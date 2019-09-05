@@ -1,0 +1,12 @@
+[
+	{
+		"name": "app.main.model.Foo",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "app.main.Receiver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	}
+]

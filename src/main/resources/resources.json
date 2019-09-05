@@ -1,0 +1,73 @@
+{
+  "resources": [
+    {"pattern": "META-INF/spring.components"},
+    {"pattern": "META-INF/spring.factories"},
+    {"pattern": "org/springframework/boot/logging/java/logging.properties"},
+    {"pattern": "META-INF/services/javax.validation.spi.ValidationProvider"}, // make pattern?
+    {"pattern": "hibernate.properties"},
+    {"pattern": "org/hibernate/.*.xsd"},
+    {"pattern": "org/hibernate/.*.dtd"},
+    {"pattern": "application.yml"},
+    {"pattern": "application.properties"},
+    {"pattern": "logging.properties"},
+    {"pattern": "org/springframework/http/codec/CodecConfigurer.properties"},
+    
+    {"pattern": "org/reactivestreams/Publisher.class"},
+    {"pattern": "org/springframework/amqp/rabbit/connection/ChannelProxy.class"},
+    
+    // vvv vanilla-jpa
+    {"pattern": "org/springframework/boot/context/properties/ConfigurationPropertiesScanRegistrar.class"},
+    {"pattern": "META-INF/jpa-named-queries.properties"},
+    // ^^^ vanilla-jpa
+
+    // vvv vanilla-tx
+    {"pattern": "org/springframework/boot/CommandLineRunner.class"},
+    {"pattern": "app/main/EnableTx.class"},
+    {"pattern": "org/springframework/context/annotation/AutoProxyRegistrar.class"},
+    {"pattern": "app/main/Finder.class"},
+    {"pattern": "org/springframework/jdbc/support/sql-error-codes.xml"},
+    {"pattern": "schema.sql"},
+    // ^^^ vanilla-tx
+    
+    // vvv vanilla-thymeleaf
+    {"pattern": "static/index.html"},
+    {"pattern": "templates/greeting.html"},
+    // ^^^ vanilla-thymeleaf
+    
+    // vvv vanilla-rabbit
+    {"pattern": "rabbitmq-amqp-client.properties"},
+    // ^^^ vanilla-rabbit
+    {"pattern": "META-INF/spring.integration.default.properties"},
+
+    // Does this catch the logging/<eachDirectory>/*.properties?
+    {"pattern": "org/springframework/boot/logging/.*.properties"},
+    {"pattern": "org/springframework/boot/logging/.*.xml"},
+    
+    {"pattern": "org/hibernate/validator/internal/engine/ConfigurationImpl.class"},
+    {"pattern": "org/hibernate/validator/internal/util/Contracts.class"},
+    {"pattern": "org/hibernate/validator/internal/util/logging/Log.class"},
+    {"pattern": "org/hibernate/validator/internal/engine/resolver/TraversableResolvers.class"},
+
+	{"pattern": "org/springframework/boot/context/properties/ConfigurationPropertiesScanRegistrar.class"},
+    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration.Hikari.class"},
+    {"pattern": "org/springframework/boot/autoconfigure/orm/jpa/DataSourceInitializedPublisher.Registrar.class"},
+    {"pattern": "org/springframework/boot/autoconfigure/orm/jpa/DataSourceInitializedPublisher.class"},
+    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.class"},
+    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceInitializerPostProcessor.class"},
+
+    {"pattern": "org/springframework/context/ApplicationListener.class"},
+    {"pattern": "org/springframework/beans/factory/InitializingBean.class"},
+    {"pattern": "org/springframework/context/annotation/Role.class"},
+    {"pattern": "javax/validation/Validator.class"},
+    {"pattern": "org/springframework/context/annotation/Import.class"},
+    {"pattern": "org/springframework/context/annotation/ImportAware.class"},
+    {"pattern": "org/springframework/context/EnvironmentAware.class"},
+    {"pattern": "org/springframework/context/annotation/Configuration.class"},
+    {"pattern": "org/springframework/beans/factory/BeanFactoryAware.class"},
+    {"pattern": "org/springframework/beans/factory/Aware.class"},
+    {"pattern": "org/springframework/beans/factory/BeanClassLoaderAware.class"},
+    {"pattern": "org/springframework/context/ApplicationContextAware.class"},
+    {"pattern": "org/springframework/context/annotation/ImportBeanDefinitionRegistrar.class"}
+  ]
+}
+
