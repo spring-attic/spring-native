@@ -18,7 +18,7 @@ export CP=.:$LIBPATH
 #java -classpath $CP app.main.SampleApplication
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../target/spring-graal-feature-0.5.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../target/spring-graal-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \

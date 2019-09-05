@@ -5,7 +5,7 @@
 
 	<groupId>org.springframework</groupId>
 	<artifactId>spring-graal-feature</artifactId>
-	<version>0.5.0.RELEASE</version>
+	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>spring-graal-feature</name>
