@@ -25,9 +25,9 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
+	    <groupId>com.github.spring-projects-experimental</groupId>
             <artifactId>spring-graal-feature</artifactId>
-            <version>0.5.0.BUILD-SNAPSHOT</version>
+            <version>0.5.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -106,8 +106,16 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
+        <pluginRepository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+	</pluginRepository>
     </pluginRepositories>
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+	</repository>
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
