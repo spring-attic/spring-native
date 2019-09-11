@@ -6,7 +6,10 @@
 {"class": "reactor.netty.http.client.HttpClientSecure"},
 {"class": "sun.reflect.misc.Trampoline"},
 {"class": "reactor.netty.http.server.HttpServer"},
-{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"}
+{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"},
+// vvv tomcat sample
+{"package": "org.apache.tomcat.util.net"}
+// ^^^ tomcat sample
 ],
 "buildTimeInitialization":
 [

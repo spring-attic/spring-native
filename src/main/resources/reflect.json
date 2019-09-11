@@ -347,6 +347,150 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
+	// vvv for tomcat sample
+	
+	{
+		"name": "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.web.servlet.view.InternalResourceViewResolver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.springframework.web.servlet.view.BeanNameViewResolver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.apache.tomcat.util.descriptor.web.ErrorPage",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	// These are all Http11NioProtocol and supertypes
+	{
+		"name": "org.apache.coyote.http11.Http11NioProtocol",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.apache.coyote.http11.AbstractHttp11JsseProtocol",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.apache.coyote.http11.AbstractHttp11Protocol",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.apache.coyote.AbstractProtocol",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "org.apache.coyote.ProtocolHandler",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	{
+		"name": "javax.management.MBeanRegistration",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	
+	{
+		"name": "org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},  
+	
+	// These 4 are from OnWebApplicationCondition:
+	{
+		"name": "org.springframework.web.context.support.GenericWebApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.web.context.ConfigurableWebApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.web.context.WebApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.context.ConfigurableApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	
+	{
+		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition$1",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	// These 3 are parameters to the @Bean method in EmbeddedTomcat
+{
+	"name": "org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer",
+	"allDeclaredConstructors": true,
+	"allDeclaredMethods": true
+},
+{
+	"name": "org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer",
+	"allDeclaredConstructors": true,
+	"allDeclaredMethods": true
+},
+{
+	"name": "org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer",
+	"allDeclaredConstructors": true,
+	"allDeclaredMethods": true
+},
+	{
+		"name": "org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$1",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$LoaderHidingResourceRoot",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	// ^^^ for tomcat sample
 	{
 		"name": "org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory",
 		"allDeclaredConstructors": true,
