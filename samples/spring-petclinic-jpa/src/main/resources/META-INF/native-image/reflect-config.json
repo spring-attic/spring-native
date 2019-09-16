@@ -1,5 +1,11 @@
 [
 	{
+		"name": "org.hibernate.hql.internal.ast.tree.OrderByClause",
+		"allDeclaredConstructors": true,
+		"allDeclaredFields": true,
+		"allDeclaredMethods": true
+},
+	{
 		"name": "org.hibernate.hql.internal.ast.tree.SelectExpressionImpl",
 		"allDeclaredConstructors": true,
 		"allDeclaredFields": true,
