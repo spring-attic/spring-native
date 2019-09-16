@@ -8,3 +8,11 @@ log.txt
 unpack
 target
 .attach_pid*
+clr
+demo
+grpc
+petclinic
+jpa
+orm
+thymeleaf
+tx

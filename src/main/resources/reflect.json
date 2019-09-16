@@ -1,6 +1,11 @@
 [
 	// vvv petclinic
 	{
+		"name": "org.thymeleaf.extras.java8time.expression.Temporals",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
 		"name": "org.hibernate.persister.collection.OneToManyPersister",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
