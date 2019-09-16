@@ -1,4 +1,16 @@
 [
+	// vvv petclinic
+	{
+		"name": "org.hibernate.persister.collection.OneToManyPersister",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.samples.petclinic.visit.VisitRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	// ^^^
 	// vv vanilla-grpc
 	{
 		"name": "com.google.protobuf.ExtensionRegistry",

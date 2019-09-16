@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -251,6 +252,7 @@ public class ResourcesHandler {
 		while (keys.hasMoreElements()) {
 			String k = (String)keys.nextElement();
 			System.out.println("Registering Spring Component: "+k);
+			try {
 			reflectionHandler.addAccess(k,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 			resourcesRegistry.addResources(k.replace(".", "/")+".class");
 			// Register nested types of the component
@@ -261,7 +263,34 @@ public class ResourcesHandler {
 				resourcesRegistry.addResources(t.getName()+".class");
 			}
 			registerHierarchy(baseType, new HashSet<>(), resourcesRegistry);
+		} catch (Throwable t) {
+		  t.printStackTrace();	
+		  // assuming ok for now - see 
+		  // SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ??? for petclinic spring.components
 		}
+		String vs = (String)p.get(k);
+		StringTokenizer st = new StringTokenizer(vs,",");
+		// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
+		while (st.hasMoreElements()) {
+			String tt = st.nextToken();
+			try {
+			reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+			resourcesRegistry.addResources(tt.replace(".", "/")+".class");
+			// Register nested types of the component
+			Type baseType = ts.resolveDotted(tt);
+			for (Type t: baseType.getNestedTypes()) {
+				String n = t.getName().replace("/", ".");
+				reflectionHandler.addAccess(n,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+				resourcesRegistry.addResources(t.getName()+".class");
+			}
+			registerHierarchy(baseType, new HashSet<>(), resourcesRegistry);
+		} catch (Throwable t) {
+		  t.printStackTrace();	
+		  System.out.println("Problems with value "+tt);
+		}
+	}
+		}
+		
 	}
 	
 	public void registerHierarchy(Type t, Set<Type> visited, ResourcesRegistry resourcesRegistry) {
