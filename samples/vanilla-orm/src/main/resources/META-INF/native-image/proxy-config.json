@@ -1,0 +1,3 @@
+[
+	["org.springframework.boot.CommandLineRunner", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"]
+]
