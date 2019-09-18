@@ -25,7 +25,7 @@ class OnlyPresent implements Predicate<String> {
 		try {
 			return Class.forName(type, false, getClass().getClassLoader()) != null;
 		}
-		catch (ClassNotFoundException ex) {
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			return false;
 		}
 	}

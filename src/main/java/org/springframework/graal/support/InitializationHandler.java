@@ -43,6 +43,9 @@ public class InitializationHandler {
 	public void register(BeforeAnalysisAccess access) {
 		InitializationDescriptor id = compute();
 		System.out.println("SBG: forcing explicit class initialization at build or runtime:");
+		if (id == null) {
+			throw new IllegalStateException("Unable to load initialization descriptor");
+		}
 		System.out.println(id.toString());
 		List<Class> collect = id.getBuildtimeClasses().stream()
 				.map(access::findClassByName).filter(Objects::nonNull).collect(Collectors.toList());

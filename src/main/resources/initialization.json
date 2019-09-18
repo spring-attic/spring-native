@@ -10,9 +10,20 @@
 // vvv tomcat sample
 {"package": "org.apache.tomcat.util.net"}
 // ^^^ tomcat sample
+// vvv petclinic
+  //  {"class": "java.sql.DriverManager"},
+  //  {"class": "org.hsqldb.jdbc.JDBCDriver"},
+  //  {"class": "com.mysql.cj.jdbc.Driver"},
+  //  {"class": "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread"}
+// ^^^ petclinic
 ],
 "buildTimeInitialization":
 [
+    // vvv petclinic
+    {"package": "org.springframework.core.env"},
+{"class": "org.springframework.util.unit.DataUnit"},
+    // ^^^ petclinic
+    
     // vv vanilla-grpc
     {"class": "io.netty.handler.codec.http2.CharSequenceMap"},
     {"class": "io.netty.handler.codec.http2.Http2Headers$PseudoHeaderName"},

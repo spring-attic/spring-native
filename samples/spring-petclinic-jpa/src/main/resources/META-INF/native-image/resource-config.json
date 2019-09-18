@@ -1,0 +1,16 @@
+{
+  "bundles": [
+    {"name":"messages.messages"}
+  ],
+  "resources": [
+    {"pattern": "META-INF/resources/webjars/.*"},
+    {"pattern": "banner.txt"},
+    {"pattern": "db/.*"},
+    {"pattern": "messages/.*"},
+    {"pattern": "static/.*"},
+    {"pattern": "templates/.*"},
+    {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
+{"pattern": "templates/owners/ownersList.html"},
+{"pattern": "org/springframework/http/mime.types"}
+  ]
+}

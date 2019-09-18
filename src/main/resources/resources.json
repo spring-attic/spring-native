@@ -1,5 +1,26 @@
 {
-  "resources": [
+  // vvv petclinic
+    "bundles": [
+    {"name":"messages.messages"}
+  ],
+  // ^^^
+    "resources": [
+    // vvv petclinic
+    {"pattern": "org/springframework/format/Formatter.class"},
+    {"pattern": "org/springframework/format/Printer.class"},
+    {"pattern": "org/springframework/format/*"},
+    {"pattern": "org/springframework/format/*.class"},
+    {"pattern": "org/springframework/format/Parser.class"},
+    {"pattern": "banner.txt"},
+    {"pattern": "db/.*"},
+    {"pattern": "messages/.*"},
+    {"pattern": "static/.*"},
+    {"pattern": "templates/.*"},
+    {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
+{"pattern": "templates/owners/ownersList.html"},
+{"pattern": "org/springframework/http/mime.types"},
+    {"pattern": "org/springframework/samples/petclinic/visit/VisitRepository.class"},
+    // ^^^
     // vvv tomcat sample
     {"pattern":"javax/servlet/http/LocalStrings.properties"},
     {"pattern":"org/apache/catalina/authenticator/LocalStrings.properties"},
