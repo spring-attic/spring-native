@@ -1,4 +1,11 @@
 [
+	// vvv petclinic with recent (>m5) 2.2.0.build-snapshots
+	{
+		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	
 	// vvv petclinic
 	{
 		"name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
