@@ -1,4 +1,7 @@
 {
+  "bundles": [
+    {"name":"messages.messages"}
+  ],
   "resources": [
     {"pattern": "META-INF/resources/webjars/.*"},
     {"pattern": "banner.txt"},
