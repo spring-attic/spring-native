@@ -1,5 +1,10 @@
 {
-  "resources": [
+  // vvv petclinic
+    "bundles": [
+    {"name":"messages.messages"}
+  ],
+  // ^^^
+    "resources": [
     // vvv petclinic
     {"pattern": "org/springframework/format/Formatter.class"},
     {"pattern": "org/springframework/format/Printer.class"},
