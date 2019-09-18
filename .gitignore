@@ -14,4 +14,14 @@ samples/vanilla-thymeleaf/thymeleaf
 samples/vanilla-tx/tx
 samples/demo/demo
 samples/commandlinerunner/clr
+.sts4-cache/
 .attach_pid*
+clr
+demo
+grpc
+petclinic
+jpa
+msgs
+orm
+thymeleaf
+tx

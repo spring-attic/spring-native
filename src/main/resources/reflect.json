@@ -1,4 +1,26 @@
 [
+	// vvv petclinic
+	{
+		"name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.thymeleaf.extras.java8time.expression.Temporals",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.hibernate.persister.collection.OneToManyPersister",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.samples.petclinic.visit.VisitRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	// ^^^
 	// vv vanilla-grpc
 	{
 		"name": "com.google.protobuf.ExtensionRegistry",
@@ -349,6 +371,46 @@
 	},
 	// vvv for tomcat sample
 	
+	{
+		"name": "org.springframework.web.servlet.support.SessionFlashMapManager",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "java.util.concurrent.Callable",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.springframework.web.servlet.theme.FixedThemeResolver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.apache.catalina.servlets.DefaultServlet",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
+	{
+		"name": "org.apache.tomcat.websocket.server.WsContextListener",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},	
 	{
 		"name": "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext",
 		"allDeclaredConstructors": true,
