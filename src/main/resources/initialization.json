@@ -74,6 +74,7 @@
 {"class": "org.hibernate.validator.internal.engine.ConfigurationImpl"},
 {"class": "org.springframework.core.annotation.AnnotationFilter"},
 {"class": "org.springframework.core.annotation.AnnotationFilter$1"},
+{"class": "org.springframework.core.annotation.AnnotationFilter$2"},
 {"class": "org.springframework.core.annotation.PackagesAnnotationFilter"},
 {"class": "org.springframework.util.StringUtils"},
 {"class": "org.springframework.util.Assert"},
