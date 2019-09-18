@@ -1,5 +1,6 @@
 {
   "resources": [
+    {"pattern": "META-INF/resources/webjars/.*"},
     {"pattern": "banner.txt"},
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
