@@ -60,6 +60,15 @@ public class ReflectionHandler {
 
 	private ImageClassLoader cl;
 
+	private static boolean AVOID_LOGBACK;
+	
+	static {
+		AVOID_LOGBACK = Boolean.valueOf(System.getProperty("avoidLogback","false"));
+		if (AVOID_LOGBACK) {
+			System.out.println("Avoiding logback configuration");
+		}
+	}
+	
 	public ReflectionDescriptor getConstantData() {
 		if (constantReflectionDescriptor == null) {
 			try {
@@ -175,7 +184,9 @@ public class ReflectionHandler {
 				}
 			}
 		}
-		registerLogback();
+		if (!AVOID_LOGBACK) {
+			registerLogback();
+		}
 	}
 
 	// TODO review - not strictly correct as they may ask with different flags (but right now they don't)
