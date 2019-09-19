@@ -8,6 +8,11 @@
 	
 	// vvv petclinic
 	{
+		"name": "org.hibernate.validator.internal.util.logging.Log_$logger",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
 		"name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true

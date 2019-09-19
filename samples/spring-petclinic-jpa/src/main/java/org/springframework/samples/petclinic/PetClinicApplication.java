@@ -16,8 +16,13 @@
 
 package org.springframework.samples.petclinic;
 
+import javax.validation.Validator;
+
+import org.springframework.samples.petclinic.owner.Owner;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -30,7 +35,8 @@ import org.springframework.core.io.ClassPathResource;
 public class PetClinicApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(PetClinicApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(PetClinicApplication.class, args);
+		System.err.println(context.getBean(Validator.class).getConstraintsForClass(Owner.class));
 	}
 
 }
