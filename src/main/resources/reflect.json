@@ -596,6 +596,11 @@
 		"allDeclaredMethods": true
 	},
 	{
+	"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder$Factory",
+	"allDeclaredConstructors": true,
+	"allDeclaredMethods": true
+	},
+	{
 		"name": "org.springframework.boot.autoconfigure.condition.SearchStrategy",
 		"allDeclaredConstructors": true,
 		"allDeclaredFields": true,
