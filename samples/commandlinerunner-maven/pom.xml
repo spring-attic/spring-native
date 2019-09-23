@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.M5</version>
+        <version>2.2.0.BUILD-SNAPSHOT</version>
         <relativePath />
     </parent>
     <groupId>com.example</groupId>
@@ -25,9 +25,9 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-	    <groupId>com.github.spring-projects-experimental</groupId>
+        <groupId>com.github.spring-projects-experimental</groupId>
             <artifactId>spring-graal-feature</artifactId>
-            <version>0.5.0.RELEASE</version>
+            <version>-cd2a3ebe15-1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -56,7 +56,7 @@
                     <plugin>
                         <groupId>com.oracle.substratevm</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
-                        <version>19.2.0</version>
+                        <version>19.2.0.1</version>
                         <executions>
                             <execution>
                                 <goals>
