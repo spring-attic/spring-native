@@ -23,6 +23,7 @@ import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
 import org.springframework.graal.domain.proxies.ProxiesDescriptor;
 import org.springframework.graal.domain.proxies.ProxiesDescriptorJsonMarshaller;
+import org.springframework.graal.domain.proxies.ProxyDescriptor;
 
 import com.oracle.svm.core.jdk.proxy.DynamicProxyRegistry;
 import com.oracle.svm.hosted.ImageClassLoader;
@@ -42,22 +43,25 @@ public class DynamicProxiesHandler {
 
 	public void register(DuringSetupAccess a) {
     	ProxiesDescriptor pd = compute();
-    	System.out.println("SBG: Proxy registration: #"+pd.getProxyDescriptors().size()+" proxies");
+    	System.out.println("Attempting proxy registration of #"+pd.getProxyDescriptors().size()+" proxies");
+    	int skippedProxiesCount = 0;
     	DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
     	ImageClassLoader imageClassLoader = access.getImageClassLoader();
     	// Should have been registered by DynamicProxyFeature already
     	DynamicProxyRegistry dynamicProxySupport = ImageSingletons.lookup(DynamicProxyRegistry.class);
 //      DynamicProxySupport dynamicProxySupport = new DynamicProxySupport(imageClassLoader.getClassLoader());
 //      ImageSingletons.add(DynamicProxyRegistry.class, dynamicProxySupport);
-    	Consumer<List<String>> proxyRegisteringConsumer = interfaceNames -> {
-    		System.out.println("- "+interfaceNames);
-    		boolean isOK= true;
+    	
+    	for (ProxyDescriptor proxyDescriptor : pd.getProxyDescriptors()) {
+    		List<String> interfaceNames = proxyDescriptor.getInterfaces();
+    		boolean isOK = true;
             Class<?>[] interfaces = new Class<?>[interfaceNames.size()];
             for (int i = 0; i < interfaceNames.size(); i++) {
                 String className = interfaceNames.get(i);
                 Class<?> clazz = imageClassLoader.findClassByName(className, false);
                 if (clazz == null) {
-                	System.out.println("Skipping dynamic proxy registration due to missing type: "+className);
+                	SpringFeature.log("Skipping proxy registration for "+interfaceNames+" because of missing type: "+className);
+                	skippedProxiesCount++;
                     isOK=false;
                     break;
                 }
@@ -70,7 +74,36 @@ public class DynamicProxiesHandler {
 	            /* The interfaces array can be empty. The java.lang.reflect.Proxy API allows it. */
 	            dynamicProxySupport.addProxyClass(interfaces);
             }
-    	};
-    	pd.consume(proxyRegisteringConsumer);
+		}
+    	if (skippedProxiesCount != 0) {
+			System.out.println("Skipped registration of #"+skippedProxiesCount+" proxies - some types not part of this app");
+		}
+
+//    	Consumer<List<String>> proxyRegisteringConsumer = interfaceNames -> {
+//    		boolean isOK= true;
+//            Class<?>[] interfaces = new Class<?>[interfaceNames.size()];
+//            for (int i = 0; i < interfaceNames.size(); i++) {
+//                String className = interfaceNames.get(i);
+//                Class<?> clazz = imageClassLoader.findClassByName(className, false);
+//                if (clazz == null) {
+//                	SpringFeature.log("Skipping proxy registration for "+interfaceNames+" because of missing type: "+className);
+//                	skippedProxiesCount++;
+//                    isOK=false;
+//                    break;
+//                }
+//                if (!clazz.isInterface()) {
+//                    throw new RuntimeException("The class \"" + className + "\" is not an interface.");
+//                }
+//                interfaces[i] = clazz;
+//            }
+//            if (isOK) {
+//	            /* The interfaces array can be empty. The java.lang.reflect.Proxy API allows it. */
+//	            dynamicProxySupport.addProxyClass(interfaces);
+//            }
+//    	};
+//    	if (skippedProxiesCount != 0) {
+//    		System.out.println("Skipped registration of #"+skippedProxiesCount+" proxies due to missing types (use -Dverbose=true to see more detail)");
+//    	}
+//    	pd.consume(proxyRegisteringConsumer);
 	}
 }

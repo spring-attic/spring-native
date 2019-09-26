@@ -90,7 +90,7 @@ public class ResourcesHandler {
 		// against Resources
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
-		System.out.println("SBG: adding resources - #" + rd.getPatterns().size()+" patterns");
+		System.out.println("Registering resources - #" + rd.getPatterns().size()+" patterns");
 
 		for (String pattern : rd.getPatterns()) {
 			if (pattern.equals("META-INF/spring.factories")) {
@@ -133,7 +133,7 @@ public class ResourcesHandler {
 			System.out.println("vvv");
 			p.list(System.out);
 			System.out.println("^^^");
-			System.out.println(">>> "+p.toString());
+//			System.out.println(">>> "+p.toString());
 			try {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				p.store(baos,"");
@@ -141,7 +141,7 @@ public class ResourcesHandler {
 				byte[] bs = baos.toByteArray();
 				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
 				Resources.registerResource("META-INF/spring.components", bais);
-				System.out.println("BAOS: "+new String(bs));
+//				System.out.println("BAOS: "+new String(bs));
 			} catch (IOException e) {
 				throw new IllegalStateException(e);
 			}
@@ -154,7 +154,7 @@ public class ResourcesHandler {
 		}
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		Type componentType = ts.resolveDotted(typename);
-		System.out.println("> Component processing: "+typename);
+		SpringFeature.log("> Component processing: "+typename);
 		List<String> conditionalTypes = componentType.findConditionalOnClassValue();
 		if (conditionalTypes != null) {
 			for (String lDescriptor : conditionalTypes) {
@@ -175,7 +175,7 @@ public class ResourcesHandler {
 		}
 		try {
 			// String configNameDotted = configType.getName().replace("/",".");
-			System.out.println("Including auto-configuration "+typename);
+			SpringFeature.log("Including auto-configuration "+typename);
 			reflectionHandler.addAccess(typename,Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			resourcesRegistry.addResources(typename.replace(".", "/")+".class");
 		} catch (NoClassDefFoundError e) {
@@ -183,12 +183,12 @@ public class ResourcesHandler {
 			// PROBLEM? Can't register Type:org/springframework/boot/autoconfigure/web/servlet/HttpEncodingAutoConfiguration because cannot find javax/servlet/Filter
 			// java.lang.NoClassDefFoundError: javax/servlet/Filter
 			// ... at com.oracle.svm.hosted.config.ReflectionRegistryAdapter.registerDeclaredConstructors(ReflectionRegistryAdapter.java:97)
-			System.out.println("PROBLEM? Can't register "+typename+" because cannot find "+e.getMessage());
+			System.out.println("Possible problem, cannot register "+typename+" because cannot find "+e.getMessage());
 		}
 		
 		Map<String,List<String>> imports = componentType.findImports();
 		if (imports != null) {
-			System.out.println("Imports found on "+typename+" are "+imports);
+			SpringFeature.log("Imports found on "+typename+" are "+imports);
 			for (Map.Entry<String,List<String>> importsEntry: imports.entrySet()) {
 				reflectionHandler.addAccess(importsEntry.getKey(),Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 				for (String imported: importsEntry.getValue()) {
@@ -248,10 +248,12 @@ public class ResourcesHandler {
 		// com.example.demo.Foobar=org.springframework.stereotype.Component
 		// com.example.demo.DemoApplication=org.springframework.stereotype.Component
 		Enumeration<Object> keys = p.keys();
+		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
 			String k = (String)keys.nextElement();
-			System.out.println("Registering Spring Component: "+k);
+			SpringFeature.log("Registering Spring Component: "+k);
+			registeredComponents++;
 			try {
 			reflectionHandler.addAccess(k,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 			resourcesRegistry.addResources(k.replace(".", "/")+".class");
@@ -288,8 +290,10 @@ public class ResourcesHandler {
 		  t.printStackTrace();	
 		  System.out.println("Problems with value "+tt);
 		}
+
 	}
 		}
+		System.out.println("Registered "+registeredComponents+" components");
 		
 	}
 	
@@ -298,7 +302,7 @@ public class ResourcesHandler {
 			return;
 		}
 		String desc = t.getName();
-		System.out.println("Hierarchy registration of "+t.getName());
+//		System.out.println("Hierarchy registration of "+t.getName());
 		reflectionHandler.addAccess(desc.replace("/", "."),Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 		resourcesRegistry.addResources(desc.replace("$", ".")+".class");			
 		Type s = t.getSuperclass();
@@ -395,7 +399,7 @@ public class ResourcesHandler {
 		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
 		loadSpringFactoryFile(springFactory, p);
-		
+		int excludeAutoConfigCount = 0;
 		Enumeration<Object> keyz = p.keys();
 		// Handle all keys except EnableAutoConfiguration
 		while (keyz.hasMoreElements()) {
@@ -404,8 +408,7 @@ public class ResourcesHandler {
 				String classesList = p.getProperty(k);
 				for (String s: classesList.split(",")) {
 					try {
-						reflectionHandler.addAccess(s,Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-						System.out.println("NEEDS ADDING TO RESOURCE LIST? "+s);
+						reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 					} catch (NoClassDefFoundError ncdfe) {
 						System.out.println("SBG: WARNING: Whilst processing "+k+" problem adding access for type: "+s+" because of missing "+ncdfe.getMessage());
 					}
@@ -421,25 +424,27 @@ public class ResourcesHandler {
 			}
 			// TODO what about ConditionalOnResource?
 			System.out.println(
-					"Spring.factories processing: looking at #" + configs.size() + " configuration references");
+					"Processing spring.factories - looking at #" + configs.size() + " configuration references");
 			for (Iterator<String> iterator = configs.iterator(); iterator.hasNext();) {
 				String config = iterator.next();
 				boolean needToAddThem = true;
 				if (!verifyType(config)) {
-					System.out.println("Excluding auto-configuration " + config);
-					System.out.println("= COC failed so just adding class forname access (no methods/ctors)");
+					SpringFeature.log("Excluding auto-configuration " + config);
+					excludeAutoConfigCount++;
+//					System.out.println("= COC failed so just adding class forname access (no methods/ctors)");
 					if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
 						forRemoval.add(config);
 						needToAddThem = false;
 					}
 				}
 				if (needToAddThem) {
-					System.out.println("Resource Adding: "+config);	
+					SpringFeature.log("Resource Adding: "+config);	
 					reflectionHandler.addAccess(config); // no flags as it isn't going to trigger
 					ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 					resourcesRegistry.addResources(config.replace(".", "/").replace("$", ".")+".class");
 				}
 			}
+			System.out.println("Excluding "+excludeAutoConfigCount+" auto configurations from spring.factories file");
 			configs.removeAll(forRemoval);
 			p.put("org.springframework.boot.autoconfigure.EnableAutoConfiguration", String.join(",", configs));
 		}
@@ -447,7 +452,7 @@ public class ResourcesHandler {
 			if (forRemoval.size() == 0) {
 				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
-				System.out.println("  removed " + forRemoval.size() + " configurations");
+				SpringFeature.log("  removed " + forRemoval.size() + " configurations");
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				p.store(baos,"");
 				baos.close();
@@ -481,7 +486,7 @@ public class ResourcesHandler {
 	}
 
 	private boolean processType(Type configType, Set<String> visited, int depth) {	
-		System.out.println(spaces(depth)+"Processing type "+configType.getName());
+		SpringFeature.log(spaces(depth)+"Processing type "+configType.getName());
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 
 		// This would fetch 'things we care about from a graal point of view'
@@ -495,7 +500,7 @@ public class ResourcesHandler {
 		if (!missing.isEmpty()) {
 			// No point continuing with this type, it cannot be resolved against current classpath
 			// The assumption is it will never need to be accessed anyway
-			System.out.println(spaces(depth)+"for "+configType.getName()+" missing types are "+missing);
+			SpringFeature.log(spaces(depth)+"for "+configType.getName()+" missing types are "+missing);
 			return false;
 		}
 		
@@ -503,7 +508,7 @@ public class ResourcesHandler {
 		if (!missingAnnotationTypes.isEmpty()) {
 			// If only the annotations are missing, it is ok to reflect on the existence of the type, it is
 			// just not safe to reflect on the annotations on that type.
-			System.out.println(spaces(depth)+"for "+configType.getName()+" missing annotation types are "+missingAnnotationTypes);
+			SpringFeature.log(spaces(depth)+"for "+configType.getName()+" missing annotation types are "+missingAnnotationTypes);
 		}
 		boolean passesTests = true;
 		Set<String> toMakeAccessible = new HashSet<>();
@@ -513,7 +518,7 @@ public class ResourcesHandler {
 			for (Map.Entry<HintDescriptor, List<String>> hint: hints.entrySet()) {
 				HintDescriptor hintDescriptor = hint.getKey();
 				List<String> typeReferences = hint.getValue();
-				System.out.println(spaces(depth)+"checking @CompilationHint "+h+"/"+hints.size()+" "+hintDescriptor.getAnnotationChain());
+				SpringFeature.log(spaces(depth)+"checking @CompilationHint "+h+"/"+hints.size()+" "+hintDescriptor.getAnnotationChain());
 				
 				String[] name = hintDescriptor.getName();
 				if (name != null) {
@@ -531,12 +536,12 @@ public class ResourcesHandler {
 					// TODO is this too much repetition for certain types?
 					for (Type annotatedType : hintDescriptor.getAnnotationChain()) {
 						try {
-							System.out.println("Handling annotated thingy: "+annotatedType.getName());
+							SpringFeature.log("Handling annotated thingy: "+annotatedType.getName());
 							String t = annotatedType.getDescriptor();
 							reflectionHandler.addAccess(t.substring(1,t.length()-1).replace("/", "."),Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 							resourcesRegistry.addResources(t.substring(1,t.length()-1).replace("$", ".")+".class");
 						} catch (NoClassDefFoundError e) {
-							System.out.println(spaces(depth)+annotatedType.getName()+" not found for configuration "+configType.getName());
+							SpringFeature.log(spaces(depth)+annotatedType.getName()+" not found for configuration "+configType.getName());
 						}
 						
 					}
@@ -546,7 +551,7 @@ public class ResourcesHandler {
 					for (String typeReference: typeReferences) { // La/b/C;
 						Type t = ts.Lresolve(typeReference, true);
 						boolean exists = (t != null);
-						System.out.println(spaces(depth)+" does "+fromLtoDotted(typeReference)+" exist? "+exists);
+						SpringFeature.log(spaces(depth)+" does "+fromLtoDotted(typeReference)+" exist? "+exists);
 						if (exists) {
 							// TODO should this specify what aspects of reflection are required (methods/fields/ctors/annotations)
 							toMakeAccessible.add(typeReference);
@@ -568,7 +573,7 @@ public class ResourcesHandler {
 					reflectionHandler.addAccess(t.substring(1,t.length()-1).replace("/", "."),Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(t.substring(1,t.length()-1).replace("$", ".")+".class");
 				} catch (NoClassDefFoundError e) {
-					System.out.println(spaces(depth)+"Conditional type "+fromLtoDotted(t)+" not 	found for configuration "+configType.getName());
+					SpringFeature.log(spaces(depth)+"Conditional type "+fromLtoDotted(t)+" not 	found for configuration "+configType.getName());
 				}
 			}
 		}
@@ -576,10 +581,9 @@ public class ResourcesHandler {
 		if (passesTests) {
 			try {
 				String configNameDotted = configType.getName().replace("/",".");
-				System.out.println(spaces(depth)+"including reflective/resource access to "+configNameDotted);
+				SpringFeature.log(spaces(depth)+"including reflective/resource access to "+configNameDotted);
 				visited.add(configType.getName());
 				reflectionHandler.addAccess(configNameDotted,Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-				System.out.println("res: "+configType.getName().replace("$", ".")+".class");
 				resourcesRegistry.addResources(configType.getName().replace("$", ".")+".class");
 				// In some cases the superclass of the config needs to be accessible
 				// TODO need this guard? if (isConfiguration(configType)) {
@@ -589,7 +593,7 @@ public class ResourcesHandler {
 				// PROBLEM? Can't register Type:org/springframework/boot/autoconfigure/web/servlet/HttpEncodingAutoConfiguration because cannot find javax/servlet/Filter
 				// java.lang.NoClassDefFoundError: javax/servlet/Filter
 				// ... at com.oracle.svm.hosted.config.ReflectionRegistryAdapter.registerDeclaredConstructors(ReflectionRegistryAdapter.java:97)
-				System.out.println("PROBLEM? Can't register "+configType.getName()+" because cannot find "+e.getMessage());
+				SpringFeature.log("PROBLEM? Can't register "+configType.getName()+" because cannot find "+e.getMessage());
 			}
 		}
 		
@@ -610,7 +614,7 @@ public class ResourcesHandler {
 				}
 			}
 		} else {
-			System.out.println("INFO: tests failed on "+configType.getName()+" so not going into nested types");
+			SpringFeature.log("INFO: tests failed on "+configType.getName()+" so not going into nested types");
 		}
 		return passesTests;
 	}

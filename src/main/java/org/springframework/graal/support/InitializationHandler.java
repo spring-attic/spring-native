@@ -42,7 +42,7 @@ public class InitializationHandler {
 
 	public void register(BeforeAnalysisAccess access) {
 		InitializationDescriptor id = compute();
-		System.out.println("SBG: forcing explicit class initialization at build or runtime:");
+		SpringFeature.log("Configuring initialization time for specific types and packages:");
 		if (id == null) {
 			throw new IllegalStateException("Unable to load initialization descriptor");
 		}
@@ -53,9 +53,9 @@ public class InitializationHandler {
 		id.getRuntimeClasses().stream()
 				.map(access::findClassByName).filter(Objects::nonNull)
 				.forEach(RuntimeClassInitialization::initializeAtRunTime);
-		System.out.println("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
+		SpringFeature.log("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
 		RuntimeClassInitialization.initializeAtBuildTime(id.getBuildtimePackages().toArray(new String[] {}));
-		System.out.println("Registering these packages for runtime initialization: \n"+id.getRuntimePackages());
+		SpringFeature.log("Registering these packages for runtime initialization: \n"+id.getRuntimePackages());
 		RuntimeClassInitialization.initializeAtRunTime(id.getRuntimePackages().toArray(new String[] {}));
 	}
 

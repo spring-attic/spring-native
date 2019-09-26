@@ -37,6 +37,15 @@ public class SpringFeature implements Feature {
     
     private InitializationHandler buildTimeInitializationHandler;
 
+	public static boolean VERBOSE;
+	
+	static {
+		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
+		if (VERBOSE) {
+			System.out.println("Turning on verbose mode for the feature");
+		}
+	}
+	
 	public SpringFeature() {
 		System.out.println(
 				" ____             _               _____          _                  \n"+
@@ -45,6 +54,9 @@ public class SpringFeature implements Feature {
 				" ___) | |_) | |  | | | | | (_| | |  _|  __/ (_| | |_| |_| | | |  __/\n"+
 				"|____/| .__/|_|  |_|_| |_|\\__, | |_|  \\___|\\__,_|\\__|\\__,_|_|  \\___|\n"+
 			    "      |_|                 |___/                                     \n");
+		if (!VERBOSE) {
+			System.out.println("Use -Dverbose=true on native-image call to see more detailed information from the feature");
+		}
     	reflectionHandler = new ReflectionHandler();
     	dynamicProxiesHandler = new DynamicProxiesHandler();
     	resourcesHandler = new ResourcesHandler(reflectionHandler);
@@ -79,6 +91,12 @@ public class SpringFeature implements Feature {
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
+    	System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
     }
 
+	public static void log(String msg) {
+		if (SpringFeature.VERBOSE) {
+			System.out.println(msg);
+		}
+	}
 }

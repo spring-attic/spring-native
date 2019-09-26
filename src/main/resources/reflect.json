@@ -233,11 +233,6 @@
 		"allDeclaredMethods": true
 	},	
 	{
-		"name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.hibernate.annotations.common.util.impl.Log_$logger",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -338,11 +333,6 @@
 
 	{
 		"name": "org.hibernate.validator.HibernateValidatorConfiguration",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.annotation.Configuration",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -651,12 +641,6 @@
 		"allDeclaredFields": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication$Type",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true,
-		"allDeclaredFields": true
-	},
-	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigureOrder",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -758,11 +742,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.context.annotation.ImportSelector",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.context.annotation.ImportSelector",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup",
 		"allDeclaredConstructors": true,
@@ -1362,11 +1346,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackage",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -1733,27 +1712,12 @@
 		"allDeclaredFields": true
 	},
 	{
-		"name": "java.util.EventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "java.lang.Class",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "java.util.EventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.lang.Class",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.lang.Object",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
