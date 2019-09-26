@@ -37,6 +37,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.graal.support.SpringFeature;
 
 /**
  * @author Andy Clement
@@ -771,7 +772,7 @@ public class Type {
 			for (AnnotationNode an: node.visibleAnnotations) {
 				Type annotationType = typeSystem.Lresolve(an.desc, true);
 				if (annotationType == null) {
-					System.out.println("Couldn't resolve "+an.desc);
+					SpringFeature.log("Couldn't resolve "+an.desc+" annotation type whilst searching for hints on "+getName());
 				} else {
 					Stack<Type> s = new Stack<>();
 					s.push(this);
@@ -804,7 +805,7 @@ public class Type {
 					for (AnnotationNode an2: node.visibleAnnotations) {
 						Type annotationType = typeSystem.Lresolve(an2.desc, true);
 						if (annotationType == null) {
-							System.out.println("Couldn't resolve "+an2.desc);
+							SpringFeature.log("Couldn't resolve "+an2.desc+" annotation type whilst searching for hints on "+getName());
 						} else {
 							annotationType.collectHints(an2, hints, visited, annotationChain);
 						}

@@ -202,9 +202,9 @@ public class TypeSystem {
 			} else {
 				// Check generics
 				List<String> typesInSignature = baseType.getTypesInSignature();
-				for (String t: typesInSignature) {
-					System.out.println("Found this "+t+" in signature of "+baseType.getName());
-				}
+//				for (String t: typesInSignature) {
+//					System.out.println("Found this "+t+" in signature of "+baseType.getName());
+//				}
 				String superclassString = baseType.getSuperclassString();
 				if (superclassString != null) {
 					resolveComplete(superclassString, missingTypes, visited);

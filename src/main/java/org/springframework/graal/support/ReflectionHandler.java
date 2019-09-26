@@ -39,6 +39,7 @@ import org.springframework.graal.domain.reflect.MethodDescriptor;
 import org.springframework.graal.domain.reflect.ReflectionDescriptor;
 
 import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
+import com.oracle.svm.core.hub.ClassForNameSupport;
 import com.oracle.svm.hosted.ImageClassLoader;
 import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
 
@@ -61,6 +62,8 @@ public class ReflectionHandler {
 	private ImageClassLoader cl;
 
 	private static boolean AVOID_LOGBACK;
+	
+	private int typesRegisteredForReflectiveAccessCount = 0;
 	
 	static {
 		AVOID_LOGBACK = Boolean.valueOf(System.getProperty("avoidLogback","false"));
@@ -88,59 +91,63 @@ public class ReflectionHandler {
 		rra = new ReflectionRegistryAdapter(rrs, cl);
 		ReflectionDescriptor reflectionDescriptor = getConstantData();
 
-		System.out.println("SBG: reflection registering #"+reflectionDescriptor.getClassDescriptors().size()+" entries");
+		System.out.println("Registering #"+reflectionDescriptor.getClassDescriptors().size()+" types from "+RESOURCE_FILE);
+		int missingFromClasspathCount = 0;
+		int flagHandlingCount = 0;
 		for (ClassDescriptor classDescriptor : reflectionDescriptor.getClassDescriptors()) {
 			Class<?> type = null;
 			String n2 = classDescriptor.getName();
 			if (n2.endsWith("[]")) {
-				System.out.println("ARRAY: "+n2.substring(0,n2.length()-2));
 				type = rra.resolveType(n2.substring(0,n2.length()-2));
-				System.out.println("Array base type resolved as "+type.getName());
 				Object o = Array.newInstance(type, 1);
 				type = o.getClass();
-				System.out.println("Class of array is "+type.getName());
 			} else {
 				type = rra.resolveType(classDescriptor.getName());
 			}
 			if (type == null) {
-				System.out.println("SBG: WARNING: "+RESOURCE_FILE+" included "+classDescriptor.getName()+" but it doesn't exist on the classpath, skipping...");
+				missingFromClasspathCount++;
+				SpringFeature.log(RESOURCE_FILE+" included "+classDescriptor.getName()+" but it doesn't exist on the classpath, skipping...");
 				continue;
 			}
-	        rra.registerType(type);
-			Set<Flag> flags = classDescriptor.getFlags();
-			if (flags != null) {
-				for (Flag flag: flags) {
-					try {
-						switch (flag) {
-						case allDeclaredClasses:
-							rra.registerDeclaredClasses(type);
-							break;
-						case allDeclaredFields:
-							rra.registerDeclaredFields(type);
-							break;
-						case allPublicFields:
-							rra.registerPublicFields(type);
-							break;
-						case allDeclaredConstructors:
-							rra.registerDeclaredConstructors(type);
-							break;
-						case allPublicConstructors:
-							rra.registerPublicConstructors(type);
-							break;
-						case allDeclaredMethods:
-							rra.registerDeclaredMethods(type);
-							break;
-						case allPublicMethods:
-							rra.registerPublicMethods(type);
-							break;
-						case allPublicClasses:
-							rra.registerPublicClasses(type);
-							break;						
+			if (checkType(type)) {
+		        rra.registerType(type);
+				Set<Flag> flags = classDescriptor.getFlags();
+				if (flags != null) {
+					for (Flag flag: flags) {
+						try {
+							switch (flag) {
+							case allDeclaredClasses:
+								rra.registerDeclaredClasses(type);
+								break;
+							case allDeclaredFields:
+								rra.registerDeclaredFields(type);
+								break;
+							case allPublicFields:
+								rra.registerPublicFields(type);
+								break;
+							case allDeclaredConstructors:
+								rra.registerDeclaredConstructors(type);
+								break;
+							case allPublicConstructors:
+								rra.registerPublicConstructors(type);
+								break;
+							case allDeclaredMethods:
+								rra.registerDeclaredMethods(type);
+								break;
+							case allPublicMethods:
+								rra.registerPublicMethods(type);
+								break;
+							case allPublicClasses:
+								rra.registerPublicClasses(type);
+								break;						
+							}
+						} catch (NoClassDefFoundError ncdfe) {
+							flagHandlingCount++;
+							SpringFeature.log(RESOURCE_FILE+" problem handling flag: "+flag+" for "+type.getName()+" because of missing "+ncdfe.getMessage());
 						}
-					} catch (NoClassDefFoundError ncdfe) {
-						System.out.println("SBG: ERROR: problem handling flag: "+flag+" for "+type.getName()+" because of missing "+ncdfe.getMessage());
 					}
 				}
+				typesRegisteredForReflectiveAccessCount++;
 			}
 			
 			// Process all specific methods defined in the input class descriptor (including constructors)
@@ -184,10 +191,32 @@ public class ReflectionHandler {
 				}
 			}
 		}
+		if (missingFromClasspathCount != 0 ) {
+			System.out.println("Warning: "+RESOURCE_FILE+": number of types referenced that are not on the classpath: #"+missingFromClasspathCount);
+		}
+		if (flagHandlingCount != 0) {
+			System.out.println("Warning: "+RESOURCE_FILE+": number of problems processing field/method/constructor access requests: #"+flagHandlingCount);
+		}
 		if (!AVOID_LOGBACK) {
 			registerLogback();
 		}
 	}
+	
+	private boolean checkType(Class clazz) {
+	    try {
+	        clazz.getDeclaredFields();
+	        clazz.getFields();
+	        clazz.getDeclaredMethods();
+	        clazz.getMethods();
+	        clazz.getDeclaredConstructors();
+	        clazz.getConstructors();
+	        clazz.getDeclaredClasses();
+	        clazz.getClasses();
+	    } catch (NoClassDefFoundError e) {
+	    	return false;
+	    }
+	    return true;
+    }
 
 	// TODO review - not strictly correct as they may ask with different flags (but right now they don't)
 	public static final Set<String> added = new HashSet<>();
@@ -209,69 +238,79 @@ public class ReflectionHandler {
 		if (!added.add(typename)) {
 			return null;
 		}
-		System.out.println("SBG: INFO: Registering reflective access to "+typename);
+		SpringFeature.log("Registering reflective access to "+typename);
 		// This can return null if, for example, the supertype of the specified type is not
 		// on the classpath. In a simple app there may be a number of types coming in from
 		// spring-boot-autoconfigure but they extend types not on the classpath.
 		Class<?> type = rra.resolveType(typename);
 		if (type == null) {
-			System.out.println("SBG: ERROR: CANNOT RESOLVE "+typename+" ???");
+			SpringFeature.log("WARNING: Possible problem, cannot resolve "+typename);
 			return null;
 		}
 		if (constantReflectionDescriptor.hasClassDescriptor(typename)) {
-			System.out.println("SBG: WARNING: type "+typename+" being added dynamically whilst "+RESOURCE_FILE+
+			SpringFeature.log("WARNING: type "+typename+" being added dynamically whilst "+RESOURCE_FILE+
 					" already contains it - does it need to be in the file? ");
 		}
-		rra.registerType(type);
-		for (Flag flag: flags) {
-			try {
-				switch (flag) {
-				case allDeclaredClasses:
-					if (verify(type.getDeclaredClasses())) {
-						rra.registerDeclaredClasses(type);
+		// The call on this next line and the need to guard with checkType on the register call feel dirty
+		// They are here because otherwise we start getting warnings to system.out - need graal bug to tidy this up
+        ClassForNameSupport.registerClass(type);
+		if (checkType(type)) {
+			rra.registerType(type);
+			for (Flag flag: flags) {
+				try {
+					switch (flag) {
+					case allDeclaredClasses:
+						if (verify(type.getDeclaredClasses())) {
+							rra.registerDeclaredClasses(type);
+						}
+						break;
+					case allDeclaredFields:
+						if (verify(type.getDeclaredFields())) {
+							rra.registerDeclaredFields(type);
+						}
+						break;
+					case allPublicFields:
+						if (verify(type.getFields())) {
+							rra.registerPublicFields(type);
+						}
+						break;
+					case allDeclaredConstructors:
+						if (verify(type.getDeclaredConstructors())) {
+							rra.registerDeclaredConstructors(type);	
+						}
+						break;
+					case allPublicConstructors:
+						if (verify(type.getConstructors())) {
+							rra.registerPublicConstructors(type);
+						}
+						break;
+					case allDeclaredMethods:
+						if (verify(type.getDeclaredMethods())) {
+							rra.registerDeclaredMethods(type);
+						}
+						break;
+					case allPublicMethods:
+						if (verify(type.getMethods())) {
+							rra.registerPublicMethods(type);
+						}
+						break;
+					case allPublicClasses:
+						if (verify(type.getClasses())) {
+							rra.registerPublicClasses(type);
+						}
+						break;
 					}
-					break;
-				case allDeclaredFields:
-					if (verify(type.getDeclaredFields())) {
-						rra.registerDeclaredFields(type);
-					}
-					break;
-				case allPublicFields:
-					if (verify(type.getFields())) {
-						rra.registerPublicFields(type);
-					}
-					break;
-				case allDeclaredConstructors:
-					if (verify(type.getDeclaredConstructors())) {
-						rra.registerDeclaredConstructors(type);	
-					}
-					break;
-				case allPublicConstructors:
-					if (verify(type.getConstructors())) {
-						rra.registerPublicConstructors(type);
-					}
-					break;
-				case allDeclaredMethods:
-					if (verify(type.getDeclaredMethods())) {
-						rra.registerDeclaredMethods(type);
-					}
-					break;
-				case allPublicMethods:
-					if (verify(type.getMethods())) {
-						rra.registerPublicMethods(type);
-					}
-					break;
-				case allPublicClasses:
-					if (verify(type.getClasses())) {
-						rra.registerPublicClasses(type);
-					}
-					break;
+				} catch (NoClassDefFoundError ncdfe) {
+					SpringFeature.log("WARNING: problem handling flag: "+flag+" for "+type.getName()+" because of missing "+ncdfe.getMessage());
 				}
-			} catch (NoClassDefFoundError ncdfe) {
-				System.out.println("SBG: ERROR: problem handling flag: "+flag+" for "+type.getName()+" because of missing "+ncdfe.getMessage());
 			}
 		}
+		typesRegisteredForReflectiveAccessCount++;
 		return type;
+	}
+	
+	public int getTypesRegisteredForReflectiveAccessCount() {
+		return typesRegisteredForReflectiveAccessCount;
 	}
 
 
@@ -300,7 +339,7 @@ public class ReflectionHandler {
 						e.getParameters();
 					}
 				} catch (Exception e) {
-					System.out.println("REFLECTION PROBLEM LATER due to reference from "+o+" to "+e.getMessage());
+					SpringFeature.log("WARNING: Possible reflection problem later due to (generics related) reference from "+o+" to "+e.getMessage());
 					return false;
 				}
 			}
