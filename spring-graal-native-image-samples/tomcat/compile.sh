@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-../../feature/mvnw clean install
+../../mvnw -DskipTests clean package
 
 export JAR="tomcat-0.0.1-SNAPSHOT.jar"
 rm -f tc
