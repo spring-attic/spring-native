@@ -16,7 +16,7 @@ Then build the feature project with:
 
 ```
 cd spring-graal-native-image-feature
-mvn clean package
+./mvnw clean package
 ```
 
 Now go into the spring-graal-native-image-samples subfolder from the root of the
