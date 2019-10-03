@@ -81,7 +81,7 @@ public class InitializationDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(String.format("#%s buildtime-classes   #%s buildtime-packages   #%s runtime-classes    #%s runtime-packages\n",
+		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes    #%s runtime-init-packages\n",
 				buildtimeClasses.size(), buildtimePackages.size(), runtimeClasses.size(), runtimePackages.size()));
 //		result.append("buildtime classes:\n");
 //		this.buildtimeClasses.forEach(cd -> {

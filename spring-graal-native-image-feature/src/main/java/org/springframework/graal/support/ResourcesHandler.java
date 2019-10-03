@@ -293,7 +293,7 @@ public class ResourcesHandler {
 
 	}
 		}
-		System.out.println("Registered "+registeredComponents+" components");
+		System.out.println("Registered "+registeredComponents+" entries");
 		
 	}
 	
@@ -444,7 +444,9 @@ public class ResourcesHandler {
 					resourcesRegistry.addResources(config.replace(".", "/").replace("$", ".")+".class");
 				}
 			}
-			System.out.println("Excluding "+excludeAutoConfigCount+" auto configurations from spring.factories file");
+			if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
+				System.out.println("Excluding "+excludeAutoConfigCount+" auto configurations from spring.factories file");
+			}
 			configs.removeAll(forRemoval);
 			p.put("org.springframework.boot.autoconfigure.EnableAutoConfiguration", String.join(",", configs));
 		}
