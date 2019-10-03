@@ -6,10 +6,42 @@
 		"allDeclaredMethods": true
 	},
 	{
+		"name": "javax.persistence.TypedQuery",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "javax.persistence.Query",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
 		"name": "org.hibernate.query.Query",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
+	{
+		"name": "org.hibernate.Query",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "javax.persistence.Parameter",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.hibernate.query.CommonQueryContract",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.hibernate.BasicQueryContract",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	
+	
 		
 	// vvv petclinic added as sfw 5.2 released and boot snapshots ~30-Sep-2019
 	{"name":"org.hibernate.event.spi.ClearEventListener[]",
@@ -473,6 +505,21 @@
 	// Should these two be pulled in by annotations on entityManagerFactory method in JpaBaseConfiguration
 	{
 		"name": "javax.persistence.EntityManagerFactory",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.orm.jpa.EntityManagerProxy",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.hibernate.query.QueryProducer",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "javax.persistence.EntityManager",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
