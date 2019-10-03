@@ -799,6 +799,11 @@
 	"allDeclaredMethods": true
 	},
 	{
+	"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator",
+	"allDeclaredConstructors": true,
+	"allDeclaredMethods": true
+	},
+	{
 		"name": "org.springframework.boot.autoconfigure.condition.SearchStrategy",
 		"allDeclaredConstructors": true,
 		"allDeclaredFields": true,

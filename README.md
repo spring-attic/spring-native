@@ -6,8 +6,7 @@ Once built, native-images have very fast startup!
 
 This feature supports:
 - Graal 19.2.0.1
-- Spring Boot 2.2.0.BUILD-SNAPSHOT (pre RC1)
-- Spring Framework 5.2.0.BUILD-SNAPSHOT (pre GA)
+- Spring Boot 2.2.0.RC1
 
 To try it out, install Graal 19.2.0.1 from: https://github.com/oracle/graal/releases
 
