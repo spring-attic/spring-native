@@ -76,7 +76,7 @@ public class DynamicProxiesHandler {
             }
 		}
     	if (skippedProxiesCount != 0) {
-			System.out.println("Skipped registration of #"+skippedProxiesCount+" proxies - some types not part of this app");
+			System.out.println("Skipped registration of #"+skippedProxiesCount+" proxies - relevant types not on classpath");
 		}
 
 //    	Consumer<List<String>> proxyRegisteringConsumer = interfaceNames -> {

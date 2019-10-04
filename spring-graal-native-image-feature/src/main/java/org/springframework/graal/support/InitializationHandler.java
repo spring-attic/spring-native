@@ -42,7 +42,7 @@ public class InitializationHandler {
 
 	public void register(BeforeAnalysisAccess access) {
 		InitializationDescriptor id = compute();
-		SpringFeature.log("Configuring initialization time for specific types and packages:");
+		System.out.println("Configuring initialization time for specific types and packages:");
 		if (id == null) {
 			throw new IllegalStateException("Unable to load initialization descriptor");
 		}
