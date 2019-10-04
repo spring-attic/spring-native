@@ -29,7 +29,7 @@ import org.springframework.core.io.AbstractResource;
 import org.springframework.core.log.LogAccessor;
 
 /**
- * Workaround for
+ * Workaround for https://github.com/oracle/graal/issues/1683
  * 
  * @author Andy Clement
  */
@@ -49,15 +49,12 @@ public final class Target_org_springframework_core_io_classpathresource {
 				size += read;
 			}
 			return size;
-		}
-		finally {
+		} finally {
 			try {
 				is.close();
+			} catch (IOException ex) {
+				System.err.println("Could not close InputStream for resource: " + resource.getDescription());
 			}
-			catch (IOException ex) {
-				System.err.println(
-						"Could not close InputStream for resource: " + resource.getDescription());
-			}
+		}
 	}
-}
 }

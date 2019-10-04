@@ -91,7 +91,7 @@ public class ReflectionHandler {
 		rra = new ReflectionRegistryAdapter(rrs, cl);
 		ReflectionDescriptor reflectionDescriptor = getConstantData();
 
-		System.out.println("Registering #"+reflectionDescriptor.getClassDescriptors().size()+" types from "+RESOURCE_FILE);
+		System.out.println("Found #"+reflectionDescriptor.getClassDescriptors().size()+" types in static list to register");
 		int missingFromClasspathCount = 0;
 		int flagHandlingCount = 0;
 		for (ClassDescriptor classDescriptor : reflectionDescriptor.getClassDescriptors()) {
@@ -194,10 +194,10 @@ public class ReflectionHandler {
 			}
 		}
 		if (missingFromClasspathCount != 0 ) {
-			System.out.println("Warning: "+RESOURCE_FILE+": number of types referenced that are not on the classpath: #"+missingFromClasspathCount);
+			System.out.println("Skipping #"+missingFromClasspathCount+" types not on the classpath");
 		}
 		if (flagHandlingCount != 0) {
-			System.out.println("Warning: "+RESOURCE_FILE+": number of problems processing field/method/constructor access requests: #"+flagHandlingCount);
+			System.out.println("Number of problems processing field/method/constructor access requests: #"+flagHandlingCount);
 		}
 		if (!AVOID_LOGBACK) {
 			registerLogback();
