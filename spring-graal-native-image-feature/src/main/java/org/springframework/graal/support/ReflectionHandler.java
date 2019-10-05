@@ -91,7 +91,7 @@ public class ReflectionHandler {
 		rra = new ReflectionRegistryAdapter(rrs, cl);
 		ReflectionDescriptor reflectionDescriptor = getConstantData();
 
-		System.out.println("Found #"+reflectionDescriptor.getClassDescriptors().size()+" types in static list to register");
+		System.out.println("Found #"+reflectionDescriptor.getClassDescriptors().size()+" types in static reflection list to register");
 		int missingFromClasspathCount = 0;
 		int flagHandlingCount = 0;
 		for (ClassDescriptor classDescriptor : reflectionDescriptor.getClassDescriptors()) {

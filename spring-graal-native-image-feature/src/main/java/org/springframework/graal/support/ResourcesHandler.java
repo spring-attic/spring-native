@@ -424,7 +424,7 @@ public class ResourcesHandler {
 			}
 			// TODO what about ConditionalOnResource?
 			System.out.println(
-					"Processing spring.factories - looking at #" + configs.size() + " configuration references");
+					"Processing spring.factories - looking at #" + configs.size() + " auto-configuration references");
 			for (Iterator<String> iterator = configs.iterator(); iterator.hasNext();) {
 				String config = iterator.next();
 				boolean needToAddThem = true;
@@ -445,7 +445,7 @@ public class ResourcesHandler {
 				}
 			}
 			if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
-				System.out.println("Excluding "+excludeAutoConfigCount+" auto configurations from spring.factories file");
+				System.out.println("Excluding "+excludeAutoConfigCount+" auto-configurations from spring.factories file");
 			}
 			configs.removeAll(forRemoval);
 			p.put("org.springframework.boot.autoconfigure.EnableAutoConfiguration", String.join(",", configs));
