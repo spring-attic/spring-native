@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.springframework.experimental</groupId>
-  <artifactId>spring-graal-native-image-parent</artifactId>
+  <artifactId>spring-graal-native-parent</artifactId>
   <version>0.6.0.BUILD-SNAPSHOT</version>
   <packaging>pom</packaging>
  
   <modules>
-    <module>spring-graal-native-image-feature</module>
+    <module>spring-graal-native-feature</module>
   </modules>
 </project>
