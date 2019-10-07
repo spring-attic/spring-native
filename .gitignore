@@ -26,3 +26,4 @@ samples/vanilla-rabbit/rabbit
 samples/vanilla-thymeleaf/thymeleaf
 samples/vanilla-tx/tx
 samples/webflux-netty/webflux-netty
+samples/kotlin-webmvc/kotlin-webmvc
