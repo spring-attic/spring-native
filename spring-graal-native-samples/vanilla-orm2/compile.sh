@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ../../mvnw -DskipTests clean package
 
-export JAR="vanilla-rabbit-0.0.1.BUILD-SNAPSHOT.jar"
-rm rabbit
+export JAR="orm-0.0.1.BUILD-SNAPSHOT.jar"
+rm orm
 printf "Unpacking $JAR"
 rm -rf unpack
 mkdir unpack
@@ -15,16 +15,16 @@ export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
 export CP=.:$LIBPATH
 
 # This would run it here... (as an exploded jar)
-#java -classpath $CP app.main.SampleApplication
+#java -classpath $CP com.example.demo.DemoApplication
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-image-feature/target/spring-graal-native-image-feature-0.6.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=rabbit\
+  -H:Name=orm \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
@@ -33,9 +33,9 @@ native-image \
   -cp $CP app.main.SampleApplication
 
   #--debug-attach \
-mv rabbit ../../..
+mv orm ../../..
 
 printf "\n\nCompiled app (demo)\n"
 cd ../../..
-time ./rabbit
+time ./orm -Dhibernate.dialect=org.hibernate.dialect.H2Dialect
 

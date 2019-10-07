@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ../../mvnw -DskipTests clean package
 
-export JAR="orm-0.0.1.BUILD-SNAPSHOT.jar"
-rm orm
+export JAR="vanilla-tx-0.0.1.BUILD-SNAPSHOT.jar"
+rm tx
 printf "Unpacking $JAR"
 rm -rf unpack
 mkdir unpack
@@ -15,27 +15,29 @@ export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
 export CP=.:$LIBPATH
 
 # This would run it here... (as an exploded jar)
-#java -classpath $CP com.example.demo.DemoApplication
+#java -classpath $CP hello.Application
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-image-feature/target/spring-graal-native-image-feature-0.6.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=orm \
+  -H:Name=tx \
   -H:+ReportExceptionStackTraces \
+  -H:+TraceClassInitialization \
   --no-fallback \
   --allow-incomplete-classpath \
+  -H:EnableURLProtocols=https \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
   -cp $CP app.main.SampleApplication
 
   #--debug-attach \
-mv orm ../../..
+mv tx ../../..
 
-printf "\n\nCompiled app (demo)\n"
+printf "\n\nCompiled app \n"
 cd ../../..
-time ./orm -Dhibernate.dialect=org.hibernate.dialect.H2Dialect
+./tx 
 

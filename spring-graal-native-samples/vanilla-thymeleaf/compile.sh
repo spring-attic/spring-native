@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ../../mvnw -DskipTests clean package
 
-export JAR="vanilla-tx-0.0.1.BUILD-SNAPSHOT.jar"
-rm tx
+export JAR="vanilla-thymeleaf-0.1.0.jar"
+rm thymeleaf
 printf "Unpacking $JAR"
 rm -rf unpack
 mkdir unpack
@@ -18,26 +18,25 @@ export CP=.:$LIBPATH
 #java -classpath $CP hello.Application
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-image-feature/target/spring-graal-native-image-feature-0.6.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=tx \
+  -H:Name=thymeleaf \
   -H:+ReportExceptionStackTraces \
-  -H:+TraceClassInitialization \
   --no-fallback \
   --allow-incomplete-classpath \
-  -H:EnableURLProtocols=https \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
-  -cp $CP app.main.SampleApplication
+  -cp $CP hello.Application
+
 
   #--debug-attach \
-mv tx ../../..
+mv thymeleaf ../../..
 
-printf "\n\nCompiled app \n"
+printf "\n\nCompiled app (demo)\n"
 cd ../../..
-./tx 
+./thymeleaf 
 

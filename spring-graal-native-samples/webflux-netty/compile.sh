@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-../../mvnw -DskipTests clean package
+../../mvnw clean install
 
-export JAR="orm-0.0.1.BUILD-SNAPSHOT.jar"
-rm orm
+export JAR="webflux-netty-0.0.1-SNAPSHOT.jar"
+rm webflux-netty
 printf "Unpacking $JAR"
 rm -rf unpack
 mkdir unpack
@@ -18,24 +18,24 @@ export CP=.:$LIBPATH
 #java -classpath $CP com.example.demo.DemoApplication
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-image-feature/target/spring-graal-native-image-feature-0.6.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=orm \
+  -H:+TraceClassInitialization \
+  -H:Name=webflux-netty \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
-  -DremoveUnusedAutoconfig=true \
-  -cp $CP app.main.SampleApplication
+ -DremoveUnusedAutoconfig=true \
+  -cp $CP com.example.demo.DemoApplication
 
-  #--debug-attach \
-mv orm ../../..
+mv webflux-netty ../../..
 
-printf "\n\nCompiled app (demo)\n"
+printf "\n\nCompiled app (webflux-netty)\n"
 cd ../../..
-time ./orm -Dhibernate.dialect=org.hibernate.dialect.H2Dialect
+time ./webflux-netty
 

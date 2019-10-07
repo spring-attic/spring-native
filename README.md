@@ -1,4 +1,4 @@
-# spring-graal-native-image
+# spring-graal-native
 
 This project contains code to enable the building of native-images with Graal VM.
 
@@ -14,7 +14,7 @@ To try it out, install Graal 19.2.0.1 from: https://github.com/oracle/graal/rele
 Then build the feature project with:
 
 ```
-cd spring-graal-native-image-feature
+cd spring-graal-native-feature
 ./mvnw clean package
 ```
 

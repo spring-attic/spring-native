@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-../../mvnw -DskipTests clean package
+../../mvnw clean install
 
-export JAR="vanilla-thymeleaf-0.1.0.jar"
-rm thymeleaf
+export JAR="commandlinerunner-0.0.1-SNAPSHOT.jar"
+rm -f clr
 printf "Unpacking $JAR"
 rm -rf unpack
 mkdir unpack
@@ -14,29 +14,27 @@ cd BOOT-INF/classes
 export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
 export CP=.:$LIBPATH
 
-# This would run it here... (as an exploded jar)
-#java -classpath $CP hello.Application
-
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-image-feature/target/spring-graal-native-image-feature-0.6.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=thymeleaf \
+  -H:Name=clr \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
-  -cp $CP hello.Application
+  -cp $CP com.example.commandlinerunner.CommandlinerunnerApplication
 
+mv clr ../../..
 
-  #--debug-attach \
-mv thymeleaf ../../..
+printf "\n\nJava exploded jar\n"
+time java -classpath $CP com.example.commandlinerunner.CommandlinerunnerApplication
 
-printf "\n\nCompiled app (demo)\n"
+printf "\n\nCompiled app (clr)\n"
 cd ../../..
-./thymeleaf 
+time ./clr
 
