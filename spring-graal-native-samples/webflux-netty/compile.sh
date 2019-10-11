@@ -22,7 +22,6 @@ export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-nat
 
 printf "\n\nCompile\n"
 native-image \
-  -Dio.netty.noUnsafe=true \
   --no-server \
   -H:+TraceClassInitialization \
   -H:Name=webflux-netty \
