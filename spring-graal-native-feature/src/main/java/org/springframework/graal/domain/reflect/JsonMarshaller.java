@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.graal.domain.reflect.ClassDescriptor.Flag;
 import org.springframework.graal.json.JSONArray;
 import org.springframework.graal.json.JSONObject;
 

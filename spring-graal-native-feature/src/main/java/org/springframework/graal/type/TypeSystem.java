@@ -82,6 +82,17 @@ public class TypeSystem {
 		return resolveSlashed(slashedTypeName);
 	}
 
+	public Type resolveDotted(String desc, boolean silent) {
+		try {
+			return resolveDotted(desc);
+		} catch (MissingTypeException mte) {
+			if (silent)
+				return null;
+			else
+				throw mte;
+		}
+	}
+
 	public boolean canResolveSlashed(String slashedTypeName) {
 		try {
 			return resolveSlashed(slashedTypeName) != null;
@@ -174,7 +185,7 @@ public class TypeSystem {
 		}
 	}
 
-	public Set<String> resolveCompleteFindMissingTypes(Type type) {
+	public Set<String> findMissingTypesInHierarchyOfThisType(Type type) {
 		return resolveComplete(type.getDescriptor());
 	}
 
@@ -475,7 +486,6 @@ public class TypeSystem {
 		}
 
 		public boolean hasDescriptorMeta(String annotationDescriptor) {
-			System.out.println("Checking " + name + " for " + annotationDescriptor);
 			for (AnnotationNode an : annotations) {
 				if (an.desc.equals(annotationDescriptor)) {
 					return true;

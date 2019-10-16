@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import org.objectweb.asm.Opcodes;
@@ -51,6 +52,8 @@ public class Type {
 	
 	public final static String ImportSelector ="Lorg/springframework/context/annotation/ImportSelector;";
 	
+	public final static String ImportBeanDefinitionRegistrar ="Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
+
 	public final static String TransactionManagementConfigurationSelector = "Lorg/springframework/transaction/annotation/TransactionManagementConfigurationSelector;";
 	
 	public final static String SpringDataWebConfigurationSelector = "Lorg/springframework/data/web/config/EnableSpringDataWebSupport$SpringDataWebConfigurationImportSelector;";
@@ -73,6 +76,8 @@ public class Type {
 	
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 
+	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	
 	public final static String AtConditional = "Lorg/springframework/context/annotation/Conditional;";
 
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
@@ -191,11 +196,13 @@ public class Type {
 	public boolean implementsInterface(String interfaceName) {
 		Type[] interfacesToCheck = getInterfaces();
 		for (Type interfaceToCheck : interfacesToCheck) {
+			if (interfaceToCheck != null) {
 			if (interfaceToCheck.getName().equals(interfaceName)) {
 				return true;
 			}
 			if (interfaceToCheck.implementsInterface(interfaceName)) {
 				return true;
+			}
 			}
 		}
 		Type superclass = getSuperclass();
@@ -462,6 +469,10 @@ public class Type {
 			}
 		}
 		return false;
+	}
+	
+	public boolean isAtConfiguration() {
+		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
 	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
@@ -758,15 +769,15 @@ public class Type {
 	}
 
 	/**
-	 * Find @CompilationHints directly on this type or used as a meta-annotation on annotations on this type.
+	 * Find compilation hints directly on this type or used as a meta-annotation on annotations on this type.
 	 */
-	public Map<HintDescriptor, List<String>> getHints() {
-		Map<HintDescriptor, List<String>> hints = new LinkedHashMap<>();
-		CompilationHint hint = proposedAnnotations.get(getDescriptor());
+	public List<Hint> getHints() {
+		List<Hint> hints = new ArrayList<>();
+		CompilationHint hint = proposedHints.get(getDescriptor());
 		if (hint !=null) {
 			List<Type> s = new ArrayList<>();
 			s.add(this);
-			hints.put(new HintDescriptor(s, hint.skipIfTypesMissing, hint.follow, hint.name), null);
+			hints.add(new Hint(s, hint.skipIfTypesMissing, hint.follow, hint.specificTypes, Collections.emptyMap()));
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
@@ -780,40 +791,50 @@ public class Type {
 				}
 			}
 		}
-		if (implementsImportSelector() && hints.size()==0) {
+		if (isImportSelector() && hints.size()==0) {
+			// Failing early as this will likely result in a problem later - fix is typically (right now) to
+			// add an entry in the Type static initializer.
 			throw new IllegalStateException("No @CompilationHint found for import selector: "+getDottedName());
 		}
-		
-		return hints.size()==0? Collections.emptyMap():hints;
+		return hints.size()==0?Collections.emptyList():hints;
 	}
 	
-	// TODO repeatable annotations...
+	// TODO handle repeatable annotations everywhere!
 	
-	private void collectHints(AnnotationNode an, Map<HintDescriptor, List<String>> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
+	private void collectHints(AnnotationNode an, List<Hint> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
 		if (!visited.add(an)) {
 			return;
 		}
 		try {
 			annotationChain.push(this);
 			// Am I a compilation hint?
-			CompilationHint hint = proposedAnnotations.get(an.desc);
+			CompilationHint hint = proposedHints.get(an.desc);
 			if (hint !=null) {
-				hints.put(new HintDescriptor(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, hint.follow, hint.name), collectTypes(an));
+				List<String> typesCollectedFromAnnotation = collectTypes(an);
+				hints.add(new Hint(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, hint.follow, hint.specificTypes,asMap(typesCollectedFromAnnotation,hint.skipIfTypesMissing)));
 			}
 			// check for meta annotation
 			if (node.visibleAnnotations != null) {
-					for (AnnotationNode an2: node.visibleAnnotations) {
-						Type annotationType = typeSystem.Lresolve(an2.desc, true);
-						if (annotationType == null) {
-							SpringFeature.log("Couldn't resolve "+an2.desc+" annotation type whilst searching for hints on "+getName());
-						} else {
-							annotationType.collectHints(an2, hints, visited, annotationChain);
-						}
+				for (AnnotationNode an2: node.visibleAnnotations) {
+					Type annotationType = typeSystem.Lresolve(an2.desc, true);
+					if (annotationType == null) {
+						SpringFeature.log("Couldn't resolve "+an2.desc+" annotation type whilst searching for hints on "+getName());
+					} else {
+						annotationType.collectHints(an2, hints, visited, annotationChain);
 					}
+				}
 			}
 		} finally {
 			annotationChain.pop();
 		}
+	}
+
+	private Map<String, AccessRequired> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
+		Map<String, AccessRequired> map = new HashMap<>();
+		for (String t: typesCollectedFromAnnotation) {
+			map.put(fromLdescriptorToDotted(t), usingForVisibilityCheck?AccessRequired.EXISTENCE_CHECK:AccessRequired.ALL);
+		}
+		return map;
 	}
 
 	private CompilationHint findCompilationHintHelper(HashSet<Type> visited) {
@@ -822,7 +843,7 @@ public class Type {
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				CompilationHint compilationHint = proposedAnnotations.get(an.desc);
+				CompilationHint compilationHint = proposedHints.get(an.desc);
 				if (compilationHint != null) {
 					return compilationHint;
 				}
@@ -852,25 +873,25 @@ public class Type {
 		return Collections.emptyList();
 	}
 
-	private static Map<String, CompilationHint> proposedAnnotations = new HashMap<>();
+	private static Map<String, CompilationHint> proposedHints = new HashMap<>();
 	
 	static {
 		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)
-		proposedAnnotations.put(AtConditionalOnClass, new CompilationHint(true,false));
+		proposedHints.put(AtConditionalOnClass, new CompilationHint(true,false));
 		
 		// @ConditionalOnMissingBean has @CompilationHint(skipIfTypesMissing=true, follow=false)
-		proposedAnnotations.put(AtConditionalOnMissingBean, new CompilationHint(true, false));
+		proposedHints.put(AtConditionalOnMissingBean, new CompilationHint(true, false));
 		
 		// TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 		// @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-		proposedAnnotations.put(AtImports, new CompilationHint(false, true));
+		proposedHints.put(AtImports, new CompilationHint(false, true));
 		
 		// @Conditional has @CompilationHint(skipIfTypesMissing=false, follow=false)
-		proposedAnnotations.put(AtConditional, new CompilationHint(false, false));
+		proposedHints.put(AtConditional, new CompilationHint(false, false));
 		
 		// TODO do configuration properties chain?
 		// @EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
-		proposedAnnotations.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
+		proposedHints.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
 		
 		// @EnableConfigurationPropertiesImportSelector has
 		// @CompilationHint(skipIfTypesMissing=false, follow=false, name={
@@ -878,19 +899,7 @@ public class Type {
 		//   ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() })
 		// proposedAnnotations.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
 		
-		// CacheConfigurationImportSelector has
-		// @CompilationHint(skipIfTypesMissing=true, follow=false, name={
-		// 	"org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.HazelcastCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.InfinispanCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.JCacheCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.CouchbaseCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.CaffeineCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.SimpleCacheConfiguration",
-		//	 	"org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration"})
-		proposedAnnotations.put(CacheConfigurationImportSelector,
+		proposedHints.put(CacheConfigurationImportSelector,
 				new CompilationHint(false,false, new String[] {
 				 	"org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration",
 				 	"org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration",
@@ -904,30 +913,56 @@ public class Type {
 				 	"org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration"}
 				));
 		
-		proposedAnnotations.put(RabbitConfigurationImportSelector,
+		proposedHints.put(RabbitConfigurationImportSelector,
 				new CompilationHint(true,true, new String[] {
 				 	"org.springframework.amqp.rabbit.annotation.RabbitBootstrapConfiguration"}
 				));
 		
-		//  TransactionManagementConfigurationSelector has
-		// @CompilationHint(skipIfTypesMissing=true, follow=true, name={...})
-		proposedAnnotations.put(TransactionManagementConfigurationSelector,
+		proposedHints.put(TransactionManagementConfigurationSelector,
 				new CompilationHint(true, true, new String[] {
 					"org.springframework.context.annotation.AutoProxyRegistrar",
 					"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration",
 					"org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration",
-					"org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration"}
-				));
+					"org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration"
+				}));
+
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$ReactiveSessionConfigurationImportSelector;",
+				new CompilationHint(true, true, new String[] {
+						"org.springframework.boot.autoconfigure.session.RedisReactiveSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.MongoReactiveSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
+				}));
+
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$SessionConfigurationImportSelector;",
+				new CompilationHint(true, true, new String[] {
+						"org.springframework.boot.autoconfigure.session.RedisSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.RedisReactiveSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.MongoSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.MongoReactiveSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.HazelcastSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.NoOpSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
+				}));
+
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$ServletSessionConfigurationImportSelector;",
+				new CompilationHint(true, true, new String[] {
+						"org.springframework.boot.autoconfigure.session.RedisSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.MongoSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.HazelcastSessionConfiguration",
+						"org.springframework.boot.autoconfigure.session.NoOpSessionConfiguration"
+				}));
 		
 		//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-		proposedAnnotations.put(SpringDataWebConfigurationSelector,
+		proposedHints.put(SpringDataWebConfigurationSelector,
 				new CompilationHint(true, true, new String[] {
 					"org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration",
-					"org.springframework.data.web.config.SpringDataWebConfiguration"}
-				));
+					"org.springframework.data.web.config.SpringDataWebConfiguration"
+				}));
 		
 		//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-		proposedAnnotations.put(SpringDataWebQueryDslSelector,
+		proposedHints.put(SpringDataWebQueryDslSelector,
 				new CompilationHint(true, true, new String[] {
 					"org.springframework.data.web.config.QuerydslWebConfiguration"}
 				));
@@ -936,53 +971,67 @@ public class Type {
 		// @CompilationHint(skipIfTypesMissing=true, follow=false, name={
 		//	 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar",
 		//	 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar"})
-		proposedAnnotations.put(EnableConfigurationPropertiesImportSelector,
+		proposedHints.put(EnableConfigurationPropertiesImportSelector,
 				new CompilationHint(false,false, new String[] {
-				 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar",
-				 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar"}
+				 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar:REGISTRAR",
+				 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar:REGISTRAR"}
 				));
 		
 				
 		// Not quite right... this is a superclass of a selector we've already added...
-		proposedAnnotations.put(AdviceModeImportSelector,
+		proposedHints.put(AdviceModeImportSelector,
 				new CompilationHint(true, true, new String[0]
 				));
 
 		
 		// Spring Security!
-		proposedAnnotations.put(SpringWebMvcImportSelector,
+		// TODO these should come with the jars themselves really (@CompilationHints on the selectors...)
+		proposedHints.put(SpringWebMvcImportSelector,
 				new CompilationHint(false, true, new String[] {
-					"org.springframework.web.servlet.DispatcherServlet",
+					"org.springframework.web.servlet.DispatcherServlet:EXISTENCE_CHECK",
 					"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
 				}));
-		proposedAnnotations.put(OAuth2ImportSelector,
+				
+		// TODO this one is actually incomplete, finish it
+		proposedHints.put(OAuth2ImportSelector,
 				new CompilationHint(false, true, new String[] {
-					"org.springframework.security.oauth2.client.registration.ClientRegistration",
+					"org.springframework.security.oauth2.client.registration.ClientRegistration:EXISTENCE_CHECK",
 					"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
 				}));
 
-		proposedAnnotations.put(HypermediaConfigurationImportSelector,
+		// TODO I am not sure the specific entry here is right, but given that the selector references entries loaded via factories - aren't those already handled? 
+		proposedHints.put(HypermediaConfigurationImportSelector,
 				new CompilationHint(false, true, new String[] {
 						"org.springframework.hateoas.config.HypermediaConfigurationImportSelector"
 				}));
 
-		proposedAnnotations.put(WebStackImportSelector,
+		proposedHints.put(WebStackImportSelector,
 				new CompilationHint(false, true, new String[] {
-						"org.springframework.hateoas.config.WebStackImportSelector"
+					//"org.springframework.hateoas.config.WebStackImportSelector" - why was this here???
+					"org.springframework.hateoas.config.WebMvcHateoasConfiguration",
+					"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
 				}));
 	}
 	
-	private boolean implementsImportSelector() {
+	public boolean isImportSelector() {
 		return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
+	}
+	
+	public boolean isImportRegistrar() {
+		return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
 	}
 	
 	private String fromLdescriptorToSlashed(String Ldescriptor) {
 		return Ldescriptor.substring(1,Ldescriptor.length()-1);
 	}
+
+	private String fromLdescriptorToDotted(String Ldescriptor) {
+		return Ldescriptor.substring(1,Ldescriptor.length()-1).replace("/",".");
+	}
 	
 	private CompilationHint findCompilationHint(Type annotationType) {
 		String descriptor = "L"+annotationType.getName().replace(".", "/")+";";
-		CompilationHint hint = proposedAnnotations.get(descriptor);
+		CompilationHint hint = proposedHints.get(descriptor);
 		if (hint !=null) {
 			return hint;
 		} else {
@@ -996,20 +1045,32 @@ public class Type {
 	static class CompilationHint {
 		boolean follow;
 		boolean skipIfTypesMissing;
-		private String[] name;
+		private Map<String, AccessRequired> specificTypes;
 		
 		public CompilationHint(boolean skipIfTypesMissing, boolean follow) {
 			this(skipIfTypesMissing,follow,new String[] {});
 		}
 		
-		// TODO what about whether you need to reflect on ctors/methods/fields?
-		public CompilationHint(boolean skipIfTypesMissing, boolean follow, String[] name) {
+		public CompilationHint(boolean skipIfTypesMissing, boolean follow, String[] specificTypes) {
 			this.skipIfTypesMissing = skipIfTypesMissing;
 			this.follow = follow;
-			this.name = name;
+			if (specificTypes != null) {
+				this.specificTypes = new LinkedHashMap<>();
+				for (String specificType: specificTypes) {
+					AccessRequired access = AccessRequired.ALL;
+					StringTokenizer t = new StringTokenizer(specificType,":");
+					String type = t.nextToken(); // the type name
+					if (t.hasMoreTokens()) { // possible access specified otherwise default to ALL
+						access = AccessRequired.valueOf(t.nextToken());
+					}
+					this.specificTypes.put(type, access);
+				}
+			} else {
+				this.specificTypes = Collections.emptyMap();
+			}
 		}
 	}
-
+	
 	public void collectMissingAnnotationTypesHelper(Set<String> missingAnnotationTypes, HashSet<Type> visited) {
 		if (!visited.add(this)) {
 			return;
@@ -1024,6 +1085,10 @@ public class Type {
 				}
 			}
 		}
+	}
+
+	public int getMethodCount() {
+		return node.methods.size();
 	}
 	
 //	@SuppressWarnings("unchecked")
