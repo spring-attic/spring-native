@@ -485,7 +485,6 @@ public class ResourcesHandler {
 		}
 		try {
 			if (forRemoval.size() == 0) {
-				System.out.println("Qui passe?");
 				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
 				SpringFeature.log("  removed " + forRemoval.size() + " configurations");
@@ -584,6 +583,7 @@ public class ResourcesHandler {
 			SpringFeature.log(spaces(depth)+"for "+type.getName()+" missing annotation types are "+missingAnnotationTypes);
 		}
 		
+		// @formatter:off
 		/*
 		   An example to help keep your sanity in this code.
 	
@@ -606,27 +606,33 @@ public class ResourcesHandler {
 		   particular use of those annotations. (So, if @ConditionalOnClass lists which classes it is
 		   conditional on, those are pulled from the @COC annotation and placed in the hint)
 		   
-		   So the three hints are actually:
-		     Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=true,follow=false,specificTypes=[],
-		       inferredTypes=[osca.EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:EXISTENCE_CHECK,oalr.Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:EXISTENCE_CHECK]}
-		     Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass,osca.Conditional],skipIfTypesMissing=false,follow=false,specificTypes=[],
-		       inferredTypes=[osbac.OnClassCondition:ALL]}
-		     Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnProperty,osca.Conditional],skipIfTypesMissing=false,follow=false,specificTypes=[],
-		       inferredTypes=[osbac.OnPropertyCondition:ALL]} 
 
-
-checking @CompilationHint 1/3 Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=true,follow=false,specificTypes=[],inferredTypes=[osca.EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:EXISTENCE_CHECK,oalr.Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:EXISTENCE_CHECK]}
-Handling annotated thingy: org/springframework/boot/autoconfigure/aop/AopAutoConfiguration
-Registering reflective access to org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
-Handling annotated thingy: org/springframework/boot/autoconfigure/condition/ConditionalOnClass
-Registering reflective access to org.springframework.boot.autoconfigure.condition.ConditionalOnClass
- does org.springframework.context.annotation.EnableAspectJAutoProxy exist? true
- does org.aspectj.lang.annotation.Aspect exist? false
- does org.aspectj.lang.reflect.Advice exist? false
- does org.aspectj.weaver.AnnotatedElement exist? false
-Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=true,follow=false,specificTypes=[],inferredTypes=[os
+			1) Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=true,follow=false,
+			     specificTypes=[],
+			     inferredTypes=[osca.EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:EXISTENCE_CHECK,oalr.Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:EXISTENCE_CHECK]}
+			2) Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass,osca.Conditional],skipIfTypesMissing=false,follow=false,
+			     specificTypes=[],
+			     inferredTypes=[osbac.OnClassCondition:ALL]}
+			3) Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnProperty,osca.Conditional],skipIfTypesMissing=false,follow=false,
+			     specificTypes=[],
+			     inferredTypes=[osbac.OnPropertyCondition:ALL]}
+			     
+		   We then process the hints - if we are configured to discard configuration that will fail runtime checks we will
+		   quit processing after the first hint that fails validation.
 		   
+		   Here we see the Aspect annotation is not found when processing the first hint, so we terminate validation early:
+
+			processing hint Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=true,follow=false,specificTypes=[],inferredTypes=[osca.EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:EXISTENCE_CHECK,oalr.Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:EXISTENCE_CHECK]}
+			inferred type org.springframework.context.annotation.EnableAspectJAutoProxy found, will get accessibility EXISTENCE_CHECK
+			inferred type org.aspectj.lang.annotation.Aspect not found
+			Registering reflective access to org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
+			Did configuration type pass validation? false
+			
+		   Notice we register the AopAutoConfiguration *anyway* because other configurations may be referring to it via
+		   @AutoConfigureAfter.  However it would be removed from spring.factories (if configured to do that) so it will not
+		   be treated as config at startup.
 		 */
+		// @formatter:on
 		boolean passesTests = true;
 		Map<String,AccessRequired> typesToMakeAccessible = new HashMap<>();
 		List<Hint> hints = type.getHints();
@@ -701,7 +707,6 @@ Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing=tr
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS || true || depth==0) {
 			try {
 				String configNameDotted = type.getName().replace("/",".");
-				SpringFeature.log(spaces(depth)+"including2 reflective/resource access to "+configNameDotted);
 				visited.add(type.getName());
 				reflectionHandler.addAccess(configNameDotted,Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 				if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
