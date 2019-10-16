@@ -16,7 +16,9 @@
 package org.springframework.graal.type;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.graal.domain.reflect.Flag;
 
@@ -30,7 +32,9 @@ public enum AccessRequired {
     REGISTRAR(true, false, false, true, false), // registrars need to be accessible with constructor access
     // TODO ALL is a bit heavy handed including fields too - check users of ALL shouldn't be using something slimmer
     ALL(true, true, true, true, true), // Need to reflect on it, including methods/ctors and accessing as a resource (this is basically what @Configuration needs)
-	EXISTENCE_AND_RESOURCE(true, false, false, false, true);
+	EXISTENCE_AND_RESOURCE(true, false, false, false, true), 
+	RESOURCE_ONLY(false,false,false,false,true), 
+	RESOURCE_CMC(false, false, true, true, true); // This was for Resource+ctors+methods+classes (don't yet support classes tho - do we still need it?)
 
     private boolean typeReflect;
     private boolean fieldReflect;
@@ -79,5 +83,32 @@ public enum AccessRequired {
        }
        return flags.toArray(new Flag[0]);
     }
+
+	public static AccessRequired request(boolean resourceAccess, Flag[] flags) {
+		for (AccessRequired ar: AccessRequired.values()) {
+			if (ar.isResourceAccess()==resourceAccess && Flag.toString(ar.getFlags()).equals(Flag.toString(flags))) {
+				return ar;
+			}
+		}
+		throw new IllegalStateException("Cant find representation of that request: resourceAccess="+resourceAccess+" Flags="+Flag.toString(flags));
+	}
+
+	/**
+	 * @return the new AccessRequired when the two passed in are merged.
+	 */
+	public static AccessRequired merge(AccessRequired one, AccessRequired two) {
+		List<Flag> combinedFlags = new ArrayList<>();
+		for (Flag f: one.getFlags()) {
+			if (!combinedFlags.contains(f)) {
+				combinedFlags.add(f);
+			}
+		}
+		for (Flag f: two.getFlags()) {
+			if (!combinedFlags.contains(f)) {
+				combinedFlags.add(f);
+			}
+		}
+		return request(one.isResourceAccess()||two.isResourceAccess(), combinedFlags.toArray(new Flag[combinedFlags.size()]));
+	}
 
 }
