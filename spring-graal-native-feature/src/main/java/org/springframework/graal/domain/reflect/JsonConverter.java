@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.springframework.graal.json.JSONArray;
 import org.springframework.graal.json.JSONObject;
-import org.springframework.graal.domain.reflect.ClassDescriptor.Flag;
 
 /**
  * Converter to change reflection descriptor objects into JSON objects

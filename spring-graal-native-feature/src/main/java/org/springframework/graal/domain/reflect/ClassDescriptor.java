@@ -37,17 +37,6 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 
 	private Set<Flag> flags; // Inclusion in list indicates they are set
 
-	public enum Flag {
-		allPublicFields, //
-		allDeclaredFields, //
-		allDeclaredConstructors, //
-		allPublicConstructors, //
-		allDeclaredMethods, //
-		allPublicMethods, //
-		allDeclaredClasses, //
-		allPublicClasses;
-	}
-
 	ClassDescriptor() {
 	}
 
