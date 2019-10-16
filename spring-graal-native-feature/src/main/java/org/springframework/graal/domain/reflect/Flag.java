@@ -29,4 +29,17 @@ public enum Flag {
 	allPublicMethods, //
 	allDeclaredClasses, //
 	allPublicClasses;
+
+	public static String toString(Flag[] flags) {
+		StringBuilder s = new StringBuilder();
+		s.append("[");
+		for (int i=0;i<flags.length;i++) {
+			if (i>0) {
+				s.append(",");
+			}
+			s.append(flags[i]);
+		}
+		s.append("]");
+		return s.toString();
+	}
 }

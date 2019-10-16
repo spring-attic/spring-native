@@ -247,11 +247,17 @@ public class ReflectionHandler {
 	 * @return the class, if the type was successfully registered for reflective
 	 *         access, otherwise null
 	 */
-	public Class<?> addAccess(String typename, Flag... flags) {
+	public Class<?> addAccess(String typename, Flag...flags) {
+		return addAccess(typename, false, flags);
+	}
+
+	public Class<?> addAccess(String typename, boolean silent, Flag... flags) {
 		if (!added.add(typename)) {
 			return null;
 		}
-		SpringFeature.log("Registering reflective access to " + typename);
+		if (!silent) {
+			SpringFeature.log("Registering reflective access to " + typename);
+		}
 		// This can return null if, for example, the supertype of the specified type is
 		// not
 		// on the classpath. In a simple app there may be a number of types coming in
