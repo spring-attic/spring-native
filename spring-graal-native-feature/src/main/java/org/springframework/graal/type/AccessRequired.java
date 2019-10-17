@@ -34,7 +34,8 @@ public enum AccessRequired {
     ALL(true, true, true, true, true), // Need to reflect on it, including methods/ctors and accessing as a resource (this is basically what @Configuration needs)
 	EXISTENCE_AND_RESOURCE(true, false, false, false, true), 
 	RESOURCE_ONLY(false,false,false,false,true), 
-	RESOURCE_CMC(false, false, true, true, true); // This was for Resource+ctors+methods+classes (don't yet support classes tho - do we still need it?)
+	RESOURCE_CMC(false, false, true, true, true), // This was for Resource+ctors+methods+classes (don't yet support classes tho - do we still need it?)
+	RESOURCE_CMF(false,true,true,true,true);
 
     private boolean typeReflect;
     private boolean fieldReflect;
@@ -90,6 +91,7 @@ public enum AccessRequired {
 				return ar;
 			}
 		}
+		// Cant find representation of that request: resourceAccess=true Flags=[allDeclaredConstructors,allDeclaredMethods,allDeclaredFields]
 		throw new IllegalStateException("Cant find representation of that request: resourceAccess="+resourceAccess+" Flags="+Flag.toString(flags));
 	}
 
