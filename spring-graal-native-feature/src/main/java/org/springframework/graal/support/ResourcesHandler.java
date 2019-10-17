@@ -695,8 +695,57 @@ public class ResourcesHandler {
 				
 			}
 		}
-		
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+			if (type.isAtConfiguration()) {
+				List<Method> atBeanMethods = type.getMethodsWithAtBean();
+				for (Method atBeanMethod: atBeanMethods) {
+					// Processing, for example:
+					// @ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
+					// @ConditionalOnMissingBean
+					// @Bean
+					// public BuildProperties buildProperties() throws Exception {
+					List<Hint> methodHints = atBeanMethod.getHints();
+					System.out.println("> Hints on method "+atBeanMethod+":\n"+methodHints);
+					for (Hint hint: methodHints) {
+						SpringFeature.log(spaces(depth)+"processing hint "+hint);
+						
+						// This is used for hints that didn't gather data from the bytecode but had them directly encoded. For example
+						// when a CompilationHint on an ImportSelector encodes the types that might be returned from it.
+						// (see the static initializer in Type for examples)
+						Map<String,AccessRequired> specificNames = hint.getSpecificTypes();
+						for (Map.Entry<String,AccessRequired> specificNameEntry: specificNames.entrySet()) {
+							registerSpecific(specificNameEntry.getKey(),specificNameEntry.getValue(),tar);
+						}
+
+						Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
+						for (Map.Entry<String, AccessRequired> inferredType: inferredTypes.entrySet()) { 
+							String s = inferredType.getKey();
+							Type t = ts.resolveDotted(s, true);
+							boolean exists = (t != null);
+							if (!exists) {
+								SpringFeature.log(spaces(depth)+"inferred type "+s+" not found (whilst processing @Bean method "+atBeanMethod+")");
+							} else {
+								SpringFeature.log(spaces(depth)+"inferred type "+s+" found, will get accessibility "+inferredType.getValue()+" (whilst processing @Bean method "+atBeanMethod+")");
+							}
+							if (exists) {
+								// TODO if already there, should we merge access required values?
+								tar.request(s,inferredType.getValue());
+								if (hint.isFollow()) {
+									toFollow.add(t);
+								}
+							} else if (hint.isSkipIfTypesMissing()) {
+								passesTests = false;
+								// Once failing, no need to process other hints
+							}
+						}
+						
+						for (Type annotatedType : hint.getAnnotationChain()) {
+							tar.request(annotatedType.getDottedName(), AccessRequired.ALL);
+						}
+						
+					}
+				}
+			}
 			// Follow transitively included inferred types only if necessary:
 			for (Type t: toFollow) {
 				boolean b = processType(t, visited, depth+1);
