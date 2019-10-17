@@ -173,6 +173,18 @@ public class TypeSystem {
 	public Type Lresolve(String desc) {
 		return resolve(desc.substring(1, desc.length() - 1));
 	}
+	
+	public Type resolve(org.objectweb.asm.Type type, boolean silent) {
+		try {
+			String desc = type.getDescriptor();
+			return resolve(desc.substring(1,desc.length()-1));
+		} catch (MissingTypeException mte) {
+			if (silent)
+				return null;
+			else
+				throw mte;
+		}
+	}
 
 	public Type Lresolve(String desc, boolean silent) {
 		try {
@@ -545,5 +557,6 @@ public class TypeSystem {
 	public List<String> findTypesAnnotationAtConfiguration(boolean metaAnnotated) {
 		return findTypesAnnotated(SPRING_AT_CONFIGURATION,metaAnnotated);
 	}
+
 
 }

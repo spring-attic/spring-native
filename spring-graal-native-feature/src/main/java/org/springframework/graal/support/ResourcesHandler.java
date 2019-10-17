@@ -231,8 +231,7 @@ public class ResourcesHandler {
 		// Find @Bean methods and add them
 		int c= componentType.getMethodCount();
 		List<Method> methodsWithAtBean = componentType.getMethodsWithAtBean();
-		total+=(c-methodsWithAtBean.size());
-		System.out.println("Rogue methods: "+(c-methodsWithAtBean.size())+" total:"+total);
+		System.out.println("Methods unnecessarily being exposed by reflection on type "+componentType.getName()+" = "+(c-methodsWithAtBean.size())+" total methods including @Bean ones:"+c);
 //		if (methodsWithAtBean.size() != 0) {
 //			System.out.println(configType+" here they are: "+
 //			methodsWithAtBean.stream().map(m -> m.getName()+m.getDesc()).collect(Collectors.toList()));
@@ -697,8 +696,27 @@ public class ResourcesHandler {
 		}
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
 			if (type.isAtConfiguration()) {
+				
+				// This is computing how many methods we are exposing unnecessarily via reflection by specifying allDeclaredMethods
+				// rather than individually specifying them. A high number indicates we should perhaps do more to be selective.
+				int c= type.getMethodCount();
+				List<Method> methodsWithAtBean = type.getMethodsWithAtBean();
+				int rogue = (c-methodsWithAtBean.size());
+				if (rogue != 0 ) {
+					System.out.println("Methods unnecessarily being exposed by reflection on this config type "+type.getName()+" = "+rogue+" (total methods including @Bean ones:"+c+")");
+				}
+
 				List<Method> atBeanMethods = type.getMethodsWithAtBean();
 				for (Method atBeanMethod: atBeanMethods) {
+					
+					// Processing this kind of thing, parameter types need to be exposed
+					// @Bean
+					// TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
+					//   ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
+					//   ObjectProvider<TomcatContextCustomizer> contextCustomizers,
+					//   ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
+					// atBeanMethod.getSignatureTypes();
+					
 					// Processing, for example:
 					// @ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 					// @ConditionalOnMissingBean

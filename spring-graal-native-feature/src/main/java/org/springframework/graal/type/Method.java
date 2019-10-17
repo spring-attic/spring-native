@@ -16,16 +16,24 @@
 
 package org.springframework.graal.type;
 
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.ParameterNode;
 import org.springframework.graal.support.SpringFeature;
 import org.springframework.graal.type.Type.CompilationHint;
+import org.springframework.graal.type.Type.TypeCollector;
 
 public class Method {
 	
@@ -64,6 +72,72 @@ public class Method {
 			}
 		}
 		return hints.size()==0?Collections.emptyList():hints;
+	}
+	
+	
+	static class TypesFromSignatureCollector extends SignatureVisitor {
+
+		Set<String> types = null;
+		
+		public TypesFromSignatureCollector() {
+			super(Opcodes.ASM7);
+		}
+		
+		@Override
+		public void visitClassType(String name) {
+			if (types == null) {
+				types = new HashSet<String>();
+			}
+			types.add(name);
+		}
+		
+		public Set<String> getTypes() {
+			if (types == null) {
+				return Collections.emptySet();
+			} else {
+				return types;
+			}
+		}
+				
+	}
+
+	/**
+	 * @return full list of types involved in the signature, including those embedded in generics.
+	 */
+	public Set<Type> getSignatureTypes() {
+		Set<Type> signatureTypes = new HashSet<>();
+		if (mn.signature == null) {
+			org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
+			Type t = typeSystem.resolve(methodType.getReturnType(), true);
+			if (t == null) {
+				System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
+			} else {
+				signatureTypes.add(t);
+			}
+			for (org.objectweb.asm.Type at: methodType.getArgumentTypes()) {
+				t = typeSystem.resolve(methodType.getReturnType(), true);
+				if (t == null) {
+					System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+at.getDescriptor());
+				} else {
+					signatureTypes.add(t);
+				}	
+			}
+		} else {
+			SignatureReader reader = new SignatureReader(mn.signature);
+			TypesFromSignatureCollector tc = new TypesFromSignatureCollector();
+			reader.accept(tc);
+			Set<String> collectedTypes = tc.getTypes();
+			for (String s: collectedTypes) {
+				Type t = typeSystem.resolveDotted(s,true);
+				if (t == null) {
+					System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+s);
+				} else {
+					signatureTypes.add(t);
+				}
+			}
+		}
+		System.out.println("A"+mn.name+mn.desc+" => "+signatureTypes);
+		return signatureTypes;
 	}
 	
 	
