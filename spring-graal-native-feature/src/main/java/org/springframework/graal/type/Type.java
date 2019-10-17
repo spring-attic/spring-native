@@ -225,7 +225,7 @@ public class Type {
 	}
 
 	public Method wrap(MethodNode mn) {
-		return new Method(mn);
+		return new Method(mn,typeSystem);
 	}
 
 	private boolean hasAnnotation(MethodNode m, String string) {
@@ -801,7 +801,7 @@ public class Type {
 	
 	// TODO handle repeatable annotations everywhere!
 	
-	private void collectHints(AnnotationNode an, List<Hint> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
+	void collectHints(AnnotationNode an, List<Hint> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
 		if (!visited.add(an)) {
 			return;
 		}
@@ -873,7 +873,7 @@ public class Type {
 		return Collections.emptyList();
 	}
 
-	private static Map<String, CompilationHint> proposedHints = new HashMap<>();
+	static Map<String, CompilationHint> proposedHints = new HashMap<>();
 	
 	static {
 		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)

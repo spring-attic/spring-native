@@ -16,14 +16,25 @@
 
 package org.springframework.graal.type;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Stack;
+
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.graal.support.SpringFeature;
+import org.springframework.graal.type.Type.CompilationHint;
 
 public class Method {
 	
-	MethodNode mn;
+	private MethodNode mn;
+	private TypeSystem typeSystem;
 
-	public Method(MethodNode mn) {
+	public Method(MethodNode mn, TypeSystem ts) {
 		this.mn = mn;
+		this.typeSystem = ts;
 	}
 	
 	public String toString() {
@@ -37,5 +48,23 @@ public class Method {
 	public String getDesc() {
 		return mn.desc;
 	}
+
+	public List<Hint> getHints() {
+		List<Hint> hints = new ArrayList<>();
+		if (mn.visibleAnnotations != null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				Type annotationType = typeSystem.Lresolve(an.desc, true);
+				if (annotationType == null) {
+					SpringFeature.log("Couldn't resolve "+an.desc+" annotation type whilst searching for hints on "+getName());
+				} else {
+					Stack<Type> s = new Stack<>();
+					// s.push(this);
+					annotationType.collectHints(an, hints, new HashSet<>(), s);
+				}
+			}
+		}
+		return hints.size()==0?Collections.emptyList():hints;
+	}
+	
 	
 }

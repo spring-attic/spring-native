@@ -267,11 +267,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.condition.OnResourceCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.hibernate.event.spi.ClearEventListener",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -712,11 +707,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+	//{
+	//	"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//},
 	{
 		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition$1",
 		"allDeclaredConstructors": true,
@@ -956,11 +951,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	//	{
-	//		"name": "org.springframework.context.annotation.ImportSelector",
-	//		"allDeclaredConstructors": true,
-	//		"allDeclaredMethods": true
-	//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup",
 		"allDeclaredConstructors": true,
