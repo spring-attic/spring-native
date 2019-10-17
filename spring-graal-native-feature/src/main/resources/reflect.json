@@ -686,7 +686,12 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// These 3 are from OnWebApplicationCondition - are they?
+	// These 4 are from OnWebApplicationCondition:
+	{
+		"name": "org.springframework.web.context.support.GenericWebApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
 	{
 		"name": "org.springframework.web.context.ConfigurableWebApplicationContext",
 		"allDeclaredConstructors": true,
@@ -699,6 +704,16 @@
 	},
 	{
 		"name": "org.springframework.context.ConfigurableApplicationContext",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition$1",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
