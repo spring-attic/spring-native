@@ -686,12 +686,7 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// These 4 are from OnWebApplicationCondition:
-	{
-		"name": "org.springframework.web.context.support.GenericWebApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+	// These 3 are from OnWebApplicationCondition - are they?
 	{
 		"name": "org.springframework.web.context.ConfigurableWebApplicationContext",
 		"allDeclaredConstructors": true,
@@ -704,16 +699,6 @@
 	},
 	{
 		"name": "org.springframework.context.ConfigurableApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	//{
-	//	"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition$1",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -800,12 +785,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.condition.SearchStrategy",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.context.support.PropertySourcesPlaceholderConfigurer",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -888,11 +867,6 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.AnnotationConfigApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.ConditionalOnResource",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},

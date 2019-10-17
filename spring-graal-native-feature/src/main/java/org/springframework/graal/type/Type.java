@@ -80,11 +80,11 @@ public class Type {
 	
 	public final static String AtConditional = "Lorg/springframework/context/annotation/Conditional;";
 
-	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
-
 	public final static String HypermediaConfigurationImportSelector = "Lorg/springframework/hateoas/config/HypermediaConfigurationImportSelector;";
 
 	public final static String WebStackImportSelector = "Lorg/springframework/hateoas/config/WebStackImportSelector;";
+	
+	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 
 	public final static Type MISSING = new Type(null, null);
 
@@ -879,8 +879,10 @@ public class Type {
 		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)
 		proposedHints.put(AtConditionalOnClass, new CompilationHint(true,false));
 		
-		// @ConditionalOnMissingBean has @CompilationHint(skipIfTypesMissing=true, follow=false)
-		proposedHints.put(AtConditionalOnMissingBean, new CompilationHint(true, false));
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;",
+				new CompilationHint(true, false, new String[] {
+				 	"org.springframework.boot.autoconfigure.condition.SearchStrategy",
+				}));
 		
 		// TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 		// @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
@@ -915,8 +917,14 @@ public class Type {
 		
 		proposedHints.put(RabbitConfigurationImportSelector,
 				new CompilationHint(true,true, new String[] {
-				 	"org.springframework.amqp.rabbit.annotation.RabbitBootstrapConfiguration"}
-				));
+				 	"org.springframework.amqp.rabbit.annotation.RabbitBootstrapConfiguration"
+				}));
+		
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/OnWebApplicationCondition;", 
+				new CompilationHint(false, false, new String[] {
+					"org.springframework.web.context.support.GenericWebApplicationContext",
+					
+				}));
 		
 		proposedHints.put(TransactionManagementConfigurationSelector,
 				new CompilationHint(true, true, new String[] {
