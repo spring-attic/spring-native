@@ -708,47 +708,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition$1",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// These 3 are parameters to the @Bean method in EmbeddedTomcat
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$1",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
