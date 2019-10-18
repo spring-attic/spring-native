@@ -87,6 +87,7 @@ public enum AccessRequired {
 
 	public static AccessRequired request(boolean resourceAccess, Flag[] flags) {
 		for (AccessRequired ar: AccessRequired.values()) {
+			System.out.println();
 			if (ar.isResourceAccess()==resourceAccess && Flag.toString(ar.getFlags()).equals(Flag.toString(flags))) {
 				return ar;
 			}

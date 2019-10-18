@@ -15,6 +15,10 @@
  */
 package org.springframework.graal.domain.reflect;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * The various types of access that can be requested.
  * 
@@ -31,13 +35,15 @@ public enum Flag {
 	allPublicClasses;
 
 	public static String toString(Flag[] flags) {
+		List<Flag> asList = Arrays.asList(flags);
+		Collections.sort(asList);
 		StringBuilder s = new StringBuilder();
 		s.append("[");
-		for (int i=0;i<flags.length;i++) {
+		for (int i=0;i<asList.size();i++) {
 			if (i>0) {
 				s.append(",");
 			}
-			s.append(flags[i]);
+			s.append(asList.get(i));
 		}
 		s.append("]");
 		return s.toString();
