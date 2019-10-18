@@ -217,11 +217,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.samples.petclinic.visit.VisitRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	// ^^^
 	// vv vanilla-grpc
 	{
