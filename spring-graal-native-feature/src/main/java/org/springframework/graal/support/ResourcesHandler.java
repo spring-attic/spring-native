@@ -260,8 +260,9 @@ public class ResourcesHandler {
 		Properties p = new Properties();
 		loadSpringFactoryFile(springComponentsFile, p);
 		// Example:
-		// com.example.demo.Foobar=org.springframework.stereotype.Component
-		// com.example.demo.DemoApplication=org.springframework.stereotype.Component
+		// app.main.SampleApplication=org.springframework.stereotype.Component
+		// app.main.model.Foo=javax.persistence.Entity
+		// app.main.model.FooRepository=org.springframework.data.repository.Repository
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
@@ -374,7 +375,7 @@ public class ResourcesHandler {
 			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 	}
-
+	
 	
 // app.main.SampleTransactionManagementConfiguration=org.springframework.stereotype.Component
 // app.main.model.Foo=javax.persistence.Entity

@@ -1537,31 +1537,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.data.repository.PagingAndSortingRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.CrudRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.Repository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.repository.JpaRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "app.main.model.FooRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.data.jpa.repository.support.EntityManagerBeanDefinitionRegistrarPostProcessor",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
