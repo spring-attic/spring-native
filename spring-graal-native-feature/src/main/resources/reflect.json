@@ -1,4 +1,10 @@
 [
+	{// fixes petclinic removeUnusedAutoconfig - was being added via CassandraReactiveDataAC
+	 // need to figure out what should be pulling it in the general case.
+		"name": "reactor.core.publisher.Flux",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
 	// vvv petclinic with recent (>m5) 2.2.0.build-snapshots
 	{
 		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
@@ -973,11 +979,6 @@
 	},
 	{
 		"name": "org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.reactive.config.DelegatingWebFluxConfiguration",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
