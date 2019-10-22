@@ -5,20 +5,19 @@
   ],
   // ^^^
     "resources": [
+    {"pattern": "db/.*"},
+    {"pattern": "messages/.*"},
+    {"pattern": "static/.*"},
+    {"pattern": "templates/.*"},
     // vvv petclinic
+    {"pattern": "banner.txt"},
     {"pattern": "org/springframework/format/Formatter.class"},
     {"pattern": "org/springframework/format/Printer.class"},
     {"pattern": "org/springframework/format/*"},
     {"pattern": "org/springframework/format/*.class"},
     {"pattern": "org/springframework/format/Parser.class"},
-    {"pattern": "banner.txt"},
-    {"pattern": "db/.*"},
-    {"pattern": "messages/.*"},
-    {"pattern": "static/.*"},
-    {"pattern": "templates/.*"},
     {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
-{"pattern": "templates/owners/ownersList.html"},
-{"pattern": "org/springframework/http/mime.types"},
+	{"pattern": "org/springframework/http/mime.types"},
     {"pattern": "META-INF/spring.components"},
     {"pattern": "META-INF/spring.factories"},
     {"pattern": "org/springframework/boot/logging/java/logging.properties"},
@@ -47,11 +46,6 @@
     {"pattern": "org/springframework/jdbc/support/sql-error-codes.xml"},
     {"pattern": "schema.sql"},
     // ^^^ vanilla-tx
-    
-    // vvv vanilla-thymeleaf
-    {"pattern": "static/index.html"},
-    {"pattern": "templates/greeting.html"},
-    // ^^^ vanilla-thymeleaf
     
     // vvv vanilla-rabbit
     {"pattern": "rabbitmq-amqp-client.properties"},

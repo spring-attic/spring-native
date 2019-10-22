@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.objectweb.asm.Opcodes;
@@ -655,63 +656,33 @@ public class Type {
 	}
 	
 	/**
-	 * @return true if meta annotated with org.springframework.stereotype.Indexed
+	 * Discover any uses of @Indexed or javax annotations, via direct/meta or interface usage.
+	 * Example output:
+	 * <pre><code>
+	 * org.springframework.samples.petclinic.PetClinicApplication=org.springframework.stereotype.Component
+     * org.springframework.samples.petclinic.model.Person=javax.persistence.MappedSuperclass
+	 * org.springframework.samples.petclinic.owner.JpaOwnerRepositoryImpl=[org.springframework.stereotype.Component,javax.transaction.Transactional]
+	 * </code></pre>
 	 */
-	public Entry<String,String> isIndexedOrEntity() {
-		Type indexedType = isMetaAnnotated2("Lorg/springframework/stereotype/Indexed;");
-		if (indexedType != null) {
-			return new AbstractMap.SimpleImmutableEntry<String,String>(this.node.name.replace("/", "."),indexedType.getName().replace("/", "."));
+	public Entry<Type,List<Type>> getRelevantStereotypes() {
+		List<Type> relevantAnnotations = new ArrayList<>();
+		List<Type> indexedTypesInHierachy = getAnnotatedElementsInHierarchy(a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
+		relevantAnnotations.addAll(indexedTypesInHierachy);
+		List<Type> types = getJavaxAnnotationsInHierarchy();
+		relevantAnnotations.addAll(types);
+		if (!relevantAnnotations.isEmpty()) {
+			return new AbstractMap.SimpleImmutableEntry<Type,List<Type>>(this,relevantAnnotations);
 		} else {
-			indexedType = isMetaAnnotated2("Ljavax/persistence/Entity;");
-			if (indexedType != null) {
-				return new AbstractMap.SimpleImmutableEntry<String,String>(this.node.name.replace("/", "."),"javax.persistence.Entity");
-			}
-			Type t = isIndexedInHierarchy();
-			if ( t != null) {
-				// This should catch repositories where the Repository interface is marked @Indexed
-				//app.main.model.FooRepository=org.springframework.data.repository.Repository")
-				return new AbstractMap.SimpleImmutableEntry<String,String>(this.node.name.replace("/","."), t.node.name.replace("/","."));
-			}
 			return null;
 		}
 	}
 	
-	private Type isIndexedInHierarchy() {
-		if (isAnnotated("Lorg/springframework/stereotype/Indexed;")) {
-			return this;
-		}
-		Type[] is = getInterfaces();
-		for (Type i: is) {
-			Type t = i.isIndexedInHierarchy();
-			if (t != null) {
-				return t;
-			}
-		}
-		Type sc = getSuperclass();
-		if (sc!=null) {
-			return sc.isIndexedInHierarchy();
-		}
-		return null;
-	}
-// app.main.model.FooRepository=org.springframework.data.repository.Repository
-//		public List<String> findConditionalOnClassValue() {
-//			if (node.visibleAnnotations != null) {
-//				for (AnnotationNode an : node.visibleAnnotations) {
-//					if (an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;")) {
-//						List<Object> values = an.values;
-//						for (int i=0;i<values.size();i+=2) {
-//							if (values.get(i).equals("value")) {
-//								return ( (List<org.objectweb.asm.Type>)values.get(i+1))
-//										.stream()
-//										.map(t -> t.getDescriptor())
-//										.collect(Collectors.toList());
-//							}
-//						}
-////						for (Object o: values) {
-////							System.out.println("<> "+o+"  "+(o==null?"":o.ge
-	
-	private Type isMetaAnnotated2(String Ldescriptor) {
-		return isMetaAnnotated2(Ldescriptor, new HashSet<>());
+	/**
+	 * Find usage of javax annotations in hierarchy (including meta usage).
+	 * @return list of types in the hierarchy of this type that are affected by a javax annotation
+	 */
+	List<Type> getJavaxAnnotationsInHierarchy() {
+		return getJavaxAnnotationsInHierarchy(new HashSet<>());
 	}
 
 	private boolean isAnnotated(String Ldescriptor) {
@@ -725,23 +696,54 @@ public class Type {
 		return false;
 	}
 	
-	private Type isMetaAnnotated2(String Ldescriptor, Set<String> seen) {
+	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
+		return getAnnotatedElementsInHierarchy(p,new HashSet<>());
+	}
+
+	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen) {
+		List<Type> results = new ArrayList<>();
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
 				if (seen.add(an.desc)) { 
-					if (an.desc.equals(Ldescriptor)) {
-						return this;//typeSystem.Lresolve(an.desc);
+					if (p.test(an)) {
+						results.add(this);
 					} else {
-						Type annoType = typeSystem.Lresolve(an.desc);
-						Type meta = annoType.isMetaAnnotated2(Ldescriptor, seen);
-						if (meta != null) {
-							return meta;
+						Type annoType = typeSystem.Lresolve(an.desc, true);
+						if (annoType != null) {
+							List<Type> ts = annoType.getAnnotatedElementsInHierarchy(p, seen);
+							results.addAll(ts);
 						}
 					}
 				}
 			}
 		}
-		return null;
+		return results.size()>0?results:Collections.emptyList();
+	}
+	
+	private List<Type> getJavaxAnnotationsInHierarchy(Set<String> seen) {
+		List<Type> result = new ArrayList<>();
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode an: node.visibleAnnotations) {
+				if (seen.add(an.desc)) { 
+					Type annoType = typeSystem.Lresolve(an.desc,true);
+					if (annoType != null) {
+						if (annoType.getDottedName().startsWith("javax.")) {
+							result.add(annoType);
+						} else {
+							List<Type> ts = annoType.getJavaxAnnotationsInHierarchy(seen);
+							result.addAll(ts);
+						}
+					}	
+				}
+			}
+		}
+		Type[] intfaces = getInterfaces();
+		for (Type intface: intfaces) {
+			if (seen.add(intface.getDottedName())) {
+				result.addAll(intface.getJavaxAnnotationsInHierarchy(seen));
+			}
+		}
+		return result;
 	}
 
 	public List<Type> getNestedTypes() {
@@ -749,7 +751,7 @@ public class Type {
 		List<InnerClassNode> innerClasses = node.innerClasses;
 		for (InnerClassNode inner: innerClasses) {	
 			if (inner.outerName==null || !inner.outerName.equals(getName())) {
-//				System.out.println("SKIPPPING "+inner.name+" because outer is "+inner.outerName+" and we are looking at "+getName());
+//				System.out.println("SKIPPING "+inner.name+" because outer is "+inner.outerName+" and we are looking at "+getName());
 				continue;
 			}
 			if (inner.name.equals(getName())) {
