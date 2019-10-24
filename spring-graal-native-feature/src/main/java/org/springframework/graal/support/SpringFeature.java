@@ -59,7 +59,7 @@ public class SpringFeature implements Feature {
 		}
     	reflectionHandler = new ReflectionHandler();
     	dynamicProxiesHandler = new DynamicProxiesHandler();
-    	resourcesHandler = new ResourcesHandler(reflectionHandler);
+    	resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
     	buildTimeInitializationHandler = new InitializationHandler();
 	}
 

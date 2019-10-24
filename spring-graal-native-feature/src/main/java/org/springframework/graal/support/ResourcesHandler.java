@@ -64,6 +64,8 @@ public class ResourcesHandler {
 
 	private ResourcesRegistry resourcesRegistry;
 
+	private DynamicProxiesHandler dynamicProxiesHandler;
+
 	private static boolean REMOVE_UNNECESSARY_CONFIGURATIONS;
 
 	static {
@@ -71,8 +73,9 @@ public class ResourcesHandler {
 		System.out.println("Remove unused config = " + REMOVE_UNNECESSARY_CONFIGURATIONS);
 	}
 
-	public ResourcesHandler(ReflectionHandler reflectionHandler) {
+	public ResourcesHandler(ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler) {
 		this.reflectionHandler = reflectionHandler;
+		this.dynamicProxiesHandler = dynamicProxiesHandler;
 	}
 
 	public ResourcesDescriptor compute() {
@@ -178,6 +181,7 @@ public class ResourcesHandler {
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
+			boolean isRepository = false;
 			String k = (String) keys.nextElement();
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
@@ -208,6 +212,9 @@ public class ResourcesHandler {
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
 				String tt = st.nextToken();
+				if (tt.equals("org.springframework.data.repository.Repository")) {
+					isRepository = true;
+				}
 				try {
 					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
 					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -228,11 +235,32 @@ public class ResourcesHandler {
 					t.printStackTrace();
 					System.out.println("Problems with value " + tt);
 				}
-
+				if (isRepository) {
+					processRepository(k);
+				}
 			}
 		}
 		System.out.println("Registered " + registeredComponents + " entries");
+	}
 
+	/**
+	 * Crude basic repository processing - needs more analysis to only add the interfaces the runtime
+	 * will be asking for when requesting the proxy.
+	 * @param repositoryName type name of the repository
+	 */
+	private void processRepository(String repositoryName) {
+		Type type = ts.resolveDotted(repositoryName);
+		// Example proxy:
+		// ["app.main.model.FooRepository", "org.springframework.data.repository.Repository",
+		//  "org.springframework.transaction.interceptor.TransactionalProxy",
+		//  "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"]
+		List<String> repositoryInterfaces = new ArrayList<>();
+		repositoryInterfaces.add(type.getDottedName());
+		repositoryInterfaces.add("org.springframework.data.repository.Repository");
+		repositoryInterfaces.add("org.springframework.transaction.interceptor.TransactionalProxy");
+		repositoryInterfaces.add( "org.springframework.aop.framework.Advised");
+		repositoryInterfaces.add( "org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(repositoryInterfaces);
 	}
 
 	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {

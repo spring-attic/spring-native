@@ -1,4 +1,9 @@
 [
+// vvv vanilla-tx
+{
+  "name":"org.springframework.transaction.TransactionManager"
+},
+// ^^^
 	{// fixes petclinic removeUnusedAutoconfig - was being added via CassandraReactiveDataAC
 	 // need to figure out what should be pulling it in the general case.
 		"name": "reactor.core.publisher.Flux",
