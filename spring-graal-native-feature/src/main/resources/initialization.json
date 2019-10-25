@@ -1,6 +1,9 @@
 {
 "runtimeInitialization": 
 [
+// with boot 2.2.0 upgrade, waiting on this one future netty release ( https://github.com/netty/netty/pull/9708 )
+{"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
+
 {"package": "io.netty.handler.codec.http2"},
 {"class": "reactor.netty.tcp.TcpClientSecure"},
 {"class": "reactor.netty.http.client.HttpClientSecure"},
