@@ -4,7 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-//(proxyBeanMethods=false)
 public class CLR implements CommandLineRunner {
 
 	@Override
