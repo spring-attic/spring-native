@@ -1,14 +1,16 @@
 # spring-graal-native
 
-This project contains code to enable the building of native-images with Graal VM.
+This project contains code to enable the building of native images with GraalVM.
 
-Once built, native-images have very fast startup!
+Once built, native images have very fast startup!
 
 This feature supports:
 - Graal 19.2.0.1
-- Spring Boot 2.2.0.RC1
+- Spring Boot 2.2.0
 
-To try it out, install Graal 19.2.0.1 from: https://github.com/oracle/graal/releases
+To try it out, install Graal 19.2.0.1 from: https://github.com/oracle/graal/releases,
+then install `native-image` by running `gu install native-image` (currently it is
+available as an early adopter plugin).
 
 
 Then build the feature project with:
@@ -18,14 +20,14 @@ cd spring-graal-native-feature
 ./mvnw clean package
 ```
 
-Now go into the spring-graal-native-image-samples subfolder from the root of the
+Now go into the `spring-graal-native-samples` subfolder from the root of the
 project. Each folder in there is using a piece of Spring technology. Within each
 is a mini project and a `compile.sh` script - the script will call the 
 native-image command passing the feature on the classpath, the executable produced
 in each case should start instantly.
 
 You can try the feature with your own projects, see the sample projects for typical
-usage or the commandlinerunner-maven sample for how to add native-image packaging
+usage or the `commandlinerunner-maven` sample for how to add native-image packaging
 to your pom.xml. 
 
 FAQ
