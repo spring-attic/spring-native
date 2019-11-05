@@ -36,7 +36,7 @@ public class JsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public void write(ReflectionDescriptor metadata, OutputStream outputStream)
+	public static void write(ReflectionDescriptor metadata, OutputStream outputStream)
 			throws IOException {
 		try {
 			JsonConverter converter = new JsonConverter();

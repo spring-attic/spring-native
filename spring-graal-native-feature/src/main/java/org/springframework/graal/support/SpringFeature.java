@@ -92,6 +92,7 @@ public class SpringFeature implements Feature {
 			e.printStackTrace();
 		}
     	System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
+    	reflectionHandler.dump();
     }
 
 	public static void log(String msg) {

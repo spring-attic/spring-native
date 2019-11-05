@@ -15,6 +15,9 @@
  */
 package org.springframework.graal.support;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -63,6 +66,8 @@ public class ReflectionHandler {
 	private ImageClassLoader cl;
 
 	private static boolean AVOID_LOGBACK;
+	
+	private static String DUMP_CONFIG;
 
 	private int typesRegisteredForReflectiveAccessCount = 0;
 
@@ -70,6 +75,10 @@ public class ReflectionHandler {
 		AVOID_LOGBACK = Boolean.valueOf(System.getProperty("avoidLogback", "false"));
 		if (AVOID_LOGBACK) {
 			System.out.println("Avoiding logback configuration");
+		}
+		DUMP_CONFIG = System.getProperty("dumpConfig");
+		if (DUMP_CONFIG!=null) {
+			System.out.println("Dumping computed config to "+DUMP_CONFIG);
 		}
 	}
 
@@ -83,6 +92,53 @@ public class ReflectionHandler {
 			}
 		}
 		return constantReflectionDescriptor;
+	}
+	
+	private List<ClassDescriptor> activeClassDescriptors;
+
+	public void includeInDump(String typename, Flag[] flags) {
+		if (DUMP_CONFIG == null) {
+			return;
+		}
+		if (activeClassDescriptors == null) {
+			activeClassDescriptors = constantReflectionDescriptor.getClassDescriptors();
+		}
+		ClassDescriptor existingOne = null;
+		for (ClassDescriptor cd: activeClassDescriptors) {
+			if (cd.getName().equals(typename)) {
+				existingOne = cd;
+				break;
+			}
+		}
+		if (existingOne != null) {
+			// Update flags...
+			for (Flag f: flags) {
+				existingOne.setFlag(f);
+			}
+		} else {
+			ClassDescriptor cd = ClassDescriptor.of(typename);
+			for (Flag f: flags) {
+				cd.setFlag(f);
+			}
+			activeClassDescriptors.add(cd);
+		}
+	}
+		
+		
+	public void dump() {
+		if (DUMP_CONFIG == null) {
+			return;
+		}
+		activeClassDescriptors.sort((c1,c2) -> c1.getName().compareTo(c2.getName()));
+		ReflectionDescriptor rd = new ReflectionDescriptor();
+		for (ClassDescriptor cd: activeClassDescriptors) {
+			rd.add(cd);
+		}
+		try (FileOutputStream fos = new FileOutputStream(new File(DUMP_CONFIG))) {
+			JsonMarshaller.write(rd,fos);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 	}
 
 	public void register(DuringSetupAccess a) {
@@ -258,6 +314,7 @@ public class ReflectionHandler {
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename);
 		}
+		includeInDump(typename, flags);
 		// This can return null if, for example, the supertype of the specified type is
 		// not
 		// on the classpath. In a simple app there may be a number of types coming in

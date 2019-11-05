@@ -444,6 +444,9 @@ public class ResourcesHandler {
 				p.store(baos, "");
 				baos.close();
 				byte[] bs = baos.toByteArray();
+				System.out.println("The new spring.factories is: vvvvvvvvv");
+				System.out.println(new String(bs));
+				System.out.println("^^^^^^^^");
 				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
 				Resources.registerResource("META-INF/spring.factories", bais);
 			}
