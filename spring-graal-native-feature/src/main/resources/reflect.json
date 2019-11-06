@@ -1748,7 +1748,6 @@
 	},
 	{
 		"name": "org.springframework.stereotype.Component",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{

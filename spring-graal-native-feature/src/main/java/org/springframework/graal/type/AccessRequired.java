@@ -35,6 +35,7 @@ public enum AccessRequired {
 	EXISTENCE_AND_RESOURCE(true, false, false, false, true), 
 	RESOURCE_ONLY(false,false,false,false,true), 
 	RESOURCE_CMC(false, false, true, true, true), // This was for Resource+ctors+methods+classes (don't yet support classes tho - do we still need it?)
+	ANNOTATION(true,false,true,false,true),
 	RESOURCE_CMF(false,true,true,true,true);
 
     private boolean typeReflect;

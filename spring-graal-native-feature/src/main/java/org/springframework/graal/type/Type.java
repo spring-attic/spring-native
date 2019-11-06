@@ -475,6 +475,10 @@ public class Type {
 	public boolean isAtConfiguration() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
 	}
+	
+	public boolean isAbstractNestedCondition() {
+		return isAnnotated("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
+	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
 		return isMetaAnnotated(slashedTypeDescriptor, new HashSet<>());
@@ -1099,6 +1103,34 @@ public class Type {
 
 	public int getMethodCount() {
 		return node.methods.size();
+	}
+
+	public boolean isAnnotation() {
+		return (node.access & Opcodes.ACC_ANNOTATION)!=0;
+	}
+
+	public List<Type> getAutoConfigureBeforeOrAfter() {
+		List<Type> result = new ArrayList<>();
+		for (AnnotationNode an : node.visibleAnnotations) {
+			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;") ||
+					an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")) {
+				List<Object> values = an.values;
+				if (values != null) {
+					for (int i=0;i<values.size();i+=2) {
+						if (values.get(i).equals("value")) {
+							List<org.objectweb.asm.Type> types = (List<org.objectweb.asm.Type>)values.get(i+1);
+							for (org.objectweb.asm.Type type: types) {
+							  Type t = typeSystem.Lresolve(type.getDescriptor());
+							  if (t!= null) {
+								  result.add(t);
+							  }
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 	
 //	@SuppressWarnings("unchecked")
