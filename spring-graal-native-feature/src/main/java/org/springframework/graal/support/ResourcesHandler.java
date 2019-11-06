@@ -220,14 +220,16 @@ public class ResourcesHandler {
 					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
 					// Flag.allPublicMethods, Flag.allDeclaredClasses);
-					reg(tt);
+//					reg(tt);
+					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
 					// Register nested types of the component
 					Type baseType = ts.resolveDotted(tt);
 					for (Type t : baseType.getNestedTypes()) {
 						String n = t.getName().replace("/", ".");
-						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-								Flag.allDeclaredClasses);
+						reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
+//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+//								Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
 					registerHierarchy(baseType, new HashSet<>(), null);
@@ -407,21 +409,13 @@ public class ResourcesHandler {
 			System.out.println("Processing spring.factories - EnableAutoConfiguration lists #" + configurations.size()
 					+ " configurations");
 			for (String config : configurations) {
-				boolean needToAddThem = true;
 				if (!checkAndRegisterConfigurationType(config)) {
 					if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
 						excludedAutoConfigCount++;
 						SpringFeature.log("Excluding auto-configuration " + config);
 						forRemoval.add(config);
-						needToAddThem = false;
 					}
 				}
-				/*
-				 * if (needToAddThem) { SpringFeature.log("Resource Adding: "+config);
-				 * reflectionHandler.addAccess(config); // no flags as it isn't going to trigger
-				 * resourcesRegistry.addResources(config.replace(".", "/").replace("$",
-				 * ".")+".class"); }
-				 */
 			}
 			if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
 				System.out.println(
@@ -674,14 +668,29 @@ public class ResourcesHandler {
 					}
 				}
 
-				for (Type annotatedType : hint.getAnnotationChain()) {
-					tar.request(annotatedType.getDottedName(), AccessRequired.ALL);
+				List<Type> annotationChain = hint.getAnnotationChain();
+				for (int i=0;i<annotationChain.size();i++) {
+					// i=0 is the annotated type, i>0 are all annotation types
+					Type t = annotationChain.get(i);
+					if (i==0) {
+						tar.request(t.getDottedName(), AccessRequired.ALL);
+					} else {
+						tar.request(t.getDottedName(), AccessRequired.ANNOTATION);
+					}
 				}
-
 			}
 		}
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
 			if (type.isAtConfiguration()) {
+				
+				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to other configurations.
+				// Those may be getting discarded in this run but need to be class accessible because this configuration
+				// needs to refer to them.
+				List<Type> boaTypes = type.getAutoConfigureBeforeOrAfter();
+				for (Type t: boaTypes) {
+					tar.request(t.getDottedName(), AccessRequired.EXISTENCE_CHECK);
+				}
+
 
 				// This is computing how many methods we are exposing unnecessarily via
 				// reflection by specifying allDeclaredMethods
@@ -770,7 +779,7 @@ public class ResourcesHandler {
 			for (Map.Entry<String, AccessRequired> t : tar.entrySet()) {
 				String dname = t.getKey();
 				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + t.getValue());
-				reflectionHandler.addAccess(dname, true, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				reflectionHandler.addAccess(dname, null, true, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 				if (t.getValue().isResourceAccess()) {
 					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".") + ".class");
 				}
@@ -778,20 +787,20 @@ public class ResourcesHandler {
 		}
 
 		// Even if the tests aren't passing (and this configuration is going to be
-		// discarded) it
-		// may still be referenced from other configuration that is staying around
-		// (through
-		// @AutoConfigureAfter) so need to add it 'enough' that those references will be
-		// OK
+		// discarded) it may still be referenced from other configuration that is
+		// staying around (through @AutoConfigureAfter) so need to add it 'enough'
+		// that those references will be OK
 		String configNameDotted = type.getDottedName();// .replace("/",".");
 		visited.add(type.getName());
-		reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+			reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
 			// In some cases the superclass of the config needs to be accessible
 			// TODO need this guard? if (isConfiguration(configType)) {
 			// }
-			registerHierarchy(type, new HashSet<>(), null);
+			//if (type.isAtConfiguration()) {
+				registerHierarchy(type, new HashSet<>(), null);
+			//}
 
 			Type s = type.getSuperclass();
 			while (s != null) {
@@ -813,6 +822,7 @@ public class ResourcesHandler {
 
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+			//if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
@@ -822,6 +832,7 @@ public class ResourcesHandler {
 					}
 				}
 			}
+			//}
 		}
 		return passesTests;
 	}

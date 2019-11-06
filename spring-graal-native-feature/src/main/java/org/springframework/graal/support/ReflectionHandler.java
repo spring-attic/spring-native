@@ -25,6 +25,8 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,14 +37,14 @@ import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
 import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
 import org.graalvm.util.GuardedAnnotationAccess;
 import org.springframework.graal.domain.reflect.ClassDescriptor;
-import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.reflect.FieldDescriptor;
+import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.reflect.JsonMarshaller;
 import org.springframework.graal.domain.reflect.MethodDescriptor;
 import org.springframework.graal.domain.reflect.ReflectionDescriptor;
 
-import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
 import com.oracle.svm.core.hub.ClassForNameSupport;
+import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
 import com.oracle.svm.hosted.ImageClassLoader;
 import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
 
@@ -94,33 +96,40 @@ public class ReflectionHandler {
 		return constantReflectionDescriptor;
 	}
 	
-	private List<ClassDescriptor> activeClassDescriptors;
+	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
 
-	public void includeInDump(String typename, Flag[] flags) {
+	public void includeInDump(String typename, String[][] methodsAndConstructors, Flag[] flags) {
 		if (DUMP_CONFIG == null) {
 			return;
 		}
-		if (activeClassDescriptors == null) {
-			activeClassDescriptors = constantReflectionDescriptor.getClassDescriptors();
-		}
-		ClassDescriptor existingOne = null;
+		ClassDescriptor currentCD = null;
 		for (ClassDescriptor cd: activeClassDescriptors) {
 			if (cd.getName().equals(typename)) {
-				existingOne = cd;
+				currentCD = cd;
 				break;
 			}
 		}
-		if (existingOne != null) {
-			// Update flags...
-			for (Flag f: flags) {
-				existingOne.setFlag(f);
+		if (currentCD == null) {
+			currentCD  = ClassDescriptor.of(typename);
+			activeClassDescriptors.add(currentCD);
+		}
+		// Update flags...
+		for (Flag f : flags) {
+			currentCD.setFlag(f);
+		}
+		if (methodsAndConstructors != null) {
+			for (String[] mc: methodsAndConstructors) {
+				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
+				currentCD.addMethodDescriptor(md);	
 			}
+		}
+	}
+	
+	public static String[] subarray(String[] array) {
+		if (array.length == 1) {
+			return null;
 		} else {
-			ClassDescriptor cd = ClassDescriptor.of(typename);
-			for (Flag f: flags) {
-				cd.setFlag(f);
-			}
-			activeClassDescriptors.add(cd);
+			return Arrays.copyOfRange(array, 1, array.length);
 		}
 	}
 		
@@ -171,6 +180,7 @@ public class ReflectionHandler {
 				continue;
 			}
 			if (checkType(type)) {
+				activeClassDescriptors.add(classDescriptor);
 				rra.registerType(type);
 				Set<Flag> flags = classDescriptor.getFlags();
 				if (flags != null) {
@@ -304,17 +314,17 @@ public class ReflectionHandler {
 	 *         access, otherwise null
 	 */
 	public Class<?> addAccess(String typename, Flag...flags) {
-		return addAccess(typename, false, flags);
+		return addAccess(typename, null, false, flags);
 	}
 
-	public Class<?> addAccess(String typename, boolean silent, Flag... flags) {
+	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, boolean silent, Flag... flags) {
 		if (!added.add(typename)) {
 			return null;
 		}
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename);
 		}
-		includeInDump(typename, flags);
+		includeInDump(typename, methodsAndConstructors, flags);
 		// This can return null if, for example, the supertype of the specified type is
 		// not
 		// on the classpath. In a simple app there may be a number of types coming in
@@ -334,6 +344,27 @@ public class ReflectionHandler {
 		// They are here because otherwise we start getting warnings to system.out -
 		// need graal bug to tidy this up
 		ClassForNameSupport.registerClass(type);
+		// TODO need a checkType() kinda guard on here? (to avoid rogue printouts from graal)
+		if (methodsAndConstructors != null) {
+			for (String[] methodOrCtor : methodsAndConstructors) {
+				String name = methodOrCtor[0];
+				List<Class<?>> params = new ArrayList<>();
+				for (int p = 1; p < methodOrCtor.length; p++) {
+					// TODO should use type system and catch problems?
+					params.add(rra.resolveType(methodOrCtor[p]));
+				}
+				try {
+					if (name.equals("<init>")) {
+						rra.registerConstructor(type, params);
+					} else {
+						rra.registerMethod(type, name, params);
+					}
+				} catch (NoSuchMethodException nsme) {
+					throw new IllegalStateException(
+							"Problem registering member " + name + " for reflective access on type " + type, nsme);
+				}
+			}
+		}
 		if (checkType(type)) {
 			rra.registerType(type);
 			for (Flag flag : flags) {
@@ -458,6 +489,23 @@ public class ReflectionHandler {
 		}
 		addAccess("org.springframework.boot.logging.logback.LogbackLoggingSystem", Flag.allDeclaredConstructors,
 				Flag.allDeclaredMethods);
+
+		for (String p : logBackPatterns) {
+			if (p.startsWith("org")) {
+				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			} else if (p.startsWith("ch.")) {
+				addAccess(p, new String[][] { { "<init>" } }, false);
+				// addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			} else if (p.startsWith("color.")) {
+				addAccess("ch.qos.logback.core.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				// addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			} else {
+				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, false);
+				// addAccess("ch.qos.logback.classic.pattern." + p,
+				// Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			}
+		}
+        /*
 		for (String p : logBackPatterns) {
 			if (p.startsWith("org")) {
 				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
@@ -469,6 +517,7 @@ public class ReflectionHandler {
 				addAccess("ch.qos.logback.classic.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			}
 		}
+		*/
 	}
 
 }

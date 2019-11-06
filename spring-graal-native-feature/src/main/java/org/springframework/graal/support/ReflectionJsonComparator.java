@@ -47,10 +47,15 @@ public class ReflectionJsonComparator {
 		List<ClassDescriptor> cds1 = rd1.getClassDescriptors();
 		List<ClassDescriptor> cds2 = rd2.getClassDescriptors();
 		
+		int firstNotInSecond = 0;
+		int secondNotInFirst = 0;
+		int sameInBoth = 0;
+		int differentInBoth = 0;
 		System.out.println("These are in the first reflection file but not in the second:");
 		for (ClassDescriptor cd1: cds1) {
 			if (getClassDescriptor(cds2, cd1.getName())==null) {
 				System.out.println("< "+cd1.toString());
+			firstNotInSecond++;
 			}
 		}
 		
@@ -58,6 +63,7 @@ public class ReflectionJsonComparator {
 		for (ClassDescriptor cd2: cds2) {
 			if (getClassDescriptor(cds1, cd2.getName())==null) {
 				System.out.println("> "+cd2.toString());
+			secondNotInFirst++;
 			}
 		}
 		
@@ -67,6 +73,7 @@ public class ReflectionJsonComparator {
 			if (cd2 != null) {
 				if (cd1.equals(cd2)) {
 					System.out.println("= "+cd1);	
+			sameInBoth++;
 				}
 			}
 		}
@@ -77,9 +84,15 @@ public class ReflectionJsonComparator {
 				if (!cd1.equals(cd2)) {
 					System.out.println("1?"+cd1);
 					System.out.println("2?"+cd2);
+			differentInBoth++;
 				}
 			}
 		}
+		System.out.println("Summary:");
+		System.out.println("In first but not second: "+firstNotInSecond);
+		System.out.println("In second but not first: "+secondNotInFirst);
+		System.out.println("In both files but configured differently: "+differentInBoth);
+		System.out.println("In both files and configured the same: "+sameInBoth);
 	}
 
 	private static ClassDescriptor getClassDescriptor(List<ClassDescriptor> cds, String name) {
