@@ -495,29 +495,13 @@ public class ReflectionHandler {
 				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			} else if (p.startsWith("ch.")) {
 				addAccess(p, new String[][] { { "<init>" } }, false);
-				// addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			} else if (p.startsWith("color.")) {
-				addAccess("ch.qos.logback.core.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-				// addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				// addAccess("ch.qos.logback.core.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				addAccess("ch.qos.logback.core.pattern." + p, new String[][] { { "<init>" } }, false);
 			} else {
 				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, false);
-				// addAccess("ch.qos.logback.classic.pattern." + p,
-				// Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			}
 		}
-        /*
-		for (String p : logBackPatterns) {
-			if (p.startsWith("org")) {
-				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			} else if (p.startsWith("ch.")) {
-				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			} else if (p.startsWith("color.")) {
-				addAccess("ch.qos.logback.core.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			} else {
-				addAccess("ch.qos.logback.classic.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			}
-		}
-		*/
 	}
 
 }
