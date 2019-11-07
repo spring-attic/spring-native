@@ -1285,11 +1285,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.hibernate.persister.entity.SingleTableEntityPersister",
 		"allDeclaredConstructors": true,
@@ -1417,11 +1417,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceProperties",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceProperties",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.data.jpa.repository.config.EnableJpaRepositories",
 		"allDeclaredConstructors": true,
@@ -1900,31 +1900,6 @@
 	},
 	// Simple rabbit app
 	{
-		"name": "org.springframework.boot.autoconfigure.amqp.RabbitProperties",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$Cache",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$Listener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$Ssl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.amqp.RabbitProperties$Template",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.amqp.core.Queue",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -1959,12 +1934,12 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
+    {
 		"name": "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
+   	{
 		"name": "org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true

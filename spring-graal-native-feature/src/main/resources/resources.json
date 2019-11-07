@@ -32,6 +32,7 @@
     
     {"pattern": "org/reactivestreams/Publisher.class"},
     {"pattern": "org/springframework/amqp/rabbit/connection/ChannelProxy.class"},
+    {"pattern": "org/springframework/amqp/rabbit/annotation/RabbitBootstrapConfiguration.class"},
     
     // vvv vanilla-jpa
     {"pattern": "org/springframework/boot/context/properties/ConfigurationPropertiesScanRegistrar.class"},
