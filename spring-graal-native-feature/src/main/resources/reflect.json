@@ -213,11 +213,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.thymeleaf.extras.java8time.expression.Temporals",
 		"allDeclaredConstructors": true,
@@ -453,21 +453,21 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "com.google.gson.GsonBuilder",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.aop.framework.Advised",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.aop.framework.Advised",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// these 3 from AopConfigUtils
 	{
 		"name": "org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator",
@@ -479,36 +479,36 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// supertypes of InfrastructureAdvistorAutoProxyCreator - to combat error:
 	//	Caused by: org.springframework.beans.NotWritablePropertyException: Invalid property 'order' of
 	//  bean class [org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator]: Bean property
 	//  'order' is not writable or has an invalid setter method. Does the parameter type
 	// of the setter match the return type of the getter?
-	{
-		"name": "org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.aop.framework.ProxyProcessorSupport",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.aop.framework.ProxyConfig",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.aop.framework.ProxyProcessorSupport",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.aop.framework.ProxyConfig",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// Should these two be pulled in by annotations on entityManagerFactory method in JpaBaseConfiguration
 	{
 		"name": "javax.persistence.EntityManagerFactory",
@@ -550,11 +550,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.SpringBootVersion",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.SpringBootVersion",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "javax.validation.spi.ConfigurationState",
 		"allDeclaredConstructors": true,
@@ -582,8 +582,8 @@
 	},
 	{
 		"name": "org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	// vvv for tomcat sample
 	{
@@ -591,11 +591,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.util.concurrent.Callable",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.util.concurrent.Callable",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator",
 		"allDeclaredConstructors": true,
@@ -648,8 +648,8 @@
 	},
 	{
 		"name": "org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.apache.tomcat.util.descriptor.web.ErrorPage",
@@ -682,11 +682,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "javax.management.MBeanRegistration",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "javax.management.MBeanRegistration",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
 		"allDeclaredConstructors": true,
@@ -710,8 +710,8 @@
 	},
 	{
 		"name": "org.springframework.context.ConfigurableApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+		//"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
@@ -751,8 +751,7 @@
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder$Factory",
@@ -761,56 +760,54 @@
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+		//"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.context.support.PropertySourcesPlaceholderConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+	//	"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.context.annotation.ScopedProxyMode",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.jmx.export.naming.MetadataNamingStrategy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.context.annotation.ScopedProxyMode",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredFields": true,
+//		"allDeclaredMethods": true
+//	},
+	//{
+	//	"name": "org.springframework.jmx.export.naming.MetadataNamingStrategy",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//},
 	{
 		"name": "org.springframework.context.annotation.CommonAnnotationBeanPostProcessor",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.util.logging.LogManager",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true,
-		"allDeclaredClasses": true
-	},
-	{
-		"name": "org.springframework.boot.logging.java.JavaLoggingSystem",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true,
-		"allDeclaredClasses": true
-	},
+//	{
+//		"name": "java.util.logging.LogManager",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true,
+//		"allDeclaredClasses": true
+//	},
+//	{
+//		"name": "org.springframework.boot.logging.java.JavaLoggingSystem",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true,
+//		"allDeclaredClasses": true
+//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationImportSelector",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication$Type",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true,
-		"allDeclaredFields": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication$Type",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true,
+//		"allDeclaredFields": true
+//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigureOrder",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	// these 5 are from BaseDefaultCodecs	
@@ -834,17 +831,17 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "javax.xml.bind.Binder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "javax.xml.bind.Binder",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// this one after adding those 5
-	{
-		"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.context.annotation.AnnotationConfigApplicationContext",
 		"allDeclaredConstructors": true,
@@ -890,16 +887,16 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.context.annotation.Role",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.validation.Validator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.context.annotation.Role",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.validation.Validator",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "javax.validation.Validator",
 		"allDeclaredConstructors": true,
@@ -910,26 +907,32 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "com.sun.jmx.mbeanserver.JmxMBeanServer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+	//{
+	//	"name": "com.sun.jmx.mbeanserver.JmxMBeanServer",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//},
 	{
 		"name": "org.springframework.context.event.DefaultEventListenerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"methods": [
+			{
+				"name": "<init>",
+				"parameterTypes": [
+				]
+			}
+		]
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.context.annotation.Lazy",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.lang.ClassLoader",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.lang.ClassLoader",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationProperties",
 		"allDeclaredConstructors": true,
@@ -940,21 +943,21 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigureAfter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.jmx.support.MBeanRegistrationSupport",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.BeanFactoryAware",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.AutoConfigureAfter",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+	//{
+	//	"name": "org.springframework.jmx.support.MBeanRegistrationSupport",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//},
+//	{
+//		"name": "org.springframework.beans.factory.BeanFactoryAware",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.cache.CacheCondition",
 		"allDeclaredConstructors": true,
@@ -977,15 +980,15 @@
 		"allDeclaredFields": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "com.sun.jmx.mbeanserver.SunJmxMBeanServer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//  {
+	// 	"name": "com.sun.jmx.mbeanserver.SunJmxMBeanServer",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.web.reactive.config.EnableWebFlux",
@@ -997,16 +1000,16 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.core.io.support.PropertiesLoaderSupport",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.core.io.support.PropertiesLoaderSupport",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackage",
 		"allDeclaredConstructors": true,
@@ -1022,20 +1025,20 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.lang.reflect.ParameterizedType",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.lang.reflect.ParameterizedType",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.task.TaskExecutorBuilder",
@@ -1044,23 +1047,23 @@
 	},
 	{
 		"name": "org.springframework.boot.context.properties.EnableConfigurationProperties",
-		"allDeclaredConstructors": true,
+		//"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.context.annotation.ImportBeanDefinitionRegistrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.SpringApplication",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.context.annotation.ImportBeanDefinitionRegistrar",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.SpringApplication",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+		//"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.context.annotation.ComponentScan$Filter",
@@ -1073,11 +1076,11 @@
 		"allDeclaredMethods": true
 	},
 	// vanilla-thymeleaf related, starts here...
-	{
-		"name": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.http.converter.FormHttpMessageConverter",
 		"allDeclaredConstructors": true,
@@ -1109,21 +1112,21 @@
 	},
 	// ends here...
 	// vanilla-tx vvv
-	{
-		"name": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.jdbc.support.SQLErrorCodes",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.sql.DatabaseMetaData",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.sql.DatabaseMetaData",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.transaction.TransactionDefinition",
 		"allDeclaredConstructors": true,
@@ -1142,28 +1145,28 @@
 		"allDeclaredFields": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.context.annotation.AdviceMode",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.annotation.AutoProxyRegistrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.context.annotation.AdviceMode",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredFields": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.context.annotation.AutoProxyRegistrar",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// vanilla-tx ^^^
-	{
-		"name": "org.springframework.boot.autoconfigure.jmx.ParentAwareNamingStrategy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.cache.JCacheCacheConfiguration$JCacheAvailableCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.jmx.ParentAwareNamingStrategy",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.cache.JCacheCacheConfiguration$JCacheAvailableCondition",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.task.TaskSchedulerBuilder",
 		"allDeclaredConstructors": true,
@@ -1192,7 +1195,7 @@
 	},
 	{
 		"name": "org.springframework.beans.factory.annotation.Autowired",
-		"allDeclaredConstructors": true,
+//		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -1237,8 +1240,7 @@
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.http.codec.ClientCodecConfigurer",
@@ -1412,11 +1414,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.orm.jpa.DataSourceInitializedPublisher$Registrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.orm.jpa.DataSourceInitializedPublisher$Registrar",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 //	{
 //		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceProperties",
 //		"allDeclaredConstructors": true,
@@ -1439,12 +1441,12 @@
 		"allDeclaredMethods": true
 	},
 	// vvv vanilla-jpa
-	{
-		"name": "java.lang.Throwable",
-		"allDeclaredFields": true,
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.lang.Throwable",
+//		"allDeclaredFields": true,
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.hibernate.internal.SessionImpl",
 		"allDeclaredConstructors": true,
@@ -1489,8 +1491,8 @@
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesScanRegistrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+//		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesScan",
@@ -1600,7 +1602,6 @@
 	},
 	{
 		"name": "java.lang.annotation.Repeatable",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -1608,16 +1609,16 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.lang.management.ManagementFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.lang.management.RuntimeMXBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.lang.management.ManagementFactory",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "java.lang.management.RuntimeMXBean",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "io.netty.channel.DefaultChannelPipeline$HeadContext",
 		"allDeclaredConstructors": true,
@@ -1701,11 +1702,11 @@
 	// 	"allDeclaredConstructors": true,
 	// 	"allDeclaredMethods": true
 	// },
-	{
-		"name": "javax.management.MBeanServer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "javax.management.MBeanServer",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata",
 		"allDeclaredConstructors": true,
@@ -1728,24 +1729,24 @@
 	},
 	{
 		"name": "org.springframework.context.event.GenericApplicationListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
+	//	"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.jmx.export.annotation.AnnotationMBeanExporter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.config.BeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.lang.annotation.ElementType",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.jmx.export.annotation.AnnotationMBeanExporter",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.beans.factory.config.BeanPostProcessor",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "java.lang.annotation.ElementType",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.stereotype.Component",
 		"allDeclaredMethods": true
@@ -1766,31 +1767,31 @@
 		"allDeclaredMethods": true
 	},
 	// jboss logging referenced in hibernate is accessing log4j:
-	{
-		"name": "org.apache.logging.log4j.message.ReusableMessageFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.logging.log4j.message.DefaultFlowMessageFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.apache.logging.log4j.message.ReusableMessageFactory",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.logging.log4j.message.DefaultFlowMessageFactory",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.h2.mvstore.db.MVTableEngine",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "java.sql.Statement",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.sql.Statement[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "java.sql.Statement",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "java.sql.Statement[]",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "com.zaxxer.hikari.HikariDataSource",
 		"allDeclaredConstructors": true,
@@ -1837,17 +1838,17 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true,
-		"allDeclaredFields": true
-	},
-	{
-		"name": "java.lang.Class",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true,
+//		"allDeclaredFields": true
+//	},
+//	{
+//		"name": "java.lang.Class",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "java.util.EventListener",
 		"allDeclaredConstructors": true,
@@ -1888,15 +1889,15 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
+//	{
+//		"name": "java.lang.annotation.RetentionPolicy",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
-		"name": "java.lang.annotation.RetentionPolicy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.yaml.snakeyaml.Yaml",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"name": "org.yaml.snakeyaml.Yaml"
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
 	},
 	// Simple rabbit app
 	{
@@ -1934,11 +1935,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-    {
-		"name": "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//    {
+//		"name": "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
    	{
 		"name": "org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer",
 		"allDeclaredConstructors": true,

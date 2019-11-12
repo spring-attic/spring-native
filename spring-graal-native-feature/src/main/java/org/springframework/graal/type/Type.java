@@ -77,7 +77,11 @@ public class Type {
 	
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 
+	public final static String AtConditionalOnSingleCandidate = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate;";
+
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	
+	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
 	
 	public final static String AtConditional = "Lorg/springframework/context/annotation/Conditional;";
 
@@ -198,12 +202,12 @@ public class Type {
 		Type[] interfacesToCheck = getInterfaces();
 		for (Type interfaceToCheck : interfacesToCheck) {
 			if (interfaceToCheck != null) {
-			if (interfaceToCheck.getName().equals(interfaceName)) {
-				return true;
-			}
-			if (interfaceToCheck.implementsInterface(interfaceName)) {
-				return true;
-			}
+				if (interfaceToCheck.getName().equals(interfaceName)) {
+					return true;
+				}
+				if (interfaceToCheck.implementsInterface(interfaceName)) {
+					return true;
+				}
 			}
 		}
 		Type superclass = getSuperclass();
@@ -471,6 +475,25 @@ public class Type {
 		}
 		return false;
 	}
+	
+
+	private boolean isCondition() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(Condition));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
+	
+	private boolean isEventListener() {
+		try {
+			return implementsInterface("org/springframework/context/event/EventListenerFactory");
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+		
+	}
+
 	
 	public boolean isAtConfiguration() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
@@ -817,7 +840,8 @@ public class Type {
 			CompilationHint hint = proposedHints.get(an.desc);
 			if (hint !=null) {
 				List<String> typesCollectedFromAnnotation = collectTypes(an);
-				hints.add(new Hint(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, hint.follow, hint.specificTypes,asMap(typesCollectedFromAnnotation,hint.skipIfTypesMissing)));
+				hints.add(new Hint(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, 
+					hint.follow, hint.specificTypes, asMap(typesCollectedFromAnnotation,hint.skipIfTypesMissing)));
 			}
 			// check for meta annotation
 			if (node.visibleAnnotations != null) {
@@ -838,7 +862,18 @@ public class Type {
 	private Map<String, AccessRequired> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
 		Map<String, AccessRequired> map = new HashMap<>();
 		for (String t: typesCollectedFromAnnotation) {
-			map.put(fromLdescriptorToDotted(t), usingForVisibilityCheck?AccessRequired.EXISTENCE_CHECK:AccessRequired.ALL);
+			Type type = typeSystem.Lresolve(t,true);
+			AccessRequired ar = null;
+			if (usingForVisibilityCheck) {
+				ar = AccessRequired.EXISTENCE_CHECK;
+			} else {
+				if (type != null && (type.isCondition() || type.isEventListener())) {
+					ar = AccessRequired.RESOURCE_CTORS_ONLY;
+				} else {
+					ar = AccessRequired.ALL;
+				}
+			}
+			map.put(fromLdescriptorToDotted(t), ar);
 		}
 		return map;
 	}
@@ -868,11 +903,19 @@ public class Type {
 		if (values != null) {
 			for (int i=0;i<values.size();i+=2) {
 				if (values.get(i).equals("value")) {
-					 List<String> importedReferences = ((List<org.objectweb.asm.Type>)values.get(i+1))
+					// For some annotations it is a list, for some a single class (e.g. @ConditionalOnSingleCandidate)
+					Object object = values.get(i+1);
+					List<String> importedReferences = null;
+					if (object instanceof List) {
+						importedReferences = ((List<org.objectweb.asm.Type>)object)
 							.stream()
 							.map(t -> t.getDescriptor())
 							.collect(Collectors.toList());
-					 return importedReferences;
+					} else {
+						importedReferences = new ArrayList<>();
+						importedReferences.add(((org.objectweb.asm.Type)object).getDescriptor());
+					}
+					return importedReferences;
 				}
 			}
 		}
@@ -884,6 +927,10 @@ public class Type {
 	static {
 		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)
 		proposedHints.put(AtConditionalOnClass, new CompilationHint(true,false));
+
+		// If @ConditionalOnSingleCandidate refers to a class that doesn't exist then
+		// there cannot be a bean for it in this application.
+		proposedHints.put(AtConditionalOnSingleCandidate, new CompilationHint(true,false));
 		
 		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;",
 				new CompilationHint(true, false, new String[] {
@@ -918,19 +965,14 @@ public class Type {
 				 	"org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration",
 				 	"org.springframework.boot.autoconfigure.cache.CaffeineCacheConfiguration",
 				 	"org.springframework.boot.autoconfigure.cache.SimpleCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration"}
-				));
+				 	"org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration"
+				}));
 		
 		proposedHints.put(RabbitConfigurationImportSelector,
 				new CompilationHint(true,true, new String[] {
 				 	"org.springframework.amqp.rabbit.annotation.RabbitBootstrapConfiguration"
 				}));
 		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/OnWebApplicationCondition;", 
-				new CompilationHint(false, false, new String[] {
-					"org.springframework.web.context.support.GenericWebApplicationContext",
-					
-				}));
 		
 		proposedHints.put(TransactionManagementConfigurationSelector,
 				new CompilationHint(true, true, new String[] {
@@ -939,6 +981,7 @@ public class Type {
 					"org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration",
 					"org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration"
 				}));
+		
 
 		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$ReactiveSessionConfigurationImportSelector;",
 				new CompilationHint(true, true, new String[] {
@@ -1025,6 +1068,17 @@ public class Type {
 					"org.springframework.hateoas.config.WebMvcHateoasConfiguration",
 					"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
 				}));
+
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/OnWebApplicationCondition;", 
+				new CompilationHint(false, false, new String[] {
+					"org.springframework.web.context.support.GenericWebApplicationContext",
+					
+				}));
+		// Temporary until hints more flexible...
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;", 
+				new CompilationHint(true, false, new String[] {
+					"org.springframework.web.context.support.GenericWebApplicationContext",
+				}));
 	}
 	
 	public boolean isImportSelector() {
@@ -1060,9 +1114,14 @@ public class Type {
 		boolean follow;
 		boolean skipIfTypesMissing;
 		private Map<String, AccessRequired> specificTypes;
+		private Predicate predicate;
 		
 		public CompilationHint(boolean skipIfTypesMissing, boolean follow) {
 			this(skipIfTypesMissing,follow,new String[] {});
+		}
+		
+		public CompilationHint(Predicate p) {
+			this.predicate = p;
 		}
 		
 		public CompilationHint(boolean skipIfTypesMissing, boolean follow, String[] specificTypes) {
@@ -1131,6 +1190,16 @@ public class Type {
 			}
 		}
 		return result;
+	}
+
+	public boolean hasOnlySimpleConstructor() {
+		List<MethodNode> methods = node.methods;
+		for (MethodNode mn: methods) {
+			if (mn.name.equals("<init>") && (mn.parameters!=null && mn.parameters.size()!=0)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 //	@SuppressWarnings("unchecked")
