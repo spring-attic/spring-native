@@ -36,7 +36,8 @@ public enum AccessRequired {
 	RESOURCE_ONLY(false,false,false,false,true), 
 	RESOURCE_CMC(false, false, true, true, true), // This was for Resource+ctors+methods+classes (don't yet support classes tho - do we still need it?)
 	ANNOTATION(true,false,true,false,true),
-	RESOURCE_CMF(false,true,true,true,true);
+	RESOURCE_CMF(false,true,true,true,true),
+	RESOURCE_CTORS_ONLY(true, false, false, true, false);
 
     private boolean typeReflect;
     private boolean fieldReflect;
@@ -88,7 +89,6 @@ public enum AccessRequired {
 
 	public static AccessRequired request(boolean resourceAccess, Flag[] flags) {
 		for (AccessRequired ar: AccessRequired.values()) {
-			System.out.println();
 			if (ar.isResourceAccess()==resourceAccess && Flag.toString(ar.getFlags()).equals(Flag.toString(flags))) {
 				return ar;
 			}

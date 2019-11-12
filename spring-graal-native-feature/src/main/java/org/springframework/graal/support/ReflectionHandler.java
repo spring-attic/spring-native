@@ -322,7 +322,7 @@ public class ReflectionHandler {
 			return null;
 		}
 		if (!silent) {
-			SpringFeature.log("Registering reflective access to " + typename);
+			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
 		includeInDump(typename, methodsAndConstructors, flags);
 		// This can return null if, for example, the supertype of the specified type is
@@ -460,22 +460,29 @@ public class ReflectionHandler {
 
 	// TODO this is horrible, it should be packaged with logback
 	// from PatternLayout
-	private String logBackPatterns[] = new String[] { "ch.qos.logback.core.pattern.IdentityCompositeConverter",
-			"ch.qos.logback.core.pattern.ReplacingCompositeConverter", "DateConverter", "RelativeTimeConverter",
-			"LevelConverter", "ThreadConverter", "LoggerConverter", "MessageConverter", "ClassOfCallerConverter",
-			"MethodOfCallerConverter", "LineOfCallerConverter", "FileOfCallerConverter", "MDCConverter",
-			"ThrowableProxyConverter", "RootCauseFirstThrowableProxyConverter", "ExtendedThrowableProxyConverter",
-			"NopThrowableInformationConverter", "ContextNameConverter", "CallerDataConverter", "MarkerConverter",
-			"PropertyConverter", "LineSeparatorConverter", "color.BlackCompositeConverter",
-			"color.RedCompositeConverter", "color.GreenCompositeConverter", "color.YellowCompositeConverter",
-			"color.BlueCompositeConverter", "color.MagentaCompositeConverter", "color.CyanCompositeConverter",
-			"color.WhiteCompositeConverter", "color.GrayCompositeConverter", "color.BoldRedCompositeConverter",
-			"color.BoldGreenCompositeConverter", "color.BoldYellowCompositeConverter",
-			"color.BoldBlueCompositeConverter", "color.BoldMagentaCompositeConverter",
-			"color.BoldCyanCompositeConverter", "color.BoldWhiteCompositeConverter",
-			"ch.qos.logback.classic.pattern.color.HighlightingCompositeConverter", "LocalSequenceNumberConverter",
+	private String logBackPatterns[] = new String[] { 
+			"DateConverter", 
+			"LevelConverter", "ThreadConverter", "LoggerConverter", "MessageConverter", 
+			"LineSeparatorConverter", 
+//			"ch.qos.logback.core.pattern.IdentityCompositeConverter",
+//			"ch.qos.logback.core.pattern.ReplacingCompositeConverter",
+//			"PropertyConverter", 
+//			"ThrowableProxyConverter", "RootCauseFirstThrowableProxyConverter", 
+//			"ClassOfCallerConverter", "ContextNameConverter", "NopThrowableInformationConverter", 
+//			"RelativeTimeConverter", "ExtendedThrowableProxyConverter",
+//			"MethodOfCallerConverter", "LineOfCallerConverter", 
+//			"CallerDataConverter", "MarkerConverter",
+//			"FileOfCallerConverter", "MDCConverter",
+//			"color.BlackCompositeConverter",
+//			"color.RedCompositeConverter", "color.GreenCompositeConverter", "color.YellowCompositeConverter",
+//			"color.BlueCompositeConverter", "color.MagentaCompositeConverter", "color.CyanCompositeConverter",
+//			"color.WhiteCompositeConverter", "color.GrayCompositeConverter", "color.BoldRedCompositeConverter",
+//			"color.BoldGreenCompositeConverter", "color.BoldYellowCompositeConverter",
+//			"color.BoldBlueCompositeConverter", "color.BoldMagentaCompositeConverter",
+//			"color.BoldCyanCompositeConverter", "color.BoldWhiteCompositeConverter",
+//			"ch.qos.logback.classic.pattern.color.HighlightingCompositeConverter", "LocalSequenceNumberConverter",
 			"org.springframework.boot.logging.logback.ColorConverter",
-			"org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter",
+//			"org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter",
 			"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" };
 
 // what would a reflection hint look like here? Would it specify maven coords for logback as a requirement on the classpath?
@@ -492,11 +499,10 @@ public class ReflectionHandler {
 
 		for (String p : logBackPatterns) {
 			if (p.startsWith("org")) {
-				addAccess(p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				addAccess(p, new String[][] { { "<init>" } }, false);
 			} else if (p.startsWith("ch.")) {
 				addAccess(p, new String[][] { { "<init>" } }, false);
 			} else if (p.startsWith("color.")) {
-				// addAccess("ch.qos.logback.core.pattern." + p, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 				addAccess("ch.qos.logback.core.pattern." + p, new String[][] { { "<init>" } }, false);
 			} else {
 				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, false);
