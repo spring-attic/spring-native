@@ -197,6 +197,17 @@ public class Type {
 		}
 				
 	}
+	
+	public boolean extendsClass(String clazzname) {
+		Type superclass = getSuperclass();
+		while (superclass != null) {
+			if (superclass.getDescriptor().equals(clazzname)) {
+				return true;
+			}
+			superclass = superclass.getSuperclass();
+		}
+		return false;
+	}
 
 	public boolean implementsInterface(String interfaceName) {
 		Type[] interfacesToCheck = getInterfaces();
@@ -448,6 +459,35 @@ public class Type {
 	public boolean isInterface() {
 		return Modifier.isInterface(node.access);
 	}
+	
+	public Map<String,String> getAnnotationValuesInHierarchy(String LdescriptorLookingFor) {
+		Map<String,String> collector = new HashMap<>();
+		getAnnotationValuesInHierarchy(LdescriptorLookingFor, new ArrayList<>(), collector);
+		return collector;
+	}
+
+	public void getAnnotationValuesInHierarchy(String lookingFor, List<String> seen,Map<String,String> collector) {
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode anno : node.visibleAnnotations) {
+				if (seen.contains(anno.desc))
+					continue;
+				seen.add(anno.desc);
+				System.out.println("Comparing "+anno.desc+" with "+lookingFor);
+				if (anno.desc.equals(lookingFor)) {
+					List<Object> os =anno.values;
+					for (int i=0;i<os.size();i+=2) {
+						collector.put(os.get(i).toString(), os.get(i+1).toString());
+					}
+				}
+				try {
+					Type resolve = typeSystem.Lresolve(anno.desc);
+					resolve.getAnnotationValuesInHierarchy(lookingFor, seen,collector);
+				} catch (MissingTypeException mte) {
+					// not on classpath, that's ok
+				}
+			}
+		}
+	}
 
 	public boolean hasAnnotationInHierarchy(String lookingFor) {
 		return hasAnnotationInHierarchy(lookingFor, new ArrayList<String>());
@@ -459,7 +499,7 @@ public class Type {
 				if (seen.contains(anno.desc))
 					continue;
 				seen.add(anno.desc);
-	//			System.out.println("Comparing "+anno.desc+" with "+lookingFor);
+				// System.out.println("Comparing "+anno.desc+" with "+lookingFor);
 				if (anno.desc.equals(lookingFor)) {
 					return true;
 				}
@@ -476,8 +516,7 @@ public class Type {
 		return false;
 	}
 	
-
-	private boolean isCondition() {
+	public boolean isCondition() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(Condition));
 		} catch (MissingTypeException mte) {
@@ -500,7 +539,7 @@ public class Type {
 	}
 	
 	public boolean isAbstractNestedCondition() {
-		return isAnnotated("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
+		return extendsClass("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
 	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
@@ -869,6 +908,13 @@ public class Type {
 			} else {
 				if (type != null && (type.isCondition() || type.isEventListener())) {
 					ar = AccessRequired.RESOURCE_CTORS_ONLY;
+					if (type.isAbstractNestedCondition()) {
+						// Need to pull in member types of this condition
+						Type[] memberTypes = type.getMemberTypes();
+						for (Type memberType: memberTypes) {
+							//map.put(memberType.getDottedName(), AccessRequired.RESOURCE_ONLY);
+						}
+					}
 				} else {
 					ar = AccessRequired.ALL;
 				}
@@ -876,6 +922,21 @@ public class Type {
 			map.put(fromLdescriptorToDotted(t), ar);
 		}
 		return map;
+	}
+
+	private Type[] getMemberTypes() {
+		List<Type> result = new ArrayList<>();
+		List<InnerClassNode> nestMembers = node.innerClasses;
+		if (nestMembers != null) {
+			for (InnerClassNode icn: nestMembers) {
+				if (icn.name.startsWith(this.getName()+"$")) {
+					result.add(typeSystem.resolveSlashed(icn.name));
+				}
+			}
+			System.out.println(this.getName()+" has inners "+
+				nestMembers.stream().map(f -> "oo="+this.getDescriptor()+"::o="+f.outerName+"::n="+f.name+"::in="+f.innerName).collect(Collectors.joining(","))+"  >> "+result);
+		}
+		return result.toArray(new Type[0]);
 	}
 
 	private CompilationHint findCompilationHintHelper(HashSet<Type> visited) {
@@ -922,9 +983,23 @@ public class Type {
 		return Collections.emptyList();
 	}
 
+	// TODO move these hint things into a different standalone class
 	static Map<String, CompilationHint> proposedHints = new HashMap<>();
 	
+	static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
+	
 	static {
+		
+		// This specifies that the TemplateAvailabilityProvider key will only be processed if one of the
+		// specified types is around. This ensures we don't provide reflective access to the value of this
+		// key in apps that don't use mvc or webflux
+		proposedFactoryGuards.put(
+			"org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider",new String[] {
+				"org.springframework.web.reactive.config.WebFluxConfigurer",
+				"org.springframework.web.servlet.config.annotation.WebMvcConfigurer"
+			});
+		
+		
 		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)
 		proposedHints.put(AtConditionalOnClass, new CompilationHint(true,false));
 
@@ -1078,6 +1153,7 @@ public class Type {
 		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;", 
 				new CompilationHint(true, false, new String[] {
 					"org.springframework.web.context.support.GenericWebApplicationContext",
+					"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication$Type"
 				}));
 	}
 	
@@ -1193,59 +1269,33 @@ public class Type {
 	}
 
 	public boolean hasOnlySimpleConstructor() {
+		boolean hasCtor = false;
 		List<MethodNode> methods = node.methods;
 		for (MethodNode mn: methods) {
-			if (mn.name.equals("<init>") && (mn.parameters!=null && mn.parameters.size()!=0)) {
-				return false;
+			if (mn.name.equals("<init>")) {
+				if (mn.parameters!=null && mn.parameters.size()!=0) {
+					return false;
+				} else {
+					hasCtor = true;
+				}
 			}
 		}
-		return true;
+		return hasCtor;
+	}
+
+	public static boolean shouldBeProcessed(String key, TypeSystem ts) {
+		String[] guardTypes = proposedFactoryGuards.get(key);
+		if (guardTypes == null) {
+			return true;
+		} else {
+			for (String guardType: guardTypes) {
+				Type resolvedType = ts.resolveDotted(guardType,true);
+				if (resolvedType != null) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	public void findCompilationHints(String annotationType, Map<String,List<String>> hintCollector, Set<String> visited) {		
-//		if (!visited.add(this.getName())) {
-//			return Collections.emptyMap();
-//		}
-//		Map<String,List<String>> collectedResults = new LinkedHashMap<>();
-//		if (node.visibleAnnotations != null) {
-//			for (AnnotationNode an : node.visibleAnnotations) {
-//				if (an.desc.equals(annotationType)) {
-//					List<Object> values = an.values;
-//					if (values != null) {
-//						for (int i=0;i<values.size();i+=2) {
-//							if (values.get(i).equals("value")) {
-//								 List<String> importedReferences = ((List<org.objectweb.asm.Type>)values.get(i+1))
-//										.stream()
-//										.map(t -> t.getDescriptor())
-//										.collect(Collectors.toList());
-//								collectedResults.put(this.getName().replace("/", "."), importedReferences);
-//							}
-//						}
-//					}
-//				}
-//			}
-//			if (searchMeta) {
-//				for (AnnotationNode an: node.visibleAnnotations) {
-//					// For example @EnableSomething might have @Import on it
-//					Type annoType = null;
-//					try {
-//						annoType = typeSystem.Lresolve(an.desc);
-//					} catch (MissingTypeException mte) { 
-//						System.out.println("SBG: WARNING: Unable to find "+an.desc+" skipping...");
-//						continue;
-//					}
-//					collectedResults.putAll(annoType.findCompilationHints(annotationType, visited));
-//				}
-//			}
-//		}
-//		return collectedResults;
-//	}
-
-	
-	// Assume @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true) and both value() and name() in
-	// the annotation would have @CompilationTypeList
-
-	
-
 }
