@@ -164,17 +164,13 @@ public class ResourcesHandler {
 
 	public void reg(String s) {
 		reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-		// reflectionHandler.addAccess(s,Flag.allPublicConstructors,
-		// Flag.allPublicMethods, Flag.allDeclaredClasses);
 	}
 
 	// TODO shouldn't this code just call into processType like we do for discovered
 	// configuration?
 	// (Then we have consistent processing across library and user code - without it
-	// I think this
-	// code below will prove insufficient when we get more sophisticated samples -
-	// such as
-	// one using @Imported configuration - write a testcase for that)
+	// I think this code below will prove insufficient when we get more sophisticated
+	// samples - such as one using @Imported configuration - write a testcase for that)
 	private void processSpringComponents(Properties p) {
 		// Example:
 		// app.main.SampleApplication=org.springframework.stereotype.Component
@@ -275,20 +271,35 @@ public class ResourcesHandler {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
+		// System.out.println("> registerHierarchy "+type.getName());
 		String desc = type.getName();
-		// System.out.println("Hierarchy registration of "+t.getName());
-		if (typesToMakeAccessible != null) {
-			// Collecting them rather than directly registering them right now
-			typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CMC);
+		if (type.isCondition()) {
+			if (type.hasOnlySimpleConstructor()) {
+				if (typesToMakeAccessible != null) {
+					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+				} else {
+					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
+							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
+				}
+			} else {
+				if (typesToMakeAccessible != null) {
+					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+				} else {
+					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
+					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
+				}
+			}
 		} else {
-			resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
-			// reflectionHandler.addAccess(desc.replace("/",
-			// "."),Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-			// Flag.allDeclaredClasses);
-			// reflectionHandler.addAccess(desc.replace("/",
-			// "."),Flag.allPublicConstructors, Flag.allPublicMethods,
-			// Flag.allDeclaredClasses);
-			reg(desc.replace("/", "."));
+			if (typesToMakeAccessible != null) {
+				typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CMC);
+			} else {
+				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
+						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
+				resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
+			}
+			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
+			// Flag.allDeclaredMethods);
 		}
 		Type superclass = type.getSuperclass();
 		registerHierarchy(superclass, visited, typesToMakeAccessible);
@@ -296,6 +307,7 @@ public class ResourcesHandler {
 		for (Type intface : intfaces) {
 			registerHierarchy(intface, visited, typesToMakeAccessible);
 		}
+		// System.out.println("< registerHierarchy "+type.getName());
 		// TODO inners of those supertypes/interfaces?
 	}
 
@@ -408,12 +420,12 @@ public class ResourcesHandler {
 			String k = (String) factoryKeys.nextElement();
 			System.out.println("Adding all the classes for this key: " + k);
 			if (!k.equals(EnableAutoconfigurationKey)) {
-				if (k.equals("org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider")) {
-					System.out.println("TEMP: skipping "+k);
+				if (Type.shouldBeProcessed(k,ts)) {
+					for (String v : p.getProperty(k).split(",")) {
+						registerTypeReferencedBySpringFactoriesKey(v);
+					}
 				} else {
-				for (String v : p.getProperty(k).split(",")) {
-					registerTypeReferencedBySpringFactoriesKey(v);
-				}
+					System.out.println("Skipping processing spring.factories key "+k+" due to missing types");
 				}
 			}
 		}
@@ -490,9 +502,8 @@ public class ResourcesHandler {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
 		if (config.equals("org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration")
 				|| config.equals("org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration") 
-	//|| config.equals("org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration") 
 				) {
-			System.out.println("SKIPPING IT!!!");
+			System.out.println("MUSTFIX - SKIPPING "+config);
 			return false;
 		}
 		boolean b = processType(ts.resolveDotted(config), visited, 0);
@@ -527,12 +538,10 @@ public class ResourcesHandler {
 				tar.request(typename, AccessRequired.REGISTRAR);
 			} else {
 				if (accessRequired.isResourceAccess()) {
-//					resourcesRegistry.addResources(typename.replace(".", "/")+".class");
 					tar.request(typename, AccessRequired.request(true, accessRequired.getFlags()));
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-//				reflectionHandler.addAccess(typename,accessRequired.getFlags());
 					tar.request(typename, AccessRequired.request(false, accessRequired.getFlags()));
 				}
 				if (t.isAtConfiguration()) {
@@ -645,8 +654,14 @@ public class ResourcesHandler {
 		 */
 		// @formatter:on
 		boolean passesTests = true;
+		Map<String,String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
+		if (REMOVE_UNNECESSARY_CONFIGURATIONS && conditionalOnPropertyValues.size()!=0 && 
+			(conditionalOnPropertyValues.get("matchIfMissing")==null || conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
+			SpringFeature.log(spaces(depth) + "skipping "+type.getName()+" due to ConditionalOnPropertyCheck");
+			passesTests = false;
+		}
 		TypeAccessRequestor tar = new TypeAccessRequestor();
-		List<Hint> hints = type.getHints();
+		List<Hint> hints = passesTests?type.getHints():Collections.emptyList();
 		if (hints.size() != 0) {
 			SpringFeature.log(spaces(depth) + "#" + hints.size() + " hints on " + type.getName() + " are: ");
 			for (int h = 0; h < hints.size(); h++) {
@@ -707,6 +722,50 @@ public class ResourcesHandler {
 				registerAnnotationChain(depth, tar, annotationChain);
 			}
 		}
+		
+
+		// TODO this should be pushed earlier and access requests put into tar
+		String configNameDotted = type.getDottedName();
+		visited.add(type.getName());
+		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+			if (type.isCondition()) {
+				if (type.hasOnlySimpleConstructor()) {
+					System.out.println("FOO: Registering condition "+configNameDotted);
+					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } }, true);
+				} else {
+					System.out.println("FOO2: Registering condition "+configNameDotted);
+					reflectionHandler.addAccess(configNameDotted, null, true, Flag.allDeclaredConstructors);
+				}
+			} else {
+				System.out.println("FOO: Registering non-condition "+configNameDotted);
+				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			}
+			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
+			// In some cases the superclass of the config needs to be accessible
+			// TODO need this guard? if (isConfiguration(configType)) {
+			// }
+			// if (type.isAtConfiguration()) {
+			registerHierarchy(type, new HashSet<>(), tar);
+			// }
+
+			Type s = type.getSuperclass();
+			while (s != null) {
+				if (s.getName().equals("java/lang/Object")) {
+					break;
+				}
+				if (visited.add(s.getName())) {
+					boolean b = processType(s, visited, depth + 1);
+					if (!b) {
+						SpringFeature.log(spaces(depth) + "IMPORTANT2: whilst processing type " + type.getName()
+								+ " superclass " + s.getName() + " verification failed");
+					}
+				} else {
+					break;
+				}
+				s = s.getSuperclass();
+			}
+		}
+		
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
 			if (type.isAtConfiguration()) {
 
@@ -835,39 +894,6 @@ public class ResourcesHandler {
 			}
 		}
 
-		// Even if the tests aren't passing (and this configuration is going to be
-		// discarded) it may still be referenced from other configuration that is
-		// staying around (through @AutoConfigureAfter) so need to add it 'enough'
-		// that those references will be OK
-		String configNameDotted = type.getDottedName();// .replace("/",".");
-		visited.add(type.getName());
-		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
-			reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
-			// In some cases the superclass of the config needs to be accessible
-			// TODO need this guard? if (isConfiguration(configType)) {
-			// }
-			// if (type.isAtConfiguration()) {
-			registerHierarchy(type, new HashSet<>(), null);
-			// }
-
-			Type s = type.getSuperclass();
-			while (s != null) {
-				if (s.getName().equals("java/lang/Object")) {
-					break;
-				}
-				if (visited.add(s.getName())) {
-					boolean b = processType(s, visited, depth + 1);
-					if (!b) {
-						SpringFeature.log(spaces(depth) + "IMPORTANT2: whilst processing type " + type.getName()
-								+ " superclass " + s.getName() + " verification failed");
-					}
-				} else {
-					break;
-				}
-				s = s.getSuperclass();
-			}
-		}
 
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {

@@ -30,7 +30,6 @@ public class TypeAccessRequestor {
 	private Map<String, AccessRequired> requestedAccesses = new HashMap<>();
 	
 	public void request(String type, AccessRequired accessRequired) {
-		System.out.println("REQUEST FOR "+type+" "+accessRequired);
 		if (type.indexOf("/")!=-1) {
 			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
 		}

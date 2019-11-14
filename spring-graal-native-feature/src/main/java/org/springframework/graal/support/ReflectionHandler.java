@@ -120,7 +120,9 @@ public class ReflectionHandler {
 		if (methodsAndConstructors != null) {
 			for (String[] mc: methodsAndConstructors) {
 				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
-				currentCD.addMethodDescriptor(md);	
+				if (!currentCD.contains(md)) {
+					currentCD.addMethodDescriptor(md);	
+				}
 			}
 		}
 	}
@@ -294,10 +296,6 @@ public class ReflectionHandler {
 		return true;
 	}
 
-	// TODO review - not strictly correct as they may ask with different flags (but
-	// right now they don't)
-	public static final Set<String> added = new HashSet<>();
-
 	/**
 	 * Record that reflective access to a type (and a selection of its members based
 	 * on the flags) should be possible at runtime. This method will pre-emptively
@@ -318,9 +316,6 @@ public class ReflectionHandler {
 	}
 
 	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, boolean silent, Flag... flags) {
-		if (!added.add(typename)) {
-			return null;
-		}
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}

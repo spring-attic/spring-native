@@ -208,14 +208,27 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		return methods.contains(methodDescriptor);
 	}
 
-	public MethodDescriptor getMethodDescriptor(String name,String...parameterTypes) {
-		MethodDescriptor searchmd = MethodDescriptor.of(name, parameterTypes);
-		for (MethodDescriptor md: methods) {
-			if (md.equals(searchmd)) {
-				return md;
+	public MethodDescriptor getMethodDescriptor(String name, String... parameterTypes) {
+		if (methods != null) {
+			MethodDescriptor toFind = MethodDescriptor.of(name, parameterTypes);
+			for (MethodDescriptor md : methods) {
+				if (md.equals(toFind)) {
+					return md;
+				}
 			}
 		}
 		return null;
+	}
+
+	public boolean contains(MethodDescriptor toFind) {
+		if (methods != null) {
+			for (MethodDescriptor md: methods) {
+				if (md.equals(toFind)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
