@@ -1012,6 +1012,11 @@ public class Type {
 				 	"org.springframework.boot.autoconfigure.condition.SearchStrategy",
 				}));
 		
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration;",
+				new CompilationHint(true, false, new String[] {
+					"java.util.concurrent.Callable:EXISTENCE_MC"
+				}));
+				
 		// TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 		// @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
 		proposedHints.put(AtImports, new CompilationHint(false, true));
@@ -1114,7 +1119,6 @@ public class Type {
 		proposedHints.put(AdviceModeImportSelector,
 				new CompilationHint(true, true, new String[0]
 				));
-
 		
 		// Spring Security!
 		// TODO these should come with the jars themselves really (@CompilationHints on the selectors...)
@@ -1129,6 +1133,12 @@ public class Type {
 				new CompilationHint(false, true, new String[] {
 					"org.springframework.security.oauth2.client.registration.ClientRegistration:EXISTENCE_CHECK",
 					"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
+				}));
+		
+		
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/task/TaskExecutionAutoConfiguration;",
+				new CompilationHint(true,false, new String[] {
+						"org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor:REGISTRAR"
 				}));
 
 		// TODO I am not sure the specific entry here is right, but given that the selector references entries loaded via factories - aren't those already handled? 

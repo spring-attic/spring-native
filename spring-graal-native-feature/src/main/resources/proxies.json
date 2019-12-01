@@ -1,4 +1,7 @@
 [
+["org.springframework.context.annotation.Lazy","org.springframework.core.annotation.SynthesizedAnnotation"],
+["org.springframework.web.bind.annotation.RequestMapping","org.springframework.core.annotation.SynthesizedAnnotation"],
+// above here for mvc sample
 ["org.springframework.boot.context.properties.ConfigurationProperties","org.springframework.core.annotation.SynthesizedAnnotation"],
 ["org.springframework.stereotype.Component"],
 ["org.springframework.beans.factory.annotation.Qualifier"],

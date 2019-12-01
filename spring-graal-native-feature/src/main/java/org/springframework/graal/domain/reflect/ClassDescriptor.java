@@ -126,13 +126,13 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 	public List<MethodDescriptor> getMethods() {
 		return this.methods;
 	}
-	
+
 	public static ClassDescriptor of(String name) {
 		ClassDescriptor cd = new ClassDescriptor();
 		cd.setName(name);
 		return cd;
 	}
-	
+
 //	public static ClassDescriptor newGroup(String name, String type, String sourceType,
 //			String sourceMethod) {
 //		return new ClassDescriptor(ItemType.GROUP, name, null, type, sourceType,
@@ -173,39 +173,46 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 	}
 
 	/**
-	 * Used when new data is to be added to an already existing class descriptor (additional members, flag settings).
+	 * Used when new data is to be added to an already existing class descriptor
+	 * (additional members, flag settings).
 	 * 
 	 * @param cd the ClassDescriptor to merge into this one
 	 */
 	public void merge(ClassDescriptor cd) {
+		if (cd.getFlags()!= null) {
 		for (Flag flag : cd.getFlags()) {
 			this.setFlag(flag);
 		}
-		for (FieldDescriptor fd : cd.getFields()) {
-			FieldDescriptor existingSimilarOne = null;
-			for (FieldDescriptor existingFd: getFields()) {
-				if (existingFd.getName().equals(fd.getName())) {
-					existingSimilarOne = existingFd;
-					break;
+		}
+		if (cd.getFields() != null) {
+			for (FieldDescriptor fd : cd.getFields()) {
+				FieldDescriptor existingSimilarOne = null;
+				for (FieldDescriptor existingFd : getFields()) {
+					if (existingFd.getName().equals(fd.getName())) {
+						existingSimilarOne = existingFd;
+						break;
+					}
 				}
-			}
-			if (existingSimilarOne != null) {
-				if (fd.isAllowWrite()) {
-					existingSimilarOne.setAllowWrite(true);
+				if (existingSimilarOne != null) {
+					if (fd.isAllowWrite()) {
+						existingSimilarOne.setAllowWrite(true);
+					}
+				} else {
+					addFieldDescriptor(fd);
 				}
-			} else {
-				addFieldDescriptor(fd);
 			}
 		}
-		for (MethodDescriptor methodDescriptor : cd.getMethods()) {
-			if (!containsMethodDescriptor(methodDescriptor)) {
-				addMethodDescriptor(methodDescriptor);
+		if (cd.getMethods() != null) {
+			for (MethodDescriptor methodDescriptor : cd.getMethods()) {
+				if (!containsMethodDescriptor(methodDescriptor)) {
+					addMethodDescriptor(methodDescriptor);
+				}
 			}
 		}
 	}
 
 	private boolean containsMethodDescriptor(MethodDescriptor methodDescriptor) {
-		return methods.contains(methodDescriptor);
+		return methods == null?false:methods.contains(methodDescriptor);
 	}
 
 	public MethodDescriptor getMethodDescriptor(String name, String... parameterTypes) {
@@ -222,7 +229,7 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 
 	public boolean contains(MethodDescriptor toFind) {
 		if (methods != null) {
-			for (MethodDescriptor md: methods) {
+			for (MethodDescriptor md : methods) {
 				if (md.equals(toFind)) {
 					return true;
 				}

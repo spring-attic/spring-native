@@ -869,7 +869,6 @@
 	},
 	{
 		"name": "org.springframework.web.bind.annotation.ResponseBody",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -879,19 +878,12 @@
 	},
 	{
 		"name": "org.springframework.stereotype.Controller",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.web.bind.annotation.RestController",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-//	{
-//		"name": "org.springframework.context.annotation.Role",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 //	{
 //		"name": "org.springframework.validation.Validator",
 //		"allDeclaredConstructors": true,
@@ -1022,7 +1014,6 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.ComponentScan",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 //	{
@@ -1189,8 +1180,6 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.Configuration",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -1844,11 +1833,6 @@
 //		"allDeclaredMethods": true,
 //		"allDeclaredFields": true
 //	},
-//	{
-//		"name": "java.lang.Class",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "java.util.EventListener",
 		"allDeclaredConstructors": true,
@@ -1856,7 +1840,6 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.Bean",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{

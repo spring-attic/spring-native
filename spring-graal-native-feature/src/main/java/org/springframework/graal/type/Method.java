@@ -74,6 +74,21 @@ public class Method {
 		return hints.size()==0?Collections.emptyList():hints;
 	}
 	
+	public List<Type> getAnnotationTypes() {
+		List<Type> results = null;
+		if (mn.visibleAnnotations!= null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				Type annotationType = typeSystem.Lresolve(an.desc, true);
+				if (annotationType != null) {
+					if (results == null) {
+						results = new ArrayList<>();
+					}
+					results.add(annotationType);
+				}
+			}
+		}
+		return results == null? Collections.emptyList():results;
+	}
 	
 	static class TypesFromSignatureCollector extends SignatureVisitor {
 
@@ -139,6 +154,7 @@ public class Method {
 		System.out.println("A"+mn.name+mn.desc+" => "+signatureTypes);
 		return signatureTypes;
 	}
+
 	
 	
 }
