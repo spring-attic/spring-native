@@ -863,7 +863,16 @@ public class ResourcesHandler {
 
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
-
+					}
+						
+					// Register other runtime visible annotations from the @Bean method, this ensures @Role is visible (for example) on:
+					// @Bean
+					// @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+					// @ConditionalOnMissingBean(Validator.class)
+					// public static LocalValidatorFactoryBean defaultValidator() {
+					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
+					for (Type annotationOnMethod: annotationsOnMethod) {
+						tar.request(annotationOnMethod.getDottedName(),AccessRequired.ANNOTATION);
 					}
 				}
 			}
