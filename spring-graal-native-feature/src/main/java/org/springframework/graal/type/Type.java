@@ -472,7 +472,7 @@ public class Type {
 				if (seen.contains(anno.desc))
 					continue;
 				seen.add(anno.desc);
-				System.out.println("Comparing "+anno.desc+" with "+lookingFor);
+				//System.out.println("Comparing "+anno.desc+" with "+lookingFor);
 				if (anno.desc.equals(lookingFor)) {
 					List<Object> os =anno.values;
 					for (int i=0;i<os.size();i+=2) {
