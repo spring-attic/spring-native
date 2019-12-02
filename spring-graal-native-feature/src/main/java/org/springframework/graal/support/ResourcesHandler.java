@@ -885,6 +885,14 @@ public class ResourcesHandler {
 			}
 			for (Map.Entry<String, AccessRequired> t : tar.entrySet()) {
 				String dname = t.getKey();
+				
+				// Let's produce a message if this computed value is also in reflect.json
+				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
+					System.out.println("This is in the constant data, does it need to stay in there? "+dname+"  (dynamically requested access is "+t.getValue()+")");
+				}
+				
+				
+				
 				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + t.getValue());
 				Flag[] flags = t.getValue().getFlags();
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
