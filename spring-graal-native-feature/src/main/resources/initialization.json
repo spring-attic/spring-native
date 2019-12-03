@@ -1,12 +1,25 @@
 {
 "runtimeInitialization": 
 [
-// with boot 2.2.0 upgrade, waiting on this one future netty release ( https://github.com/netty/netty/pull/9708 )
-{"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
+// With Graal 19.3 changes for InetAddress, needed this:
+{"class":"io.netty.channel.DefaultChannelId"},
+{"class":"io.netty.util.NetUtil"},
+{"class":"io.netty.channel.socket.InternetProtocolFamily"},
+{"class":"io.netty.resolver.HostsFileEntriesResolver"},
+{"class":"io.netty.resolver.dns.DnsNameResolver"},
+{"class":"io.netty.resolver.dns.DnsServerAddressStreamProviders"},
+{"class":"io.netty.resolver.dns.PreferredAddressTypeComparator$1"},
+{"class":"io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider"},
 
-{"package": "io.netty.handler.codec.http2"},
-{"class": "reactor.netty.tcp.TcpClientSecure"},
-{"class": "reactor.netty.http.client.HttpClientSecure"},
+
+// with boot 2.2.0 upgrade, waiting on this one future netty release ( https://github.com/netty/netty/pull/9708 )
+//{"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
+//{"package": "io.netty.handler.codec.http2"},
+
+//{"class": "reactor.netty.tcp.TcpClientSecure"},
+//{"class": "reactor.netty.http.client.HttpClientSecure"},
+//{"class": "reactor.netty.http"},
+//{"class": "reactor.netty.tcp"},
 {"class": "sun.reflect.misc.Trampoline"},
 {"class": "reactor.netty.http.server.HttpServer"},
 {"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"},
@@ -28,8 +41,8 @@
     // ^^^ petclinic
     
     // vv vanilla-grpc
-    {"class": "io.netty.handler.codec.http2.CharSequenceMap"},
-    {"class": "io.netty.handler.codec.http2.Http2Headers$PseudoHeaderName"},
+    //{"class": "io.netty.handler.codec.http2.CharSequenceMap"},
+    //{"class": "io.netty.handler.codec.http2.Http2Headers$PseudoHeaderName"},
     // ^^ vanilla-grpc
     // These whilst working on the tx sample upgrading to graal 19.2 and boot 2.2.0.m5
     //{"package": "org.springframework.aop"},
@@ -44,7 +57,7 @@
     {"class": "org.springframework.jdbc.datasource.ConnectionProxy"},
     //
     {"class": "org.slf4j.helpers.NOPLogger"},
-    {"class": "io.netty.handler.codec.http2.ReadOnlyHttp2Headers"},
+    //{"class": "io.netty.handler.codec.http2.ReadOnlyHttp2Headers"},
 {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},
 {"class": "com.google.protobuf.Extension"},
 {"class": "com.google.protobuf.ExtensionLite"},
@@ -53,19 +66,20 @@
 {"class": "org.springframework.transaction.annotation.Propagation"},
 {"class": "org.springframework.http.HttpStatus"},
 {"class": "org.h2.Driver"},
-{"package": "reactor.netty.resources"},
-{"package": "reactor.netty"},
-{"package": "reactor.netty.channel"},
-{"package": "reactor.netty.http"},
-{"package": "reactor.netty.http.client"},
-{"package": "reactor.netty.http.server"},
-{"package": "reactor.netty.http.websocket"},
-{"package": "reactor.netty.resources"},
-{"package": "reactor.netty.tcp"},
-{"package": "reactor.netty.udp"},
-{"class": "reactor.netty.resources.ConnectionProvider"},
-{"package": "reactor.util"},
-{"class": "reactor.util.Loggers$Slf4JLogger"},
+//{"package": "reactor.netty.resources"},
+//{"package": "reactor.netty"},
+//{"package": "reactor.netty.channel"},
+//{"package": "reactor.netty.http"},
+//{"package": "reactor.netty.http.client"},
+//{"package": "reactor.netty.http.server"},
+//{"package": "reactor.netty.http.websocket"},
+//{"package": "reactor.netty.resources"},
+//{"package": "reactor.netty.tcp"},
+//{"package": "reactor.netty.udp"},
+//{"class": "reactor.netty.resources.ConnectionProvider"},
+//{"package": "reactor.util"},
+//{"class": "reactor.util.Loggers$Slf4JLogger"},
+//{"class": "reactor.netty.ConnectionObserver"},
 {"package": "org.apache.logging.log4j"},
 {"class": "org.jboss.logging.LoggerProviders"},
 {"class": "org.jboss.logging.Log4j2LoggerProvider"},
@@ -81,7 +95,6 @@
 {"class": "org.springframework.core.annotation.PackagesAnnotationFilter"},
 {"class": "org.springframework.util.StringUtils"},
 {"class": "org.springframework.util.Assert"},
-{"class": "reactor.netty.ConnectionObserver"},
 {"class": "org.slf4j.helpers.Util"},
 {"class": "org.slf4j.helpers.NOPLoggerFactory"},
 {"class": "org.slf4j.helpers.SubstituteLoggerFactory"},

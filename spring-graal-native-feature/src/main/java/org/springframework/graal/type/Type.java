@@ -910,10 +910,10 @@ public class Type {
 					ar = AccessRequired.RESOURCE_CTORS_ONLY;
 					if (type.isAbstractNestedCondition()) {
 						// Need to pull in member types of this condition
-						Type[] memberTypes = type.getMemberTypes();
-						for (Type memberType: memberTypes) {
-							//map.put(memberType.getDottedName(), AccessRequired.RESOURCE_ONLY);
-						}
+						//Type[] memberTypes = type.getMemberTypes();
+						//for (Type memberType: memberTypes) {
+						//	// map.put(memberType.getDottedName(), AccessRequired.RESOURCE_ONLY);
+						//}
 					}
 				} else {
 					ar = AccessRequired.ALL;
@@ -1035,7 +1035,7 @@ public class Type {
 		// proposedAnnotations.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
 		
 		proposedHints.put(CacheConfigurationImportSelector,
-				new CompilationHint(false,false, new String[] {
+				new CompilationHint(false,true, new String[] {
 				 	"org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration",
 				 	"org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration",
 				 	"org.springframework.boot.autoconfigure.cache.HazelcastCacheConfiguration",

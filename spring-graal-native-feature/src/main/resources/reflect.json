@@ -647,16 +647,16 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
+//	{
+//		"name": "org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext",
+//		"methods": [
+//			{
+//				"name": "<init>",
+//				"parameterTypes": [
+//				]
+//			}
+//		]
+//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
 		"allDeclaredConstructors": true

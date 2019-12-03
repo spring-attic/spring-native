@@ -22,16 +22,20 @@ export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-nat
 
 printf "\n\nCompile\n"
 native-image \
+-Djava.awt.headless=true \
   --no-server \
+  -Dverbose=true \
   -H:+TraceClassInitialization \
   -H:Name=webflux-netty \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
- -DremoveUnusedAutoconfig=true \
+  -DremoveUnusedAutoconfig=true \
   -cp $CP com.example.demo.DemoApplication
 
+#
+#--debug-attach \
 mv webflux-netty ../../..
 
 printf "\n\nCompiled app (webflux-netty)\n"

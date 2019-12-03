@@ -20,7 +20,9 @@ export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-nat
 printf "\n\nCompile\n"
 native-image \
   -Dio.netty.noUnsafe=true \
+  -Djava.awt.headless=true \
   --no-server \
+  -H:+TraceClassInitialization \
   -H:Name=clr \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
@@ -30,9 +32,6 @@ native-image \
   -cp $CP com.example.commandlinerunner.CommandlinerunnerApplication
 
 mv clr ../../..
-
-printf "\n\nJava exploded jar\n"
-time java -classpath $CP com.example.commandlinerunner.CommandlinerunnerApplication
 
 printf "\n\nCompiled app (clr)\n"
 cd ../../..
