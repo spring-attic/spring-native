@@ -500,12 +500,14 @@ public class ResourcesHandler {
 
 	private boolean processType(String config, Set<String> visited) {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
+		/*
 		if (config.equals("org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration")
 				|| config.equals("org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration") 
 				) {
 			System.out.println("MUSTFIX - SKIPPING "+config);
 			return false;
 		}
+		*/
 		boolean b = processType(ts.resolveDotted(config), visited, 0);
 		SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
 		return b;
@@ -561,7 +563,7 @@ public class ResourcesHandler {
 	}
 
 	private boolean processType(Type type, Set<String> visited, int depth) {
-		SpringFeature.log(spaces(depth) + "> " + type.getName());
+		SpringFeature.log(spaces(depth) + "> processType: " + type.getName());
 
 		// 1. Check the hierarchy of the type, if bits are missing resolution of this
 		// type at runtime will not work - that suggests that in this particular
@@ -575,84 +577,11 @@ public class ResourcesHandler {
 		Set<String> missingAnnotationTypes = ts.resolveCompleteFindMissingAnnotationTypes(type);
 		if (!missingAnnotationTypes.isEmpty()) {
 			// If only the annotations are missing, it is ok to reflect on the existence of
-			// the type, it is
-			// just not safe to reflect on the annotations on that type.
+			// the type, it is just not safe to reflect on the annotations on that type.
 			SpringFeature.log(spaces(depth) + "for " + type.getName() + " missing annotation types are "
 					+ missingAnnotationTypes);
 		}
 
-		// @formatter:off
-		/*
-		 * An example to help keep your sanity in this code.
-		 * 
-		 * This is the type AopAutoConfiguration, it has the following 3 annotations on
-		 * it:
-		 * 
-		 * @Configuration(proxyBeanMethods = false)
-		 * 
-		 * @ConditionalOnClass({ EnableAspectJAutoProxy.class, Aspect.class,
-		 * Advice.class, AnnotatedElement.class })
-		 * 
-		 * @ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue =
-		 * "true", matchIfMissing = true) public class AopAutoConfiguration {
-		 * 
-		 * In collecting hints we are looking for direct annotations or those
-		 * discoverable via meta usage.
-		 * 
-		 * Here there are three cases discovered
-		 * 
-		 * @ConditionalOnClass has a CompilationHint
-		 * 
-		 * @ConditionalOnClass is annotated with @Conditional which has a
-		 * CompilationHint
-		 * 
-		 * @ConditionalOnProperty is annotated with @Conditional which has a
-		 * CompilationHint on it
-		 * 
-		 * In the case of each of these the system will pulls a list of types from the
-		 * value field of the particular use of those annotations. (So,
-		 * if @ConditionalOnClass lists which classes it is conditional on, those are
-		 * pulled from the @COC annotation and placed in the hint)
-		 * 
-		 * 
-		 * 1)
-		 * Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing
-		 * =true,follow=false, specificTypes=[],
-		 * inferredTypes=[osca.EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:
-		 * EXISTENCE_CHECK,oalr.Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:
-		 * EXISTENCE_CHECK]} 2)
-		 * Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass,osca.Conditional],
-		 * skipIfTypesMissing=false,follow=false, specificTypes=[],
-		 * inferredTypes=[osbac.OnClassCondition:ALL]} 3)
-		 * Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnProperty,osca.Conditional
-		 * ],skipIfTypesMissing=false,follow=false, specificTypes=[],
-		 * inferredTypes=[osbac.OnPropertyCondition:ALL]}
-		 * 
-		 * We then process the hints - if we are configured to discard configuration
-		 * that will fail runtime checks we will quit processing after the first hint
-		 * that fails validation.
-		 * 
-		 * Here we see the Aspect annotation is not found when processing the first
-		 * hint, so we terminate validation early:
-		 * 
-		 * processing hint
-		 * Hint{[osbaa.AopAutoConfiguration,osbac.ConditionalOnClass],skipIfTypesMissing
-		 * =true,follow=false,specificTypes=[],inferredTypes=[osca.
-		 * EnableAspectJAutoProxy:EXISTENCE_CHECK,oala.Aspect:EXISTENCE_CHECK,oalr.
-		 * Advice:EXISTENCE_CHECK,oaw.AnnotatedElement:EXISTENCE_CHECK]} inferred type
-		 * org.springframework.context.annotation.EnableAspectJAutoProxy found, will get
-		 * accessibility EXISTENCE_CHECK inferred type
-		 * org.aspectj.lang.annotation.Aspect not found Registering reflective access to
-		 * org.springframework.boot.autoconfigure.aop.AopAutoConfiguration Did
-		 * configuration type pass validation? false
-		 * 
-		 * Notice we register the AopAutoConfiguration *anyway* because other
-		 * configurations may be referring to it via
-		 * 
-		 * @AutoConfigureAfter. However it would be removed from spring.factories (if
-		 * configured to do that) so it will not be treated as config at startup.
-		 */
-		// @formatter:on
 		boolean passesTests = true;
 		Map<String,String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
 		if (REMOVE_UNNECESSARY_CONFIGURATIONS && conditionalOnPropertyValues.size()!=0 && 
@@ -676,24 +605,27 @@ public class ResourcesHandler {
 				SpringFeature.log(spaces(depth) + "processing hint " + hint);
 
 				// This is used for hints that didn't gather data from the bytecode but had them
-				// directly encoded. For example
-				// when a CompilationHint on an ImportSelector encodes the types that might be
-				// returned from it.
-				// (see the static initializer in Type for examples)
+				// directly encoded. For example when a CompilationHint on an ImportSelector encodes
+				// the types that might be returned from it.
 				Map<String, AccessRequired> specificNames = hint.getSpecificTypes();
-				SpringFeature
-						.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
+				SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
 				for (Map.Entry<String, AccessRequired> specificNameEntry : specificNames.entrySet()) {
-					if (!registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), tar)) {
+					String specificTypeName = specificNameEntry.getKey();
+					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
 						if (hint.isSkipIfTypesMissing()) {
 							passesTests = false;
+						}
+					} else {
+						if (hint.isFollow()) {
+							// TODO I suspect only certain things need following, specific types lists could specify that in a suffix (like access required)
+							SpringFeature.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
+							toFollow.add(ts.resolveDotted(specificTypeName));
 						}
 					}
 				}
 
 				Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
-				SpringFeature
-						.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
+				SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
 				for (Map.Entry<String, AccessRequired> inferredType : inferredTypes.entrySet()) {
 					String s = inferredType.getKey();
 					Type t = ts.resolveDotted(s, true);
@@ -711,7 +643,11 @@ public class ResourcesHandler {
 							SpringFeature.log(spaces(depth) + "will follow " + t);
 							toFollow.add(t);
 						}
-					} else if (hint.isSkipIfTypesMissing()) {
+					} else if (hint.isSkipIfTypesMissing() && depth==0) {
+						// TODO If processing secondary type (depth>0) we can't skip things as we don't know if the 
+						// top level type that refers to us is going to fail or not.  Ideally we should pass in the 
+						// tar and accumulate types in secondary type processing and leave it to the outermost
+						// processing to decide if they need registration. 
 						passesTests = false;
 						// Once failing, no need to process other hints
 						break hints;
@@ -730,14 +666,11 @@ public class ResourcesHandler {
 		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
 			if (type.isCondition()) {
 				if (type.hasOnlySimpleConstructor()) {
-					System.out.println("FOO: Registering condition "+configNameDotted);
 					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } }, true);
 				} else {
-					System.out.println("FOO2: Registering condition "+configNameDotted);
 					reflectionHandler.addAccess(configNameDotted, null, true, Flag.allDeclaredConstructors);
 				}
 			} else {
-				System.out.println("FOO: Registering non-condition "+configNameDotted);
 				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			}
 			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
@@ -865,7 +798,7 @@ public class ResourcesHandler {
 						registerAnnotationChain(depth, tar, annotationChain);
 					}
 						
-					// Register other runtime visible annotations from the @Bean method, this ensures @Role is visible (for example) on:
+					// Register other runtime visible annotations from the @Bean method. For example this ensures @Role is visible on:
 					// @Bean
 					// @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 					// @ConditionalOnMissingBean(Validator.class)
@@ -887,11 +820,10 @@ public class ResourcesHandler {
 				String dname = t.getKey();
 				
 				// Let's produce a message if this computed value is also in reflect.json
+				// This is a sign we can probably remove that entry from reflect.json (maybe depend if inferred access required matches declared)
 				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
 					System.out.println("This is in the constant data, does it need to stay in there? "+dname+"  (dynamically requested access is "+t.getValue()+")");
 				}
-				
-				
 				
 				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + t.getValue());
 				Flag[] flags = t.getValue().getFlags();

@@ -54,8 +54,10 @@ public class InitializationHandler {
 				.map(access::findClassByName).filter(Objects::nonNull)
 				.forEach(RuntimeClassInitialization::initializeAtRunTime);
 		SpringFeature.log("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
+		// SpringFeature.log("Registering these classes for buildtime initialization: \n"+id.getBuildtimeClasses());
 		RuntimeClassInitialization.initializeAtBuildTime(id.getBuildtimePackages().toArray(new String[] {}));
 		SpringFeature.log("Registering these packages for runtime initialization: \n"+id.getRuntimePackages());
+		// SpringFeature.log("Registering these classes for runtime initialization: \n"+id.getRuntimeClasses());
 		RuntimeClassInitialization.initializeAtRunTime(id.getRuntimePackages().toArray(new String[] {}));
 	}
 
