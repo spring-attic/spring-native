@@ -29,6 +29,7 @@ native-image \
   -H:+TraceClassInitialization \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -H:Name=tc \
+-Djava.awt.headless=true \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
