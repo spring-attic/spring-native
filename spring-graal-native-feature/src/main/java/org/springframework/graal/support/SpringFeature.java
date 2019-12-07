@@ -84,13 +84,13 @@ public class SpringFeature implements Feature {
     	resourcesHandler.register(access);
     	buildTimeInitializationHandler.register(access);
     	// TODO who requires this, is it a netty thing?
-    	try {
-			access.registerAsUnsafeAccessed(Buffer.class.getDeclaredField("address"));
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+//    	try {
+//			access.registerAsUnsafeAccessed(Buffer.class.getDeclaredField("address"));
+//		} catch (NoSuchFieldException e) {
+//			e.printStackTrace();
+//		} catch (SecurityException e) {
+//			e.printStackTrace();
+//		}
     	System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
     	reflectionHandler.dump();
     }

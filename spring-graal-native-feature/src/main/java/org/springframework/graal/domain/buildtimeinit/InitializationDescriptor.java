@@ -77,28 +77,35 @@ public class InitializationDescriptor {
 	public void addRuntimePackage(String pkg) {
 		this.runtimePackages.add(pkg);
 	}
+	
+	public String toDetailedString() {
+		StringBuilder result = new StringBuilder();
+		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes    #%s runtime-init-packages\n",
+				buildtimeClasses.size(), buildtimePackages.size(), runtimeClasses.size(), runtimePackages.size()));
+		result.append("buildtime classes:\n");
+		this.buildtimeClasses.forEach(cd -> {
+			result.append(String.format("%s\n",cd));
+		});
+		result.append("buildtime packages:\n");
+		this.buildtimePackages.forEach(cd -> {
+			result.append(String.format("%s\n",cd));
+		});
+		result.append("runtime classes:\n");
+		this.runtimeClasses.forEach(cd -> {
+			result.append(String.format("%s\n",cd));
+		});
+		result.append("runtime packages:\n");
+		this.runtimePackages.forEach(cd -> {
+			result.append(String.format("%s\n",cd));
+		});
+		return result.toString();
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes    #%s runtime-init-packages\n",
 				buildtimeClasses.size(), buildtimePackages.size(), runtimeClasses.size(), runtimePackages.size()));
-//		result.append("buildtime classes:\n");
-//		this.buildtimeClasses.forEach(cd -> {
-//			result.append(String.format("%s\n",cd));
-//		});
-//		result.append("buildtime packages:\n");
-//		this.buildtimePackages.forEach(cd -> {
-//			result.append(String.format("%s\n",cd));
-//		});
-//		result.append("runtime classes:\n");
-//		this.runtimeClasses.forEach(cd -> {
-//			result.append(String.format("%s\n",cd));
-//		});
-//		result.append("runtime packages:\n");
-//		this.runtimePackages.forEach(cd -> {
-//			result.append(String.format("%s\n",cd));
-//		});
 		return result.toString();
 	}
 
