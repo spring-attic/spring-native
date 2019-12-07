@@ -902,11 +902,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-//	{
-//		"name": "java.sql.DatabaseMetaData",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.transaction.TransactionDefinition",
 		"allDeclaredConstructors": true,

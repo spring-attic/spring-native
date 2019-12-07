@@ -47,7 +47,7 @@ public class InitializationHandler {
 			throw new IllegalStateException("Unable to load initialization descriptor");
 		}
 		System.out.println(id.toString());
-		List<Class> collect = id.getBuildtimeClasses().stream()
+		List<Class<?>> collect = id.getBuildtimeClasses().stream()
 				.map(access::findClassByName).filter(Objects::nonNull).collect(Collectors.toList());
 		RuntimeClassInitialization.initializeAtBuildTime(collect.toArray(new Class[] {}));
 		id.getRuntimeClasses().stream()
