@@ -20,13 +20,3 @@ $ grpcurl -plaintext -d '{}' localhost:50051 demo.Greeter/Hello
   "lastName": "Long"
 }
 ```
-
-Native image:
-
-```
-$ CP=`java -jar $HOME/.m2/repository/org/springframework/boot/experimental/spring-boot-thin-launcher/1.0.22.RELEASE/spring-boot-thin-launcher-1.0.22.RELEASE-exec.jar --thin.archive=target/vanilla-proto-0.0.1-SNAPSHOT.jar --thin.classpath`
-$ native-image -Dio.netty.noUnsafe=true --no-server -H:Name=target/demo \
--H:+ReportExceptionStackTraces --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime \
--DremoveUnusedAutoconfig=true -cp $CP \
---initialize-at-build-time='com.google.protobuf.ExtensionRegistry,com.google.protobuf.ExtensionLite,com.google.protobuf.Extension,io.netty.handler.codec.http2.ReadOnlyHttp2Headers,io.netty.handler.codec.http2.CharSequenceMap,io.netty.handler.codec.http2.Http2Headers$PseudoHeaderName' \
-com.example.ProtoApplication`

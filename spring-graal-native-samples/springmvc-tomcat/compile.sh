@@ -1,60 +1,56 @@
 #!/usr/bin/env bash
-../../mvnw -DskipTests clean package
 
-export JAR="tomcat-0.0.1-SNAPSHOT.jar"
-rm -f tc
-printf "Unpacking $JAR"
-rm -rf unpack
-mkdir unpack
-cd unpack
-jar -xvf ../target/$JAR >/dev/null 2>&1
+ARTIFACT=springmvc-tomcat
+MAINCLASS=com.example.tomcat.TomcatApplication
+VERSION=0.0.1-SNAPSHOT
+FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+rm -rf target
+mkdir -p target/native-image
+
+echo "Packaging $ARTIFACT with Maven"
+../../mvnw -DskipTests package > target/native-image/output.txt
+
+JAR="$ARTIFACT-$VERSION.jar"
+rm -f $ARTIFACT
+echo "Unpacking $JAR"
+cd target/native-image
+jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
-cd BOOT-INF/classes
-export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
-export CP=.:$LIBPATH
+LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
+CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
-# Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
-
-printf "\n\nCompile\n"
-
+GRAALVM_VERSION=`native-image --version`
+echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 native-image \
-  -Dio.netty.noUnsafe=true \
   --no-server \
   --initialize-at-build-time=org.eclipse.jdt,org.apache.el.parser.SimpleNode,javax.servlet.jsp.JspFactory,org.apache.jasper.servlet.JasperInitializer,org.apache.jasper.runtime.JspFactoryImpl -H:+JNI \
   -H:EnableURLProtocols=http,https,jar \
-  -H:ReflectionConfigurationFiles=../../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../../tomcat-resource.json -H:JNIConfigurationFiles=../../../tomcat-jni.json \
+  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../tomcat-resource.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
   --enable-https \
   -H:+TraceClassInitialization \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
-  -H:Name=tc \
+  -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -DremoveUnusedAutoconfig=true \
-  -cp $CP com.example.tomcat.TomcatApplication
+  -cp $CP $MAINCLASS >> output.txt
 
-#native-image \
-#  -Dio.netty.noUnsafe=true \
-#  --enable-https \
-#  --no-server \
-#  -H:+TraceClassInitialization \
-#  -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
-#  -H:Name=tc \
-#  -H:+ReportExceptionStackTraces \
-#  --no-fallback \
-#  --allow-incomplete-classpath \
-#  --report-unsupported-elements-at-runtime \
-#-Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
-#  -DremoveUnusedAutoconfig=true \
-#  -cp $CP com.example.tomcat.TomcatApplication
-#
-mv tc ../../..
-
-printf "\n\nCompiled app (tc)\n"
-cd ../../..
-time ./tc
+if [[ -f $ARTIFACT ]]
+then
+  printf "${GREEN}SUCCESS${NC}\n"
+  mv ./$ARTIFACT ..
+  exit 0
+else
+  printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
+  exit 1
+fi
 
