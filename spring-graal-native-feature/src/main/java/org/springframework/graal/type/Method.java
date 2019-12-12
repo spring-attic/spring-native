@@ -16,9 +16,7 @@
 
 package org.springframework.graal.type;
 
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,10 +28,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.ParameterNode;
 import org.springframework.graal.support.SpringFeature;
-import org.springframework.graal.type.Type.CompilationHint;
-import org.springframework.graal.type.Type.TypeCollector;
 
 public class Method {
 	
@@ -155,6 +150,10 @@ public class Method {
 		return signatureTypes;
 	}
 
-	
-	
+	public Type getReturnType() {
+		org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
+		Type returnType = typeSystem.resolve(methodType.getReturnType(), true);	
+		return returnType;
+	}
+
 }

@@ -734,6 +734,13 @@ public class ResourcesHandler {
 					SpringFeature.log(spaces(depth) + "processing " + atBeanMethods.size() + " @Bean methods");
 				}
 				for (Method atBeanMethod : atBeanMethods) {
+					Type returnType = atBeanMethod.getReturnType();
+					if (returnType == null) {
+						// I believe null means that type is not on the classpath so skip further analysis
+						continue;
+					} else {
+						tar.request(returnType.getDottedName(),  AccessRequired.EXISTENCE_MC);
+					}
 
 					// Processing this kind of thing, parameter types need to be exposed
 					// @Bean
@@ -743,6 +750,17 @@ public class ResourcesHandler {
 					// ObjectProvider<TomcatProtocolHandlerCustomizer<?>>
 					// protocolHandlerCustomizers) {
 					// atBeanMethod.getSignatureTypes();
+
+					// This code would cover adding parameter types - but do we really need to?
+					// If these 'beans' are being built the return types of the bean factory
+					// methods would ensure the registration has occurred.
+					/*
+					Set<Type> signatureTypes = atBeanMethod.getSignatureTypes();
+					for (Type signatureType: signatureTypes) {
+						System.out.println("Flibble: "+signatureType.getDottedName());
+						tar.request(signatureType.getDottedName(), AccessRequired.EXISTENCE_MC);
+					}
+					*/
 
 					// Processing, for example:
 					// @ConditionalOnResource(resources =
@@ -796,7 +814,8 @@ public class ResourcesHandler {
 
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
-					}
+					}	
+					
 						
 					// Register other runtime visible annotations from the @Bean method. For example this ensures @Role is visible on:
 					// @Bean
