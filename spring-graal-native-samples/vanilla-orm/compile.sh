@@ -22,6 +22,7 @@ export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-nat
 
 printf "\n\nCompile\n"
 native-image \
+  -Djava.awt.headless=true \
   -Dio.netty.noUnsafe=true \
   --no-server \
   -H:Name=orm \

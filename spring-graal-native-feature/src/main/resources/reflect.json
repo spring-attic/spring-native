@@ -1,4 +1,121 @@
 [
+
+
+//	{
+//		"name": "org.springframework.web.servlet.View",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+	
+       {
+               "name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+
+       {
+               "name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+
+{"name":"org.h2.store.fs.FilePathDisk","allDeclaredConstructors": true},
+        {"name":            "org.h2.store.fs.FilePathMem","allDeclaredConstructors": true},
+       {"name":             "org.h2.store.fs.FilePathMemLZF","allDeclaredConstructors": true},
+       {"name":             "org.h2.store.fs.FilePathNioMem","allDeclaredConstructors": true},
+      {"name":              "org.h2.store.fs.FilePathNioMemLZF","allDeclaredConstructors": true},
+     {"name":               "org.h2.store.fs.FilePathSplit","allDeclaredConstructors": true},
+    {"name":                "org.h2.store.fs.FilePathNio","allDeclaredConstructors": true},
+     {"name":               "org.h2.store.fs.FilePathNioMapped","allDeclaredConstructors": true},
+    {"name":                "org.h2.store.fs.FilePathAsync","allDeclaredConstructors": true},
+     {"name":               "org.h2.store.fs.FilePathZip","allDeclaredConstructors": true},
+    {"name":                "org.h2.store.fs.FilePathRetryOnInterrupt","allDeclaredConstructors": true},
+    
+    
+       {
+               "name": "org.springframework.boot.SpringApplication",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+    
+       {
+               "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       {
+               "name": "org.apache.logging.log4j.message.DefaultFlowMessageFactory",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+
+       {
+               "name": "java.sql.Statement",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       {
+               "name": "java.sql.Statement[]",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+
+       {
+               "name": "org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       
+       {
+               "name": "org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       {
+               "name": "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       
+       {
+               "name": "org.springframework.aop.framework.ProxyProcessorSupport",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+       {
+               "name": "org.springframework.aop.framework.ProxyConfig",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
+
+       {
+               "name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true,
+               "allDeclaredFields": true
+       },
+
+       {
+               "name": "java.util.logging.LogManager",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true,
+               "allDeclaredClasses": true
+       },
+       {
+               "name": "org.springframework.boot.logging.java.JavaLoggingSystem",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true,
+               "allDeclaredClasses": true
+       },
+
+        {
+                "name": "org.springframework.web.servlet.View",
+                "allDeclaredConstructors": true,
+                "allDeclaredMethods": true
+        },
+
+// temp whilst getting petclinic to work
+
 // vvv vanilla-tx
 {
   "name":"org.springframework.transaction.TransactionManager"

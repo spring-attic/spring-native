@@ -29,6 +29,7 @@ native-image \
   -H:Name=webflux-netty \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
+  -H:ClassInitialization=org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration:run_time \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
