@@ -3,6 +3,7 @@
 [
 {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
 {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
+{"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
 //{"class": "io.netty.handler.codec.http2.Http2CodecUtil"},
 //{"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
 //{"class": "reactor.netty.http.server.Http1OrH2CleartextCodec"},

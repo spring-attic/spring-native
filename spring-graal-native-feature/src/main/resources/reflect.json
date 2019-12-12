@@ -1,6 +1,5 @@
 [
 
-
 //	{
 //		"name": "org.springframework.web.servlet.View",
 //		"allDeclaredConstructors": true,
@@ -8,18 +7,12 @@
 //	},
 	
        {
-               "name": "org.springframework.boot.autoconfigure.context.MessageSourceProperties",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-
-       {
                "name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
 
-{"name":"org.h2.store.fs.FilePathDisk","allDeclaredConstructors": true},
+	{"name":"org.h2.store.fs.FilePathDisk","allDeclaredConstructors": true},
         {"name":            "org.h2.store.fs.FilePathMem","allDeclaredConstructors": true},
        {"name":             "org.h2.store.fs.FilePathMemLZF","allDeclaredConstructors": true},
        {"name":             "org.h2.store.fs.FilePathNioMem","allDeclaredConstructors": true},
