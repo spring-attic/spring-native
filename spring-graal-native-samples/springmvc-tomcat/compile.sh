@@ -29,7 +29,7 @@ native-image \
   -H:+TraceClassInitialization \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -H:Name=tc \
--Djava.awt.headless=true \
+  -Djava.awt.headless=true \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
   --allow-incomplete-classpath \
@@ -37,6 +37,7 @@ native-image \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -DremoveUnusedAutoconfig=true \
   -cp $CP com.example.tomcat.TomcatApplication
+  #-H:ClassInitialization=org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration:run_time \
 
 #native-image \
 #  -Dio.netty.noUnsafe=true \

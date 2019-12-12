@@ -1,6 +1,12 @@
 {
 "runtimeInitialization": 
 [
+{"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
+{"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
+//{"class": "io.netty.handler.codec.http2.Http2CodecUtil"},
+//{"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
+//{"class": "reactor.netty.http.server.Http1OrH2CleartextCodec"},
+
 // With Graal 19.3 changes for InetAddress, need these until they come in netty itself:
 {"class":"io.netty.channel.DefaultChannelId"},
 {"class":"io.netty.util.NetUtil"},
