@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.0.RC1</version>
+		<version>2.2.2.RELEASE</version>
 		<relativePath />
 	</parent>
 	<name>spring-petclinic-jpa</name>
@@ -31,6 +31,11 @@
 	</properties>
 
 	<dependencies>
+<dependency>
+  <groupId>javax.xml.bind</groupId>
+  <artifactId>jaxb-api</artifactId>
+  <version>2.3.0</version>
+</dependency>
 		<!-- Spring and Spring Boot dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
