@@ -6,8 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(proxyBeanMethods=false)
 public class CommandlinerunnerApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		SpringApplication.run(CommandlinerunnerApplication.class, args);
+		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 	
 }

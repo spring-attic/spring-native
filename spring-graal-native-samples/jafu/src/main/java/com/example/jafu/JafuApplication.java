@@ -57,6 +57,7 @@ public class JafuApplication {
 
 	public static void main(String[] args) throws InterruptedException {
 		new JafuApplication().run(args);
+		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 	
 }
