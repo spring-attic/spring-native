@@ -30,6 +30,7 @@ import org.springframework.graal.domain.reflect.Flag;
 public enum AccessRequired {
     EXISTENCE_CHECK(true, false, false, false, false), // Only need to reflect on it, not even its methods/ctors
     EXISTENCE_MC(true, false, true, true, false),
+    EXISTENCE_CMF(true, true, true, true, false), 
     REGISTRAR(true, false, false, true, false), // registrars need to be accessible with constructor access
     // TODO ALL is a bit heavy handed including fields too - check users of ALL shouldn't be using something slimmer
     ALL(true, true, true, true, true), // Need to reflect on it, including methods/ctors and accessing as a resource (this is basically what @Configuration needs)
