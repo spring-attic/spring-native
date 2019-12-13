@@ -4,28 +4,41 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo "Testing vanilla-grpc"
+EXECUTABLE=${PWD##*/}
+echo "Testing $EXECUTABLE output"
 
-./target/vanilla-grpc >> target/native-image/output.txt 2>&1 &
-SERVER_PID=$!
+./target/${EXECUTABLE} > target/native-image/test-output.txt 2>&1 &
+PID=$!
 sleep 1
 
+RSS=`ps -o rss ${PID} | tail -n1`
+RSS=`bc <<< "scale=1; ${RSS}/1024"`
+echo "RSS memory: ${RSS}M"
+SIZE=`wc -c <"./target/${EXECUTABLE}"`/1024
+SIZE=`bc <<< "scale=1; ${SIZE}/1024"`
+echo "Image size: ${SIZE}M"
+STARTUP=`cat target/native-image/test-output.txt | grep "JVM running for"`
+REGEXP="Started .* in (.*)\$"
+if [[ ${STARTUP} =~ ${REGEXP} ]]; then
+	echo "Startup time: ${BASH_REMATCH[1]}"
+fi
+
 OUTPUT=`grpcurl -plaintext localhost:50051 describe demo.Greeter 2>&1`
-if [[ ! $OUTPUT == *"demo.Greeter is a service:"* ]]
+if [[ ! ${OUTPUT} == *"demo.Greeter is a service:"* ]]
 then
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
-  kill $SERVER_PID
+  kill ${PID}
   exit 1
 fi
 
 OUTPUT=`grpcurl -plaintext -d '{}' localhost:50051 demo.Greeter/Hello 2>&1`
-if [[ $OUTPUT == *"\"firstName\": \"Josh\","* ]]
+if [[ ${OUTPUT} == *"\"firstName\": \"Josh\","* ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
-  kill $SERVER_PID
+  kill ${PID}
   exit 0
 else
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
-  kill $SERVER_PID
+  kill ${PID}
   exit 1
 fi

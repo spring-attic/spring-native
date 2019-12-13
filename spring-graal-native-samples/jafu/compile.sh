@@ -26,13 +26,14 @@ CP=BOOT-INF/classes:$LIBPATH
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-time native-image \
+native-image \
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
+  -H:+PrintAnalysisCallTree \
   --initialize-at-build-time \
   -cp $CP $MAINCLASS >> output.txt
 
