@@ -1034,6 +1034,33 @@ public class Type {
 		//   ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() })
 		// proposedAnnotations.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
 		
+		// TODO review this - what is the right way? That type is only needed if (strictly speaking) XMLEventFactory is used
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration;",
+				new CompilationHint(false, false, new String[] {
+						"com.sun.xml.internal.stream.events.XMLEventFactoryImpl:REGISTRAR",
+						"org.apache.logging.log4j.message.DefaultFlowMessageFactory:REGISTRAR"
+				}));
+		
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
+				new CompilationHint(false, false, new String[] {
+						"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor:EXISTENCE_CMF"
+				}));
+
+		proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSourceConfiguration;",
+				new CompilationHint(false, false, new String[] {
+						"org.h2.store.fs.FilePathDisk:REGISTRAR",
+						"org.h2.store.fs.FilePathMem:REGISTRAR",
+						"org.h2.store.fs.FilePathMemLZF:REGISTRAR",
+						"org.h2.store.fs.FilePathNioMem:REGISTRAR",
+						"org.h2.store.fs.FilePathNioMemLZF:REGISTRAR",
+						"org.h2.store.fs.FilePathSplit:REGISTRAR",
+						"org.h2.store.fs.FilePathNio:REGISTRAR",
+						"org.h2.store.fs.FilePathNioMapped:REGISTRAR",
+						"org.h2.store.fs.FilePathAsync:REGISTRAR",
+						"org.h2.store.fs.FilePathZip:REGISTRAR",
+						"org.h2.store.fs.FilePathRetryOnInterrupt:REGISTRAR"
+				}));
+
 		proposedHints.put(CacheConfigurationImportSelector,
 				new CompilationHint(false,true, new String[] {
 				 	"org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration",

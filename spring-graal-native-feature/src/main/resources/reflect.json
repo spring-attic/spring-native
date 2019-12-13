@@ -1,43 +1,14 @@
 [
 
-//	{
-//		"name": "org.springframework.web.servlet.View",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	
-       {
-               "name": "com.sun.xml.internal.stream.events.XMLEventFactoryImpl",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-
-	{"name":"org.h2.store.fs.FilePathDisk","allDeclaredConstructors": true},
-        {"name":            "org.h2.store.fs.FilePathMem","allDeclaredConstructors": true},
-       {"name":             "org.h2.store.fs.FilePathMemLZF","allDeclaredConstructors": true},
-       {"name":             "org.h2.store.fs.FilePathNioMem","allDeclaredConstructors": true},
-      {"name":              "org.h2.store.fs.FilePathNioMemLZF","allDeclaredConstructors": true},
-     {"name":               "org.h2.store.fs.FilePathSplit","allDeclaredConstructors": true},
-    {"name":                "org.h2.store.fs.FilePathNio","allDeclaredConstructors": true},
-     {"name":               "org.h2.store.fs.FilePathNioMapped","allDeclaredConstructors": true},
-    {"name":                "org.h2.store.fs.FilePathAsync","allDeclaredConstructors": true},
-     {"name":               "org.h2.store.fs.FilePathZip","allDeclaredConstructors": true},
-    {"name":                "org.h2.store.fs.FilePathRetryOnInterrupt","allDeclaredConstructors": true},
-    
-    
+// This are related to getting petclinic to work, some need a deeper dive though (e.g. the
+// proxy related ones - we need to know if a spring aop proxy will be getting created)
        {
                "name": "org.springframework.boot.SpringApplication",
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
-    
        {
                "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.apache.logging.log4j.message.DefaultFlowMessageFactory",
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
@@ -58,7 +29,6 @@
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
-       
        {
                "name": "org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
                "allDeclaredConstructors": true,
@@ -69,7 +39,6 @@
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
-       
        {
                "name": "org.springframework.aop.framework.ProxyProcessorSupport",
                "allDeclaredConstructors": true,
@@ -79,13 +48,6 @@
                "name": "org.springframework.aop.framework.ProxyConfig",
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
-       },
-
-       {
-               "name": "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true,
-               "allDeclaredFields": true
        },
 
        {
@@ -107,7 +69,7 @@
                 "allDeclaredMethods": true
         },
 
-// temp whilst getting petclinic to work
+// END
 
 // vvv vanilla-tx
 {
@@ -123,41 +85,6 @@
 	// vvv petclinic with recent (>m5) 2.2.0.build-snapshots
 	{
 		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.persistence.TypedQuery",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.persistence.Query",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.query.Query",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.Query",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.persistence.Parameter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.query.CommonQueryContract",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.BasicQueryContract",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -757,16 +684,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-//	{
-//		"name": "org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext",
-//		"methods": [
-//			{
-//				"name": "<init>",
-//				"parameterTypes": [
-//				]
-//			}
-//		]
-//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
 		"allDeclaredConstructors": true
@@ -1347,11 +1264,6 @@
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.persistence.Entity",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
