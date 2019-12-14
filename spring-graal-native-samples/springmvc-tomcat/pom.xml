@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>tomcat</artifactId>
+	<artifactId>springmvc-tomcat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tomcat</name>
 	<description>Demo project for Spring Boot</description>

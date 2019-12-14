@@ -1,39 +1,49 @@
 #!/usr/bin/env bash
-../../mvnw clean install
 
-export JAR="logger-0.0.1-SNAPSHOT.jar"
-rm -f logger
-printf "Unpacking $JAR"
-rm -rf unpack
-mkdir unpack
-cd unpack
-jar -xvf ../target/$JAR >/dev/null 2>&1
+ARTIFACT=logger
+MAINCLASS=com.example.logger.LoggerApplication
+VERSION=0.0.1-SNAPSHOT
+FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+rm -rf target
+mkdir -p target/native-image
+
+echo "Packaging $ARTIFACT with Maven"
+../../mvnw -DskipTests package > target/native-image/output.txt
+
+JAR="$ARTIFACT-$VERSION.jar"
+rm -f $ARTIFACT
+echo "Unpacking $JAR"
+cd target/native-image
+jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
-cd BOOT-INF/classes
-export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
-export CP=.:$LIBPATH
+LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
+CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
-# Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
-
-printf "\n\nCompile\n"
+GRAALVM_VERSION=`native-image --version`
+echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 native-image \
-  -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=logger \
-  -H:+ReportExceptionStackTraces \
   --no-fallback \
+  -H:Name=$ARTIFACT \
+  -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
-  -cp $CP com.example.logger.LoggerApplication
+  -DremoveUnusedAutoconfig=true \
+  -cp $CP $MAINCLASS >> output.txt
 
-mv logger ../../..
-
-printf "\n\nJava exploded jar\n"
-time java -classpath $CP com.example.logger.LoggerApplication
-
-printf "\n\nCompiled app (logger)\n"
-cd ../../..
-time ./logger
+if [[ -f $ARTIFACT ]]
+then
+  printf "${GREEN}SUCCESS${NC}\n"
+  mv ./$ARTIFACT ..
+  exit 0
+else
+  printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
+  exit 1
+fi
 

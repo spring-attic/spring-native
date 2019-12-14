@@ -1,41 +1,49 @@
 #!/usr/bin/env bash
-export EXECUTABLE_NAME=grpc
 
-../../mvnw -DskipTests clean package
+ARTIFACT=vanilla-grpc
+MAINCLASS=com.example.ProtoApplication
+VERSION=0.0.1-SNAPSHOT
+FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
-export JAR=`ls -1 target/*.jar`
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
 
-rm $EXECUTABLE_NAME
-printf "Unpacking $JAR"
-rm -rf unpack
-mkdir unpack
-cd unpack
+rm -rf target
+mkdir -p target/native-image
+
+echo "Packaging $ARTIFACT with Maven"
+../../mvnw -DskipTests package > target/native-image/output.txt
+
+JAR="$ARTIFACT-$VERSION.jar"
+rm -f $ARTIFACT
+echo "Unpacking $JAR"
+cd target/native-image
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
-cd BOOT-INF/classes
-export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
-export CP=.:$LIBPATH
+LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
+CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
-# Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../target/spring-graal-feature-0.6.0.BUILD-SNAPSHOT.jar
-
-printf "\n\nCompile\n"
+GRAALVM_VERSION=`native-image --version`
+echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 native-image \
-  -Dio.netty.noUnsafe=true \
   --no-server \
-  -H:Name=$EXECUTABLE_NAME \
-  -H:+ReportExceptionStackTraces \
   --no-fallback \
+  -H:+TraceClassInitialization \
+  -H:Name=$ARTIFACT \
+  -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
-  -cp $CP com.example.ProtoApplication
-  #--debug-attach \
+  -cp $CP $MAINCLASS >> output.txt
 
-mv $EXECUTABLE_NAME ../../..
-
-printf "\n\nCompiled app...\n"
-cd ../../..
-time ./$EXECUTABLE_NAME
-
+if [[ -f $ARTIFACT ]]
+then
+  printf "${GREEN}SUCCESS${NC}\n"
+  mv ./$ARTIFACT ..
+  exit 0
+else
+  printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
+  exit 1
+fi
