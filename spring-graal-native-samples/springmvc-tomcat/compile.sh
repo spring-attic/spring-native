@@ -27,11 +27,11 @@ CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-native-image \
+time native-image \
   --no-server \
   --initialize-at-build-time=org.eclipse.jdt,org.apache.el.parser.SimpleNode,javax.servlet.jsp.JspFactory,org.apache.jasper.servlet.JasperInitializer,org.apache.jasper.runtime.JspFactoryImpl -H:+JNI \
   -H:EnableURLProtocols=http,https,jar \
-  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../tomcat-resource.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
+  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
   --enable-https \
   -H:+TraceClassInitialization \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
@@ -42,6 +42,7 @@ native-image \
   --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -DremoveUnusedAutoconfig=true \
+  -H:+PrintMethodHistogram \
   -cp $CP $MAINCLASS >> output.txt
 
 if [[ -f $ARTIFACT ]]
