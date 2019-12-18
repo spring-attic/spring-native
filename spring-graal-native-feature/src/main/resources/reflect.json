@@ -1,5 +1,67 @@
 [
-
+// These array types are due to a change in graal that isn't as actively adding array types anymore
+	{"name":"org.springframework.core.io.InputStreamSource[]","allDeclaredConstructors":true,"allDeclaredMethods":true},
+	{"name":"java.lang.String[]","allDeclaredConstructors":true},
+	{"name":"java.io.Serializable[]","allDeclaredConstructors":true},
+	{"name":"java.lang.Comparable[]","allDeclaredConstructors":true},
+// vanilla-jpa vvv
+	{"name":"org.apache.logging.log4j.spi.LoggerContext","allDeclaredMethods":true,"allDeclaredCosntructors":true},
+	{
+		"name": "java.lang.Throwable",
+		"allDeclaredFields": true,
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "javax.persistence.Entity",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.data.repository.PagingAndSortingRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.data.repository.CrudRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.data.repository.Repository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.data.jpa.repository.JpaRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "app.main.model.FooRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+    {
+		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+    },
+	{//superclass of PropertiesFactoryBean
+		"name": "org.springframework.core.io.support.PropertiesLoaderSupport",
+		"allDeclaredConstructors": true,
+ 		"allDeclaredMethods": true
+	},
+	{
+		"name": "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]",
+		"allDeclaredConstructors": true
+	},
+	{
+		"name": "org.springframework.boot.autoconfigure.AutoConfigureAfter",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+// vanilla-jpa ^^^
 // This are related to getting petclinic to work, some need a deeper dive though (e.g. the
 // proxy related ones - we need to know if a spring aop proxy will be getting created)
        {

@@ -3,5 +3,10 @@
 		"name": "app.main.model.Foo",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
+	},
+	{
+		"name": "app.main.model.FooRepository",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
 	}
 ]

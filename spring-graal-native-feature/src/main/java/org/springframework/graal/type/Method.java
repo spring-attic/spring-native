@@ -155,5 +155,21 @@ public class Method {
 		Type returnType = typeSystem.resolve(methodType.getReturnType(), true);	
 		return returnType;
 	}
+	
+
+	public List<Type> getParameterTypes() {
+		List<Type> results = null;
+		org.objectweb.asm.Type[] parameterTypes = org.objectweb.asm.Type.getArgumentTypes(mn.desc);
+		if (parameterTypes!=null) {
+			for (org.objectweb.asm.Type t: parameterTypes) {
+				if (results == null) {
+					results = new ArrayList<>();
+				}
+				results.add(typeSystem.resolve(t,true));
+			}
+		}
+		return results==null?Collections.emptyList():results;
+	}
+
 
 }

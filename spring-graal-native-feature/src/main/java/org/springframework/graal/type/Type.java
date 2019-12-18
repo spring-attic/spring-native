@@ -1038,7 +1038,9 @@ public class Type {
 		proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration;",
 				new CompilationHint(false, false, new String[] {
 						"com.sun.xml.internal.stream.events.XMLEventFactoryImpl:REGISTRAR",
-						"org.apache.logging.log4j.message.DefaultFlowMessageFactory:REGISTRAR"
+						"org.apache.logging.log4j.message.DefaultFlowMessageFactory:REGISTRAR",
+						"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]:REGISTRAR",
+						"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry:REGISTRAR"
 				}));
 		
 		proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
@@ -1338,10 +1340,10 @@ public class Type {
 		List<MethodNode> methods = node.methods;
 		for (MethodNode mn: methods) {
 			if (mn.name.equals("<init>")) {
-				if (mn.parameters!=null && mn.parameters.size()!=0) {
-					return false;
-				} else {
+				if (mn.desc.equals("()V")) {
 					hasCtor = true;
+				} else {
+					return false;
 				}
 			}
 		}
