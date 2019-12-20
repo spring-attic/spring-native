@@ -5,6 +5,12 @@
 {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
 {"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
 {"class": "io.netty.handler.codec.http2.Http2ConnectionHandler"},
+{"class": "org.springframework.core.io.VfsUtils"},
+{"class": "reactor.netty.http.client.HttpClient"},
+{"class": "reactor.netty.tcp.TcpClient"},
+{"class": "reactor.netty.tcp.TcpServer"},
+{"class": "org.springframework.http.codec.xml.XmlEventDecoder$AaltoDataBufferToXmlEvent"},
+{"class": "org.springframework.core.io.VfsUtils"},
 
 // This is because it calls LogFactory.getLog()
 {"class": "org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration"},
