@@ -30,15 +30,16 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 time native-image \
   --no-server \
   --no-fallback \
+  --initialize-at-build-time \
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  -H:ClassInitialization=org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration:run_time \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
   -cp $CP $MAINCLASS >> output.txt
 
+#--initialize-at-run-time=reactor.netty.http.client.HttpClient,reactor.netty.tcp.TcpClient,reactor.netty.tcp.TcpServer,org.springframework.http.codec.xml.XmlEventDecoder\$AaltoDataBufferToXmlEvent,org.springframework.core.io.VfsUtils \
 if [[ -f $ARTIFACT ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"

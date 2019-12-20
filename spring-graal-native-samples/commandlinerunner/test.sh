@@ -11,7 +11,9 @@ echo "Testing $EXECUTABLE output"
 PID=$!
 sleep 3
 
-BUILDTIME=`cat target/native-image/output.txt | grep "\[total\]" | sed 's/^.*\[total\]: *//' | tr -d -c 0-9\.`
+TOTALINFO=`cat target/native-image/output.txt | grep "\[total\]"`
+BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
+BUILDMEMORY=`echo $TOTALINFO | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
 echo "Image build time: ${BUILDTIME}ms"
 RSS=`ps -o rss ${PID} | tail -n1`
 RSS=`bc <<< "scale=1; ${RSS}/1024"`
@@ -31,11 +33,12 @@ fi
 if [[ `cat target/native-image/test-output.txt | grep "commandlinerunner running!"` ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
-  echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
+  echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
   kill ${PID}
   exit 0
 else
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
+  echo `date +%Y%m%d-%H%M`,$EXECUTABLE,ERROR > target/native-image/summary.csv
   kill ${PID}
   exit 1
 fi
