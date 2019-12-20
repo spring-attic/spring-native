@@ -9,8 +9,10 @@ echo "Testing $EXECUTABLE output"
 
 ./target/${EXECUTABLE} > target/native-image/test-output.txt 2>&1 &
 PID=$!
-sleep 1
+sleep 3
 
+BUILDTIME=`cat target/native-image/output.txt | grep "\[total\]" | sed 's/^.*\[total\]: *//' | tr -d -c 0-9\.`
+echo "Image build time: ${BUILDTIME}ms"
 RSS=`ps -o rss ${PID} | tail -n1`
 RSS=`bc <<< "scale=1; ${RSS}/1024"`
 echo "RSS memory: ${RSS}M"
@@ -18,14 +20,18 @@ SIZE=`wc -c <"./target/${EXECUTABLE}"`/1024
 SIZE=`bc <<< "scale=1; ${SIZE}/1024"`
 echo "Image size: ${SIZE}M"
 STARTUP=`cat target/native-image/test-output.txt | grep "JVM running for"`
-REGEXP="Started .* in (.*)\$"
+REGEXP="Started .* in ([0-9\.]*) seconds \(JVM running for ([0-9\.]*)\).*$"
 if [[ ${STARTUP} =~ ${REGEXP} ]]; then
-	echo "Startup time: ${BASH_REMATCH[1]}"
+  STIME=${BASH_REMATCH[1]}
+  JTIME=${BASH_REMATCH[2]}
+  echo "Startup time: ${STIME} (JVM running for ${JTIME})"
 fi
+
 
 if [[ `cat target/native-image/test-output.txt | grep "commandlinerunner running!"` ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
+  echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
   kill ${PID}
   exit 0
 else
