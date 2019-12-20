@@ -1,11 +1,12 @@
 [
+{"name":"org.reactivestreams.Publisher"},
 // These array types are due to a change in graal that isn't as actively adding array types anymore
 	{"name":"org.springframework.core.io.InputStreamSource[]","allDeclaredConstructors":true,"allDeclaredMethods":true},
 	{"name":"java.lang.String[]","allDeclaredConstructors":true},
 	{"name":"java.io.Serializable[]","allDeclaredConstructors":true},
 	{"name":"java.lang.Comparable[]","allDeclaredConstructors":true},
 // vanilla-jpa vvv
-	{"name":"org.apache.logging.log4j.spi.LoggerContext","allDeclaredMethods":true,"allDeclaredCosntructors":true},
+	{"name":"org.apache.logging.log4j.spi.LoggerContext","allDeclaredMethods":true,"allDeclaredConstructors":true,"allDeclaredFields":true},
 	{
 		"name": "java.lang.Throwable",
 		"allDeclaredFields": true,
@@ -124,7 +125,6 @@
                "allDeclaredMethods": true,
                "allDeclaredClasses": true
        },
-
         {
                 "name": "org.springframework.web.servlet.View",
                 "allDeclaredConstructors": true,
@@ -134,9 +134,10 @@
 // END
 
 // vvv vanilla-tx
-{
-  "name":"org.springframework.transaction.TransactionManager"
-},
+{"name":"org.springframework.context.annotation.AutoProxyRegistrar","allDeclaredConstructors":true,"allDeclaredMethods":true},
+{"name":"org.springframework.transaction.TransactionManager"},
+{"name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
+{"name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
 // ^^^
 	{// fixes petclinic removeUnusedAutoconfig - was being added via CassandraReactiveDataAC
 	 // need to figure out what should be pulling it in the general case.

@@ -4,6 +4,7 @@
 {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
 {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
 {"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
+{"class": "io.netty.handler.codec.http2.Http2ConnectionHandler"},
 
 // This is because it calls LogFactory.getLog()
 {"class": "org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration"},
