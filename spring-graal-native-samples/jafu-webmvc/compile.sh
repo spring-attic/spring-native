@@ -31,7 +31,8 @@ time native-image \
   --no-fallback \
   -H:+JNI \
   -H:EnableURLProtocols=http,https,jar \
-  --initialize-at-build-time=org.eclipse.jdt,org.apache.el.parser.SimpleNode,javax.servlet.jsp.JspFactory,org.apache.jasper.servlet.JasperInitializer,org.apache.jasper.runtime.JspFactoryImpl,org.springframework.util.unit.DataSize \
+  --initialize-at-build-time \
+  --initialize-at-run-time=org.springframework.core.io.VfsUtils,org.apache.tomcat.jni.SSL \
   -H:ReflectionConfigurationFiles=../../tomcat-reflection.json,../../reflection-config.json -H:ResourceConfigurationFiles=../../tomcat-resource.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
   --enable-https \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
