@@ -1,10 +1,10 @@
 [
 {"name":"org.reactivestreams.Publisher"},
 // These array types are due to a change in graal that isn't as actively adding array types anymore
-	{"name":"org.springframework.core.io.InputStreamSource[]","allDeclaredConstructors":true,"allDeclaredMethods":true},
-	{"name":"java.lang.String[]","allDeclaredConstructors":true},
-	{"name":"java.io.Serializable[]","allDeclaredConstructors":true},
-	{"name":"java.lang.Comparable[]","allDeclaredConstructors":true},
+	{"name":"org.springframework.core.io.InputStreamSource[]"},
+	{"name":"java.lang.String[]"},
+	{"name":"java.io.Serializable[]"},
+	{"name":"java.lang.Comparable[]"},
 // vanilla-jpa vvv
 	{"name":"org.apache.logging.log4j.spi.LoggerContext","allDeclaredMethods":true,"allDeclaredConstructors":true,"allDeclaredFields":true},
 	{
@@ -59,7 +59,6 @@
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigureAfter",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 // vanilla-jpa ^^^
@@ -768,8 +767,7 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.CommonAnnotationBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationImportSelector",
@@ -859,18 +857,15 @@
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationProperties",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.context.TypeExcludeFilter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.cache.CacheCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.boot.CommandLineRunner",
@@ -879,8 +874,6 @@
 	},
 	{
 		"name": "org.springframework.boot.SpringBootConfiguration",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -910,8 +903,7 @@
 	},
 	{
 		"name": "org.springframework.context.event.EventListenerMethodProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.context.annotation.ComponentScan",
@@ -937,7 +929,6 @@
 	},
 	{
 		"name": "org.springframework.context.annotation.ComponentScan$Filter",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
@@ -1037,18 +1028,15 @@
 	},
 	{
 		"name": "org.springframework.beans.factory.annotation.Autowired",
-//		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.context.annotation.AnnotationScopeMetadataResolver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
+		"allDeclaredConstructors": true
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages$BasePackages",
