@@ -27,8 +27,7 @@ CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-native-image \
--Djava.awt.headless=true \
+time native-image \
   --no-server \
   --no-fallback \
   -H:+TraceClassInitialization \
