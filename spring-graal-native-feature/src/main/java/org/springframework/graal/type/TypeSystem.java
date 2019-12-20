@@ -18,6 +18,7 @@ package org.springframework.graal.type;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -294,6 +295,8 @@ public class TypeSystem {
 					}
 				}
 			}
+		} catch (FileNotFoundException fnfe) {
+			System.err.println("WARNING: Unable to find jar '"+jar+"' whilst scanning filesystem");
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem during scan of " + jar, ioe);
 		}
