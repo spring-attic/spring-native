@@ -157,6 +157,13 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		}
 		flags.add(f);
 	}
+	
+	public void unsetFlag(Flag f) {
+		if (flags == null) {
+			return;
+		}
+		flags.remove(f);
+	}
 
 	public void addMethodDescriptor(MethodDescriptor methodDescriptor) {
 		if (methods == null) {
