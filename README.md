@@ -5,8 +5,11 @@ This project contains code to enable the building of native images with GraalVM.
 Once built, native images have very fast startup!
 
 This feature supports:
-- GraalVM 19.2.1 (19.3 not supported yet)
+- GraalVM 19.2.1 
 - Spring Boot 2.2.0
+
+There is a branch supporting Graal master (post 19.3) - the upgrade_19_3 branch - we
+expect to fold that into master once 19.3.1 comes out in early 2020.
 
 To try it out, install GraalVM 19.2.1 from: https://github.com/oracle/graal/releases,
 then install `native-image` by running `gu install native-image` (currently it is
