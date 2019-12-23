@@ -49,3 +49,15 @@ Q. Are you taking contributions?
 
 A. Sure, but please recognize this is an experimental project, we aren't at the
    polishing javadoc stage right now :)
+
+Feature Options
+
+These can be specified on the call to native image:
+
+`-Dverbose=true` will output lots of information about the feature behaviour as it
+processes auto configuration and chooses which to include.
+`-Dmode=light` will flip the feature into a lightweight mode that only supplies
+substitutions and initialization configuration. It will no longer set reflection,
+resource or proxy data - relying on the project to supply that. See the `jafu`
+sample for an example of this usage.
+
