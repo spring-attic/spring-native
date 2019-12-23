@@ -28,22 +28,33 @@ import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 
 @AutomaticFeature
 public class SpringFeature implements Feature {
-	
+
+
     private ReflectionHandler reflectionHandler;
-    
+
     private DynamicProxiesHandler dynamicProxiesHandler;
     
     private ResourcesHandler resourcesHandler;
     
-    private InitializationHandler buildTimeInitializationHandler;
+	private InitializationHandler buildTimeInitializationHandler;
 
 	public static boolean VERBOSE;
+
+	public static String MODE;
 	
 	static {
 		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
 		if (VERBOSE) {
 			System.out.println("Turning on verbose mode for the feature");
 		}
+		MODE = System.getProperty("mode","default");
+		if (!MODE.equals("default")) {
+			System.out.println("Feature operating in light mode, only supplying substitutions and initialization data");
+		}
+	}
+
+	private boolean isLightMode() {
+		return MODE.equals("light");
 	}
 	
 	public SpringFeature() {
@@ -57,9 +68,11 @@ public class SpringFeature implements Feature {
 		if (!VERBOSE) {
 			System.out.println("Use -Dverbose=true on native-image call to see more detailed information from the feature");
 		}
-    	reflectionHandler = new ReflectionHandler();
-    	dynamicProxiesHandler = new DynamicProxiesHandler();
-    	resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
+		if (!isLightMode()) {
+			reflectionHandler = new ReflectionHandler();
+			dynamicProxiesHandler = new DynamicProxiesHandler();
+			resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
+		}
     	buildTimeInitializationHandler = new InitializationHandler();
 	}
 
@@ -76,23 +89,21 @@ public class SpringFeature implements Feature {
     }
     
     public void duringSetup(DuringSetupAccess access) {
-    	reflectionHandler.register(access);
-    	dynamicProxiesHandler.register(access);
+		if (!isLightMode()) {
+    		reflectionHandler.register(access);
+			dynamicProxiesHandler.register(access);
+		}
     }
     
     public void beforeAnalysis(BeforeAnalysisAccess access) {
-    	resourcesHandler.register(access);
+		if (!isLightMode()) {
+			resourcesHandler.register(access);
+		}
     	buildTimeInitializationHandler.register(access);
-    	// TODO who requires this, is it a netty thing?
-//    	try {
-//			access.registerAsUnsafeAccessed(Buffer.class.getDeclaredField("address"));
-//		} catch (NoSuchFieldException e) {
-//			e.printStackTrace();
-//		} catch (SecurityException e) {
-//			e.printStackTrace();
-//		}
-    	System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
-    	reflectionHandler.dump();
+		if (!isLightMode()) {
+			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
+			reflectionHandler.dump();
+		}
     }
 
 	public static void log(String msg) {

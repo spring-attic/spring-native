@@ -1,0 +1,3 @@
+[
+{ "name":"org.springframework.context.support.GenericApplicationContext", "methods": [ { "name": "<init>", "parameterTypes": [ ] } ] }
+]
