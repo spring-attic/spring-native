@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericApplicationContextWithoutSpel;
 
 public class JafuApplication {
 
@@ -52,7 +53,7 @@ public class JafuApplication {
 
 	protected void initializeWebApplicationContext(SpringApplication app) {
 		app.setWebApplicationType(WebApplicationType.NONE);
-		app.setApplicationContextClass(GenericApplicationContext.class);
+		app.setApplicationContextClass(GenericApplicationContextWithoutSpel.class);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
