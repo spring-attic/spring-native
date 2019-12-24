@@ -9,7 +9,7 @@ echo "Testing $EXECUTABLE output"
 
 ./target/${EXECUTABLE} > target/native-image/test-output.txt 2>&1 &
 PID=$!
-sleep 1
+sleep 2
 
 RSS=`ps -o rss ${PID} | tail -n1`
 RSS=`bc <<< "scale=1; ${RSS}/1024"`
