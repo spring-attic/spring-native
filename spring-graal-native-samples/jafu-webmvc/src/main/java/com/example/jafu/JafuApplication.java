@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.ServletWebServerApplicationContextWithoutSpel;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctionDsl;
 import org.springframework.web.servlet.function.RouterFunctions;
@@ -79,7 +80,7 @@ public class JafuApplication {
 
 	protected void initializeWebApplicationContext(SpringApplication app) {
 		app.setWebApplicationType(WebApplicationType.SERVLET);
-		app.setApplicationContextClass(ServletWebServerApplicationContext.class);
+		app.setApplicationContextClass(ServletWebServerApplicationContextWithoutSpel.class);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
