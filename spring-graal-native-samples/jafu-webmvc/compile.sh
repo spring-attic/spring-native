@@ -3,6 +3,7 @@
 ARTIFACT=jafu-webmvc
 MAINCLASS=com.example.jafu.JafuApplication
 VERSION=0.0.1-SNAPSHOT
+FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -21,14 +22,13 @@ cd target/native-image
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
-find BOOT-INF/lib | grep 19.3.0 | xargs rm
-
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
-CP=BOOT-INF/classes:$LIBPATH
+CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 time native-image \
+  -Dmode=light \
   --no-server \
   --no-fallback \
   -H:+JNI \

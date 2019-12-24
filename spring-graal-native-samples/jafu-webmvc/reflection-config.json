@@ -15,11 +15,6 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.springframework.web.servlet.view.BeanNameViewResolver",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
@@ -103,7 +98,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext",
+    "name": "org.springframework.context.support.ServletWebServerApplicationContextWithoutSpel",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
   },
