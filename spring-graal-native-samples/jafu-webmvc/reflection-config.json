@@ -181,10 +181,5 @@
     "name": "org.springframework.web.servlet.support.SessionFlashMapManager",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
-  },
-  {
-    "name": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
   }
 ]
