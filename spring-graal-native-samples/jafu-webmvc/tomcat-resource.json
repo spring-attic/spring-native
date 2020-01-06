@@ -13,7 +13,6 @@
     {"name":"org.apache.catalina.manager.LocalStrings"},
     {"name":"org.apache.catalina.manager.host.LocalStrings"},
     {"name":"org.apache.catalina.mapper.LocalStrings"},
-    {"name":"org.apache.catalina.mbeans.LocalStrings"},
     {"name":"org.apache.catalina.realm.LocalStrings"},
     {"name":"org.apache.catalina.security.LocalStrings"},
     {"name":"org.apache.catalina.servlets.LocalStrings"},
