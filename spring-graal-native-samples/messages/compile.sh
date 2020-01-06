@@ -26,7 +26,8 @@ CP=BOOT-INF/classes:$LIBPATH
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-time native-image \
+{ time native-image \
+  --verbose \
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
@@ -34,7 +35,7 @@ time native-image \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   --initialize-at-run-time=org.springframework.context.annotation.FilterType,org.springframework.context.annotation.ScopedProxyMode,org.springframework.core.annotation.AnnotationFilter \
-  -cp $CP $MAINCLASS >> output.txt
+  -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
 then
