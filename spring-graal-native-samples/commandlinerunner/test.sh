@@ -11,7 +11,10 @@ echo "Testing $EXECUTABLE output"
 PID=$!
 sleep 3
 
-if [[ $1 != "-s" ]]; then  # enable silent mode to avoid the below 
+if [[ `cat target/native-image/test-output.txt | grep "commandlinerunner running!"` ]]
+then
+  printf "${GREEN}SUCCESS${NC}\n"
+  if [[ "$1" != "-s" ]]; then  # enable silent mode to avoid the below 
     TOTALINFO=`cat target/native-image/output.txt | grep "\[total\]"`
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
     BUILDMEMORY=`echo $TOTALINFO | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
@@ -29,14 +32,7 @@ if [[ $1 != "-s" ]]; then  # enable silent mode to avoid the below
       JTIME=${BASH_REMATCH[2]}
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
-fi
-
-
-if [[ `cat target/native-image/test-output.txt | grep "commandlinerunner running!"` ]]
-then
-  printf "${GREEN}SUCCESS${NC}\n"
-  if [[ $1 != "-s" ]]; then
-      echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
+    echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
   fi
   kill ${PID}
   exit 0
