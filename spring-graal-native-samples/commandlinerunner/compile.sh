@@ -45,6 +45,7 @@ then
   mv ./$ARTIFACT ..
   exit 0
 else
+  cat output.txt
   printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
   exit 1
 fi
