@@ -5,6 +5,9 @@ echo "Date,Sample,Image Build Time (ms),Image Build Memory (GB),RSS Memory (M),I
 for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc
 do
   (cd spring-graal-native-samples/$i && ./build.sh && cat ./target/native-image/summary.csv >> ../../samples-summary.csv)
+  if [ -d "spring-graal-native-samples/$i/agent" ]; then
+    (cd spring-graal-native-samples/$i/agent && ./build.sh && cat ./summary.csv >> ../../../samples-summary.csv)
+  fi
 done
 
 head -1 samples-summary.csv

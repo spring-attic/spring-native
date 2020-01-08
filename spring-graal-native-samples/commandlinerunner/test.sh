@@ -32,7 +32,7 @@ then
       JTIME=${BASH_REMATCH[2]}
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
-    echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
+    echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > target/native-image/summary.csv
   fi
   kill ${PID}
   exit 0
@@ -41,7 +41,7 @@ else
   cat target/native-image/test-output.txt
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
   if [[ $1 != "-s" ]]; then
-      echo `date +%Y%m%d-%H%M`,$EXECUTABLE,ERROR > target/native-image/summary.csv
+      echo `date +%Y%m%d-%H%M`,$EXECUTABLE,ERROR,0,0,0,0,0 > target/native-image/summary.csv
   fi
   kill ${PID}
   exit 1
