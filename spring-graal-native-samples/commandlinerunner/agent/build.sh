@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Build the project and unpack the fat jar ready to run
+./1prepare.sh
+
+# Set the CP for the jars/code in the unpacked application, leaving us in the BOOT-INF/classes folder
+. ./2setcp.sh
+
+# Run the application with the agent to populate the configuration files
+../../../3runWithAgent.sh
+
+# Patch in the missing entries to that configuration
+../../../4patch.sh
+
+# Run native image to compile the application
+../../../5compile.sh
+
+# Test the application
+SCRIPTS=${PWD%/spring-graal-native-samples/*}/scripts
+$SCRIPTS/test.sh commandlinerunner-agent .
+mv summary.csv ../../..
