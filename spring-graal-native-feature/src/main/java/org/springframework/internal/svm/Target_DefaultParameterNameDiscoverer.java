@@ -1,4 +1,4 @@
-package org.springframework.core;
+package org.springframework.internal.svm;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
+
+import org.springframework.core.ParameterNameDiscoverer;
 
 // Because code removal does not work yet with GraalDetector
 @TargetClass(className = "org.springframework.core.DefaultParameterNameDiscoverer")
