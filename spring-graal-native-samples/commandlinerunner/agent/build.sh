@@ -16,6 +16,8 @@
 ../../../5compile.sh
 
 # Test the application
-SCRIPTS=${PWD%/spring-graal-native-samples/*}/scripts
-$SCRIPTS/test.sh commandlinerunner-agent .
+
+# The test script will look for it in the current folder
+cp ../../../verify.sh .
+${PWD%/*samples/*}/scripts/test.sh commandlinerunner-agent .
 mv summary.csv ../../..
