@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-../../mvnw -DskipTests package > target/native-image/output.txt
+mvn -DskipTests package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
@@ -27,14 +27,12 @@ CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-time native-image \
+{ time native-image \
+  --verbose \
   --no-server \
   --initialize-at-build-time=org.eclipse.jdt,org.apache.el.parser.SimpleNode,javax.servlet.jsp.JspFactory,org.apache.jasper.servlet.JasperInitializer,org.apache.jasper.runtime.JspFactoryImpl \
-  -H:+JNI \
-  -H:EnableURLProtocols=http,https,jar \
-  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../tomcat-resource.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
-  -H:ClassInitialization=org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration:run_time \
-  --enable-https \
+  -H:EnableURLProtocols=http,jar \
+  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:+TraceClassInitialization \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -H:Name=$ARTIFACT \
@@ -44,8 +42,7 @@ time native-image \
   --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -DremoveUnusedAutoconfig=true \
-  -H:+PrintMethodHistogram \
-  -cp $CP $MAINCLASS >> output.txt
+  -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
 then
@@ -53,6 +50,7 @@ then
   mv ./$ARTIFACT ..
   exit 0
 else
+  cat output.txt
   printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
   exit 1
 fi

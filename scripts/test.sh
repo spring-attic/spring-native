@@ -7,6 +7,13 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+if [[ "$1" == "-s" ]]; then
+  SILENT=true
+  shift 1
+else 
+  SILENT=false
+fi
+
 EXECUTABLE=${1:-target/${PWD##*/}}
 if [ -z "$2" ]; then
   TEST_OUTPUT_FILE=target/native-image/test-output.txt
@@ -17,17 +24,20 @@ else
   BUILD_OUTPUT_FILE=$2/output.txt
   SUMMARY_CSV_FILE=$2/summary.csv
 fi
-echo "Testing executable '$EXECUTABLE'"
+echo "Testing executable '`basename $EXECUTABLE`'"
 
 chmod +x ${EXECUTABLE}
 ./${EXECUTABLE} > $TEST_OUTPUT_FILE 2>&1 &
 PID=$!
 sleep 3
 
-if [[ `cat $TEST_OUTPUT_FILE | grep "commandlinerunner running!"` ]]
+#if [[ `cat $TEST_OUTPUT_FILE | grep "commandlinerunner running!"` ]]
+./verify.sh
+RC=$?
+if [[ $RC == 0 ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
-  if [ -f "$BUILD_OUTPUT_FILE" ]; then
+  if [ $SILENT == 'false' ]; then
     TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
     BUILDMEMORY=`echo $TOTALINFO | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
@@ -45,14 +55,16 @@ then
       JTIME=${BASH_REMATCH[2]}
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
-    echo `date +%Y%m%d-%H%M`,$EXECUTABLE,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > $SUMMARY_CSV_FILE
+    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > $SUMMARY_CSV_FILE
   fi
   kill ${PID}
   exit 0
 else
+  cat $BUILD_OUTPUT_FILE
+  cat $TEST_OUTPUT_FILE
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
-  if [ -f "$BUILD_OUTPUT_FILE" ]; then 
-    echo `date +%Y%m%d-%H%M`,$EXECUTABLE,ERROR,0,0,0,0,0 > $SUMMARY_CSV_FILE
+  if [ $SILENT == 'false' ]; then
+    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,0,0,0,0,0 > $SUMMARY_CSV_FILE
   fi
   kill ${PID}
   exit 1

@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-../../mvnw -DskipTests package > target/native-image/output.txt
+mvn -DskipTests package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
@@ -29,23 +29,20 @@ CP=BOOT-INF/classes:$LIBPATH:$FEATURE
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-time native-image \
+{ time native-image \
+  --verbose \
   -Dmode=light \
   --no-server \
   --no-fallback \
-  -H:+JNI \
-  -H:EnableURLProtocols=http,https,jar \
+  -H:EnableURLProtocols=http \
   --initialize-at-build-time \
   --initialize-at-run-time=org.springframework.core.io.VfsUtils,org.apache.tomcat.jni.SSL \
-  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json,../../reflection-config.json -H:ResourceConfigurationFiles=../../tomcat-resource.json -H:JNIConfigurationFiles=../../tomcat-jni.json \
-  --enable-https \
-  -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
-  -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
+  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json,../../reflection-config.json -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
-  -cp $CP $MAINCLASS >> output.txt
+  -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
 then
@@ -53,7 +50,7 @@ then
   mv ./$ARTIFACT ..
   exit 0
 else
+  cat output.txt
   printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
   exit 1
 fi
-
