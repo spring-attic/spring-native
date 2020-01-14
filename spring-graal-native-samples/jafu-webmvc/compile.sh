@@ -22,6 +22,7 @@ cd target/native-image
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
+# Avoids clashing substitutions from this project deps and the feature deps
 rm BOOT-INF/lib/svm-19.*.jar
 
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
