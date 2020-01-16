@@ -53,6 +53,7 @@
 ],
 "buildTimeInitialization":
 [
+{"class": "org.springframework.core.GraalDetector"},
     // vvv petclinic
     {"package": "org.springframework.core.env"},
 {"class": "org.springframework.util.unit.DataUnit"},
