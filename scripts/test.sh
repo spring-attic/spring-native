@@ -41,9 +41,10 @@ then
     TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
     BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
-    if [ ! -s "$BUILDMEMORY" ]; then
+    if [ -z "$BUILDMEMORY" ]; then
       BUILDMEMORY="-"
     fi
+    echo "Build memory: ${BUILDMEMORY}GB"
     echo "Image build time: ${BUILDTIME}ms"
     RSS=`ps -o rss ${PID} | tail -n1`
     RSS=`bc <<< "scale=1; ${RSS}/1024"`
