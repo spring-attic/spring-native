@@ -295,5 +295,15 @@
 		"name": "org.hibernate.persister.collection.BasicCollectionPersister",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.web.bind.annotation.ModelAttribute",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{
+		"name": "org.springframework.format.annotation.DateTimeFormat",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
 	}
 ]
