@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Graal: `native-image --version`" > samples-summary.csv
-echo "Date,Sample,Image Build Time (ms),Image Build Memory (GB),RSS Memory (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
+echo "Date,Sample,Build Time (ms),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
 for d in spring-graal-native-samples/*/
 do
   if [[ -f "$d/build.sh" ]]; then
