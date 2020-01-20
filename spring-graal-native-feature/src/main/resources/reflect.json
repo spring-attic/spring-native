@@ -1691,5 +1691,17 @@
 		"name": "org.springframework.integration.config.DefaultConfiguringBeanFactoryPostProcessor",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
+	},
+	{
+		"name": "reactor.core.publisher.Traces$StackWalkerCallSiteSupplierFactory",
+		"allDeclaredConstructors": true
+	},
+	{
+		"name": "reactor.core.publisher.Traces$SharedSecretsCallSiteSupplierFactory",
+		"allDeclaredConstructors": true
+	},
+	{
+		"name": "reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory",
+		"allDeclaredConstructors": true
 	}
 ]
