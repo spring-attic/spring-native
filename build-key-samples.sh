@@ -2,11 +2,23 @@
 
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Image Build Time (ms),Image Build Memory (GB),RSS Memory (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc
+#for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc vanilla-thymeleaf vanilla-grpc
+for i in commandlinerunner webflux-netty 
 do
-  (cd spring-graal-native-samples/$i && ./build.sh && cat ./target/native-image/summary.csv >> ../../samples-summary.csv)
+  (cd spring-graal-native-samples/$i && ./build.sh)
+  if [ -f "spring-graal-native-samples/$i/target/native-image/summary.csv" ]; then
+    cat spring-graal-native-samples/$i/target/native-image/summary.csv >> samples-summary.csv
+  else
+    echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
+  fi
+
   if [ -d "spring-graal-native-samples/$i/agent" ]; then
-    (cd spring-graal-native-samples/$i/agent && ./build.sh && cat ./summary.csv >> ../../../samples-summary.csv)
+    (cd spring-graal-native-samples/$i/agent && ./build.sh)
+    if [ -f "spring-graal-native-samples/$i/agent/summary.csv" ]; then
+      cat spring-graal-native-samples/$i/agent/summary.csv >> samples-summary.csv
+    else
+      echo `date +%Y%m%d-%H%M`,${i}-agent,ERROR,,,,, >> samples-summary.csv
+    fi
   fi
 done
 

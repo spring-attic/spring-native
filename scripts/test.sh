@@ -40,7 +40,10 @@ then
   if [ $SILENT == 'false' ]; then
     TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
-    BUILDMEMORY=`echo $TOTALINFO | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
+    BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
+    if [ ! -s "$BUILDMEMORY" ]; then
+      BUILDMEMORY="-"
+    fi
     echo "Image build time: ${BUILDTIME}ms"
     RSS=`ps -o rss ${PID} | tail -n1`
     RSS=`bc <<< "scale=1; ${RSS}/1024"`
@@ -64,7 +67,7 @@ else
   cat $TEST_OUTPUT_FILE
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
   if [ $SILENT == 'false' ]; then
-    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,0,0,0,0,0 > $SUMMARY_CSV_FILE
+    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,-,,,, > $SUMMARY_CSV_FILE
   fi
   kill ${PID}
   exit 1

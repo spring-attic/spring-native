@@ -17,7 +17,7 @@ then
   if [[ "$1" != "-s" ]]; then  # enable silent mode to avoid the below 
     TOTALINFO=`cat target/native-image/output.txt | grep "\[total\]"`
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
-    BUILDMEMORY=`echo $TOTALINFO | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
+    BUILDMEMORY=`echo $TOTALINFO | grep "GB" | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
     echo "Image build time: ${BUILDTIME}ms"
     RSS=`ps -o rss ${PID} | tail -n1`
     RSS=`bc <<< "scale=1; ${RSS}/1024"`
