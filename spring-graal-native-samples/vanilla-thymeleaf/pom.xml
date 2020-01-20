@@ -18,15 +18,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
                 <exclusions>
-<!--
                         <exclusion>
-                                <groupId>org.springframework.boot</groupId>
-                                <artifactId>spring-boot-starter-logging</artifactId>
-                        </exclusion>
--->
-                        <exclusion>
-                                <groupId>org.hibernate.validator</groupId>
-                                <artifactId>hibernate-validator</artifactId>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-validation</artifactId>
                         </exclusion>
                         <exclusion>
                                 <groupId>io.netty</groupId>
@@ -35,10 +29,6 @@
                         <exclusion>
                                 <groupId>io.netty</groupId>
                                 <artifactId>netty-codec-http2</artifactId>
-                        </exclusion>
-                        <exclusion>
-                                <groupId>jakarta.validation</groupId>
-                                <artifactId>jakarta.validation-api</artifactId>
                         </exclusion>
                 </exclusions>
        </dependency>
