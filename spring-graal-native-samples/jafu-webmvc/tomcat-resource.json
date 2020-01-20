@@ -17,7 +17,6 @@
     {"name":"org.apache.catalina.security.LocalStrings"},
     {"name":"org.apache.catalina.servlets.LocalStrings"},
     {"name":"org.apache.catalina.session.LocalStrings"},
-    {"name":"org.apache.catalina.ssi.LocalStrings"},
     {"name":"org.apache.catalina.startup.LocalStrings"},
     {"name":"org.apache.catalina.users.LocalStrings"},
     {"name":"org.apache.catalina.util.LocalStrings"},

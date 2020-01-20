@@ -26,12 +26,14 @@ CP=BOOT-INF/classes:$LIBPATH
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
+# TODO Check why we have to specify -H:IncludeResourceBundles=messages/messages with GraalVM 19.3.1 even if the bundle is configured in resource-config.properties
 { time native-image \
   --verbose \
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
+  -H:IncludeResourceBundles=messages/messages \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   --initialize-at-run-time=org.springframework.context.annotation.FilterType,org.springframework.context.annotation.ScopedProxyMode,org.springframework.core.annotation.AnnotationFilter \
