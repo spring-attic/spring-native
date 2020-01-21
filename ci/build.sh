@@ -2,7 +2,7 @@
 
 set -e
 
-yum install -y unzip wget procps bc
+yum install -y unzip wget procps bc perl
 wget https://repo1.maven.org/maven2/org/apache/maven/apache-maven/3.5.3/apache-maven-3.5.3-bin.zip
 unzip apache-maven-3.5.3-bin.zip
 export PATH=$PATH:`pwd`/apache-maven-3.5.3/bin
