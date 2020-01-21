@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,22 +66,7 @@ public class ReflectionHandler {
 
 	private ImageClassLoader cl;
 
-	private static boolean AVOID_LOGBACK;
-	
-	private static String DUMP_CONFIG;
-
 	private int typesRegisteredForReflectiveAccessCount = 0;
-
-	static {
-		AVOID_LOGBACK = Boolean.valueOf(System.getProperty("avoidLogback", "false"));
-		if (AVOID_LOGBACK) {
-			System.out.println("Avoiding logback configuration");
-		}
-		DUMP_CONFIG = System.getProperty("dumpConfig");
-		if (DUMP_CONFIG!=null) {
-			System.out.println("Dumping computed config to "+DUMP_CONFIG);
-		}
-	}
 
 	public ReflectionDescriptor getConstantData() {
 		if (constantReflectionDescriptor == null) {
@@ -99,7 +83,7 @@ public class ReflectionHandler {
 	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
 
 	public void includeInDump(String typename, String[][] methodsAndConstructors, Flag[] flags) {
-		if (DUMP_CONFIG == null) {
+		if (!ConfigOptions.shouldDumpConfig()) {
 			return;
 		}
 		ClassDescriptor currentCD = null;
@@ -137,7 +121,7 @@ public class ReflectionHandler {
 		
 		
 	public void dump() {
-		if (DUMP_CONFIG == null) {
+		if (!ConfigOptions.shouldDumpConfig()) {
 			return;
 		}
 		activeClassDescriptors.sort((c1,c2) -> c1.getName().compareTo(c2.getName()));
@@ -145,7 +129,7 @@ public class ReflectionHandler {
 		for (ClassDescriptor cd: activeClassDescriptors) {
 			rd.add(cd);
 		}
-		try (FileOutputStream fos = new FileOutputStream(new File(DUMP_CONFIG))) {
+		try (FileOutputStream fos = new FileOutputStream(new File(ConfigOptions.getDumpConfigLocation()))) {
 			JsonMarshaller.write(rd,fos);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -275,7 +259,7 @@ public class ReflectionHandler {
 			System.out.println(
 					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
 		}
-		if (!AVOID_LOGBACK) {
+		if (!ConfigOptions.shouldAvoidLogback()) {
 			registerLogback();
 		}
 	}

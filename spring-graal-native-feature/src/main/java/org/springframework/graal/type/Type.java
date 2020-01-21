@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
-import java.util.StringTokenizer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -40,63 +39,18 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.graal.support.SpringFeature;
+import org.springframework.graal.type.SpringConfiguration.CompilationHint;
 
 /**
  * @author Andy Clement
  */
 public class Type {
 	
-	// Spring Security
-	public final static String OAuth2ImportSelector = "Lorg/springframework/security/config/annotation/web/configuration/OAuth2ImportSelector;";
-	
-	public final static String SpringWebMvcImportSelector = "Lorg/springframework/security/config/annotation/web/configuration/SpringWebMvcImportSelector;";
-	
-	public final static String ImportSelector ="Lorg/springframework/context/annotation/ImportSelector;";
-	
-	public final static String ImportBeanDefinitionRegistrar ="Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
-
-	public final static String TransactionManagementConfigurationSelector = "Lorg/springframework/transaction/annotation/TransactionManagementConfigurationSelector;";
-	
-	public final static String SpringDataWebConfigurationSelector = "Lorg/springframework/data/web/config/EnableSpringDataWebSupport$SpringDataWebConfigurationImportSelector;";
-
-	public final static String SpringDataWebQueryDslSelector = "Lorg/springframework/data/web/config/EnableSpringDataWebSupport$QuerydslActivator;";
-
-	public final static String AdviceModeImportSelector="Lorg/springframework/context/annotation/AdviceModeImportSelector;";
-
-	public final static String EnableConfigurationPropertiesImportSelector = "Lorg/springframework/boot/context/properties/EnableConfigurationPropertiesImportSelector;";
-	
-	public final static String CacheConfigurationImportSelector = "Lorg/springframework/boot/autoconfigure/cache/CacheAutoConfiguration$CacheConfigurationImportSelector;";
-	
-	public final static String RabbitConfigurationImportSelector = "Lorg/springframework/amqp/rabbit/annotation/RabbitListenerConfigurationSelector;";
-	
-	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
-
-	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
-
-	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
-	
-	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
-
-	public final static String AtConditionalOnSingleCandidate = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate;";
-
-	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
-	
-	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
-	
-	public final static String AtConditional = "Lorg/springframework/context/annotation/Conditional;";
-
-	public final static String HypermediaConfigurationImportSelector = "Lorg/springframework/hateoas/config/HypermediaConfigurationImportSelector;";
-
-	public final static String WebStackImportSelector = "Lorg/springframework/hateoas/config/WebStackImportSelector;";
-	
-	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
-
 	public final static Type MISSING = new Type(null, null);
 
 	public final static Type[] NO_INTERFACES = new Type[0];
 
 	protected static Set<String> validBoxing = new HashSet<String>();
-
 
 	private TypeSystem typeSystem;
 
@@ -237,7 +191,7 @@ public class Type {
 	}
 	
 	public List<Method> getMethodsWithAtBean() {
-		return getMethodsWithAnnotation(AtBean);
+		return getMethodsWithAnnotation(SpringConfiguration.AtBean);
 	}
 
 	public Method wrap(MethodNode mn) {
@@ -518,7 +472,7 @@ public class Type {
 	
 	public boolean isCondition() {
 		try {
-			return implementsInterface(fromLdescriptorToSlashed(Condition));
+			return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.Condition));
 		} catch (MissingTypeException mte) {
 			return false;
 		}
@@ -535,7 +489,7 @@ public class Type {
 
 	
 	public boolean isAtConfiguration() {
-		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
+		return isMetaAnnotated(fromLdescriptorToSlashed(SpringConfiguration.AtConfiguration), new HashSet<>());
 	}
 	
 	public boolean isAbstractNestedCondition() {
@@ -569,11 +523,11 @@ public class Type {
 
 	
 	public List<String> findConditionalOnMissingBeanValue() {
-		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnMissingBean, false);
+		 List<String> findAnnotationValue = findAnnotationValue(SpringConfiguration.AtConditionalOnMissingBean, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
 					for (AnnotationNode an : node.visibleAnnotations) {
-						if (an.desc.equals(AtConditionalOnMissingBean)) {
+						if (an.desc.equals(SpringConfiguration.AtConditionalOnMissingBean)) {
 							System.out.println("??? found nothing on this @COC annotated thing "+this.getName());
 						}
 					}
@@ -583,11 +537,11 @@ public class Type {
 	}
 
 	public List<String> findConditionalOnClassValue() {
-		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnClass, false);
+		 List<String> findAnnotationValue = findAnnotationValue(SpringConfiguration.AtConditionalOnClass, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
 					for (AnnotationNode an : node.visibleAnnotations) {
-						if (an.desc.equals(AtConditionalOnClass)) {
+						if (an.desc.equals(SpringConfiguration.AtConditionalOnClass)) {
 							System.out.println("??? found nothing on this @COC annotated thing "+this.getName());
 						}
 					}
@@ -597,12 +551,12 @@ public class Type {
 	}
 	
 	public List<String> findEnableConfigurationPropertiesValue() {
-		 List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false);
+		 List<String> values = findAnnotationValue(SpringConfiguration.AtEnableConfigurationProperties, false);
 		 return values;
 	}
 
 	public Map<String,List<String>> findImports() {
-		 return findAnnotationValueWithHostAnnotation(AtImports, true, new HashSet<>());
+		 return findAnnotationValueWithHostAnnotation(SpringConfiguration.AtImports, true, new HashSet<>());
 	}
 		
 	public List<String> findAnnotationValue(String annotationType, boolean searchMeta) {		
@@ -841,7 +795,7 @@ public class Type {
 	 */
 	public List<Hint> getHints() {
 		List<Hint> hints = new ArrayList<>();
-		CompilationHint hint = proposedHints.get(getDescriptor());
+		CompilationHint hint = SpringConfiguration.findProposedHints(getDescriptor());//proposedHints.get(getDescriptor());
 		if (hint !=null) {
 			List<Type> s = new ArrayList<>();
 			s.add(this);
@@ -876,7 +830,7 @@ public class Type {
 		try {
 			annotationChain.push(this);
 			// Am I a compilation hint?
-			CompilationHint hint = proposedHints.get(an.desc);
+			CompilationHint hint = SpringConfiguration.findProposedHints(an.desc);
 			if (hint !=null) {
 				List<String> typesCollectedFromAnnotation = collectTypes(an);
 				hints.add(new Hint(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, 
@@ -945,7 +899,7 @@ public class Type {
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				CompilationHint compilationHint = proposedHints.get(an.desc);
+				CompilationHint compilationHint = SpringConfiguration.findProposedHints(an.desc);
 				if (compilationHint != null) {
 					return compilationHint;
 				}
@@ -983,253 +937,12 @@ public class Type {
 		return Collections.emptyList();
 	}
 
-	// TODO move these hint things into a different standalone class
-	static Map<String, CompilationHint> proposedHints = new HashMap<>();
-	
-	static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
-	
-	static {
-		
-		// This specifies that the TemplateAvailabilityProvider key will only be processed if one of the
-		// specified types is around. This ensures we don't provide reflective access to the value of this
-		// key in apps that don't use mvc or webflux
-		proposedFactoryGuards.put(
-			"org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider",new String[] {
-				"org.springframework.web.reactive.config.WebFluxConfigurer",
-				"org.springframework.web.servlet.config.annotation.WebMvcConfigurer"
-			});
-		
-		
-		// @ConditionalOnClass has @CompilationHint(skipIfTypesMissing=true, follow=false)
-		proposedHints.put(AtConditionalOnClass, new CompilationHint(true,false));
-
-		// If @ConditionalOnSingleCandidate refers to a class that doesn't exist then
-		// there cannot be a bean for it in this application.
-		proposedHints.put(AtConditionalOnSingleCandidate, new CompilationHint(true,false));
-		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;",
-				new CompilationHint(true, false, new String[] {
-				 	"org.springframework.boot.autoconfigure.condition.SearchStrategy",
-				}));
-		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration;",
-				new CompilationHint(true, false, new String[] {
-					"java.util.concurrent.Callable:EXISTENCE_MC"
-				}));
-				
-		// TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
-		// @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-		proposedHints.put(AtImports, new CompilationHint(false, true));
-		
-		// @Conditional has @CompilationHint(skipIfTypesMissing=false, follow=false)
-		proposedHints.put(AtConditional, new CompilationHint(false, false));
-		
-		// TODO do configuration properties chain?
-		// @EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
-		proposedHints.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
-		
-		// @EnableConfigurationPropertiesImportSelector has
-		// @CompilationHint(skipIfTypesMissing=false, follow=false, name={
-		//   ConfigurationPropertiesBeanRegistrar.class.getName(),
-		//   ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() })
-		// proposedAnnotations.put(AtEnableConfigurationProperties, new CompilationHint(false, false));
-		
-		// TODO review this - what is the right way? That type is only needed if (strictly speaking) XMLEventFactory is used
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration;",
-				new CompilationHint(false, false, new String[] {
-						"com.sun.xml.internal.stream.events.XMLEventFactoryImpl:REGISTRAR",
-						"org.apache.logging.log4j.message.DefaultFlowMessageFactory:REGISTRAR",
-						"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]:REGISTRAR",
-						"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry:REGISTRAR"
-				}));
-		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
-				new CompilationHint(false, false, new String[] {
-						"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor:EXISTENCE_CMF"
-				}));
-
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSourceConfiguration;",
-				new CompilationHint(false, false, new String[] {
-						"org.h2.store.fs.FilePathDisk:REGISTRAR",
-						"org.h2.store.fs.FilePathMem:REGISTRAR",
-						"org.h2.store.fs.FilePathMemLZF:REGISTRAR",
-						"org.h2.store.fs.FilePathNioMem:REGISTRAR",
-						"org.h2.store.fs.FilePathNioMemLZF:REGISTRAR",
-						"org.h2.store.fs.FilePathSplit:REGISTRAR",
-						"org.h2.store.fs.FilePathNio:REGISTRAR",
-						"org.h2.store.fs.FilePathNioMapped:REGISTRAR",
-						"org.h2.store.fs.FilePathAsync:REGISTRAR",
-						"org.h2.store.fs.FilePathZip:REGISTRAR",
-						"org.h2.store.fs.FilePathRetryOnInterrupt:REGISTRAR"
-				}));
-
-		proposedHints.put(CacheConfigurationImportSelector,
-				new CompilationHint(false,true, new String[] {
-				 	"org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.HazelcastCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.InfinispanCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.JCacheCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.CouchbaseCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.CaffeineCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.SimpleCacheConfiguration",
-				 	"org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration"
-				}));
-		
-		proposedHints.put(RabbitConfigurationImportSelector,
-				new CompilationHint(true,true, new String[] {
-				 	"org.springframework.amqp.rabbit.annotation.RabbitBootstrapConfiguration"
-				}));
-		
-		
-		proposedHints.put(TransactionManagementConfigurationSelector,
-				new CompilationHint(true, true, new String[] {
-					"org.springframework.context.annotation.AutoProxyRegistrar",
-					"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration",
-					"org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration",
-					"org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration"
-				}));
-		
-
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$ReactiveSessionConfigurationImportSelector;",
-				new CompilationHint(true, true, new String[] {
-						"org.springframework.boot.autoconfigure.session.RedisReactiveSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.MongoReactiveSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
-				}));
-
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$SessionConfigurationImportSelector;",
-				new CompilationHint(true, true, new String[] {
-						"org.springframework.boot.autoconfigure.session.RedisSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.RedisReactiveSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.MongoSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.MongoReactiveSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.HazelcastSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.NoOpSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
-				}));
-
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoConfiguration$ServletSessionConfigurationImportSelector;",
-				new CompilationHint(true, true, new String[] {
-						"org.springframework.boot.autoconfigure.session.RedisSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.MongoSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.HazelcastSessionConfiguration",
-						"org.springframework.boot.autoconfigure.session.NoOpSessionConfiguration"
-				}));
-		
-		//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-		proposedHints.put(SpringDataWebConfigurationSelector,
-				new CompilationHint(true, true, new String[] {
-					"org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration",
-					"org.springframework.data.web.config.SpringDataWebConfiguration"
-				}));
-		
-		//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-		proposedHints.put(SpringDataWebQueryDslSelector,
-				new CompilationHint(true, true, new String[] {
-					"org.springframework.data.web.config.QuerydslWebConfiguration"}
-				));
-		
-		// EnableConfigurationPropertiesImportSelector has
-		// @CompilationHint(skipIfTypesMissing=true, follow=false, name={
-		//	 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar",
-		//	 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar"})
-		proposedHints.put(EnableConfigurationPropertiesImportSelector,
-				new CompilationHint(false,false, new String[] {
-				 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar:REGISTRAR",
-				 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar:REGISTRAR"}
-				));
-		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/DispatcherServletAutoConfiguration;", 
-				new CompilationHint(false,false, new String[] {
-						// All from DispatcherServlet.properties
-//org.springframework.web.servlet.LocaleResolver=
-						"org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver",
-//org.springframework.web.servlet.ThemeResolver=
-						"org.springframework.web.servlet.theme.FixedThemeResolver",
-//org.springframework.web.servlet.HandlerMapping=
-						"org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping",
-						"org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping",
-						"org.springframework.web.servlet.function.support.RouterFunctionMapping",
-//org.springframework.web.servlet.HandlerAdapter=
-						"org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter",
-						"org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter",
-						"org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter",
-						"org.springframework.web.servlet.function.support.HandlerFunctionAdapter",
-//org.springframework.web.servlet.HandlerExceptionResolver=
-						"org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver",
-						"org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver",
-						"org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver",
-//org.springframework.web.servlet.RequestToViewNameTranslator=
-						"org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator",
-//org.springframework.web.servlet.ViewResolver=
-						"org.springframework.web.servlet.view.InternalResourceViewResolver",
-//org.springframework.web.servlet.FlashMapManager=
-						"org.springframework.web.servlet.support.SessionFlashMapManager"
-				}));
-		
-				
-		// Not quite right... this is a superclass of a selector we've already added...
-		proposedHints.put(AdviceModeImportSelector,
-				new CompilationHint(true, true, new String[0]
-				));
-		
-		// Spring Security!
-		// TODO these should come with the jars themselves really (@CompilationHints on the selectors...)
-		proposedHints.put(SpringWebMvcImportSelector,
-				new CompilationHint(false, true, new String[] {
-					"org.springframework.web.servlet.DispatcherServlet:EXISTENCE_CHECK",
-					"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
-				}));
-				
-		// TODO this one is actually incomplete, finish it
-		proposedHints.put(OAuth2ImportSelector,
-				new CompilationHint(false, true, new String[] {
-					"org.springframework.security.oauth2.client.registration.ClientRegistration:EXISTENCE_CHECK",
-					"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
-				}));
-		
-		
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/task/TaskExecutionAutoConfiguration;",
-				new CompilationHint(true,false, new String[] {
-						"org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor:REGISTRAR"
-				}));
-
-		// TODO I am not sure the specific entry here is right, but given that the selector references entries loaded via factories - aren't those already handled? 
-		proposedHints.put(HypermediaConfigurationImportSelector,
-				new CompilationHint(false, true, new String[] {
-						"org.springframework.hateoas.config.HypermediaConfigurationImportSelector"
-				}));
-
-		proposedHints.put(WebStackImportSelector,
-				new CompilationHint(false, true, new String[] {
-					//"org.springframework.hateoas.config.WebStackImportSelector" - why was this here???
-					"org.springframework.hateoas.config.WebMvcHateoasConfiguration",
-					"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
-				}));
-
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/OnWebApplicationCondition;", 
-				new CompilationHint(false, false, new String[] {
-					"org.springframework.web.context.support.GenericWebApplicationContext",
-					
-				}));
-		// Temporary until hints more flexible...
-		proposedHints.put("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;", 
-				new CompilationHint(true, false, new String[] {
-					"org.springframework.web.context.support.GenericWebApplicationContext",
-					"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication$Type"
-				}));
-	}
-	
 	public boolean isImportSelector() {
-		return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
+		return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.ImportSelector));
 	}
 	
 	public boolean isImportRegistrar() {
-		return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
+		return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.ImportBeanDefinitionRegistrar));
 	}
 	
 	private String fromLdescriptorToSlashed(String Ldescriptor) {
@@ -1242,7 +955,7 @@ public class Type {
 	
 	private CompilationHint findCompilationHint(Type annotationType) {
 		String descriptor = "L"+annotationType.getName().replace(".", "/")+";";
-		CompilationHint hint = proposedHints.get(descriptor);
+		CompilationHint hint = SpringConfiguration.findProposedHints(descriptor);
 		if (hint !=null) {
 			return hint;
 		} else {
@@ -1250,42 +963,6 @@ public class Type {
 			return annotationType.findCompilationHintHelper(new HashSet<>());
 		}
 	}		
-	
-	// TODO what about AliasFor usage in spring annotations themselves? does that trip this code up when we start looking at particular fields?
-
-	static class CompilationHint {
-		boolean follow;
-		boolean skipIfTypesMissing;
-		private Map<String, AccessRequired> specificTypes;
-		private Predicate predicate;
-		
-		public CompilationHint(boolean skipIfTypesMissing, boolean follow) {
-			this(skipIfTypesMissing,follow,new String[] {});
-		}
-		
-		public CompilationHint(Predicate p) {
-			this.predicate = p;
-		}
-		
-		public CompilationHint(boolean skipIfTypesMissing, boolean follow, String[] specificTypes) {
-			this.skipIfTypesMissing = skipIfTypesMissing;
-			this.follow = follow;
-			if (specificTypes != null) {
-				this.specificTypes = new LinkedHashMap<>();
-				for (String specificType: specificTypes) {
-					AccessRequired access = AccessRequired.ALL;
-					StringTokenizer t = new StringTokenizer(specificType,":");
-					String type = t.nextToken(); // the type name
-					if (t.hasMoreTokens()) { // possible access specified otherwise default to ALL
-						access = AccessRequired.valueOf(t.nextToken());
-					}
-					this.specificTypes.put(type, access);
-				}
-			} else {
-				this.specificTypes = Collections.emptyMap();
-			}
-		}
-	}
 	
 	public void collectMissingAnnotationTypesHelper(Set<String> missingAnnotationTypes, HashSet<Type> visited) {
 		if (!visited.add(this)) {
@@ -1351,7 +1028,7 @@ public class Type {
 	}
 
 	public static boolean shouldBeProcessed(String key, TypeSystem ts) {
-		String[] guardTypes = proposedFactoryGuards.get(key);
+		String[] guardTypes = SpringConfiguration.findProposedFactoryGuards(key);//.get(key);
 		if (guardTypes == null) {
 			return true;
 		} else {
