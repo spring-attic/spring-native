@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: oracle/graalvm-ce
+    tag: 19.3.1-java8
+
+inputs:
+  - name: spring-graal-native
+
+run:
+  path: spring-graal-native/ci/build.sh
