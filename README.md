@@ -1,3 +1,5 @@
+[![Build Status](https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge)](https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native)
+
 # spring-graal-native
 
 This project contains code to enable the building of native images with GraalVM.
