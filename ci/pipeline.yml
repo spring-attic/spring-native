@@ -1,0 +1,14 @@
+resources:
+  - name: spring-graal-native
+    type: git
+    source:
+      uri: https://github.com/spring-projects-experimental/spring-graal-native
+      branch: master
+jobs:
+  - name: build
+    public: true
+    plan:
+    - get: spring-graal-native
+      trigger: true
+    - task: build
+      file: spring-graal-native/ci/build.yml
