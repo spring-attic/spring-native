@@ -15,7 +15,6 @@
  */
 package org.springframework.graal.support;
 
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 @AutomaticFeature
 public class SpringFeature implements Feature {
 
-
     private ReflectionHandler reflectionHandler;
 
     private DynamicProxiesHandler dynamicProxiesHandler;
@@ -38,25 +36,6 @@ public class SpringFeature implements Feature {
     
 	private InitializationHandler buildTimeInitializationHandler;
 
-	public static boolean VERBOSE;
-
-	public static String MODE;
-	
-	static {
-		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
-		if (VERBOSE) {
-			System.out.println("Turning on verbose mode for the feature");
-		}
-		MODE = System.getProperty("mode","default");
-		if (!MODE.equals("default")) {
-			System.out.println("Feature operating in light mode, only supplying substitutions and initialization data");
-		}
-	}
-
-	private boolean isLightMode() {
-		return MODE.equals("light");
-	}
-	
 	public SpringFeature() {
 		System.out.println(
 				" ____             _               _____          _                  \n"+
@@ -65,10 +44,10 @@ public class SpringFeature implements Feature {
 				" ___) | |_) | |  | | | | | (_| | |  _|  __/ (_| | |_| |_| | | |  __/\n"+
 				"|____/| .__/|_|  |_|_| |_|\\__, | |_|  \\___|\\__,_|\\__|\\__,_|_|  \\___|\n"+
 			    "      |_|                 |___/                                     \n");
-		if (!VERBOSE) {
+		if (!ConfigOptions.isVerbose()) {
 			System.out.println("Use -Dverbose=true on native-image call to see more detailed information from the feature");
 		}
-		if (!isLightMode()) {
+		if (!ConfigOptions.isLightweightMode()) {
 			reflectionHandler = new ReflectionHandler();
 			dynamicProxiesHandler = new DynamicProxiesHandler();
 			resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
@@ -89,25 +68,25 @@ public class SpringFeature implements Feature {
     }
     
     public void duringSetup(DuringSetupAccess access) {
-		if (!isLightMode()) {
+		if (!ConfigOptions.isLightweightMode()) {
     		reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
     }
     
     public void beforeAnalysis(BeforeAnalysisAccess access) {
-		if (!isLightMode()) {
+		if (!ConfigOptions.isLightweightMode()) {
 			resourcesHandler.register(access);
 		}
     	buildTimeInitializationHandler.register(access);
-		if (!isLightMode()) {
+		if (!ConfigOptions.isLightweightMode()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}
     }
 
 	public static void log(String msg) {
-		if (SpringFeature.VERBOSE) {
+		if (ConfigOptions.isVerbose()) {
 			System.out.println(msg);
 		}
 	}

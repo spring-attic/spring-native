@@ -16,9 +16,7 @@
 package org.springframework.graal.type;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.graal.domain.reflect.Flag;
 
@@ -28,6 +26,7 @@ import org.springframework.graal.domain.reflect.Flag;
  * @author Andy Clement
  */
 public enum AccessRequired {
+	// TODO needs some rationalizing
     EXISTENCE_CHECK(true, false, false, false, false), // Only need to reflect on it, not even its methods/ctors
     EXISTENCE_MC(true, false, true, true, false),
     EXISTENCE_CMF(true, true, true, true, false), 
