@@ -20,9 +20,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,14 +62,13 @@ class OwnerController {
 	}
 
 	@PostMapping("/owners/new")
-	public Mono<String> processCreationForm(@Valid Owner owner, BindingResult result) {
+	public String processCreationForm(@Valid Owner owner, BindingResult result) {
 		if (result.hasErrors()) {
-			return Mono.just(VIEWS_OWNER_CREATE_OR_UPDATE_FORM);
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			return Mono.fromRunnable(() -> this.owners.save(owner))
-					.subscribeOn(Schedulers.elastic())
-					.then(Mono.just("redirect:/owners/" + owner.getId()));
+			this.owners.save(owner);
+			return "redirect:/owners/" + owner.getId();
 		}
 	}
 
@@ -83,7 +79,7 @@ class OwnerController {
 	}
 
 	@GetMapping("/owners")
-	public Mono<String> processFindForm(Owner owner, BindingResult result,
+	public String processFindForm(Owner owner, BindingResult result,
 			Map<String, Object> model) {
 
 		// allow parameterless GET request for /owners to return all records
@@ -92,46 +88,40 @@ class OwnerController {
 		}
 
 		// find owners by last name
-		Mono<Collection<Owner>> found = Mono
-				.fromCallable(() -> this.owners.findByLastName(owner.getLastName()))
-				.subscribeOn(Schedulers.elastic());
-		return found.map(results -> {
-			if (results.isEmpty()) {
-				// no owners found
-				result.rejectValue("lastName", "notFound", "not found");
-				return "owners/findOwners";
-			}
-			else if (results.size() == 1) {
-				// 1 owner found
-				Owner output = results.iterator().next();
-				return "redirect:/owners/" + output.getId();
-			}
-			else {
-				// multiple owners found
-				model.put("selections", results);
-				return "owners/ownersList";
-			}
-		});
+		Collection<Owner> found = this.owners.findByLastName(owner.getLastName());
+		if (found.isEmpty()) {
+			// no owners found
+			result.rejectValue("lastName", "notFound", "not found");
+			return "owners/findOwners";
+		}
+		else if (found.size() == 1) {
+			// 1 owner found
+			Owner output = found.iterator().next();
+			return "redirect:/owners/" + output.getId();
+		}
+		else {
+			// multiple owners found
+			model.put("selections", found);
+			return "owners/ownersList";
+		}
 	}
 
 	@GetMapping("/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-		model.addAttribute("owner", Mono.fromCallable(() -> this.owners.findById(ownerId))
-				.subscribeOn(Schedulers.elastic()));
+		model.addAttribute("owner",this.owners.findById(ownerId));
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping("/owners/{ownerId}/edit")
-	public Mono<String> processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
+	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
 			@PathVariable("ownerId") int ownerId) {
 		if (result.hasErrors()) {
-			return Mono.just(VIEWS_OWNER_CREATE_OR_UPDATE_FORM);
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 		else {
 			owner.setId(ownerId);
-			return Mono.fromRunnable(() -> this.owners.save(owner))
-					.subscribeOn(Schedulers.elastic())
-					.then(Mono.just("redirect:/owners/{ownerId}"));
+			this.owners.save(owner);
+			return "redirect:/owners/{ownerId}";
 		}
 	}
 
@@ -141,17 +131,13 @@ class OwnerController {
 	 * @return a ModelMap with the model attributes for the view
 	 */
 	@GetMapping("/owners/{ownerId}")
-	public Mono<String> showOwner(@PathVariable("ownerId") int ownerId,
-			Map<String, Object> model) {
-		return Mono.fromCallable(() -> this.owners.findById(ownerId))
-				.subscribeOn(Schedulers.elastic())
-				.doOnNext(owner -> {
-					for (Pet pet : owner.getPets()) {
-						pet.setVisitsInternal(visits.findByPetId(pet.getId()));
-					}
-					model.put("owner", owner); 
-				})
-				.then(Mono.just("owners/ownerDetails"));
+	public String showOwner(@PathVariable("ownerId") int ownerId, Map<String, Object> model) {
+		Owner owner = this.owners.findById(ownerId);
+		for (Pet pet : owner.getPets()) {
+			pet.setVisitsInternal(visits.findByPetId(pet.getId()));
+		}
+		model.put("owner", owner);
+		return "owners/ownerDetails";
 	}
 
 }

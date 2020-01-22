@@ -20,9 +20,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -60,8 +57,8 @@ class PetController {
 	}
 
 	@ModelAttribute("owner")
-	public Mono<Owner> findOwner(@PathVariable("ownerId") int ownerId) {
-		return Mono.fromCallable(() -> this.owners.findById(ownerId)).subscribeOn(Schedulers.elastic());
+	public Owner findOwner(@PathVariable("ownerId") int ownerId) {
+		return this.owners.findById(ownerId);
 	}
 
 	@InitBinder("owner")
@@ -83,7 +80,7 @@ class PetController {
 	}
 
 	@PostMapping("/pets/new")
-	public Mono<String> processCreationForm(Owner owner, @Valid Pet pet, BindingResult result,
+	public String processCreationForm(Owner owner, @Valid Pet pet, BindingResult result,
 			Map<String, Object> model) {
 		if (StringUtils.hasLength(pet.getName()) && pet.isNew() && owner.getPet(pet.getName(), true) != null) {
 			result.rejectValue("name", "duplicate", "already exists");
@@ -91,34 +88,33 @@ class PetController {
 		owner.addPet(pet);
 		if (result.hasErrors()) {
 			model.put("pet", pet);
-			return Mono.just(VIEWS_PETS_CREATE_OR_UPDATE_FORM);
+			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			return Mono.fromRunnable(() -> this.pets.save(pet)).subscribeOn(Schedulers.elastic())
-					.then(Mono.just("redirect:/owners/{ownerId}"));
+			this.pets.save(pet);
+			return "redirect:/owners/{ownerId}";
 		}
 	}
 
 	@GetMapping("/pets/{petId}/edit")
-	public Mono<String> initUpdateForm(@PathVariable("petId") int petId, Map<String, Object> model) {
-		return Mono.fromRunnable(() -> {
-			Pet pet = this.pets.findById(petId);
-			model.put("pet", pet);
-		}).subscribeOn(Schedulers.elastic()).then(Mono.just(VIEWS_PETS_CREATE_OR_UPDATE_FORM));
+	public String initUpdateForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+		Pet pet = this.pets.findById(petId);
+		model.put("pet", pet);
+		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping("/pets/{petId}/edit")
-	public Mono<String> processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner,
+	public String processUpdateForm(@Valid Pet pet, BindingResult result, Owner owner,
 			Map<String, Object> model) {
 		if (result.hasErrors()) {
 			pet.setOwner(owner);
 			model.put("pet", pet);
-			return Mono.just(VIEWS_PETS_CREATE_OR_UPDATE_FORM);
+			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 		else {
 			owner.addPet(pet);
-			return Mono.fromRunnable(() -> this.pets.save(pet)).subscribeOn(Schedulers.elastic())
-					.then(Mono.just("redirect:/owners/{ownerId}"));
+			this.pets.save(pet);
+			return "redirect:/owners/{ownerId}";
 		}
 	}
 

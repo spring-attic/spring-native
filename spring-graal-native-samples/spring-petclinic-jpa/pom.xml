@@ -31,11 +31,12 @@
 	</properties>
 
 	<dependencies>
-<dependency>
-  <groupId>javax.xml.bind</groupId>
-  <artifactId>jaxb-api</artifactId>
-  <version>2.3.0</version>
-</dependency>
+		<!-- Should not be needed -->
+		<dependency>
+			<groupId>org.reactivestreams</groupId>
+			<artifactId>reactive-streams</artifactId>
+		</dependency>
+
 		<!-- Spring and Spring Boot dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,14 +51,6 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.xml.bind</groupId>
-					<artifactId>jaxb-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.glassfish.jaxb</groupId>
-					<artifactId>jaxb-runtime</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
 				</exclusion>
@@ -69,13 +62,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-transport-native-epoll</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,12 +78,6 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-indexer</artifactId>
-		</dependency>
--->
 
 		<!-- Databases - Uses H2 by default -->
 		<dependency>
@@ -130,6 +111,11 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

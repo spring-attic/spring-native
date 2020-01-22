@@ -17,9 +17,6 @@ package org.springframework.samples.petclinic.vet;
 
 import java.util.Map;
 
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,18 +42,17 @@ class VetController {
 		// objects so it is simpler for Object-Xml mapping
 		Vets vets = new Vets();
 		vets.getVetList().addAll(this.vets.findAll());
-		model.put("vets", Mono.fromRunnable(() -> vets.getVetList().addAll(this.vets.findAll()))
-				.subscribeOn(Schedulers.elastic()).then(Mono.just(vets)));
+		model.put("vets", vets);
 		return "vets/vetList";
 	}
 
 	@GetMapping({ "/vets" })
-	public @ResponseBody Mono<Vets> showResourcesVetList() {
+	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects so it is simpler for JSon/Object mapping
 		Vets vets = new Vets();
-		return Mono.fromRunnable(() -> vets.getVetList().addAll(this.vets.findAll())).subscribeOn(Schedulers.elastic())
-				.then(Mono.just(vets));
+		vets.getVetList().addAll(this.vets.findAll());
+		return vets;
 	}
 
 }
