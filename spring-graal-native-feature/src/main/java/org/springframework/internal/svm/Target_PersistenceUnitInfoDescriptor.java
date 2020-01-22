@@ -43,7 +43,7 @@ import com.oracle.svm.core.annotate.TargetClass;
  * @author Andy Clement
  */
 @TargetClass(className="org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor", onlyWith = OnlyPresent.class)
-public final class Target_org_hibernate_jpa_boot_internal_PersistenceUnitInfoDescriptor {
+public final class Target_PersistenceUnitInfoDescriptor {
 
 	@Substitute
 	public ClassLoader getTempClassLoader() {

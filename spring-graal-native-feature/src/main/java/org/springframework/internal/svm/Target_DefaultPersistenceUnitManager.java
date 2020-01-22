@@ -43,7 +43,7 @@ import com.oracle.svm.core.annotate.TargetClass;
  * @author Andy Clement
  */
 @TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = OnlyPresent.class)
-public final class Target_org_springframework_orm_jpa_persistenceunit_defaultpersistenceunitmanager {
+public final class Target_DefaultPersistenceUnitManager {
 
 	@Substitute
 	public URL determineDefaultPersistenceUnitRootUrl() {

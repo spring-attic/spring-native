@@ -29,8 +29,8 @@ import com.oracle.svm.core.annotate.TargetClass;
  * 
  * @author Andy Clement
  */
-@TargetClass(className="org.springframework.boot.validation.MessageInterpolatorFactory",onlyWith=MessageInterpolatorIsAround.class)
-public final class Target_org_springframework_boot_validation_MessageInterpolatorFactory {
+@TargetClass(className="org.springframework.boot.validation.MessageInterpolatorFactory", onlyWith=MessageInterpolatorIsAround.class)
+public final class Target_MessageInterpolatorFactory {
 
 	@Substitute
 	public MessageInterpolator getObject() throws BeansException {
