@@ -56,6 +56,8 @@ public class ResourcesHandler {
 
 	private final static String EnableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 
+	private final static String PropertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
+
 	private TypeSystem ts;
 
 	private ImageClassLoader cl;
@@ -415,11 +417,11 @@ public class ResourcesHandler {
 		int excludedAutoConfigCount = 0;
 		Enumeration<Object> factoryKeys = p.keys();
 
-		// Handle all keys other than EnableAutoConfiguration
+		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
 			System.out.println("Adding all the classes for this key: " + k);
-			if (!k.equals(EnableAutoconfigurationKey)) {
+			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
 				if (Type.shouldBeProcessed(k,ts)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
@@ -430,6 +432,30 @@ public class ResourcesHandler {
 			}
 		}
 
+		// Handle PropertySourceLoader
+		String propertySourceLoaderValues = (String) p.get(PropertySourceLoaderKey);
+		if (propertySourceLoaderValues != null) {
+			List<String> propertySourceLoaders = new ArrayList<>();
+			for (String s : propertySourceLoaderValues.split(",")) {
+				if(!s.equals("org.springframework.boot.env.YamlPropertySourceLoader") || !ConfigOptions.shouldRemoveYamlSupport()) {
+					registerTypeReferencedBySpringFactoriesKey(s);
+					propertySourceLoaders.add(s);
+				}
+				else {
+					forRemoval.add(s);
+				}
+			}
+			System.out.println("Processing spring.factories - PropertySourceLoader lists #" + propertySourceLoaders.size()
+					+ " property source loaders");
+			SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
+			for (int c = 0; c < propertySourceLoaders.size(); c++) {
+				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
+			}
+			p.put(PropertySourceLoaderKey, String.join(",", propertySourceLoaders));
+
+		}
+
+		// Handle EnableAutoConfiguration
 		String enableAutoConfigurationValues = (String) p.get(EnableAutoconfigurationKey);
 		if (enableAutoConfigurationValues != null) {
 			List<String> configurations = new ArrayList<>();
@@ -451,19 +477,20 @@ public class ResourcesHandler {
 				System.out.println(
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
-				p.put("org.springframework.boot.autoconfigure.EnableAutoConfiguration",
-						String.join(",", configurations));
-				SpringFeature.log("These configurations are remaining iin the EnableAutoConfiguration key value:");
+				p.put(EnableAutoconfigurationKey, String.join(",", configurations));
+				SpringFeature.log("These configurations are remaining in the EnableAutoConfiguration key value:");
 				for (int c = 0; c < configurations.size(); c++) {
 					SpringFeature.log((c + 1) + ") " + configurations.get(c));
 				}
 			}
 		}
+
+		// Filter spring.factories if necessary
 		try {
 			if (forRemoval.size() == 0) {
 				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
-				SpringFeature.log("  removed " + forRemoval.size() + " configurations");
+				SpringFeature.log("  removed " + forRemoval.size() + " classes");
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				p.store(baos, "");
 				baos.close();

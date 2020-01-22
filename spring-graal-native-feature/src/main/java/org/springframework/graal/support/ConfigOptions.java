@@ -23,6 +23,8 @@ package org.springframework.graal.support;
 public abstract class ConfigOptions {
 
 	private final static boolean AVOID_LOGBACK;
+
+	private final static boolean REMOVE_YAML_SUPPORT;
 	
     private final static String DUMP_CONFIG;
 
@@ -48,6 +50,10 @@ public abstract class ConfigOptions {
 		if (AVOID_LOGBACK) {
 			System.out.println("Avoiding logback configuration");
 		}
+		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("removeYamlSupport", "false"));
+		if (REMOVE_YAML_SUPPORT) {
+			System.out.println("Removing Yaml support");
+		}
 		DUMP_CONFIG = System.getProperty("dumpConfig");
 		if (DUMP_CONFIG!=null) {
 			System.out.println("Dumping computed config to "+DUMP_CONFIG);
@@ -65,6 +71,10 @@ public abstract class ConfigOptions {
     public static boolean shouldAvoidLogback() {
         return AVOID_LOGBACK;
     }
+
+	public static boolean shouldRemoveYamlSupport() {
+		return REMOVE_YAML_SUPPORT;
+	}
 
     public static boolean isLightweightMode() {
         return MODE.equals("light");

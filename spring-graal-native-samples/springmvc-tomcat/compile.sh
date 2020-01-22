@@ -42,6 +42,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -DremoveUnusedAutoconfig=true \
+  -DremoveYamlSupport=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
