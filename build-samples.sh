@@ -24,7 +24,7 @@ done
 
 head -1 samples-summary.csv
 if ! [ -x "$(command -v tty-table)" ]; then
-  tail +2 samples-summary.csv | perl -pe 's/((?<=,)|(?<=^)),/ ,/g;'  | column -t -s, 
+  tail -n +2 samples-summary.csv | perl -pe 's/((?<=,)|(?<=^)),/ ,/g;'  | column -t -s, 
 else
-  tail +2 samples-summary.csv | tty-table
+  tail -n +2 samples-summary.csv | tty-table
 fi
