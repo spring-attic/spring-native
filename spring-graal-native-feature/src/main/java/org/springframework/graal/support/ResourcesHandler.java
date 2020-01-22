@@ -68,13 +68,6 @@ public class ResourcesHandler {
 
 	private DynamicProxiesHandler dynamicProxiesHandler;
 
-	private static boolean REMOVE_UNNECESSARY_CONFIGURATIONS;
-
-	static {
-		REMOVE_UNNECESSARY_CONFIGURATIONS = Boolean.valueOf(System.getProperty("removeUnusedAutoconfig", "false"));
-		System.out.println("Remove unused config = " + REMOVE_UNNECESSARY_CONFIGURATIONS);
-	}
-
 	public ResourcesHandler(ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler) {
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
@@ -466,14 +459,14 @@ public class ResourcesHandler {
 					+ " configurations");
 			for (String config : configurations) {
 				if (!checkAndRegisterConfigurationType(config)) {
-					if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
+					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 						excludedAutoConfigCount++;
 						SpringFeature.log("Excluding auto-configuration " + config);
 						forRemoval.add(config);
 					}
 				}
 			}
-			if (REMOVE_UNNECESSARY_CONFIGURATIONS) {
+			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 				System.out.println(
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
@@ -617,7 +610,7 @@ public class ResourcesHandler {
 		// ...
 		//   @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
 		//	 static class ExplicitType { 
-		if (depth==0 && REMOVE_UNNECESSARY_CONFIGURATIONS && conditionalOnPropertyValues.size()!=0 && 
+		if (depth==0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size()!=0 &&
 			(conditionalOnPropertyValues.get("matchIfMissing")==null || conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
 			SpringFeature.log(spaces(depth) + "skipping "+type.getName()+" due to ConditionalOnPropertyCheck");
 			passesTests = false;
@@ -696,7 +689,7 @@ public class ResourcesHandler {
 		// TODO this should be pushed earlier and access requests put into tar
 		String configNameDotted = type.getDottedName();
 		visited.add(type.getName());
-		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isCondition()) {
 				if (type.hasOnlySimpleConstructor()) {
 					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } }, true);
@@ -732,7 +725,7 @@ public class ResourcesHandler {
 			}
 		}
 		
-		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
 
 				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
@@ -897,7 +890,7 @@ public class ResourcesHandler {
 
 
 		// If the outer type is failing a test, we don't need to go into nested types...
-		if (passesTests || !REMOVE_UNNECESSARY_CONFIGURATIONS) {
+		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			// if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {

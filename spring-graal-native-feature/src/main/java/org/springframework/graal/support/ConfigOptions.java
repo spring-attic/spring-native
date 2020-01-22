@@ -19,8 +19,11 @@ package org.springframework.graal.support;
  * Encapsulate configurable feature behaviour.
  * 
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public abstract class ConfigOptions {
+
+	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
 	private final static boolean AVOID_LOGBACK;
 
@@ -36,6 +39,10 @@ public abstract class ConfigOptions {
 	private final static String MODE; // 'default'/'light'
     
     static {
+		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("removeUnusedAutoconfig", "false"));
+		if(REMOVE_UNUSED_AUTOCONFIG) {
+			System.out.println("Removing unused configurations");
+		}
 		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
 		if (VERBOSE) {
 			System.out.println("Turning on verbose mode for the feature");
@@ -59,6 +66,10 @@ public abstract class ConfigOptions {
 			System.out.println("Dumping computed config to "+DUMP_CONFIG);
 		}
     }
+
+	public static boolean shouldRemoveUnusedAutoconfig() {
+		return REMOVE_UNUSED_AUTOCONFIG;
+	}
 
     public static boolean isVerbose() {
         return VERBOSE;
