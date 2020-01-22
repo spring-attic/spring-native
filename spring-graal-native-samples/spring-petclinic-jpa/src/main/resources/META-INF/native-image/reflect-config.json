@@ -316,6 +316,19 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
+	{ "name":"javax.validation.constraints.Digits",
+	  "allDeclaredConstructors": true,
+	  "allDeclaredMethods": true,
+	  "allDeclaredFields": true
+	},
+	{ "name":"org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
+	{ "name":"org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	},
 
 	{ "name":"javax.servlet.http.HttpServlet" },
 	{ "name":"org.apache.catalina.AccessLog" },
