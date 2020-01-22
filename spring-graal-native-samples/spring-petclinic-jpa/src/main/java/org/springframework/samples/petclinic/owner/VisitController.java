@@ -19,9 +19,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -65,15 +62,13 @@ class VisitController {
 	 * @return Pet
 	 */
 	@ModelAttribute
-	public Mono<Void> loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
-		return Mono.<Void>fromRunnable(() -> {
-			Visit visit = new Visit();
-			Pet pet = this.pets.findById(petId);
-			pet.setVisitsInternal(this.visits.findByPetId(petId));
-			pet.addVisit(visit);
-			model.put("pet", pet);
-			model.put("visit", visit);
-		}).subscribeOn(Schedulers.elastic());
+	public void loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
+		Visit visit = new Visit();
+		Pet pet = this.pets.findById(petId);
+		pet.setVisitsInternal(this.visits.findByPetId(petId));
+		pet.addVisit(visit);
+		model.put("pet", pet);
+		model.put("visit", visit);
 	}
 
 	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
@@ -84,13 +79,13 @@ class VisitController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
-	public Mono<String> processNewVisitForm(@Valid Visit visit, BindingResult result) {
+	public String processNewVisitForm(@Valid Visit visit, BindingResult result) {
 		if (result.hasErrors()) {
-			return Mono.just("pets/createOrUpdateVisitForm");
+			return "pets/createOrUpdateVisitForm";
 		}
 		else {
-			return Mono.fromRunnable(() -> this.visits.save(visit)).subscribeOn(Schedulers.elastic())
-					.then(Mono.just("redirect:/owners/{ownerId}"));
+			this.visits.save(visit);
+			return "redirect:/owners/{ownerId}";
 		}
 	}
 
