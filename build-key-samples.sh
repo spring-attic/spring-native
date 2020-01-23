@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Graal: `native-image --version`" > samples-summary.csv
-echo "Date,Sample,Build Time (ms),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
+echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
 for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc vanilla-thymeleaf vanilla-grpc vanilla-tx
 do
   (cd spring-graal-native-samples/$i && ./build.sh)
