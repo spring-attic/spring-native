@@ -53,6 +53,11 @@
 ],
 "buildTimeInitialization":
 [
+  // This is due to the code using VarHandle in a multi release jar - so if on Java 9 or
+  // later the 'new implementation' will be picked up that uses VarHandle and we need that
+  // compiled early
+  {"class":"org.h2.util.Bits"},
+  
 {"class": "org.springframework.core.GraalDetector"},
     // vvv petclinic
     {"package": "org.springframework.core.env"},
