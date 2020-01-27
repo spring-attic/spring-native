@@ -1,6 +1,5 @@
 {
   "bundles":[
-    {"name":"javax.el.LocalStrings"},
     {"name":"javax.servlet.LocalStrings"},
     {"name":"javax.servlet.http.LocalStrings"},
     {"name":"org.apache.catalina.authenticator.LocalStrings"},
@@ -28,7 +27,6 @@
     {"name":"org.apache.coyote.http11.filters.LocalStrings"},
     {"name":"org.apache.coyote.http11.upgrade.LocalStrings"},
     {"name":"org.apache.coyote.http2.LocalStrings"},
-    {"name":"org.apache.el.Messages"},
     {"name":"org.apache.naming.LocalStrings"},
     {"name":"org.apache.naming.factory.LocalStrings"},
     {"name":"org.apache.naming.factory.webservices.LocalStrings"},

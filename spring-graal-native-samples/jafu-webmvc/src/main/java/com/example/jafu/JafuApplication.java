@@ -7,14 +7,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.context.MessageSourceInitializer;
-import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ResourceConverterInitializer;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerInitializer;
 import org.springframework.boot.autoconfigure.web.servlet.StringConverterInitializer;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,8 +29,6 @@ public class JafuApplication {
 
 	private ServerProperties serverProperties = new ServerProperties();
 
-	private HttpProperties httpProperties = new HttpProperties();
-
 	private WebMvcProperties webMvcProperties = new WebMvcProperties();
 
 	private ResourceProperties resourceProperties = new ResourceProperties();
@@ -46,7 +42,7 @@ public class JafuApplication {
 			serverProperties.setPort(8080);
 			new StringConverterInitializer().initialize(context);
 			new ResourceConverterInitializer().initialize(context);
-			new ServletWebServerInitializer(serverProperties, httpProperties, webMvcProperties, resourceProperties).initialize(context);
+			new ServletWebServerInitializer(serverProperties, webMvcProperties, resourceProperties).initialize(context);
 		};
 	}
 
