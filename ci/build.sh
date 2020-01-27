@@ -22,8 +22,6 @@ yum update -y oraclelinux-release-el7 \
 
 fc-cache -f -v
 
-cp gu-wrapper.sh /usr/local/bin/gu
-
 set -eux \
     && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
     | gunzip | tar x -C /opt/ \
@@ -34,8 +32,7 @@ set -eux \
         base="$(basename "$bin")"; \
         [ ! -e "/usr/bin/$base" ]; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-    done \
-    && chmod +x /usr/local/bin/gu
+    done
 
 java -version
 gu install native-image
