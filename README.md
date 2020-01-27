@@ -9,13 +9,11 @@ Once built, native images have very fast startup!
 
 This feature supports:
 
-- GraalVM 19.3.1 *1
-- Spring Boot 2.2.X
-
-*1 Some of the samples work with Graal 19.3.1, whilst some do not, we are working hard with the GraalVM team to address all issues on both sides.
+- GraalVM 20.1 dev builds
+- Spring Boot 2.3.0.M1
 
 ## Download Graal 
-To try it out, install GraalVM 19.3.1 from: [https://github.com/graalvm/graalvm-ce-builds/releases](),
+To try it out, install [GraalVM 20.1.0-dev_20200125-1203](https://github.com/graalvm/graalvm-ce-dev-builds/releases/tag/20.1.0-dev_20200125-1203),
 then once having set your `PATH` to that new java home, install `native-image` by running `gu install native-image`.
 
 ## Building the feature

@@ -9,11 +9,8 @@
 # Run the application with the agent to populate the configuration files
 ../../../3runWithAgent.sh
 
-# Patch in the missing entries to that configuration
-../../../4patch.sh
-
 # Run native image to compile the application
-../../../5compile.sh
+../../../4compile.sh
 
 # Test the application
 

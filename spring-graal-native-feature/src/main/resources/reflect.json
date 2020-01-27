@@ -1703,5 +1703,11 @@
 	{
 		"name": "reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory",
 		"allDeclaredConstructors": true
+	},
+	// Boot 2.3.0.M1
+	{
+		"name": "org.springframework.boot.context.properties.BoundConfigurationProperties",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
 	}
 ]
