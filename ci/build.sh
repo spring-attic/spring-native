@@ -2,12 +2,11 @@
 
 set -e
 
-# Beginning of GraalVM dev build install
-
 GRAALVM_VERSION=20.1.0-dev
 GRAALVM_BUILD=20200125-1203
 JAVA_VERSION=java8
-GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/${GRAALVM_VERSION}_${GRAALVM_BUILD}/graalvm-ce-${JAVA_VERSION}-linux-amd64-${GRAALVM_VERSION}.tar.gz
+GRAALVM_FILE=graalvm-ce-${JAVA_VERSION}-linux-amd64-${GRAALVM_VERSION}.tar.gz
+GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/${GRAALVM_VERSION}_${GRAALVM_BUILD}/${GRAALVM_FILE}
 
 export ENV LANG=en_US.UTF-8
 export JAVA_HOME=/opt/graalvm-ce-${JAVA_VERSION}-${GRAALVM_VERSION}/
@@ -18,13 +17,14 @@ yum update -y oraclelinux-release-el7 \
     && yum-config-manager --enable ol7_developer_EPEL \
     && yum-config-manager --enable ol7_optional_latest \
     && yum install -y bzip2-devel ed gcc gcc-c++ gcc-gfortran gzip file fontconfig less libcurl-devel make openssl openssl-devel readline-devel tar vi which xz-devel zlib-devel \
-    && yum install -y glibc-static libcxx libcxx-devel libstdc++-static zlib-static
+    glibc-static libcxx libcxx-devel libstdc++-static zlib-static \
+    unzip wget procps bc perl util-linux golang git
 
 fc-cache -f -v
 
 set -eux \
-    && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
-    | gunzip | tar x -C /opt/ \
+    && wget ${GRAALVM_PKG} \
+    && tar -zxf ${GRAALVM_FILE} -C /opt/ \
     && mkdir -p "/usr/java" \
     && ln -sfT "$JAVA_HOME" /usr/java/default \
     && ln -sfT "$JAVA_HOME" /usr/java/latest \
@@ -37,10 +37,8 @@ set -eux \
 java -version
 gu install native-image
 
-# End of GraalVM dev build install
-
 npm install tty-table -g
-yum install -y unzip wget procps bc perl util-linux golang git
+
 
 go get github.com/fullstorydev/grpcurl
 go install github.com/fullstorydev/grpcurl/cmd/grpcurl
