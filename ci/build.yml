@@ -5,7 +5,7 @@ image_resource:
   type: docker-image
   source:
     repository: springci/graalvm-ce-java8
-    tag: 20.1.0-dev_20200125-1203
+    tag: 20.0.0-dev_20200121-1000
 
 inputs:
   - name: spring-graal-native
