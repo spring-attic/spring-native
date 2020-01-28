@@ -12,14 +12,14 @@ This feature supports:
 - GraalVM 20.1 dev builds
 - Spring Boot 2.3.0.M1
 
-## Download Graal 
-To try it out, install [GraalVM 20.1.0-dev_20200125-1203](https://github.com/graalvm/graalvm-ce-dev-builds/releases/tag/20.1.0-dev_20200125-1203),
-then once having set your `PATH` to that new java home, install `native-image` by running `gu install native-image`.
+## Build
 
-## Building the feature
+Run `docker.sh` then `cd home`, you will be able to tun various commands with the right version of `native-image` installed.
+
+### Building the feature
 Then in the top level of your clone of this repository, build the feature project with `./build-feature.sh`.
 
-## Samples 
+### Samples 
 In the `spring-graal-native-samples` subfolder from the root of the
 project. Each folder in there is using a piece of Spring technology. Within each
 is a mini project and a `compile.sh` script - the script will call the 
