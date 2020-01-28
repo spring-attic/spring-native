@@ -9,7 +9,7 @@ Once built, native images have very fast startup!
 
 This feature supports:
 
-- GraalVM 20.1 dev builds
+- GraalVM 20.0.0 dev builds
 - Spring Boot 2.3.0.M1
 
 ## Build

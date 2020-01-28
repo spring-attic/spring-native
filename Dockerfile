@@ -9,8 +9,8 @@ FROM oraclelinux:7-slim
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
 ARG MAVEN_VERSION=3.5.3
-ARG GRAALVM_VERSION=20.1.0-dev
-ARG GRAALVM_BUILD=20200125-1203
+ARG GRAALVM_VERSION=20.0.0-dev
+ARG GRAALVM_BUILD=20200121-1000
 ARG JAVA_VERSION=java8
 ARG GRAALVM_FILE=graalvm-ce-${JAVA_VERSION}-linux-amd64-${GRAALVM_VERSION}.tar.gz
 ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/${GRAALVM_VERSION}_${GRAALVM_BUILD}/${GRAALVM_FILE}
