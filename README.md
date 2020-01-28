@@ -14,7 +14,7 @@ This feature supports:
 
 ## Build
 
-Run `docker.sh` then `cd home`, you will be able to tun various commands with the right version of `native-image` installed.
+Run `docker.sh` then `cd home`, you will be able to run various commands with the right version of `native-image` installed.
 
 ### Building the feature
 Then in the top level of your clone of this repository, build the feature project with `./build-feature.sh`.
