@@ -42,7 +42,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:EnableURLProtocols=http,jar \
   -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:ReflectionConfigurationFiles=../../tomcat-reflection.json \
-  -H:ReflectionConfigurationFiles=graal/META-INF/native-image/reflect-config.json \
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
