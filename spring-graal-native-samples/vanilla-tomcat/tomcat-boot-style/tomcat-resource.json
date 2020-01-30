@@ -1,12 +1,1 @@
-{
-  "bundles":[
-    {"name":"javax.el.LocalStrings"},
-    {"name":"javax.servlet.LocalStrings"},
-    {"name":"javax.servlet.http.LocalStrings"}
-  ],
-  "resources":[
-    {"pattern":".*/*.properties$"},
-    {"pattern":".*/*.dtd$"},
-    {"pattern":".*/*.xsd$"}
-  ]
-}
+{}
