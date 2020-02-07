@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.example</groupId>
+	<artifactId>vanilla-tomcat</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>vanilla-tomcat</name>
+	<description>Demo projects for Apache Tomcat</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<tomcat.embed.version>9.0.30</tomcat.embed.version>
+		<tomcat.main.class>com.example.tomcat.TomcatOnlyApplication</tomcat.main.class>
+	</properties>
+
+	<modules>
+		<module>tomcat-basic</module>
+		<module>tomcat-boot-style</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${tomcat.embed.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-el</artifactId>
+			<version>${tomcat.embed.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<version>${tomcat.embed.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.2.0</version>
+
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<appendAssemblyId>true</appendAssemblyId>
+					<archive>
+						<manifest>
+							<mainClass>${tomcat.main.class}</mainClass>
+						</manifest>
+					</archive>
+
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+			<repository>
+					<id>central</id>
+					<url>https://repo.maven.apache.org/maven2</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-release</id>
+					<name>Spring release</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-snapshot</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+							<enabled>true</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-milestone</id>
+					<name>Spring Milestone</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+	</repositories>
+
+	<pluginRepositories>
+			<pluginRepository>
+					<id>central</id>
+					<url>https://repo.maven.apache.org/maven2</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-release</id>
+					<name>Spring release</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-snapshot</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+							<enabled>true</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-milestone</id>
+					<name>Spring Milestone</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+	</pluginRepositories>
+
+</project>
