@@ -1,4 +1,5 @@
 org.springframework.amqp.rabbit.annotation.Hints
+org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
 org.springframework.boot.autoconfigure.condition.Hints
 org.springframework.boot.autoconfigure.jdbc.Hints

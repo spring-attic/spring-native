@@ -30,6 +30,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   --no-server \
+-Dverbose=true \
   --no-fallback \
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
