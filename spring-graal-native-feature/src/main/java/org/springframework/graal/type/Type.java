@@ -1094,6 +1094,7 @@ public class Type {
 	private CompilationHint fromConfigurationHintToCompilationHint(AnnotationNode an) {
 		CompilationHint ch = new CompilationHint();
 		List<Object> values = an.values;
+		if (values != null) {
 		for (int i=0;i<values.size();i+=2){ 
 			String key = (String)values.get(i);
 			Object value = values.get(i+1);
@@ -1122,6 +1123,10 @@ public class Type {
 			} else {
 				System.out.println("annotation "+key+"="+value+"("+value.getClass()+")");
 			}
+		}
+		}
+		if (ch.getTargetType() == null) {
+		ch.setTargetType("java.lang.Object");//TODO should be set from annotation default value, not duplicated here
 		}
 		return ch;
 	}

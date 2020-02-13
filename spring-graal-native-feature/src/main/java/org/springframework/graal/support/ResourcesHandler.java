@@ -41,6 +41,7 @@ import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graal.type.AccessBits;
+import org.springframework.graal.type.CompilationHint;
 import org.springframework.graal.type.Hint;
 import org.springframework.graal.type.Method;
 import org.springframework.graal.type.MissingTypeException;
@@ -104,6 +105,18 @@ public class ResourcesHandler {
 		}
 		processSpringFactories();
 		handleSpringComponents();
+		handleSpringConstants();
+	}
+
+	private void handleSpringConstants() {
+		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		System.out.println("Registering fixed entries: "+constantHints);
+		for (CompilationHint ch: constantHints) {
+			Map<String, Integer> dependantTypes = ch.getDependantTypes();
+			for (Map.Entry<String,Integer> dependantType: dependantTypes.entrySet()) {
+				reflectionHandler.addAccess(dependantType.getKey(), null, true,AccessBits.getFlags(dependantType.getValue()));
+			}
+		}
 	}
 
 	public void handleSpringComponents() {

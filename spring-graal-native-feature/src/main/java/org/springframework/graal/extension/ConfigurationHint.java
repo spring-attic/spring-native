@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigurationHint {
 	
-	public Class<?> value();
+	public Class<?> value() default Object.class;
 
 	public TypeInfo[] typeInfos() default {};
 	

@@ -9,6 +9,7 @@ org.springframework.boot.autoconfigure.task.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints
 org.springframework.boot.context.properties.Hints
 org.springframework.context.annotation.Hints
+org.springframework.core.annotation.Hints
 org.springframework.data.web.config.Hints
 org.springframework.hateoas.config.Hints
 org.springframework.security.config.annotation.web.configuration.Hints

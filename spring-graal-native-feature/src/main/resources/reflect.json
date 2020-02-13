@@ -13,36 +13,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	//{
-	//	"name": "javax.persistence.Entity",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
-	//{
-	//	"name": "org.springframework.data.repository.PagingAndSortingRepository",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
-	//{
-	//	"name": "org.springframework.data.repository.CrudRepository",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
-	//{
-	//	"name": "org.springframework.data.repository.Repository",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
-	//{
-	//	"name": "org.springframework.data.jpa.repository.JpaRepository",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
-	//{
-	//	"name": "app.main.model.FooRepository",
-	//	"allDeclaredConstructors": true,
-	//	"allDeclaredMethods": true
-	//}//,
 	// vvv vanilla-jpa vvv
     {
 		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
@@ -75,7 +45,6 @@
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
-
        {
                "name": "java.sql.Statement",
                "allDeclaredConstructors": true,
@@ -107,7 +76,6 @@
 // END
 
 // vvv vanilla-tx
-{"name":"org.springframework.context.annotation.AutoProxyRegistrar","allDeclaredConstructors":true,"allDeclaredMethods":true},
 {"name":"org.springframework.transaction.TransactionManager"},
 {"name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
 {"name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
@@ -753,11 +721,6 @@
 	},
 	// these 5 are from BaseDefaultCodecs	
 	{
-		"name": "com.fasterxml.jackson.databind.ObjectMapper",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "com.fasterxml.jackson.core.JsonGenerator",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -837,10 +800,10 @@
 		"name": "org.springframework.boot.context.TypeExcludeFilter",
 		"allDeclaredConstructors": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.cache.CacheCondition",
-		"allDeclaredConstructors": true
-	},
+	//{
+	//	"name": "org.springframework.boot.autoconfigure.cache.CacheCondition",
+	//	"allDeclaredConstructors": true
+	//},
 	{
 		"name": "org.springframework.boot.CommandLineRunner",
 		"allDeclaredConstructors": true,
@@ -891,11 +854,11 @@
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
 		"allDeclaredConstructors": true
 	},
-	{
-		"name": "org.springframework.boot.task.TaskExecutorBuilder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.task.TaskExecutorBuilder",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar",
 		"allDeclaredConstructors": true
@@ -1461,11 +1424,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.core.annotation.Order",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.context.support.GenericApplicationContext",
 		"methods": [
 			{
@@ -1479,10 +1437,6 @@
 		"name": "org.springframework.context.event.GenericApplicationListener",
 		"allDeclaredConstructors": true
 	//	"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.stereotype.Component",
-		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.beans.factory.annotation.Qualifier",
@@ -1588,67 +1542,6 @@
 	},
 	{
 		"name": "org.yaml.snakeyaml.Yaml"
-	},
-	// Simple rabbit app
-	{
-		"name": "org.springframework.amqp.core.Queue",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.rabbit.annotation.RabbitListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.rabbit.connection.ChannelProxy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.rabbitmq.client.Channel",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.rabbitmq.client.ShutdownNotifier",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.rabbit.annotation.RabbitListenerAnnotationBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-   	{
-		"name": "org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.amqp.DirectRabbitListenerContainerFactoryConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.rabbit.connection.CachingConnectionFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.core.AnonymousQueue",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.amqp.core.AmqpAdmin",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.reactivestreams.Publisher",
