@@ -69,6 +69,15 @@ public class TypeTests {
 	}
 
 	@Test
+	public void defaultValue() {
+		Type testClass = typeSystem.resolveName(TestClass1a.class.getName());
+		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		assertEquals(1, compilationHints.size());
+		CompilationHint ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTargetType());
+	}
+
+	@Test
 	public void configurationHintConversion2() {
 		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
 		List<CompilationHint> compilationHints = testClass.getCompilationHints();
@@ -138,6 +147,10 @@ public class TypeTests {
 
 	@ConfigurationHint(value = Integer.class)
 	static class TestClass1 {
+	}
+
+	@ConfigurationHint
+	static class TestClass1a {
 	}
 
 	@ConfigurationHint(value = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
