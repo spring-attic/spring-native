@@ -86,33 +86,6 @@
                "allDeclaredConstructors": true,
                "allDeclaredMethods": true
        },
-
-       {
-               "name": "org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.springframework.aop.framework.ProxyProcessorSupport",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.springframework.aop.framework.ProxyConfig",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-
        {
                "name": "java.util.logging.LogManager",
                "allDeclaredConstructors": true,
