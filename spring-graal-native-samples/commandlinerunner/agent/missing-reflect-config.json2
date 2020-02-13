@@ -1,0 +1,4 @@
+{"name": "org.springframework.context.support.PropertySourcesPlaceholderConfigurer", "allDeclaredConstructors":true},
+{"name": "org.springframework.boot.diagnostics.FailureAnalyzers", "allDeclaredConstructors":true},
+{"name": "org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration", "allDeclaredConstructors":true},
+{"name": "org.springframework.boot.autoconfigure.aop.AopAutoConfiguration$ClassProxyingConfiguration","allDeclaredConstructors":true},

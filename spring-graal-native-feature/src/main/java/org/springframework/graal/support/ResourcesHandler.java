@@ -40,7 +40,7 @@ import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
-import org.springframework.graal.type.AccessRequired;
+import org.springframework.graal.type.AccessBits;
 import org.springframework.graal.type.Hint;
 import org.springframework.graal.type.Method;
 import org.springframework.graal.type.MissingTypeException;
@@ -87,6 +87,7 @@ public class ResourcesHandler {
 	public void register(BeforeAnalysisAccess access) {
 		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
 		ts = TypeSystem.get(cl.getClasspath());
+
 		ResourcesDescriptor rd = compute();
 		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		// Patterns can be added to the registry, resources can be directly registered
@@ -271,7 +272,7 @@ public class ResourcesHandler {
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+					typesToMakeAccessible.request(type.getDottedName(), AccessBits.RESOURCE|AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -279,7 +280,7 @@ public class ResourcesHandler {
 				}
 			} else {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+					typesToMakeAccessible.request(type.getDottedName(), AccessBits.RESOURCE|AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
 					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
@@ -287,7 +288,7 @@ public class ResourcesHandler {
 			}
 		} else {
 			if (typesToMakeAccessible != null) {
-				typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CMC);
+				typesToMakeAccessible.request(type.getDottedName(), AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS|AccessBits.RESOURCE);//TypeKind.REGISTRAR);AccessBits // TODO why no class here? how can it work without the others...
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -544,7 +545,7 @@ public class ResourcesHandler {
 	 * 
 	 * @param tar
 	 */
-	private boolean registerSpecific(String typename, AccessRequired accessRequired, TypeAccessRequestor tar) {
+	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
 		if (t != null) {
 			// System.out.println("> registerSpecific for "+typename+" ar="+accessRequired);
@@ -557,14 +558,15 @@ public class ResourcesHandler {
 			}
 			if (importRegistrarOrSelector) {
 				// reflectionHandler.addAccess(typename,Flag.allDeclaredConstructors);
-				tar.request(typename, AccessRequired.REGISTRAR);
+				tar.request(typename, AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS);//TypeKind.REGISTRAR);
 			} else {
-				if (accessRequired.isResourceAccess()) {
-					tar.request(typename, AccessRequired.request(true, accessRequired.getFlags()));
+				if (AccessBits.isResourceAccessRequired(typeKind)) {
+					tar.request(typename, AccessBits.RESOURCE );
+					tar.request(typename, typeKind);
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-					tar.request(typename, AccessRequired.request(false, accessRequired.getFlags()));
+					tar.request(typename, typeKind);
 				}
 				if (t.isAtConfiguration()) {
 					// This is because of cases like Transaction auto configuration where the
@@ -633,9 +635,9 @@ public class ResourcesHandler {
 				// This is used for hints that didn't gather data from the bytecode but had them
 				// directly encoded. For example when a CompilationHint on an ImportSelector encodes
 				// the types that might be returned from it.
-				Map<String, AccessRequired> specificNames = hint.getSpecificTypes();
+				Map<String, Integer> specificNames = hint.getSpecificTypes();
 				SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
-				for (Map.Entry<String, AccessRequired> specificNameEntry : specificNames.entrySet()) {
+				for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 					String specificTypeName = specificNameEntry.getKey();
 					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
 						if (hint.isSkipIfTypesMissing()) {
@@ -650,9 +652,9 @@ public class ResourcesHandler {
 					}
 				}
 
-				Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
+				Map<String, Integer> inferredTypes = hint.getInferredTypes();
 				SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
-				for (Map.Entry<String, AccessRequired> inferredType : inferredTypes.entrySet()) {
+				for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 					String s = inferredType.getKey();
 					Type t = ts.resolveDotted(s, true);
 					boolean exists = (t != null);
@@ -739,7 +741,7 @@ public class ResourcesHandler {
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					tar.request(t.getDottedName(), AccessRequired.EXISTENCE_CHECK);
+					tar.request(t.getDottedName(), AccessBits.CLASS);//TypeKind.EXISTENCE_CHECK);//AccessRequired.EXISTENCE_CHECK);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -765,7 +767,7 @@ public class ResourcesHandler {
 						// I believe null means that type is not on the classpath so skip further analysis
 						continue;
 					} else {
-						tar.request(returnType.getDottedName(),  AccessRequired.EXISTENCE_MC);
+						tar.request(returnType.getDottedName(),  AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS);
 					}
 					
 					// Processing this kind of thing, parameter types need to be exposed
@@ -804,17 +806,17 @@ public class ResourcesHandler {
 						// when a CompilationHint on an ImportSelector encodes the types that might be
 						// returned from it.
 						// (see the static initializer in Type for examples)
-						Map<String, AccessRequired> specificNames = hint.getSpecificTypes();
+						Map<String, Integer> specificNames = hint.getSpecificTypes();
 						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
 								+ " specific types");
-						for (Map.Entry<String, AccessRequired> specificNameEntry : specificNames.entrySet()) {
+						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), tar);
 						}
 
-						Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
+						Map<String, Integer> inferredTypes = hint.getInferredTypes();
 						SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size()
 								+ " inferred types");
-						for (Map.Entry<String, AccessRequired> inferredType : inferredTypes.entrySet()) {
+						for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 							String s = inferredType.getKey();
 							Type t = ts.resolveDotted(s, true);
 							boolean exists = (t != null);
@@ -841,7 +843,6 @@ public class ResourcesHandler {
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
 					}	
-					
 						
 					// Register other runtime visible annotations from the @Bean method. For example this ensures @Role is visible on:
 					// @Bean
@@ -850,7 +851,7 @@ public class ResourcesHandler {
 					// public static LocalValidatorFactoryBean defaultValidator() {
 					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
 					for (Type annotationOnMethod: annotationsOnMethod) {
-						tar.request(annotationOnMethod.getDottedName(),AccessRequired.ANNOTATION);
+						tar.request(annotationOnMethod.getDottedName(),AccessBits.ANNOTATION);
 					}
 				}
 			}
@@ -861,7 +862,7 @@ public class ResourcesHandler {
 					SpringFeature.log(spaces(depth) + "followed " + t.getName() + " and it failed validation");
 				}
 			}
-			for (Map.Entry<String, AccessRequired> t : tar.entrySet()) {
+			for (Map.Entry<String, Integer> t : tar.entrySet()) {
 				String dname = t.getKey();
 				
 				// Let's produce a message if this computed value is also in reflect.json
@@ -870,19 +871,20 @@ public class ResourcesHandler {
 					System.out.println("This is in the constant data, does it need to stay in there? "+dname+"  (dynamically requested access is "+t.getValue()+")");
 				}
 				
-				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + t.getValue());
-				Flag[] flags = t.getValue().getFlags();
+				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
+				Flag[] flags = AccessBits.getFlags(t.getValue());//.getFlags();
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, true);
+						System.out.println(">>>>"+dname);
+						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, false);
 					} else {
-						reflectionHandler.addAccess(dname, null, true, flags);
+						reflectionHandler.addAccess(dname, null, false, flags);
 					}
 				} else {
-					reflectionHandler.addAccess(dname, null, true, flags);
+					reflectionHandler.addAccess(dname, null, false, flags);
 				}
-				if (t.getValue().isResourceAccess()) {
+				if (AccessBits.isResourceAccessRequired(t.getValue())) {//.isResourceAccessRequired()) {
 					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".") + ".class");
 				}
 			}
@@ -912,7 +914,7 @@ public class ResourcesHandler {
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
-			tar.request(t.getDottedName(), t.isAnnotation() ? AccessRequired.ANNOTATION : AccessRequired.ALL);
+			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
 			/*
 			 * if (i==0) { tar.request(t.getDottedName(), AccessRequired.ALL); } else {
 			 * tar.request(t.getDottedName(), AccessRequired.ANNOTATION); }

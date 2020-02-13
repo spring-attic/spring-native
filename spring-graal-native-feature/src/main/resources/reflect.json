@@ -13,36 +13,37 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "javax.persistence.Entity",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.PagingAndSortingRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.CrudRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.Repository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.repository.JpaRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "app.main.model.FooRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+	//{
+	//	"name": "javax.persistence.Entity",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	//{
+	//	"name": "org.springframework.data.repository.PagingAndSortingRepository",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	//{
+	//	"name": "org.springframework.data.repository.CrudRepository",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	//{
+	//	"name": "org.springframework.data.repository.Repository",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	//{
+	//	"name": "org.springframework.data.jpa.repository.JpaRepository",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	//{
+	//	"name": "app.main.model.FooRepository",
+	//	"allDeclaredConstructors": true,
+	//	"allDeclaredMethods": true
+	//}//,
+	// vvv vanilla-jpa vvv
     {
 		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
 		"allDeclaredConstructors": true,

@@ -40,14 +40,14 @@ public class Hint {
 	private boolean follow;
 
 	// These are the types pulled directly from the compilation hint (e.g. for ImportSelectors/registrars)
-	private Map<String, AccessRequired> specificTypes;
+	private Map<String, Integer> specificTypes;
 
 	// These are pulled from the particular application of the hint (e.g. @ConditionalOnClass has a hint and when
 	// @COC seen, these are the types pulled from the @COC)
-	private Map<String, AccessRequired> inferredTypes;
+	private Map<String, Integer> inferredTypes;
 
 	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
-			boolean follow, Map<String, AccessRequired> specificTypes,Map<String,AccessRequired> inferredTypes) {
+			boolean follow, Map<String, Integer> specificTypes,Map<String,Integer> inferredTypes) {
 		this.annotationChain = annotationChain;
 		this.skipIfTypesMissing = skipIfTypesMissing;
 		this.follow = follow;
@@ -67,11 +67,11 @@ public class Hint {
 		return follow;
 	}
 	
-	public Map<String,AccessRequired> getSpecificTypes() {
+	public Map<String,Integer> getSpecificTypes() {
 		return specificTypes;
 	}
 	
-	public Map<String, AccessRequired> getInferredTypes() {
+	public Map<String, Integer> getInferredTypes() {
 		return inferredTypes;
 	}
 	
@@ -87,15 +87,15 @@ public class Hint {
 		return s.toString();
 	}
 	
-	private String shorten(Map<String, AccessRequired> types) {
+	private String shorten(Map<String, Integer> types) {
 		StringBuilder s = new StringBuilder();
 		int i=0;
 		s.append("[");
-		for (Map.Entry<String, AccessRequired> entry: types.entrySet()) {
+		for (Map.Entry<String, Integer> entry: types.entrySet()) {
 			if (i>0) {
 				s.append(",");
 			}
-			s.append(shorten(entry.getKey())).append(":").append(entry.getValue());
+			s.append(shorten(entry.getKey())).append(":").append(AccessBits.toString(entry.getValue()));
 			i++;
 		}
 		s.append("]");

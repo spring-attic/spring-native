@@ -38,13 +38,25 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.ConfigurationHints;
 import org.springframework.graal.support.SpringFeature;
-import org.springframework.graal.type.SpringConfiguration.CompilationHint;
 
 /**
  * @author Andy Clement
  */
 public class Type {
+	
+	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
+ 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
+	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
+	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
+	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
+	public final static String ImportBeanDefinitionRegistrar ="Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
+	public final static String ImportSelector ="Lorg/springframework/context/annotation/ImportSelector;";
+	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
+
 	
 	public final static Type MISSING = new Type(null, null);
 
@@ -57,6 +69,7 @@ public class Type {
 	private ClassNode node;
 	
 	private Type[] interfaces;
+
 
 	public Type(TypeSystem typeSystem, ClassNode node) {
 		this.typeSystem = typeSystem;
@@ -191,7 +204,7 @@ public class Type {
 	}
 	
 	public List<Method> getMethodsWithAtBean() {
-		return getMethodsWithAnnotation(SpringConfiguration.AtBean);
+		return getMethodsWithAnnotation(AtBean);
 	}
 
 	public Method wrap(MethodNode mn) {
@@ -472,7 +485,7 @@ public class Type {
 	
 	public boolean isCondition() {
 		try {
-			return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.Condition));
+			return implementsInterface(fromLdescriptorToSlashed(Condition));
 		} catch (MissingTypeException mte) {
 			return false;
 		}
@@ -489,7 +502,7 @@ public class Type {
 
 	
 	public boolean isAtConfiguration() {
-		return isMetaAnnotated(fromLdescriptorToSlashed(SpringConfiguration.AtConfiguration), new HashSet<>());
+		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
 	}
 	
 	public boolean isAbstractNestedCondition() {
@@ -523,11 +536,11 @@ public class Type {
 
 	
 	public List<String> findConditionalOnMissingBeanValue() {
-		 List<String> findAnnotationValue = findAnnotationValue(SpringConfiguration.AtConditionalOnMissingBean, false);
+		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnMissingBean, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
 					for (AnnotationNode an : node.visibleAnnotations) {
-						if (an.desc.equals(SpringConfiguration.AtConditionalOnMissingBean)) {
+						if (an.desc.equals(AtConditionalOnMissingBean)) {
 							System.out.println("??? found nothing on this @COC annotated thing "+this.getName());
 						}
 					}
@@ -537,11 +550,11 @@ public class Type {
 	}
 
 	public List<String> findConditionalOnClassValue() {
-		 List<String> findAnnotationValue = findAnnotationValue(SpringConfiguration.AtConditionalOnClass, false);
+		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnClass, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
 					for (AnnotationNode an : node.visibleAnnotations) {
-						if (an.desc.equals(SpringConfiguration.AtConditionalOnClass)) {
+						if (an.desc.equals(AtConditionalOnClass)) {
 							System.out.println("??? found nothing on this @COC annotated thing "+this.getName());
 						}
 					}
@@ -551,12 +564,12 @@ public class Type {
 	}
 	
 	public List<String> findEnableConfigurationPropertiesValue() {
-		 List<String> values = findAnnotationValue(SpringConfiguration.AtEnableConfigurationProperties, false);
+		 List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false);
 		 return values;
 	}
 
 	public Map<String,List<String>> findImports() {
-		 return findAnnotationValueWithHostAnnotation(SpringConfiguration.AtImports, true, new HashSet<>());
+		 return findAnnotationValueWithHostAnnotation(AtImports, true, new HashSet<>());
 	}
 		
 	public List<String> findAnnotationValue(String annotationType, boolean searchMeta) {		
@@ -795,11 +808,13 @@ public class Type {
 	 */
 	public List<Hint> getHints() {
 		List<Hint> hints = new ArrayList<>();
-		CompilationHint hint = SpringConfiguration.findProposedHints(getDescriptor());//proposedHints.get(getDescriptor());
-		if (hint !=null) {
+		List<CompilationHint> hintx = typeSystem.findHints(getName());//SpringConfiguration.findProposedHints(getName());
+		if (hintx.size() != 0) {
 			List<Type> s = new ArrayList<>();
 			s.add(this);
-			hints.add(new Hint(s, hint.skipIfTypesMissing, hint.follow, hint.specificTypes, Collections.emptyMap()));
+			for (CompilationHint hintxx: hintx) {
+				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(), Collections.emptyMap()));
+			}
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
@@ -830,11 +845,13 @@ public class Type {
 		try {
 			annotationChain.push(this);
 			// Am I a compilation hint?
-			CompilationHint hint = SpringConfiguration.findProposedHints(an.desc);
-			if (hint !=null) {
+			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);//;SpringConfiguration.findProposedHints(an.desc);
+			if (hints2.size() !=0) {
 				List<String> typesCollectedFromAnnotation = collectTypes(an);
-				hints.add(new Hint(new ArrayList<>(annotationChain), hint.skipIfTypesMissing, 
-					hint.follow, hint.specificTypes, asMap(typesCollectedFromAnnotation,hint.skipIfTypesMissing)));
+				for (CompilationHint hints2a: hints2) {
+				hints.add(new Hint(new ArrayList<>(annotationChain), hints2a.skipIfTypesMissing, 
+					hints2a.follow, hints2a.getDependantTypes(), asMap(typesCollectedFromAnnotation,hints2a.skipIfTypesMissing)));
+				}
 			}
 			// check for meta annotation
 			if (node.visibleAnnotations != null) {
@@ -852,16 +869,16 @@ public class Type {
 		}
 	}
 
-	private Map<String, AccessRequired> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
-		Map<String, AccessRequired> map = new HashMap<>();
+	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
+		Map<String, Integer> map = new HashMap<>();
 		for (String t: typesCollectedFromAnnotation) {
 			Type type = typeSystem.Lresolve(t,true);
-			AccessRequired ar = null;
+			int ar = -1;
 			if (usingForVisibilityCheck) {
-				ar = AccessRequired.EXISTENCE_CHECK;
+				ar = AccessBits.CLASS;//TypeKind.EXISTENCE_CHECK;
 			} else {
 				if (type != null && (type.isCondition() || type.isEventListener())) {
-					ar = AccessRequired.RESOURCE_CTORS_ONLY;
+					ar = AccessBits.RESOURCE|AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS;//TypeKind.RESOURCE_AND_INSTANTIATION;//AccessRequired.RESOURCE_CTORS_ONLY;
 					if (type.isAbstractNestedCondition()) {
 						// Need to pull in member types of this condition
 						//Type[] memberTypes = type.getMemberTypes();
@@ -870,7 +887,7 @@ public class Type {
 						//}
 					}
 				} else {
-					ar = AccessRequired.ALL;
+					ar = AccessBits.EVERYTHING;//TypeKind.EVERYTHING;
 				}
 			}
 			map.put(fromLdescriptorToDotted(t), ar);
@@ -893,20 +910,20 @@ public class Type {
 		return result.toArray(new Type[0]);
 	}
 
-	private CompilationHint findCompilationHintHelper(HashSet<Type> visited) {
+	private List<CompilationHint> findCompilationHintHelper(HashSet<Type> visited) {
 		if (!visited.add(this)) {
 			return null;
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				CompilationHint compilationHint = SpringConfiguration.findProposedHints(an.desc);
-				if (compilationHint != null) {
-					return compilationHint;
+				List<CompilationHint> compilationHints = typeSystem.findHints(an.desc);//SpringConfiguration.findProposedHints(an.desc);
+				if (compilationHints.size()!=0) {
+					return compilationHints;
 				}
 				Type resolvedAnnotation = typeSystem.Lresolve(an.desc);
-				compilationHint = resolvedAnnotation.findCompilationHintHelper(visited);
-				if (compilationHint != null) {
-					return compilationHint;
+				compilationHints = resolvedAnnotation.findCompilationHintHelper(visited);
+				if (compilationHints.size()!=0) {
+					return compilationHints;
 				}
 			}
 		}
@@ -938,11 +955,11 @@ public class Type {
 	}
 
 	public boolean isImportSelector() {
-		return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.ImportSelector));
+		return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
 	}
 	
 	public boolean isImportRegistrar() {
-		return implementsInterface(fromLdescriptorToSlashed(SpringConfiguration.ImportBeanDefinitionRegistrar));
+		return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
 	}
 	
 	private String fromLdescriptorToSlashed(String Ldescriptor) {
@@ -953,11 +970,11 @@ public class Type {
 		return Ldescriptor.substring(1,Ldescriptor.length()-1).replace("/",".");
 	}
 	
-	private CompilationHint findCompilationHint(Type annotationType) {
+	private List<CompilationHint> findCompilationHint(Type annotationType) {
 		String descriptor = "L"+annotationType.getName().replace(".", "/")+";";
-		CompilationHint hint = SpringConfiguration.findProposedHints(descriptor);
-		if (hint !=null) {
-			return hint;
+		List<CompilationHint> hints = typeSystem.findHints(descriptor);//SpringConfiguration.findProposedHints(descriptor);
+		if (hints.size()!=0) {
+			return hints;
 		} else {
 			// check for meta annotation
 			return annotationType.findCompilationHintHelper(new HashSet<>());
@@ -1041,5 +1058,147 @@ public class Type {
 			return false;
 		}
 	}
+
+	/**
+	 * Find the @ConfigurationHint annotations on this type (may be more than one)
+	 * and from them build CompilationHints, taking care to convert class references
+	 * to strings because they may not be resolvable. TODO ok to discard those that
+	 * aren't resolvable at this point?
+	 * 
+	 * @return
+	 */
+	public List<CompilationHint> unpackConfigurationHints() {
+		List<CompilationHint> hints = null;
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode an : node.visibleAnnotations) {
+				if (fromLdescriptorToDotted(an.desc).equals(ConfigurationHint.class.getName())) {
+					CompilationHint hint = fromConfigurationHintToCompilationHint(an);
+					if (hints == null) {
+						hints = new ArrayList<>();
+					}
+					hints.add(hint);
+				} else if (fromLdescriptorToDotted(an.desc).equals(ConfigurationHints.class.getName())) {
+					List<CompilationHint> chints = fromConfigurationHintsToCompilationHints(an);
+					if (hints == null) {
+						hints = new ArrayList<>();
+					}
+					hints.addAll(chints);
+				}
+			}
+		}
+		// TODO support repeatable version
+		return hints==null?Collections.emptyList():hints;
+	}
+
+	@SuppressWarnings("unchecked")
+	private CompilationHint fromConfigurationHintToCompilationHint(AnnotationNode an) {
+		CompilationHint ch = new CompilationHint();
+		List<Object> values = an.values;
+		for (int i=0;i<values.size();i+=2){ 
+			String key = (String)values.get(i);
+			Object value = values.get(i+1);
+			if (key.equals("value")) {
+				// value(String)=Ljava/lang/String;(org.objectweb.asm.Type)
+				ch.setTargetType(((org.objectweb.asm.Type)value).getClassName());
+				/*
+			} else if (key.equals("types")) {
+				// types=[Ljava/lang/String;, Ljava/lang/Float;](class java.util.ArrayList)
+				ArrayList<org.objectweb.asm.Type> types = (ArrayList<org.objectweb.asm.Type>)value;
+			    for (org.objectweb.asm.Type type: types) {
+			    		ch.addDependantType(type.getClassName(), inferTypeKind(type));
+			    }
+			*/
+			} else if (key.equals("typeInfos")) {
+				List<AnnotationNode> typeInfos = (List<AnnotationNode>)value;
+				for (AnnotationNode typeInfo: typeInfos) {
+					unpackTypeInfo(typeInfo, ch);
+				}
+			} else if (key.equals("abortIfTypesMissing")) {
+				Boolean b = (Boolean)value;
+				ch.setAbortIfTypesMissing(b);
+			} else if (key.equals("follow")) {
+				Boolean b = (Boolean)value;
+				ch.setFollow(b);
+			} else {
+				System.out.println("annotation "+key+"="+value+"("+value.getClass()+")");
+			}
+		}
+		return ch;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void unpackTypeInfo(AnnotationNode typeInfo, CompilationHint ch) {
+		List<Object> values = typeInfo.values;
+		List<org.objectweb.asm.Type> types = new ArrayList<>();
+		List<String> typeNames = new ArrayList<>();
+		int accessRequired = -1;
+		for (int i=0;i<values.size();i+=2){ 
+			String key = (String)values.get(i);
+			Object value = values.get(i+1);
+			if (key.equals("types")) {
+				types = (ArrayList<org.objectweb.asm.Type>)value;
+			} else if (key.equals("access")) {
+				accessRequired = (Integer)value;
+			} else if (key.equals("typeNames")) {
+				typeNames = (ArrayList<String>)value;
+			}
+		}
+		for (org.objectweb.asm.Type type: types) {
+			ch.addDependantType(type.getClassName(), accessRequired==-1?inferTypeKind(type):accessRequired);
+		}
+		for (String typeName: typeNames) {
+			Type resolvedType = typeSystem.resolveName(typeName,true);
+			if (resolvedType != null) {
+				ch.addDependantType(typeName, accessRequired==-1?inferTypeKind(resolvedType):accessRequired);
+			}
+			
+		}
+	}
+
+	private int inferTypeKind(Type t) {
+		if (t == null) {
+			return AccessBits.NONE;
+		}
+		if (t.isAtConfiguration()) {
+			return AccessBits.CONFIGURATION;
+		} else {
+			return AccessBits.ALL; // TODO this is wrong!
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<CompilationHint> fromConfigurationHintsToCompilationHints(AnnotationNode an) {
+		List<CompilationHint> chs = new ArrayList<>();
+		List<Object> values = an.values;
+		for (int i=0;i<values.size();i+=2){ 
+			String key = (String)values.get(i);
+			Object value = values.get(i+1);
+			if (key.equals("value")) {
+				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee, org.objectweb.asm.tree.AnnotationNode@68fb2c38]
+				List<AnnotationNode> annotationNodes = (List<AnnotationNode>)value;
+				for (int j=0;j<annotationNodes.size();j++) {
+					chs.add(fromConfigurationHintToCompilationHint(annotationNodes.get(j)));
+				}
+			}
+		}
+		return chs;
+	}
+	
+	private int inferTypeKind(org.objectweb.asm.Type type) {
+		Type t = typeSystem.resolve(type, true);
+		if (t == null) {
+			return AccessBits.NONE;
+		}
+		if (t.isAtConfiguration()) {
+			return AccessBits.CONFIGURATION;
+		} else {
+			return AccessBits.ALL; // TODO this is wrong!
+		}
+	}
+
+	public List<CompilationHint> getCompilationHints() {
+		return unpackConfigurationHints();
+	}
+	
 	
 }
