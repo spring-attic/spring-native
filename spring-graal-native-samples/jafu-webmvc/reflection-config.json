@@ -15,11 +15,6 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.apache.tomcat.websocket.server.WsContextListener",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.springframework.web.servlet.view.BeanNameViewResolver",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
