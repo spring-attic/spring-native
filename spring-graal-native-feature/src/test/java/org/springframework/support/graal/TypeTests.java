@@ -43,6 +43,12 @@ public class TypeTests {
 		// System.out.println(file.getCanonicalPath());
 		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
 	}
+	
+	@Test
+	public void conversions() {
+		String c = Type.fromLdescriptorToSlashed("[Ljava/lang/String;");
+		assertEquals("java/lang/String[]",c);
+	}
 
 	@Test
 	public void simpleResolution() {
@@ -76,6 +82,17 @@ public class TypeTests {
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(Object.class.getName(), ch.getTargetType());
 	}
+
+	@Test
+	public void arrayValue() {
+		Type testClass = typeSystem.resolveName(TestClass1b.class.getName());
+		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		assertEquals(1, compilationHints.size());
+		CompilationHint ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTargetType());
+		assertEquals("java.lang.String[]",ch.getDependantTypes().keySet().iterator().next().toString());
+	}
+
 
 	@Test
 	public void configurationHintConversion2() {
@@ -151,6 +168,10 @@ public class TypeTests {
 
 	@ConfigurationHint
 	static class TestClass1a {
+	}
+
+	@ConfigurationHint(typeInfos= {@TypeInfo(types= {String[].class})})
+	static class TestClass1b {
 	}
 
 	@ConfigurationHint(value = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })

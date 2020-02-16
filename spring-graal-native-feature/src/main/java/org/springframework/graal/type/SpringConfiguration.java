@@ -47,7 +47,6 @@ public class SpringConfiguration {
 				System.out.println("Found "+hints.size()+" hints: "+hints);
 				for (CompilationHint hint: hints) {
 				  List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());
-				  System.out.println("TT:"+hint.getTargetType());
 				  if (existingHints == null) {
 					  existingHints = new ArrayList<>();
 					  proposedHints.put(hint.getTargetType(), existingHints);
