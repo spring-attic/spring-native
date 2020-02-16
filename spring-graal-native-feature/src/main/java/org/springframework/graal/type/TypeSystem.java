@@ -130,11 +130,21 @@ public class TypeSystem {
 		if (type != null) {
 			return type;
 		}
-		byte[] bytes = find(slashedTypeName);
+		int dimensions = 0;
+		String typeToLocate = slashedTypeName;
+		if (slashedTypeName.endsWith("[]")) {
+			String n = slashedTypeName;
+			while (n.endsWith("[]")) {
+				dimensions++;
+				n = n.substring(0,n.length()-2);
+			}
+			typeToLocate = n;
+		}
+		byte[] bytes = find(typeToLocate);
 		if (bytes == null) {
 			// System class?
 			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(slashedTypeName + ".class");
+					.getResourceAsStream(typeToLocate + ".class");
 			if (resourceAsStream == null) {
 				// cache a missingtype so we don't go looking again!
 				typeCache.put(slashedTypeName, Type.MISSING);
@@ -153,7 +163,7 @@ public class TypeSystem {
 		ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, ClassReader.SKIP_DEBUG);
-		type = Type.forClassNode(this, node);
+		type = Type.forClassNode(this, node,dimensions);
 		typeCache.put(slashedTypeName, type);
 		return type;
 	}

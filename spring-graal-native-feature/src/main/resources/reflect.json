@@ -28,10 +28,7 @@
 		"name": "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]",
 		"allDeclaredConstructors": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigureAfter",
-		"allDeclaredMethods": true
-	},
+
 // vanilla-jpa ^^^
 // This are related to getting petclinic to work, some need a deeper dive though (e.g. the
 // proxy related ones - we need to know if a spring aop proxy will be getting created)
@@ -75,11 +72,6 @@
 
 // END
 
-// vvv vanilla-tx
-{"name":"org.springframework.transaction.TransactionManager"},
-{"name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
-{"name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
-// ^^^
 	{// fixes petclinic removeUnusedAutoconfig - was being added via CassandraReactiveDataAC
 	 // need to figure out what should be pulling it in the general case.
 		"name": "reactor.core.publisher.Flux",
@@ -92,168 +84,7 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// vvv petclinic added as sfw 5.2 released and boot snapshots ~30-Sep-2019
-	{
-		"name": "org.hibernate.event.spi.ClearEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.EventType[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.MergeEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionRecreateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionRemoveEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionUpdateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostDeleteEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostInsertEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostLoadEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostUpdateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionRecreateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionRemoveEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionUpdateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreDeleteEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreInsertEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreLoadEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreUpdateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.RefreshEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.ReplicateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.SaveOrUpdateEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.LockEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.InitializeCollectionEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.ResolveNaturalIdEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.LoadEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.FlushEntityEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.FlushEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.EvictEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.DirtyCheckEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.DeleteEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.AutoFlushEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PersistEventListener[]",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	// vvv petclinic
-	{
-		"name": "org.hibernate.validator.internal.util.logging.Log_$logger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	{
 		"name": "org.thymeleaf.extras.java8time.expression.Temporals",
 		"allDeclaredConstructors": true,
@@ -272,27 +103,6 @@
 		"allDeclaredMethods": true
 	},
 	// ^^ vanilla-grpc
-	// These two are from CodecConfigurer.properties
-	{
-		"name": "org.springframework.http.codec.support.DefaultClientCodecConfigurer",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
-	{
-		"name": "org.springframework.http.codec.support.DefaultServerCodecConfigurer",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
 	{
 		"name": "org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl",
 		"allDeclaredConstructors": true,
@@ -300,167 +110,6 @@
 	},
 	{
 		"name": "org.hibernate.annotations.common.Version",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.AutoFlushEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.ClearEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.DeleteEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.DirtyCheckEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.EvictEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.FlushEntityEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.FlushEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.InitializeCollectionEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.LoadEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.LockEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.MergeEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PersistEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionRecreateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionRemoveEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostCollectionUpdateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostDeleteEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostInsertEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostLoadEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PostUpdateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionRecreateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionRemoveEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreCollectionUpdateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreDeleteEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreInsertEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreLoadEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.PreUpdateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.RefreshEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.ReplicateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.ResolveNaturalIdEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.SaveOrUpdateEventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.event.spi.EventType",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.dialect.H2Dialect",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -476,16 +125,6 @@
 	},
 	{
 		"name": "org.hibernate.annotations.common.util.impl.Log",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -542,11 +181,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.hibernate.validator.HibernateValidatorConfiguration",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "javax.validation.spi.ConfigurationState",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -566,11 +200,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.http.client.reactive.ReactorResourceFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.http.client.reactive.ReactorResourceFactory",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor",
 		"allDeclaredConstructors": true
@@ -678,16 +312,16 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.web.reactive.function.client.WebClient$Builder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.client.RestTemplateBuilder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.web.reactive.function.client.WebClient$Builder",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.web.client.RestTemplateBuilder",
+//////		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
 		"allDeclaredConstructors": true
@@ -714,10 +348,6 @@
 	{
 		"name": "org.springframework.boot.autoconfigure.AutoConfigurationImportSelector",
 		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigureOrder",
-		"allDeclaredMethods": true
 	},
 	// these 5 are from BaseDefaultCodecs	
 	{
@@ -800,10 +430,6 @@
 		"name": "org.springframework.boot.context.TypeExcludeFilter",
 		"allDeclaredConstructors": true
 	},
-	//{
-	//	"name": "org.springframework.boot.autoconfigure.cache.CacheCondition",
-	//	"allDeclaredConstructors": true
-	//},
 	{
 		"name": "org.springframework.boot.CommandLineRunner",
 		"allDeclaredConstructors": true,
@@ -834,17 +460,8 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackage",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.context.event.EventListenerMethodProcessor",
 		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.context.annotation.ComponentScan",
-		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar",
@@ -868,11 +485,12 @@
 		"name": "org.springframework.context.annotation.ComponentScan$Filter",
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+	
+//	{
+//		"name": "org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// vanilla-thymeleaf related, starts here...
 //	{
 //		"name": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
@@ -939,11 +557,11 @@
 		"allDeclaredMethods": true
 	},
 	// vanilla-tx ^^^
-	{
-		"name": "org.springframework.boot.task.TaskSchedulerBuilder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.task.TaskSchedulerBuilder",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.validation.beanvalidation.MethodValidationPostProcessor",
 		"allDeclaredConstructors": true,
@@ -957,14 +575,6 @@
 	{
 		"name": "org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext",
 		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.annotation.Configuration",
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.annotation.Autowired",
 		"allDeclaredMethods": true
 	},
 	{
@@ -1025,26 +635,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.hibernate.validator.internal.util.logging.Messages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.internal.util.logging.Log",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.boot.autoconfigure.condition.BeanTypeRegistry",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -1055,116 +645,11 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.hibernate.persister.entity.SingleTableEntityPersister",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.cache.spi.access.CollectionDataAccess",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.mapping.PersistentClass",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.persister.spi.PersisterCreationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.cache.spi.access.NaturalIdDataAccess",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.cache.spi.access.EntityDataAccess",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.persister.entity.AbstractEntityPersister",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.persister.internal.PersisterClassResolverInitiator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.persister.spi.PersisterClassResolver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "org.springframework.transaction.support.TransactionTemplate",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	// These from DefaultIdentifierGeneratorFactory
-	{
-		"name": "org.hibernate.id.UUIDGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.GUIDGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.UUIDHexGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.Assigned",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.IdentityGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.SelectGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.enhanced.SequenceStyleGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.SequenceHiLoGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.IncrementGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.ForeignGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.SequenceIdentityGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.id.enhanced.TableGenerator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	{
 		"name": "app.main.model.Foo",
 		"allDeclaredConstructors": true,
@@ -1316,31 +801,7 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.hibernate.validator.internal.engine.resolver.JPATraversableResolver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.internal.engine.resolver.TraversableResolvers",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.resourceloading.PlatformResourceBundleLocator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.validator.internal.engine.ConfigurationImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+
 	{
 		"name": "java.lang.annotation.Repeatable",
 		"allDeclaredMethods": true
@@ -1547,28 +1008,28 @@
 		"name": "org.reactivestreams.Publisher",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
-	},
-	// plus spring integration
-	{
-		"name": "org.springframework.integration.config.IntegrationConfigurationBeanFactoryPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.integration.config.DefaultConfiguringBeanFactoryPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "reactor.core.publisher.Traces$StackWalkerCallSiteSupplierFactory",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "reactor.core.publisher.Traces$SharedSecretsCallSiteSupplierFactory",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory",
-		"allDeclaredConstructors": true
 	}
+	// plus spring integration
+//	{
+//		"name": "org.springframework.integration.config.IntegrationConfigurationBeanFactoryPostProcessor",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.integration.config.DefaultConfiguringBeanFactoryPostProcessor",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "reactor.core.publisher.Traces$StackWalkerCallSiteSupplierFactory",
+//		"allDeclaredConstructors": true
+//	},
+//	{
+//		"name": "reactor.core.publisher.Traces$SharedSecretsCallSiteSupplierFactory",
+//		"allDeclaredConstructors": true
+//	},
+//	{
+//		"name": "reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory",
+//		"allDeclaredConstructors": true
+//	}
 ]

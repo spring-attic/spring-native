@@ -560,6 +560,9 @@ public class ResourcesHandler {
 	 */
 	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
+		if (t==null) {
+			System.out.println("WARNING: UNABLE TO RESOLVE: "+typename);
+		}
 		if (t != null) {
 			// System.out.println("> registerSpecific for "+typename+" ar="+accessRequired);
 			boolean importRegistrarOrSelector = false;
@@ -898,7 +901,7 @@ public class ResourcesHandler {
 					reflectionHandler.addAccess(dname, null, false, flags);
 				}
 				if (AccessBits.isResourceAccessRequired(t.getValue())) {//.isResourceAccessRequired()) {
-					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".") + ".class");
+					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class");
 				}
 			}
 		}

@@ -15,16 +15,46 @@
  */
 package org.springframework.support.graal;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.Collections;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.graal.type.Type;
+import org.springframework.graal.type.TypeSystem;
 
 public class TypeSystemTest {
 
+	private static TypeSystem typeSystem;
+
+	@BeforeClass
+	public static void setup() throws Exception {
+		File file = new File("./target/classes");
+		// System.out.println(file.getCanonicalPath());
+		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
+	}
+
 	@Test
 	public void test() throws Exception {
-		File file = new File("./target/classes");
-		System.out.println(file.getCanonicalPath());
+		Type t= typeSystem.resolveName("java.lang.String");
+		assertNotNull(t);
+	}
+
+	@Test
+	public void testArray() throws Exception {
+		Type s = typeSystem.resolveName("java.lang.String");
+		assertEquals("Ljava/lang/String;", s.getDescriptor());
+		Type t = typeSystem.resolveName("java.lang.String[]");
+		assertNotNull(t);
+		assertEquals(1,t.getDimensions());
+		assertTrue(t.isArray());
+		assertEquals("[Ljava/lang/String;",t.getDescriptor());
+		assertEquals("java/lang/String[]",t.getName());
+		assertEquals("java.lang.String[]",t.getDottedName());
 	}
 
 }

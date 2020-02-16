@@ -8,18 +8,17 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigurationHint {
 	
+	/**
+	 * This is the target of the hint, i.e. what is being hinted about. For example a hint on @Import indicating there are
+	 * type references in its value fields.
+	 */
 	public Class<?> value() default Object.class;
 
 	public TypeInfo[] typeInfos() default {};
 	
-	//public Class<?>[] types() default {};
-
-	// Due to visibility reasons may not be able to directly refer to .class - so use fully qualified names here
-	//public String[] typeNames() default {};
-
 	/**
-	 * Names of the annotation attributes on the annotation this hint is attached to which contain type names
-	 * that should be extracted (and considered inferred).
+	 * Names of the annotation attributes on the target type which contain type names (as class references or strings).
+	 * The types referenced will be exposed for reflection.
 	 */
 	public String[] extractTypesFromAttributes() default {};
 

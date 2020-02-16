@@ -58,7 +58,7 @@ public class Type {
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
 
 	
-	public final static Type MISSING = new Type(null, null);
+	public final static Type MISSING = new Type(null, null, 0);
 
 	public final static Type[] NO_INTERFACES = new Type[0];
 
@@ -69,29 +69,42 @@ public class Type {
 	private ClassNode node;
 	
 	private Type[] interfaces;
+	
+	private String name;
 
+	private int dimensions = 0; // >0 for array types
 
-	public Type(TypeSystem typeSystem, ClassNode node) {
+	private Type(TypeSystem typeSystem, ClassNode node,int dimensions) {
 		this.typeSystem = typeSystem;
 		this.node = node;
+		this.dimensions = dimensions;
+		if (node != null) {
+		this.name = node.name;
+		for (int i=0;i<dimensions;i++) {
+			this.name+="[]";
+		}
+		}
 	}
 
-	public static Type forClassNode(TypeSystem typeSystem, ClassNode node) {
-		return new Type(typeSystem, node);
+	public static Type forClassNode(TypeSystem typeSystem, ClassNode node, int dimensions) {
+		return new Type(typeSystem, node,dimensions);
 	}
 
 	/**
 	 * @return typename in slashed form (aaa/bbb/ccc/Ddd$Eee)
 	 */
 	public String getName() {
-		return node.name;
+		return name;
 	}
 
 	public String getDottedName() {
-		return node.name.replace("/", ".");
+		return name.replace("/", ".");
 	}
 
 	public Type getSuperclass() {
+		if (dimensions>0) {
+			return typeSystem.resolveSlashed("java/lang/Object");
+		}
 		if (node.superName == null) {
 			return null;
 		}
@@ -102,9 +115,13 @@ public class Type {
 	public String toString() {
 		return "Type:"+getName();
 	}
+	
 
 	public Type[] getInterfaces() {
 		if (interfaces == null) {
+			if (dimensions !=0 ) {
+				interfaces = new Type[] {typeSystem.resolveSlashed("java/lang/Cloneable"),typeSystem.resolveSlashed("java/io/Serializable")};
+			} else {
 			List<String> itfs = node.interfaces;
 			if (itfs.size() == 0) {
 				interfaces = NO_INTERFACES;
@@ -114,22 +131,30 @@ public class Type {
 					interfaces[i] = typeSystem.resolveSlashed(itfs.get(i));
 				}
 			}
+			}
 		}
 		return interfaces;
 	}
 	
 	/** @return List of slashed interface types */
 	public List<String> getInterfacesStrings() {
+		if (dimensions!=0 ) {
+		List<String> itfs = new ArrayList<>();	
+		itfs.add("java/lang/Cloneable");
+		itfs.add("java/io/Serializable");
+		return itfs;
+		} else {
 		return node.interfaces;
+		}
 	}
 
 	/** @return slashed supertype name */
 	public String getSuperclassString() {
-		return node.superName;
+		return dimensions>0?"java/lang/Object":node.superName;
 	}
 	
 	public List<String> getTypesInSignature() {
-		if (node.signature == null) {
+		if (node.signature == null || dimensions>0) {
 			return Collections.emptyList();
 		} else {
 			SignatureReader reader = new SignatureReader(node.signature);
@@ -199,7 +224,7 @@ public class Type {
 	}
 
 	public List<Method> getMethodsWithAnnotation(String string) {
-		return node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
+		return dimensions>0?Collections.emptyList():node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
 				.collect(Collectors.toList());
 	}
 	
@@ -207,7 +232,7 @@ public class Type {
 		return getMethodsWithAnnotation(AtBean);
 	}
 
-	public Method wrap(MethodNode mn) {
+	private Method wrap(MethodNode mn) {
 		return new Method(mn,typeSystem);
 	}
 
@@ -247,6 +272,7 @@ public class Type {
 			return true;
 		}
 
+			System.out.println("A>A>A>"+this.getName());
 		if (this.getName().equals("Ljava/lang/Object;")) {
 			return true;
 		}
@@ -424,16 +450,22 @@ public class Type {
 	}
 
 	public boolean isInterface() {
-		return Modifier.isInterface(node.access);
+		return dimensions>0?false:Modifier.isInterface(node.access);
 	}
 	
 	public Map<String,String> getAnnotationValuesInHierarchy(String LdescriptorLookingFor) {
+		if (dimensions > 0) {
+			return Collections.emptyMap();
+		}
 		Map<String,String> collector = new HashMap<>();
 		getAnnotationValuesInHierarchy(LdescriptorLookingFor, new ArrayList<>(), collector);
 		return collector;
 	}
 
 	public void getAnnotationValuesInHierarchy(String lookingFor, List<String> seen,Map<String,String> collector) {
+		if (dimensions > 0) {
+			return;
+		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode anno : node.visibleAnnotations) {
 				if (seen.contains(anno.desc))
@@ -457,10 +489,16 @@ public class Type {
 	}
 
 	public boolean hasAnnotationInHierarchy(String lookingFor) {
+		if (dimensions>0) {
+			return false;
+		}
 		return hasAnnotationInHierarchy(lookingFor, new ArrayList<String>());
 	}
 
 	public boolean hasAnnotationInHierarchy(String lookingFor, List<String> seen) {
+		if (dimensions>0) {
+			return false;
+		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode anno : node.visibleAnnotations) {
 				if (seen.contains(anno.desc))
@@ -484,6 +522,9 @@ public class Type {
 	}
 	
 	public boolean isCondition() {
+		if (dimensions>0) {
+			return false;
+		}
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(Condition));
 		} catch (MissingTypeException mte) {
@@ -502,18 +543,30 @@ public class Type {
 
 	
 	public boolean isAtConfiguration() {
+		if (dimensions>0) {
+			return false;
+		}
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
 	}
 	
 	public boolean isAbstractNestedCondition() {
+		if (dimensions>0) {
+			return false;
+		}
 		return extendsClass("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
 	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
+		if (dimensions>0) {
+			return false;
+		}
 		return isMetaAnnotated(slashedTypeDescriptor, new HashSet<>());
 	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor, Set<String> seen) {
+		if (dimensions>0) {
+			return false;
+		}
 //		System.out.println("Looking at "+this.getName()+" for "+slashedTypeDescriptor);
 		for (Type t : this.getAnnotations()) {
 			String tname = t.getName();
@@ -536,6 +589,9 @@ public class Type {
 
 	
 	public List<String> findConditionalOnMissingBeanValue() {
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnMissingBean, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
@@ -550,6 +606,9 @@ public class Type {
 	}
 
 	public List<String> findConditionalOnClassValue() {
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		 List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnClass, false);
 		 if (findAnnotationValue==null) {
 			 if (node.visibleAnnotations != null) {
@@ -564,20 +623,32 @@ public class Type {
 	}
 	
 	public List<String> findEnableConfigurationPropertiesValue() {
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		 List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false);
 		 return values;
 	}
 
 	public Map<String,List<String>> findImports() {
+		if (dimensions>0) {
+			return Collections.emptyMap();
+		}
 		 return findAnnotationValueWithHostAnnotation(AtImports, true, new HashSet<>());
 	}
 		
 	public List<String> findAnnotationValue(String annotationType, boolean searchMeta) {		
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		return findAnnotationValue(annotationType, searchMeta, new HashSet<>());
 	}
 	
 	@SuppressWarnings("unchecked")
 	public Map<String,List<String>> findAnnotationValueWithHostAnnotation(String annotationType, boolean searchMeta, Set<String> visited) {		
+		if (dimensions>0) {
+			return Collections.emptyMap();
+		}
 		if (!visited.add(this.getName())) {
 			return Collections.emptyMap();
 		}
@@ -619,6 +690,9 @@ public class Type {
 
 	@SuppressWarnings("unchecked")
 	public List<String> findAnnotationValue(String annotationType, boolean searchMeta, Set<String> visited) {		
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		if (!visited.add(this.getName())) {
 			return Collections.emptyList();
 		}
@@ -651,6 +725,9 @@ public class Type {
 	}
 
 	private List<Type> getAnnotations() {
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		if (annotations == null) {
 			annotations = new ArrayList<>();
 			if (node.visibleAnnotations != null) {
@@ -679,6 +756,9 @@ public class Type {
 	}
 
 	public Type findAnnotation(Type searchType) {
+		if (dimensions>0) {
+			return null;
+		}
 		List<Type> annos = getAnnotations();
 		for (Type anno : annos) {
 			if (anno.equals(searchType)) {
@@ -698,6 +778,7 @@ public class Type {
 	 * </code></pre>
 	 */
 	public Entry<Type,List<Type>> getRelevantStereotypes() {
+		if (dimensions>0) return null;
 		List<Type> relevantAnnotations = new ArrayList<>();
 		List<Type> indexedTypesInHierachy = getAnnotatedElementsInHierarchy(a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
 		relevantAnnotations.addAll(indexedTypesInHierachy);
@@ -719,6 +800,7 @@ public class Type {
 	}
 
 	private boolean isAnnotated(String Ldescriptor) {
+		if (dimensions>0) return false;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
 				if (an.desc.equals(Ldescriptor)) {
@@ -734,6 +816,7 @@ public class Type {
 	}
 
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen) {
+		if (dimensions>0) return Collections.emptyList();
 		List<Type> results = new ArrayList<>();
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
@@ -754,6 +837,7 @@ public class Type {
 	}
 	
 	private List<Type> getJavaxAnnotationsInHierarchy(Set<String> seen) {
+		if (dimensions>0) return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an: node.visibleAnnotations) {
@@ -780,6 +864,7 @@ public class Type {
 	}
 
 	public List<Type> getNestedTypes() {
+		if (dimensions>0) return Collections.emptyList();
 		List<Type> result = null;
 		List<InnerClassNode> innerClasses = node.innerClasses;
 		for (InnerClassNode inner: innerClasses) {	
@@ -800,13 +885,21 @@ public class Type {
 	}
 
 	public String getDescriptor() {
-		return "L"+node.name.replace(".", "/")+";";
+		StringBuilder s = new StringBuilder();
+		for (int i=0;i<dimensions;i++) {
+			s.append("[");
+		}
+		s.append("L").append(node.name.replace(".", "/")).append(";");
+		return s.toString();
 	}
 
 	/**
 	 * Find compilation hints directly on this type or used as a meta-annotation on annotations on this type.
 	 */
 	public List<Hint> getHints() {
+		if (dimensions>0) {
+			return Collections.emptyList();
+		}
 		List<Hint> hints = new ArrayList<>();
 		List<CompilationHint> hintx = typeSystem.findHints(getName());//SpringConfiguration.findProposedHints(getName());
 		if (hintx.size() != 0) {
@@ -896,6 +989,7 @@ public class Type {
 	}
 
 	private Type[] getMemberTypes() {
+		if (dimensions>0) return new Type[0];
 		List<Type> result = new ArrayList<>();
 		List<InnerClassNode> nestMembers = node.innerClasses;
 		if (nestMembers != null) {
@@ -962,12 +1056,25 @@ public class Type {
 		return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
 	}
 	
-	private String fromLdescriptorToSlashed(String Ldescriptor) {
-		return Ldescriptor.substring(1,Ldescriptor.length()-1);
+	public static String fromLdescriptorToSlashed(String Ldescriptor) {
+		int dims = 0;
+		int p = 0;
+		if (Ldescriptor.startsWith("[") ) {
+		  while (Ldescriptor.charAt(p)=='[') {	
+			  p++;
+			  dims++;
+		  }
+		}
+		StringBuilder r = new StringBuilder();
+		r.append(Ldescriptor.substring(p+1,Ldescriptor.length()-1));
+		for (int i=0;i<dims;i++) {
+			r.append("[]");
+		}
+		return r.toString();
 	}
 
-	private String fromLdescriptorToDotted(String Ldescriptor) {
-		return Ldescriptor.substring(1,Ldescriptor.length()-1).replace("/",".");
+	public static String fromLdescriptorToDotted(String Ldescriptor) {
+		return fromLdescriptorToSlashed(Ldescriptor).replace("/", ".");
 	}
 	
 	private List<CompilationHint> findCompilationHint(Type annotationType) {
@@ -982,6 +1089,7 @@ public class Type {
 	}		
 	
 	public void collectMissingAnnotationTypesHelper(Set<String> missingAnnotationTypes, HashSet<Type> visited) {
+		if (dimensions>0) return;
 		if (!visited.add(this)) {
 			return;
 		}
@@ -1002,10 +1110,12 @@ public class Type {
 	}
 
 	public boolean isAnnotation() {
+		if (dimensions>0) return false;
 		return (node.access & Opcodes.ACC_ANNOTATION)!=0;
 	}
 
 	public List<Type> getAutoConfigureBeforeOrAfter() {
+		if (dimensions>0) return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
 		for (AnnotationNode an : node.visibleAnnotations) {
 			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;") ||
@@ -1030,6 +1140,7 @@ public class Type {
 	}
 
 	public boolean hasOnlySimpleConstructor() {
+		if (dimensions>0) return false;
 		boolean hasCtor = false;
 		List<MethodNode> methods = node.methods;
 		for (MethodNode mn: methods) {
@@ -1068,6 +1179,7 @@ public class Type {
 	 * @return
 	 */
 	public List<CompilationHint> unpackConfigurationHints() {
+		if (dimensions>0) return Collections.emptyList();
 		List<CompilationHint> hints = null;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
@@ -1162,7 +1274,7 @@ public class Type {
 
 	private int inferTypeKind(Type t) {
 		if (t == null) {
-			return AccessBits.NONE;
+			return AccessBits.ALL;
 		}
 		if (t.isAtConfiguration()) {
 			return AccessBits.CONFIGURATION;
@@ -1192,7 +1304,8 @@ public class Type {
 	private int inferTypeKind(org.objectweb.asm.Type type) {
 		Type t = typeSystem.resolve(type, true);
 		if (t == null) {
-			return AccessBits.NONE;
+			// TODO All because of type might be array and we aren't resolving that quite right yet
+			return AccessBits.ALL;
 		}
 		if (t.isAtConfiguration()) {
 			return AccessBits.CONFIGURATION;
@@ -1202,7 +1315,16 @@ public class Type {
 	}
 
 	public List<CompilationHint> getCompilationHints() {
+		if (dimensions>0) return Collections.emptyList();
 		return unpackConfigurationHints();
+	}
+
+	public int getDimensions() {
+		return dimensions;
+	}
+
+	public boolean isArray() {
+		return dimensions>0;
 	}
 	
 	
