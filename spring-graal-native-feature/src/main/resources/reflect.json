@@ -308,21 +308,6 @@
 	},
 	// ^^^ for tomcat sample
 	{
-		"name": "org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-//	{
-//		"name": "org.springframework.web.reactive.function.client.WebClient$Builder",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "org.springframework.boot.web.client.RestTemplateBuilder",
-//////		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
 		"allDeclaredConstructors": true
 	},
@@ -390,7 +375,7 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
+ 	{
 		"name": "org.springframework.web.bind.annotation.ResponseBody",
 		"allDeclaredMethods": true
 	},
@@ -641,11 +626,6 @@
 	},
 	{
 		"name": "org.h2.Driver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.transaction.support.TransactionTemplate",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -914,63 +894,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// jboss logging referenced in hibernate is accessing log4j:
-	{
-		"name": "org.h2.mvstore.db.MVTableEngine",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.zaxxer.hikari.HikariDataSource",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.zaxxer.hikari.HikariConfig",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.internal.EntityManagerMessageLogger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.internal.EntityManagerMessageLogger_$logger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.internal.CoreMessageLogger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.internal.CoreMessageLogger_$logger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// These 2 from HibernatJpaConfiguration:
-	{
-		"name": "org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.service.jta.platform.internal.NoJtaPlatform",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.Session",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "java.util.EventListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	{
 		"name": "io.netty.handler.codec.http.HttpServerCodec",
 		"allDeclaredConstructors": true,
@@ -1009,27 +932,4 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	}
-	// plus spring integration
-//	{
-//		"name": "org.springframework.integration.config.IntegrationConfigurationBeanFactoryPostProcessor",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "org.springframework.integration.config.DefaultConfiguringBeanFactoryPostProcessor",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "reactor.core.publisher.Traces$StackWalkerCallSiteSupplierFactory",
-//		"allDeclaredConstructors": true
-//	},
-//	{
-//		"name": "reactor.core.publisher.Traces$SharedSecretsCallSiteSupplierFactory",
-//		"allDeclaredConstructors": true
-//	},
-//	{
-//		"name": "reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory",
-//		"allDeclaredConstructors": true
-//	}
 ]
