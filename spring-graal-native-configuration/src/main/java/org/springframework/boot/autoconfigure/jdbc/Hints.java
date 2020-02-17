@@ -1,5 +1,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
+import org.h2.mvstore.db.MVTableEngine;
 import org.h2.store.fs.FilePathAsync;
 import org.h2.store.fs.FilePathDisk;
 import org.h2.store.fs.FilePathMem;
@@ -9,10 +10,14 @@ import org.h2.store.fs.FilePathNioMem;
 import org.h2.store.fs.FilePathRetryOnInterrupt;
 import org.h2.store.fs.FilePathSplit;
 import org.h2.store.fs.FilePathZip;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /*
 proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
@@ -43,5 +48,8 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSour
 				typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
 				types= {FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}),
 		})
+@ConfigurationHint(value=Hikari.class,typeInfos= {
+		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class})
+	})
 public class Hints implements NativeImageConfiguration {
 }

@@ -1,10 +1,14 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.EventListener;
+
 import javax.persistence.TableGenerator;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
+import org.hibernate.Session;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEventListener;
 import org.hibernate.event.spi.DeleteEventListener;
@@ -47,6 +51,8 @@ import org.hibernate.id.SequenceIdentityGenerator;
 import org.hibernate.id.UUIDGenerator;
 import org.hibernate.id.UUIDHexGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.internal.CoreMessageLogger;
+import org.hibernate.internal.EntityManagerMessageLogger;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.persister.spi.PersisterCreationContext;
@@ -142,8 +148,18 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 			HibernateValidatorConfiguration.class,ConfigurationImpl.class,
 			
 			// related to Naming.applyNamingStrategies
-			SpringImplicitNamingStrategy.class,SpringPhysicalNamingStrategy.class
-				})
+			SpringImplicitNamingStrategy.class,SpringPhysicalNamingStrategy.class,
+			
+		//	HikariDataSource.class,HikariConfig.class,	MVTableEngine.class // pushed to datasource hints
+			NoJtaPlatform.class,
+			//org.hibernate.service.jta.platform.internal.NoJtaPlatform.class
+			EntityManagerMessageLogger.class,CoreMessageLogger.class,
+			Session.class,EventListener.class
+		}, typeNames = {
+			"org.hibernate.internal.EntityManagerMessageLogger_$logger",
+			"org.hibernate.internal.CoreMessageLogger_$logger",
+			"org.hibernate.service.jta.platform.internal.NoJtaPlatform"
+		})
 })
 // These look to be hibernate validator related ... where should they live? Or can we rely on the hibernate feature now?
 //{
