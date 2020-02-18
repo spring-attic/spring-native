@@ -72,7 +72,11 @@ public class ResourcesJsonMarshaller {
 	
 	private static ResourcesDescriptor toResourcesDescriptor(JSONObject object) throws Exception {
 		ResourcesDescriptor rd = new ResourcesDescriptor();
-		JSONArray array = object.getJSONArray("resources");
+		JSONArray array = object.getJSONArray("bundles");
+		for (int i=0;i<array.length();i++) {
+			rd.addBundle(array.getJSONObject(i).getString("name"));
+		}
+		array = object.getJSONArray("resources");
 		for (int i=0;i<array.length();i++) {
 			rd.add(array.getJSONObject(i).getString("pattern"));
 		}

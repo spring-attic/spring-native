@@ -38,7 +38,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:EnableURLProtocols=http \
   --initialize-at-build-time \
   --initialize-at-run-time=org.springframework.core.io.VfsUtils,org.apache.tomcat.jni.SSL \
-  -H:ReflectionConfigurationFiles=../../tomcat-reflection.json,../../reflection-config.json -H:ResourceConfigurationFiles=../../tomcat-resource.json \
+  -H:ReflectionConfigurationFiles=../../reflection-config.json \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
