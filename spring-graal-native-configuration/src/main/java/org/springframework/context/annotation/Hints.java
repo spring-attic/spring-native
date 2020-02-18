@@ -16,7 +16,12 @@ proposedHints.put(AdviceModeImportSelector,
 // @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
 @ConfigurationHint(value = Import.class, abortIfTypesMissing = false, follow = true) // TODO verify these flags...
 @ConfigurationHint(value = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
+// These don't specify a triggering value target so are always exposed
 @ConfigurationHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
+@ConfigurationHint(typeInfos = {
+		@TypeInfo(types = { AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class }, 
+				  access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS) 
+})
 public class Hints implements NativeImageConfiguration {
 }
