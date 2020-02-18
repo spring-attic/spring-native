@@ -28,8 +28,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -103,6 +105,7 @@ public class ResourcesHandler {
 			}
 			resourcesRegistry.addResources(pattern);
 		}
+		registerResourceBundles(rd);
 		processSpringFactories();
 		handleSpringComponents();
 		handleSpringConstants();
@@ -116,6 +119,18 @@ public class ResourcesHandler {
 			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
 				reflectionHandler.addAccess(dependantType.getKey(), null, true,
 						AccessBits.getFlags(dependantType.getValue()));
+			}
+		}
+	}
+
+	private void registerResourceBundles(ResourcesDescriptor rd) {
+		System.out.println("Registering resources - #" + rd.getBundles().size() + " bundles");
+		for (String bundle : rd.getBundles()) {
+			try {
+				ResourceBundle.getBundle(bundle);
+				resourcesRegistry.addResourceBundles(bundle);
+			} catch (MissingResourceException e) {
+				//bundle not available. don't load it
 			}
 		}
 	}
