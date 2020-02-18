@@ -720,52 +720,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "io.netty.channel.DefaultChannelPipeline$HeadContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.DefaultChannelPipeline$TailContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// vvv vanilla-grpc
-	{
-		"name": "io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelInboundHandlerAdapter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelHandlerAdapter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelInboundHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.bootstrap.ServerBootstrap$1",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelInitializer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	// ^^^ vanilla-grpc
 	// Because of EntityTuplizerFactory
 	{
@@ -804,60 +758,8 @@
 		]
 	},
 	{
-		"name": "org.springframework.context.event.GenericApplicationListener",
-		"allDeclaredConstructors": true
-	//	"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.annotation.Qualifier",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.annotation.ConfigurationClassPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.EnvironmentAware",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.handler.codec.http.HttpServerCodec",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.CombinedChannelDuplexHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.ChannelDuplexHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "reactor.netty.channel.BootstrapHandlers$BootstrapInitializerHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "reactor.netty.channel.ChannelOperationsHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "reactor.netty.http.server.HttpTrafficHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.yaml.snakeyaml.Yaml"
-	},
-	{
-		"name": "org.reactivestreams.Publisher",
+	// DelegatingWebFluxConfiguration (used by webfluxconfigurationsupport)
+		"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	}

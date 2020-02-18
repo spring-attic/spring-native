@@ -21,7 +21,8 @@ proposedHints.put(AdviceModeImportSelector,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
 @ConfigurationHint(typeInfos = {
 		@TypeInfo(types = { AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class }, 
-				  access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS) 
+				  access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
+		@TypeInfo(types = { ConfigurationClassPostProcessor.class }) // This needs more access than those
 })
 public class Hints implements NativeImageConfiguration {
 }
