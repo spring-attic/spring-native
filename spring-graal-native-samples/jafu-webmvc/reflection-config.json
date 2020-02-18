@@ -5,6 +5,11 @@
     "allDeclaredMethods": true
   },
   {
+    "name": "org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
     "name": "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
