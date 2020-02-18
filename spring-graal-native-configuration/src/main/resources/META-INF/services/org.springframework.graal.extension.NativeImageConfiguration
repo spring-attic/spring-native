@@ -4,6 +4,7 @@ org.springframework.boot.autoconfigure.Hints
 org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
 org.springframework.boot.autoconfigure.condition.Hints
+org.springframework.boot.autoconfigure.jackson.Hints
 org.springframework.boot.autoconfigure.jdbc.Hints
 org.springframework.boot.autoconfigure.orm.jpa.Hints
 org.springframework.boot.autoconfigure.session.Hints
@@ -17,4 +18,6 @@ org.springframework.core.annotation.Hints
 org.springframework.data.web.config.Hints
 org.springframework.hateoas.config.Hints
 org.springframework.security.config.annotation.web.configuration.Hints
+org.springframework.stereotype.Hints
 org.springframework.transaction.annotation.Hints
+org.springframework.web.bind.annotation.Hints
