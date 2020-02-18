@@ -20,19 +20,22 @@ import java.util.List;
 
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/RESOURCES.md
- * 
+ *
  * @author Andy Clement
  */
 public class ResourcesDescriptor {
 
 	private final List<String> patterns;
+	private final List<String> bundles;
 
 	public ResourcesDescriptor() {
 		this.patterns = new ArrayList<>();
+		this.bundles = new ArrayList<>();
 	}
 
 	public ResourcesDescriptor(ResourcesDescriptor metadata) {
 		this.patterns = new ArrayList<>(metadata.patterns);
+		this.bundles = new ArrayList<>(metadata.bundles);
 	}
 
 	public List<String> getPatterns() {
@@ -43,13 +46,21 @@ public class ResourcesDescriptor {
 		this.patterns.add(pattern);
 	}
 
+	public List<String> getBundles() {
+		return this.bundles;
+	}
+
+	public void addBundle(String name) {
+		this.bundles.add(name);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(String.format("ResourcesDescriptors #%s\n",patterns.size()));
-		this.patterns.forEach(cd -> {
-			result.append(String.format("%s: \n",cd));
-		});
+		result.append(String.format("ResourcesDescriptors Resources: #%s\n",patterns.size()));
+		this.patterns.forEach(cd -> result.append(String.format("%s: \n",cd)));
+		result.append(String.format("ResourcesDescriptors Bundles: #%s\n",bundles.size()));
+		this.bundles.forEach(cd -> result.append(String.format("%s: \n",cd)));
 		return result.toString();
 	}
 

@@ -1,11 +1,15 @@
 {
-
-  // vvv petclinic
     "bundles": [
-    {"name":"messages.messages"}
+    // vvv springmvc-tomcat
+    {"name":"javax.servlet.LocalStrings"},
+    {"name":"javax.servlet.http.LocalStrings"}
+    // ^^^ springmvc-tomcat
   ],
-  // ^^^
     "resources": [
+    // vvv springmvc-tomcat
+    {"pattern": "org/springframework/web/servlet/DispatcherServlet.properties"},
+    {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
+    // ^^^ springmvc-tomcat
 	// vvv vanilla-tx
 	{"pattern": "org/springframework/context/annotation/AdviceModeImportSelector.class"},
 	{"pattern": "org/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class"},
