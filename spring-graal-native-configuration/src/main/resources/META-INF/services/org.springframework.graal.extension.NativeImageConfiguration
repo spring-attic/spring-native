@@ -4,6 +4,7 @@ org.springframework.boot.autoconfigure.Hints
 org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
 org.springframework.boot.autoconfigure.condition.Hints
+org.springframework.boot.autoconfigure.data.jpa.Hints
 org.springframework.boot.autoconfigure.jackson.Hints
 org.springframework.boot.autoconfigure.jdbc.Hints
 org.springframework.boot.autoconfigure.orm.jpa.Hints
@@ -15,6 +16,7 @@ org.springframework.boot.autoconfigure.web.servlet.Hints
 org.springframework.boot.context.properties.Hints
 org.springframework.context.annotation.Hints
 org.springframework.core.annotation.Hints
+org.springframework.data.jpa.repository.support.Hints
 org.springframework.data.web.config.Hints
 org.springframework.hateoas.config.Hints
 org.springframework.security.config.annotation.web.configuration.Hints
