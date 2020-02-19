@@ -95,61 +95,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// ^^^
-	// vv vanilla-grpc
-	{
-		"name": "com.google.protobuf.ExtensionRegistry",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// ^^ vanilla-grpc
-	{
-		"name": "org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.annotations.common.Version",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.jboss.logging.BasicLogger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.annotations.common.util.impl.Log_$logger",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.annotations.common.util.impl.Log",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.google.gson.GsonBuilder",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// these 3 from AopConfigUtils
-	{
-		"name": "org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.aop.aspectj.AspectJAwareAdvisorAutoProxyCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// Should these two be pulled in by annotations on entityManagerFactory method in JpaBaseConfiguration
-	{
-		"name": "javax.persistence.EntityManagerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
 	{
 		"name": "org.springframework.orm.jpa.EntityManagerProxy",
 		"allDeclaredConstructors": true,
@@ -167,16 +112,6 @@
 	},
 	{
 		"name": "org.hibernate.jpa.HibernateEntityManagerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
@@ -394,18 +329,6 @@
 		"name": "org.springframework.context.annotation.ComponentScan$Filter",
 		"allDeclaredMethods": true
 	},
-	
-//	{
-//		"name": "org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	// vanilla-thymeleaf related, starts here...
-//	{
-//		"name": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.http.converter.FormHttpMessageConverter",
 		"allDeclaredConstructors": true,
@@ -454,11 +377,6 @@
 		"allDeclaredMethods": true
 	},
 	// vanilla-tx ^^^
-//	{
-//		"name": "org.springframework.boot.task.TaskSchedulerBuilder",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.validation.beanvalidation.MethodValidationPostProcessor",
 		"allDeclaredConstructors": true,
@@ -571,21 +489,6 @@
 	},
 	// vvv vanilla-jpa
 	{
-		"name": "org.hibernate.internal.SessionImpl",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.query.QueryLookupStrategy$Key",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.repository.support.SimpleJpaRepository",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		// this one shouldn't be needed (it's a superclass of the one below, which is what the bean definition actually is made of)
 		"name": "org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport",
 		"allDeclaredConstructors": true,
@@ -607,11 +510,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-//	{
-//		"name": "org.springframework.data.repository.query.QueryByExampleExecutor",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension",
 		"allDeclaredConstructors": true,
@@ -619,39 +517,11 @@
 	},
 	// ^^^ vanilla-jpa
 	{
-		"name": "org.springframework.orm.jpa.JpaVendorAdapter",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-
-	{
 		"name": "java.lang.annotation.Repeatable",
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer$SharedMetadataReaderFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// ^^^ vanilla-grpc
-	// Because of EntityTuplizerFactory
-	{
-		"name": "org.hibernate.tuple.Tuplizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.tuple.entity.EntityTuplizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.tuple.entity.AbstractEntityTuplizer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.tuple.entity.PojoEntityTuplizer",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},

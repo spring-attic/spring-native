@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.aop;
 
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.ProxyConfig;
 import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
@@ -28,7 +30,9 @@ import org.springframework.graal.type.AccessBits;
 @ConfigurationHint(value=AopAutoConfiguration.class,follow=true,
 	typeInfos = {@TypeInfo(types= {
 			ProxyProcessorSupport.class,ProxyConfig.class,InfrastructureAdvisorAutoProxyCreator.class,
-			AbstractAdvisorAutoProxyCreator.class,AbstractAutoProxyCreator.class
+			AbstractAdvisorAutoProxyCreator.class,AbstractAutoProxyCreator.class,
+			AnnotationAwareAspectJAutoProxyCreator.class,
+			AspectJAwareAdvisorAutoProxyCreator.class
 			},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
 
 public class Hints implements NativeImageConfiguration { }
