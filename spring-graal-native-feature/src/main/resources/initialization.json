@@ -112,6 +112,7 @@
 {"class": "org.jboss.logging.Log4j2Logger"},
 {"package": "org.apache.logging.slf4j"},
 {"package": "org.jboss.logging"},
+{"class":"org.hibernate.EntityMode"},
 {"class": "org.springframework.util.unit.DataSize"},
 {"class": "org.hibernate.validator.internal.engine.ConfigurationImpl"},
 {"class": "org.springframework.core.annotation.AnnotationFilter"},

@@ -17,10 +17,12 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.EventListener;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.TableGenerator;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.hibernate.Session;
+import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
@@ -71,6 +73,10 @@ import org.hibernate.internal.EntityManagerMessageLogger;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.persister.spi.PersisterCreationContext;
+import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl;
+import org.hibernate.tuple.entity.AbstractEntityTuplizer;
+import org.hibernate.tuple.entity.EntityTuplizer;
+import org.hibernate.tuple.entity.PojoEntityTuplizer;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
@@ -78,6 +84,7 @@ import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
@@ -125,6 +132,13 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				ClearEventListener[].class,MergeEventListener[].class,PostCollectionRecreateEventListener[].class,
 				PostCollectionRemoveEventListener[].class,PostCollectionUpdateEventListener[].class,PostDeleteEventListener[].class,
 			
+				// These from EntityTuplizerFactory
+				Tuplizer.class,EntityTuplizer.class,AbstractEntityTuplizer.class,PojoEntityTuplizer.class,
+
+				JdbcResourceLocalTransactionCoordinatorBuilderImpl.class,
+				SimpleJpaRepository.class,
+				EntityManagerFactory.class,
+				
 				PersistenceAnnotationBeanPostProcessor.class, 
 // Are these needed to?
 //				{
@@ -175,7 +189,9 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 		}, typeNames = {
 			"org.hibernate.internal.EntityManagerMessageLogger_$logger",
 			"org.hibernate.internal.CoreMessageLogger_$logger",
-			"org.hibernate.service.jta.platform.internal.NoJtaPlatform"
+			"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
+			"org.hibernate.annotations.common.util.impl.Log_$logger",
+			"org.hibernate.annotations.common.util.impl.Log",
 		})
 })
 // These look to be hibernate validator related ... where should they live? Or can we rely on the hibernate feature now?
