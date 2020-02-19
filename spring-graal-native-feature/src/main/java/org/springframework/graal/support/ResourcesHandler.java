@@ -892,7 +892,6 @@ public class ResourcesHandler {
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						System.out.println(">>>>"+dname);
 						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, false);
 					} else {
 						reflectionHandler.addAccess(dname, null, false, flags);

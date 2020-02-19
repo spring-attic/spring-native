@@ -385,11 +385,6 @@
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
 		"allDeclaredConstructors": true
 	},
-//	{
-//		"name": "org.springframework.boot.task.TaskExecutorBuilder",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar",
 		"allDeclaredConstructors": true
@@ -454,18 +449,6 @@
 	},
 	{
 		"name": "org.springframework.transaction.TransactionDefinition",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.transaction.annotation.Propagation",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.transaction.annotation.Transactional",
 		"allDeclaredConstructors": true,
 		"allDeclaredFields": true,
 		"allDeclaredMethods": true
@@ -615,41 +598,6 @@
 		"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.core.support.PropertiesBasedNamedQueries",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesScanRegistrar",
-		"allDeclaredConstructors": true
-//		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesScan",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages$Registrar",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
 		"name": "javax.persistence.GeneratedValue",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
@@ -659,46 +607,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurePackages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurePackages$BasePackages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.repository.query.QueryByExampleExecutor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.repository.support.EntityManagerBeanDefinitionRegistrarPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.orm.jpa.SharedEntityManagerCreator",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.util.JpaMetamodelCacheCleanup",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.data.repository.query.QueryByExampleExecutor",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension",
 		"allDeclaredConstructors": true,
