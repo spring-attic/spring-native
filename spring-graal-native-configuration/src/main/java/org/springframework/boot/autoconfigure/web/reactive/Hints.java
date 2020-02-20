@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
@@ -39,6 +41,9 @@ import org.springframework.util.ClassUtils;
 			},
 			access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS
 		)
+})
+@ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {
+		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
 })
 public class Hints implements NativeImageConfiguration {
 }

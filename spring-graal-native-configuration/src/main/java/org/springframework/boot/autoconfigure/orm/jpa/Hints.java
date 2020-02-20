@@ -17,6 +17,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.EventListener;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TableGenerator;
 
@@ -70,15 +71,18 @@ import org.hibernate.id.UUIDHexGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.internal.CoreMessageLogger;
 import org.hibernate.internal.EntityManagerMessageLogger;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.persister.spi.PersisterCreationContext;
+import org.hibernate.query.QueryProducer;
 import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
+import org.hibernate.validator.internal.util.logging.Log;
 import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
@@ -138,8 +142,15 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				JdbcResourceLocalTransactionCoordinatorBuilderImpl.class,
 				SimpleJpaRepository.class,
 				EntityManagerFactory.class,
+				EntityManager.class,
+				QueryProducer.class,
+				HibernateEntityManagerFactory.class,
 				
 				PersistenceAnnotationBeanPostProcessor.class, 
+				
+				
+				Log.class, // TODO validator related? SHould be elsewhere?
+				
 // Are these needed to?
 //				{
 //					"name": "org.hibernate.cache.spi.access.NaturalIdDataAccess",
@@ -188,6 +199,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 			Session.class,EventListener.class
 		}, typeNames = {
 			"org.hibernate.internal.EntityManagerMessageLogger_$logger",
+			"org.hibernate.validator.internal.util.logging.Log_$logger",
 			"org.hibernate.internal.CoreMessageLogger_$logger",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.annotations.common.util.impl.Log_$logger",
