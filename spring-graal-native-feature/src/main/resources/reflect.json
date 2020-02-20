@@ -78,80 +78,8 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// vvv petclinic with recent (>m5) 2.2.0.build-snapshots
 	{
 		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// vvv petclinic
-	{
-		"name": "org.thymeleaf.extras.java8time.expression.Temporals",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.persister.collection.OneToManyPersister",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.orm.jpa.EntityManagerProxy",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.query.QueryProducer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.persistence.EntityManager",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.hibernate.jpa.HibernateEntityManagerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.validation.spi.ConfigurationState",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "javax.validation.Configuration",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-//	{
-//		"name": "org.springframework.http.client.reactive.ReactorResourceFactory",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	{
-		"name": "org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor",
-		"allDeclaredConstructors": true
-	},
-	// vvv for tomcat sample
-	{
-		"name": "org.apache.catalina.servlets.DefaultServlet",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},

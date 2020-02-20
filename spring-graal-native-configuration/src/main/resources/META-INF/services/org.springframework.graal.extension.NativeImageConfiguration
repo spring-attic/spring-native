@@ -10,6 +10,7 @@ org.springframework.boot.autoconfigure.jdbc.Hints
 org.springframework.boot.autoconfigure.orm.jpa.Hints
 org.springframework.boot.autoconfigure.session.Hints
 org.springframework.boot.autoconfigure.task.Hints
+org.springframework.boot.autoconfigure.thymeleaf.Hints
 org.springframework.boot.autoconfigure.transaction.Hints
 org.springframework.boot.autoconfigure.web.reactive.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints

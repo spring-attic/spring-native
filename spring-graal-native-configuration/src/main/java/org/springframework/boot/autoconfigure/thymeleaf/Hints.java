@@ -1,0 +1,31 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.boot.autoconfigure.thymeleaf;
+
+import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.TypeInfo;
+import org.springframework.graal.type.AccessBits;
+import org.thymeleaf.extras.java8time.expression.Temporals;
+
+@ConfigurationHint(value=ThymeleafAutoConfiguration.class,typeInfos= {
+		@TypeInfo(types= {
+// Surely one of many... I wonder if there is a better way for these rather than conditional on autoconfig, conditional on jar presence? (maven coords?)
+				Temporals.class,
+				},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+})
+public class Hints implements NativeImageConfiguration {
+}
