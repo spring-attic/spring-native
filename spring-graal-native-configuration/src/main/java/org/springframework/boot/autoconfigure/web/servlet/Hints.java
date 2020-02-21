@@ -18,12 +18,25 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.concurrent.Callable;
 
 import org.apache.catalina.servlets.DefaultServlet;
+import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.tomcat.util.descriptor.web.ErrorPage;
+import org.apache.tomcat.websocket.server.WsContextListener;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver;
+import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
+import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.function.support.HandlerFunctionAdapter;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 import org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping;
@@ -37,6 +50,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 import org.springframework.web.servlet.theme.FixedThemeResolver;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -56,8 +70,26 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAut
 			"java.util.concurrent.Callable:EXISTENCE_MC"
 		}));
 */
+
+/*
+@ConfigurationHint(value=ServletWebServerFactoryConfiguration.class, typeInfos = {
+	@TypeInfo(types= {
+			// TODO These should not be in our code as they aren't spring
+	ProtocolHandler.class,AbstractProtocol.class,AbstractHttp11Protocol.class,AbstractHttp11JsseProtocol.class,Http11NioProtocol.class,
+	ErrorPage.class
+	})	
+})
+*/
 @ConfigurationHint(value=WebMvcAutoConfiguration.class, typeInfos = {
-		@TypeInfo(typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler"}),
+		@TypeInfo(types= {AnnotationConfigServletWebServerApplicationContext.class,
+				DefaultErrorViewResolver.class,
+				WsContextListener.class,
+				// TODO Maybe the first and last of these 3 needs to be in a more generic configuration hint working for both reactive and servlet
+				ConfigurableWebApplicationContext.class,TomcatEmbeddedWebappClassLoader.class,WebApplicationContext.class,
+	ProtocolHandler.class,AbstractProtocol.class,AbstractHttp11Protocol.class,AbstractHttp11JsseProtocol.class,Http11NioProtocol.class,
+	ErrorPage.class,DefaultErrorViewResolver.class,BeanNameViewResolver.class,
+				ErrorPageRegistrarBeanPostProcessor.class},
+				typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler"}),
 		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)},abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {
