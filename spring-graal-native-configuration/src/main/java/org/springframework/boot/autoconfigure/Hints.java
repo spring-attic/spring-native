@@ -25,7 +25,8 @@ import org.springframework.graal.type.AccessBits;
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @ConfigurationHint(typeInfos = { @TypeInfo(types = { AutoConfigurationImportSelector.class,
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
-		AutoConfigurationPackages.BasePackages.class
+		AutoConfigurationPackages.BasePackages.class,
+		EnableAutoConfiguration.class
 		}, typeNames = {
 				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" }) })
 public class Hints implements NativeImageConfiguration {
