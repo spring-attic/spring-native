@@ -15,9 +15,12 @@
  */
 package org.springframework.boot.autoconfigure.data.jpa;
 
+import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.support.PropertiesBasedNamedQueries;
+import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
+import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
@@ -28,6 +31,9 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 		@TypeInfo(types= {
 				SharedEntityManagerCreator.class, // TODO is this one in the right place?
 				JpaRepositoryFactoryBean.class,
+				RepositoryFactoryBeanSupport.class,
+				TransactionalRepositoryFactoryBeanSupport.class,
+				JpaEvaluationContextExtension.class,
 				PropertiesBasedNamedQueries.class, // TODO what is the right trigger for this one? Basically, are there other auto configs that trigger which would need it?
 				RepositoryFragmentsFactoryBean.class // TODO ditto
 		},typeNames= {

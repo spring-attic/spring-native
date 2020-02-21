@@ -19,6 +19,8 @@ import java.util.EventListener;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.TableGenerator;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
@@ -26,6 +28,7 @@ import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.jpa.HibernateEntityManager;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEventListener;
@@ -144,7 +147,9 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				EntityManagerFactory.class,
 				EntityManager.class,
 				QueryProducer.class,
+				HibernateEntityManager.class,
 				HibernateEntityManagerFactory.class,
+				GeneratedValue.class,Id.class,
 				
 				PersistenceAnnotationBeanPostProcessor.class, 
 				
@@ -189,6 +194,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 			ParameterMessageInterpolator.class,AbstractMessageInterpolator.class,ValidationBootstrapParameters.class,
 			HibernateValidatorConfiguration.class,ConfigurationImpl.class,
 			
+			DataSourceInitializedPublisher.class,
 			// related to Naming.applyNamingStrategies
 			SpringImplicitNamingStrategy.class,SpringPhysicalNamingStrategy.class,
 			
