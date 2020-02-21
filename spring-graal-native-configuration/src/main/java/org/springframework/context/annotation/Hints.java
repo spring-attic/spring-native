@@ -15,6 +15,8 @@
  */
 package org.springframework.context.annotation;
 
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
@@ -35,7 +37,11 @@ proposedHints.put(AdviceModeImportSelector,
 @ConfigurationHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
 @ConfigurationHint(typeInfos = {
-		@TypeInfo(types = { AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class }, 
+		@TypeInfo(types = { 
+				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,
+				AnnotationScopeMetadataResolver.class,AutoConfigurationExcludeFilter.class,
+				AutowiredAnnotationBeanPostProcessor.class
+				}, 
 				  access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
 		@TypeInfo(types = { ConfigurationClassPostProcessor.class }) // This needs more access than those
 })

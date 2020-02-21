@@ -16,18 +16,23 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
+import org.springframework.http.codec.ClientCodecConfigurer;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
-import org.springframework.util.ClassUtils;
 
 @ConfigurationHint(value=WebFluxAutoConfiguration.class,typeInfos = {
 	// These two believed through WebFluxConfigurationSupport, CodecConfigurer.properties
-	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class},
+	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
+			ClientCodecConfigurer.class, ServerCodecConfigurer.class // TODO Also put in regular web auto config?
+			},
 			// These are from BaseDefaultCodecs - not sure on needed visibility
 			// TODO Aren't these also needed for non reactive auto configuration web? Is there a common configuration supertype between those
 			// configurations that they can be hung off
@@ -36,6 +41,7 @@ import org.springframework.util.ClassUtils;
 				"com.fasterxml.jackson.core.JsonGenerator",
 				"com.fasterxml.jackson.dataformat.smile.SmileFactory", 
 				"javax.xml.bind.Binder", 
+				"org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 				"com.google.protobuf.Message", 
 				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 			},
@@ -44,6 +50,10 @@ import org.springframework.util.ClassUtils;
 })
 @ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
+})
+@ConfigurationHint(value=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = { 
+		@TypeInfo(types= {AnnotationConfigReactiveWebServerApplicationContext.class,
+				},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
 })
 public class Hints implements NativeImageConfiguration {
 }
