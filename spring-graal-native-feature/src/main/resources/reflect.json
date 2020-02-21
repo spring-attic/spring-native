@@ -78,82 +78,85 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.tomcat.websocket.server.WsContextListener",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.servlet.view.BeanNameViewResolver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.apache.tomcat.util.descriptor.web.ErrorPage",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// These are all Http11NioProtocol and supertypes
-	{
-		"name": "org.apache.coyote.http11.Http11NioProtocol",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.coyote.http11.AbstractHttp11JsseProtocol",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.coyote.http11.AbstractHttp11Protocol",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.coyote.AbstractProtocol",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.apache.coyote.ProtocolHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// These are from OnWebApplicationCondition:
-	{
-		"name": "org.springframework.web.context.ConfigurableWebApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.context.WebApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext",
+////		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor",
+//		"allDeclaredConstructors": true
+//	},
+//
+//
+//
+//	{
+//		"name": "org.thymeleaf.spring5.ISpringTemplateEngine",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.tomcat.websocket.server.WsContextListener",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.web.servlet.view.BeanNameViewResolver",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.tomcat.util.descriptor.web.ErrorPage",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	// These are all Http11NioProtocol and supertypes
+//	{
+//		"name": "org.apache.coyote.http11.Http11NioProtocol",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.coyote.http11.AbstractHttp11JsseProtocol",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.coyote.http11.AbstractHttp11Protocol",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+////		"name": "org.apache.coyote.AbstractProtocol",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.apache.coyote.ProtocolHandler",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	// These are from OnWebApplicationCondition:
+//	{
+//		"name": "org.springframework.web.context.ConfigurableWebApplicationContext",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.web.context.WebApplicationContext",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	{
 		"name": "org.springframework.context.ConfigurableApplicationContext",
 		"allDeclaredConstructors": true
@@ -169,6 +172,11 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
+	
+	//
+	//
+	//
+	
 	// ^^^ for tomcat sample
 	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
