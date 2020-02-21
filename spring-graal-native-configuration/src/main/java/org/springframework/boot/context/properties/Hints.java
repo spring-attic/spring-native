@@ -33,6 +33,9 @@ import org.springframework.graal.extension.TypeInfo;
 //TODO do configuration properties chain?
 //@EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
 @ConfigurationHint(value = EnableConfigurationProperties.class)
-@ConfigurationHint(typeInfos = {@TypeInfo(types= {ConfigurationPropertiesScan.class,ConfigurationPropertiesScanRegistrar.class})})
+@ConfigurationHint(typeInfos = {@TypeInfo(types= {
+		ConfigurationPropertiesScan.class,ConfigurationPropertiesScanRegistrar.class,
+		ConfigurationBeanFactoryMetadata.class
+		})})
 public class Hints implements NativeImageConfiguration {
 }
