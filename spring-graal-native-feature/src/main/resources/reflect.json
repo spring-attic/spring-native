@@ -306,74 +306,12 @@
 	},
 	// vanilla-tx ^^^
 	{
-		"name": "org.springframework.validation.beanvalidation.MethodValidationPostProcessor",
+		"name": "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.web.reactive.HandlerResult",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.context.annotation.AnnotationScopeMetadataResolver",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationPackages$BasePackages",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.http.HttpMessageConverters",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "io.netty.channel.socket.nio.NioServerSocketChannel",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
-	{
-		"name": "io.netty.channel.socket.nio.NioSocketChannel",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.http.codec.ClientCodecConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.http.codec.ServerCodecConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
