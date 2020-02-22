@@ -1,4 +1,10 @@
 [
+
+       {
+               "name": "org.springframework.boot.SpringApplication",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
 	{
 		"name": "javax.persistence.PersistenceContext",
 		"allDeclaredConstructors": true,
