@@ -16,7 +16,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.graal.extension.ConfigurationHint;
@@ -27,11 +26,13 @@ import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
+import org.springframework.web.reactive.HandlerResult;
 
 @ConfigurationHint(value=WebFluxAutoConfiguration.class,typeInfos = {
 	// These two believed through WebFluxConfigurationSupport, CodecConfigurer.properties
 	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
-			ClientCodecConfigurer.class, ServerCodecConfigurer.class // TODO Also put in regular web auto config?
+			ClientCodecConfigurer.class, ServerCodecConfigurer.class, // TODO Also put in regular web auto config?
+			HandlerResult.class
 			},
 			// These are from BaseDefaultCodecs - not sure on needed visibility
 			// TODO Aren't these also needed for non reactive auto configuration web? Is there a common configuration supertype between those
@@ -41,7 +42,7 @@ import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 				"com.fasterxml.jackson.core.JsonGenerator",
 				"com.fasterxml.jackson.dataformat.smile.SmileFactory", 
 				"javax.xml.bind.Binder", 
-				"org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
+				"org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping.PreFlightAmbiguousMatchHandler",
 				"com.google.protobuf.Message", 
 				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 			},

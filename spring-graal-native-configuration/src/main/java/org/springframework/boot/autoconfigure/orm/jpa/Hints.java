@@ -24,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.TableGenerator;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
@@ -150,6 +151,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				HibernateEntityManager.class,
 				HibernateEntityManagerFactory.class,
 				GeneratedValue.class,Id.class,
+				ReusableMessageFactory.class,
 				
 				PersistenceAnnotationBeanPostProcessor.class, 
 				

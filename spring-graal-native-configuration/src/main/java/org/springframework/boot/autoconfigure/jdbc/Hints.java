@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Statement;
+
 import org.h2.mvstore.db.MVTableEngine;
 import org.h2.store.fs.FilePathAsync;
 import org.h2.store.fs.FilePathDisk;
@@ -64,7 +66,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSour
 				types= {FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}),
 		})
 @ConfigurationHint(value=Hikari.class,typeInfos= {
-		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class})
+		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class,Statement.class,Statement[].class})
 	})
 public class Hints implements NativeImageConfiguration {
 }
