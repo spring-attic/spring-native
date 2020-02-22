@@ -1,4 +1,10 @@
 [
+
+       {
+               "name": "org.springframework.boot.SpringApplication",
+               "allDeclaredConstructors": true,
+               "allDeclaredMethods": true
+       },
 	{
 		"name": "org.hibernate.hql.internal.ast.tree.OrderByClause",
 		"allDeclaredConstructors": true,
