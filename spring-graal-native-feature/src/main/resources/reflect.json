@@ -1,4 +1,19 @@
 [
+//       {
+ //              "name": "java.sql.Statement",
+  //             "allDeclaredConstructors": true,
+   //            "allDeclaredMethods": true
+    //   },
+     //  {
+      //         "name": "java.sql.Statement[]",
+       //        "allDeclaredConstructors": true,
+        //       "allDeclaredMethods": true
+       //},
+     //  {
+//               "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
+ //              "allDeclaredConstructors": true,
+  //             "allDeclaredMethods": true
+   //    },
 {"name":"org.reactivestreams.Publisher"},
 // These array types are due to a change in graal that isn't as actively adding array types anymore
 	{"name":"org.springframework.core.io.InputStreamSource[]"},
@@ -32,38 +47,26 @@
 // vanilla-jpa ^^^
 // This are related to getting petclinic to work, some need a deeper dive though (e.g. the
 // proxy related ones - we need to know if a spring aop proxy will be getting created)
-       {
-               "name": "org.springframework.boot.SpringApplication",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "java.sql.Statement",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
-       {
-               "name": "java.sql.Statement[]",
-               "allDeclaredConstructors": true,
-               "allDeclaredMethods": true
-       },
+//
+// xx
+//       {
+ //              "name": "org.springframework.boot.SpringApplication",
+  //             "allDeclaredConstructors": true,
+   //            "allDeclaredMethods": true
+    //   },
        {
                "name": "java.util.logging.LogManager",
                "allDeclaredConstructors": true,
-               "allDeclaredMethods": true,
+              "allDeclaredMethods": true,
                "allDeclaredClasses": true
        },
        {
                "name": "org.springframework.boot.logging.java.JavaLoggingSystem",
                "allDeclaredConstructors": true,
-               "allDeclaredMethods": true,
+              "allDeclaredMethods": true,
                "allDeclaredClasses": true
        },
+// xxx end
 //        {
  //               "name": "org.springframework.web.servlet.View",
   //              "allDeclaredConstructors": true,
@@ -171,10 +174,10 @@
 //		"allDeclaredConstructors": true,
 //		"allDeclaredMethods": true
 //	},
-//	{
-//		"name": "org.springframework.context.event.EventListenerMethodProcessor",
-//		"allDeclaredConstructors": true
-//	},
+	{
+		"name": "org.springframework.context.event.EventListenerMethodProcessor",
+		"allDeclaredConstructors": true
+	},
 //	{
 //		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
 //		"allDeclaredConstructors": true
@@ -241,21 +244,21 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.web.reactive.HandlerResult",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.condition.BeanTypeRegistry",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.h2.Driver",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
+//	{
+//		"name": "org.springframework.web.reactive.HandlerResult",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.springframework.boot.autoconfigure.condition.BeanTypeRegistry",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
+//	{
+//		"name": "org.h2.Driver",
+//		"allDeclaredConstructors": true,
+//		"allDeclaredMethods": true
+//	},
 	// These from DefaultIdentifierGeneratorFactory
 	{
 		"name": "app.main.model.Foo",
