@@ -43,8 +43,8 @@ proposedHints.put(AdviceModeImportSelector,
 				AnnotationScopeMetadataResolver.class,AutoConfigurationExcludeFilter.class,
 				EventListenerMethodProcessor.class,
 				AutowiredAnnotationBeanPostProcessor.class
-				}, 
-				  access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
+				}, access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
+		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
 		@TypeInfo(types = { ConfigurationClassPostProcessor.class }) // This needs more access than those
 })
 public class Hints implements NativeImageConfiguration {

@@ -1,19 +1,4 @@
 [
-//       {
- //              "name": "java.sql.Statement",
-  //             "allDeclaredConstructors": true,
-   //            "allDeclaredMethods": true
-    //   },
-     //  {
-      //         "name": "java.sql.Statement[]",
-       //        "allDeclaredConstructors": true,
-        //       "allDeclaredMethods": true
-       //},
-     //  {
-//               "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
- //              "allDeclaredConstructors": true,
-  //             "allDeclaredMethods": true
-   //    },
 {"name":"org.reactivestreams.Publisher"},
 // These array types are due to a change in graal that isn't as actively adding array types anymore
 	{"name":"org.springframework.core.io.InputStreamSource[]"},
@@ -49,11 +34,6 @@
 // proxy related ones - we need to know if a spring aop proxy will be getting created)
 //
 // xx
-//       {
- //              "name": "org.springframework.boot.SpringApplication",
-  //             "allDeclaredConstructors": true,
-   //            "allDeclaredMethods": true
-    //   },
        {
                "name": "java.util.logging.LogManager",
                "allDeclaredConstructors": true,
@@ -66,15 +46,6 @@
               "allDeclaredMethods": true,
                "allDeclaredClasses": true
        },
-// xxx end
-//        {
- //               "name": "org.springframework.web.servlet.View",
-  //              "allDeclaredConstructors": true,
-   //             "allDeclaredMethods": true
-    //    },
-
-// END
-
 	{// fixes petclinic removeUnusedAutoconfig - was being added via CassandraReactiveDataAC
 	 // need to figure out what should be pulling it in the general case.
 		"name": "reactor.core.publisher.Flux",
@@ -87,40 +58,9 @@
 		//"allDeclaredMethods": true
 	},
 	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$LoaderHidingResourceRoot",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	
-	//
-	//
-	//
-	
-	// ^^^ for tomcat sample
-	{
 		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
 		"allDeclaredConstructors": true
 	},
-	{
-		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder$Factory",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator",
-		"allDeclaredConstructors": true
-		//"allDeclaredMethods": true
-	},
-//	{
-//		"name": "org.springframework.context.support.PropertySourcesPlaceholderConfigurer",
-//		"allDeclaredConstructors": true
-//	//	"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.context.event.DefaultEventListenerFactory",
 		"methods": [
@@ -131,18 +71,9 @@
 			}
 		]
 	},
-//	{
-//		"name": "org.springframework.boot.context.properties.ConfigurationProperties",
-//		"allDeclaredMethods": true
-//	},
 	{
 		"name": "org.springframework.boot.context.TypeExcludeFilter",
 		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.boot.CommandLineRunner",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
 	},
 	{
 		"name": "org.springframework.boot.SpringBootConfiguration",
@@ -158,123 +89,21 @@
 		"name": "org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
 		"allDeclaredConstructors": true
 	},
-//	{
-//		"name": "org.springframework.boot.autoconfigure.EnableAutoConfiguration",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar",
-//		"allDeclaredConstructors": true
-//	},
-//
-//
-//	{
-//		"name": "org.springframework.web.reactive.config.EnableWebFlux",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	{
-		"name": "org.springframework.context.event.EventListenerMethodProcessor",
-		"allDeclaredConstructors": true
-	},
-//	{
-//		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
-//		"allDeclaredConstructors": true
-//	},
 	{
 		"name": "org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar",
 		"allDeclaredConstructors": true
 		//"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.context.annotation.ComponentScan$Filter",
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.http.converter.FormHttpMessageConverter",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		// NPE: org.springframework.boot.autoconfigure.http.HttpMessageConverters.extractPartConverters(HttpMessageConverters.java:162)
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.web.bind.annotation.RequestParam",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		// Method [public abstract java.lang.String org.springframework.web.bind.annotation.RequestParam.name()] is unsupported for synthesized annotation type [interface org.springframework.web.bind.annotation.RequestParam]
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.thymeleaf.standard.expression.AdditionExpression",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// ends here...
-	// vanilla-tx vvv
-//	{
-//		"name": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	{
-		"name": "org.springframework.jdbc.support.SQLErrorCodes",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.transaction.TransactionDefinition",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	// vanilla-tx ^^^
+},	
 	{
 		"name": "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-//	{
-//		"name": "org.springframework.web.reactive.HandlerResult",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "org.springframework.boot.autoconfigure.condition.BeanTypeRegistry",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-//	{
-//		"name": "org.h2.Driver",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
 	// These from DefaultIdentifierGeneratorFactory
 	{
 		"name": "app.main.model.Foo",
 		"allDeclaredConstructors": true,
 		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-//	{
-//		"name": "org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers",
-//		"allDeclaredConstructors": true,
-//		"allDeclaredMethods": true
-//	},
-	{
-	// DelegatingWebFluxConfiguration (used by webfluxconfigurationsupport)
-		"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
-		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	}
 ]

@@ -20,12 +20,19 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
+import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
+import org.thymeleaf.standard.expression.AdditionExpression;
 
 @ConfigurationHint(value=ThymeleafAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {
 // Surely one of many... I wonder if there is a better way for these rather than conditional on autoconfig, conditional on jar presence? (maven coords?)
 				Temporals.class,
-				},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+				AdditionExpression.class,
+				ThymeleafReactiveView.class
+				}, typeNames= {
+						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
+				},
+				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
 })
 public class Hints implements NativeImageConfiguration {
 }
