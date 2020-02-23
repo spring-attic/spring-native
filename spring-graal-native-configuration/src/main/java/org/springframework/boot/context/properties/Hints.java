@@ -33,7 +33,11 @@ import org.springframework.graal.extension.TypeInfo;
 //TODO do configuration properties chain?
 //@EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
 @ConfigurationHint(value = EnableConfigurationPropertiesRegistrar.class,typeInfos = {
-	@TypeInfo(types= {ConfigurationPropertiesBindingPostProcessor.class})	
+	@TypeInfo(types= {
+			ConfigurationPropertiesBindingPostProcessor.class,
+		ConfigurationPropertiesBinder.Factory.class, 
+			ConfigurationPropertiesBeanDefinitionValidator.class
+			})	
 })
 @ConfigurationHint(value = EnableConfigurationProperties.class)
 @ConfigurationHint(typeInfos = {@TypeInfo(types= {

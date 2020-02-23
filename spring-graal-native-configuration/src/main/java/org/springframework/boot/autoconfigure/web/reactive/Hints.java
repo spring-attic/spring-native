@@ -32,12 +32,20 @@ import org.springframework.web.reactive.HandlerResult;
 	// These two believed through WebFluxConfigurationSupport, CodecConfigurer.properties
 	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
 			ClientCodecConfigurer.class, ServerCodecConfigurer.class, // TODO Also put in regular web auto config?
-			HandlerResult.class
+			HandlerResult.class,
 			},
 			// These are from BaseDefaultCodecs - not sure on needed visibility
 			// TODO Aren't these also needed for non reactive auto configuration web? Is there a common configuration supertype between those
 			// configurations that they can be hung off
 			typeNames= {
+
+//					{
+//					// DelegatingWebFluxConfiguration (used by webfluxconfigurationsupport)
+//						"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
+//						"allDeclaredConstructors": true,
+//						"allDeclaredMethods": true
+//					}
+				"com.sun.xml.internal.stream.XMLInputFactoryImpl",
 				"com.fasterxml.jackson.databind.ObjectMapper", 
 				"com.fasterxml.jackson.core.JsonGenerator",
 				"com.fasterxml.jackson.dataformat.smile.SmileFactory", 
