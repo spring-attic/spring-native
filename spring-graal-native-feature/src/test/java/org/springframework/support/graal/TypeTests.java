@@ -16,12 +16,14 @@
 package org.springframework.support.graal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +32,6 @@ import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.springframework.graal.type.CompilationHint;
 import org.springframework.graal.type.Type;
-import org.springframework.graal.type.TypeKind;
 import org.springframework.graal.type.TypeSystem;
 
 public class TypeTests {
@@ -43,11 +44,11 @@ public class TypeTests {
 		// System.out.println(file.getCanonicalPath());
 		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
 	}
-	
+
 	@Test
 	public void conversions() {
 		String c = Type.fromLdescriptorToSlashed("[Ljava/lang/String;");
-		assertEquals("java/lang/String[]",c);
+		assertEquals("java/lang/String[]", c);
 	}
 
 	@Test
@@ -90,9 +91,8 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(Object.class.getName(), ch.getTargetType());
-		assertEquals("java.lang.String[]",ch.getDependantTypes().keySet().iterator().next().toString());
+		assertEquals("java.lang.String[]", ch.getDependantTypes().keySet().iterator().next().toString());
 	}
-
 
 	@Test
 	public void configurationHintConversion2() {
@@ -162,6 +162,30 @@ public class TypeTests {
 		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.String"));
 	}
 
+	@Test
+	public void nestedTypeNameArrays() {
+		Type testClass = typeSystem.resolveName(TestClass8.class.getName());
+		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		assertEquals(1, compilationHints.size());
+		CompilationHint ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTargetType());
+		Map<String, Integer> dts = ch.getDependantTypes();
+		assertEquals(3, dts.size());
+		System.out.println(dts);
+		// java.lang.String=31
+		// org.springframework.support.graal.TypeTests$TestClass6=31, 
+		// org.springframework.support.graal.TypeTests$TestClass7[]=31
+		Set<String> keys = dts.keySet();
+		for (String key: keys) {
+			System.out.println("K="+key);
+			Type t= typeSystem.resolveName(key);
+			assertNotNull(t);
+			System.out.println(t.getName());
+			System.out.println(t.isArray());
+			System.out.println(t.getMethodCount());
+		}
+	}
+
 	@ConfigurationHint(value = Integer.class)
 	static class TestClass1 {
 	}
@@ -170,7 +194,7 @@ public class TypeTests {
 	static class TestClass1a {
 	}
 
-	@ConfigurationHint(typeInfos= {@TypeInfo(types= {String[].class})})
+	@ConfigurationHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1b {
 	}
 
@@ -191,15 +215,21 @@ public class TypeTests {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass5 {
 	}
-	
-	@ConfigurationHint(value = String.class, typeInfos = {
-			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
-			@TypeInfo(types= {Integer.class}, access=AccessBits.RESOURCE)
-	})
-	static class TestClass6 { }
 
 	@ConfigurationHint(value = String.class, typeInfos = {
-			@TypeInfo(typeNames= {"java.lang.String"}, types = { Float.class }, access = AccessBits.CLASS) })
+			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
+			@TypeInfo(types = { Integer.class }, access = AccessBits.RESOURCE) })
+	static class TestClass6 {
+	}
+
+	@ConfigurationHint(value = String.class, typeInfos = {
+			@TypeInfo(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass7 {
+	}
+
+	@ConfigurationHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.support.graal.TypeTests$TestClass6",
+			"org.springframework.support.graal.TypeTests$TestClass7[]", }) })
+	static class TestClass8 {
+
 	}
 }

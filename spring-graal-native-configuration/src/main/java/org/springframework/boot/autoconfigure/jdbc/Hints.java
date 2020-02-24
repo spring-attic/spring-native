@@ -35,6 +35,7 @@ import org.springframework.graal.type.AccessBits;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 /*
 proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
@@ -66,7 +67,9 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSour
 				types= {FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}),
 		})
 @ConfigurationHint(value=Hikari.class,typeInfos= {
-		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class,Statement.class,Statement[].class})
+		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class,Statement.class,Statement[].class,
+				// TODO what is the right place for this one? (and its array variant)
+				IConcurrentBagEntry[].class,IConcurrentBagEntry.class})
 	})
 public class Hints implements NativeImageConfiguration {
 }

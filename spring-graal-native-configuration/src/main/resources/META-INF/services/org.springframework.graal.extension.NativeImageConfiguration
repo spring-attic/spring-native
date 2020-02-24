@@ -1,5 +1,7 @@
 org.springframework.amqp.rabbit.annotation.Hints
 org.springframework.beans.factory.annotation.Hints
+org.springframework.beans.factory.config.Hints
+org.springframework.boot.Hints
 org.springframework.boot.autoconfigure.Hints
 org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
@@ -16,6 +18,7 @@ org.springframework.boot.autoconfigure.transaction.Hints
 org.springframework.boot.autoconfigure.web.reactive.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints
 org.springframework.boot.context.properties.Hints
+org.springframework.boot.context.Hints
 org.springframework.context.annotation.Hints
 org.springframework.core.annotation.Hints
 org.springframework.data.jpa.repository.support.Hints

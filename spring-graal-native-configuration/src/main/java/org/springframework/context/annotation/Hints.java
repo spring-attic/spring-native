@@ -17,6 +17,7 @@ package org.springframework.context.annotation;
 
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
+import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
@@ -42,6 +43,7 @@ proposedHints.put(AdviceModeImportSelector,
 				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,
 				AnnotationScopeMetadataResolver.class,AutoConfigurationExcludeFilter.class,
 				EventListenerMethodProcessor.class,
+				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
 				}, access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
 		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),

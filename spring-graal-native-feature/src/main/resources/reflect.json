@@ -13,27 +13,6 @@
 		"allDeclaredConstructors": true,
 		"allDeclaredMethods": true
 	},
-	// vvv vanilla-jpa vvv
-    {
-		"name": "org.springframework.beans.factory.config.PropertiesFactoryBean",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-    },
-	{//superclass of PropertiesFactoryBean
-		"name": "org.springframework.core.io.support.PropertiesLoaderSupport",
-		"allDeclaredConstructors": true,
- 		"allDeclaredMethods": true
-	},
-	{
-		"name": "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]",
-		"allDeclaredConstructors": true
-	},
-
-// vanilla-jpa ^^^
-// This are related to getting petclinic to work, some need a deeper dive though (e.g. the
-// proxy related ones - we need to know if a spring aop proxy will be getting created)
-//
-// xx
        {
                "name": "java.util.logging.LogManager",
                "allDeclaredConstructors": true,
@@ -57,49 +36,6 @@
 		"allDeclaredConstructors": true
 		//"allDeclaredMethods": true
 	},
-	{
-		"name": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.context.event.DefaultEventListenerFactory",
-		"methods": [
-			{
-				"name": "<init>",
-				"parameterTypes": [
-				]
-			}
-		]
-	},
-	{
-		"name": "org.springframework.boot.context.TypeExcludeFilter",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.boot.SpringBootConfiguration",
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.boot.autoconfigure.SpringBootApplication",
-		"allDeclaredConstructors": true,
-		"allDeclaredFields": true,
-		"allDeclaredMethods": true
-	},
-	{
-		"name": "org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
-		"allDeclaredConstructors": true
-	},
-	{
-		"name": "org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar",
-		"allDeclaredConstructors": true
-		//"allDeclaredMethods": true
-},	
-	{
-		"name": "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
-		"allDeclaredConstructors": true,
-		"allDeclaredMethods": true
-	},
-	// These from DefaultIdentifierGeneratorFactory
 	{
 		"name": "app.main.model.Foo",
 		"allDeclaredConstructors": true,
