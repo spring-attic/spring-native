@@ -50,12 +50,14 @@ import org.springframework.web.reactive.HandlerResult;
 				"com.fasterxml.jackson.core.JsonGenerator",
 				"com.fasterxml.jackson.dataformat.smile.SmileFactory", 
 				"javax.xml.bind.Binder", 
-				"org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping.PreFlightAmbiguousMatchHandler",
+				
 				"com.google.protobuf.Message", 
 				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 			},
 			access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS
-		)
+		),
+	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
+	access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
 })
 @ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)

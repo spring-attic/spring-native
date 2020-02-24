@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.context;
 
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
-import org.springframework.graal.type.AccessBits;
 
-@ConfigurationHint(typeInfos = { @TypeInfo(types = { AutoConfigureAfter.class, AutoConfigureOrder.class,
-		AutoConfigurationPackage.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
-// TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
-@ConfigurationHint(typeInfos = { @TypeInfo(types = { AutoConfigurationImportSelector.class,
-		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
-		AutoConfigurationPackages.BasePackages.class,
-		EnableAutoConfiguration.class,SpringBootApplication.class
-		}, typeNames = {
-				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" }) })
+@ConfigurationHint(typeInfos = {@TypeInfo(types=TypeExcludeFilter.class)})
 public class Hints implements NativeImageConfiguration {
 }

@@ -111,8 +111,14 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 		}));
 		*/
 @ConfigurationHint(value=HibernateJpaAutoConfiguration.class,typeInfos= {
-	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
+	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
+			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
 })
+/*
+@ConfigurationHint(typeInfos= {
+	@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
+})
+*/
 @ConfigurationHint(value=HibernateJpaConfiguration.class,typeInfos= {
 		@TypeInfo(types= { H2Dialect.class,
 				EventType.class,
