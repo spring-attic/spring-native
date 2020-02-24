@@ -110,11 +110,12 @@ public class ResourcesHandler {
 
 	private void handleSpringConstants() {
 		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
-		System.out.println("Registering fixed entries: "+constantHints);
-		for (CompilationHint ch: constantHints) {
+		System.out.println("Registering fixed entries: " + constantHints);
+		for (CompilationHint ch : constantHints) {
 			Map<String, Integer> dependantTypes = ch.getDependantTypes();
-			for (Map.Entry<String,Integer> dependantType: dependantTypes.entrySet()) {
-				reflectionHandler.addAccess(dependantType.getKey(), null, true,AccessBits.getFlags(dependantType.getValue()));
+			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
+				reflectionHandler.addAccess(dependantType.getKey(), null, true,
+						AccessBits.getFlags(dependantType.getValue()));
 			}
 		}
 	}
@@ -171,15 +172,24 @@ public class ResourcesHandler {
 		}
 	}
 
-	public void reg(String s) {
-		reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+	public void reg(String s, boolean includeFields) {
+		if (includeFields) {
+			reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+					Flag.allDeclaredClasses, Flag.allDeclaredFields);
+		} else {
+			reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+					Flag.allDeclaredClasses);
+
+		}
 	}
 
 	// TODO shouldn't this code just call into processType like we do for discovered
 	// configuration?
 	// (Then we have consistent processing across library and user code - without it
-	// I think this code below will prove insufficient when we get more sophisticated
-	// samples - such as one using @Imported configuration - write a testcase for that)
+	// I think this code below will prove insufficient when we get more
+	// sophisticated
+	// samples - such as one using @Imported configuration - write a testcase for
+	// that)
 	private void processSpringComponents(Properties p) {
 		// Example:
 		// app.main.SampleApplication=org.springframework.stereotype.Component
@@ -193,12 +203,14 @@ public class ResourcesHandler {
 			String k = (String) keys.nextElement();
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
+			String vs = (String) p.get(k);
 			try {
 				// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
 				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 				// reflectionHandler.addAccess(k,Flag.allPublicConstructors,
 				// Flag.allPublicMethods, Flag.allDeclaredClasses);
-				reg(k);
+				// TODO assess which kinds of thing requiring what kind of access - here we see an Entity might require field reflective access where others don't
+				reg(k, vs.contains("javax.persistence.Entity"));
 				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
 				// Register nested types of the component
 				Type baseType = ts.resolveDotted(k);
@@ -215,7 +227,6 @@ public class ResourcesHandler {
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
 				// for petclinic spring.components
 			}
-			String vs = (String) p.get(k);
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
@@ -285,7 +296,8 @@ public class ResourcesHandler {
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessBits.RESOURCE|AccessBits.PUBLIC_CONSTRUCTORS);
+					typesToMakeAccessible.request(type.getDottedName(),
+							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -293,7 +305,8 @@ public class ResourcesHandler {
 				}
 			} else {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessBits.RESOURCE|AccessBits.PUBLIC_CONSTRUCTORS);
+					typesToMakeAccessible.request(type.getDottedName(),
+							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
 					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
@@ -301,7 +314,17 @@ public class ResourcesHandler {
 			}
 		} else {
 			if (typesToMakeAccessible != null) {
-				typesToMakeAccessible.request(type.getDottedName(), AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS|AccessBits.RESOURCE);//TypeKind.REGISTRAR);AccessBits // TODO why no class here? how can it work without the others...
+				typesToMakeAccessible.request(type.getDottedName(),
+						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE);// TypeKind.REGISTRAR);AccessBits
+																											// // TODO
+																											// why no
+																											// class
+																											// here? how
+																											// can it
+																											// work
+																											// without
+																											// the
+																											// others...
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -416,7 +439,6 @@ public class ResourcesHandler {
 		}
 	}
 
-
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
 		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
@@ -429,12 +451,12 @@ public class ResourcesHandler {
 			String k = (String) factoryKeys.nextElement();
 			System.out.println("Adding all the classes for this key: " + k);
 			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
-				if (Type.shouldBeProcessed(k,ts)) {
+				if (Type.shouldBeProcessed(k, ts)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
 					}
 				} else {
-					System.out.println("Skipping processing spring.factories key "+k+" due to missing types");
+					System.out.println("Skipping processing spring.factories key " + k + " due to missing types");
 				}
 			}
 		}
@@ -444,16 +466,16 @@ public class ResourcesHandler {
 		if (propertySourceLoaderValues != null) {
 			List<String> propertySourceLoaders = new ArrayList<>();
 			for (String s : propertySourceLoaderValues.split(",")) {
-				if(!s.equals("org.springframework.boot.env.YamlPropertySourceLoader") || !ConfigOptions.shouldRemoveYamlSupport()) {
+				if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
+						|| !ConfigOptions.shouldRemoveYamlSupport()) {
 					registerTypeReferencedBySpringFactoriesKey(s);
 					propertySourceLoaders.add(s);
-				}
-				else {
+				} else {
 					forRemoval.add(s);
 				}
 			}
-			System.out.println("Processing spring.factories - PropertySourceLoader lists #" + propertySourceLoaders.size()
-					+ " property source loaders");
+			System.out.println("Processing spring.factories - PropertySourceLoader lists #"
+					+ propertySourceLoaders.size() + " property source loaders");
 			SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
 			for (int c = 0; c < propertySourceLoaders.size(); c++) {
 				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
@@ -535,13 +557,12 @@ public class ResourcesHandler {
 	private boolean processType(String config, Set<String> visited) {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
 		/*
-		if (config.equals("org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration")
-				|| config.equals("org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration") 
-				) {
-			System.out.println("MUSTFIX - SKIPPING "+config);
-			return false;
-		}
-		*/
+		 * if (config.equals(
+		 * "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration") ||
+		 * config.equals(
+		 * "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration")
+		 * ) { System.out.println("MUSTFIX - SKIPPING "+config); return false; }
+		 */
 		boolean b = processType(ts.resolveDotted(config), visited, 0);
 		SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
 		return b;
@@ -560,8 +581,8 @@ public class ResourcesHandler {
 	 */
 	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
-		if (t==null) {
-			System.out.println("WARNING: UNABLE TO RESOLVE: "+typename);
+		if (t == null) {
+			System.out.println("WARNING: UNABLE TO RESOLVE: " + typename);
 		}
 		if (t != null) {
 			// System.out.println("> registerSpecific for "+typename+" ar="+accessRequired);
@@ -574,10 +595,10 @@ public class ResourcesHandler {
 			}
 			if (importRegistrarOrSelector) {
 				// reflectionHandler.addAccess(typename,Flag.allDeclaredConstructors);
-				tar.request(typename, AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS);//TypeKind.REGISTRAR);
+				tar.request(typename, AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS);// TypeKind.REGISTRAR);
 			} else {
 				if (AccessBits.isResourceAccessRequired(typeKind)) {
-					tar.request(typename, AccessBits.RESOURCE );
+					tar.request(typename, AccessBits.RESOURCE);
 					tar.request(typename, typeKind);
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
@@ -621,20 +642,23 @@ public class ResourcesHandler {
 		}
 
 		boolean passesTests = true;
-		Map<String,String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
-		// depth==0 means we won't skip something inside something else. If we did that and the outer succeeded it will crash when digging
+		Map<String, String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy(
+				"Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
+		// depth==0 means we won't skip something inside something else. If we did that
+		// and the outer succeeded it will crash when digging
 		// through the inner stuff. For example:
 		// static class PooledDataSourceCondition extends AnyNestedCondition {
 		// ...
-		//   @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
-		//	 static class ExplicitType { 
-		if (depth==0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size()!=0 &&
-			(conditionalOnPropertyValues.get("matchIfMissing")==null || conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
-			SpringFeature.log(spaces(depth) + "skipping "+type.getName()+" due to ConditionalOnPropertyCheck");
+		// @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		// static class ExplicitType {
+		if (depth == 0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size() != 0
+				&& (conditionalOnPropertyValues.get("matchIfMissing") == null
+						|| conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
+			SpringFeature.log(spaces(depth) + "skipping " + type.getName() + " due to ConditionalOnPropertyCheck");
 			passesTests = false;
 		}
 		TypeAccessRequestor tar = new TypeAccessRequestor();
-		List<Hint> hints = passesTests?type.getHints():Collections.emptyList();
+		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
 			SpringFeature.log(spaces(depth) + "#" + hints.size() + " hints on " + type.getName() + " are: ");
 			for (int h = 0; h < hints.size(); h++) {
@@ -649,10 +673,12 @@ public class ResourcesHandler {
 				SpringFeature.log(spaces(depth) + "processing hint " + hint);
 
 				// This is used for hints that didn't gather data from the bytecode but had them
-				// directly encoded. For example when a CompilationHint on an ImportSelector encodes
+				// directly encoded. For example when a CompilationHint on an ImportSelector
+				// encodes
 				// the types that might be returned from it.
 				Map<String, Integer> specificNames = hint.getSpecificTypes();
-				SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
+				SpringFeature
+						.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
 				for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 					String specificTypeName = specificNameEntry.getKey();
 					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
@@ -661,15 +687,18 @@ public class ResourcesHandler {
 						}
 					} else {
 						if (hint.isFollow()) {
-							// TODO I suspect only certain things need following, specific types lists could specify that in a suffix (like access required)
-							SpringFeature.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
+							// TODO I suspect only certain things need following, specific types lists could
+							// specify that in a suffix (like access required)
+							SpringFeature
+									.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
 							toFollow.add(ts.resolveDotted(specificTypeName));
 						}
 					}
 				}
 
 				Map<String, Integer> inferredTypes = hint.getInferredTypes();
-				SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
+				SpringFeature
+						.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
 				for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 					String s = inferredType.getKey();
 					Type t = ts.resolveDotted(s, true);
@@ -687,11 +716,14 @@ public class ResourcesHandler {
 							SpringFeature.log(spaces(depth) + "will follow " + t);
 							toFollow.add(t);
 						}
-					} else if (hint.isSkipIfTypesMissing() && depth==0) {
-						// TODO If processing secondary type (depth>0) we can't skip things as we don't know if the 
-						// top level type that refers to us is going to fail or not.  Ideally we should pass in the 
-						// tar and accumulate types in secondary type processing and leave it to the outermost
-						// processing to decide if they need registration. 
+					} else if (hint.isSkipIfTypesMissing() && depth == 0) {
+						// TODO If processing secondary type (depth>0) we can't skip things as we don't
+						// know if the
+						// top level type that refers to us is going to fail or not. Ideally we should
+						// pass in the
+						// tar and accumulate types in secondary type processing and leave it to the
+						// outermost
+						// processing to decide if they need registration.
 						passesTests = false;
 						// Once failing, no need to process other hints
 						break hints;
@@ -702,7 +734,6 @@ public class ResourcesHandler {
 				registerAnnotationChain(depth, tar, annotationChain);
 			}
 		}
-		
 
 		// TODO this should be pushed earlier and access requests put into tar
 		String configNameDotted = type.getDottedName();
@@ -742,7 +773,7 @@ public class ResourcesHandler {
 				s = s.getSuperclass();
 			}
 		}
-		
+
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
 
@@ -757,7 +788,7 @@ public class ResourcesHandler {
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					tar.request(t.getDottedName(), AccessBits.CLASS);//TypeKind.EXISTENCE_CHECK);//AccessRequired.EXISTENCE_CHECK);
+					tar.request(t.getDottedName(), AccessBits.CLASS);// TypeKind.EXISTENCE_CHECK);//AccessRequired.EXISTENCE_CHECK);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -780,12 +811,14 @@ public class ResourcesHandler {
 				for (Method atBeanMethod : atBeanMethods) {
 					Type returnType = atBeanMethod.getReturnType();
 					if (returnType == null) {
-						// I believe null means that type is not on the classpath so skip further analysis
+						// I believe null means that type is not on the classpath so skip further
+						// analysis
 						continue;
 					} else {
-						tar.request(returnType.getDottedName(),  AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS);
+						tar.request(returnType.getDottedName(),
+								AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
 					}
-					
+
 					// Processing this kind of thing, parameter types need to be exposed
 					// @Bean
 					// TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
@@ -799,12 +832,11 @@ public class ResourcesHandler {
 					// If these 'beans' are being built the return types of the bean factory
 					// methods would ensure the registration has occurred.
 					/*
-					Set<Type> signatureTypes = atBeanMethod.getSignatureTypes();
-					for (Type signatureType: signatureTypes) {
-						System.out.println("Flibble: "+signatureType.getDottedName());
-						tar.request(signatureType.getDottedName(), AccessRequired.EXISTENCE_MC);
-					}
-					*/
+					 * Set<Type> signatureTypes = atBeanMethod.getSignatureTypes(); for (Type
+					 * signatureType: signatureTypes) {
+					 * System.out.println("Flibble: "+signatureType.getDottedName());
+					 * tar.request(signatureType.getDottedName(), AccessRequired.EXISTENCE_MC); }
+					 */
 
 					// Processing, for example:
 					// @ConditionalOnResource(resources =
@@ -858,16 +890,17 @@ public class ResourcesHandler {
 
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
-					}	
-						
-					// Register other runtime visible annotations from the @Bean method. For example this ensures @Role is visible on:
+					}
+
+					// Register other runtime visible annotations from the @Bean method. For example
+					// this ensures @Role is visible on:
 					// @Bean
 					// @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 					// @ConditionalOnMissingBean(Validator.class)
 					// public static LocalValidatorFactoryBean defaultValidator() {
 					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
-					for (Type annotationOnMethod: annotationsOnMethod) {
-						tar.request(annotationOnMethod.getDottedName(),AccessBits.ANNOTATION);
+					for (Type annotationOnMethod : annotationsOnMethod) {
+						tar.request(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
 					}
 				}
 			}
@@ -880,15 +913,18 @@ public class ResourcesHandler {
 			}
 			for (Map.Entry<String, Integer> t : tar.entrySet()) {
 				String dname = t.getKey();
-				
+
 				// Let's produce a message if this computed value is also in reflect.json
-				// This is a sign we can probably remove that entry from reflect.json (maybe depend if inferred access required matches declared)
+				// This is a sign we can probably remove that entry from reflect.json (maybe
+				// depend if inferred access required matches declared)
 				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
-					System.out.println("This is in the constant data, does it need to stay in there? "+dname+"  (dynamically requested access is "+t.getValue()+")");
+					System.out.println("This is in the constant data, does it need to stay in there? " + dname
+							+ "  (dynamically requested access is " + t.getValue() + ")");
 				}
-				
-				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
-				Flag[] flags = AccessBits.getFlags(t.getValue());//.getFlags();
+
+				SpringFeature.log(
+						spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
+				Flag[] flags = AccessBits.getFlags(t.getValue());// .getFlags();
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
@@ -899,12 +935,13 @@ public class ResourcesHandler {
 				} else {
 					reflectionHandler.addAccess(dname, null, false, flags);
 				}
-				if (AccessBits.isResourceAccessRequired(t.getValue())) {//.isResourceAccessRequired()) {
-					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class");
+				if (AccessBits.isResourceAccessRequired(t.getValue())) {// .isResourceAccessRequired()) {
+					resourcesRegistry.addResources(
+							dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
+									+ ".class");
 				}
 			}
 		}
-
 
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
