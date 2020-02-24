@@ -6,22 +6,12 @@
   ],
   // ^^^
     "resources": [
-	// vvv vanilla-tx
-	{"pattern": "org/springframework/context/annotation/AdviceModeImportSelector.class"},
-	{"pattern": "org/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class"},
-	{"pattern": "org/springframework/transaction/annotation/AbstractTransactionManagementConfiguration.class"},
-	// ^^^ vanilla-tx
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
     {"pattern": "static/.*"},
     {"pattern": "templates/.*"},
     // vvv petclinic
     {"pattern": "banner.txt"},
-    {"pattern": "org/springframework/format/Formatter.class"},
-    {"pattern": "org/springframework/format/Printer.class"},
-    {"pattern": "org/springframework/format/*"},
-    {"pattern": "org/springframework/format/*.class"},
-    {"pattern": "org/springframework/format/Parser.class"},
     {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
 	{"pattern": "org/springframework/http/mime.types"},
     {"pattern": "META-INF/spring.components"},
@@ -36,20 +26,11 @@
     {"pattern": "logging.properties"},
     {"pattern": "org/springframework/http/codec/CodecConfigurer.properties"},
     
-    {"pattern": "org/reactivestreams/Publisher.class"},
-    {"pattern": "org/springframework/amqp/rabbit/connection/ChannelProxy.class"},
-    {"pattern": "org/springframework/amqp/rabbit/annotation/RabbitBootstrapConfiguration.class"},
-    
     // vvv vanilla-jpa
-    {"pattern": "org/springframework/boot/context/properties/ConfigurationPropertiesScanRegistrar.class"},
     {"pattern": "META-INF/jpa-named-queries.properties"},
     // ^^^ vanilla-jpa
 
     // vvv vanilla-tx
-    {"pattern": "org/springframework/boot/CommandLineRunner.class"},
-    {"pattern": "app/main/EnableTx.class"},
-    {"pattern": "org/springframework/context/annotation/AutoProxyRegistrar.class"},
-    {"pattern": "app/main/Finder.class"},
     {"pattern": "org/springframework/jdbc/support/sql-error-codes.xml"},
     {"pattern": "schema.sql"},
     // ^^^ vanilla-tx
@@ -61,33 +42,7 @@
 
     // Does this catch the logging/<eachDirectory>/*.properties?
     {"pattern": "org/springframework/boot/logging/.*.properties"},
-    {"pattern": "org/springframework/boot/logging/.*.xml"},
-    
-    {"pattern": "org/hibernate/validator/internal/engine/ConfigurationImpl.class"},
-    {"pattern": "org/hibernate/validator/internal/util/Contracts.class"},
-    {"pattern": "org/hibernate/validator/internal/util/logging/Log.class"},
-    {"pattern": "org/hibernate/validator/internal/engine/resolver/TraversableResolvers.class"},
-
-	{"pattern": "org/springframework/boot/context/properties/ConfigurationPropertiesScanRegistrar.class"},
-    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration.Hikari.class"},
-    {"pattern": "org/springframework/boot/autoconfigure/orm/jpa/DataSourceInitializedPublisher.Registrar.class"},
-    {"pattern": "org/springframework/boot/autoconfigure/orm/jpa/DataSourceInitializedPublisher.class"},
-    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.class"},
-    {"pattern": "org/springframework/boot/autoconfigure/jdbc/DataSourceInitializerPostProcessor.class"},
-
-    {"pattern": "org/springframework/context/ApplicationListener.class"},
-    {"pattern": "org/springframework/beans/factory/InitializingBean.class"},
-    {"pattern": "org/springframework/context/annotation/Role.class"},
-    {"pattern": "javax/validation/Validator.class"},
-    {"pattern": "org/springframework/context/annotation/Import.class"},
-    {"pattern": "org/springframework/context/annotation/ImportAware.class"},
-    {"pattern": "org/springframework/context/EnvironmentAware.class"},
-    {"pattern": "org/springframework/context/annotation/Configuration.class"},
-    {"pattern": "org/springframework/beans/factory/BeanFactoryAware.class"},
-    {"pattern": "org/springframework/beans/factory/Aware.class"},
-    {"pattern": "org/springframework/beans/factory/BeanClassLoaderAware.class"},
-    {"pattern": "org/springframework/context/ApplicationContextAware.class"},
-    {"pattern": "org/springframework/context/annotation/ImportBeanDefinitionRegistrar.class"}
+    {"pattern": "org/springframework/boot/logging/.*.xml"}
   ]
 }
 
