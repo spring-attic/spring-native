@@ -34,5 +34,4 @@ import org.springframework.graal.type.AccessBits;
 			AnnotationAwareAspectJAutoProxyCreator.class,
 			AspectJAwareAdvisorAutoProxyCreator.class
 			},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
-
 public class Hints implements NativeImageConfiguration { }
