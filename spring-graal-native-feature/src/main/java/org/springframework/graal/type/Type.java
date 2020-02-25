@@ -901,7 +901,7 @@ public class Type {
 			return Collections.emptyList();
 		}
 		List<Hint> hints = new ArrayList<>();
-		List<CompilationHint> hintx = typeSystem.findHints(getName());//SpringConfiguration.findProposedHints(getName());
+		List<CompilationHint> hintx = typeSystem.findHints(getName());
 		if (hintx.size() != 0) {
 			List<Type> s = new ArrayList<>();
 			s.add(this);
