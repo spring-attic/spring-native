@@ -583,10 +583,23 @@ public class TypeSystem {
 	}
 
 	public List<CompilationHint> findHints(String typename) {
+		if (typename.contains("/")) {
+			if (typename.endsWith(";")) {
+				typename= typename.substring(1,typename.length()-1).replace("/", ".");
+			} else {
+				typename= typename.replace("/", ".");
+			}
+		}
 		if (hintLocator == null) {
 			hintLocator = new SpringConfiguration(this);
 		}
-		return hintLocator.findProposedHints(typename);
+		// The result should include hints directly on the type as well
+		// as discovered hints from separate configuration
+		List<CompilationHint> results = new ArrayList<>();
+		results.addAll(hintLocator.findProposedHints(typename));
+		List<CompilationHint> declaredHints = resolveName(typename).getCompilationHints();
+		results.addAll(declaredHints);
+		return results;
 	}
 
 }

@@ -71,13 +71,7 @@ public class SpringConfiguration {
 	
 	public List<CompilationHint> findProposedHints(String typename) {
 		// TODO sort out callers so they use a proper dotted name
-		if (typename.contains("/")) {
-			if (typename.endsWith(";")) {
-				typename= typename.substring(1,typename.length()-1).replace("/", ".");
-			} else {
-				typename= typename.replace("/", ".");
-			}
-		}
+
         List<CompilationHint> results = proposedHints.get(typename);     
 //        System.out.println("Found these for "+typename+" #"+(results==null?0:results.size()));
         return (results==null?Collections.emptyList():results);
