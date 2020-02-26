@@ -20,4 +20,5 @@
 # The test script will look for it in the current folder
 cp ../../../verify.sh .
 ${PWD%/*samples/*}/scripts/test.sh commandlinerunner-agent .
-mv summary.csv ../../..
+mkdir -p ../../../target/native-image/
+mv summary.csv ../../../target/native-image/
