@@ -1,28 +1,87 @@
 [
-["org.springframework.context.annotation.Lazy","org.springframework.core.annotation.SynthesizedAnnotation"],
-["org.springframework.web.bind.annotation.RequestMapping","org.springframework.core.annotation.SynthesizedAnnotation"],
-// above here for mvc sample
-["org.springframework.boot.context.properties.ConfigurationProperties","org.springframework.core.annotation.SynthesizedAnnotation"],
-["org.springframework.stereotype.Component"],
-["org.springframework.beans.factory.annotation.Qualifier"],
+// vvv commandlinerunner
 ["org.springframework.boot.context.properties.ConfigurationProperties"],
-["org.springframework.context.annotation.Lazy"],
+// vvv webflux-netty
 ["org.springframework.web.bind.annotation.RequestMapping"],
-["org.springframework.web.bind.annotation.ResponseStatus"],
-["org.springframework.web.bind.annotation.RequestBody"],
-["org.springframework.web.bind.annotation.ResponseBody"],
-["javax.validation.Validator","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+// vvv springmvc-tomcat
+// vvv spring-petclinic-jpa
+["org.springframework.context.annotation.Lazy"],
 ["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo"],
-["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo","javax.persistence.EntityManagerFactory"],
+["org.hibernate.jpa.HibernateEntityManager","org.springframework.orm.jpa.EntityManagerProxy"],
+["javax.validation.Validator", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+// vvv vanilla-jpa
+//	at com.oracle.svm.core.util.VMError.unsupportedFeature(VMError.java:101)
+//	at com.oracle.svm.reflect.proxy.DynamicProxySupport.getProxyClass(DynamicProxySupport.java:113)
+//	at java.lang.reflect.Proxy.getProxyClass0(Proxy.java:54)
+//	at java.lang.reflect.Proxy.newProxyInstance(Proxy.java:719)
+//	at org.springframework.core.annotation.SynthesizedMergedAnnotationInvocationHandler.createProxy(SynthesizedMergedAnnotationInvocationHandler.java:183)
+//	at org.springframework.core.annotation.TypeMappedAnnotation.createSynthesized(TypeMappedAnnotation.java:335)
+//	at org.springframework.core.annotation.AbstractMergedAnnotation.synthesize(AbstractMergedAnnotation.java:210)
+//	at org.springframework.core.annotation.AbstractMergedAnnotation.synthesize(AbstractMergedAnnotation.java:200)
+//	at org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation(AnnotatedElementUtils.java:634)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.lambda$populateAnnotationCache$7(AnnotationBasedPersistentProperty.java:131)
+//	at java.util.Optional.ifPresent(Optional.java:159)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.populateAnnotationCache(AnnotationBasedPersistentProperty.java:120)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.<init>(AnnotationBasedPersistentProperty.java:88)
+//	at org.springframework.data.jpa.mapping.JpaPersistentPropertyImpl.<init>(JpaPersistentPropertyImpl.java:100)
+//	at org.springframework.data.jpa.mapping.JpaMetamodelMappingContext.createPersistentProperty(JpaMetamodelMappingContext.java:80)
 ["javax.persistence.Id"],
+
+//	at com.oracle.svm.core.util.VMError.unsupportedFeature(VMError.java:101)
+//	at com.oracle.svm.reflect.proxy.DynamicProxySupport.getProxyClass(DynamicProxySupport.java:113)
+//	at java.lang.reflect.Proxy.getProxyClass0(Proxy.java:54)
+//	at java.lang.reflect.Proxy.newProxyInstance(Proxy.java:719)
+//	at org.springframework.core.annotation.SynthesizedMergedAnnotationInvocationHandler.createProxy(SynthesizedMergedAnnotationInvocationHandler.java:183)
+//	at org.springframework.core.annotation.TypeMappedAnnotation.createSynthesized(TypeMappedAnnotation.java:335)
+//	at org.springframework.core.annotation.AbstractMergedAnnotation.synthesize(AbstractMergedAnnotation.java:210)
+//	at org.springframework.core.annotation.AbstractMergedAnnotation.synthesize(AbstractMergedAnnotation.java:200)
+//	at org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation(AnnotatedElementUtils.java:634)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.lambda$populateAnnotationCache$7(AnnotationBasedPersistentProperty.java:131)
+//	at java.util.Optional.ifPresent(Optional.java:159)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.populateAnnotationCache(AnnotationBasedPersistentProperty.java:120)
+//	at org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.<init>(AnnotationBasedPersistentProperty.java:88)
+//	at org.springframework.data.jpa.mapping.JpaPersistentPropertyImpl.<init>(JpaPersistentPropertyImpl.java:100)
+//	at org.springframework.data.jpa.mapping.JpaMetamodelMappingContext.createPersistentProperty(JpaMetamodelMappingContext.java:80)
 ["javax.persistence.GeneratedValue"],
 ["javax.persistence.Transient"],
-["org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"],
-["org.hibernate.jpa.HibernateEntityManager","org.springframework.orm.jpa.EntityManagerProxy"],
-["org.springframework.web.bind.annotation.RequestParam"],
-["org.springframework.amqp.rabbit.annotation.RabbitListener"],
-["org.springframework.amqp.rabbit.connection.ChannelProxy"],
-["org.hibernate.query.Query", "org.hibernate.query.spi.QueryImplementor"]
+["org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"]
+// vvv vanilla-tx
+
+
+//org.springframework.beans.factory.BeanCreationException: 
+// Error creating bean with name 'webHandler' defined in class path resource 
+// [org/springframework/boot/autoconfigure/web/reactive/WebFluxAutoConfiguration$EnableWebFluxConfiguration.class]: 
+// I//nitialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: 
+// Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource 
+// [org/springframework/boot/autoconfigure/web/reactive/WebFluxAutoConfiguration$EnableWebFluxConfiguration.class]: 
+// Invocation of init method failed; nested exception is com.oracle.svm.core.jdk.UnsupportedFeatureError: 
+// Proxy class defined by interfaces [interface org.springframework.web.bind.annotation.RequestMapping] not found. 
+// Generating proxy classes at runtime is not supported. Proxy classes need to be defined at image build time by 
+// specifying the list of interfaces that they implement. To define proxy classes use -H:DynamicProxyConfigurationFiles=<comma-separated-config-files> and -H:DynamicProxyConfigurationResources=<comma-separated-config-resources> options.
+//
+//Caused by: org.springframework.beans.factory.BeanCreationException: 
+//  Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource
+//  [org/springframework/boot/autoconfigure/web/reactive/WebFluxAutoConfiguration$EnableWebFluxConfiguration.class]:
+//  Invocation of init method failed; nested exception is com.oracle.svm.core.jdk.UnsupportedFeatureError:
+//  Proxy class defined by interfaces [interface org.springframework.web.bind.annotation.RequestMapping] not 
+//  found. Generating proxy classes at runtime is not supported. Proxy classes need to be defined at image build time by specifying the list of interfaces that they implement. To define proxy classes use -H:DynamicProxyConfigurationFiles=<comma-separated-config-files> and -H:DynamicProxyConfigurationResources=<comma-separated-config-resources> options.
+//
+//Caused by: com.oracle.svm.core.jdk.UnsupportedFeatureError: Proxy class defined by interfaces 
+//  [interface org.springframework.web.bind.annotation.RequestMapping] not found. Generating proxy classes at runtime is not supported. Proxy classes need to be defined at image build time by specifying the list of interfaces that they implement. To define proxy classes use -H:DynamicProxyConfigurationFiles=<comma-separated-config-files> and -H:DynamicProxyConfigurationResources=<comma-separated-config-resources> options.
+//["org.springframework.context.annotation.Lazy","org.springframework.core.annotation.SynthesizedAnnotation"],
+//["org.springframework.web.bind.annotation.RequestMapping","org.springframework.core.annotation.SynthesizedAnnotation"],
+// above here for mvc sample
+//["org.springframework.boot.context.properties.ConfigurationProperties","org.springframework.core.annotation.SynthesizedAnnotation"],
+//["org.springframework.stereotype.Component"],
+//["org.springframework.beans.factory.annotation.Qualifier"],
+//["org.springframework.web.bind.annotation.ResponseStatus"],
+//["org.springframework.web.bind.annotation.RequestBody"],
+//["org.springframework.web.bind.annotation.ResponseBody"],
+//["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo","javax.persistence.EntityManagerFactory"],
+//["org.springframework.web.bind.annotation.RequestParam"],
+//["org.springframework.amqp.rabbit.annotation.RabbitListener"],
+//["org.springframework.amqp.rabbit.connection.ChannelProxy"],
+//["org.hibernate.query.Query", "org.hibernate.query.spi.QueryImplementor"]
 
    // vvv sample specific
   // ["org.springframework.boot.CommandLineRunner","app.main.Finder","org.springframework.aop.SpringProxy",

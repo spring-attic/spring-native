@@ -91,7 +91,19 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAut
 	ProtocolHandler.class,AbstractProtocol.class,AbstractHttp11Protocol.class,AbstractHttp11JsseProtocol.class,Http11NioProtocol.class,
 	ErrorPage.class,DefaultErrorViewResolver.class,BeanNameViewResolver.class,
 				ErrorPageRegistrarBeanPostProcessor.class},
-				typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler"}),
+				typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
+						//TODO I wonder if this one should be conditional on jax2b being on the classpath, this is the stacktrace from securing-web
+//Caused by: javax.xml.transform.TransformerFactoryConfigurationError: Provider com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl not found
+//	at javax.xml.transform.FactoryFinder.newInstance(FactoryFinder.java:181) ~[na:na]
+//	at javax.xml.transform.FactoryFinder.find(FactoryFinder.java:261) ~[na:na]
+//	at javax.xml.transform.TransformerFactory.newInstance(TransformerFactory.java:106) ~[na:na]
+//	at org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter.<init>(AbstractXmlHttpMessageConverter.java:52) ~[na:na]
+//	at org.springframework.http.converter.xml.AbstractJaxb2HttpMessageConverter.<init>(AbstractJaxb2HttpMessageConverter.java:38) ~[na:na]
+//	at org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter.<init>(Jaxb2RootElementHttpMessageConverter.java:64) ~[na:na]
+//	at org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter.<init>(AllEncompassingFormHttpMessageConverter.java:72) ~[na:na]
+//	at org.springframework.web.filter.FormContentFilter.<init>(FormContentFilter.java:61) ~[securing-web:na]
+						"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"
+						}),
 		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)},abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {

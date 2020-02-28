@@ -19,7 +19,17 @@ import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
+import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
+import org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration.OAuth2ClientWebMvcImportSelector;
+import org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration.OAuth2ClientWebMvcSecurityConfiguration;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer.JwtConfigurer;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /*
@@ -44,7 +54,12 @@ proposedHints.put(OAuth2ImportSelector,
 */
 @ConfigurationHint(value=OAuth2ImportSelector.class,follow = true, typeInfos= {
 		@TypeInfo(types= {ClientRegistration.class},access=AccessBits.CLASS),
-		@TypeInfo(types= {OAuth2ClientConfiguration.class})
+		@TypeInfo(types= {OAuth2ClientConfiguration.class}),
+		@TypeInfo(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
+})
+// from gs-securing-web sample
+@ConfigurationHint(value=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
+	@TypeInfo(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})	
 })
 public class Hints implements NativeImageConfiguration {
 }

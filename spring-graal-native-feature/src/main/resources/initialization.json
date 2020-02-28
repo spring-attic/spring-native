@@ -40,9 +40,10 @@
 //
 {"class": "sun.reflect.misc.Trampoline"},
 {"class": "reactor.netty.http.server.HttpServer"},
-{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"}
+{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"},
 // vvv tomcat sample
 //{"package": "org.apache.tomcat.util.net"}
+{"class":"org.apache.tomcat.jni.SSL"}
 // ^^^ tomcat sample
 // vvv petclinic
   //  {"class": "java.sql.DriverManager"},
