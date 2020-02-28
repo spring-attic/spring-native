@@ -8,12 +8,17 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigurationHint {
 	
+	// TODO change this to a different name - target?
 	/**
-	 * This is the target of the hint, i.e. what is being hinted about. For example a hint on @Import indicating there are
-	 * type references in its value fields.
+	 * This is the target of the hint, i.e. what is being hinted about. For example a hint specifying <tt>value=@Import</tt>
+	 * is supplying hints about types that must be exposed when @Import is being used.  If no value is specified it
+	 * is considered to be a hint about the type upon which the hint annotation is specified.
 	 */
 	public Class<?> value() default Object.class;
 
+	/**
+	 * A set of type infos indicated which types should be made accessible (as resources and/or via reflection)
+	 */
 	public TypeInfo[] typeInfos() default {};
 	
 	/**
