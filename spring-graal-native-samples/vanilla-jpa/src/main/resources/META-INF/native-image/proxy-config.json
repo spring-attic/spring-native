@@ -1,3 +1,0 @@
-[
-    ["app.main.model.FooRepository", "org.springframework.data.repository.Repository", "org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"]
-]

@@ -16,10 +16,13 @@
 package org.springframework.support.graal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,7 @@ import org.springframework.graal.type.AccessBits;
 import org.springframework.graal.type.CompilationHint;
 import org.springframework.graal.type.Type;
 import org.springframework.graal.type.TypeSystem;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TypeTests {
 
@@ -177,13 +181,66 @@ public class TypeTests {
 		// org.springframework.support.graal.TypeTests$TestClass7[]=31
 		Set<String> keys = dts.keySet();
 		for (String key: keys) {
-			System.out.println("K="+key);
 			Type t= typeSystem.resolveName(key);
 			assertNotNull(t);
 			System.out.println(t.getName());
 			System.out.println(t.isArray());
 			System.out.println(t.getMethodCount());
 		}
+	}
+	
+	@Test
+	public void isTransactional() {
+		Type txClass1 = typeSystem.resolveName(TXClass1.class.getName());
+		assertTrue(txClass1.isTransactional());
+		Type txClass2 = typeSystem.resolveName(TXClass2.class.getName());
+		assertTrue(txClass2.isTransactional());
+		Type tClass1 = typeSystem.resolveName(TestClass1.class.getName());
+		assertFalse(tClass1.isTransactional());
+		Type txClass3 = typeSystem.resolveName(TXClass3.class.getName());
+		assertTrue(txClass3.isTransactional());
+		Type txClass4 = typeSystem.resolveName(TXClass4.class.getName());
+		assertTrue(txClass4.isTransactional());
+	}
+	
+	@Test
+	public void typeParameters() {
+		Type extenderClass = typeSystem.resolveName(Extender.class.getName());
+		List<String> typesInSignature = extenderClass.getTypesInSignature();
+		assertEquals(3, typesInSignature.size());
+		assertEquals("java/lang/Object",typesInSignature.get(0));
+		assertEquals("org/springframework/support/graal/TypeTests$Finder",typesInSignature.get(1));
+		assertEquals("org/springframework/support/graal/TypeTests$TXClass4",typesInSignature.get(2));
+		Type extender2 = typeSystem.resolveName(Extender2.class.getName());
+		typesInSignature = extender2.getTypesInSignature();
+		assertEquals(2, typesInSignature.size());
+		assertEquals("org/springframework/support/graal/TypeTests$TXClass4",typesInSignature.get(0));
+		assertEquals("java/io/Serializable",typesInSignature.get(1));
+	}
+	
+	@SuppressWarnings("serial")
+	static class Extender2 extends TXClass4 implements Serializable {
+	}
+
+	static class Extender implements Finder<TXClass4> {
+	}
+
+	interface Finder<T> {
+	}
+
+	static class TXClass4 extends TXClass1 {
+	}
+	
+	static class TXClass3 extends TXClass2 {
+	}
+	
+	@Transactional
+	static class TXClass1 {
+	}
+
+	static class TXClass2 {
+		@Transactional
+		public void m() {}
 	}
 
 	@ConfigurationHint(value = Integer.class)
