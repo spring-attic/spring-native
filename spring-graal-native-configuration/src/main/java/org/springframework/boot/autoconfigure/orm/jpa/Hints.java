@@ -75,6 +75,7 @@ import org.hibernate.id.UUIDHexGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.internal.CoreMessageLogger;
 import org.hibernate.internal.EntityManagerMessageLogger;
+import org.hibernate.internal.SessionImpl;
 import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
@@ -121,6 +122,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 */
 @ConfigurationHint(value=HibernateJpaConfiguration.class,typeInfos= {
 		@TypeInfo(types= { H2Dialect.class,
+				SessionImpl.class,
 				EventType.class,
 				// Related to EventListenerRegistry...
 				SaveOrUpdateEventListener.class,ResolveNaturalIdEventListener.class,

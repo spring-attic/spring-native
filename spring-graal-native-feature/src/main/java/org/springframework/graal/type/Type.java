@@ -47,6 +47,7 @@ import org.springframework.graal.support.SpringFeature;
  */
 public class Type {
 	
+	public final static String AtTransactional = "Lorg/springframework/transaction/annotation/Transactional;";
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
  	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
@@ -153,10 +154,25 @@ public class Type {
 		return dimensions>0?"java/lang/Object":node.superName;
 	}
 	
+	/**
+	 * Compute all the types referenced in the signature of this type.
+	 * @return
+	 */
 	public List<String> getTypesInSignature() {
-		if (node.signature == null || dimensions>0) {
+		if (dimensions>0 ) {
 			return Collections.emptyList();
+		} else if (node.signature == null) {
+			// With no generic signature it is just superclass and interfaces
+			List<String> ls = new ArrayList<>();
+			if (node.superName!=null) {
+				ls.add(node.superName);
+			}
+			if (node.interfaces!=null) {
+				ls.addAll(node.interfaces);
+			}
+			return ls;
 		} else {
+			// Pull out all the types from the generic signature
 			SignatureReader reader = new SignatureReader(node.signature);
 			TypeCollector tc = new TypeCollector();
 			reader.accept(tc);
@@ -1326,6 +1342,42 @@ public class Type {
 	public boolean isArray() {
 		return dimensions>0;
 	}
+
+	/**
+	 * @return true if type or a method inside is marked @Transactional
+	 */
+	public boolean isTransactional() {
+		return isAnnotatedInHierarchy(AtTransactional);
+	}
 	
+	public boolean isAnnotatedInHierarchy(String anno) {
+		if (isAnnotated(AtTransactional)) {
+			return true;
+		}
+		List<Method> methodsWithAnnotation = getMethodsWithAnnotation(anno);
+		if (methodsWithAnnotation.size()!=0) {
+			return true;
+		}
+		Type superclass = this.getSuperclass();
+		if (superclass != null) {
+			if (superclass.isAnnotatedInHierarchy(anno)) {
+				return true;
+			}
+		}
+		Type[] intfaces = this.getInterfaces();
+		if (intfaces != null) {
+			for (Type intface: intfaces) {
+				if (intface.isAnnotatedInHierarchy(anno)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public List<String> collectTypeParameterNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
@@ -53,6 +54,7 @@ import org.springframework.graal.type.TypeSystem;
 import com.oracle.svm.core.configure.ResourcesRegistry;
 import com.oracle.svm.core.jdk.Resources;
 import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
+
 import com.oracle.svm.hosted.ImageClassLoader;
 
 public class ResourcesHandler {
@@ -229,6 +231,13 @@ public class ResourcesHandler {
 				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
 				// Register nested types of the component
 				Type baseType = ts.resolveDotted(k);
+				
+				if (baseType != null) {
+					if (baseType.isTransactional()) {
+						processTransactionalTarget(baseType);
+					}
+				}
+
 				for (Type t : baseType.getNestedTypes()) {
 					String n = t.getName().replace("/", ".");
 					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
@@ -237,6 +246,7 @@ public class ResourcesHandler {
 				}
 				registerHierarchy(baseType, new HashSet<>(), null);
 			} catch (Throwable t) {
+				SpringFeature.log("WHAT?"+t.toString());
 				t.printStackTrace();
 				// assuming ok for now - see
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
@@ -250,10 +260,8 @@ public class ResourcesHandler {
 					isRepository = true;
 				}
 				try {
-					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
-					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
-					// Flag.allPublicMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors, Flag.allPublicMethods, Flag.allDeclaredClasses);
 //					reg(tt);
 					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
@@ -262,8 +270,7 @@ public class ResourcesHandler {
 					for (Type t : baseType.getNestedTypes()) {
 						String n = t.getName().replace("/", ".");
 						reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
-//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-//								Flag.allDeclaredClasses);
+//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
 					registerHierarchy(baseType, new HashSet<>(), null);
@@ -302,11 +309,23 @@ public class ResourcesHandler {
 		dynamicProxiesHandler.addProxy(repositoryInterfaces);
 	}
 
+	private void processTransactionalTarget(Type type) {
+		List<String> transactionalInterfaces = new ArrayList<>();
+		for (Type intface: type.getInterfaces()) {
+			transactionalInterfaces.add(intface.getDottedName());
+		}
+		transactionalInterfaces.add("org.springframework.aop.SpringProxy");
+		transactionalInterfaces.add("org.springframework.aop.framework.Advised");
+		transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(transactionalInterfaces);	
+		System.out.println("Created transaction related proxy for interfaces: "+transactionalInterfaces);
+	}
+
 	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
-		// System.out.println("> registerHierarchy "+type.getName());
+		SpringFeature.log("> registerHierarchy "+type.getName());
 		String desc = type.getName();
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
@@ -330,7 +349,7 @@ public class ResourcesHandler {
 		} else {
 			if (typesToMakeAccessible != null) {
 				typesToMakeAccessible.request(type.getDottedName(),
-						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE);// TypeKind.REGISTRAR);AccessBits
+						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE); // TypeKind.REGISTRAR);AccessBits
 																											// // TODO
 																											// why no
 																											// class
@@ -348,12 +367,18 @@ public class ResourcesHandler {
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
 		}
+		List<String> types = type.getTypesInSignature();
+		for (String t: types) {
+			registerHierarchy(ts.resolveSlashed(t), visited, typesToMakeAccessible);
+		}
+		/*
 		Type superclass = type.getSuperclass();
 		registerHierarchy(superclass, visited, typesToMakeAccessible);
 		Type[] intfaces = type.getInterfaces();
 		for (Type intface : intfaces) {
 			registerHierarchy(intface, visited, typesToMakeAccessible);
 		}
+		*/
 		// System.out.println("< registerHierarchy "+type.getName());
 		// TODO inners of those supertypes/interfaces?
 	}
