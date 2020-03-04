@@ -52,6 +52,7 @@ public class Type {
  	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	public final static String AtRepository = "Lorg/springframework/stereotype/Repository;";
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
 	public final static String ImportBeanDefinitionRegistrar ="Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
@@ -818,10 +819,13 @@ public class Type {
 	private boolean isAnnotated(String Ldescriptor) {
 		if (dimensions>0) return false;
 		if (node.visibleAnnotations != null) {
+
 			for (AnnotationNode an: node.visibleAnnotations) {
+				System.out.println("Checking "+an.desc+" against "+node.visibleAnnotations);
 				if (an.desc.equals(Ldescriptor)) {
 					return true;
 				}
+				System.out.println("no");
 			}
 		}
 		return false;
@@ -1378,6 +1382,10 @@ public class Type {
 	public List<String> collectTypeParameterNames() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public boolean isAtRepository() {
+		return isAnnotated(AtRepository);
 	}
 	
 }

@@ -252,6 +252,10 @@ public class ResourcesHandler {
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
 				// for petclinic spring.components
 			}
+		Type kType = ts.resolveDotted(k);
+		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
+			processRepository2(kType);
+		}
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
@@ -260,13 +264,14 @@ public class ResourcesHandler {
 					isRepository = true;
 				}
 				try {
+					Type baseType = ts.resolveDotted(tt);
+
 					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors, Flag.allPublicMethods, Flag.allDeclaredClasses);
 //					reg(tt);
 					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
 					// Register nested types of the component
-					Type baseType = ts.resolveDotted(tt);
 					for (Type t : baseType.getNestedTypes()) {
 						String n = t.getName().replace("/", ".");
 						reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
@@ -286,6 +291,24 @@ public class ResourcesHandler {
 		System.out.println("Registered " + registeredComponents + " entries");
 	}
 
+	// Code from petclinic that ends us up in here:
+	// public interface VisitRepository { ... }
+	// @org.springframework.stereotype.Repository @Transactional public class JpaVisitRepositoryImpl implements VisitRepository { ... }
+	// Need proxy: [org.springframework.samples.petclinic.visit.VisitRepository,org.springframework.aop.SpringProxy,
+	//              org.springframework.aop.framework.Advised,org.springframework.core.DecoratingProxy] 
+	// And entering here with r = JpaVisitRepositoryImpl
+	private void processRepository2(Type r) {
+		System.out.println("Processing @oss.Repository annotated "+r.getDottedName());
+		List<String> repositoryInterfaces = new ArrayList<>();
+		for (String s: r.getInterfacesStrings()) {
+			repositoryInterfaces.add(s.replace("/", "."));
+		}
+		repositoryInterfaces.add("org.springframework.aop.SpringProxy");
+		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
+		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(repositoryInterfaces);
+	}
+
 	/**
 	 * Crude basic repository processing - needs more analysis to only add the
 	 * interfaces the runtime will be asking for when requesting the proxy.
@@ -293,6 +316,7 @@ public class ResourcesHandler {
 	 * @param repositoryName type name of the repository
 	 */
 	private void processRepository(String repositoryName) {
+		SpringFeature.log("Processing repository: "+repositoryName+" - adding proxy implementing Repository, TransactionalProxy, Advised, DecoratingProxy");
 		Type type = ts.resolveDotted(repositoryName);
 		// Example proxy:
 		// ["app.main.model.FooRepository",
