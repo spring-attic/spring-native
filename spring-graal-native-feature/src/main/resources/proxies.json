@@ -5,6 +5,12 @@
 ["org.springframework.web.bind.annotation.RequestMapping"],
 // vvv springmvc-tomcat
 // vvv spring-petclinic-jpa
+
+        ["org.springframework.web.bind.annotation.PathVariable"],
+        ["javax.validation.Valid"],
+        ["org.springframework.web.bind.annotation.InitBinder"],
+        ["org.springframework.web.bind.annotation.ModelAttribute"],
+        ["org.springframework.format.annotation.DateTimeFormat"],
 ["org.springframework.context.annotation.Lazy"],
 ["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo"],
 ["org.hibernate.jpa.HibernateEntityManager","org.springframework.orm.jpa.EntityManagerProxy"],
