@@ -48,6 +48,7 @@ import org.springframework.graal.support.SpringFeature;
 public class Type {
 	
 	public final static String AtTransactional = "Lorg/springframework/transaction/annotation/Transactional;";
+	public final static String AtJavaxTransactional = "Ljavax/transaction/Transactional;";
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
  	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
@@ -241,6 +242,7 @@ public class Type {
 	}
 
 	public List<Method> getMethodsWithAnnotation(String string) {
+		//System.out.println("looking through methods "+node.methods+" for "+string);
 		return dimensions>0?Collections.emptyList():node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
 				.collect(Collectors.toList());
 	}
@@ -817,12 +819,14 @@ public class Type {
 	}
 
 	private boolean isAnnotated(String Ldescriptor) {
-		if (dimensions>0) return false;
+		if (dimensions>0) {
+			return false;
+		}
 		if (node.visibleAnnotations != null) {
-
 			for (AnnotationNode an: node.visibleAnnotations) {
-				System.out.println("Checking "+an.desc+" against "+node.visibleAnnotations);
+				System.out.println("Looking for: "+Ldescriptor+" is this it:"+an.desc+"?");
 				if (an.desc.equals(Ldescriptor)) {
+					System.out.println("yes");
 					return true;
 				}
 				System.out.println("no");
@@ -1351,7 +1355,22 @@ public class Type {
 	 * @return true if type or a method inside is marked @Transactional
 	 */
 	public boolean isTransactional() {
-		return isAnnotatedInHierarchy(AtTransactional);
+		System.out.println("Checking if "+getName()+" is transactional");
+		// TODO are these usable as meta annotations?
+		return isAnnotated(AtTransactional) || isAnnotated(AtJavaxTransactional);
+	}
+	
+	public boolean hasTransactionalMethods() {
+		// TODO meta annotation usage?
+		List<Method> methodsWithAtTransactional = getMethodsWithAnnotation(AtTransactional);
+		if (methodsWithAtTransactional.size()>0) {
+			return true;
+		}
+		List<Method> methodsWithAtJavaxTransactional = getMethodsWithAnnotation(AtJavaxTransactional);
+		if (methodsWithAtJavaxTransactional.size()>0) {
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean isAnnotatedInHierarchy(String anno) {

@@ -58,6 +58,7 @@
   // later the 'new implementation' will be picked up that uses VarHandle and we need that
   // compiled early
   {"class":"org.h2.util.Bits"},
+  {"class":"org.springframework.format.annotation.DateTimeFormat$ISO"},
   
 {"class": "org.springframework.core.GraalDetector"},
     // vvv petclinic
@@ -82,6 +83,7 @@
     {"class": "org.springframework.core.DecoratingProxy"},
     {"class": "org.springframework.jdbc.datasource.ConnectionProxy"},
     //
+    {"class":"org.slf4j.helpers.SubstituteLogger"},
     {"class": "org.slf4j.helpers.NOPLogger"},
     //{"class": "io.netty.handler.codec.http2.ReadOnlyHttp2Headers"},
 {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},

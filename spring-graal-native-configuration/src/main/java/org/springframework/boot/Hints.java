@@ -25,6 +25,7 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
 @ConfigurationHint(typeInfos = { @TypeInfo(types = {
+		SpringApplication.class,
 		SpringBootConfiguration.class,
 		// TODO Handle these more correctly - the need to expose these should be 
 		// inferred by recognizing which constructors are being exposed and that the parameters

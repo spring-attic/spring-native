@@ -227,13 +227,16 @@ public class ResourcesHandler {
 				// reflectionHandler.addAccess(k,Flag.allPublicConstructors,
 				// Flag.allPublicMethods, Flag.allDeclaredClasses);
 				// TODO assess which kinds of thing requiring what kind of access - here we see an Entity might require field reflective access where others don't
-				reg(k, vs.contains("javax.persistence.Entity"));
+				// I think as a component may have autowired fields (and an entity may have interesting fields) - you kind of always need to expose fields
+				// There is a type in vanilla-orm called Bootstrap that shows this need
+				reg(k,true);// vs.contains("javax.persistence.Entity"));
 				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
 				// Register nested types of the component
 				Type baseType = ts.resolveDotted(k);
 				
 				if (baseType != null) {
-					if (baseType.isTransactional()) {
+					System.out.println("Checking if type "+baseType+" has transactional methods: "+baseType.hasTransactionalMethods());
+					if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { // TODO should this check the values against this key or for the annotation presence?
 						processTransactionalTarget(baseType);
 					}
 				}
