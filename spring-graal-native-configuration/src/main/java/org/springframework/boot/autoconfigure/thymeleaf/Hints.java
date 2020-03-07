@@ -20,11 +20,20 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
+import org.thymeleaf.spring5.expression.Fields;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring5.view.ThymeleafView;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
 import org.thymeleaf.standard.expression.AdditionExpression;
+import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
+import org.thymeleaf.templateresolver.AbstractTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @ConfigurationHint(value=ThymeleafAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {
+				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
+				SpringResourceTemplateResolver.class,Fields.class,
+				ThymeleafView.class,
 // Surely one of many... I wonder if there is a better way for these rather than conditional on autoconfig, conditional on jar presence? (maven coords?)
 				Temporals.class,
 				AdditionExpression.class,

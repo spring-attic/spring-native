@@ -17,19 +17,28 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.EventListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
+import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.H2Dialect;
-import org.hibernate.jpa.HibernateEntityManager;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEventListener;
@@ -62,6 +71,20 @@ import org.hibernate.event.spi.RefreshEventListener;
 import org.hibernate.event.spi.ReplicateEventListener;
 import org.hibernate.event.spi.ResolveNaturalIdEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.hibernate.hql.internal.ast.HqlToken;
+import org.hibernate.hql.internal.ast.tree.BinaryLogicOperatorNode;
+import org.hibernate.hql.internal.ast.tree.DotNode;
+import org.hibernate.hql.internal.ast.tree.FromClause;
+import org.hibernate.hql.internal.ast.tree.FromElement;
+import org.hibernate.hql.internal.ast.tree.IdentNode;
+import org.hibernate.hql.internal.ast.tree.Node;
+import org.hibernate.hql.internal.ast.tree.OrderByClause;
+import org.hibernate.hql.internal.ast.tree.ParameterNode;
+import org.hibernate.hql.internal.ast.tree.QueryNode;
+import org.hibernate.hql.internal.ast.tree.SelectClause;
+import org.hibernate.hql.internal.ast.tree.SelectExpressionImpl;
+import org.hibernate.hql.internal.ast.tree.SqlFragment;
+import org.hibernate.hql.internal.ast.tree.SqlNode;
 import org.hibernate.id.Assigned;
 import org.hibernate.id.ForeignGenerator;
 import org.hibernate.id.GUIDGenerator;
@@ -76,9 +99,14 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.internal.CoreMessageLogger;
 import org.hibernate.internal.EntityManagerMessageLogger;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.jpa.HibernateEntityManager;
 import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.hibernate.mapping.PersistentClass;
+import org.hibernate.persister.collection.BasicCollectionPersister;
+import org.hibernate.persister.collection.OneToManyPersister;
+import org.hibernate.persister.entity.JoinedSubclassEntityPersister;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
+import org.hibernate.persister.entity.UnionSubclassEntityPersister;
 import org.hibernate.persister.spi.PersisterCreationContext;
 import org.hibernate.query.QueryProducer;
 import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl;
@@ -86,7 +114,10 @@ import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
 import org.hibernate.validator.HibernateValidatorConfiguration;
+import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
+import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
+import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.util.logging.Log;
 import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
@@ -97,7 +128,9 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
+import org.springframework.graal.type.AccessBits;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
+import org.springframework.stereotype.Repository;
 
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
@@ -121,7 +154,22 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 })
 */
 @ConfigurationHint(value=HibernateJpaConfiguration.class,typeInfos= {
-		@TypeInfo(types= { H2Dialect.class,
+		@TypeInfo(types= {
+				// petclinic
+				// TODO what about having a way to specify everything in a package? More resilient and less verbose? do those things matter?
+				OrderByClause.class,SelectExpressionImpl.class,SqlFragment.class,SelectClause.class,BinaryLogicOperatorNode.class,
+				ParameterNode.class,DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,
+				Node.class,HqlToken.class,
+		},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS),
+		@TypeInfo(types= {
+				// petclinic
+				Repository.class,
+				PersistenceContext.class,MappedSuperclass.class,Column.class,ManyToOne.class,JoinColumn.class,Table.class,Transient.class
+		},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
+		@TypeInfo(types= {
+				OneToManyPersister.class,JoinedSubclassEntityPersister.class,SingleTableEntityPersister.class,UnionSubclassEntityPersister.class,
+				BasicCollectionPersister.class,
+				H2Dialect.class,
 				SessionImpl.class,
 				EventType.class,
 				// Related to EventListenerRegistry...
@@ -160,6 +208,8 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				HibernateEntityManagerFactory.class,
 				GeneratedValue.class,Id.class,
 				ReusableMessageFactory.class,
+				// TODO expose package contents again?
+				ParameterizedMessageFactory.class,
 				
 				PersistenceAnnotationBeanPostProcessor.class, 
 				
@@ -203,6 +253,9 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 			// related to hibernate validator
 			ParameterMessageInterpolator.class,AbstractMessageInterpolator.class,ValidationBootstrapParameters.class,
 			HibernateValidatorConfiguration.class,ConfigurationImpl.class,
+			// TODO lots of validators like the NotEmptyValidatorForCharSequence - should expose package contents?
+			NotEmpty.class,ConstraintDescriptorImpl.class,Digits.class,NotEmptyValidatorForCharSequence.class,
+			DigitsValidatorForCharSequence.class,
 			
 			DataSourceInitializedPublisher.class,
 			// related to Naming.applyNamingStrategies
