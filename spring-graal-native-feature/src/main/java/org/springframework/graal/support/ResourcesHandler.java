@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
@@ -54,7 +53,6 @@ import org.springframework.graal.type.TypeSystem;
 import com.oracle.svm.core.configure.ResourcesRegistry;
 import com.oracle.svm.core.jdk.Resources;
 import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
-
 import com.oracle.svm.hosted.ImageClassLoader;
 
 public class ResourcesHandler {
@@ -78,11 +76,11 @@ public class ResourcesHandler {
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 	}
 
-	public ResourcesDescriptor compute() {
+	public ResourcesDescriptor readStaticResourcesConfiguration() {
 		try {
 			InputStream s = this.getClass().getResourceAsStream("/resources.json");
-			ResourcesDescriptor read = ResourcesJsonMarshaller.read(s);
-			return read;
+			ResourcesDescriptor resourcesDescriptor = ResourcesJsonMarshaller.read(s);
+			return resourcesDescriptor;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -93,10 +91,10 @@ public class ResourcesHandler {
 		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
 		ts = TypeSystem.get(cl.getClasspath());
 
-		ResourcesDescriptor rd = compute();
+		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		// Patterns can be added to the registry, resources can be directly registered
-		// against Resources
+		// against Resources:
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
 		System.out.println("Registering resources - #" + rd.getPatterns().size() + " patterns");
@@ -109,11 +107,15 @@ public class ResourcesHandler {
 		}
 		registerResourceBundles(rd);
 		processSpringFactories();
-		handleSpringComponents();
-		handleSpringConstants();
+		processExistingOrSynthesizedSpringComponentsFiles();
+		handleSpringConstantHints();
 	}
 
-	private void handleSpringConstants() {
+	/**
+	 * Some types need reflective access in every Spring Boot application. When hints are scanned
+	 * these 'constants' are registered against the java.lang.Object key. 
+	 */
+	private void handleSpringConstantHints() {
 		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
 		System.out.println("Registering fixed entries: " + constantHints);
 		for (CompilationHint ch : constantHints) {
@@ -137,7 +139,7 @@ public class ResourcesHandler {
 		}
 	}
 
-	public void handleSpringComponents() {
+	public void processExistingOrSynthesizedSpringComponentsFiles() {
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
 			log("Processing META-INF/spring.components files...");
@@ -177,29 +179,6 @@ public class ResourcesHandler {
 		}
 	}
 
-	// TODO verify how much access is needed for a type @COC reference
-	private void registerConditionalOnClassTypeReference(Type componentType, String slashedTypeReference) {
-		try {
-			reflectionHandler.addAccess(slashedTypeReference.replace("/", "."), Flag.allDeclaredConstructors,
-					Flag.allDeclaredMethods);
-			resourcesRegistry.addResources(slashedTypeReference + ".class");
-		} catch (NoClassDefFoundError e) {
-			System.out.println(
-					"ERROR: @COC type " + slashedTypeReference + " not found for component " + componentType.getName());
-		}
-	}
-
-	public void reg(String s, boolean includeFields) {
-		if (includeFields) {
-			reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-					Flag.allDeclaredClasses, Flag.allDeclaredFields);
-		} else {
-			reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-					Flag.allDeclaredClasses);
-
-		}
-	}
-
 	// TODO shouldn't this code just call into processType like we do for discovered
 	// configuration?
 	// (Then we have consistent processing across library and user code - without it
@@ -229,7 +208,15 @@ public class ResourcesHandler {
 				// TODO assess which kinds of thing requiring what kind of access - here we see an Entity might require field reflective access where others don't
 				// I think as a component may have autowired fields (and an entity may have interesting fields) - you kind of always need to expose fields
 				// There is a type in vanilla-orm called Bootstrap that shows this need
-				reg(k,true);// vs.contains("javax.persistence.Entity"));
+				boolean includeFields = true;
+				if (includeFields) {
+					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+							Flag.allDeclaredClasses, Flag.allDeclaredFields);
+				} else {
+					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+							Flag.allDeclaredClasses);
+
+				}
 				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
 				// Register nested types of the component
 				Type baseType = ts.resolveDotted(k);
@@ -348,11 +335,18 @@ public class ResourcesHandler {
 		System.out.println("Created transaction related proxy for interfaces: "+transactionalInterfaces);
 	}
 
+	/**
+	 * Walk a type hierarchy and register them all for reflective access.
+	 * 
+	 * @param type the type whose hierarchy to register
+	 * @param visited used to remember what has already been visited
+	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
+	 */
 	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
-		SpringFeature.log("> registerHierarchy "+type.getName());
+		// SpringFeature.log("> registerHierarchy "+type.getName());
 		String desc = type.getName();
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
@@ -375,17 +369,9 @@ public class ResourcesHandler {
 			}
 		} else {
 			if (typesToMakeAccessible != null) {
+				// TODO why no CLASS here?
 				typesToMakeAccessible.request(type.getDottedName(),
-						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE); // TypeKind.REGISTRAR);AccessBits
-																											// // TODO
-																											// why no
-																											// class
-																											// here? how
-																											// can it
-																											// work
-																											// without
-																											// the
-																											// others...
+						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE);
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -394,20 +380,12 @@ public class ResourcesHandler {
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
 		}
-		List<String> types = type.getTypesInSignature();
-		for (String t: types) {
-			registerHierarchy(ts.resolveSlashed(t), visited, typesToMakeAccessible);
+		// Rather than just looking at superclass and interfaces, this will dig into everything including
+		// parameterized type references so nothing is missed
+		List<String> relatedTypes = type.getTypesInSignature();
+		for (String relatedType: relatedTypes) {
+			registerHierarchy(ts.resolveSlashed(relatedType), visited, typesToMakeAccessible);
 		}
-		/*
-		Type superclass = type.getSuperclass();
-		registerHierarchy(superclass, visited, typesToMakeAccessible);
-		Type[] intfaces = type.getInterfaces();
-		for (Type intface : intfaces) {
-			registerHierarchy(intface, visited, typesToMakeAccessible);
-		}
-		*/
-		// System.out.println("< registerHierarchy "+type.getName());
-		// TODO inners of those supertypes/interfaces?
 	}
 
 	/**

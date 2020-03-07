@@ -59,6 +59,10 @@
   // compiled early
   {"class":"org.h2.util.Bits"},
   {"class":"org.springframework.format.annotation.DateTimeFormat$ISO"},
+  // TODO some of these conditional? but are they conditional on actually being used?
+  {"class":"javax.persistence.FetchType"},
+  {"class":"javax.persistence.PersistenceContextType"},
+  {"class":"javax.persistence.SynchronizationType"},
   
 {"class": "org.springframework.core.GraalDetector"},
     // vvv petclinic
