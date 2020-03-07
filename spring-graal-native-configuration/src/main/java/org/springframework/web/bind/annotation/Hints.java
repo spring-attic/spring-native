@@ -24,8 +24,12 @@ import org.springframework.graal.type.AccessBits;
 // autoconfigs share a common ancestor that these could trigger off? Although, of course these will only be exposed
 // if they are on the classpath - why would you have the web jar on the classpath if not using these?
 @ConfigurationHint(typeInfos = {
+		// TODO What about some way to say "all annotations in this package"
 		@TypeInfo(types= {
+				ModelAttribute.class,
+				InitBinder.class,
 				ResponseBody.class,RequestBody.class,RestController.class, RequestParam.class,
+				PathVariable.class,
 				RequestMapping.class,GetMapping.class,PostMapping.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS)
 	})
 public class Hints implements NativeImageConfiguration {
