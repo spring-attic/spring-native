@@ -88,6 +88,8 @@
     {"class": "org.springframework.jdbc.datasource.ConnectionProxy"},
     //
     {"class":"org.slf4j.helpers.SubstituteLogger"},
+    {"class":"org.slf4j.event.SubstituteLoggingEvent"},
+    {"class":"org.slf4j.event.EventRecodingLogger"},
     {"class": "org.slf4j.helpers.NOPLogger"},
     //{"class": "io.netty.handler.codec.http2.ReadOnlyHttp2Headers"},
 {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},
@@ -174,6 +176,7 @@
 {"class": "javax.validation.Validation"},
 {"class": "javax.validation.ConstraintValidator"},
 {"package": "javax.validation"},
+{"package": "javax.transaction"},
 {"class": "org.hibernate.validator.constraints.CompositionType"},
 {"package": "org.hibernate.validator.constraints"},
 {"class": "org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator"},

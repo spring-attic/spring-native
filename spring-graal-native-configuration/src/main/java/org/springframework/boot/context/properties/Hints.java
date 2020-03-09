@@ -33,9 +33,13 @@ import org.springframework.graal.extension.TypeInfo;
 //TODO do configuration properties chain?
 //@EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
 @ConfigurationHint(value = EnableConfigurationPropertiesRegistrar.class,typeInfos = {
-	@TypeInfo(types= {
+	@TypeInfo(
+			// TODO version handling - this type isn't in 2.2.3 but in 2.3.0.M2 ! How can we make sure
+			// we keep up and verify when things might not be compatible?
+			typeNames="org.springframework.boot.context.properties.BoundConfigurationProperties",
+			types= {
 			ConfigurationPropertiesBindingPostProcessor.class,
-		ConfigurationPropertiesBinder.Factory.class, 
+			ConfigurationPropertiesBinder.Factory.class, 
 			ConfigurationPropertiesBeanDefinitionValidator.class
 			})	
 })
