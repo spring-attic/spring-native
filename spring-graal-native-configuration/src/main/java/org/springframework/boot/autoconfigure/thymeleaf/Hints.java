@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.thymeleaf;
 
+import javax.servlet.http.HttpServletRequestWrapper;
+
 import org.springframework.graal.extension.ConfigurationHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
@@ -25,12 +27,14 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
 import org.thymeleaf.standard.expression.AdditionExpression;
+import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
 import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @ConfigurationHint(value=ThymeleafAutoConfiguration.class,typeInfos= {
-		@TypeInfo(types= {
+		@TypeInfo(
+				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
 				SpringResourceTemplateResolver.class,Fields.class,
 				ThymeleafView.class,
