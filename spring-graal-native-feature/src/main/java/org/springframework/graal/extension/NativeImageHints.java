@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.repository.support;
+package org.springframework.graal.extension;
 
-import org.springframework.graal.extension.NativeImageHint;
-import org.springframework.graal.extension.NativeImageConfiguration;
-import org.springframework.graal.extension.TypeInfo;
-import org.springframework.graal.type.AccessBits;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {
-		EntityManagerBeanDefinitionRegistrarPostProcessor.class
-		},access = AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)})
-public class Hints implements NativeImageConfiguration { }
+/**
+ * Repeatable annotation container for {@link NativeImageHint} annotations.
+ * 
+ * @author Andy Clement
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NativeImageHints {
+	NativeImageHint[] value();
+}

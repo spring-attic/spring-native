@@ -15,12 +15,12 @@
  */
 package org.springframework.stereotype;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@ConfigurationHint(typeInfos = {
+@NativeImageHint(typeInfos = {
 	@TypeInfo(types= {Controller.class
 			},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS)
 })

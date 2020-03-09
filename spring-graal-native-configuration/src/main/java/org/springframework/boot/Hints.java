@@ -20,11 +20,11 @@ import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
-@ConfigurationHint(typeInfos = { @TypeInfo(types = {
+@NativeImageHint(typeInfos = { @TypeInfo(types = {
 		SpringApplication.class,
 		SpringBootConfiguration.class,
 		// TODO Handle these more correctly - the need to expose these should be 

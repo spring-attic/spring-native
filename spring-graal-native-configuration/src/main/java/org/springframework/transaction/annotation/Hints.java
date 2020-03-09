@@ -16,7 +16,7 @@
 package org.springframework.transaction.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -34,11 +34,11 @@ proposedHints.put(TransactionManagementConfigurationSelector,
 		}));
 		*/
 // TODO really the 'skip if missing' can be different for each one here...
-@ConfigurationHint(value=TransactionManagementConfigurationSelector.class,typeInfos = {
+@NativeImageHint(trigger=TransactionManagementConfigurationSelector.class,typeInfos = {
 	@TypeInfo(types= {AutoProxyRegistrar.class, ProxyTransactionManagementConfiguration.class,AspectJJtaTransactionManagementConfiguration.class,	
 			AspectJTransactionManagementConfiguration.class })
 },follow=true)
-@ConfigurationHint(typeInfos= {
+@NativeImageHint(typeInfos= {
 		@TypeInfo(types= {Transactional.class,javax.transaction.Transactional.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
 		@TypeInfo(types= {Propagation.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})

@@ -38,8 +38,8 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.springframework.graal.extension.ConfigurationHint;
-import org.springframework.graal.extension.ConfigurationHints;
+import org.springframework.graal.extension.NativeImageHint;
+import org.springframework.graal.extension.NativeImageHints;
 import org.springframework.graal.support.SpringFeature;
 
 /**
@@ -1207,13 +1207,13 @@ public class Type {
 		List<CompilationHint> hints = null;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				if (fromLdescriptorToDotted(an.desc).equals(ConfigurationHint.class.getName())) {
+				if (fromLdescriptorToDotted(an.desc).equals(NativeImageHint.class.getName())) {
 					CompilationHint hint = fromConfigurationHintToCompilationHint(an);
 					if (hints == null) {
 						hints = new ArrayList<>();
 					}
 					hints.add(hint);
-				} else if (fromLdescriptorToDotted(an.desc).equals(ConfigurationHints.class.getName())) {
+				} else if (fromLdescriptorToDotted(an.desc).equals(NativeImageHints.class.getName())) {
 					List<CompilationHint> chints = fromConfigurationHintsToCompilationHints(an);
 					if (hints == null) {
 						hints = new ArrayList<>();
@@ -1234,7 +1234,7 @@ public class Type {
 		for (int i=0;i<values.size();i+=2){ 
 			String key = (String)values.get(i);
 			Object value = values.get(i+1);
-			if (key.equals("value")) {
+			if (key.equals("trigger")) {
 				// value(String)=Ljava/lang/String;(org.objectweb.asm.Type)
 				ch.setTargetType(((org.objectweb.asm.Type)value).getClassName());
 				/*

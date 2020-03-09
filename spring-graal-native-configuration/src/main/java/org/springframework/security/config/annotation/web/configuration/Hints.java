@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.configuration;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -39,7 +39,7 @@ proposedHints.put(SpringWebMvcImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
 		}));
 		*/
-@ConfigurationHint(value=SpringWebMvcImportSelector.class,follow = true, typeInfos= {
+@NativeImageHint(trigger=SpringWebMvcImportSelector.class,follow = true, typeInfos= {
 		@TypeInfo(types= {DispatcherServlet.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {WebMvcSecurityConfiguration.class})
 })
@@ -52,13 +52,13 @@ proposedHints.put(OAuth2ImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
 		}));
 */
-@ConfigurationHint(value=OAuth2ImportSelector.class,follow = true, typeInfos= {
+@NativeImageHint(trigger=OAuth2ImportSelector.class,follow = true, typeInfos= {
 		@TypeInfo(types= {ClientRegistration.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {OAuth2ClientConfiguration.class}),
 		@TypeInfo(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
 })
 // from gs-securing-web sample
-@ConfigurationHint(value=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
+@NativeImageHint(trigger=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
 	@TypeInfo(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})	
 })
 public class Hints implements NativeImageConfiguration {

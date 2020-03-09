@@ -17,7 +17,7 @@ package org.springframework.data.web.config;
 
 import org.springframework.data.web.config.EnableSpringDataWebSupport.QuerydslActivator;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.SpringDataWebConfigurationImportSelector;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
@@ -30,7 +30,7 @@ proposedHints.put(SpringDataWebConfigurationSelector,
 			"org.springframework.data.web.config.SpringDataWebConfiguration"
 		}));
 */
-@ConfigurationHint(value = SpringDataWebConfigurationImportSelector.class, typeInfos = {
+@NativeImageHint(trigger = SpringDataWebConfigurationImportSelector.class, typeInfos = {
 	@TypeInfo(types= {HateoasAwareSpringDataWebConfiguration.class,SpringDataWebConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) 
 /*
@@ -41,7 +41,7 @@ proposedHints.put(SpringDataWebQueryDslSelector,
 			"org.springframework.data.web.config.QuerydslWebConfiguration"}
 		));
 */
-@ConfigurationHint(value = QuerydslActivator.class, typeInfos = {
+@NativeImageHint(trigger = QuerydslActivator.class, typeInfos = {
 	@TypeInfo(types= {QuerydslWebConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) 
 public class Hints implements NativeImageConfiguration {

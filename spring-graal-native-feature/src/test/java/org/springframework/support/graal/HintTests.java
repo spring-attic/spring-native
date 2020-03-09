@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.Hint;
 import org.springframework.graal.type.Type;
@@ -47,7 +47,7 @@ public class HintTests {
 		assertEquals(1,hints.size());
 	}
 
-	@ConfigurationHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1 {
 	}
 

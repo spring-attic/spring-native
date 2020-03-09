@@ -19,7 +19,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -43,7 +43,7 @@ import org.springframework.security.authentication.event.AuthenticationFailureSe
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
-@ConfigurationHint(value=SecurityAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
 				access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS),
 		@TypeInfo(types= {

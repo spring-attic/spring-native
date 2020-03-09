@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.context.properties;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
@@ -32,7 +32,7 @@ import org.springframework.graal.extension.TypeInfo;
 //@ConfigurationHint(value=EnableConfigurationPropertiesImportSelector.class)
 //TODO do configuration properties chain?
 //@EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
-@ConfigurationHint(value = EnableConfigurationPropertiesRegistrar.class,typeInfos = {
+@NativeImageHint(trigger = EnableConfigurationPropertiesRegistrar.class,typeInfos = {
 	@TypeInfo(
 			// TODO version handling - this type isn't in 2.2.3 but in 2.3.0.M2 ! How can we make sure
 			// we keep up and verify when things might not be compatible?
@@ -43,8 +43,8 @@ import org.springframework.graal.extension.TypeInfo;
 			ConfigurationPropertiesBeanDefinitionValidator.class
 			})	
 })
-@ConfigurationHint(value = EnableConfigurationProperties.class)
-@ConfigurationHint(typeInfos = {@TypeInfo(types= {
+@NativeImageHint(trigger = EnableConfigurationProperties.class)
+@NativeImageHint(typeInfos = {@TypeInfo(types= {
 		ConfigurationPropertiesScan.class,ConfigurationPropertiesScanRegistrar.class,
 		ConfigurationBeanFactoryMetadata.class
 		})})
