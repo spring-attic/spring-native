@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.repository.support;
+package org.springframework.graal.extension;
 
-import org.springframework.graal.extension.NativeImageHint;
-import org.springframework.graal.extension.NativeImageConfiguration;
-import org.springframework.graal.extension.TypeInfo;
-import org.springframework.graal.type.AccessBits;
+/**
+ * Not yet used. This would be a context object accessible to a NativeImageConfiguration implementation which may
+ * use it to answer questions about the current application being compiled in order to compute optimal 
+ * reflection/resource/etc native image configuration.
+ * 
+ * @author Andy Clement
+ */
+public interface SpringNativeImageContext {
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {
-		EntityManagerBeanDefinitionRegistrarPostProcessor.class
-		},access = AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)})
-public class Hints implements NativeImageConfiguration { }
+}

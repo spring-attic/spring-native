@@ -15,7 +15,7 @@
  */
 package org.springframework.web.bind.annotation;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -23,7 +23,7 @@ import org.springframework.graal.type.AccessBits;
 // TODO do these need to be more conditional? The triggers are either of the web stack configurations - do those
 // autoconfigs share a common ancestor that these could trigger off? Although, of course these will only be exposed
 // if they are on the classpath - why would you have the web jar on the classpath if not using these?
-@ConfigurationHint(typeInfos = {
+@NativeImageHint(typeInfos = {
 		// TODO What about some way to say "all annotations in this package"
 		@TypeInfo(types= {
 				ModelAttribute.class,

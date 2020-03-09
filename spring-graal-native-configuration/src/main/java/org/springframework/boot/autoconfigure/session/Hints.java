@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ReactiveSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ServletSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
@@ -30,7 +30,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoCo
 				"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
 		}));
 		*/
-@ConfigurationHint(value=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
+@NativeImageHint(trigger=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class, NoOpReactiveSessionConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) // follow should be per entry and obvious as these are configurations
 /*
@@ -46,7 +46,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoCo
 				"org.springframework.boot.autoconfigure.session.NoOpReactiveSessionConfiguration"
 		}));
 		*/
-@ConfigurationHint(value=SessionConfigurationImportSelector.class, typeInfos= {
+@NativeImageHint(trigger=SessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisSessionConfiguration.class, RedisReactiveSessionConfiguration.class, MongoSessionConfiguration.class, MongoReactiveSessionConfiguration.class,
 		JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class,NoOpReactiveSessionConfiguration.class	
 	})
@@ -61,7 +61,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/session/SessionAutoCo
 				"org.springframework.boot.autoconfigure.session.NoOpSessionConfiguration"
 		}));
 */
-@ConfigurationHint(value=ServletSessionConfigurationImportSelector.class, typeInfos= {
+@NativeImageHint(trigger=ServletSessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisSessionConfiguration.class,MongoSessionConfiguration.class,
 					  JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class	
 					})

@@ -17,11 +17,11 @@ package org.springframework.boot.autoconfigure.data;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
-@ConfigurationHint(value = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
+@NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
 		// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
 		// TODO I've made PFB globally accessible as vanilla-jpa sample needed it and wasn't seeing it through this AbstractRepo config
 		@TypeInfo(types = {PropertiesFactoryBean.class, PropertiesLoaderSupport.class /* super of PropertiesFactoryBean*/}) })

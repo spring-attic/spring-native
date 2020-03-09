@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.transaction;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.ProxyTransactionManagementConf
 //{"name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
 //{"name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
 		*/
-@ConfigurationHint(value=TransactionAutoConfiguration.class, typeInfos = {
+@NativeImageHint(trigger=TransactionAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS),
 		@TypeInfo(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS)
 },abortIfTypesMissing = true)

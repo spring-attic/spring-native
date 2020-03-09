@@ -30,7 +30,7 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.springframework.graal.type.CompilationHint;
@@ -243,48 +243,48 @@ public class TypeTests {
 		public void m() {}
 	}
 
-	@ConfigurationHint(value = Integer.class)
+	@NativeImageHint(trigger = Integer.class)
 	static class TestClass1 {
 	}
 
-	@ConfigurationHint
+	@NativeImageHint
 	static class TestClass1a {
 	}
 
-	@ConfigurationHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1b {
 	}
 
-	@ConfigurationHint(value = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
+	@NativeImageHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
 	static class TestClass2 {
 	}
 
-	@ConfigurationHint(value = Integer.class, typeInfos = { @TypeInfo(types = { String.class }) })
-	@ConfigurationHint(value = String.class, typeInfos = { @TypeInfo(types = { Float.class }) })
+	@NativeImageHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class }) })
+	@NativeImageHint(trigger = String.class, typeInfos = { @TypeInfo(types = { Float.class }) })
 	static class TestClass3 {
 	}
 
-	@ConfigurationHint(value = Integer.class, abortIfTypesMissing = true)
+	@NativeImageHint(trigger = Integer.class, abortIfTypesMissing = true)
 	static class TestClass4 {
 	}
 
-	@ConfigurationHint(value = String.class, typeInfos = {
+	@NativeImageHint(trigger = String.class, typeInfos = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass5 {
 	}
 
-	@ConfigurationHint(value = String.class, typeInfos = {
+	@NativeImageHint(trigger = String.class, typeInfos = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
 			@TypeInfo(types = { Integer.class }, access = AccessBits.RESOURCE) })
 	static class TestClass6 {
 	}
 
-	@ConfigurationHint(value = String.class, typeInfos = {
+	@NativeImageHint(trigger = String.class, typeInfos = {
 			@TypeInfo(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass7 {
 	}
 
-	@ConfigurationHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.support.graal.TypeTests$TestClass6",
+	@NativeImageHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.support.graal.TypeTests$TestClass6",
 			"org.springframework.support.graal.TypeTests$TestClass7[]", }) })
 	static class TestClass8 {
 

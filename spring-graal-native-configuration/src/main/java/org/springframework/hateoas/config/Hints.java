@@ -15,7 +15,7 @@
  */
 package org.springframework.hateoas.config;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
@@ -27,7 +27,7 @@ proposedHints.put(WebStackImportSelector,
 			"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
 		}));
 		*/
-@ConfigurationHint(value=WebStackImportSelector.class,typeInfos= {
+@NativeImageHint(trigger=WebStackImportSelector.class,typeInfos= {
 	@TypeInfo(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})	
 },follow=true)
 /*
@@ -38,7 +38,7 @@ public final static String HypermediaConfigurationImportSelector = "Lorg/springf
 					"org.springframework.hateoas.config.HypermediaConfigurationImportSelector"
 			}));
 			*/
-@ConfigurationHint(value=HypermediaConfigurationImportSelector.class,typeInfos= {
+@NativeImageHint(trigger=HypermediaConfigurationImportSelector.class,typeInfos= {
 	@TypeInfo(types= {HypermediaConfigurationImportSelector.class})	
 },follow=true) // TODO WTF is this one?
 public class Hints implements NativeImageConfiguration {

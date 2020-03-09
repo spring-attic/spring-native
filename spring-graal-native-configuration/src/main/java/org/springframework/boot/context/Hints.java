@@ -15,10 +15,10 @@
  */
 package org.springframework.boot.context;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
-@ConfigurationHint(typeInfos = {@TypeInfo(types=TypeExcludeFilter.class)})
+@NativeImageHint(typeInfos = {@TypeInfo(types=TypeExcludeFilter.class)})
 public class Hints implements NativeImageConfiguration {
 }

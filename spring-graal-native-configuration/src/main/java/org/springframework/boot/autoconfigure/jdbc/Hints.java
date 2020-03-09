@@ -28,7 +28,7 @@ import org.h2.store.fs.FilePathRetryOnInterrupt;
 import org.h2.store.fs.FilePathSplit;
 import org.h2.store.fs.FilePathZip;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -59,9 +59,9 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSour
 				"org.h2.store.fs.FilePathRetryOnInterrupt:REGISTRAR"
 		})); REGISTRAR = class.forname and constructor reflection/invocation
 */
-@ConfigurationHint(value=DataSourceInitializationConfiguration.Registrar.class,
+@NativeImageHint(trigger=DataSourceInitializationConfiguration.Registrar.class,
 	typeInfos= {@TypeInfo(types=DataSourceInitializerPostProcessor.class,access=AccessBits.FULL_REFLECTION)})
-@ConfigurationHint(value=EmbeddedDataSourceConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=EmbeddedDataSourceConfiguration.class,typeInfos= {
 		@TypeInfo(types=EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
 		@TypeInfo(
@@ -71,7 +71,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSour
 				types= {
 						FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}),
 		})
-@ConfigurationHint(value=Hikari.class,typeInfos= {
+@NativeImageHint(trigger=Hikari.class,typeInfos= {
 		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class,Statement.class,Statement[].class,
 				// TODO what is the right place for this one? (and its array variant)
 				IConcurrentBagEntry[].class,IConcurrentBagEntry.class})

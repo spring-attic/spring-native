@@ -125,7 +125,7 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -144,7 +144,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry:REGISTRAR"
 		}));
 		*/
-@ConfigurationHint(value=HibernateJpaAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
 	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
 			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
 })
@@ -153,7 +153,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 	@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
 })
 */
-@ConfigurationHint(value=HibernateJpaConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=HibernateJpaConfiguration.class,typeInfos= {
 		@TypeInfo(types= {
 				// petclinic
 				// TODO what about having a way to specify everything in a package? More resilient and less verbose? do those things matter?

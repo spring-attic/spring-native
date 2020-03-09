@@ -17,7 +17,7 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -32,7 +32,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@ConfigurationHint(value=ThymeleafAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=ThymeleafAutoConfiguration.class,typeInfos= {
 		@TypeInfo(
 				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,

@@ -21,13 +21,13 @@ import org.springframework.data.repository.core.support.PropertiesBasedNamedQuer
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
-@ConfigurationHint(value=JpaRepositoriesAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=JpaRepositoriesAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {
 				SharedEntityManagerCreator.class, // TODO is this one in the right place?
 				JpaRepositoryFactoryBean.class,

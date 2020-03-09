@@ -32,7 +32,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoa
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
@@ -59,7 +59,7 @@ import org.springframework.web.util.HtmlUtils;
 
 
 // These types come from DispatcherServlet.properties - maybe this hint should point to a properties file containing class names?
-@ConfigurationHint(value=DispatcherServletAutoConfiguration.class,typeInfos = {
+@NativeImageHint(trigger=DispatcherServletAutoConfiguration.class,typeInfos = {
 	@TypeInfo(types= {
 		HtmlUtils.class,MediaTypeFactory.class,
 		AcceptHeaderLocaleResolver.class,FixedThemeResolver.class,BeanNameUrlHandlerMapping.class,RequestMappingHandlerMapping.class,RouterFunctionMapping.class,
@@ -86,7 +86,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAut
 	})	
 })
 */
-@ConfigurationHint(value=WebMvcAutoConfiguration.class, typeInfos = {
+@NativeImageHint(trigger=WebMvcAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types= {AnnotationConfigServletWebServerApplicationContext.class,
 				DefaultErrorViewResolver.class,
 				WsContextListener.class,
@@ -110,7 +110,7 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAut
 						}),
 		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)},abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
-@ConfigurationHint(value=BeanPostProcessorsRegistrar.class,typeInfos= {
+@NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
 })
 public class Hints implements NativeImageConfiguration {

@@ -16,11 +16,11 @@
 package org.springframework.beans.factory.config;
 
 import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@ConfigurationHint( typeInfos = {@TypeInfo(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },access = AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
+@NativeImageHint( typeInfos = {@TypeInfo(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },access = AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
 public class Hints implements NativeImageConfiguration {
 }

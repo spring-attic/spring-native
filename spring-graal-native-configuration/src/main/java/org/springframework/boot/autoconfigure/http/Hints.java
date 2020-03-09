@@ -15,12 +15,12 @@
  */
 package org.springframework.boot.autoconfigure.http;
 
-import org.springframework.graal.extension.ConfigurationHint;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
-@ConfigurationHint(value=HttpMessageConvertersAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=HttpMessageConvertersAutoConfiguration.class,typeInfos= {
 	@TypeInfo(types= {HttpMessageConverters.class,FormHttpMessageConverter.class})	
 })
 public class Hints implements NativeImageConfiguration {
