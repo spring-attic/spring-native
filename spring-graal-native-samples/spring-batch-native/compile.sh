@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-../../mvnw -DskipTests package > target/native-image/output.txt
+../../mvnw -DskipTests package
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
@@ -31,6 +31,7 @@ pwd
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 time native-image \
+  --verbose \
   --no-server \
   --no-fallback \
   -DavoidLogback=true \
@@ -41,8 +42,8 @@ time native-image \
   --allow-incomplete-classpath \
   -H:+TraceClassInitialization \
   --report-unsupported-elements-at-runtime \
-  --initialize-at-build-time=com.mysql.cj.jdbc.Driver org.springframework.samples.springbatchnative.SpringBatchNativeApplication
-  -cp $CP $MAINCLASS >> output.txt
+  --initialize-at-build-time=com.mysql.cj.jdbc.Driver org.springframework.samples.springbatchnative.SpringBatchNativeApplication \
+  -cp $CP $MAINCLASS
 
 
 #if [[ -f $ARTIFACT ]]

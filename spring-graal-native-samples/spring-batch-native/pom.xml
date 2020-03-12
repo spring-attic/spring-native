@@ -28,7 +28,7 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>20.0.0</version>
 <configuration>
-<buildArgs>-Dmode=light --initialize-at-build-time --allow-incomplete-classpath --report-unsupported-elements-at-runtime --enable-all-security-services -H:+ReportExceptionStackTraces</buildArgs>
+<buildArgs>-Dmode=light -J-esa --initialize-at-build-time --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime --enable-all-security-services  -H:+TraceClassInitialization -H:+ReportExceptionStackTraces</buildArgs>
 </configuration>
                         <executions>
                             <execution>
@@ -60,7 +60,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>1.0.3</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
