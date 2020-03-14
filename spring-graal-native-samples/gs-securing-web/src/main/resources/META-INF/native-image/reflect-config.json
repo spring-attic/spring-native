@@ -1,8 +1,8 @@
 [
-{"name":"org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl","allDeclaredMethods":true,"allDeclaredConstructors":true},
 {
   "name":"boolean[]"
 },
+{"name":"org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl","allDeclaredMethods":true,"allDeclaredConstructors":true},
 {
   "name":"ch.qos.logback.classic.pattern.DateConverter",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -38,7 +38,7 @@
   "methods":[{"name":"addViewControllers","parameterTypes":["org.springframework.web.servlet.config.annotation.ViewControllerRegistry"] }]
 },
 {
-  "name":"com.example.securingweb.MvcConfig$$EnhancerBySpringCGLIB$$18797f5a",
+  "name":"com.example.securingweb.MvcConfig$$EnhancerBySpringCGLIB$$a884e3de",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true,
@@ -52,7 +52,7 @@
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
 },
 {
-  "name":"com.example.securingweb.SecuringWebApplication$$EnhancerBySpringCGLIB$$8f26612c",
+  "name":"com.example.securingweb.SecuringWebApplication$$EnhancerBySpringCGLIB$$1f31c5b0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true,
@@ -65,7 +65,7 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"com.example.securingweb.WebSecurityConfig$$EnhancerBySpringCGLIB$$54e3c6f4",
+  "name":"com.example.securingweb.WebSecurityConfig$$EnhancerBySpringCGLIB$$e4ef2b78",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allPublicMethods":true,
@@ -73,7 +73,7 @@
   "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
-  "name":"com.example.securingweb.WebSecurityConfig$$EnhancerBySpringCGLIB$$54e3c6f4$$FastClassBySpringCGLIB$$a2917f30",
+  "name":"com.example.securingweb.WebSecurityConfig$$EnhancerBySpringCGLIB$$e4ef2b78$$FastClassBySpringCGLIB$$1f82f103",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
 },
 {
@@ -200,10 +200,7 @@
   "name":"java.io.Serializable[]"
 },
 {
-  "name":"java.lang.ArithmeticException"
-},
-{
-  "name":"java.lang.ArrayStoreException"
+  "name":"java.lang.ArrayIndexOutOfBoundsException"
 },
 {
   "name":"java.lang.Boolean",
@@ -217,11 +214,11 @@
   "allDeclaredMethods":true
 },
 {
-  "name":"java.lang.ClassCastException"
-},
-{
   "name":"java.lang.ClassLoader",
   "methods":[{"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int","java.security.ProtectionDomain"] }]
+},
+{
+  "name":"java.lang.ClassNotFoundException"
 },
 {
   "name":"java.lang.Class[]"
@@ -230,11 +227,20 @@
   "name":"java.lang.Comparable[]"
 },
 {
-  "name":"java.lang.Integer$IntegerCache"
+  "name":"java.lang.IllegalArgumentException"
+},
+{
+  "name":"java.lang.IllegalStateException"
+},
+{
+  "name":"java.lang.InternalError"
 },
 {
   "name":"java.lang.Iterable",
   "allPublicMethods":true
+},
+{
+  "name":"java.lang.NullPointerException"
 },
 {
   "name":"java.lang.Object",
@@ -244,7 +250,7 @@
   "name":"java.lang.Object[]"
 },
 {
-  "name":"java.lang.Short$ShortCache"
+  "name":"java.lang.StackTraceElement"
 },
 {
   "name":"java.lang.String",
@@ -254,7 +260,13 @@
   "name":"java.lang.String[]"
 },
 {
-  "name":"java.lang.Thread"
+  "name":"java.lang.Throwable"
+},
+{
+  "name":"java.lang.UnsatisfiedLinkError"
+},
+{
+  "name":"java.lang.UnsupportedOperationException"
 },
 {
   "name":"java.lang.annotation.Documented",
@@ -277,26 +289,8 @@
   "allDeclaredMethods":true
 },
 {
-  "name":"java.lang.invoke.CallSite"
-},
-{
-  "name":"java.lang.invoke.LambdaForm"
-},
-{
-  "name":"java.lang.invoke.MemberName"
-},
-{
-  "name":"java.lang.invoke.MethodHandle"
-},
-{
-  "name":"java.lang.ref.Reference"
-},
-{
   "name":"java.lang.reflect.AnnotatedElement",
   "allPublicMethods":true
-},
-{
-  "name":"java.lang.reflect.Array"
 },
 {
   "name":"java.lang.reflect.GenericDeclaration",
@@ -317,9 +311,6 @@
 },
 {
   "name":"java.util.HashSet"
-},
-{
-  "name":"java.util.Iterator"
 },
 {
   "name":"java.util.concurrent.Executor"
@@ -344,9 +335,6 @@
 },
 {
   "name":"javax.annotation.Resource"
-},
-{
-  "name":"javax.management.DynamicMBean"
 },
 {
   "name":"javax.naming.ldap.LdapContext"
@@ -432,6 +420,174 @@
 },
 {
   "name":"javax.xml.ws.WebServiceRef"
+},
+{
+  "name":"jdk.vm.ci.code.Architecture"
+},
+{
+  "name":"jdk.vm.ci.code.BytecodeFrame"
+},
+{
+  "name":"jdk.vm.ci.code.DebugInfo"
+},
+{
+  "name":"jdk.vm.ci.code.InstalledCode"
+},
+{
+  "name":"jdk.vm.ci.code.InvalidInstalledCodeException"
+},
+{
+  "name":"jdk.vm.ci.code.Location"
+},
+{
+  "name":"jdk.vm.ci.code.Register"
+},
+{
+  "name":"jdk.vm.ci.code.RegisterSaveLayout"
+},
+{
+  "name":"jdk.vm.ci.code.RegisterValue"
+},
+{
+  "name":"jdk.vm.ci.code.StackLockValue"
+},
+{
+  "name":"jdk.vm.ci.code.StackSlot"
+},
+{
+  "name":"jdk.vm.ci.code.TargetDescription"
+},
+{
+  "name":"jdk.vm.ci.code.VirtualObject"
+},
+{
+  "name":"jdk.vm.ci.code.site.Call"
+},
+{
+  "name":"jdk.vm.ci.code.site.ConstantReference"
+},
+{
+  "name":"jdk.vm.ci.code.site.DataPatch"
+},
+{
+  "name":"jdk.vm.ci.code.site.DataSectionReference"
+},
+{
+  "name":"jdk.vm.ci.code.site.ExceptionHandler"
+},
+{
+  "name":"jdk.vm.ci.code.site.InfopointReason"
+},
+{
+  "name":"jdk.vm.ci.code.site.Mark"
+},
+{
+  "name":"jdk.vm.ci.code.site.Site"
+},
+{
+  "name":"jdk.vm.ci.code.stack.InspectedFrameVisitor"
+},
+{
+  "name":"jdk.vm.ci.common.JVMCIError"
+},
+{
+  "name":"jdk.vm.ci.hotspot.DirectHotSpotObjectConstantImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotCompilationRequestResult"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotCompiledCode"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotCompiledCode$Comment"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotCompiledNmethod"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotCompressedNullConstant"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotConstantPool"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotForeignCallTarget"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotInstalledCode"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotJVMCIRuntime"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotMetaData"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotMetaspaceConstantImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotNmethod"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotObjectConstantImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotReferenceMap"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotResolvedJavaFieldImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotResolvedJavaMethodImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotResolvedObjectTypeImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotResolvedPrimitiveType"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotSentinelConstant"
+},
+{
+  "name":"jdk.vm.ci.hotspot.HotSpotStackFrameReference"
+},
+{
+  "name":"jdk.vm.ci.hotspot.IndirectHotSpotObjectConstantImpl"
+},
+{
+  "name":"jdk.vm.ci.hotspot.VMField"
+},
+{
+  "name":"jdk.vm.ci.hotspot.VMFlag"
+},
+{
+  "name":"jdk.vm.ci.hotspot.VMIntrinsicMethod"
+},
+{
+  "name":"jdk.vm.ci.meta.Assumptions$CallSiteTargetValue"
+},
+{
+  "name":"jdk.vm.ci.meta.Assumptions$ConcreteMethod"
+},
+{
+  "name":"jdk.vm.ci.meta.Assumptions$ConcreteSubtype"
+},
+{
+  "name":"jdk.vm.ci.meta.Assumptions$LeafType"
+},
+{
+  "name":"jdk.vm.ci.meta.Assumptions$NoFinalizableSubclass"
+},
+{
+  "name":"jdk.vm.ci.meta.JavaConstant"
+},
+{
+  "name":"jdk.vm.ci.meta.RawConstant"
+},
+{
+  "name":"jdk.vm.ci.runtime.JVMCI"
 },
 {
   "name":"jdk.vm.ci.services.Services"
@@ -553,224 +709,8 @@
   "name":"org.apache.tomcat.websocket.server.WsSci"
 },
 {
-  "name":"org.graalvm.compiler.hotspot.amd64.AMD64ArrayCompareToStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.amd64.AMD64ArrayEqualsStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.amd64.AMD64ArrayIndexOfStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.amd64.AMD64X87MathSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.nodes.AllocaNode"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.nodes.BeginLockScopeNode"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.nodes.CurrentLockNode"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.nodes.GraalHotSpotVMConfigNode"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.AssertionSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HashCodeSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotAllocationSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotAllocationSnippets$HotSpotAllocationProfilingData"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotArraySubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotClassSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotReplacementsUtil"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.HotSpotReplacementsUtil$5"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.InstanceOfSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.LoadExceptionObjectSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.MonitorSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.ObjectCloneSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.ObjectSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.StringToBytesSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.UnsafeLoadSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.UnsafeSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.replacements.aot.ResolveConstantSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.ArrayStoreExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.ClassCastExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.DivisionByZeroExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.ExceptionHandlerStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.ForeignCallSnippets"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.ForeignCallStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.IntegerExactOverflowExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.LongExactOverflowExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.NullPointerExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.OutOfBoundsExceptionStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.UnwindExceptionToCallerStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.stubs.VerifyOopStub"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.word.KlassPointer"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.word.MetaspacePointer"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.word.MethodCountersPointer"
-},
-{
-  "name":"org.graalvm.compiler.hotspot.word.MethodPointer"
-},
-{
-  "name":"org.graalvm.compiler.nodes.ConstantNode"
-},
-{
-  "name":"org.graalvm.compiler.nodes.NamedLocationIdentity"
-},
-{
-  "name":"org.graalvm.compiler.nodes.memory.address.AddressNode$Address"
-},
-{
-  "name":"org.graalvm.compiler.replacements.AllocationSnippets$AllocationProfilingData"
-},
-{
-  "name":"org.graalvm.compiler.replacements.ArraySubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.ArraysSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.BoxingSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.ConstantStringIndexOfSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.SnippetCounter"
-},
-{
-  "name":"org.graalvm.compiler.replacements.SnippetCounterNode$SnippetCounterSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.SnippetTemplate$EagerSnippetInfo"
-},
-{
-  "name":"org.graalvm.compiler.replacements.SnippetTemplate$SnippetInfo"
-},
-{
-  "name":"org.graalvm.compiler.replacements.StringSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.amd64.AMD64ConvertSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.amd64.AMD64IntegerSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.amd64.AMD64LongSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.amd64.AMD64StringSubstitutions"
-},
-{
-  "name":"org.graalvm.compiler.replacements.arraycopy.ArrayCopyCallNode"
-},
-{
-  "name":"org.graalvm.compiler.replacements.arraycopy.ArrayCopySnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.arraycopy.ArrayCopySnippets$ArrayCopyTypeCheck"
-},
-{
-  "name":"org.graalvm.compiler.replacements.arraycopy.ArrayCopyWithDelayedLoweringNode"
-},
-{
-  "name":"org.graalvm.compiler.replacements.gc.G1WriteBarrierSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.gc.SerialWriteBarrierSnippets"
-},
-{
-  "name":"org.graalvm.compiler.replacements.nodes.CStringConstant"
-},
-{
-  "name":"org.graalvm.compiler.word.BarrieredAccess"
-},
-{
-  "name":"org.graalvm.compiler.word.ObjectAccess"
-},
-{
-  "name":"org.graalvm.compiler.word.Word"
-},
-{
   "name":"org.graalvm.nativeimage.ImageInfo",
   "methods":[{"name":"inImageCode","parameterTypes":[] }]
-},
-{
-  "name":"org.graalvm.word.LocationIdentity"
-},
-{
-  "name":"org.graalvm.word.LocationIdentity$AnyLocationIdentity"
-},
-{
-  "name":"org.graalvm.word.WordBase"
-},
-{
-  "name":"org.graalvm.word.WordFactory"
 },
 {
   "name":"org.slf4j.bridge.SLF4JBridgeHandler"
