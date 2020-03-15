@@ -38,6 +38,8 @@ proposedHints.put(AdviceModeImportSelector,
 // These don't specify a triggering value target so are always exposed
 @NativeImageHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
+// TODO Check required access for enums like this FilterType
+@NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_FIELDS) })
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
 				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,

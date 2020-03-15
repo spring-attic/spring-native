@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.core.annotation;
+package org.springframework.cloud.function.context.config;
 
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
+import org.springframework.messaging.MessageHeaders;
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {Order.class,AnnotationAttributes.class,AnnotationAttributes[].class,
-TypeMappedAnnotation[].class },access = AccessBits.CLASS|AccessBits.PUBLIC_METHODS)})
-public class Hints implements NativeImageConfiguration { }
+@NativeImageHint(trigger=ContextFunctionCatalogAutoConfiguration.class, 
+		typeInfos = {@TypeInfo(types= {MessageHeaders.class},
+		access = AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_FIELDS|AccessBits.PUBLIC_METHODS)})
+public class Hints implements NativeImageConfiguration {
+}
+

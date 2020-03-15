@@ -20,6 +20,8 @@ org.springframework.boot.autoconfigure.web.reactive.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints
 org.springframework.boot.context.properties.Hints
 org.springframework.boot.context.Hints
+org.springframework.cloud.function.context.config.Hints
+org.springframework.cloud.function.web.mvc.Hints
 org.springframework.context.annotation.Hints
 org.springframework.core.annotation.Hints
 org.springframework.data.jpa.repository.support.Hints
