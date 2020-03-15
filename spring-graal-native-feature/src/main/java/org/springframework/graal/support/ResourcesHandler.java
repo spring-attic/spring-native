@@ -860,8 +860,19 @@ public class ResourcesHandler {
 						// analysis
 						continue;
 					} else {
-						tar.request(returnType.getDottedName(),
-								AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
+
+
+						// We will need access to Supplier and Flux because of this return type
+						Set<Type> ts = atBeanMethod.getSignatureTypes();
+						for (Type t: ts) {
+							System.out.println("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
+							tar.request(t.getDottedName(),
+									AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
+						}
+
+
+//						tar.request(returnType.getDottedName(),
+//								AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
 					}
 
 					// Processing this kind of thing, parameter types need to be exposed

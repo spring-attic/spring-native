@@ -36,6 +36,9 @@
 //["org.springframework.amqp.rabbit.connection.ChannelProxy"],
 //["org.hibernate.query.Query", "org.hibernate.query.spi.QueryImplementor"]
 
+// vvv function sample
+["org.springframework.web.bind.annotation.RequestBody"],
+
 ["org.springframework.core.annotation.Order"],
 // vvv gs-securing-web sample
 ["org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication"]
