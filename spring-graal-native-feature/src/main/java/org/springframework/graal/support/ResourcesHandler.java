@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -246,6 +247,9 @@ public class ResourcesHandler {
 		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
 			processRepository2(kType);
 		}
+		if (kType != null && kType.isAtResponseBody()) {
+			processResponseBodyComponent(kType);
+		}
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
@@ -279,6 +283,16 @@ public class ResourcesHandler {
 			}
 		}
 		System.out.println("Registered " + registeredComponents + " entries");
+	}
+	
+	private void processResponseBodyComponent(Type t) {
+	  // If a controller is marked up @ResponseBody (possibly via @RestController), need to register reflective access to
+	  // the return types of the methods marked @Mapping (meta marked) 
+	  Collection<Type> returnTypes = t.collectAtMappingMarkedReturnTypes();
+	  System.out.println("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
+	  for (Type returnType: returnTypes ) {
+		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
+	  }
 	}
 
 	// Code from petclinic that ends us up in here:
