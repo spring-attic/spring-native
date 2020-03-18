@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.springframework.http.codec.ClientCodecConfigurer;
@@ -32,6 +32,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import reactor.netty.DisposableServer;
 
 @NativeImageHint(trigger=WebFluxAutoConfiguration.class,typeInfos = {
 	// These two believed through WebFluxConfigurationSupport, CodecConfigurer.properties
@@ -95,7 +96,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
 })
 @NativeImageHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = { 
-		@TypeInfo(types= {AnnotationConfigReactiveWebServerApplicationContext.class,
+		@TypeInfo(
+				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
 				},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
 })
 public class Hints implements NativeImageConfiguration {

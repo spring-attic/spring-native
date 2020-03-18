@@ -22,7 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -191,16 +192,27 @@ public class TypeTests {
 	
 	@Test
 	public void isTransactional() {
+		// TODO verify how to deal with a type extending a type that has transactional methods - are instances
+		// of the subtype considered transactional?
 		Type txClass1 = typeSystem.resolveName(TXClass1.class.getName());
 		assertTrue(txClass1.isTransactional());
 		Type txClass2 = typeSystem.resolveName(TXClass2.class.getName());
-		assertTrue(txClass2.isTransactional());
+		assertFalse(txClass2.isTransactional());
+		assertTrue(txClass2.hasTransactionalMethods());
 		Type tClass1 = typeSystem.resolveName(TestClass1.class.getName());
 		assertFalse(tClass1.isTransactional());
 		Type txClass3 = typeSystem.resolveName(TXClass3.class.getName());
-		assertTrue(txClass3.isTransactional());
+		assertFalse(txClass3.isTransactional());
 		Type txClass4 = typeSystem.resolveName(TXClass4.class.getName());
-		assertTrue(txClass4.isTransactional());
+		assertFalse(txClass4.isTransactional());
+	}
+	
+	@Test
+	public void responseBody() {
+		Type testController = typeSystem.resolveName(TestController1.class.getName());
+		assertTrue(testController.hasAnnotation("L"+ResponseBody.class.getName().replace(".","/")+";", true));
+		Type testController2 = typeSystem.resolveName(TestController2.class.getName());
+		assertTrue(testController2.hasAnnotation("L"+ResponseBody.class.getName().replace(".","/")+";", true));
 	}
 	
 	@Test
@@ -234,6 +246,20 @@ public class TypeTests {
 	static class TXClass3 extends TXClass2 {
 	}
 	
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ResponseBody {}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ResponseBody
+	@interface RestController {}
+	
+	
+	@ResponseBody
+	static class TestController1 {}
+
+	@RestController // Meta annotated with ResponseBody
+	static class TestController2 {}
+
 	@Transactional
 	static class TXClass1 {
 	}
