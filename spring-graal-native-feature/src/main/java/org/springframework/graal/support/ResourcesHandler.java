@@ -118,7 +118,7 @@ public class ResourcesHandler {
 	 */
 	private void handleSpringConstantHints() {
 		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
-		System.out.println("Registering fixed entries: " + constantHints);
+		SpringFeature.log("Registering fixed entries: " + constantHints);
 		for (CompilationHint ch : constantHints) {
 			Map<String, Integer> dependantTypes = ch.getDependantTypes();
 			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
@@ -289,7 +289,7 @@ public class ResourcesHandler {
 	  // If a controller is marked up @ResponseBody (possibly via @RestController), need to register reflective access to
 	  // the return types of the methods marked @Mapping (meta marked) 
 	  Collection<Type> returnTypes = t.collectAtMappingMarkedReturnTypes();
-	  System.out.println("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
+	  SpringFeature.log("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
 	  for (Type returnType: returnTypes ) {
 		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
 	  }
@@ -302,7 +302,7 @@ public class ResourcesHandler {
 	//              org.springframework.aop.framework.Advised,org.springframework.core.DecoratingProxy] 
 	// And entering here with r = JpaVisitRepositoryImpl
 	private void processRepository2(Type r) {
-		System.out.println("Processing @oss.Repository annotated "+r.getDottedName());
+		SpringFeature.log("Processing @oss.Repository annotated "+r.getDottedName());
 		List<String> repositoryInterfaces = new ArrayList<>();
 		for (String s: r.getInterfacesStrings()) {
 			repositoryInterfaces.add(s.replace("/", "."));
@@ -879,7 +879,7 @@ public class ResourcesHandler {
 						// We will need access to Supplier and Flux because of this return type
 						Set<Type> ts = atBeanMethod.getSignatureTypes();
 						for (Type t: ts) {
-							System.out.println("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
+							SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
 							tar.request(t.getDottedName(),
 									AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
 						}
