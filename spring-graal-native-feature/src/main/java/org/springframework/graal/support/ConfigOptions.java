@@ -48,8 +48,8 @@ public abstract class ConfigOptions {
 			System.out.println("Turning on verbose mode for the feature");
 		}
 		MODE = System.getProperty("mode","default");
-		if (MODE.equals("light")) {
-			System.out.println("Feature operating in light mode, only supplying substitutions and initialization data");
+		if (MODE.equals("initialization-only")) {
+			System.out.println("Feature operating in initialization-only mode, only supplying substitutions and initialization data");
         } else if (!MODE.equals("default")) {
             throw new IllegalStateException("Supported modes are 'default' or 'light', not '"+MODE+"'");
         }

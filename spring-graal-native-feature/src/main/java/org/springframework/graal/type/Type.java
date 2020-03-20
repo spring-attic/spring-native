@@ -294,14 +294,12 @@ public class Type {
 	private boolean hasAnnotationHelper(String lAnnotationDescriptor, boolean checkMetaUsage, Set<String> seen) {
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				System.out.println("Checking " + an.desc + " against " + lAnnotationDescriptor);
 				if (an.desc.equals(lAnnotationDescriptor)) {
 					return true;
 				}
 				if (checkMetaUsage && seen.add(lAnnotationDescriptor)) {
 					Type t = typeSystem.Lresolve(an.desc);
 					if (t != null) {
-						System.out.println("Diving into " + an.desc);
 						boolean b = t.hasAnnotationHelper(lAnnotationDescriptor, checkMetaUsage, seen);
 						if (b) {
 							return true;
@@ -686,16 +684,11 @@ public class Type {
 		if (dimensions > 0) {
 			return false;
 		}
-		System.out.println("Looking at " + this.getName() + " for " + slashedTypeDescriptor);
-		// need to check us
 		for (Type t : this.getAnnotations()) {
 			String tname = t.getName();
-			System.out.println("Checking tname=" + tname);
 			if (tname.equals(slashedTypeDescriptor)) {
-				System.out.println("true!");
 				return true;
 			}
-			System.out.println("false!");
 			if (!seen.contains(tname)) {
 				seen.add(tname);
 				if (t.isMetaAnnotated(slashedTypeDescriptor, seen)) {
@@ -932,12 +925,9 @@ public class Type {
 		}
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				System.out.println("Looking for: " + Ldescriptor + " is this it:" + an.desc + "?");
 				if (an.desc.equals(Ldescriptor)) {
-					System.out.println("yes");
 					return true;
 				}
-				System.out.println("no");
 			}
 		}
 		return false;
@@ -1500,7 +1490,6 @@ public class Type {
 	 * @return true if type or a method inside is marked @Transactional
 	 */
 	public boolean isTransactional() {
-		System.out.println("Checking if " + getName() + " is transactional");
 		// TODO are these usable as meta annotations?
 		return isAnnotated(AtTransactional) || isAnnotated(AtJavaxTransactional);
 	}
