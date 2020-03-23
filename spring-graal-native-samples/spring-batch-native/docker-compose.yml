@@ -1,0 +1,9 @@
+mysql:
+  image: mysql:5.7
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_ROOT_PASSWORD=p@ssw0rd
+    - MYSQL_DATABASE=batch_graalvm
+  volumes:
+    - "./conf.d:/etc/mysql/conf.d:ro"

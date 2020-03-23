@@ -1,5 +1,5 @@
 native-image \
-  -Dmode=light \
+  -Dmode=initialization-only \
   --no-server \
   --no-fallback \
   --allow-incomplete-classpath \
