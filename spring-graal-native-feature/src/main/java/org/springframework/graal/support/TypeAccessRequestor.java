@@ -20,29 +20,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.springframework.graal.type.AccessRequired;
-
 /**
  * @author Andy Clement
  */
 public class TypeAccessRequestor {
 
-	private Map<String, AccessRequired> requestedAccesses = new HashMap<>();
+	private Map<String, Integer> requestedAccesses = new HashMap<>();
 	
-	public void request(String type, AccessRequired accessRequired) {
+	public void request(String type, Integer accessRequired) {
 		if (type.indexOf("/")!=-1) {
 			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
 		}
-		AccessRequired existsAlready = requestedAccesses.get(type);
-		if (existsAlready != null && existsAlready != accessRequired) {
-			AccessRequired merged = AccessRequired.merge(existsAlready, accessRequired);
-			requestedAccesses.put(type, merged);
+		Integer existsAlready = requestedAccesses.get(type);
+		if (existsAlready != null) {
+			requestedAccesses.put(type, existsAlready | accessRequired);//existsAlready.with(accessRequired));
 		} else {
 			requestedAccesses.put(type, accessRequired);
 		}
 	}
-
-	public Set<Entry<String,AccessRequired>> entrySet() {
+	
+	public Set<Entry<String,Integer>> entrySet() {
 		return requestedAccesses.entrySet();
 	}
 

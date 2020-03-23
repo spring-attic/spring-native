@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -42,7 +43,8 @@ import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
-import org.springframework.graal.type.AccessRequired;
+import org.springframework.graal.type.AccessBits;
+import org.springframework.graal.type.CompilationHint;
 import org.springframework.graal.type.Hint;
 import org.springframework.graal.type.Method;
 import org.springframework.graal.type.MissingTypeException;
@@ -75,11 +77,11 @@ public class ResourcesHandler {
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 	}
 
-	public ResourcesDescriptor compute() {
+	public ResourcesDescriptor readStaticResourcesConfiguration() {
 		try {
 			InputStream s = this.getClass().getResourceAsStream("/resources.json");
-			ResourcesDescriptor read = ResourcesJsonMarshaller.read(s);
-			return read;
+			ResourcesDescriptor resourcesDescriptor = ResourcesJsonMarshaller.read(s);
+			return resourcesDescriptor;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -89,10 +91,11 @@ public class ResourcesHandler {
 	public void register(BeforeAnalysisAccess access) {
 		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
 		ts = TypeSystem.get(cl.getClasspath());
-		ResourcesDescriptor rd = compute();
+
+		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		// Patterns can be added to the registry, resources can be directly registered
-		// against Resources
+		// against Resources:
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
 		System.out.println("Registering resources - #" + rd.getPatterns().size() + " patterns");
@@ -105,7 +108,24 @@ public class ResourcesHandler {
 		}
 		registerResourceBundles(rd);
 		processSpringFactories();
-		handleSpringComponents();
+		processExistingOrSynthesizedSpringComponentsFiles();
+		handleSpringConstantHints();
+	}
+
+	/**
+	 * Some types need reflective access in every Spring Boot application. When hints are scanned
+	 * these 'constants' are registered against the java.lang.Object key. 
+	 */
+	private void handleSpringConstantHints() {
+		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		SpringFeature.log("Registering fixed entries: " + constantHints);
+		for (CompilationHint ch : constantHints) {
+			Map<String, Integer> dependantTypes = ch.getDependantTypes();
+			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
+				reflectionHandler.addAccess(dependantType.getKey(), null, true,
+						AccessBits.getFlags(dependantType.getValue()));
+			}
+		}
 	}
 
 	private void registerResourceBundles(ResourcesDescriptor rd) {
@@ -120,7 +140,7 @@ public class ResourcesHandler {
 		}
 	}
 
-	public void handleSpringComponents() {
+	public void processExistingOrSynthesizedSpringComponentsFiles() {
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
 			log("Processing META-INF/spring.components files...");
@@ -160,27 +180,13 @@ public class ResourcesHandler {
 		}
 	}
 
-	// TODO verify how much access is needed for a type @COC reference
-	private void registerConditionalOnClassTypeReference(Type componentType, String slashedTypeReference) {
-		try {
-			reflectionHandler.addAccess(slashedTypeReference.replace("/", "."), Flag.allDeclaredConstructors,
-					Flag.allDeclaredMethods);
-			resourcesRegistry.addResources(slashedTypeReference + ".class");
-		} catch (NoClassDefFoundError e) {
-			System.out.println(
-					"ERROR: @COC type " + slashedTypeReference + " not found for component " + componentType.getName());
-		}
-	}
-
-	public void reg(String s) {
-		reflectionHandler.addAccess(s, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-	}
-
 	// TODO shouldn't this code just call into processType like we do for discovered
 	// configuration?
 	// (Then we have consistent processing across library and user code - without it
-	// I think this code below will prove insufficient when we get more sophisticated
-	// samples - such as one using @Imported configuration - write a testcase for that)
+	// I think this code below will prove insufficient when we get more
+	// sophisticated
+	// samples - such as one using @Imported configuration - write a testcase for
+	// that)
 	private void processSpringComponents(Properties p) {
 		// Example:
 		// app.main.SampleApplication=org.springframework.stereotype.Component
@@ -194,15 +200,35 @@ public class ResourcesHandler {
 			String k = (String) keys.nextElement();
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
+			String vs = (String) p.get(k);
 			try {
 				// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
 				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 				// reflectionHandler.addAccess(k,Flag.allPublicConstructors,
 				// Flag.allPublicMethods, Flag.allDeclaredClasses);
-				reg(k);
+				// TODO assess which kinds of thing requiring what kind of access - here we see an Entity might require field reflective access where others don't
+				// I think as a component may have autowired fields (and an entity may have interesting fields) - you kind of always need to expose fields
+				// There is a type in vanilla-orm called Bootstrap that shows this need
+				boolean includeFields = true;
+				if (includeFields) {
+					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+							Flag.allDeclaredClasses, Flag.allDeclaredFields);
+				} else {
+					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+							Flag.allDeclaredClasses);
+
+				}
 				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
 				// Register nested types of the component
 				Type baseType = ts.resolveDotted(k);
+				
+				if (baseType != null) {
+					System.out.println("Checking if type "+baseType+" has transactional methods: "+baseType.hasTransactionalMethods());
+					if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { // TODO should this check the values against this key or for the annotation presence?
+						processTransactionalTarget(baseType);
+					}
+				}
+
 				for (Type t : baseType.getNestedTypes()) {
 					String n = t.getName().replace("/", ".");
 					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
@@ -211,12 +237,19 @@ public class ResourcesHandler {
 				}
 				registerHierarchy(baseType, new HashSet<>(), null);
 			} catch (Throwable t) {
+				SpringFeature.log("WHAT?"+t.toString());
 				t.printStackTrace();
 				// assuming ok for now - see
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
 				// for petclinic spring.components
 			}
-			String vs = (String) p.get(k);
+		Type kType = ts.resolveDotted(k);
+		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
+			processRepository2(kType);
+		}
+		if (kType != null && kType.isAtResponseBody()) {
+			processResponseBodyComponent(kType);
+		}
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
@@ -225,20 +258,18 @@ public class ResourcesHandler {
 					isRepository = true;
 				}
 				try {
-					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
-					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
-					// Flag.allPublicMethods, Flag.allDeclaredClasses);
+					Type baseType = ts.resolveDotted(tt);
+
+					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors, Flag.allPublicMethods, Flag.allDeclaredClasses);
 //					reg(tt);
 					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
 					// Register nested types of the component
-					Type baseType = ts.resolveDotted(tt);
 					for (Type t : baseType.getNestedTypes()) {
 						String n = t.getName().replace("/", ".");
 						reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
-//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-//								Flag.allDeclaredClasses);
+//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
 					registerHierarchy(baseType, new HashSet<>(), null);
@@ -253,6 +284,34 @@ public class ResourcesHandler {
 		}
 		System.out.println("Registered " + registeredComponents + " entries");
 	}
+	
+	private void processResponseBodyComponent(Type t) {
+	  // If a controller is marked up @ResponseBody (possibly via @RestController), need to register reflective access to
+	  // the return types of the methods marked @Mapping (meta marked) 
+	  Collection<Type> returnTypes = t.collectAtMappingMarkedReturnTypes();
+	  SpringFeature.log("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
+	  for (Type returnType: returnTypes ) {
+		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
+	  }
+	}
+
+	// Code from petclinic that ends us up in here:
+	// public interface VisitRepository { ... }
+	// @org.springframework.stereotype.Repository @Transactional public class JpaVisitRepositoryImpl implements VisitRepository { ... }
+	// Need proxy: [org.springframework.samples.petclinic.visit.VisitRepository,org.springframework.aop.SpringProxy,
+	//              org.springframework.aop.framework.Advised,org.springframework.core.DecoratingProxy] 
+	// And entering here with r = JpaVisitRepositoryImpl
+	private void processRepository2(Type r) {
+		SpringFeature.log("Processing @oss.Repository annotated "+r.getDottedName());
+		List<String> repositoryInterfaces = new ArrayList<>();
+		for (String s: r.getInterfacesStrings()) {
+			repositoryInterfaces.add(s.replace("/", "."));
+		}
+		repositoryInterfaces.add("org.springframework.aop.SpringProxy");
+		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
+		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(repositoryInterfaces);
+	}
 
 	/**
 	 * Crude basic repository processing - needs more analysis to only add the
@@ -261,6 +320,7 @@ public class ResourcesHandler {
 	 * @param repositoryName type name of the repository
 	 */
 	private void processRepository(String repositoryName) {
+		SpringFeature.log("Processing repository: "+repositoryName+" - adding proxy implementing Repository, TransactionalProxy, Advised, DecoratingProxy");
 		Type type = ts.resolveDotted(repositoryName);
 		// Example proxy:
 		// ["app.main.model.FooRepository",
@@ -275,18 +335,46 @@ public class ResourcesHandler {
 		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
 		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
 		dynamicProxiesHandler.addProxy(repositoryInterfaces);
+		
+		// TODO why do we need two proxies here? (vanilla-jpa seems to need both when upgraded from boot 2.2 to 2.3)
+		repositoryInterfaces.clear();
+		repositoryInterfaces.add(type.getDottedName());
+		repositoryInterfaces.add("org.springframework.aop.SpringProxy");
+		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
+		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(repositoryInterfaces);
 	}
 
+	private void processTransactionalTarget(Type type) {
+		List<String> transactionalInterfaces = new ArrayList<>();
+		for (Type intface: type.getInterfaces()) {
+			transactionalInterfaces.add(intface.getDottedName());
+		}
+		transactionalInterfaces.add("org.springframework.aop.SpringProxy");
+		transactionalInterfaces.add("org.springframework.aop.framework.Advised");
+		transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
+		dynamicProxiesHandler.addProxy(transactionalInterfaces);	
+		System.out.println("Created transaction related proxy for interfaces: "+transactionalInterfaces);
+	}
+
+	/**
+	 * Walk a type hierarchy and register them all for reflective access.
+	 * 
+	 * @param type the type whose hierarchy to register
+	 * @param visited used to remember what has already been visited
+	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
+	 */
 	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
-		// System.out.println("> registerHierarchy "+type.getName());
+		// SpringFeature.log("> registerHierarchy "+type.getName());
 		String desc = type.getName();
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+					typesToMakeAccessible.request(type.getDottedName(),
+							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -294,7 +382,8 @@ public class ResourcesHandler {
 				}
 			} else {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CTORS_ONLY);
+					typesToMakeAccessible.request(type.getDottedName(),
+							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
 					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
@@ -302,7 +391,9 @@ public class ResourcesHandler {
 			}
 		} else {
 			if (typesToMakeAccessible != null) {
-				typesToMakeAccessible.request(type.getDottedName(), AccessRequired.RESOURCE_CMC);
+				// TODO why no CLASS here?
+				typesToMakeAccessible.request(type.getDottedName(),
+						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE);
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -311,14 +402,12 @@ public class ResourcesHandler {
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
 		}
-		Type superclass = type.getSuperclass();
-		registerHierarchy(superclass, visited, typesToMakeAccessible);
-		Type[] intfaces = type.getInterfaces();
-		for (Type intface : intfaces) {
-			registerHierarchy(intface, visited, typesToMakeAccessible);
+		// Rather than just looking at superclass and interfaces, this will dig into everything including
+		// parameterized type references so nothing is missed
+		List<String> relatedTypes = type.getTypesInSignature();
+		for (String relatedType: relatedTypes) {
+			registerHierarchy(ts.resolveSlashed(relatedType), visited, typesToMakeAccessible);
 		}
-		// System.out.println("< registerHierarchy "+type.getName());
-		// TODO inners of those supertypes/interfaces?
 	}
 
 	/**
@@ -417,7 +506,6 @@ public class ResourcesHandler {
 		}
 	}
 
-
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
 		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
@@ -430,12 +518,12 @@ public class ResourcesHandler {
 			String k = (String) factoryKeys.nextElement();
 			System.out.println("Adding all the classes for this key: " + k);
 			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
-				if (Type.shouldBeProcessed(k,ts)) {
+				if (Type.shouldBeProcessed(k, ts)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
 					}
 				} else {
-					System.out.println("Skipping processing spring.factories key "+k+" due to missing types");
+					System.out.println("Skipping processing spring.factories key " + k + " due to missing types");
 				}
 			}
 		}
@@ -445,16 +533,16 @@ public class ResourcesHandler {
 		if (propertySourceLoaderValues != null) {
 			List<String> propertySourceLoaders = new ArrayList<>();
 			for (String s : propertySourceLoaderValues.split(",")) {
-				if(!s.equals("org.springframework.boot.env.YamlPropertySourceLoader") || !ConfigOptions.shouldRemoveYamlSupport()) {
+				if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
+						|| !ConfigOptions.shouldRemoveYamlSupport()) {
 					registerTypeReferencedBySpringFactoriesKey(s);
 					propertySourceLoaders.add(s);
-				}
-				else {
+				} else {
 					forRemoval.add(s);
 				}
 			}
-			System.out.println("Processing spring.factories - PropertySourceLoader lists #" + propertySourceLoaders.size()
-					+ " property source loaders");
+			System.out.println("Processing spring.factories - PropertySourceLoader lists #"
+					+ propertySourceLoaders.size() + " property source loaders");
 			SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
 			for (int c = 0; c < propertySourceLoaders.size(); c++) {
 				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
@@ -536,13 +624,12 @@ public class ResourcesHandler {
 	private boolean processType(String config, Set<String> visited) {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
 		/*
-		if (config.equals("org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration")
-				|| config.equals("org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration") 
-				) {
-			System.out.println("MUSTFIX - SKIPPING "+config);
-			return false;
-		}
-		*/
+		 * if (config.equals(
+		 * "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration") ||
+		 * config.equals(
+		 * "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration")
+		 * ) { System.out.println("MUSTFIX - SKIPPING "+config); return false; }
+		 */
 		boolean b = processType(ts.resolveDotted(config), visited, 0);
 		SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
 		return b;
@@ -559,8 +646,11 @@ public class ResourcesHandler {
 	 * 
 	 * @param tar
 	 */
-	private boolean registerSpecific(String typename, AccessRequired accessRequired, TypeAccessRequestor tar) {
+	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
+		if (t == null) {
+			System.out.println("WARNING: UNABLE TO RESOLVE: " + typename);
+		}
 		if (t != null) {
 			// System.out.println("> registerSpecific for "+typename+" ar="+accessRequired);
 			boolean importRegistrarOrSelector = false;
@@ -572,14 +662,15 @@ public class ResourcesHandler {
 			}
 			if (importRegistrarOrSelector) {
 				// reflectionHandler.addAccess(typename,Flag.allDeclaredConstructors);
-				tar.request(typename, AccessRequired.REGISTRAR);
+				tar.request(typename, AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS);// TypeKind.REGISTRAR);
 			} else {
-				if (accessRequired.isResourceAccess()) {
-					tar.request(typename, AccessRequired.request(true, accessRequired.getFlags()));
+				if (AccessBits.isResourceAccessRequired(typeKind)) {
+					tar.request(typename, AccessBits.RESOURCE);
+					tar.request(typename, typeKind);
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-					tar.request(typename, AccessRequired.request(false, accessRequired.getFlags()));
+					tar.request(typename, typeKind);
 				}
 				if (t.isAtConfiguration()) {
 					// This is because of cases like Transaction auto configuration where the
@@ -618,20 +709,23 @@ public class ResourcesHandler {
 		}
 
 		boolean passesTests = true;
-		Map<String,String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
-		// depth==0 means we won't skip something inside something else. If we did that and the outer succeeded it will crash when digging
+		Map<String, String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy(
+				"Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
+		// depth==0 means we won't skip something inside something else. If we did that
+		// and the outer succeeded it will crash when digging
 		// through the inner stuff. For example:
 		// static class PooledDataSourceCondition extends AnyNestedCondition {
 		// ...
-		//   @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
-		//	 static class ExplicitType { 
-		if (depth==0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size()!=0 &&
-			(conditionalOnPropertyValues.get("matchIfMissing")==null || conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
-			SpringFeature.log(spaces(depth) + "skipping "+type.getName()+" due to ConditionalOnPropertyCheck");
+		// @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		// static class ExplicitType {
+		if (depth == 0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size() != 0
+				&& (conditionalOnPropertyValues.get("matchIfMissing") == null
+						|| conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
+			SpringFeature.log(spaces(depth) + "skipping " + type.getName() + " due to ConditionalOnPropertyCheck");
 			passesTests = false;
 		}
 		TypeAccessRequestor tar = new TypeAccessRequestor();
-		List<Hint> hints = passesTests?type.getHints():Collections.emptyList();
+		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
 			SpringFeature.log(spaces(depth) + "#" + hints.size() + " hints on " + type.getName() + " are: ");
 			for (int h = 0; h < hints.size(); h++) {
@@ -646,11 +740,13 @@ public class ResourcesHandler {
 				SpringFeature.log(spaces(depth) + "processing hint " + hint);
 
 				// This is used for hints that didn't gather data from the bytecode but had them
-				// directly encoded. For example when a CompilationHint on an ImportSelector encodes
+				// directly encoded. For example when a CompilationHint on an ImportSelector
+				// encodes
 				// the types that might be returned from it.
-				Map<String, AccessRequired> specificNames = hint.getSpecificTypes();
-				SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
-				for (Map.Entry<String, AccessRequired> specificNameEntry : specificNames.entrySet()) {
+				Map<String, Integer> specificNames = hint.getSpecificTypes();
+				SpringFeature
+						.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
+				for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 					String specificTypeName = specificNameEntry.getKey();
 					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
 						if (hint.isSkipIfTypesMissing()) {
@@ -658,16 +754,19 @@ public class ResourcesHandler {
 						}
 					} else {
 						if (hint.isFollow()) {
-							// TODO I suspect only certain things need following, specific types lists could specify that in a suffix (like access required)
-							SpringFeature.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
+							// TODO I suspect only certain things need following, specific types lists could
+							// specify that in a suffix (like access required)
+							SpringFeature
+									.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
 							toFollow.add(ts.resolveDotted(specificTypeName));
 						}
 					}
 				}
 
-				Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
-				SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
-				for (Map.Entry<String, AccessRequired> inferredType : inferredTypes.entrySet()) {
+				Map<String, Integer> inferredTypes = hint.getInferredTypes();
+				SpringFeature
+						.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
+				for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 					String s = inferredType.getKey();
 					Type t = ts.resolveDotted(s, true);
 					boolean exists = (t != null);
@@ -684,11 +783,14 @@ public class ResourcesHandler {
 							SpringFeature.log(spaces(depth) + "will follow " + t);
 							toFollow.add(t);
 						}
-					} else if (hint.isSkipIfTypesMissing() && depth==0) {
-						// TODO If processing secondary type (depth>0) we can't skip things as we don't know if the 
-						// top level type that refers to us is going to fail or not.  Ideally we should pass in the 
-						// tar and accumulate types in secondary type processing and leave it to the outermost
-						// processing to decide if they need registration. 
+					} else if (hint.isSkipIfTypesMissing() && depth == 0) {
+						// TODO If processing secondary type (depth>0) we can't skip things as we don't
+						// know if the
+						// top level type that refers to us is going to fail or not. Ideally we should
+						// pass in the
+						// tar and accumulate types in secondary type processing and leave it to the
+						// outermost
+						// processing to decide if they need registration.
 						passesTests = false;
 						// Once failing, no need to process other hints
 						break hints;
@@ -699,7 +801,6 @@ public class ResourcesHandler {
 				registerAnnotationChain(depth, tar, annotationChain);
 			}
 		}
-		
 
 		// TODO this should be pushed earlier and access requests put into tar
 		String configNameDotted = type.getDottedName();
@@ -739,7 +840,7 @@ public class ResourcesHandler {
 				s = s.getSuperclass();
 			}
 		}
-		
+
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
 
@@ -754,7 +855,7 @@ public class ResourcesHandler {
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					tar.request(t.getDottedName(), AccessRequired.EXISTENCE_CHECK);
+					tar.request(t.getDottedName(), AccessBits.CLASS);// TypeKind.EXISTENCE_CHECK);//AccessRequired.EXISTENCE_CHECK);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -777,12 +878,25 @@ public class ResourcesHandler {
 				for (Method atBeanMethod : atBeanMethods) {
 					Type returnType = atBeanMethod.getReturnType();
 					if (returnType == null) {
-						// I believe null means that type is not on the classpath so skip further analysis
+						// I believe null means that type is not on the classpath so skip further
+						// analysis
 						continue;
 					} else {
-						tar.request(returnType.getDottedName(),  AccessRequired.EXISTENCE_MC);
+
+
+						// We will need access to Supplier and Flux because of this return type
+						Set<Type> ts = atBeanMethod.getSignatureTypes();
+						for (Type t: ts) {
+							SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
+							tar.request(t.getDottedName(),
+									AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
+						}
+
+
+//						tar.request(returnType.getDottedName(),
+//								AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
 					}
-					
+
 					// Processing this kind of thing, parameter types need to be exposed
 					// @Bean
 					// TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory(
@@ -796,12 +910,11 @@ public class ResourcesHandler {
 					// If these 'beans' are being built the return types of the bean factory
 					// methods would ensure the registration has occurred.
 					/*
-					Set<Type> signatureTypes = atBeanMethod.getSignatureTypes();
-					for (Type signatureType: signatureTypes) {
-						System.out.println("Flibble: "+signatureType.getDottedName());
-						tar.request(signatureType.getDottedName(), AccessRequired.EXISTENCE_MC);
-					}
-					*/
+					 * Set<Type> signatureTypes = atBeanMethod.getSignatureTypes(); for (Type
+					 * signatureType: signatureTypes) {
+					 * System.out.println("Flibble: "+signatureType.getDottedName());
+					 * tar.request(signatureType.getDottedName(), AccessRequired.EXISTENCE_MC); }
+					 */
 
 					// Processing, for example:
 					// @ConditionalOnResource(resources =
@@ -819,17 +932,17 @@ public class ResourcesHandler {
 						// when a CompilationHint on an ImportSelector encodes the types that might be
 						// returned from it.
 						// (see the static initializer in Type for examples)
-						Map<String, AccessRequired> specificNames = hint.getSpecificTypes();
+						Map<String, Integer> specificNames = hint.getSpecificTypes();
 						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
 								+ " specific types");
-						for (Map.Entry<String, AccessRequired> specificNameEntry : specificNames.entrySet()) {
+						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), tar);
 						}
 
-						Map<String, AccessRequired> inferredTypes = hint.getInferredTypes();
+						Map<String, Integer> inferredTypes = hint.getInferredTypes();
 						SpringFeature.log(spaces(depth) + "attempting registration of " + inferredTypes.size()
 								+ " inferred types");
-						for (Map.Entry<String, AccessRequired> inferredType : inferredTypes.entrySet()) {
+						for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 							String s = inferredType.getKey();
 							Type t = ts.resolveDotted(s, true);
 							boolean exists = (t != null);
@@ -855,17 +968,17 @@ public class ResourcesHandler {
 
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
-					}	
-					
-						
-					// Register other runtime visible annotations from the @Bean method. For example this ensures @Role is visible on:
+					}
+
+					// Register other runtime visible annotations from the @Bean method. For example
+					// this ensures @Role is visible on:
 					// @Bean
 					// @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 					// @ConditionalOnMissingBean(Validator.class)
 					// public static LocalValidatorFactoryBean defaultValidator() {
 					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
-					for (Type annotationOnMethod: annotationsOnMethod) {
-						tar.request(annotationOnMethod.getDottedName(),AccessRequired.ANNOTATION);
+					for (Type annotationOnMethod : annotationsOnMethod) {
+						tar.request(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
 					}
 				}
 			}
@@ -876,33 +989,37 @@ public class ResourcesHandler {
 					SpringFeature.log(spaces(depth) + "followed " + t.getName() + " and it failed validation");
 				}
 			}
-			for (Map.Entry<String, AccessRequired> t : tar.entrySet()) {
+			for (Map.Entry<String, Integer> t : tar.entrySet()) {
 				String dname = t.getKey();
-				
+
 				// Let's produce a message if this computed value is also in reflect.json
-				// This is a sign we can probably remove that entry from reflect.json (maybe depend if inferred access required matches declared)
+				// This is a sign we can probably remove that entry from reflect.json (maybe
+				// depend if inferred access required matches declared)
 				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
-					System.out.println("This is in the constant data, does it need to stay in there? "+dname+"  (dynamically requested access is "+t.getValue()+")");
+					System.out.println("This is in the constant data, does it need to stay in there? " + dname
+							+ "  (dynamically requested access is " + t.getValue() + ")");
 				}
-				
-				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + t.getValue());
-				Flag[] flags = t.getValue().getFlags();
+
+				SpringFeature.log(
+						spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
+				Flag[] flags = AccessBits.getFlags(t.getValue());// .getFlags();
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, true);
+						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, false);
 					} else {
-						reflectionHandler.addAccess(dname, null, true, flags);
+						reflectionHandler.addAccess(dname, null, false, flags);
 					}
 				} else {
-					reflectionHandler.addAccess(dname, null, true, flags);
+					reflectionHandler.addAccess(dname, null, false, flags);
 				}
-				if (t.getValue().isResourceAccess()) {
-					resourcesRegistry.addResources(dname.replace(".", "/").replace("$", ".") + ".class");
+				if (AccessBits.isResourceAccessRequired(t.getValue())) {// .isResourceAccessRequired()) {
+					resourcesRegistry.addResources(
+							dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
+									+ ".class");
 				}
 			}
 		}
-
 
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -927,7 +1044,7 @@ public class ResourcesHandler {
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
-			tar.request(t.getDottedName(), t.isAnnotation() ? AccessRequired.ANNOTATION : AccessRequired.ALL);
+			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
 			/*
 			 * if (i==0) { tar.request(t.getDottedName(), AccessRequired.ALL); } else {
 			 * tar.request(t.getDottedName(), AccessRequired.ANNOTATION); }

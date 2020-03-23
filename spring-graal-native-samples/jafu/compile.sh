@@ -3,7 +3,7 @@
 ARTIFACT=jafu
 MAINCLASS=com.example.jafu.JafuApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
+FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar:../../../../spring-graal-native-configuration/target/spring-graal-native-configuration-0.6.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -29,7 +29,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  -Dmode=light \
+  -Dmode=initialization-only \
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \

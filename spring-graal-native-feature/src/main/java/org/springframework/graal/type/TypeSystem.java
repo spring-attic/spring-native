@@ -46,11 +46,13 @@ import org.objectweb.asm.tree.ClassNode;
  * Simple type system with some rudimentary caching.
  */
 public class TypeSystem {
-	
+
 	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
 
 	// Map of all types on the classpath that have some kind of annotations on them
 	Map<String, AnnotationInfo> annotatedTypes;
+
+	private SpringConfiguration hintLocator = null;
 
 	// Classpath from which this type system will resolve types
 	private List<String> classpath;
@@ -64,7 +66,6 @@ public class TypeSystem {
 	// Map of which application files contain particular packages
 	private Map<String, List<File>> appPackages = new HashMap<>();
 
-	
 	public static TypeSystem get(List<String> classpath) {
 		return new TypeSystem(classpath);
 	}
@@ -73,14 +74,22 @@ public class TypeSystem {
 		this.classpath = classpath;
 		index();
 	}
-	
+
 	public List<String> getClasspath() {
 		return classpath;
+	}
+
+	public Type resolveName(String dottedTypeName) {
+		return resolveDotted(dottedTypeName);
 	}
 
 	public Type resolveDotted(String dottedTypeName) {
 		String slashedTypeName = toSlashedName(dottedTypeName);
 		return resolveSlashed(slashedTypeName);
+	}
+
+	public Type resolveName(String desc, boolean silent) {
+		return resolveDotted(desc, silent);
 	}
 
 	public Type resolveDotted(String desc, boolean silent) {
@@ -121,11 +130,21 @@ public class TypeSystem {
 		if (type != null) {
 			return type;
 		}
-		byte[] bytes = find(slashedTypeName);
+		int dimensions = 0;
+		String typeToLocate = slashedTypeName;
+		if (slashedTypeName.endsWith("[]")) {
+			String n = slashedTypeName;
+			while (n.endsWith("[]")) {
+				dimensions++;
+				n = n.substring(0,n.length()-2);
+			}
+			typeToLocate = n;
+		}
+		byte[] bytes = find(typeToLocate);
 		if (bytes == null) {
 			// System class?
 			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(slashedTypeName + ".class");
+					.getResourceAsStream(typeToLocate + ".class");
 			if (resourceAsStream == null) {
 				// cache a missingtype so we don't go looking again!
 				typeCache.put(slashedTypeName, Type.MISSING);
@@ -144,7 +163,7 @@ public class TypeSystem {
 		ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, ClassReader.SKIP_DEBUG);
-		type = Type.forClassNode(this, node);
+		type = Type.forClassNode(this, node,dimensions);
 		typeCache.put(slashedTypeName, type);
 		return type;
 	}
@@ -166,7 +185,7 @@ public class TypeSystem {
 		}
 		return resolveSlashed(classname, allowNotFound);
 	}
-	
+
 	public Type resolve(String classname) {
 		return resolve(classname, false);
 	}
@@ -174,11 +193,11 @@ public class TypeSystem {
 	public Type Lresolve(String desc) {
 		return resolve(desc.substring(1, desc.length() - 1));
 	}
-	
+
 	public Type resolve(org.objectweb.asm.Type type, boolean silent) {
 		try {
 			String desc = type.getDescriptor();
-			return resolve(desc.substring(1,desc.length()-1));
+			return resolve(desc.substring(1, desc.length() - 1));
 		} catch (MissingTypeException mte) {
 			if (silent)
 				return null;
@@ -209,15 +228,17 @@ public class TypeSystem {
 	}
 
 	/**
-	 * Verifies the type plus all its super types, interfaces and any type references in generic specifications exist.
+	 * Verifies the type plus all its super types, interfaces and any type
+	 * references in generic specifications exist.
+	 * 
 	 * @return List of missing types, empty if all good!
 	 */
 	public Set<String> resolveComplete(String desc) {
 		Set<String> missingTypes = new LinkedHashSet<>();
-		resolveComplete(desc.substring(1, desc.length()-1), missingTypes, new HashSet<>());
+		resolveComplete(desc.substring(1, desc.length() - 1), missingTypes, new HashSet<>());
 		return missingTypes;
 	}
-	
+
 	private void resolveComplete(String slashedDescriptor, Set<String> missingTypes, Set<String> visited) {
 		if (visited.add(slashedDescriptor)) {
 			Type baseType = resolve(slashedDescriptor, true);
@@ -235,8 +256,8 @@ public class TypeSystem {
 				}
 				List<String> interfaces = baseType.getInterfacesStrings();
 				if (interfaces != null) {
-					for (String interfce: interfaces) {
-						resolveComplete(interfce, missingTypes, visited);				
+					for (String interfce : interfaces) {
+						resolveComplete(interfce, missingTypes, visited);
 					}
 				}
 			}
@@ -296,7 +317,7 @@ public class TypeSystem {
 				}
 			}
 		} catch (FileNotFoundException fnfe) {
-			System.err.println("WARNING: Unable to find jar '"+jar+"' whilst scanning filesystem");
+			System.err.println("WARNING: Unable to find jar '" + jar + "' whilst scanning filesystem");
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem during scan of " + jar, ioe);
 		}
@@ -306,7 +327,7 @@ public class TypeSystem {
 		String search = slashedTypeName + ".class";
 		try {
 			int index = slashedTypeName.lastIndexOf("/");
-			String packageName = index==-1?"":slashedTypeName.substring(0, index);
+			String packageName = index == -1 ? "" : slashedTypeName.substring(0, index);
 
 			if (appPackages.containsKey(packageName)) {
 				List<File> list = appPackages.get(packageName);
@@ -556,10 +577,29 @@ public class TypeSystem {
 					.map(ai -> ai.name).collect(Collectors.toList());
 		}
 	}
-	
+
 	public List<String> findTypesAnnotationAtConfiguration(boolean metaAnnotated) {
-		return findTypesAnnotated(SPRING_AT_CONFIGURATION,metaAnnotated);
+		return findTypesAnnotated(SPRING_AT_CONFIGURATION, metaAnnotated);
 	}
 
+	public List<CompilationHint> findHints(String typename) {
+		if (typename.contains("/")) {
+			if (typename.endsWith(";")) {
+				typename= typename.substring(1,typename.length()-1).replace("/", ".");
+			} else {
+				typename= typename.replace("/", ".");
+			}
+		}
+		if (hintLocator == null) {
+			hintLocator = new SpringConfiguration(this);
+		}
+		// The result should include hints directly on the type as well
+		// as discovered hints from separate configuration
+		List<CompilationHint> results = new ArrayList<>();
+		results.addAll(hintLocator.findProposedHints(typename));
+		List<CompilationHint> declaredHints = resolveName(typename).getCompilationHints();
+		results.addAll(declaredHints);
+		return results;
+	}
 
 }

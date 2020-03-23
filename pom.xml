@@ -10,5 +10,6 @@
  
   <modules>
     <module>spring-graal-native-feature</module>
+    <module>spring-graal-native-configuration</module>
   </modules>
 </project>

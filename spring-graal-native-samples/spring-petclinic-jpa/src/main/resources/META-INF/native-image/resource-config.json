@@ -1,8 +1,6 @@
 {
   "bundles": [
-    {"name":"messages.messages"},
-    {"name":"javax.servlet.LocalStrings"},
-    {"name":"javax.servlet.http.LocalStrings"}
+    {"name":"messages.messages"}
   ],
   "resources": [
     {"pattern": "META-INF/resources/webjars/.*"},

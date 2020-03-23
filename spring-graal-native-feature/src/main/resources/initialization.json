@@ -40,9 +40,10 @@
 //
 {"class": "sun.reflect.misc.Trampoline"},
 {"class": "reactor.netty.http.server.HttpServer"},
-{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"}
+{"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"},
 // vvv tomcat sample
 //{"package": "org.apache.tomcat.util.net"}
+{"class":"org.apache.tomcat.jni.SSL"}
 // ^^^ tomcat sample
 // vvv petclinic
   //  {"class": "java.sql.DriverManager"},
@@ -57,6 +58,11 @@
   // later the 'new implementation' will be picked up that uses VarHandle and we need that
   // compiled early
   {"class":"org.h2.util.Bits"},
+  {"class":"org.springframework.format.annotation.DateTimeFormat$ISO"},
+  // TODO some of these conditional? but are they conditional on actually being used?
+  {"class":"javax.persistence.FetchType"},
+  {"class":"javax.persistence.PersistenceContextType"},
+  {"class":"javax.persistence.SynchronizationType"},
   
 {"class": "org.springframework.core.GraalDetector"},
     // vvv petclinic
@@ -81,6 +87,9 @@
     {"class": "org.springframework.core.DecoratingProxy"},
     {"class": "org.springframework.jdbc.datasource.ConnectionProxy"},
     //
+    {"class":"org.slf4j.helpers.SubstituteLogger"},
+    {"class":"org.slf4j.event.SubstituteLoggingEvent"},
+    {"class":"org.slf4j.event.EventRecodingLogger"},
     {"class": "org.slf4j.helpers.NOPLogger"},
     //{"class": "io.netty.handler.codec.http2.ReadOnlyHttp2Headers"},
 {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},
@@ -112,6 +121,7 @@
 {"class": "org.jboss.logging.Log4j2Logger"},
 {"package": "org.apache.logging.slf4j"},
 {"package": "org.jboss.logging"},
+{"class":"org.hibernate.EntityMode"},
 {"class": "org.springframework.util.unit.DataSize"},
 {"class": "org.hibernate.validator.internal.engine.ConfigurationImpl"},
 {"class": "org.springframework.core.annotation.AnnotationFilter"},
@@ -166,6 +176,7 @@
 {"class": "javax.validation.Validation"},
 {"class": "javax.validation.ConstraintValidator"},
 {"package": "javax.validation"},
+{"package": "javax.transaction"},
 {"class": "org.hibernate.validator.constraints.CompositionType"},
 {"package": "org.hibernate.validator.constraints"},
 {"class": "org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator"},
