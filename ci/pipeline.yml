@@ -5,10 +5,20 @@ resources:
       uri: https://github.com/spring-projects-experimental/spring-graal-native
       branch: master
 jobs:
-  - name: build
+  - name: java8-build
     public: true
     plan:
     - get: spring-graal-native
       trigger: true
     - task: build
-      file: spring-graal-native/ci/build.yml
+      file: spring-graal-native/ci/java8-build.yml
+  - name: java11-build
+    public: true
+    plan:
+      - get: spring-graal-native
+        trigger: true
+      - task: build
+        file: spring-graal-native/ci/java11-build.yml
+groups:
+  - name: "Build"
+    jobs: ["java8-build", "java11-build"]
