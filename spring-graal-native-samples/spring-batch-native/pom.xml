@@ -16,46 +16,48 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-<start-class>org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
+		<start-class>org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
 	</properties>
-<profiles>
-       <profile>
-            <id>graal</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.nativeimage</groupId>
-                        <artifactId>native-image-maven-plugin</artifactId>
-                        <version>20.0.0</version>
-<configuration>
-<buildArgs>-Dmode=light --initialize-at-build-time --allow-incomplete-classpath --report-unsupported-elements-at-runtime --enable-all-security-services -H:+ReportExceptionStackTraces</buildArgs>
-</configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>native-image</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-</profiles>
-
+	<profiles>
+		<profile>
+			<id>graal</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.graalvm.nativeimage</groupId>
+						<artifactId>native-image-maven-plugin</artifactId>
+						<version>20.0.0</version>
+						<configuration>
+							<buildArgs>-Dmode=light --initialize-at-build-time --allow-incomplete-classpath
+								--report-unsupported-elements-at-runtime --enable-all-security-services
+								-H:+ReportExceptionStackTraces
+							</buildArgs>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>native-image</goal>
+								</goals>
+								<phase>package</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 
 	<dependencies>
-<dependency>
-    <groupId>org.springframework.experimental</groupId>
-    <artifactId>spring-graal-native-feature</artifactId>
-    <version>0.6.0.BUILD-SNAPSHOT</version>
-</dependency>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graal-native-feature</artifactId>
+			<version>0.6.0.BUILD-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -107,7 +109,7 @@
 		</plugins>
 	</build>
 
-<pluginRepositories>
+	<pluginRepositories>
 		<pluginRepository>
 			<id>central</id>
 			<url>https://repo.maven.apache.org/maven2</url>
