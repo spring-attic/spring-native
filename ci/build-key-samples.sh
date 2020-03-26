@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
-./setup.sh
-
 cd spring-graal-native
+./ci/setup.sh
 ./build-feature.sh
 ./build-key-samples.sh
