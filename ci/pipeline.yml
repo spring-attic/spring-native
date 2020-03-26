@@ -8,34 +8,38 @@ resources:
     type: time
     source: {interval: 24h}
 jobs:
-  - name: java8-build-key-samples
+  - name: java8-key-samples-build
+    old_name: java8-build-key-samples
     public: true
     plan:
     - get: git-repo
       trigger: true
     - task: build
-      file: spring-graal-native/ci/java8-build-key-samples.yml
-  - name: java11-build-key-samples
+      file: spring-graal-native/ci/java8-key-samples-build.yml
+  - name: java11-key-samples-build
+    old_name: java11-build-key-samples
     public: true
     plan:
       - get: git-repo
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java11-build-key-samples.yml
-  - name: java8-build-samples
+        file: spring-graal-native/ci/java11-key-samples-build.yml
+  - name: java8-samples-build
+    old_name: java8-build-samples
     public: true
     plan:
       - get: every-day
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java8-build-samples.yml
+        file: spring-graal-native/ci/java8-samples-build.yml
   - name: java11-build-samples
+    old_name: java11-samples-build
     public: true
     plan:
       - get: every-day
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java11-build-samples.yml
+        file: spring-graal-native/ci/java11-samples-build.yml
 groups:
   - name: "Build"
-    jobs: ["java8-build-key-samples", "java11-build-key-samples", "java8-build-samples", "java11-build-samples"]
+    jobs: ["java8-key-samples-build", "java11-key-samples-build", "java8-samples-build", "java11-samples-build"]
