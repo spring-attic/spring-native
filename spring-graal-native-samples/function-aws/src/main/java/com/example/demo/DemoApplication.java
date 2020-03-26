@@ -10,6 +10,7 @@ import org.springframework.cloud.function.web.source.ExporterProperties;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.PropertySource;
 
 @SpringBootApplication(proxyBeanMethods = false)
 public class DemoApplication implements ApplicationContextInitializer<GenericApplicationContext> {
@@ -19,6 +20,11 @@ public class DemoApplication implements ApplicationContextInitializer<GenericApp
 		System.err.println(
 			"Beans: " + Arrays.asList(context.getBeanDefinitionNames())
 		);
+		for (PropertySource<?> source : context.getEnvironment().getPropertySources()) {
+		System.err.println(
+			"Environment: " + source.getName() + ", " + source.getSource()
+		);
+	}
 		System.err.println(
 			"URL: " + context.getBean(ExporterProperties.class).getSource().getUrl()
 		);
