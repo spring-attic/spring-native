@@ -5,10 +5,10 @@ image_resource:
   type: docker-image
   source:
     repository: oracle/graalvm-ce
-    tag: 20.0.0-java11
+    tag: 20.0.0-java8
 
 inputs:
   - name: spring-graal-native
 
 run:
-  path: spring-graal-native/ci/build.sh
+  path: spring-graal-native/ci/build-key-samples.sh

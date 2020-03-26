@@ -22,7 +22,3 @@ go install github.com/fullstorydev/grpcurl/cmd/grpcurl
 wget https://repo1.maven.org/maven2/org/apache/maven/apache-maven/3.5.3/apache-maven-3.5.3-bin.zip
 unzip apache-maven-3.5.3-bin.zip
 export PATH=$PATH:`pwd`/apache-maven-3.5.3/bin:/root/go/bin:$JAVA_HOME/jre/languages/js/bin
-
-cd spring-graal-native
-./build-feature.sh
-./build-key-samples.sh
