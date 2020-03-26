@@ -14,21 +14,21 @@ else
   SILENT=false
 fi
 
-if [[ "$1" != "--"* ]]; then
+if ! [ -z "$1" ] && [[ "$1" != "--"* ]]; then
 	EXECUTABLE=${1}
 	shift 1
 else
-	EXECUTABLE=target/${PWD##*/}
+	EXECUTABLE=${1:-target/${PWD##*/}}
 fi
 
-if [ -z "$2" ] || [[ "$2" == "--"* ]]; then
+if [ -z "$1" ] || [[ "$1" == "--"* ]]; then
   TEST_OUTPUT_FILE=target/native-image/test-output.txt
   BUILD_OUTPUT_FILE=target/native-image/output.txt
   SUMMARY_CSV_FILE=target/native-image/summary.csv
 else
-  TEST_OUTPUT_FILE=$2/test-output.txt
-  BUILD_OUTPUT_FILE=$2/output.txt
-  SUMMARY_CSV_FILE=$2/summary.csv
+  TEST_OUTPUT_FILE=$1/test-output.txt
+  BUILD_OUTPUT_FILE=$1/output.txt
+  SUMMARY_CSV_FILE=$1/summary.csv
   shift 1
 fi
 echo "Testing executable '`basename $EXECUTABLE`'"
