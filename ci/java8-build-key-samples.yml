@@ -8,7 +8,7 @@ image_resource:
     tag: 20.0.0-java8
 
 inputs:
-  - name: spring-graal-native
+  - name: git-repo
 
 run:
   path: spring-graal-native/ci/build-key-samples.sh
