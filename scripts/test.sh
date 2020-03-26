@@ -14,9 +14,13 @@ else
   SILENT=false
 fi
 
-if ! [ -z "$1" ] && [[ "$1" != "--"* ]]; then
-	EXECUTABLE=${1}
-	shift 1
+if ! [ -z "$1" ]; then
+	if [[ "$1" != "--"* ]]; then
+		EXECUTABLE=${1}
+		shift 1
+	else
+		EXECUTABLE=target/${PWD##*/}
+	fi
 else
 	EXECUTABLE=${1:-target/${PWD##*/}}
 fi
