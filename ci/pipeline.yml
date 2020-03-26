@@ -1,25 +1,43 @@
 resources:
-  - name: spring-graal-native
+  - name: git-repo
     type: git
     source:
       uri: https://github.com/spring-projects-experimental/spring-graal-native
       branch: master
+  - name: every-day
+    type: time
+    source: {interval: 24h}
 jobs:
-  - name: java8-build
-    old_name: build
+  - name: java8-build-key-samples
+    old_name: java8-build
     public: true
     plan:
-    - get: spring-graal-native
+    - get: git-repo
       trigger: true
     - task: build
-      file: spring-graal-native/ci/java8-build.yml
-  - name: java11-build
+      file: spring-graal-native/ci/java8-build-key-samples.yml
+  - name: java11-build-key-samples
+    old_name: java11-build
     public: true
     plan:
-      - get: spring-graal-native
+      - get: git-repo
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java11-build.yml
+        file: spring-graal-native/ci/java11-build-key-samples.yml
+  - name: java8-build-samples
+    public: true
+    plan:
+      - get: every-day
+        trigger: true
+      - task: build
+        file: spring-graal-native/ci/java8-build-samples.yml
+  - name: java11-build-samples
+    public: true
+    plan:
+      - get: every-day
+        trigger: true
+      - task: build
+        file: spring-graal-native/ci/java11-build-samples.yml
 groups:
   - name: "Build"
-    jobs: ["java8-build", "java11-build"]
+    jobs: ["java8-build-key-samples", "java11-build-key-samples", "java8-build-samples", "java11-build-samples"]
