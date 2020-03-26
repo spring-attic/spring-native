@@ -32,8 +32,8 @@ jobs:
         trigger: true
       - task: build
         file: spring-graal-native/ci/java8-samples-build.yml
-  - name: java11-build-samples
-    old_name: java11-samples-build
+  - name: java11-samples-build
+    old_name: java11-build-samples
     public: true
     plan:
       - get: every-day
