@@ -8,7 +8,7 @@ image_resource:
     tag: 20.0.0-java11
 
 inputs:
-  - name: every-day
+  - name: spring-graal-native
 
 run:
   path: spring-graal-native/ci/build-key-samples.sh
