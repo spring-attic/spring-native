@@ -10,7 +10,7 @@ public class CLR implements CommandLineRunner {
 	private WebClient client;
 
 	public CLR(WebClient.Builder builder) {
-		this.client = builder.baseUrl("http://example.com").build();
+		this.client = builder.baseUrl("https://example.com").build();
 	}
 
 	@Override
