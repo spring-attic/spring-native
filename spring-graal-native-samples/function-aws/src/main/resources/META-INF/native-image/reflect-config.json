@@ -1,0 +1,8 @@
+[
+{
+  "name":"org.springframework.cloud.function.web.source.ExporterProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+}
+]

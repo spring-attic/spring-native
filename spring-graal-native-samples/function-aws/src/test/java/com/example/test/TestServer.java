@@ -1,5 +1,8 @@
 package com.example.test;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -18,7 +21,9 @@ public class TestServer {
     private String response = "";
 
     public static void main(String[] args) {
-        SpringApplication.run(TestServer.class, "--server.port=8000", "--spring.cloud.function.web.export.enabled=false");
+        Set<String> list = new LinkedHashSet<>(Arrays.asList(args));
+        list.addAll(Arrays.asList("--server.port=8000", "--spring.cloud.function.web.export.enabled=false", "--spring.main.web-application-type=reactive"));
+        SpringApplication.run(TestServer.class, list.toArray(new String[0]));
     }
 
     @Bean
