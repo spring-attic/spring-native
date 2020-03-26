@@ -9,7 +9,6 @@ resources:
     source: {interval: 24h}
 jobs:
   - name: java8-build-key-samples
-    old_name: java8-build
     public: true
     plan:
     - get: git-repo
@@ -17,7 +16,6 @@ jobs:
     - task: build
       file: spring-graal-native/ci/java8-build-key-samples.yml
   - name: java11-build-key-samples
-    old_name: java11-build
     public: true
     plan:
       - get: git-repo
