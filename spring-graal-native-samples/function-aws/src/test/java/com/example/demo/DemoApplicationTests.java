@@ -49,7 +49,7 @@ public class DemoApplicationTests {
     static void before() {
         int port = SocketUtils.findAvailableTcpPort();
         System.setProperty("export.port", "" + port);
-        context = SpringApplication.run(TestServer.class, "--server.port="+port, "--spring.cloud.function.web.export.enabled=false");
+        context = SpringApplication.run(TestServer.class, "--server.port="+port, "--spring.cloud.function.web.export.enabled=false", "--spring.main.web-application-type=reactive");
     }
 
 }
