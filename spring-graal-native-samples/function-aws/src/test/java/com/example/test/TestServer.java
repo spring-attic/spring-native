@@ -44,7 +44,6 @@ public class TestServer {
         return input -> {
             System.err.println("Add: " + input);
             output.onNext(input);
-            // output.onComplete(); // Just one event
             output = MonoProcessor.<String>create();
             return "Added: " + input;
         };
