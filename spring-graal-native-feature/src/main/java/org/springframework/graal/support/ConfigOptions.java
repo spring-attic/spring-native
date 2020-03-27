@@ -32,6 +32,8 @@ public abstract class ConfigOptions {
     private final static String DUMP_CONFIG;
 
 	private final static boolean VERBOSE;
+	
+	private final static String MISSING_SELECTOR_HINTS;
 
 	// In light mode the feature only supplies initialization information and nothing
 	// about reflection/proxies/etc - this is useful if using the agent to produce that
@@ -46,6 +48,12 @@ public abstract class ConfigOptions {
 		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
 		if (VERBOSE) {
 			System.out.println("Turning on verbose mode for the feature");
+		}
+		MISSING_SELECTOR_HINTS = System.getProperty("missingSelectorHints","error");
+		if (MISSING_SELECTOR_HINTS.equals("warning")) {
+			System.out.println("Selectors missing hints will be reported as a warning, not an error");
+		} else if (!MISSING_SELECTOR_HINTS.equals("error")) {
+			throw new IllegalStateException("Supported values for 'missingSelectorHints' are 'error' (default) or 'warning'");
 		}
 		MODE = System.getProperty("mode","default");
 		if (MODE.equals("initialization-only")) {
@@ -69,6 +77,10 @@ public abstract class ConfigOptions {
 
 	public static boolean shouldRemoveUnusedAutoconfig() {
 		return REMOVE_UNUSED_AUTOCONFIG;
+	}
+	
+	public static boolean areMissingSelectorHintsAnError() {
+		return MISSING_SELECTOR_HINTS.equals("error");
 	}
 
     public static boolean isVerbose() {
