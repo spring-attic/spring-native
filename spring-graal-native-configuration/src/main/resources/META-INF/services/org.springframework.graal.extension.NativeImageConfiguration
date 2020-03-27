@@ -30,6 +30,7 @@ org.springframework.data.jpa.repository.support.Hints
 org.springframework.data.web.config.Hints
 org.springframework.hateoas.config.Hints
 org.springframework.security.config.annotation.web.configuration.Hints
+org.springframework.security.config.annotation.web.reactive.Hints
 org.springframework.stereotype.Hints
 org.springframework.transaction.annotation.Hints
 org.springframework.web.bind.annotation.Hints
