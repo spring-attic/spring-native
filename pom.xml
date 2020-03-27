@@ -12,4 +12,51 @@
 		<module>spring-graal-native-feature</module>
 		<module>spring-graal-native-configuration</module>
 	</modules>
+
+	<profiles>
+
+		<profile>
+			<id>artifactory</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.jfrog.buildinfo</groupId>
+							<artifactId>artifactory-maven-plugin</artifactId>
+							<version>2.7.0</version>
+							<executions>
+								<execution>
+									<id>build-info</id>
+									<goals>
+										<goal>publish</goal>
+									</goals>
+									<configuration>
+										<publisher>
+											<contextUrl>https://repo.spring.io</contextUrl>
+											<username>${artifactory.username}</username>
+											<password>${artifactory.password}</password>
+											<repoKey>libs-milestone-local</repoKey>
+											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+										</publisher>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+
+				<plugins>
+
+					<plugin>
+						<groupId>org.jfrog.buildinfo</groupId>
+						<artifactId>artifactory-maven-plugin</artifactId>
+					</plugin>
+
+				</plugins>
+
+			</build>
+		</profile>
+	</profiles>
+
+
 </project>
