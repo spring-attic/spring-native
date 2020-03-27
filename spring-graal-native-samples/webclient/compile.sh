@@ -38,7 +38,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -DremoveUnusedAutoconfig=true \
-  -DremoveYamlSupport=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

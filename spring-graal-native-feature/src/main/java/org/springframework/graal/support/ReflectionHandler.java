@@ -262,6 +262,10 @@ public class ReflectionHandler {
 		if (!ConfigOptions.shouldAvoidLogback()) {
 			registerLogback();
 		}
+
+		if (!ConfigOptions.shouldRemoveYamlSupport()) {
+			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		}
 	}
 
 	private boolean checkType(Class clazz) {
