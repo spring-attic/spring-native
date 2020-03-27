@@ -46,17 +46,25 @@
 				</pluginManagement>
 
 				<plugins>
-
 					<plugin>
 						<groupId>org.jfrog.buildinfo</groupId>
 						<artifactId>artifactory-maven-plugin</artifactId>
 					</plugin>
-
 				</plugins>
 
 			</build>
 		</profile>
 	</profiles>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-plugins-release</id>
+			<url>https://repo.spring.io/plugins-release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-libs-milestone</id>
+			<url>https://repo.spring.io/libs-milestone</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
