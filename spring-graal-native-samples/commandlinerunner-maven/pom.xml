@@ -25,9 +25,14 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.spring-projects-experimental</groupId>
-			<artifactId>spring-graal-native-image</artifactId>
-			<version>4dc925987b</version>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graal-native-feature</artifactId>
+			<version>0.6.0.BUILD-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graal-native-configuration</artifactId>
+			<version>0.6.0.BUILD-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -54,9 +59,9 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>com.oracle.substratevm</groupId>
+						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
-						<version>19.2.0.1</version>
+						<version>20.0.0</version>
 						<executions>
 							<execution>
 								<goals>
@@ -106,16 +111,8 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
-		<pluginRepository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
 		<repository>
 			<id>central</id>
 			<url>https://repo.maven.apache.org/maven2</url>
