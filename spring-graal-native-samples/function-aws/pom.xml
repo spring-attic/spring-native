@@ -72,7 +72,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>zip</id>
+						<id>java-zip</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
@@ -82,12 +82,40 @@
 				</executions>
 				<configuration>
 					<descriptors>
-						<descriptor>src/assembly/zip.xml</descriptor>
+						<descriptor>src/assembly/java.xml</descriptor>
 					</descriptors>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>native</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>native-zip</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<inherited>false</inherited>
+							</execution>
+						</executions>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/native.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</plugin>		
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<pluginRepositories>
 		<pluginRepository>
