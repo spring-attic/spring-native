@@ -17,18 +17,38 @@ For more detailed information on the feature and how to use it, please jump over
 
 ## Quick start
 
-For detailed information and walkthroughs of applying the techniques to your project, please see the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki), but to very very quickly get started:
+For detailed information and walkthroughs of applying the techniques to your project, please see the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki).
+
+### Install GraalVM native
+
+From GraalVM builds:
 
 - Install Graal 20.0 from [here](https://github.com/graalvm/graalvm-ce-builds/releases).
-
 - Set `JAVA_HOME` and `PATH` appropriately for that Graal version.
-
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
+Or you can use [SDKMAN](https://sdkman.io/) to easily switch between GraalVM versions:
+
+- [Install SDKMAN](https://sdkman.io/install)
+- Install GraalVM with `sdk install java 20.0.0.r8-grl` for Java 8 or `sdk install java 20.0.0.r11-grl` for Java 11
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+### Artifacts
+
+The repositories to use are `https://repo.spring.io/milestone` for 0.x milestones or `https://repo.spring.io/snapshot/` for snapshots.
+
+The artifacts available are:
+
+- `org.springframework.experimental:spring-graal-native-feature`: a feature that configures GraalVM native to support Spring Boot applications
+- `org.springframework.experimental:spring-graal-native-configuration`: configuration hints used by the feature
+
+The recommended version is `0.6.0.BUILD-SNAPSHOT`.
+ 
+### Play with the samples
+
+- `git clone https://github.com/spring-projects-experimental/spring-graal-native`
 - In the project root, run `./build-feature.sh` 
-
 - Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
-
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
 `build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the [Samples wiki page](https://github.com/spring-projects-experimental/spring-graal-native/wiki/Samples).
