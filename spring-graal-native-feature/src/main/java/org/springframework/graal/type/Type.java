@@ -43,6 +43,7 @@ import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageHints;
+import org.springframework.graal.support.ConfigOptions;
 import org.springframework.graal.support.SpringFeature;
 
 /**
@@ -1069,9 +1070,12 @@ public class Type {
 		}
 		if (isImportSelector() && hints.size() == 0) {
 			// Failing early as this will likely result in a problem later - fix is
-			// typically (right now) to
-			// add an entry in the Type static initializer.
-			throw new IllegalStateException("No @CompilationHint found for import selector: " + getDottedName());
+			// typically (right now) to add a new Hint in the configuration module
+			if (ConfigOptions.areMissingSelectorHintsAnError()) {
+				throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
+			} else {
+				System.out.println("WARNING: No access hint found for import selector: " + getDottedName());
+			}
 		}
 		return hints.size() == 0 ? Collections.emptyList() : hints;
 	}
