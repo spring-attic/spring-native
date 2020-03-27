@@ -39,7 +39,7 @@ jobs:
         trigger: true
       - task: build
         file: spring-graal-native/ci/java11-samples-build.yml
-  - name: deploy-snapshot
+  - name: deploy
     public: true
     plan:
       - get: spring-graal-native
@@ -53,4 +53,4 @@ jobs:
           ARTIFACTORY_PASSWORD: ((artifactory_password))
 groups:
   - name: "Build"
-    jobs: ["java8-key-samples-build", "java11-key-samples-build", "java8-samples-build", "java11-samples-build", "deploy-snapshot"]
+    jobs: ["java8-key-samples-build", "java11-key-samples-build", "java8-samples-build", "java11-samples-build", "deploy"]
