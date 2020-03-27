@@ -623,13 +623,6 @@ public class ResourcesHandler {
 
 	private boolean processType(String config, Set<String> visited) {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
-		/*
-		 * if (config.equals(
-		 * "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration") ||
-		 * config.equals(
-		 * "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration")
-		 * ) { System.out.println("MUSTFIX - SKIPPING "+config); return false; }
-		 */
 		boolean b = processType(ts.resolveDotted(config), visited, 0);
 		SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
 		return b;

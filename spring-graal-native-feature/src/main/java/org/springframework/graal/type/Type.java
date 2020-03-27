@@ -1088,6 +1088,10 @@ public class Type {
 			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);// ;SpringConfiguration.findProposedHints(an.desc);
 			if (hints2.size() != 0) {
 				List<String> typesCollectedFromAnnotation = collectTypes(an);
+				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
+					// TODO special handling here for @EnableConfigurationProperties - should we promote this to a hint annotation value or truly a special case?
+					addInners(typesCollectedFromAnnotation);
+				}
 				for (CompilationHint hints2a : hints2) {
 					hints.add(new Hint(new ArrayList<>(annotationChain), hints2a.skipIfTypesMissing, hints2a.follow,
 							hints2a.getDependantTypes(),
@@ -1109,6 +1113,21 @@ public class Type {
 		} finally {
 			annotationChain.pop();
 		}
+	}
+
+	private void addInners(List<String> propertiesTypes) {
+		List<String> extras = new ArrayList<>();
+		for (String propertiesType: propertiesTypes) {
+			Type type = typeSystem.Lresolve(propertiesType,true);
+			if (type !=null) {
+				// TODO recurse all the way down
+				List<Type> nestedTypes = type.getNestedTypes();
+				for (Type nestedType: nestedTypes) {
+					extras.add(nestedType.getDescriptor());
+				}
+			}
+		}
+		propertiesTypes.addAll(extras);
 	}
 
 	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
