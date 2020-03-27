@@ -9,8 +9,8 @@ Once built, native images have very fast startup!
 
 This feature supports:
 
-- GraalVM 20.0.0 dev builds
-- Spring Boot 2.3.0.M1 (you may be able to get some things working with Boot 2.2.X but not 2.1 or earlier)
+- GraalVM 20.0
+- Spring Boot 2.3.0.M3 (you may be able to get some things working with Boot 2.2.X but not 2.1 or earlier)
 
 For more detailed information on the feature and how to use it, please jump over to the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki). There is a [video](https://www.youtube.com/watch?v=OxS66Q26ykA) of a presentation covering this project from Spring One Platform 2019.
 
