@@ -11,6 +11,7 @@
 {"class": "reactor.netty.tcp.TcpServer"},
 {"class": "org.springframework.http.codec.xml.XmlEventDecoder$AaltoDataBufferToXmlEvent"},
 {"class": "org.springframework.core.io.VfsUtils"},
+{"class": "org.h2.store.fs.FileNioMemData"}, // vanilla-jpa with iabuildtime
 
 // This is because it calls LogFactory.getLog()
 {"class": "org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration"},
