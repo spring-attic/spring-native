@@ -10,7 +10,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.core.ParameterNameDiscoverer;
 
 // Because code removal does not work yet with GraalDetector
-@TargetClass(className = "org.springframework.core.DefaultParameterNameDiscoverer")
+@TargetClass(className = "org.springframework.core.DefaultParameterNameDiscoverer", onlyWith = OnlyPresent.class)
 final class Target_DefaultParameterNameDiscoverer {
 
 	@Alias

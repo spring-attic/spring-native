@@ -18,7 +18,7 @@ package org.springframework.internal.svm;
 
 import java.util.function.Predicate;
 
-class OnlyPresent implements Predicate<String> {
+public class OnlyPresent implements Predicate<String> {
 
 	@Override
 	public boolean test(String type) {

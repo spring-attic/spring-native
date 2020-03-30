@@ -7,8 +7,9 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.aop.SpringProxy;
+import org.springframework.internal.svm.OnlyPresent;
 
-@TargetClass(className = "org.springframework.aop.framework.DefaultAopProxyFactory")
+@TargetClass(className = "org.springframework.aop.framework.DefaultAopProxyFactory", onlyWith = OnlyPresent.class)
 public final class Target_DefaultAopProxyFactory {
 
 	@Substitute
