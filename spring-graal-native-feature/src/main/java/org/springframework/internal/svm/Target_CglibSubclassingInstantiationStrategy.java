@@ -9,7 +9,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.lang.Nullable;
 
-@TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy")
+@TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy", onlyWith = OnlyPresent.class)
 public final class Target_CglibSubclassingInstantiationStrategy {
 
 	@Substitute

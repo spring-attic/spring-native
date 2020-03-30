@@ -7,7 +7,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
 
-@TargetClass(className = "org.springframework.boot.SpringApplicationBannerPrinter")
+@TargetClass(className = "org.springframework.boot.SpringApplicationBannerPrinter", onlyWith = OnlyPresent.class)
 public final class Target_SpringApplicationBannerPrinter {
 
 	@Alias

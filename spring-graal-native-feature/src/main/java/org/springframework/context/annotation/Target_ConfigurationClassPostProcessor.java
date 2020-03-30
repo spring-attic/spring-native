@@ -16,9 +16,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.internal.svm.OnlyPresent;
 import org.springframework.util.ClassUtils;
 
-@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor")
+@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", onlyWith = OnlyPresent.class)
 public final class Target_ConfigurationClassPostProcessor {
 
 	@Alias
@@ -71,7 +72,7 @@ public final class Target_ConfigurationClassPostProcessor {
 	}
 }
 
-@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", innerClass = "ImportAwareBeanPostProcessor")
+@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", innerClass = "ImportAwareBeanPostProcessor", onlyWith = OnlyPresent.class)
 final class Target_ImportAwareBeanPostProcessor {
 
 	@Alias

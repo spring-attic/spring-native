@@ -9,7 +9,7 @@ import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.util.ClassUtils;
 
-@TargetClass(className = "org.springframework.boot.json.JsonParserFactory", onlyWith = YamlSupportRemoved.class)
+@TargetClass(className = "org.springframework.boot.json.JsonParserFactory", onlyWith = { YamlSupportRemoved.class, OnlyPresent.class })
 public final class Target_JsonParserFactory {
 
 	@Substitute
