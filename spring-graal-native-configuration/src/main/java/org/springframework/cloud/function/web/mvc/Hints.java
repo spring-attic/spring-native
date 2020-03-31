@@ -23,7 +23,7 @@ import org.springframework.graal.type.AccessBits;
 
 @NativeImageHint(trigger=RequestProcessor.class, 
 		typeInfos = {@TypeInfo(types= {java.util.function.Consumer.class},
-		access = AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
+		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)})
 public class Hints implements NativeImageConfiguration {
 }
 

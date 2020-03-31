@@ -39,7 +39,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 		},typeNames= {
 				"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 				"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)
+				},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)
 	})
 // TODO Why can't I make this conditional on JpaReposAutoConfig above? The vanilla-orm sample needs this but JpaRepositoriesAutoConfiguration is not active in that sample
 //@ConfigurationHint(typeInfos= {@TypeInfo(types= {PersistenceAnnotationBeanPostProcessor.class})}) // temporarily moved this to be HibernateJpaConfiguration dependant

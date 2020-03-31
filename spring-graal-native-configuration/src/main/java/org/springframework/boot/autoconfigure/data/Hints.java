@@ -22,8 +22,8 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 
 @NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
-		// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
-		// TODO I've made PFB globally accessible as vanilla-jpa sample needed it and wasn't seeing it through this AbstractRepo config
-		@TypeInfo(types = {PropertiesFactoryBean.class, PropertiesLoaderSupport.class /* super of PropertiesFactoryBean*/}) })
+	// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
+	// TODO I've made PFB globally accessible as vanilla-jpa sample needed it and wasn't seeing it through this AbstractRepo config
+	@TypeInfo(types = {PropertiesFactoryBean.class, PropertiesLoaderSupport.class /* super of PropertiesFactoryBean*/}) })
 public class Hints implements NativeImageConfiguration {
 }

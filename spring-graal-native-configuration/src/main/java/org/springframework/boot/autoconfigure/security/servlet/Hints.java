@@ -45,7 +45,7 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 
 @NativeImageHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
-				access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS),
+				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
 		@TypeInfo(types= {
 				// From DefaultAuthenticationEventPublisher
 				BadCredentialsException.class,AuthenticationFailureBadCredentialsEvent.class,
@@ -64,12 +64,12 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				typeNames= {
 						"org.springframework.security.authentication.cas.ProxyUntrustedException",
 				},
-				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS),
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
 		// TODO interesting that gs-securing-web causes these to be needed although it is in thymeleaf (due to SpEL expressions I think)
 		@TypeInfo(
 			typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
 			types= { HttpServletRequestWrapper.class,ServletRequestWrapper.class,ServletRequest.class},
-			access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_FIELDS|AccessBits.PUBLIC_METHODS)
+			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)
 })
 public class Hints implements NativeImageConfiguration {
 }

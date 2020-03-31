@@ -20,14 +20,19 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@NativeImageHint(typeInfos = { @TypeInfo(types = { AutoConfigureAfter.class, AutoConfigureOrder.class,
-		AutoConfigurationPackage.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
+@NativeImageHint(typeInfos = {
+	@TypeInfo(types = { AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
+			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
-@NativeImageHint(typeInfos = { @TypeInfo(types = { AutoConfigurationImportSelector.class,
+@NativeImageHint(typeInfos = { 
+	@TypeInfo(types = { 
+		AutoConfigurationImportSelector.class,
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
-		}, typeNames = {
-				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" }) })
+	}, typeNames = {
+		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
+	})
+})
 public class Hints implements NativeImageConfiguration {
 }

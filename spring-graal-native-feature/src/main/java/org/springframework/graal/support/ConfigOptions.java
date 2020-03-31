@@ -38,7 +38,7 @@ public abstract class ConfigOptions {
 	// In light mode the feature only supplies initialization information and nothing
 	// about reflection/proxies/etc - this is useful if using the agent to produce that
 	// configuration data.
-	private final static String MODE; // 'default'/'light'
+	private final static String MODE; // 'default'/'initialization-only'
     
     static {
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("removeUnusedAutoconfig", "false"));
@@ -99,7 +99,7 @@ public abstract class ConfigOptions {
 		return REMOVE_YAML_SUPPORT;
 	}
 
-    public static boolean isLightweightMode() {
+    public static boolean isInitializationModeOnly() {
         return MODE.equals("initialization-only");
     }
 

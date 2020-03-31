@@ -30,7 +30,7 @@ import org.springframework.graal.type.AccessBits;
 				InitBinder.class,
 				ResponseBody.class,RequestBody.class,RestController.class, RequestParam.class,
 				PathVariable.class,
-				RequestMapping.class,GetMapping.class,PostMapping.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS)
+				RequestMapping.class,GetMapping.class,PostMapping.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 	})
 public class Hints implements NativeImageConfiguration {
 }

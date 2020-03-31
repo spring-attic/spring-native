@@ -35,6 +35,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +58,7 @@ import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
 import com.oracle.svm.hosted.ImageClassLoader;
 
 public class ResourcesHandler {
-
+	
 	private final static String EnableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 
 	private final static String PropertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
@@ -374,7 +375,7 @@ public class ResourcesHandler {
 			if (type.hasOnlySimpleConstructor()) {
 				if (typesToMakeAccessible != null) {
 					typesToMakeAccessible.request(type.getDottedName(),
-							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
+							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -383,7 +384,7 @@ public class ResourcesHandler {
 			} else {
 				if (typesToMakeAccessible != null) {
 					typesToMakeAccessible.request(type.getDottedName(),
-							AccessBits.RESOURCE | AccessBits.PUBLIC_CONSTRUCTORS);
+							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
 					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
@@ -393,7 +394,7 @@ public class ResourcesHandler {
 			if (typesToMakeAccessible != null) {
 				// TODO why no CLASS here?
 				typesToMakeAccessible.request(type.getDottedName(),
-						AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS | AccessBits.RESOURCE);
+						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE);
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -629,23 +630,19 @@ public class ResourcesHandler {
 	}
 
 	/**
-	 * Used when registering types not easily identifiable from the bytecode that we
-	 * are simply capturing as specific references in the Compilation Hints defined
-	 * in the feature for now (see Type.<clinit>). Used for import selectors, import
-	 * registrars, configuration. For @Configuration types here, need only bean
-	 * method access (not all methods), for other types (import selectors/etc) may
-	 * not need any method reflective access at all (and no resource access in that
-	 * case).
-	 * 
-	 * @param tar
+	 * Specific type references are used when registering types not easily identifiable from the
+	 * bytecode that we are simply capturing as specific references in the Compilation Hints defined
+	 * in the configuration module. Used for import selectors, import registrars, configuration.
+	 * For @Configuration types here, need only bean method access (not all methods), for 
+	 * other types (import selectors/etc) may not need any method reflective access at all
+	 * (and no resource access in that case).
 	 */
 	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
-			System.out.println("WARNING: UNABLE TO RESOLVE: " + typename);
-		}
-		if (t != null) {
-			// System.out.println("> registerSpecific for "+typename+" ar="+accessRequired);
+			System.out.println("WARNING: Unable to resolve specific type: " + typename);
+			return false;
+		} else {
 			boolean importRegistrarOrSelector = false;
 			try {
 				importRegistrarOrSelector = t.isImportRegistrar() || t.isImportSelector();
@@ -654,8 +651,7 @@ public class ResourcesHandler {
 				return false;
 			}
 			if (importRegistrarOrSelector) {
-				// reflectionHandler.addAccess(typename,Flag.allDeclaredConstructors);
-				tar.request(typename, AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS);// TypeKind.REGISTRAR);
+				tar.request(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
 			} else {
 				if (AccessBits.isResourceAccessRequired(typeKind)) {
 					tar.request(typename, AccessBits.RESOURCE);
@@ -676,15 +672,13 @@ public class ResourcesHandler {
 				}
 			}
 			return true;
-		} else {
-			return false;
 		}
 	}
 
 	private boolean processType(Type type, Set<String> visited, int depth) {
-		SpringFeature.log(spaces(depth) + "> processType: " + type.getName());
+		SpringFeature.log(spaces(depth) + "Analyzing " + type.getDottedName());
 
-		// 1. Check the hierarchy of the type, if bits are missing resolution of this
+		// Check the hierarchy of the type, if bits are missing resolution of this
 		// type at runtime will not work - that suggests that in this particular
 		// run the types are not on the classpath and so this type isn't being used.
 		Set<String> missingTypes = ts.findMissingTypesInHierarchyOfThisType(type);
@@ -720,7 +714,7 @@ public class ResourcesHandler {
 		TypeAccessRequestor tar = new TypeAccessRequestor();
 		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
-			SpringFeature.log(spaces(depth) + "#" + hints.size() + " hints on " + type.getName() + " are: ");
+			SpringFeature.log(spaces(depth) + hints.size() + " hints on " + type.getDottedName() + " are: ");
 			for (int h = 0; h < hints.size(); h++) {
 				SpringFeature.log(spaces(depth) + (h + 1) + ") " + hints.get(h));
 			}
@@ -737,56 +731,53 @@ public class ResourcesHandler {
 				// encodes
 				// the types that might be returned from it.
 				Map<String, Integer> specificNames = hint.getSpecificTypes();
-				SpringFeature
-						.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
-				for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
-					String specificTypeName = specificNameEntry.getKey();
-					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
-						if (hint.isSkipIfTypesMissing()) {
-							passesTests = false;
-						}
-					} else {
-						if (hint.isFollow()) {
-							// TODO I suspect only certain things need following, specific types lists could
-							// specify that in a suffix (like access required)
-							SpringFeature
-									.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
-							toFollow.add(ts.resolveDotted(specificTypeName));
+				if (specificNames.size() > 0) {
+					SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
+					for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
+						String specificTypeName = specificNameEntry.getKey();
+						if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
+							if (hint.isSkipIfTypesMissing()) {
+								passesTests = false;
+								break;
+							}
+						} else {
+							if (hint.isFollow()) {
+								// TODO I suspect only certain things need following, specific types lists could
+								// specify that in a suffix (like access required)
+								SpringFeature.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
+								toFollow.add(ts.resolveDotted(specificTypeName));
+							}
 						}
 					}
 				}
 
 				Map<String, Integer> inferredTypes = hint.getInferredTypes();
-				SpringFeature
-						.log(spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
-				for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
-					String s = inferredType.getKey();
-					Type t = ts.resolveDotted(s, true);
-					boolean exists = (t != null);
-					if (!exists) {
-						SpringFeature.log(spaces(depth) + "inferred type " + s + " not found");
-					} else {
-						SpringFeature.log(spaces(depth) + "inferred type " + s + " found, will get accessibility "
-								+ inferredType.getValue());
-					}
-					if (exists) {
-						// TODO if already there, should we merge access required values?
-						tar.request(s, inferredType.getValue());
-						if (hint.isFollow()) {
-							SpringFeature.log(spaces(depth) + "will follow " + t);
-							toFollow.add(t);
+				if (inferredTypes.size() > 0) {
+					SpringFeature.log(
+							spaces(depth) + "attempting registration of " + inferredTypes.size() + " inferred types");
+					for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
+						String s = inferredType.getKey();
+						Type t = ts.resolveDotted(s, true);
+						boolean exists = (t != null);
+						if (!exists) {
+							SpringFeature.log(spaces(depth) + "inferred type " + s + " not found");
 						}
-					} else if (hint.isSkipIfTypesMissing() && depth == 0) {
-						// TODO If processing secondary type (depth>0) we can't skip things as we don't
-						// know if the
-						// top level type that refers to us is going to fail or not. Ideally we should
-						// pass in the
-						// tar and accumulate types in secondary type processing and leave it to the
-						// outermost
-						// processing to decide if they need registration.
-						passesTests = false;
-						// Once failing, no need to process other hints
-						break hints;
+						if (exists) {
+							// TODO if already there, should we merge access required values?
+							tar.request(s, inferredType.getValue());
+							if (hint.isFollow()) {
+								SpringFeature.log(spaces(depth) + "will follow " + t);
+								toFollow.add(t);
+							}
+						} else if (hint.isSkipIfTypesMissing() && depth == 0) {
+							// TODO If processing secondary type (depth>0) we can't skip things as we don't
+							// know if the top level type that refers to us is going to fail or not. Ideally we should
+							// pass in the tar and accumulate types in secondary type processing and leave it to the
+							// outermost processing to decide if they need registration.
+							passesTests = false;
+							// Once failing, no need to process other hints
+							break hints;
+						}
 					}
 				}
 
@@ -824,7 +815,7 @@ public class ResourcesHandler {
 				if (visited.add(s.getName())) {
 					boolean b = processType(s, visited, depth + 1);
 					if (!b) {
-						SpringFeature.log(spaces(depth) + "IMPORTANT2: whilst processing type " + type.getName()
+						SpringFeature.log(spaces(depth) + "WARNING: whilst processing type " + type.getName()
 								+ " superclass " + s.getName() + " verification failed");
 					}
 				} else {
@@ -836,19 +827,17 @@ public class ResourcesHandler {
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
-
 				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
 				// other configurations.
 				// Those may be getting discarded in this run but need to be class accessible
-				// because this configuration
-				// needs to refer to them.
+				// because this configuration needs to refer to them.
 				List<Type> boaTypes = type.getAutoConfigureBeforeOrAfter();
 				if (boaTypes.size() != 0) {
 					SpringFeature.log(spaces(depth) + "registering " + boaTypes.size()
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					tar.request(t.getDottedName(), AccessBits.CLASS);// TypeKind.EXISTENCE_CHECK);//AccessRequired.EXISTENCE_CHECK);
+					tar.request(t.getDottedName(), AccessBits.CLASS);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -882,12 +871,8 @@ public class ResourcesHandler {
 						for (Type t: ts) {
 							SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
 							tar.request(t.getDottedName(),
-									AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
+									AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
 						}
-
-
-//						tar.request(returnType.getDottedName(),
-//								AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_CONSTRUCTORS);
 					}
 
 					// Processing this kind of thing, parameter types need to be exposed
@@ -993,20 +978,19 @@ public class ResourcesHandler {
 							+ "  (dynamically requested access is " + t.getValue() + ")");
 				}
 
-				SpringFeature.log(
-						spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
-				Flag[] flags = AccessBits.getFlags(t.getValue());// .getFlags();
+				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
+				Flag[] flags = AccessBits.getFlags(t.getValue());
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, false);
+						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, true);
 					} else {
-						reflectionHandler.addAccess(dname, null, false, flags);
+						reflectionHandler.addAccess(dname, null, true, flags);
 					}
 				} else {
-					reflectionHandler.addAccess(dname, null, false, flags);
+					reflectionHandler.addAccess(dname, null, true, flags);
 				}
-				if (AccessBits.isResourceAccessRequired(t.getValue())) {// .isResourceAccessRequired()) {
+				if (AccessBits.isResourceAccessRequired(t.getValue())) {
 					resourcesRegistry.addResources(
 							dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
 									+ ".class");
@@ -1026,11 +1010,10 @@ public class ResourcesHandler {
 					}
 				}
 			}
-			// }
 		}
 		return passesTests;
 	}
-
+	
 	private void registerAnnotationChain(int depth, TypeAccessRequestor tar, List<Type> annotationChain) {
 		SpringFeature.log(spaces(depth) + "attempting registration of " + annotationChain.size()
 				+ " elements of annotation chain");
@@ -1038,15 +1021,7 @@ public class ResourcesHandler {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
 			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
-			/*
-			 * if (i==0) { tar.request(t.getDottedName(), AccessRequired.ALL); } else {
-			 * tar.request(t.getDottedName(), AccessRequired.ANNOTATION); }
-			 */
 		}
-	}
-
-	String fromLtoDotted(String lDescriptor) {
-		return lDescriptor.substring(1, lDescriptor.length() - 1).replace("/", ".");
 	}
 
 	private Enumeration<URL> fetchResources(String resource) {

@@ -16,7 +16,8 @@
 package org.springframework.graal.extension;
 
 /**
- * Not yet used. This would be a context object accessible to a NativeImageConfiguration implementation which may
+ * Not yet used. 
+ * This would be a context object accessible to a NativeImageConfiguration implementation which may
  * use it to answer questions about the current application being compiled in order to compute optimal 
  * reflection/resource/etc native image configuration.
  * 

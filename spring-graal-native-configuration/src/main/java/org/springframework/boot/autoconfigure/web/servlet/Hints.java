@@ -68,24 +68,8 @@ import org.springframework.web.util.HtmlUtils;
 		DefaultHandlerExceptionResolver.class,DefaultRequestToViewNameTranslator.class,InternalResourceViewResolver.class,SessionFlashMapManager.class,
 		AuthConfigFactoryImpl.class
 		}),
-		@TypeInfo(types= {DefaultServlet.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+		@TypeInfo(types= {DefaultServlet.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-/*
-proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration;",
-		new CompilationHint(true, false, new String[] {
-			"java.util.concurrent.Callable:EXISTENCE_MC"
-		}));
-*/
-
-/*
-@ConfigurationHint(value=ServletWebServerFactoryConfiguration.class, typeInfos = {
-	@TypeInfo(types= {
-			// TODO These should not be in our code as they aren't spring
-	ProtocolHandler.class,AbstractProtocol.class,AbstractHttp11Protocol.class,AbstractHttp11JsseProtocol.class,Http11NioProtocol.class,
-	ErrorPage.class
-	})	
-})
-*/
 @NativeImageHint(trigger=WebMvcAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types= {AnnotationConfigServletWebServerApplicationContext.class,
 				DefaultErrorViewResolver.class,
@@ -108,10 +92,10 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/web/servlet/WebMvcAut
 //	at org.springframework.web.filter.FormContentFilter.<init>(FormContentFilter.java:61) ~[securing-web:na]
 						"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"
 						}),
-		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)},abortIfTypesMissing = true)
+		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)},abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
-		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
+		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 public class Hints implements NativeImageConfiguration {
 }

@@ -16,7 +16,6 @@
 package org.springframework.graal.type;
 
 import java.lang.reflect.Modifier;
-import java.sql.Types;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -391,7 +390,6 @@ public class Type {
 			return true;
 		}
 
-		System.out.println("A>A>A>" + this.getName());
 		if (this.getName().equals("Ljava/lang/Object;")) {
 			return true;
 		}
@@ -1143,7 +1141,7 @@ public class Type {
 				ar = AccessBits.CLASS;// TypeKind.EXISTENCE_CHECK;
 			} else {
 				if (type != null && (type.isCondition() || type.isEventListener())) {
-					ar = AccessBits.RESOURCE | AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS;// TypeKind.RESOURCE_AND_INSTANTIATION;//AccessRequired.RESOURCE_CTORS_ONLY;
+					ar = AccessBits.RESOURCE | AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;// TypeKind.RESOURCE_AND_INSTANTIATION;//AccessRequired.RESOURCE_CTORS_ONLY;
 					if (type.isAbstractNestedCondition()) {
 						// Need to pull in member types of this condition
 						// Type[] memberTypes = type.getMemberTypes();

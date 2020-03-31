@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.graal.type;
 
 import java.util.LinkedHashMap;
@@ -23,31 +38,6 @@ public class CompilationHint {
 		sb.append(specificTypes);
 		return sb.toString();
 	}
-	
-	/*
-	public CompilationHint(boolean skipIfTypesMissing, boolean follow) {
-		this(skipIfTypesMissing, follow, new String[] {});
-	}
-	
-	public CompilationHint(boolean skipIfTypesMissing, boolean follow, String[] specificTypes) {
-		this.skipIfTypesMissing = skipIfTypesMissing;
-		this.follow = follow;
-		if (specificTypes != null) {
-			this.specificTypes = new LinkedHashMap<>();
-			for (String specificType: specificTypes) {
-				TypeKind access = TypeKind.UNRECOGNIZED;
-				StringTokenizer t = new StringTokenizer(specificType,":");
-				String type = t.nextToken(); // the type name
-				if (t.hasMoreTokens()) { // possible access specified otherwise default to ALL
-					access = TypeKind.valueOf(t.nextToken());
-				}
-				this.specificTypes.put(type, access);
-			}
-		} else {
-			this.specificTypes = Collections.emptyMap();
-		}
-	}
-	*/
 
 	public void setTargetType(String targetTypename) {
 		this.targetType = targetTypename;
