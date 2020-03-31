@@ -120,14 +120,14 @@ public class Method {
 			org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
 			Type t = typeSystem.resolve(methodType.getReturnType(), true);
 			if (t == null) {
-				System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
+				SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
 			} else {
 				signatureTypes.add(t);
 			}
 			for (org.objectweb.asm.Type at: methodType.getArgumentTypes()) {
 				t = typeSystem.resolve(methodType.getReturnType(), true);
 				if (t == null) {
-					System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+at.getDescriptor());
+					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+at.getDescriptor());
 				} else {
 					signatureTypes.add(t);
 				}	
@@ -140,13 +140,12 @@ public class Method {
 			for (String s: collectedTypes) {
 				Type t = typeSystem.resolveDotted(s,true);
 				if (t == null) {
-					System.out.println("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+s);
+					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+s);
 				} else {
 					signatureTypes.add(t);
 				}
 			}
 		}
-		System.out.println("A"+mn.name+mn.desc+" => "+signatureTypes);
 		return signatureTypes;
 	}
 

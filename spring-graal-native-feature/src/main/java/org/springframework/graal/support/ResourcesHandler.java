@@ -224,7 +224,7 @@ public class ResourcesHandler {
 				Type baseType = ts.resolveDotted(k);
 				
 				if (baseType != null) {
-					System.out.println("Checking if type "+baseType+" has transactional methods: "+baseType.hasTransactionalMethods());
+					// System.out.println("Checking if type "+baseType+" has transactional methods: "+baseType.hasTransactionalMethods());
 					if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { // TODO should this check the values against this key or for the annotation presence?
 						processTransactionalTarget(baseType);
 					}
@@ -355,7 +355,7 @@ public class ResourcesHandler {
 		transactionalInterfaces.add("org.springframework.aop.framework.Advised");
 		transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
 		dynamicProxiesHandler.addProxy(transactionalInterfaces);	
-		System.out.println("Created transaction related proxy for interfaces: "+transactionalInterfaces);
+		SpringFeature.log("Created transaction related proxy for interfaces: "+transactionalInterfaces);
 	}
 
 	/**
@@ -517,14 +517,14 @@ public class ResourcesHandler {
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
-			System.out.println("Adding all the classes for this key: " + k);
+			SpringFeature.log("Adding all the classes for this key: " + k);
 			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
 				if (Type.shouldBeProcessed(k, ts)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
 					}
 				} else {
-					System.out.println("Skipping processing spring.factories key " + k + " due to missing types");
+					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing types");
 				}
 			}
 		}
@@ -592,9 +592,9 @@ public class ResourcesHandler {
 				p.store(baos, "");
 				baos.close();
 				byte[] bs = baos.toByteArray();
-				System.out.println("The new spring.factories is: vvvvvvvvv");
-				System.out.println(new String(bs));
-				System.out.println("^^^^^^^^");
+				SpringFeature.log("The new spring.factories is: vvvvvvvvv");
+				SpringFeature.log(new String(bs));
+				SpringFeature.log("^^^^^^^^");
 				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
 				Resources.registerResource("META-INF/spring.factories", bais);
 			}
@@ -640,7 +640,7 @@ public class ResourcesHandler {
 	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
-			System.out.println("WARNING: Unable to resolve specific type: " + typename);
+			SpringFeature.log("WARNING: Unable to resolve specific type: " + typename);
 			return false;
 		} else {
 			boolean importRegistrarOrSelector = false;
