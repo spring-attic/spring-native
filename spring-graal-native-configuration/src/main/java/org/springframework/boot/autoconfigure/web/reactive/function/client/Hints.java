@@ -25,7 +25,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types= {
 				NioSocketChannel.class
-		},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+		},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 	})
 public class Hints implements NativeImageConfiguration {
 }

@@ -24,15 +24,9 @@ import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration;
 
-/*
- * x
-//{"name":"org.springframework.transaction.TransactionManager"},
-//{"name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
-//{"name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration","allDeclaredConstructors":true,"allDeclaredMethods":true},
-		*/
 @NativeImageHint(trigger=TransactionAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS),
-		@TypeInfo(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS)
+		@TypeInfo(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeInfo(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
 },abortIfTypesMissing = true)
 public class Hints implements NativeImageConfiguration {
 }

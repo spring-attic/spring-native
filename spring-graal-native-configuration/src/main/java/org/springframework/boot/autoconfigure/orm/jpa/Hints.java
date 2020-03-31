@@ -125,8 +125,8 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
@@ -134,25 +134,10 @@ import org.springframework.stereotype.Repository;
 
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
-/*
-// TODO review this - what is the right way? That type is only needed if (strictly speaking) XMLEventFactory is used
-proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration;",
-		new CompilationHint(false, false, new String[] {
-				"com.sun.xml.internal.stream.events.XMLEventFactoryImpl:REGISTRAR",
-				"org.apache.logging.log4j.message.DefaultFlowMessageFactory:REGISTRAR",
-				"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]:REGISTRAR",
-				"com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry:REGISTRAR"
-		}));
-		*/
 @NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
 	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
 			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
 })
-/*
-@ConfigurationHint(typeInfos= {
-	@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
-})
-*/
 @NativeImageHint(trigger=HibernateJpaConfiguration.class,typeInfos= {
 		@TypeInfo(types= {
 				// petclinic
@@ -160,12 +145,12 @@ proposedHints.put("Lorg/springframework/boot/autoconfigure/orm/jpa/HibernateJpaA
 				OrderByClause.class,SelectExpressionImpl.class,SqlFragment.class,SelectClause.class,BinaryLogicOperatorNode.class,
 				ParameterNode.class,DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,
 				Node.class,HqlToken.class,
-		},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS),
+		},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
 		@TypeInfo(types= {
 				// petclinic
 				Repository.class,
 				PersistenceContext.class,MappedSuperclass.class,Column.class,ManyToOne.class,JoinColumn.class,Table.class,Transient.class
-		},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
+		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types= {
 				OneToManyPersister.class,JoinedSubclassEntityPersister.class,SingleTableEntityPersister.class,UnionSubclassEntityPersister.class,
 				BasicCollectionPersister.class,

@@ -38,34 +38,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
-/*
-proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/DataSourceInitializationConfiguration$Registrar;",
-		new CompilationHint(false, false, new String[] {
-				"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor:EXISTENCE_CMF"
-		}));
-
-proposedHints.put("Lorg/springframework/boot/autoconfigure/jdbc/EmbeddedDataSourceConfiguration;",
-		new CompilationHint(false, false, new String[] {
-				"org.h2.store.fs.FilePathDisk:REGISTRAR",
-				"org.h2.store.fs.FilePathMem:REGISTRAR",
-				"org.h2.store.fs.FilePathMemLZF:REGISTRAR",
-				"org.h2.store.fs.FilePathNioMem:REGISTRAR",
-				"org.h2.store.fs.FilePathNioMemLZF:REGISTRAR",
-				"org.h2.store.fs.FilePathSplit:REGISTRAR",
-				"org.h2.store.fs.FilePathNio:REGISTRAR",
-				"org.h2.store.fs.FilePathNioMapped:REGISTRAR",
-				"org.h2.store.fs.FilePathAsync:REGISTRAR",
-				"org.h2.store.fs.FilePathZip:REGISTRAR",
-				"org.h2.store.fs.FilePathRetryOnInterrupt:REGISTRAR"
-		})); REGISTRAR = class.forname and constructor reflection/invocation
-*/
 @NativeImageHint(trigger=DataSourceInitializationConfiguration.Registrar.class,
 	typeInfos= {@TypeInfo(types=DataSourceInitializerPostProcessor.class,access=AccessBits.FULL_REFLECTION)})
 @NativeImageHint(trigger=EmbeddedDataSourceConfiguration.class,typeInfos= {
 		@TypeInfo(types=EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
-				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(
-				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS,
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS,
 				typeNames= {
 						"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
 				types= {

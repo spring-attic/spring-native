@@ -15,10 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.thymeleaf;
 
-import javax.servlet.http.HttpServletRequestWrapper;
-
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
@@ -27,7 +25,6 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
 import org.thymeleaf.standard.expression.AdditionExpression;
-import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
 import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -45,7 +42,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 				}, typeNames= {
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				},
-				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 public class Hints implements NativeImageConfiguration {
 }

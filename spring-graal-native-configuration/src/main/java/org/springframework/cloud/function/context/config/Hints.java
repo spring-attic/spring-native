@@ -23,7 +23,7 @@ import org.springframework.messaging.MessageHeaders;
 
 @NativeImageHint(trigger=ContextFunctionCatalogAutoConfiguration.class, 
 		typeInfos = {@TypeInfo(types= {MessageHeaders.class},
-		access = AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_FIELDS|AccessBits.PUBLIC_METHODS)})
+		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
 public class Hints implements NativeImageConfiguration {
 }
 

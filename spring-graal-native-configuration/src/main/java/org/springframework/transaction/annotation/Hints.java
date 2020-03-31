@@ -39,8 +39,8 @@ proposedHints.put(TransactionManagementConfigurationSelector,
 			AspectJTransactionManagementConfiguration.class })
 },follow=true)
 @NativeImageHint(typeInfos= {
-		@TypeInfo(types= {Transactional.class,javax.transaction.Transactional.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
-		@TypeInfo(types= {Propagation.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
+		@TypeInfo(types= {Transactional.class,javax.transaction.Transactional.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+		@TypeInfo(types= {Propagation.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
 public class Hints implements NativeImageConfiguration {
 }

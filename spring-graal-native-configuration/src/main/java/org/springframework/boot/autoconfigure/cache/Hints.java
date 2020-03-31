@@ -21,10 +21,12 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@NativeImageHint(trigger=CacheConfigurationImportSelector.class,follow=true,
-	typeInfos = {@TypeInfo(types= {GenericCacheConfiguration.class, EhCacheCacheConfiguration.class,
+@NativeImageHint(trigger=CacheConfigurationImportSelector.class, follow=true,
+	typeInfos = {@TypeInfo(types= {
+		GenericCacheConfiguration.class, EhCacheCacheConfiguration.class,
 		HazelcastCacheConfiguration.class, InfinispanCacheConfiguration.class,
 		JCacheCacheConfiguration.class, CouchbaseCacheConfiguration.class,
 		RedisCacheConfiguration.class, CaffeineCacheConfiguration.class,
-		SimpleCacheConfiguration.class, NoOpCacheConfiguration.class},access=AccessBits.CONFIGURATION)})
+		SimpleCacheConfiguration.class, NoOpCacheConfiguration.class
+	},access=AccessBits.CONFIGURATION)})
 public class Hints implements NativeImageConfiguration { }

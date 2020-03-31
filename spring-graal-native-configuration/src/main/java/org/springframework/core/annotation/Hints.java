@@ -21,5 +21,5 @@ import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
 @NativeImageHint( typeInfos = {@TypeInfo(types= {Order.class,AnnotationAttributes.class,AnnotationAttributes[].class,
-TypeMappedAnnotation[].class },access = AccessBits.CLASS|AccessBits.PUBLIC_METHODS)})
+TypeMappedAnnotation[].class },access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
 public class Hints implements NativeImageConfiguration { }

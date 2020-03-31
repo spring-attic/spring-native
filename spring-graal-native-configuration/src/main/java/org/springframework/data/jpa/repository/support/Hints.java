@@ -22,5 +22,5 @@ import org.springframework.graal.type.AccessBits;
 
 @NativeImageHint( typeInfos = {@TypeInfo(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
-		},access = AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.PUBLIC_CONSTRUCTORS)})
+		},access = AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)})
 public class Hints implements NativeImageConfiguration { }

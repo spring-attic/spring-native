@@ -37,9 +37,9 @@ proposedHints.put(AdviceModeImportSelector,
 @NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
 @NativeImageHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
-		Configuration.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS) })
+		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO Check required access for enums like this FilterType
-@NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.PUBLIC_FIELDS) })
+@NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
 				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,
@@ -47,8 +47,8 @@ proposedHints.put(AdviceModeImportSelector,
 				EventListenerMethodProcessor.class,
 				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
-				}, access = AccessBits.CLASS | AccessBits.PUBLIC_CONSTRUCTORS),
-		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS),
+				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types = { ConfigurationClassPostProcessor.class }) // This needs more access than those
 })
 public class Hints implements NativeImageConfiguration {

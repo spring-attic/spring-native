@@ -63,7 +63,7 @@ import reactor.netty.DisposableServer;
 						"io.netty.util.concurrent.GenericFutureListener",
 						"io.netty.bootstrap.ServerBootstrap$1",
 						"io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor"},
-				access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
 	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
 			ClientCodecConfigurer.class, ServerCodecConfigurer.class, // TODO Also put in regular web auto config?
 			HandlerResult.class,
@@ -87,18 +87,18 @@ import reactor.netty.DisposableServer;
 				"com.google.protobuf.Message", 
 				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 			},
-			access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS
+			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS
 		),
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
-	access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
-		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS)
+		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 @NativeImageHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = { 
 		@TypeInfo(
 				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
-				},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 public class Hints implements NativeImageConfiguration {
 }

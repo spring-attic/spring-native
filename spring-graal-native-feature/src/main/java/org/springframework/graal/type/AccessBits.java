@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.graal.type;
 
 import java.util.ArrayList;
@@ -5,20 +20,26 @@ import java.util.List;
 
 import org.springframework.graal.domain.reflect.Flag;
 
+/**
+ * Specifies the reflective access desired for a type and whether it needs to be accessible as
+ * a resource in the image (i.e. the .class is going to be read as a byte array).
+ * 
+ * @author Andy Clement
+ */
 public class AccessBits {
 	public static final int RESOURCE = 0x0001;
 	public static final int CLASS = 0x0002;
-	public static final int PUBLIC_CONSTRUCTORS = 0x0004;
-	public static final int PUBLIC_METHODS = 0x0008;
-	public static final int PUBLIC_FIELDS = 0x0010;
+	public static final int DECLARED_CONSTRUCTORS = 0x0004;
+	public static final int DECLARED_METHODS = 0x0008;
+	public static final int DECLARED_FIELDS = 0x0010;
 
 	public static final int NONE = 0;
-	public static final int FULL_REFLECTION = (CLASS | PUBLIC_CONSTRUCTORS | PUBLIC_METHODS | PUBLIC_FIELDS);
-	public static final int ALL = (RESOURCE | CLASS | PUBLIC_CONSTRUCTORS | PUBLIC_METHODS | PUBLIC_FIELDS);
-	public static final int CONFIGURATION = (RESOURCE | CLASS | PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | PUBLIC_FIELDS);
-	public static final int EVERYTHING = (RESOURCE | CLASS | PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | PUBLIC_FIELDS);
-	public static final int ANNOTATION = (RESOURCE | CLASS | PUBLIC_METHODS);
-	public static final int LOAD_AND_CONSTRUCT = (CLASS | PUBLIC_CONSTRUCTORS);
+	public static final int FULL_REFLECTION = (CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+	public static final int ALL = (RESOURCE | CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+	public static final int CONFIGURATION = (RESOURCE | CLASS | DECLARED_METHODS | DECLARED_CONSTRUCTORS | DECLARED_FIELDS);
+	public static final int EVERYTHING = (RESOURCE | CLASS | DECLARED_METHODS | DECLARED_CONSTRUCTORS | DECLARED_FIELDS);
+	public static final int ANNOTATION = (RESOURCE | CLASS | DECLARED_METHODS);
+	public static final int LOAD_AND_CONSTRUCT = (CLASS | DECLARED_CONSTRUCTORS);
 
 	private int value;
 
@@ -37,19 +58,19 @@ public class AccessBits {
 		StringBuilder s = new StringBuilder();
 		s.append("AccessBits(");
 		if ((value & RESOURCE) != 0) {
-			s.append("RESOURCE ");
+			s.append("RES ");
 		}
 		if ((value & CLASS) != 0) {
-			s.append("CLASS ");
+			s.append("CLS ");
 		}
-		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
-			s.append("CONSTRUCTORS ");
+		if ((value & DECLARED_CONSTRUCTORS) != 0) {
+			s.append("CONS ");
 		}
-		if ((value & PUBLIC_METHODS) != 0) {
-			s.append("METHODS ");
+		if ((value & DECLARED_METHODS) != 0) {
+			s.append("METHS ");
 		}
-		if ((value & PUBLIC_FIELDS) != 0) {
-			s.append("FIELDS ");
+		if ((value & DECLARED_FIELDS) != 0) {
+			s.append("FLDS ");
 		}
 		if (value == 0) {
 			s.append("NONE");
@@ -59,13 +80,13 @@ public class AccessBits {
 
 	public static Flag[] getFlags(int value) {
 		List<Flag> flags = new ArrayList<>();
-		if ((value & PUBLIC_FIELDS) != 0) {
+		if ((value & DECLARED_FIELDS) != 0) {
 			flags.add(Flag.allDeclaredFields);
 		}
-		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
+		if ((value & DECLARED_CONSTRUCTORS) != 0) {
 			flags.add(Flag.allDeclaredConstructors);
 		}
-		if ((value & PUBLIC_METHODS) != 0) {
+		if ((value & DECLARED_METHODS) != 0) {
 			flags.add(Flag.allDeclaredMethods);
 		}
 		return flags.toArray(new Flag[0]);
@@ -107,19 +128,19 @@ public class AccessBits {
 		StringBuilder s = new StringBuilder();
 		s.append("AccessBits(");
 		if ((value & RESOURCE) != 0) {
-			s.append("RESOURCE ");
+			s.append("RES ");
 		}
 		if ((value & CLASS) != 0) {
-			s.append("CLASS ");
+			s.append("CLS ");
 		}
-		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
-			s.append("CONSTRUCTORS ");
+		if ((value & DECLARED_CONSTRUCTORS) != 0) {
+			s.append("CONS ");
 		}
-		if ((value & PUBLIC_METHODS) != 0) {
-			s.append("METHODS ");
+		if ((value & DECLARED_METHODS) != 0) {
+			s.append("METHS ");
 		}
-		if ((value & PUBLIC_FIELDS) != 0) {
-			s.append("FIELDS ");
+		if ((value & DECLARED_FIELDS) != 0) {
+			s.append("FLDS ");
 		}
 		if (value == 0) {
 			s.append("NONE");
@@ -130,5 +151,4 @@ public class AccessBits {
 	public static boolean isResourceAccessRequired(Integer typeKind) {
 		return (typeKind & RESOURCE)!=0;
 	}
-
 }

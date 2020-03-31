@@ -27,11 +27,12 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@NativeImageHint(trigger=AopAutoConfiguration.class,follow=true,
-	typeInfos = {@TypeInfo(types= {
-			ProxyProcessorSupport.class,ProxyConfig.class,InfrastructureAdvisorAutoProxyCreator.class,
-			AbstractAdvisorAutoProxyCreator.class,AbstractAutoProxyCreator.class,
-			AnnotationAwareAspectJAutoProxyCreator.class,
-			AspectJAwareAdvisorAutoProxyCreator.class
-			},access=AccessBits.CLASS|AccessBits.PUBLIC_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)})
+@NativeImageHint(trigger=AopAutoConfiguration.class, follow=true,
+	typeInfos = {
+		@TypeInfo(types= {
+			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
+			AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class,
+			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class
+			},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+})
 public class Hints implements NativeImageConfiguration { }

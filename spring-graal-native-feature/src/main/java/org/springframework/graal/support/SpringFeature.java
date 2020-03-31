@@ -47,7 +47,7 @@ public class SpringFeature implements Feature {
 		if (!ConfigOptions.isVerbose()) {
 			System.out.println("Use -Dverbose=true on native-image call to see more detailed information from the feature");
 		}
-		if (!ConfigOptions.isLightweightMode()) {
+		if (!ConfigOptions.isInitializationModeOnly()) {
 			reflectionHandler = new ReflectionHandler();
 			dynamicProxiesHandler = new DynamicProxiesHandler();
 			resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
@@ -68,18 +68,18 @@ public class SpringFeature implements Feature {
     }
     
     public void duringSetup(DuringSetupAccess access) {
-		if (!ConfigOptions.isLightweightMode()) {
+		if (!ConfigOptions.isInitializationModeOnly()) {
     		reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
     }
     
     public void beforeAnalysis(BeforeAnalysisAccess access) {
-		if (!ConfigOptions.isLightweightMode()) {
+		if (!ConfigOptions.isInitializationModeOnly()) {
 			resourcesHandler.register(access);
 		}
     	buildTimeInitializationHandler.register(access);
-		if (!ConfigOptions.isLightweightMode()) {
+		if (!ConfigOptions.isInitializationModeOnly()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}

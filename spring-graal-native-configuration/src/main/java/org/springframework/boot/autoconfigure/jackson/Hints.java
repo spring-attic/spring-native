@@ -23,7 +23,7 @@ import org.springframework.graal.type.AccessBits;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeImageHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types = { JsonGenerator.class }, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS
-				| AccessBits.PUBLIC_CONSTRUCTORS) })
+		@TypeInfo(types = { JsonGenerator.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS
+				| AccessBits.DECLARED_CONSTRUCTORS) })
 public class Hints implements NativeImageConfiguration {
 }
