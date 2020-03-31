@@ -1564,7 +1564,7 @@ public class Type {
 
 	public boolean isAtResponseBody() {
 		boolean b = hasAnnotation(AtResponseBody, true);
-		System.out.println("Checking if " + getName() + " is @ResponseBody meta annotated: " + b);
+		// System.out.println("Checking if " + getName() + " is @ResponseBody meta annotated: " + b);
 		return b;
 	}
 

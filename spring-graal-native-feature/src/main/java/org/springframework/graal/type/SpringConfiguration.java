@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.support.SpringFeature;
 
 /**
  * @author Andy Clement
@@ -37,14 +38,14 @@ public class SpringConfiguration {
 
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
-		System.out.println("SpringConfiguration: Discovering hints");
+		SpringFeature.log("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeImageConfiguration> hintProviders = ServiceLoader.load(NativeImageConfiguration.class);
 		for (NativeImageConfiguration hintProvider: hintProviders) {
-			System.out.println("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
+			SpringFeature.log("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
 				List<CompilationHint> hints = t.getCompilationHints();
-				System.out.println("Found "+hints.size()+" hints: "+hints);
+				SpringFeature.log("Found "+hints.size()+" hints: "+hints);
 				for (CompilationHint hint: hints) {
 				  List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());
 				  if (existingHints == null) {
@@ -55,7 +56,6 @@ public class SpringConfiguration {
 				}
 			}
 		}
-		System.out.println("SpringConfiguration: Done");
 	}
 
 	static {
@@ -69,11 +69,9 @@ public class SpringConfiguration {
 			});
 	}
 	
+	// TODO sort out callers so they use a proper dotted name
 	public List<CompilationHint> findProposedHints(String typename) {
-		// TODO sort out callers so they use a proper dotted name
-
         List<CompilationHint> results = proposedHints.get(typename);     
-//        System.out.println("Found these for "+typename+" #"+(results==null?0:results.size()));
         return (results==null?Collections.emptyList():results);
 	}
 
