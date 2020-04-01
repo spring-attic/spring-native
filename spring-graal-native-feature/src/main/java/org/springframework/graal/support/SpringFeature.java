@@ -45,7 +45,7 @@ public class SpringFeature implements Feature {
 				"|____/| .__/|_|  |_|_| |_|\\__, | |_|  \\___|\\__,_|\\__|\\__,_|_|  \\___|\n"+
 			    "      |_|                 |___/                                     \n");
 		if (!ConfigOptions.isVerbose()) {
-			System.out.println("Use -Dverbose=true on native-image call to see more detailed information from the feature");
+			System.out.println("Use -Dspring.graal.verbose=true on native-image call to see more detailed information from the feature");
 		}
 		if (!ConfigOptions.isInitializationModeOnly()) {
 			reflectionHandler = new ReflectionHandler();

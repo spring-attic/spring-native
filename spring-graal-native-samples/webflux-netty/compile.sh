@@ -29,7 +29,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
--Dverbose=true \
+-Dspring.graal.verbose=true \
   --no-server \
   --no-fallback \
   --initialize-at-build-time \
@@ -38,8 +38,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:+ReportExceptionStackTraces \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
-  -DremoveUnusedAutoconfig=true \
-  -DremoveYamlSupport=true \
+  -Dspring.graal.remove-unused-autoconfig=true \
+  -Dspring.graal.skip-yaml=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

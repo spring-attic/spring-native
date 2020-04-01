@@ -33,7 +33,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 time native-image \
   --no-server \
   --no-fallback \
-  -DavoidLogback=true \
+  -Dspring.graal.skip-logback=true \
   -Ddebug=true \
   -Dio.netty.noUnsafe=true \
   -H:Name=$ARTIFACT \

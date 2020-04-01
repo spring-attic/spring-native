@@ -30,7 +30,7 @@ native-image \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -H:+TraceClassInitialization=io.netty.bootstrap.AbstractBootstrap \
-  -DremoveUnusedAutoconfig=true \
+  -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP hello.Application
 
   #--debug-attach \
