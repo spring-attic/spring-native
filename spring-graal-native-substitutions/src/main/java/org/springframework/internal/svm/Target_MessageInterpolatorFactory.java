@@ -17,12 +17,12 @@ package org.springframework.internal.svm;
 
 import javax.validation.MessageInterpolator;
 
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.util.ClassUtils;
-
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
 
 /**
  * Substitution for MessageInterpolatorFactory. The code pattern in there misbehaves under graal so let's just fallback straight away... needs review
