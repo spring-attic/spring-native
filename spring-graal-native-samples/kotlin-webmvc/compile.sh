@@ -30,7 +30,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   --no-server \
-  --initialize-at-build-time=org.eclipse.jdt,org.apache.el.parser.SimpleNode,javax.servlet.jsp.JspFactory,org.apache.jasper.servlet.JasperInitializer,org.apache.jasper.runtime.JspFactoryImpl \
+  --initialize-at-build-time \
   -H:EnableURLProtocols=http,jar \
   -H:ReflectionConfigurationFiles=../../tomcat-reflection.json -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:+TraceClassInitialization \
@@ -39,7 +39,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
-  -DremoveUnusedAutoconfig=true \
+  -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

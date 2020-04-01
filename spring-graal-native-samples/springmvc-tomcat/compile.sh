@@ -47,8 +47,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --allow-incomplete-classpath \
   --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
-  -DremoveUnusedAutoconfig=true \
-  -DremoveYamlSupport=true \
+  -Dspring.graal.remove-unused-autoconfig=true \
+  -Dspring.graal.skip-yaml=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

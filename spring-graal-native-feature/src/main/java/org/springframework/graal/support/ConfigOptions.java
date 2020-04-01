@@ -25,9 +25,9 @@ public abstract class ConfigOptions {
 
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
-	private final static boolean AVOID_LOGBACK;
+	private final static boolean SKIP_LOGBACK;
 
-	private final static boolean REMOVE_YAML_SUPPORT;
+	private final static boolean SKIP_YAML;
 	
     private final static String DUMP_CONFIG;
 
@@ -41,35 +41,35 @@ public abstract class ConfigOptions {
 	private final static String MODE; // 'default'/'initialization-only'
     
     static {
-		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("removeUnusedAutoconfig", "false"));
+		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.graal.remove-unused-autoconfig", "false"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
 		}
-		VERBOSE = Boolean.valueOf(System.getProperty("verbose","false"));
+		VERBOSE = Boolean.valueOf(System.getProperty("spring.graal.verbose","false"));
 		if (VERBOSE) {
 			System.out.println("Turning on verbose mode for the feature");
 		}
-		MISSING_SELECTOR_HINTS = System.getProperty("missingSelectorHints","error");
+		MISSING_SELECTOR_HINTS = System.getProperty("spring.graal.missing-selector-hints","error");
 		if (MISSING_SELECTOR_HINTS.equals("warning")) {
 			System.out.println("Selectors missing hints will be reported as a warning, not an error");
 		} else if (!MISSING_SELECTOR_HINTS.equals("error")) {
-			throw new IllegalStateException("Supported values for 'missingSelectorHints' are 'error' (default) or 'warning'");
+			throw new IllegalStateException("Supported values for 'spring.graal.missing-selector-hints' are 'error' (default) or 'warning'");
 		}
-		MODE = System.getProperty("mode","default");
+		MODE = System.getProperty("spring.graal.mode","default");
 		if (MODE.equals("initialization-only")) {
 			System.out.println("Feature operating in initialization-only mode, only supplying substitutions and initialization data");
         } else if (!MODE.equals("default")) {
             throw new IllegalStateException("Supported modes are 'default' or 'initialization-only', not '"+MODE+"'");
         }
-		AVOID_LOGBACK = Boolean.valueOf(System.getProperty("avoidLogback", "false"));
-		if (AVOID_LOGBACK) {
-			System.out.println("Avoiding logback configuration");
+		SKIP_LOGBACK = Boolean.valueOf(System.getProperty("spring.graal.skip-logback", "false"));
+		if (SKIP_LOGBACK) {
+			System.out.println("Skipping logback configuration");
 		}
-		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("removeYamlSupport", "false"));
-		if (REMOVE_YAML_SUPPORT) {
-			System.out.println("Removing Yaml support");
+		SKIP_YAML = Boolean.valueOf(System.getProperty("spring.graal.skip-yaml", "false"));
+		if (SKIP_YAML) {
+			System.out.println("Skipping Yaml support");
 		}
-		DUMP_CONFIG = System.getProperty("dumpConfig");
+		DUMP_CONFIG = System.getProperty("spring.graal.dump-config");
 		if (DUMP_CONFIG!=null) {
 			System.out.println("Dumping computed config to "+DUMP_CONFIG);
 		}
@@ -92,11 +92,11 @@ public abstract class ConfigOptions {
     }
 
     public static boolean shouldAvoidLogback() {
-        return AVOID_LOGBACK;
+        return SKIP_LOGBACK;
     }
 
 	public static boolean shouldRemoveYamlSupport() {
-		return REMOVE_YAML_SUPPORT;
+		return SKIP_YAML;
 	}
 
     public static boolean isInitializationModeOnly() {

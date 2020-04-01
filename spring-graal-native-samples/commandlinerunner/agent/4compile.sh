@@ -1,5 +1,5 @@
 native-image \
-  -Dmode=initialization-only \
+  -Dspring.graal.mode=initialization-only \
   --no-server \
   --no-fallback \
   --allow-incomplete-classpath \
