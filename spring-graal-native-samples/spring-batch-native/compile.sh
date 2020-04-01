@@ -3,7 +3,7 @@
 ARTIFACT=spring-batch-native
 MAINCLASS=org.springframework.samples.springbatchnative.SpringBatchNativeApplication
 VERSION=0.0.1-BUILD-SNAPSHOT
-FEATURE=../../../../spring-graal-native-feature/target/spring-graal-native-feature-0.6.0.BUILD-SNAPSHOT.jar
+FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.6.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'

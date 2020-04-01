@@ -37,12 +37,7 @@ Or you can use [SDKMAN](https://sdkman.io/) to easily switch between GraalVM ver
 
 The repositories to use are `https://repo.spring.io/milestone` for 0.x milestones or `https://repo.spring.io/snapshot/` for snapshots.
 
-The artifacts available are:
-
-- `org.springframework.experimental:spring-graal-native-feature`: a feature that configures GraalVM native to support Spring Boot applications
-- `org.springframework.experimental:spring-graal-native-configuration`: configuration hints used by the feature
-
-The recommended version is `0.6.0.BUILD-SNAPSHOT`.
+The artifact available is `org.springframework.experimental:spring-graal-native:0.6.0.BUILD-SNAPSHOT`.
  
 ### Play with the samples
 

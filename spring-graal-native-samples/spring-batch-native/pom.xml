@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
+		<start-class>org.org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
 	</properties>
 	<profiles>
 		<profile>
@@ -55,7 +55,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-graal-native-feature</artifactId>
+			<artifactId>spring-graal-native</artifactId>
 			<version>0.6.0.BUILD-SNAPSHOT</version>
 		</dependency>
 

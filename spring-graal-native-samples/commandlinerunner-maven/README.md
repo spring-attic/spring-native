@@ -1,6 +1,6 @@
 This is a variant of the commandlinerunner sample that uses maven to drive the native-image construction.
 
-Ensure you have have the graal JDK installed and JAVA_HOME set appropriately (eg. `/Users/aclement/installs/graalvm-ce-19.2.0/Contents/Home`)
+Ensure you have have the graal JDK installed and JAVA_HOME set appropriately.
 
 Then you can:
 
@@ -19,9 +19,6 @@ ImageName=clr
 Args= -H:+ReportExceptionStackTraces --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime
 ```
 - the script also used to pass the initial class to the command. That is now done by setting `<start-class>` in the properties section of the pom.
-
-- jitpack is used to access the 0.5.0.RELEASE of the spring-graal-feature, see the pom.xml for the repository
-and coordinates
 
 
 
