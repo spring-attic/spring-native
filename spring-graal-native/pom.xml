@@ -15,6 +15,10 @@
 	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
+	<name>Spring Graal native</name>
+	<description>GraalVM native experimental support for Spring Boot applications</description>
+	<url>https://github.com/spring-projects-experimental/spring-graal-native/</url>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

@@ -15,8 +15,7 @@
 	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>spring-graal-native-substitutions</name>
-	<url>http://maven.apache.org</url>
+	<name>Spring Graal native substitutions</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
