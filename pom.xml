@@ -66,7 +66,7 @@
 											<password>${artifactory.password}</password>
 											<repoKey>libs-milestone-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-											<excludePatterns>spring-graal-native-feature-*,spring-graal-native-configuration-*,spring-graal-native-substitutions-*</excludePatterns>
+											<excludePatterns>spring-graal-native-feature-*.*, spring-graal-native-configuration-*.*, spring-graal-native-substitutions-*.*</excludePatterns>
 										</publisher>
 									</configuration>
 								</execution>
