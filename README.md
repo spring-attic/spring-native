@@ -1,19 +1,27 @@
 [![Build Status](https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge)](https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native)
 
-# spring-graal-native
+This project goal is to provide experimental support for building [Spring Boot](https://spring.io/projects/spring-boot) applications as [GraalVM native-images](https://www.graalvm.org/docs/reference-manual/native-image/).
+See this [Running Spring Boot applications as GraalVM native images](https://www.youtube.com/watch?v=3eoAxphAUIg) Devoxx talk video for more details.
 
-This project contains code to enable the building of native images with GraalVM.
-This repository contains a feature and a number of samples that demonstrate the feature usage. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+It is mainly composed of 5 parts:
 
-Once built, native images have very fast startup!
+- `spring-graal-native-feature`: this module is Spring GraalVM feature. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+- `spring-graal-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
+- `spring-graal-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
+- `spring-graal-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
+- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+
+For more detailed information on the feature and how to use it, please jump over to the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki). 
+
+## Scope and status
+
+This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples.
+Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing image size and memory consumption, will happen as a second step.   
 
 This feature supports:
 
-- GraalVM 20.0
-- Spring Boot 2.3.0.M3 (you may be able to get some things working with Boot 2.2.X but not 2.1 or earlier)
-
-For more detailed information on the feature and how to use it, please jump over to the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki). There is a [video](https://www.youtube.com/watch?v=OxS66Q26ykA) of a presentation covering this project from Spring One Platform 2019.
-
+- GraalVM 20.0.0
+- Spring Boot 2.3.0 M3
 
 ## Quick start
 
@@ -23,8 +31,8 @@ For detailed information and walkthroughs of applying the techniques to your pro
 
 From GraalVM builds:
 
-- Install Graal 20.0 from [here](https://github.com/graalvm/graalvm-ce-builds/releases).
-- Set `JAVA_HOME` and `PATH` appropriately for that Graal version.
+- Install GraalVM from [here](https://github.com/graalvm/graalvm-ce-builds/releases).
+- Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 Or you can use [SDKMAN](https://sdkman.io/) to easily switch between GraalVM versions:
@@ -35,9 +43,9 @@ Or you can use [SDKMAN](https://sdkman.io/) to easily switch between GraalVM ver
 
 ### Artifacts
 
-The repositories to use are `https://repo.spring.io/milestone` for 0.x milestones or `https://repo.spring.io/snapshot/` for snapshots.
+- Artifact: [`org.springframework.experimental:spring-graal-native:0.6.0.BUILD-SNAPSHOT`](https://repo.spring.io/snapshot/org/springframework/experimental/spring-graal-native/0.6.0.BUILD-SNAPSHOT/spring-graal-native-0.6.0.BUILD-SNAPSHOT.jar).
 
-The artifact available is `org.springframework.experimental:spring-graal-native:0.6.0.BUILD-SNAPSHOT`.
+- Repositories: `https://repo.spring.io/milestone` for 0.x milestones or `https://repo.spring.io/snapshot` for snapshots.
  
 ### Play with the samples
 
@@ -48,21 +56,6 @@ The artifact available is `org.springframework.experimental:spring-graal-native:
 
 `build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the [Samples wiki page](https://github.com/spring-projects-experimental/spring-graal-native/wiki/Samples).
 
-## FAQ
-
-*Q. I get out of memory problems?*
-
-A. native-image likes to use a _lot_ of RAM. There have been problems observed at 8G.
-
-*Q. This just isn't working for my project! Why not?*
-
-A. The samples demonstrate the kinds of Spring feature that have been tested. If having problems it is *probably* just that extra configuration is required rather than fundamentally impossible to make it work (however, this can depend what other libraries are in the project dependencies). Consult the [Troubleshooting](https://github.com/spring-projects-experimental/spring-graal-native/wiki/Troubleshooting) page for more details on dealing with specific problems. There are some features projects might be using that are not supported by GraalVM native-images, they are documented [here](https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md).
-
-*Q. What's the roadmap?*
-
-A. The feature is evolving and features are coming through in base Spring all the time too. Things should only improve in terms of compatibility across Spring and also smaller images, even faster startups and lower memory profiles.
-
-
 ## Contributing
 
 This project is in the spring-projects-experimental org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the [extension guide](https://github.com/spring-projects-experimental/spring-graal-native/wiki/ExtensionGuide) if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
@@ -71,4 +64,3 @@ This project is in the spring-projects-experimental org indicating it is not as 
 ## License
 
 [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
