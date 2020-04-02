@@ -2,5 +2,5 @@
 
 cd spring-graal-native
 . ci/setup.sh
-./build-feature.sh
+./build.sh
 ./build-key-samples.sh

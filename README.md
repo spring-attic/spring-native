@@ -50,7 +50,7 @@ Or you can use [SDKMAN](https://sdkman.io/) to easily switch between GraalVM ver
 ### Play with the samples
 
 - `git clone https://github.com/spring-projects-experimental/spring-graal-native`
-- In the project root, run `./build-feature.sh` 
+- In the project root, run `./build.sh` 
 - Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
