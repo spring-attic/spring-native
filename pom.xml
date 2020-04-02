@@ -8,6 +8,10 @@
 	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<name>Spring Graal native parent</name>
+	<description>Parent POM for GraalVM native experimental support for Spring Boot applications</description>
+	<url>https://github.com/spring-projects-experimental/spring-graal-native/</url>
+
 	<properties>
 		<graalvm.version>20.0.0</graalvm.version>
 	</properties>
