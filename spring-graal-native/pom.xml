@@ -10,7 +10,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-graal-native</artifactId>
 	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -18,6 +17,10 @@
 	<name>Spring Graal native</name>
 	<description>GraalVM native experimental support for Spring Boot applications</description>
 	<url>https://github.com/spring-projects-experimental/spring-graal-native/</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -50,6 +53,16 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/MANIFEST.MF</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

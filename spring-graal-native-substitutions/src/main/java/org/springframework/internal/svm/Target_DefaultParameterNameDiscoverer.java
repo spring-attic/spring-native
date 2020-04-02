@@ -18,6 +18,6 @@ final class Target_DefaultParameterNameDiscoverer {
 
 	@Substitute
 	public Target_DefaultParameterNameDiscoverer() {
-		this.parameterNameDiscoverers = new LinkedList();
+		this.parameterNameDiscoverers = new LinkedList<>();
 	}
 }

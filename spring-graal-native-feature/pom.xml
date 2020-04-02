@@ -10,7 +10,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-graal-native-feature</artifactId>
 	<version>0.6.0.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -95,6 +94,17 @@
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/MANIFEST.MF</exclude>
+								<exclude>module-info.class</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

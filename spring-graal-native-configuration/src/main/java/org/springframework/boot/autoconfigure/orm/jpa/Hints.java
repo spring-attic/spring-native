@@ -134,6 +134,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
+@SuppressWarnings("deprecation")
 @NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
 	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
 			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
@@ -199,7 +200,7 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 				PersistenceAnnotationBeanPostProcessor.class, 
 				
 				
-				Log.class, // TODO validator related? SHould be elsewhere?
+				Log.class, // TODO validator related? Should be elsewhere?
 				
 // Are these needed to?
 //				{

@@ -1197,6 +1197,7 @@ public class Type {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<String> collectTypes(AnnotationNode an) {
 		List<Object> values = an.values;
 		if (values != null) {
@@ -1288,13 +1289,13 @@ public class Type {
 		return (node.access & Opcodes.ACC_ANNOTATION) != 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Type> getAutoConfigureBeforeOrAfter() {
 		if (dimensions > 0)
 			return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
 		for (AnnotationNode an : node.visibleAnnotations) {
-			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")
-					|| an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")) {
+			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")) {
 				List<Object> values = an.values;
 				if (values != null) {
 					for (int i = 0; i < values.size(); i += 2) {
