@@ -34,8 +34,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   --initialize-at-build-time \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

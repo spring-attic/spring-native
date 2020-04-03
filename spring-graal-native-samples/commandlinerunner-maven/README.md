@@ -16,7 +16,7 @@ Notes:
 - without the compile script we need to pass the options to the native-image command. This is done via the file (currently) in `src/main/resources/META-INF/native-image/native-image.properties`:
 ```
 ImageName=clr
-Args= -H:+ReportExceptionStackTraces --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime
+Args= -H:+ReportExceptionStackTraces --no-fallback
 ```
 - the script also used to pass the initial class to the command. That is now done by setting `<start-class>` in the properties section of the pom.
 

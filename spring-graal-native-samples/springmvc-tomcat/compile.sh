@@ -44,8 +44,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -Dspring.graal.remove-unused-autoconfig=true \
   -Dspring.graal.skip-yaml=true \
