@@ -37,8 +37,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

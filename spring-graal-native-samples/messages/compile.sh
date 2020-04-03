@@ -34,8 +34,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   -H:IncludeResourceBundles=messages/messages \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   --initialize-at-run-time=org.springframework.context.annotation.FilterType,org.springframework.context.annotation.ScopedProxyMode,org.springframework.core.annotation.AnnotationFilter \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

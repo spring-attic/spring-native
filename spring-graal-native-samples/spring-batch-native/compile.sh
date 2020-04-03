@@ -38,9 +38,7 @@ time native-image \
   -Dio.netty.noUnsafe=true \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  --allow-incomplete-classpath \
   -H:+TraceClassInitialization \
-  --report-unsupported-elements-at-runtime \
   --initialize-at-build-time=com.mysql.cj.jdbc.Driver org.springframework.samples.springbatchnative.SpringBatchNativeApplication
   -cp $CP $MAINCLASS >> output.txt
 

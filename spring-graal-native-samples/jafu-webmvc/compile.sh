@@ -41,8 +41,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:ReflectionConfigurationFiles=../../reflection-config.json \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

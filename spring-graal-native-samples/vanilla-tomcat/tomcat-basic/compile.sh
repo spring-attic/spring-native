@@ -46,8 +46,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

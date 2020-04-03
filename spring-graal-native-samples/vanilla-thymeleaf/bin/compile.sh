@@ -27,8 +27,6 @@ native-image \
   -H:Name=thymeleaf \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -H:+TraceClassInitialization=io.netty.bootstrap.AbstractBootstrap \
   -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP hello.Application
