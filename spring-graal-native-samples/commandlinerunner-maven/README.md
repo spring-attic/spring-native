@@ -13,17 +13,13 @@ This will build the project normally and give you a boot executable jar (as norm
 This will compile the project then drive it through native-image, producing an executable called `clr` in the target folder.
 
 Notes:
-- without the compile script we need to pass the options to the native-image command. This is done via the file (currently) in `src/main/resources/META-INF/native-image/native-image.properties`:
-```
-ImageName=clr
-Args= -H:+ReportExceptionStackTraces --no-fallback
-```
+- without the compile script we need to pass the options to the native-image command. This is done via the file (currently) in `src/main/resources/META-INF/native-image/com.example/commandlinerunner/native-image.properties`:
 - the script also used to pass the initial class to the command. That is now done by setting `<start-class>` in the properties section of the pom.
 
 
 
 ```
-time ./target/clr
+time ./target/commandlinerunner
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -33,7 +29,7 @@ time ./target/clr
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::
 
-CLR running!
+commandlinerunner running!
 
 real	0m0.050s
 user	0m0.030s
