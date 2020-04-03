@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>org.org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
+		<start-class>org.springframework.samples.springbatchnative.SpringBatchNativeApplication</start-class>
 	</properties>
 	<profiles>
 		<profile>
@@ -28,7 +28,7 @@
 						<artifactId>native-image-maven-plugin</artifactId>
 						<version>20.0.0</version>
 						<configuration>
-							<buildArgs>-Dspring.graal.mode=light --initialize-at-build-time
+							<buildArgs>-Dspring.graal.mode=initialization-only --initialize-at-build-time
 								--report-unsupported-elements-at-runtime --enable-all-security-services
 								-H:+ReportExceptionStackTraces
 							</buildArgs>
