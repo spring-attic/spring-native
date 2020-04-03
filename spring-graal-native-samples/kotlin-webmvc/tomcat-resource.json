@@ -1,9 +1,0 @@
-{
-  "bundles":[
-    {"name":"javax.servlet.LocalStrings"},
-    {"name":"javax.servlet.http.LocalStrings"}
-  ],
-  "resources":[
-    {"pattern":".*/*.properties$"}
-  ]
-}
