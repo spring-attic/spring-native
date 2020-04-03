@@ -8,7 +8,7 @@ public class CLR implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("CLR running!");
+		System.out.println("commandlinerunner running!");
 	}
 	
 }
