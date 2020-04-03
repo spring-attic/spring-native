@@ -30,6 +30,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   --no-server \
+  --allow-incomplete-classpath \
+  --report-unsupported-elements-at-runtime \
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
