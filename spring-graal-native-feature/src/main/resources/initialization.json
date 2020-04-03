@@ -1,6 +1,13 @@
 {
 "runtimeInitialization": 
 [
+// Boot 2.3.0.M4 needs these 5
+{"class":"org.springframework.boot.context.properties.bind.ValueObjectBinder$DefaultValueObject"},
+{"class":"org.springframework.data.mapping.model.PreferredConstructorDiscoverer$Discoverers"},
+{"class":"org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint"},
+{"class":"org.springframework.web.reactive.result.method.annotation.ModelAttributeMethodArgumentResolver"},
+{"class":"org.springframework.web.method.annotation.ModelAttributeMethodProcessor"},
+
 {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
 {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
 {"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},

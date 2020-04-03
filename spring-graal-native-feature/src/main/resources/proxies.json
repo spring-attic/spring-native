@@ -18,6 +18,9 @@
 // vvv vanilla-thymeleaf
 ["org.springframework.web.bind.annotation.RequestParam"],
 // vvv vanilla-jpa
+["javax.persistence.Id","org.springframework.core.annotation.SynthesizedAnnotation"],
+["javax.persistence.GeneratedValue","org.springframework.core.annotation.SynthesizedAnnotation"],
+["javax.persistence.Transient","org.springframework.core.annotation.SynthesizedAnnotation"],
 ["javax.persistence.Id"],
 ["javax.persistence.GeneratedValue"],
 ["javax.persistence.Transient"],
@@ -47,5 +50,6 @@
 ["org.springframework.web.bind.annotation.RequestMapping", "org.springframework.core.annotation.SynthesizedAnnotation"],
 ["org.springframework.boot.context.properties.ConfigurationProperties", "org.springframework.core.annotation.SynthesizedAnnotation"],
 ["org.springframework.context.annotation.Lazy", "org.springframework.core.annotation.SynthesizedAnnotation"],
-["org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"]
+["org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"],
+["org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"]
 ]
