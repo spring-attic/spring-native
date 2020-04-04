@@ -39,6 +39,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose --no-server \
   --initialize-at-build-time=org.apache.el.parser.SimpleNode \
+  --report-unsupported-elements-at-runtime \
+  --allow-incomplete-classpath \
   -H:EnableURLProtocols=http,jar \
   -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:ReflectionConfigurationFiles=../../tomcat-reflection.json \
