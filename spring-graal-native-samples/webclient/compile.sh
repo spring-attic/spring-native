@@ -29,12 +29,12 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  -Dspring.graal.verbose=true \
   --no-server \
   --initialize-at-build-time \
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
+  -Dspring.graal.verbose=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt

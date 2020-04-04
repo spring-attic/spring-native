@@ -31,14 +31,13 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   --no-server \
   --no-fallback \
-  -Dspring.graal.skip-logback=true \
-  -Ddebug=true \
-  -Dio.netty.noUnsafe=true \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   -H:IncludeResourceBundles=messages/messages \
-  -H:+TraceClassInitialization \
   -Dspring.graal.remove-unused-autoconfig=true \
+  -Dspring.graal.skip-logback=true \
+  -Ddebug=true \
+  -Dio.netty.noUnsafe=true \
   --initialize-at-build-time=org.springframework.boot.validation.MessageInterpolatorFactory,org.hsqldb.jdbc.JDBCDriver,com.mysql.cj.jdbc.Driver,org.springframework.samples.petclinic.owner.PetRepository,org.springframework.samples.petclinic.owner.OwnerRepository,org.springframework.samples.petclinic.visit.VisitRepository,org.springframework.samples.petclinic.vet.VetRepository,org.springframework.samples.petclinic.owner.Pet,org.springframework.samples.petclinic.owner.Owner,org.springframework.samples.petclinic.model.NamedEntity,org.springframework.samples.petclinic.model.Person,org.springframework.samples.petclinic.model.BaseEntity,org.springframework.samples.petclinic.model.NamedEntity,org.springframework.samples.petclinic.visit.Visit,org.springframework.samples.petclinic.vet.Vet \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

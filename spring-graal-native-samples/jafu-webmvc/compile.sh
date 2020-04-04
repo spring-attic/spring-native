@@ -23,7 +23,7 @@ jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
 # Avoids clashing substitutions from this project deps and the feature deps
-rm BOOT-INF/lib/svm-19.*.jar
+rm BOOT-INF/lib/svm-20.*.jar
 
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
 CP=BOOT-INF/classes:$LIBPATH:$FEATURE
@@ -32,15 +32,12 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  -Dspring.graal.mode=initialization-only \
   --no-server \
   --no-fallback \
   -H:EnableURLProtocols=http \
-  --initialize-at-build-time \
-  --initialize-at-run-time=org.springframework.core.io.VfsUtils,org.apache.tomcat.jni.SSL \
-  -H:ReflectionConfigurationFiles=../../reflection-config.json \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
+  -Dspring.graal.mode=initialization-only \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
