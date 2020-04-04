@@ -21,7 +21,7 @@ Supporting a wider and clearly defined range of Spring Boot applications, as wel
 This feature supports:
 
 - GraalVM 20.0.0
-- Spring Boot 2.3.0 M3
+- Spring Boot 2.3.0.M4
 
 ## Quick start
 
