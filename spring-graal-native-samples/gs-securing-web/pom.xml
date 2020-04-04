@@ -30,13 +30,10 @@
 						<version>20.0.0</version>
 						<configuration>
 							<buildArgs>
-								-Dspring.graal.mode=light --initialize-at-build-time
+								-Dspring.graal.mode=initialization-only
 								--report-unsupported-elements-at-runtime --enable-all-security-services
 								-H:+ReportExceptionStackTraces --verbose
 							</buildArgs>
-							<!--
-							-Dspring.graal.mode=light -initialize-at-build-time -initialize-at-run-time=org.apache.tomcat.jni.SSL   -allow-incomplete-classpath -report-unsupported-elements-at-runtime -enable-all-security-services -H:+ReportExceptionStackTraces
-							-->
 						</configuration>
 						<executions>
 							<execution>
