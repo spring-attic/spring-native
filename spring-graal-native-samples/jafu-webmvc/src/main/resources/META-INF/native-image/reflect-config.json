@@ -98,7 +98,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.context.support.ServletWebServerApplicationContextWithoutSpel",
+    "name": "org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
   },

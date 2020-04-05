@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=jafu-webmvc
-MAINCLASS=com.example.jafu.JafuApplication
+MAINCLASS=com.example.jafu.DemoApplication
 VERSION=0.0.1-SNAPSHOT
 FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.6.0.BUILD-SNAPSHOT.jar
 
