@@ -2,11 +2,11 @@ package com.example.jafu;
 
 import org.junit.jupiter.api.Test;
 
-public class JafuApplicationTests {
+public class DemoApplicationTests {
 
 	@Test
 	public void runApplication() {
-		new JafuApplication().run();
+		DemoApplication.app.run();
 	}
 
 }
