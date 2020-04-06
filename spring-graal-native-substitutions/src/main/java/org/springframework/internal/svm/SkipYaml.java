@@ -6,7 +6,7 @@ public class SkipYaml implements BooleanSupplier {
 
 	@Override
 	public boolean getAsBoolean() {
-		return Boolean.valueOf(System.getProperty("spring.graal.skip-yaml", "false"));
+		return Boolean.valueOf(System.getProperty("spring.graal.remove-yaml-support", "false"));
 	}
 
 }
