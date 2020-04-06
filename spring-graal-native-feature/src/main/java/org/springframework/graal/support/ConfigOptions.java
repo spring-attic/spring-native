@@ -91,7 +91,7 @@ public abstract class ConfigOptions {
         return DUMP_CONFIG != null;
     }
 
-    public static boolean shouldAvoidLogback() {
+    public static boolean shouldSkipLogback() {
         return SKIP_LOGBACK;
     }
 

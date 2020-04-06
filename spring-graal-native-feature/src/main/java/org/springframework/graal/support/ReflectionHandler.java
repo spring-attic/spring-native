@@ -259,7 +259,7 @@ public class ReflectionHandler {
 			System.out.println(
 					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
 		}
-		if (!ConfigOptions.shouldAvoidLogback()) {
+		if (!ConfigOptions.shouldSkipLogback()) {
 			registerLogback();
 		}
 
