@@ -11,4 +11,4 @@ inputs:
   - name: spring-graal-native
 
 run:
-  path: spring-graal-native/ci/build-key-samples.sh
+  path: spring-graal-native/ci/build-samples.sh
