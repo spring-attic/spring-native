@@ -15,8 +15,8 @@ For more detailed information on the feature and how to use it, please jump over
 
 ## Scope and status
 
-This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples.
-Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing image size and memory consumption, will happen as a second step.   
+This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples (work in progress).
+Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing efficiency (image size, memory consumption) and performances will happen as a second step.   
 
 This feature supports:
 
