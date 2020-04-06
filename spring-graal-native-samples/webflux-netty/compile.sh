@@ -37,7 +37,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:+ReportExceptionStackTraces \
   -Dspring.graal.verbose=true \
   -Dspring.graal.remove-unused-autoconfig=true \
-  -Dspring.graal.skip-yaml=true \
+  -Dspring.graal.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

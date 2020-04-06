@@ -27,7 +27,7 @@ public abstract class ConfigOptions {
 
 	private final static boolean SKIP_LOGBACK;
 
-	private final static boolean SKIP_YAML;
+	private final static boolean REMOVE_YAML_SUPPORT;
 	
     private final static String DUMP_CONFIG;
 
@@ -65,8 +65,8 @@ public abstract class ConfigOptions {
 		if (SKIP_LOGBACK) {
 			System.out.println("Skipping logback configuration");
 		}
-		SKIP_YAML = Boolean.valueOf(System.getProperty("spring.graal.skip-yaml", "false"));
-		if (SKIP_YAML) {
+		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-yaml-support", "false"));
+		if (REMOVE_YAML_SUPPORT) {
 			System.out.println("Skipping Yaml support");
 		}
 		DUMP_CONFIG = System.getProperty("spring.graal.dump-config");
@@ -96,7 +96,7 @@ public abstract class ConfigOptions {
     }
 
 	public static boolean shouldRemoveYamlSupport() {
-		return SKIP_YAML;
+		return REMOVE_YAML_SUPPORT;
 	}
 
     public static boolean isInitializationModeOnly() {
