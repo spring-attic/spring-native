@@ -1,0 +1,60 @@
+[[options]]
+== Options
+
+The behaviour of GraalVM native can be tweaked via options.
+These are passed to `native-image` as command line parameters, in a `META-INF/native-image/native-image.properties` file with an `Arg` key or via the `<buildArgs>..</buildArgs>` block when invoking via maven.
+
+=== GraalVM options
+
+==== Options enabled by default
+
+These options are enabled by default when using `spring-graal-native` since they are mandatory to make Spring application working when compiled as GraalVM native images.
+
+* `--allow-incomplete-classpath` allows image building with an incomplete class path and reports type resolution errors at run time when they are accessed the first time, instead of during image building.
+
+* `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
+
+==== Options recommended by default
+
+* `--no-server` means do not use image-build server which can be sometimes unreliable.
+
+* `--verbose` makes image building output more verbose.
+
+* `--no-fallback` enforce native image only runtime and disable fallback on regular JVM
+
+* `-H:+ReportExceptionStackTraces`
+
+==== Other options
+
+* `--initialize-at-build-time` without any class or package specified initialize classes by default at build time.
+Currently (hopefully temporarily) required for Netty based application, but not recommended for other kind of application since it can trigger compatibility issues especially regarding to logging and static fields.
+See https://github.com/spring-projects-experimental/spring-graal-native/issues/8[this issue] for more details.
+It can be used with specific classes or package specified if needed.
+
+* `-H:+PrintAnalysisCallTree` helps to find what classes/methods/fields are used and why, more details in GraalVM https://github.com/oracle/graal/blob/master/substratevm/REPORTS.md[reports documentation].
+
+* `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
+
+=== Feature options
+
+The current options are:
+
+* `-Dspring.graal.remove-unused-autoconfig=true` removes unused configurations, enabling faster compilation and smaller executables.
+
+* `-Dspring.graal.mode=initialization-only` flips the feature into a lightweight mode that only supplies substitutions and initialization configuration. It will no longer set reflection, resource or proxy data - relying on the project to supply that. This is a good mode for the feature when using the GraalVM agent to compute the project configuration as discussed <<agent,here>>.
+
+* `-Dspring.graal.verbose=true` outputs lots of information about the feature behaviour as it processes auto configuration and chooses which to include.
+
+* `-Dspring.graal.skip-logback=true` skips Logback configuration.
+
+* `-Dspring.graal.remove-yaml-support=true` removes Yaml support from Spring Boot, enabling faster compilation and smaller executables.
+
+* `-Dspring.graal.dump-config=/tmp/dump.txt` dumps the configuration to the specified file.
+
+* `-Dspring.graal.missing-selector-hints=warning` switches the feature from a hard error for missing hints to a warning. See the <<troubleshooting>> section for more details on this.
+
+===Optional options
+
+* `--enable-all-security-services` required for HTTPS and crypto.
+
+* `--static` builds a statically linked executable, useful to deploy on a `FROM scratch` Docker image.
