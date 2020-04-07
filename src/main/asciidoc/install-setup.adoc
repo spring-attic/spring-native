@@ -1,0 +1,184 @@
+=== Download and install GraalVM
+
+Although the native-image build is going to be invoked via maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
+Notice there are Java8 and Java11 versions available.
+Although either should work we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
+
+=== Setup the sample project
+
+Like the instructions for using the feature, here we will use the getting started rest service guide.
+This is the sample project we will be tracing with the agent and then building into a native-image.
+
+====
+[source,bash]
+----
+git clone https://github.com/spring-guides/gs-rest-service
+cd gs-rest-service/complete
+----
+====
+
+==== Update the pom.xml
+
+IMPORTANT: Ensure the project is using a supported version of Spring Boot
+
+Upgrade the project to Spring Boot 2.3.0.M3.
+
+If using a milestone (or snapshot) of boot, these repositories will need adding to the pom.xml too:
+
+====
+[source,xml]
+----
+<pluginRepositories>
+    <!-- ... -->
+    <pluginRepository>
+        <id>spring-milestone</id>
+        <name>Spring Milestone</name>
+        <url>https://repo.spring.io/milestone</url>
+    </pluginRepository>
+</pluginRepositories>
+<repositories>
+    <!-- ... -->
+    <repository>
+        <id>spring-milestone</id>
+        <name>Spring Milestone</name>
+        <url>https://repo.spring.io/milestone</url>
+    </repository>
+</repositories>
+----
+====
+
+==== add the maven plugin
+
+GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[maven plugin] that we are going to bring in here. Paste this XML into the pom - we will use it later to invoke the native image build.
+
+====
+[source,xml]
+----
+<profiles>
+  <profile>
+    <id>graal</id>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.graalvm.nativeimage</groupId>
+          <artifactId>native-image-maven-plugin</artifactId>
+          <version>20.0.0</version>
+          <configuration>
+            <buildArgs>-Dspring.graal.mode=initialization-only --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>native-image</goal>
+              </goals>
+              <phase>package</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
+----
+====
+
+The important part is perhaps the `<buildArgs>..</buildArgs>` block showing the options we are passing to the native-image operation and the spring-graal-native feature.
+Those prefixed `-D` are aimed at the feature.
+
+NOTE: see the --no-server option.
+Like a gradle daemon the server here is supposed to help accelerate subsequent builds. Unfortunately there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation, hence it is turned off here - in particular we have seen logging disappearing if using the server to aid compilation
+
+==== Add the repository for spring-graal-native
+
+If necessary, add the repository for the spring-graal-native dependency.
+
+====
+[source,xml]
+----
+<repositories>
+	<!-- ... -->
+	<repository>
+		<id>spring-snapshot</id>
+		<name>Spring Snapshots</name>
+		<url>https://repo.spring.io/snapshot</url>
+	</repository>
+</repositories>
+----
+====
+
+==== Add the feature and appropriate configuration dependencies
+
+====
+[source,xml]
+----
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-context-indexer</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.experimental</groupId>
+    <artifactId>spring-graal-native</artifactId>
+    <version>0.6.0.BUILD-SNAPSHOT</version>
+</dependency>
+----
+====
+
+* The spring-context-indexer has been in Spring for a while.
+In a native-image all notion of classpath is lost so it is not possible to explore the classpath to find components at runtime.
+The indexer actually produces a list of components at Java compile time and captures it in a spring.components file in the built application.
+If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
+The indexer can be used for this whether building a native image or just running your application as a standard Java app.
+
+* Why do we need spring-graal-native?
+This will be discussed in more detail below but basically the feature is being used in a lightweight mode here where it is not providing all the configuration, it is only providing the initialization configuration.
+That is because the agent does not compute this information.
+
+==== Set the start-class
+
+The native image build needs to know the entry point to your application. It does consult a few places to find it but in our sample we should set it in the properties section of the pom.xml
+
+====
+[source,xml]
+----
+<start-class>com.example.restservice.RestServiceApplication</start-class>
+----
+====
+
+==== Update the source code
+
+In the case of this sample, there are no changes to be made but in some Boot applications it may be necessary to make some tweaks to ensure they aren't doing anything that is not supported by GraalVM native images.
+
+====== Proxies
+
+The only kind of proxy allowed with native images is a JDK proxy.
+It is not possible to use CGLIB or some other kind of generated proxy.
+In Boot 2.2 the option was added to avoid creating these kinds of native-image incompatible proxies for configuration class contents and this happens to suit native-image compilation.
+The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here] and basically applications need to switch to using proxyBeanMethods=false in their configuration annotations - the framework code has already all moved to this model. Here is an example from the webflux-netty sample:
+
+====
+[source,java]
+----
+@SpringBootApplication(proxyBeanMethods = false)
+public class DemoApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+	}
+
+	@RestController
+	class Foo {
+
+		@GetMapping("/")
+		public String greet() {
+			return "hi!";
+		}
+	}
+
+}
+----
+====
