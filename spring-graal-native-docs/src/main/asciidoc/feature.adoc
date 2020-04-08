@@ -1,5 +1,5 @@
 [[feature]]
-== Feature
+== Using the feature
 
 This section will walkthrough how to try building a native-image for a Spring Boot project.
 This will be a practical guide so we'll perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].

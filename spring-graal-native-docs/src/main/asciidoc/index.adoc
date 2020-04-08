@@ -60,6 +60,22 @@ We are working with the GraalVM team to ensure issues are fixed up.
 There is even a hybrid model where the feature and the agent are used together.
 Neither the feature nor the agent are perfect, but sometimes they can nicely complement each others deficiencies! See <<hybrid,the hybrid guide>>.
 
+include::samples.adoc[]
+
+== Tutorials
+
+include::feature.adoc[leveloffset=+1]
+
+include::agent.adoc[leveloffset=+1]
+
+include::hybrid_feature_agent.adoc[leveloffset=+1]
+
+include::extension_guide.adoc[]
+
+include::options.adoc[]
+
+include::troubleshooting.adoc[]
+
 == Contact us!
 
 Finally, just before you post that rant about it not working, please check the <<troubleshooting,troubleshooting guide>> which is full of information on pitfalls, common problems, and how to deal with them (via fixes/workarounds).
@@ -70,17 +86,3 @@ If you are thinking about making a contribution here, see the <<extension_guide,
 Please just be aware this is pre-1.0 and as such some of these options/extension APIs are still evolving and may change before it is finally considered done.
 
 Good luck!
-
-include::agent.adoc[]
-
-include::extension_guide.adoc[]
-
-include::feature.adoc[]
-
-include::hybrid_feature_agent.adoc[]
-
-include::options.adoc[]
-
-include::samples.adoc[]
-
-include::troubleshooting.adoc[]
