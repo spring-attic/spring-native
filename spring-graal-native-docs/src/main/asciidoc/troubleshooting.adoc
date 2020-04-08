@@ -1,25 +1,31 @@
 [[troubleshooting]]
-== Troubleshooting
+=== Troubleshooting
 
-Whilst trying to build native images various things can go wrong, either at image build time or at runtime when attempting to launch the built image.
-Usually the problem is a lack of configuration - GraalVM native-image wasn't told about the application intending to reflectively call something or load a resource.
-But there can also be more serious problems, native-image crashing or the application using a third party library that includes code not compatible with native-image.
+While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
+Usually, the problem is a lack of configuration.
+GraalVM native-image probably was not told about the application intending to reflectively call something or load a resource.
+However, there can also be more serious problems, the `native-image` crashing or the application using a third party library that includes code not compatible with `native-image`.
 
-This page will explore some of the errors that can encountered and any fixes or workarounds possible.
-The two main sections of this page are problems at image build time and problems at image runtime.
+This section explores some of the errors that can encountered and possible any fixes or workarounds.
+The two main sections of this page are problems at image-build time and problems at image runtime.
 
-The Spring team is actively working with the Graal team on issues, those currently open can be seen https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
-This page tracks spring labelled issues on the Graal issue tracker.
+The Spring team is actively working with the Graal team on issues.
+You can see the currently open issues https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
+This section tracks Spring-labelled issues on the Graal issue tracker.
 
-=== `native-image` is failing
+==== `native-image` is Failing
 
-==== out of memory when building the native image
+The image can fail for a number of reasons. We have described the most common causes and their solutions here.
+
+===== Out of Memory when Building the Native Image
 
 `native-image` consumes a lot of RAM.
 We have most success on 32G RAM desktop machines.
 16G is possible for smaller samples but 8G machines are likely to hit problems more often.
 
-==== Weird crash
+===== You get a Weird Crash
+
+If you get a "`weird crash`", check to see if you get the following error:
 
 ====
 [source,bash]
@@ -53,13 +59,17 @@ Error: Image build request failed with exit status 255
 ----
 ====
 
-This has been seen with Graal 20.0 - current workaround is just to re-run, it is intermittent.
+This has been seen with Graal 20.0.
+The current workaround is to re-run your application, because the problem is intermittent.
 
-=== the built image will not run
+==== The Built Image Does Not Run
 
-==== missing resource bundles
+If your built image does not run, you can try a number of fixes.
+This section describes those possible fixes.
 
-In some cases when there is a problem the error message will try to tell you exactly what to do:
+===== Missing Resource Bundles
+
+In some cases, when there is a problem, the error message tries to tell you exactly what to do, as follows:
 
 ====
 [source,bash]
@@ -71,9 +81,11 @@ Caused by: java.util.MissingResourceException:
 ----
 ====
 
-Here it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section in the `pom.xml`.
+Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section in the `pom.xml` file.
 
-==== ClassNotFoundException
+===== Getting `ClassNotFoundException`
+
+The following listing shows a typical `ClassNotFoundException`:
 
 ====
 [source,bash]
@@ -84,25 +96,25 @@ Caused by: java.lang.ClassNotFoundException:
 ----
 ====
 
-This indicates the native-image build wasn't told about the reflective need for a type and so did not include the data to satisfy a request to access it at runtime.
+This exception indicates the `native-image` build was not told about the reflective need for a type and, so, did not include the data to satisfy a request to access it at runtime.
 
-If using the agent, it can be a sign the agent is missing something (this particular message here was collected whilst debugging https://github.com/oracle/graal/issues/2198[issue 2198]).
+If you use the agent, it can be a sign that the agent is missing something (this particular message was collected while debugging https://github.com/oracle/graal/issues/2198[issue 2198]).
 
-Options to address it:
+You have a number of options to address it:
 
-* download a new version of GraalVM that includes a fixed agent.
+* Download a new version of GraalVM that includes a fixed agent.
 
-* raise a bug against the `spring-graal-native` project as a key aim of the feature is to make sure these things get registered.
-If not 'obvious' that it should be registered then it may be necessary for a new or expanded hint to the added to the `spring-graal-native-configuration` project (see the extension guide for more into if you want to explore that)
+* Raise a bug against the `spring-graal-native` project, as a key aim of the feature is to make sure these things get registered.
+If it is not "`obvious`" that it should be registered, it may be necessary for a new or expanded hint to the added to the `spring-graal-native-configuration` project (see the <<extension_guide,extension guide>> if you want to explore that).
 
-* manually add it.
-The native-image run will pick up any configuration it finds.
-In this case just create a `reflect-config.json` under a `META-INF/native-image` folder structure and ensure that is on the classpath.
-This is sometimes easiest just by creating it in your project `src/main/resources` folder (so `src/main/resources/META-INF/native-image/reflect-config.json`).
-An entry to satisfy the above error would look like this.
-Note there are various access options to specify.
-Here we are setting `allDeclaredConstructors` and `allDeclaredMethods`.
-We might need `allDeclaredFields` if the code is intending to reflect on those too.
+* Manually add it.
+The `native-image` run picks up any configuration it finds.
+In this case, you can create a `reflect-config.json` under a `META-INF/native-image` folder structure and ensure that is on the classpath.
+This is sometimes most easily accomplished by creating it in your project `src/main/resources` folder (so, `src/main/resources/META-INF/native-image/reflect-config.json`).
+Note that there are various access options to specify.
+To fix it, we set `allDeclaredConstructors` and `allDeclaredMethods`.
+We might need `allDeclaredFields` if the code intends to reflect on those, too.
+The following entry satisfies the preceding error:
 
 ====
 [source,bash]
@@ -117,37 +129,42 @@ We might need `allDeclaredFields` if the code is intending to reflect on those t
 ----
 ====
 
-Recompiling should pick up this extra config and the resultant image will include metadata to satisfy reflection of `AuthConfigFactoryImpl`
+Recompiling should pick up this extra configuration, and the resultant image include metadata to satisfy reflection of `AuthConfigFactoryImpl`.
 
-=== Where has my logging gone?
+==== Where Has My Logging Gone?
 
-In standard operation `native-image` uses a server to optimize compilation speeds. Using the server has been known to produce native images that are missing logging. In this case add `--no-server` to the arguments being passed to `native-image`.
+In standard operation, `native-image` uses a server to optimize compilation speeds.
+Using the server has been known to produce native images that are missing logging.
+In this case, add `--no-server` to the arguments being passed to `native-image`.
 
-==== No access hint found for import selector: XXX
+===== No Access Hint Found for Import Selector: XXX
 
 The feature chases down configuration references to other configurations (`@Import` usages).
-However if using an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
-The feature doesn't do that level of analysis (it could get very complicated).
-This means although the feature can tell it has encountered a selector, it doesn't know what types that selector needs reflective access to or what further configurations it is referencing.
-Now, the feature could just continue - maybe it would work, maybe it would crash at runtime.
-Typically the error you get can when there is a missing hint can be very cryptic. If the selector is doing a "if this type is around return this configuration to include" then it may simply be not finding some type (when it is really there, just not exposed in the image) and not including some critical configuration.
-For this reason the feature fails early and fast indicating it doesn't know what a particular selector is doing.
+However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
+The feature does not do that level of analysis (it could get very complicated).
+This means that, although the feature can tell it has encountered a selector, it does not know what types that selector needs reflective access to or what further configurations it references.
+Now, the feature could continue.
+Maybe it would work, and maybe it would crash at runtime.
+Typically, the error you get can when there is a missing hint can be very cryptic.
+If the selector is doing a "`if this type is around, return this configuration to include`", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration.
+For this reason, the feature fails early and fast, indicating that it does not know what a particular selector is doing.
 To fix it, take a look in the selector in question and craft a quick hint for it.
-See {project-home}/commit/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for spring security ({project-home}/issues/60[issue]).
+See {project-home}/commit/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for a Spring Security ({project-home}/issues/60[issue]).
 
-_IF_ you are feeling brave, you can temporarily turn this hard error into a warning.
-It is possible that in your case you don't need what the selector is doing.
-Specify the option `-Dspring.graal.missing-selector-hints=warning` - this will cause log messages about the problem but not a hard fail.
-Beware :)
+you can temporarily turn this hard error into a warning.
+It is possible that, in your case, you do not need what the selector is doing.
+To do so, specify the `-Dspring.graal.missing-selector-hints=warning` optionto cause log messages about the problem but not a hard fail.
+Note that using warnings rather than errors can cause serious problems for your application.
 
-=== Diagnosing issues with the feature
+==== Diagnosing Issues with the Feature
 
-Sometimes you want to use the feature but can't - maybe you like that the feature does offer that more optimal mode of discarding unecessary configuration at image build time which the agent mode doesn't.
-When using the feature you either get an error about some missing piece of configuration, or worse you get no error and it doesn't work (implying there is probably missing configuration but it isn't critical for the app to start, it is just critical for it to actually work!).
-If the error is clear then you can follow the guidlines in the <<extension_guide,extension guide>> and perhaps contribute it back.
+Sometimes, you want to use the feature but cannot.
+Maybe you like that the feature offers that more optimal mode of discarding unnecessary configuration at image-build time, which the agent mode does not.
+When you use the feature, you either get an error about some missing piece of configuration or, worse, you get no error and it does not work (implying there is probably missing configuration that is not critical for the app to start but is just critical for it to actually work).
+If the error is clear, you can follow the guidelines in the <<extension_guide,extension guide>> and perhaps contribute it back.
 But in the case where you have no idea, what do you do?
 
-The first step to take here is try and run it with the agent.
+The first step to take here is try and run it with the agent, as follows:
 
 ====
 [source,bash]
@@ -158,7 +175,8 @@ java -agentlib:native-image-agent=config-output-dir=native-image-config \
   -jar target/myapp-0.0.1-SNAPSHOT.jar
 ----
 ====
-After hitting the app via whatever endpoints you want to be exercised and shutting it down, there will be config files in the output folder:
+
+After hitting the application through whatever endpoints you want to exercise and shutting it down, there should be config files in the output folder, as follows:
 
 ====
 [source,bash]
@@ -171,9 +189,9 @@ ls -l native-image-config
 ----
 ====
 
-Now, we want to compare that native-image-config/reflect-config.json with the configuration being produced by the feature.
-Luckily the feature supports a dump mode where it will put it out on disk for us to see.
-Add this to the maven <buildArgs>...</buildArgs> section or as a parameter in the direct call to native-image.
+Now, we want to compare `native-image-config/reflect-config.json` with the configuration being produced by the feature.
+Luckily, the feature supports a dump mode, where it puts it out on disk for us to see.
+Add the following to the maven `<buildArgs>...</buildArgs>` section or as a parameter in the direct call to native-image:
 
 ====
 [source,bash]
@@ -182,8 +200,9 @@ Add this to the maven <buildArgs>...</buildArgs> section or as a parameter in th
 ----
 ====
 
-Then after running the native image build again that file will exist.
-It is now possible to diff the computed one with the agent one. The scripts folder in spring-graal-native contains a compare script:
+Then, after running the native image build again, that file should exist.
+It is now possible to diff the computed one with the agent one.
+The scripts folder in `spring-graal-native` contains a compare script, which you can invoke as follows:
 
 ====
 [source,bash]
@@ -192,8 +211,8 @@ It is now possible to diff the computed one with the agent one. The scripts fold
 ----
 ====
 
-This will produce a summary of the differences.
-It understands the format a little better than just doing a 'diff':
+This script produces a summary of the differences.
+It understands the format a little better than doing a plain `diff`:
 
 ====
 [source,bash]
@@ -210,7 +229,7 @@ In both files and configured the same: 67
 ----
 ====
 
-We might search that for what entries are in the agent file that aren't in the computed file for Spring:
+We might search that for entries are in the agent file that are not in the computed file for Spring, as follows:
 
 ====
 [source,bash]
@@ -219,7 +238,7 @@ grep "^> org.spring" diff.txt
 ----
 ====
 
-This will show data like this:
+This shows data similar to the following:
 
 ====
 [source,bash]
@@ -233,7 +252,7 @@ This will show data like this:
 ----
 ====
 
-These can be crafted into a config file for the project:
+You can craft these into a config file for the project, as follows:
 
 ====
 [source,bash]
@@ -242,7 +261,7 @@ mkdir -p src/main/resources/META-INF/native-image
 ----
 ====
 
-Now create src/main/resources/META-INF/native-image/reflect-config.json with content like this (just including the first one from the diff in this example):
+Now create `src/main/resources/META-INF/native-image/reflect-config.json` with content similar to the following (including the first one from the diff in this example):
 
 ====
 [source,bash]
@@ -253,5 +272,5 @@ Now create src/main/resources/META-INF/native-image/reflect-config.json with con
 ----
 ====
 
-As we add the ones found in the diff we can rebuild the native-image each time and see which help.
-Once computed, we can create a hint in the feature configuration project that captures this knowledge (see the <<extension_guide,extension guide>> for more info on that) or, if it is more related to this specific application than the infrastructure, we might leave that reflect-config.json in the project and commit it to our repository alongside the source for future use.
+As we add the details found in the diff, we can rebuild the `native-image` each time and see which bits help.
+Once computed, we can create a hint in the feature configuration project that captures this knowledge (see the <<extension_guide,extension guide>> for more info on that) or, if it is more related to this specific application than the infrastructure, we might leave that `reflect-config.json` in the project and commit it to our repository alongside the source for future use.

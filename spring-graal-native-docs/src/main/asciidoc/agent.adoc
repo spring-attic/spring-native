@@ -1,24 +1,25 @@
 [[agent]]
-== Using the GraalVM agent
+=== Using the GraalVM agent
 
-The GraalVM agent can be attached to an application and during the course of the applications execution it will produce the necessary configuration files for a subsequent native-image build.
-As the application runs it will observe the types being reflectively accessed, the resources being loaded, the proxies being requested, and it will capture this information in .json files.
+You can attach the GraalVM agent to an application and, during the course of the application's execution, it produce the necessary configuration files for a subsequent `native-image` build.
+As the application runs, it observes the types being reflectively accessed, the resources being loaded, and the proxies being requested, and it captures this information in `.json` files.
 
-This section will walkthrough using the agent to compute the configuration data and then building a native-image using it.
-A real application will be used to show the process but the same techniques should apply to any application.
+This section walks through using the agent to compute the configuration data and then build a `native-image` using it.
+A real application is used to show the process, but the same techniques should apply to any application.
 
-NOTE: Currently there are agent bugs and we'll cover those as we go, how they manifest and how to do deal with them
+NOTE: Currently, there are agent bugs, and we cover those, including how they manifest and how to do deal with them, as we go.
 
-=== Download and install GraalVM
+==== Download and Install GraalVM
 
-Although the native-image build is going to be invoked via maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice there are Java8 and Java11 versions available.
-Although either should work we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
+Although the `native-image` build is going to be invoked through Maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
+Notice that Java8 and Java11 versions are available.
+Although either should work, we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
 
-=== Setup the sample project
+==== Setup the sample project
 
-Like the instructions for using the feature, here we will use the getting started rest service guide.
-This is the sample project we will be tracing with the agent and then building into a native-image.
+Like the instructions for using the feature, here we use the getting started REST service guide.
+This is the sample project we trace with the agent and then build into a `native-image`.
+The following commands install the REST service:
 
 ====
 [source,bash]
@@ -28,13 +29,13 @@ cd gs-rest-service/complete
 ----
 ====
 
-==== Update the pom.xml
+===== Update the `pom.xml` File
 
-IMPORTANT: Ensure the project is using a supported version of Spring Boot
+IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
 
 Upgrade the project to Spring Boot 2.3.0.M3.
 
-If using a milestone (or snapshot) of boot, these repositories will need adding to the pom.xml too:
+If using a milestone (or snapshot) of boot, you also need to add the following repositories to the `pom.xml` file:
 
 ====
 [source,xml]
@@ -58,9 +59,9 @@ If using a milestone (or snapshot) of boot, these repositories will need adding 
 ----
 ====
 
-==== add the maven plugin
+===== Add the Maven Plugin
 
-GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[maven plugin] that we are going to bring in here. Paste this XML into the pom - we will use it later to invoke the native image build.
+GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin] that we are going to bring in here. Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
 
 ====
 [source,xml]
@@ -97,15 +98,18 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
 ----
 ====
 
-The important part is perhaps the `<buildArgs>..</buildArgs>` block showing the options we are passing to the native-image operation and the spring-graal-native feature.
+The important part is the `<buildArgs>..</buildArgs>` block that shows the options we pass to the `native-image` operation and the `spring-graal-native` feature.
 Those prefixed `-D` are aimed at the feature.
 
-NOTE: see the --no-server option.
-Like a gradle daemon the server here is supposed to help accelerate subsequent builds. Unfortunately there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation, hence it is turned off here - in particular we have seen logging disappearing if using the server to aid compilation
+NOTE: Notice the `--no-server` option.
+Like a Gradle daemon, the server here is supposed to help accelerate subsequent builds.
+Unfortunately, there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation.
+In particular, we have seen logging disappear the server is used to aid compilation.
+Hence, using the server to aid compilation is turned off here.
 
-==== Add the repository for spring-graal-native
+===== Add the Repository for `spring-graal-native`
 
-If necessary, add the repository for the spring-graal-native dependency.
+If necessary, add the repository for the `spring-graal-native` dependency, as follows:
 
 ====
 [source,xml]
@@ -121,7 +125,9 @@ If necessary, add the repository for the spring-graal-native dependency.
 ----
 ====
 
-==== Add the feature and appropriate configuration dependencies
+===== Add the Feature and Appropriate Configuration Dependencies
+
+The following listing adds the needed dependencies:
 
 ====
 [source,xml]
@@ -139,19 +145,22 @@ If necessary, add the repository for the spring-graal-native dependency.
 ----
 ====
 
-* The spring-context-indexer has been in Spring for a while.
-In a native-image all notion of classpath is lost so it is not possible to explore the classpath to find components at runtime.
-The indexer actually produces a list of components at Java compile time and captures it in a spring.components file in the built application.
+* The `spring-context-indexer` has been in Spring for a while.
+In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
+The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
-The indexer can be used for this whether building a native image or just running your application as a standard Java app.
+The indexer can be used for this whether building a native image or running your application as a standard Java application.
 
-* Why do we need spring-graal-native?
-This will be discussed in more detail below but basically the feature is being used in a lightweight mode here where it is not providing all the configuration, it is only providing the initialization configuration.
+* Why do we need `spring-graal-native`?
+This is discussed in more detail later in this section.
+Basically, the feature is being used in a lightweight mode here where it is not providing all the configuration.
+Rather, it provides only the initialization configuration.
 That is because the agent does not compute this information.
 
-==== Set the start-class
+===== Set `the start-class` Element
 
-The native image build needs to know the entry point to your application. It does consult a few places to find it but in our sample we should set it in the properties section of the pom.xml
+The native image build needs to know the entry point to your application. It consults a few places to find it.
+However, in our sample, we set it in the properties section of the `pom.xml` file:
 
 ====
 [source,xml]
@@ -160,16 +169,20 @@ The native image build needs to know the entry point to your application. It doe
 ----
 ====
 
-==== Update the source code
+===== Update the Source Code
 
-In the case of this sample, there are no changes to be made but in some Boot applications it may be necessary to make some tweaks to ensure they aren't doing anything that is not supported by GraalVM native images.
+In the case of this sample, no changes need to be made.
+However, in some Boot applications, you may need to make some tweaks to ensure they are not doing anything that is not supported by GraalVM native images.
 
-===== Proxies
+====== Proxies
 
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
-In Boot 2.2 the option was added to avoid creating these kinds of native-image incompatible proxies for configuration class contents and this happens to suit native-image compilation.
-The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here] and basically applications need to switch to using proxyBeanMethods=false in their configuration annotations - the framework code has already all moved to this model. Here is an example from the webflux-netty sample:
+Boot 2.2 added the option to avoid creating these kinds of `native-image` incompatible proxies for configuration class contents, and this happens to suit `native-image` compilation.
+The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
+Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
+The framework code has already all moved to this model.
+The following example is from the `webflux-netty` sample:
 
 ====
 [source,java]
@@ -194,10 +207,10 @@ public class DemoApplication {
 ----
 ====
 
-=== Create a location for the generated configuration
+==== Create a Location for the Generated Configuration
 
-This can be anywhere but that location needs to be under a location of META-INF/native-image and on the classpath so that the native image operation will automatically pick it up.
-If we want to keep this config around we can generate it straight into the project and perhaps store it in version control:
+This can be anywhere, but that location needs to be under a location of `META-INF/native-image` and on the classpath so that the native image operation automatically picks it up.
+If we want to keep this configuration around, we can generate it straight into the project (and perhaps store it in version control), as follows:
 
 ====
 [source,bash]
@@ -206,9 +219,11 @@ mkdir -p src/main/resources/META-INF/native-image
 ----
 ====
 
-NOTE: the 'proper' location is perhaps a <groupid>/<artifactid> location below native-image but just keeping it simple here for now
+NOTE: The "`proper`" location is perhaps a `<groupid>/<artifactid>` location below native-image, but we keep it simple here for now.
 
-=== Run the app with the agent
+==== Run the Application with the Agent
+
+The following commands run the application with the agent:
 
 ====
 [source,bash]
@@ -219,7 +234,9 @@ java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/
 ----
 ====
 
-It will run as normal. IMPORTANT Whilst it is up make sure you exercise any codepaths you want to ensure are covered by the native image that will be built. Exercising those paths may cause extra reflection access or resource loading, etc.
+It runs as normal.
+
+IMPORTANT: While it is up to you to make sure you exercise any codepaths you want to ensure are covered by the native image that will be built, exercising those paths may cause extra reflection access or resource loading and in other situations.
 
 Shutdown the app.
 
@@ -237,17 +254,20 @@ total 256
 ----
 ====
 
-=== What about initialization configuration?
+==== What about Initialization Configuration?
 
-What the agent doesn't compute is which types need build time vs run time initialization.
-For this reason the spring-graal-native feature is still going to be used, but only to provide that initialization information.
-All the reflection/resource/proxy configuration is going to be what we generated.
+The agent does not compute which types need build-time versus run-time initialization.
+For this reason, the `spring-graal-native` feature is still going to be used, but only to provide that initialization information.
+All the reflection, resource, and proxy configuration is going to be what we generated.
 
-NOTE: The feature is also providing a couple of substitutions - these are kind of 'patches' for classes in the framework or dependant libraries that don't properly support native-image.
-These should be temporary and the proper solution pushed back into the framework/library concerned.
-You might have to develop substitutions of your own if your dependant libraries are slow to fix themselves for GraalVM native-image interop
+NOTE: The feature is also providing a couple of substitutions.
+These are kind of "`patches`" for classes in the framework or dependent libraries that do not properly support `native-image`.
+These should be temporary, and the proper solution should be pushed back into the framework or library concerned.
+You might have to develop substitutions of your own if your dependent libraries are slow to fix themselves for GraalVM `native-image` interoperation.
 
-=== Build the app!
+==== Build the Application
+
+The following command builds the application:
 
 ====
 [source,bash]
@@ -257,11 +277,13 @@ mvn -Pgraal clean package
 ====
 
 Did it build cleanly?
-If so the resultant executable will be in the target folder named after the start-class (in this case com.example.restservice.RestServiceApplication).
+If so, the resultant executable is in the target folder named after the start-class (in this case, `com.example.restservice.RestServiceApplication`).
 
-Did it fail? See the <<troubleshooting>> section. As of writing this step works.
+Did it fail? See the <<troubleshooting>> section. As of this writing, this step works.
 
-==== Run it
+===== Run the Application
+
+Run the following executable to run the application:
 
 ====
 [source,bash]
@@ -270,9 +292,12 @@ Did it fail? See the <<troubleshooting>> section. As of writing this step works.
 ----
 ====
 
-Nooooo! It failed. This is a realistic situation right now - you have to work a little harder whilst the agent is missing things. Let's do that now and troubleshoot this problem.
+It failed.
+This is a realistic situation right now.
+You have to work a little harder while the agent is missing things.
+We do that now to troubleshoot this problem.
 
-When launching it:
+You should get the folloiwng exceptions when you launch it:
 
 ====
 [source,bash]
@@ -284,9 +309,10 @@ Register the resource bundle using the option
 ----
 ====
 
-Let's tweak `pom.xml` and add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section as another option.
+You can tweak the `pom.xml` file to add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section as another option.
 
-Recompile, now it fails with:
+Recompile.
+Now it fails with the following error:
 
 ====
 [source,bash]
@@ -298,9 +324,10 @@ Caused by: java.util.MissingResourceException:
 ----
 ====
 
-Let's add that `-H:IncludeResourceBundles=javax.servlet.LocalStrings` to `pom.xml` `<buildArgs>`, and recompile again.
+You can add that `-H:IncludeResourceBundles=javax.servlet.LocalStrings` to `pom.xml` `<buildArgs>` and recompile again.
 
-Now it might launch but on curling to the endpoint `curl http://localhost:8080/greeting` it will show:
+Now it might launch.
+However, on curling to the endpoint (`curl http://localhost:8080/greeting`) it shows the following error:
 
 ====
 [source,bash]
@@ -312,7 +339,10 @@ Caused by: java.lang.ClassNotFoundException:
 ====
 
 This is what happens when the agent misses a reflective usage.
-This particular one is https://github.com/oracle/graal/issues/2198[issue 2198] - it has been fixed but after Graal 20.0. In this situation we can manually add this entry, open up `src/main/resources/META-INF/native-image/reflect-config.json` and insert this on line 2 (after the `[` on line 1):
+This particular one is https://github.com/oracle/graal/issues/2198[issue 2198].
+It has been fixed but after Graal 20.0.
+In this situation, we can manually add this entry.
+To do so, open `src/main/resources/META-INF/native-image/reflect-config.json` and insert the following on line 2 (after the `[` on line 1):
 
 ====
 [source,bash]
@@ -325,8 +355,12 @@ This particular one is https://github.com/oracle/graal/issues/2198[issue 2198] -
 ----
 ====
 
-See the startup time is <100ms, compared ~1500ms when starting the fat jar.
+The startup time is <100ms, compared to ~1500ms when starting the fat jar.
 
-=== Phew
+==== Summary
 
-Hopefully that has given you a taste of the process of building native images. There is much more coming down the pipeline in Spring to optimize in all areas - smaller images, reduced memory usage, faster native image compilation. We are also working with Graal team in all the pitfall areas shown above - things across the board should only get better. If applying these techniques to your own application and having problems, see the page covering <<troubleshooting>>.
+Hopefully ,that has given you a taste of the process of building native images.
+There is much more coming to optimize Spring in all areas: smaller images, reduced memory usage, faster native image compilation, and more.
+We are also working with the Graal team in all the pitfall areas described earlier.
+Things across the board should only get better.
+If you apply these techniques to your own application and have problems, see the <<troubleshooting>> section.

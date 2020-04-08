@@ -1,19 +1,20 @@
 [[feature]]
-== Using the feature
+=== Using the feature
 
-This section will walkthrough how to try building a native-image for a Spring Boot project.
-This will be a practical guide so we'll perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section walks through how to try building a `native-image` for a Spring Boot project.
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
-=== Download and install GraalVM
+==== Download and Install GraalVM
 
-Although the native-image build is going to be invoked via maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice there are Java8 and Java11 versions available.
-Although either should work we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
+Although the `native-image` build is invoked through Maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
+Notice Java8 and Java11 versions are available.
+Although either should work, we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
 
-=== Setup the sample project
+==== Set up the Sample Project
 
-Like the instructions for using the feature, here we will use the getting started rest service guide.
-This is the sample project we will be tracing with the agent and then building into a native-image.
+Like the instructions for using the feature, here we use the getting started REST service guide.
+This is the sample project we trace with the agent and then build into a `native-image`.
+The following commands install the REST service guide:
 
 ====
 [source,bash]
@@ -25,13 +26,13 @@ cd gs-rest-service/complete
 
 You may already be ready to go with your own project.
 
-==== Update the pom.xml
+===== Update the `pom.xml` File
 
-IMPORTANT: Ensure the project is using a supported version of Spring Boot
+IMPORTANT: Ensure the project uses a supported version of Spring Boot.
 
 Upgrade the project to Spring Boot 2.3.0.M3.
 
-If using a milestone (or snapshot) of boot, these repositories will need adding to the pom.xml too:
+If using a milestone (or snapshot) of Boot, you need to add the following repositories to the `pom.xml` file:
 
 ====
 [source,xml]
@@ -55,9 +56,10 @@ If using a milestone (or snapshot) of boot, these repositories will need adding 
 ----
 ====
 
-==== add the maven plugin
+===== Add the Maven Plugin
 
-GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[maven plugin] that we are going to bring in here. Paste this XML into the pom - we will use it later to invoke the native image build.
+GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin].
+Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
 
 ====
 [source,xml]
@@ -94,17 +96,23 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
 ----
 ====
 
-The important part is perhaps the `<buildArgs>..</buildArgs>` block showing the options we are passing to the native-image operation and the spring-graal-native feature.
+The important part is the `<buildArgs>..</buildArgs>` block, which shows the options we pass to the `native-image` operation and the `spring-graal-native` feature.
 Those prefixed `-D` are aimed at the feature.
 
-NOTE: see the --no-server option.
-Like a gradle daemon the server here is supposed to help accelerate subsequent builds. Unfortunately there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation, hence it is turned off here - in particular we have seen logging disappearing if using the server to aid compilation
+NOTE: Notice the `--no-server` option.
+Like a Gradle daemon, the server here is supposed to help accelerate subsequent builds. Unfortunately, there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation.
+In particular, we have seen logging disappear if the server is used to aid compilation.
+Hence, using the server to aid compilation is turned off here.
 
-The `-Dspring.graal.remove-unused-autoconfig=true` is an option we can use to evaluate some of the Spring Boot conditions at image build time. For example `@ConditionalOnClass` - because native-image runs at a point when the full classpath is known, we can know for certain if a class is around. If it is not around then the auto configuration conditional on that class can be discarded and not have an impact on the image startup. More details on options are discussed <<here>>
+The `-Dspring.graal.remove-unused-autoconfig=true` is an option we can use to evaluate some of the Spring Boot conditions at image-build time.
+One example of such an option is `@ConditionalOnClass`.
+Because `native-image` runs at a point when the full classpath is known, we can know for certain if a class is present.
+If it is not present, the auto configuration conditional on that class can be discarded and not have an impact on the image startup.
+More details on options are discussed <<options,here>>.
 
-==== Add the repository for spring-graal-native
+===== Add the Repository for `spring-graal-native`
 
-If necessary, add the repository for the spring-graal-native dependency.
+If necessary, add the repository for the spring-graal-native dependency, as follows:
 
 ====
 [source,xml]
@@ -120,7 +128,9 @@ If necessary, add the repository for the spring-graal-native dependency.
 ----
 ====
 
-==== Add the appropriate dependencies
+===== Add the Appropriate Dependencies
+
+The following listing shows the dependencies to add:
 
 ====
 [source,xml]
@@ -138,19 +148,19 @@ If necessary, add the repository for the spring-graal-native dependency.
 ----
 ====
 
-* The spring-context-indexer has been in Spring for a while.
-In a native-image all notion of classpath is lost so it is not possible to explore the classpath to find components at runtime.
-The indexer actually produces a list of components at Java compile time and captures it in a spring.components file in the built application.
+* The `spring-context-indexer` has been in Spring for a while.
+In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
+The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
-The indexer can be used for this whether building a native image or just running your application as a standard Java app.
+The indexer can be used for this whether building a native image or just running your application as a standard Java application.
 
-* What is spring-graal-native?
-The spring-graal-native behaviour is partially driven by hints for any reflective/resource accesses that are not obvious from what it can see in the Spring application being built into a native image. Such hints are included in spring-graal-native as well.
-Capturing what needs to be reflectively accessible or loadable as resources that is not obvious from a basic analysis of the application.
+* What is `spring-graal-native`?
+The `spring-graal-native` behavior is partially driven by hints for any reflective or resource accesses that are not obvious from what it can see in the Spring application being built into a native image. Such hints are included in `spring-graal-native` as well.
+These hints let Spring Graal Native capture what needs to be reflectively accessible or loadable as resources when that is not obvious from a basic analysis of the application.
 
-==== Set the start-class
+===== Set the `start-class` Element
 
-The native image build needs to know the entry point to your application. It does consult a few places to find it but in our sample we should set it in the properties section of the pom.xml
+The native image build needs to know the entry point to your application. It does consult a few places to find it, but, in our sample, we set it in the properties section of the `pom.xml`, as follows:
 
 ====
 [source,xml]
@@ -159,16 +169,20 @@ The native image build needs to know the entry point to your application. It doe
 ----
 ====
 
-==== Update the source code
+===== Update the Source Code
 
-In the case of this sample, there are no changes to be made but in some Boot applications it may be necessary to make some tweaks to ensure they aren't doing anything that is not supported by GraalVM native images.
+In this sample, are no changes need to be made.
+However, in some Boot applications, it may be necessary to make some tweaks to ensure they are not doing anything that is not supported by GraalVM native images.
 
-===== Proxies
+====== Proxies
 
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
-In Boot 2.2 the option was added to avoid creating these kinds of native-image incompatible proxies for configuration class contents and this happens to suit native-image compilation.
-The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here] and basically applications need to switch to using proxyBeanMethods=false in their configuration annotations - the framework code has already all moved to this model. Here is an example from the webflux-netty sample:
+Boot 2.2, added the option to avoid creating these kinds of `native-image` incompatible proxies for configuration class contents and this happens to suit `native-image` compilation.
+The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
+Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
+The framework code has already all moved to this model.
+The following example comes from the `webflux-netty` sample:
 
 ====
 [source,java]
@@ -193,7 +207,7 @@ public class DemoApplication {
 ----
 ====
 
-=== Build the app!
+==== Build the Application
 
 ====
 [source,bash]
@@ -203,11 +217,13 @@ mvn -Pgraal clean package
 ====
 
 Did it build cleanly?
-If so the resultant executable will be in the target folder named after the `start-class` (in this case `com.example.restservice.RestServiceApplication`).
+If so, the resultant executable is in the target folder named after the `start-class` (in this case, `com.example.restservice.RestServiceApplication`).
 
-Did it fail? See the <<troubleshooting>> page
+Did it fail? See the <<troubleshooting>> section.
 
-=== Run it
+==== Run the Application
+
+To run your application, you need to run the following executable:
 
 ====
 [source,bash]
@@ -222,10 +238,14 @@ INFO: Started RestServiceApplication in 0.084 seconds (JVM running for 0.087)
 ----
 ====
 
-See the startup time is <100ms, compared ~1500ms when starting the fat jar.
+The startup time is <100ms, compared ~1500ms when starting the fat jar.
 
-Did your app run successfully? If so, great! If not, please see the <<troubleshooting>> page.
+Did your application run successfully? If so, good. If not, see the <<troubleshooting>> page.
 
-=== Phew
+==== Summary
 
-Hopefully that has given you a taste of the process of building native images. There is much more coming down the pipeline in Spring to optimize in all areas - smaller images, reduced memory usage, faster native image compilation. We are also working with Graal team in all the pitfall areas shown above - things across the board should only get better. If applying these techniques to your own application and having problems, see <<troubleshooting>>.
+Hopefully, this section has given you a taste of the process of building native images.
+There is much more coming to optimize Spring in all areas: smaller images, reduced memory usage, faster native image compilation, and more.
+We are also working with the Graal team in all the pitfall areas mentioned earlier.
+Across the board, things should only get better.
+If you apply these techniques to your own application and have problems, see <<troubleshooting>>.
