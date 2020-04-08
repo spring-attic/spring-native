@@ -70,11 +70,11 @@ include::agent.adoc[leveloffset=+1]
 
 include::hybrid_feature_agent.adoc[leveloffset=+1]
 
-include::extension_guide.adoc[]
-
 include::options.adoc[]
 
 include::troubleshooting.adoc[]
+
+include::extension_guide.adoc[]
 
 == Contact us!
 
