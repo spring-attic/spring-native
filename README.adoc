@@ -1,0 +1,67 @@
+:version: 0.6.0.BUILD-SNAPSHOT
+:repository-url: https://repo.spring.io/snapshot
+:documentation-url: {repository-url}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
+
+image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
+
+This project goal is to provide experimental support for building https://spring.io/projects/spring-boot[Spring Boot] applications as https://www.graalvm.org/docs/reference-manual/native-image/[GraalVM native images].
+Watch this https://www.youtube.com/watch?v=3eoAxphAUIg[Running Spring Boot applications as GraalVM native images] Devoxx talk video for more details.
+
+It is mainly composed of 5 parts:
+
+- `spring-graal-native-feature`: this module is Spring GraalVM feature. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+- `spring-graal-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
+- `spring-graal-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
+- `spring-graal-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
+- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests. 
+
+== Scope and status
+
+This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples (work in progress).
+Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing efficiency (image size, memory consumption) and performances will happen as a second step.   
+
+This feature supports:
+
+- GraalVM 20.0.0
+- Spring Boot 2.3.0.M4
+
+== Quick start
+
+For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}/reference/index.html[documentation].
+
+=== Install GraalVM native
+
+From GraalVM builds:
+
+- Install GraalVM from https://github.com/graalvm/graalvm-ce-builds/releases[here].
+- Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
+
+- https://sdkman.io/install[Install SDKMAN]
+- Install GraalVM with `sdk install java 20.0.0.r8-grl` for Java 8 or `sdk install java 20.0.0.r11-grl` for Java 11
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+=== Artifacts
+
+- Artifact: {repository-url}/org/springframework/experimental/spring-graal-native/{version}/spring-graal-native-{version}.jar[`org.springframework.experimental:spring-graal-native:{version}`]
+- Repository: `{repository-url}`
+
+=== Play with the samples
+
+- `git clone https://github.com/spring-projects-experimental/spring-graal-native`
+- In the project root, run `./build.sh` 
+- Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
+- Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
+
+`build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[Samples documentation].
+
+== Contributing
+
+This project is in the spring-projects-experimental org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/reference/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
+
+
+== License
+
+https://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
