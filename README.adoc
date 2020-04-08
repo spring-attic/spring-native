@@ -55,7 +55,7 @@ Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versi
 - Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
-`build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[Samples documentation].
+`build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[samples documentation].
 
 == Contributing
 
