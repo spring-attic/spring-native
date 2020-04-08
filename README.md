@@ -1,4 +1,4 @@
-[![Build Status](https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge)](https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native)
+[![Build Status](https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge)](https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native) [![Documentation](https://img.shields.io/badge/documentation-blue.svg")](https://repo.spring.io/libs-snapshot-local/org/springframework/experimental/spring-graal-native-docs/0.6.0.BUILD-SNAPSHOT/spring-graal-native-docs-0.6.0.BUILD-SNAPSHOT.zip!/reference/index.html)
 
 This project goal is to provide experimental support for building [Spring Boot](https://spring.io/projects/spring-boot) applications as [GraalVM native-images](https://www.graalvm.org/docs/reference-manual/native-image/).
 See this [Running Spring Boot applications as GraalVM native images](https://www.youtube.com/watch?v=3eoAxphAUIg) Devoxx talk video for more details.
@@ -9,9 +9,7 @@ It is mainly composed of 5 parts:
 - `spring-graal-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
 - `spring-graal-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
 - `spring-graal-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
-- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
-
-For more detailed information on the feature and how to use it, please jump over to the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki). 
+- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests. 
 
 ## Scope and status
 
@@ -25,7 +23,7 @@ This feature supports:
 
 ## Quick start
 
-For detailed information and walkthroughs of applying the techniques to your project, please see the [wiki](https://github.com/spring-projects-experimental/spring-graal-native/wiki).
+For detailed information and walkthroughs of applying the techniques to your project, please see the [documentation](https://repo.spring.io/libs-snapshot-local/org/springframework/experimental/spring-graal-native-docs/0.6.0.BUILD-SNAPSHOT/spring-graal-native-docs-0.6.0.BUILD-SNAPSHOT.zip!/reference/index.html).
 
 ### Install GraalVM native
 
