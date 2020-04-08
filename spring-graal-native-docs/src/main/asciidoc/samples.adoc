@@ -4,13 +4,14 @@
 There are numerous samples in the https://github.com/spring-projects-experimental/spring-graal-native/tree/master/spring-graal-native-samples[`spring-graal-native-samples`] subfolder of the root project.
 These show the feature in use with different technologies.
 
-The samples don't all currently use maven.
-Instead they are built for us to play around with a little more easily.
-Each includes a `build.sh` script which (java) builds the app, then calls the `compile.sh` script to run the native-image process then a `verify.sh` script is used to check the built image works.
+The samples do not all currently use Maven.
+Instead, they are built for us to play around with a little more easily.
+Each includes a `build.sh` script which (Java) builds the app, calls the `compile.sh` script to run the native-image process, and runs a `verify.sh` script to check whether the built image works.
 
-Our build process for the feature currently runs `./build.sh` in the root of the project and then `./build-samples.sh` to build all the samples and verify everything is working. 
-Building native-images takes quite a long time and eats RAM.
+Our build process for the feature currently runs `./build.sh` in the root of the project and then `./build-samples.sh` to build all the samples and verify everything is working.
+Building `native-image` instances takes a long time and eats RAM.
 
-The samples show the wide variety of tech that is working fine: tomcat, netty, thymeleaf, jpa, etc, there is even a petclinic in there that brings multiple technologies together in one app.
+The samples show the wide variety of tech that is working fine: Tomcat, Netty, Thymeleaf, JPA, and others.
+The pet clinic sample brings multiple technologies together in one application.
 
-If starting out attempting to build your first Spring Boot application, we recommend you follow one of the guides
+If you are starting to build your first Spring Boot application, we recommend you follow one of the guides.
