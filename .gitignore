@@ -14,18 +14,3 @@ verbose.log
 .idea
 *.iml
 
-spring-graal-native-samples/commandlinerunner/clr
-spring-graal-native-samples/commandlinerunner-maven/clr
-spring-graal-native-samples/logger/logger
-spring-graal-native-samples/messages/msgs
-spring-graal-native-samples/spring-petclinic-jpa/petclinic
-spring-graal-native-samples/tomcat/tc
-spring-graal-native-samples/vanilla-grpc/grpc
-spring-graal-native-samples/vanilla-jpa/jpa
-spring-graal-native-samples/vanilla-orm/orm
-spring-graal-native-samples/vanilla-orm2/orm
-spring-graal-native-samples/vanilla-rabbit/rabbit
-spring-graal-native-samples/vanilla-thymeleaf/thymeleaf
-spring-graal-native-samples/vanilla-tx/tx
-spring-graal-native-samples/webflux-netty/webflux-netty
-spring-graal-native-samples/kotlin-webmvc/kotlin-webmvc
