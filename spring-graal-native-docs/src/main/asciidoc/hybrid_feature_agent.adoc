@@ -1,5 +1,5 @@
 [[hybrid]]
-== Hybrid Feature-Agent
+== Using the hybrid Feature-Agent mode
 
 This section shows the spring-graal-native feature and agent being used together.
 

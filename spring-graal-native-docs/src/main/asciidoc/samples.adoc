@@ -1,7 +1,7 @@
 [[samples]]
 == Samples
 
-There are numerous samples in the `spring-graal-native-samples` subfolder of the root project.
+There are numerous samples in the https://github.com/spring-projects-experimental/spring-graal-native/tree/master/spring-graal-native-samples[`spring-graal-native-samples`] subfolder of the root project.
 These show the feature in use with different technologies.
 
 The samples don't all currently use maven.
