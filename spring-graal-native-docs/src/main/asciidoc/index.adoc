@@ -1,4 +1,3 @@
-= Spring Graal Native reference guide
 :toc: left
 :toclevels: 4
 :numbered:
@@ -10,6 +9,7 @@
 :boot-version: 2.3.0.M3
 :boot-repository: milestone
 :graal-version: 20.0.0
+= Spring Graal Native {version} reference guide
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 [[introduction]]
