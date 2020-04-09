@@ -1,5 +1,5 @@
-:version: 0.6.0.BUILD-SNAPSHOT
-:repository: snapshot
+:version: 0.6.0.RELEASE
+:repository: milestone
 :boot-version: 2.3.0.M3
 :graal-version: 20.0.0
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
