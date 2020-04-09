@@ -1,19 +1,19 @@
 [[feature]]
 === Using the feature
 
-This section walks through how to try building a `native-image` for a Spring Boot project.
+This section walks through how to try building a native image for a Spring Boot project.
 This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
-==== Download and Install GraalVM
+==== Download and install GraalVM
 
 Although the `native-image` build is invoked through Maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice Java8 and Java11 versions are available.
-Although either should work, we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
+Notice Java 8 and Java 11 versions are available.
+Although either should work, we have had more issues with the Java 11 one, so playing it safe would be selecting the Java 8 version.
 
-==== Set up the Sample Project
+==== Set up the sample project
 
 Like the instructions for using the feature, here we use the getting started REST service guide.
-This is the sample project we trace with the agent and then build into a `native-image`.
+This is the sample project we trace with the agent and then build into a native image.
 The following commands install the REST service guide:
 
 ====
@@ -26,7 +26,7 @@ cd gs-rest-service/complete
 
 You may already be ready to go with your own project.
 
-===== Update the `pom.xml` File
+===== Update the `pom.xml` file
 
 IMPORTANT: Ensure the project uses a supported version of Spring Boot.
 
@@ -56,7 +56,7 @@ If using a milestone (or snapshot) of Boot, you need to add the following reposi
 ----
 ====
 
-===== Add the Maven Plugin
+===== Add the Maven plugin
 
 GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin].
 Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
@@ -110,7 +110,7 @@ Because `native-image` runs at a point when the full classpath is known, we can 
 If it is not present, the auto configuration conditional on that class can be discarded and not have an impact on the image startup.
 More details on options are discussed <<options,here>>.
 
-===== Add the Repository for `spring-graal-native`
+===== Add the repository for `spring-graal-native`
 
 If necessary, add the repository for the spring-graal-native dependency, as follows:
 
@@ -128,7 +128,7 @@ If necessary, add the repository for the spring-graal-native dependency, as foll
 ----
 ====
 
-===== Add the Appropriate Dependencies
+===== Add the appropriate dependencies
 
 The following listing shows the dependencies to add:
 
@@ -149,7 +149,7 @@ The following listing shows the dependencies to add:
 ====
 
 * The `spring-context-indexer` has been in Spring for a while.
-In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
+In a native image, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
 The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or just running your application as a standard Java application.
@@ -158,7 +158,7 @@ The indexer can be used for this whether building a native image or just running
 The `spring-graal-native` behavior is partially driven by hints for any reflective or resource accesses that are not obvious from what it can see in the Spring application being built into a native image. Such hints are included in `spring-graal-native` as well.
 These hints let Spring Graal Native capture what needs to be reflectively accessible or loadable as resources when that is not obvious from a basic analysis of the application.
 
-===== Set the `start-class` Element
+===== Set the `start-class` element
 
 The native image build needs to know the entry point to your application. It does consult a few places to find it, but, in our sample, we set it in the properties section of the `pom.xml`, as follows:
 
@@ -169,7 +169,7 @@ The native image build needs to know the entry point to your application. It doe
 ----
 ====
 
-===== Update the Source Code
+===== Update the source code
 
 In this sample, are no changes need to be made.
 However, in some Boot applications, it may be necessary to make some tweaks to ensure they are not doing anything that is not supported by GraalVM native images.
@@ -178,7 +178,7 @@ However, in some Boot applications, it may be necessary to make some tweaks to e
 
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
-Boot 2.2, added the option to avoid creating these kinds of `native-image` incompatible proxies for configuration class contents and this happens to suit `native-image` compilation.
+Boot 2.2, added the option to avoid creating these kinds of native image incompatible proxies for configuration class contents and this happens to suit native image compilation.
 The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
@@ -207,7 +207,7 @@ public class DemoApplication {
 ----
 ====
 
-==== Build the Application
+==== Build the application
 
 ====
 [source,bash]
@@ -221,7 +221,7 @@ If so, the resultant executable is in the target folder named after the `start-c
 
 Did it fail? See the <<troubleshooting>> section.
 
-==== Run the Application
+==== Run the application
 
 To run your application, you need to run the following executable:
 
