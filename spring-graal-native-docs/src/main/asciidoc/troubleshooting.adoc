@@ -9,7 +9,7 @@ However, there can also be more serious problems, the `native-image` crashing or
 This section explores some of the errors that can encountered and possible any fixes or workarounds.
 The two main sections of this page are problems at image-build time and problems at image runtime.
 
-The Spring team is actively working with the Graal team on issues.
+The Spring team is actively working with the GraalVM team on issues.
 You can see the currently open issues https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
 This section tracks Spring-labelled issues on the Graal issue tracker.
 

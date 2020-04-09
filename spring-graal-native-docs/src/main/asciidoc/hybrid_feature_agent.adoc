@@ -313,6 +313,6 @@ If not, see the <<troubleshooting>> page.
 
 Hopefully, this section has given you a taste of the process of building native images.
 There is much more coming to optimize Spring in all areas: smaller images, reduced memory usage, faster native image compilation, and more.
-We are also working with the Graal team in all the pitfall areas described earlier.
+We are also working with the GraalVM team in all the pitfall areas described earlier.
 Things across the board should only get better.
 If you apply these techniques to your own application and have problems, see <<troubleshooting>>.
