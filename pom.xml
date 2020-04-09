@@ -5,7 +5,7 @@
 
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-graal-native-parent</artifactId>
-	<version>0.6.0.BUILD-SNAPSHOT</version>
+	<version>0.6.0.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Graal native parent</name>
