@@ -1,18 +1,18 @@
 [[hybrid]]
-=== Using the Hybrid Feature-Agent Mode
+=== Using the hybrid feature + agent mode
 
 This section shows the `spring-graal-native` feature and agent being used together.
 
-This section walks through how to build a `native-image` for a Spring Boot project.
+This section walks through how to build a native image for a Spring Boot project.
 This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 Unlike the <<feature,feature>> or <<agent,agent>> sections, which show how to use those capabilities standalone, this will use them together in a single project.
 With the feature not being able to easily know everything about your application, and the agent missing things and not understanding Spring applications, it can sometimes be useful to use them both together.
 
-==== Download and Install GraalVM
+==== Download and install GraalVM
 
-Although the native-image build is going to be invoked through Maven, the agent is shipped with GraalVM, and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice that Java8 and Java11 versions are available.
-Although either should work, we have had more issues with the Java11 one, so playing it safe would be selecting the Java8 version.
+Although the native image build is going to be invoked through Maven, the agent is shipped with GraalVM, and we need to install it by following {project-home}#install-graalvm-native[these instructions].
+Notice that Java 8 and Java 11 versions are available.
+Although either should work, we have had more issues with the Java 11 one, so playing it safe would be selecting the Java 8 version.
 
 ==== Setup the sample project
 
@@ -28,7 +28,7 @@ cd gs-rest-service/complete
 
 You may already be ready to go with your own project.
 
-==== Update the `pom.xml` File
+==== Update the `pom.xml` file
 
 NOTE: Ensure the project uses a supported version of Spring Boot.
 
@@ -37,7 +37,7 @@ Upgrade the project to Spring Boot 2.3.0.M3.
 If you use a milestone (or snapshot) of Boot, the following repositories also need to be added to the `pom.xml`:
 
 ====
-[source,XML]
+[source,xml]
 ----
 <pluginRepositories>
     <!-- ... -->
@@ -58,13 +58,13 @@ If you use a milestone (or snapshot) of Boot, the following repositories also ne
 ----
 ====
 
-===== Add the Maven Plugin
+===== Add the Maven plugin
 
 GraalVM provides a Maven plugin that we are going to bring in here.
 Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
 
 ====
-[source,XML]
+[source,xml]
 ----
 <profiles>
   <profile>
@@ -112,10 +112,10 @@ For example, it applies to `@ConditionalOnClass`.
 Because `native-image` runs at a point when the full classpath is known, we can know for certain if a class is around.
 If it is not around, the auto-configuration conditional on that class can be discarded and not have an impact on the image startup. More details on options are discussed <<options,here>>.
 
-===== Add the Feature and Appropriate Configuration Dependencies
+===== Add the feature and appropriate configuration dependencies
 
 ====
-[source,XML]
+[source,xml]
 ----
 <dependency>
     <groupId>org.springframework.experimental</groupId>
@@ -137,7 +137,7 @@ If it is not around, the auto-configuration conditional on that class can be dis
 ====
 
 * The `spring-context-indexer` has been in Spring for a while.
-In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
+In a native image, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
 The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or just running your application as a standard Java application.
@@ -147,20 +147,20 @@ The `spring-graal-native-feature` behavior is partially driven by hints for any 
 The `spring-graal-native-configuration` is once such source of hints.
 These hints captur what needs to be reflectively accessible or loadable as resources that is not obvious from a basic analysis of the application.
 
-===== Set the `start-class` Element
+===== Set the `start-class` element
 
 The native image build needs to know the entry point to your application.
 It does consult a few places to find it.
 However, in our sample we should set it in the properties section of the `pom.xml` file, as follows:
 
 ====
-[source,XML]
+[source,xml]
 ----
 <start-class>com.example.restservice.RestServiceApplication</start-class>
 ----
 ====
 
-===== Update the Source Code
+===== Update the source code
 
 In the case of this sample, there are no changes to be made.
 However, in some Boot applications, you may need to make some tweaks to ensure that they are not doing anything that is not supported by GraalVM native images.
@@ -169,14 +169,14 @@ However, in some Boot applications, you may need to make some tweaks to ensure t
 
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
-Boot 2.2 added the option to avoid creating these kinds of `native-image` incompatible proxies for configuration class contents, and this happens to suit native-image compilation.
+Boot 2.2 added the option to avoid creating these kinds of native image incompatible proxies for configuration class contents, and this happens to suit native image compilation.
 The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
 The following example is from the `webflux-netty` sample:
 
 ====
-[source,Java]
+[source,java]
 ----
 @SpringBootApplication(proxyBeanMethods = false)
 public class DemoApplication {
@@ -198,7 +198,7 @@ public class DemoApplication {
 ----
 ====
 
-===== Create a Location for the Generated Configuration
+===== Create a location for the generated configuration
 
 When run with the agent, it needs somewhere to store the `.json` files it computes.
 This can be anywhere, but that location needs to be under a location of `META-INF/native-image` and on the classpath so that the native image operation automaticallys pick it up.
@@ -213,7 +213,7 @@ mkdir -p src/main/resources/META-INF/native-image
 
 NOTE: The "`proper`" location is perhaps a `<groupid>/<artifactid>` location below `native-image` but we keep it simple here for now.
 
-===== Run the Application with the Agent
+===== Run the application with the agent
 
 The following commands run the application with the agent:
 
@@ -264,7 +264,7 @@ Did it fail?
 See the <<troubleshooting>> page.
 As of this writing, this step works.
 
-===== Run the Application
+===== Run the application
 
 To run the application, run the following executable:
 

@@ -1,9 +1,9 @@
 [[extension_guide]]
-=== Extension Guide
+== Extension guide
 
 This section describes how to extend Spring Graal Native.
 
-==== Extending the Feature
+=== Extending the feature
 
 We are experimenting with extension models, as you will see if you look in the `spring-graal-native-configuration` module within the project.
 Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application.
@@ -14,7 +14,7 @@ Then, for any given application, if we know the likely active configurations, we
 This section walks through the structure of this hint data and finishes with how to add more configuration for areas we have not yet looked at.
 Perhaps you want to work on one and submit it as a PR.
 
-==== Hints
+=== Hints
 
 So the giant `.json` file the feature project used to include has been decomposed into lots of `@NativeImageHint` annotations.
 Each of these hints specifies a set of types that need accessibility, what kind of accessibility is needed, and, optionally, a trigger.
@@ -30,7 +30,7 @@ In this way, if you are experimenting with making your application into a native
 Once you are happy with it, you can keep it directly with your configuration.
 The first option also lets hints be provided for code you do not know or otherwise have access to change or rebuild.
 
-==== Triggered
+=== Triggered
 
 A trigger in a `NativeImageHint` is optional.
 If there is a trigger, it is a Spring configuration class name.
@@ -43,12 +43,12 @@ If there is no trigger, there are two possibilities:
 * If purely being used on a type that implements `NativeImageConfiguration`, it is assumed that the specified types must always be accessible.
 This is useful for some common types to which any application, regardless of active configurations, needs access.
 
-==== What Do Hints Look Like?
+=== What do hints look like?
 
 The following listing shows a hint:
 
 ====
-[source,Java]
+[source,java]
 ----
 @NativeImageHint(trigger = JacksonAutoConfiguration.class,
   typeInfos = {
@@ -63,7 +63,7 @@ Basically, it is that optional trigger and a series of `@TypeInfo` annotations.
 Here, the trigger is `JacksonAutoConfiguration`, and the hint as a whole reads: _if it looks like `JacksonAutoConfiguration` is active in this application, the `JsonGenerator` type should be made reflectively accessible and the methods and constructors within it should be visible_.
 One `@TypeInfo` can list multiple types if they share a similar access need, or there may be multiple `@TypeInfo` entries in one hint if different groups of types need different kinds of access.
 
-==== Optimizing Which Hints are Acted on
+=== Optimizing which hints are acted on
 
 With the feature operating during native image construction, it is in a closed world system.
 This means that the full classpath is known for this application and cannot be extended later.
@@ -73,7 +73,7 @@ The feature also chases down references between configurations (`@Import`) and l
 
 This means that, for any application, there is some 'tree' of configurations active with hints scattered across them.
 
-==== Structure of the `spring-boot-graal-configuration` Module
+=== Structure of the `spring-boot-graal-configuration` module
 
 In the `spring-boot-graal-configuration`, numerous package names look like Spring package names.
 That is deliberate.
@@ -87,7 +87,7 @@ What about private classes?
 There is a fallback, in that `@TypeInfo` can specify names as strings if it absolutely must, as follows:
 
 ====
-[source,Java]
+[source,java]
 ----
 @TypeInfo(
   typeNames="com.foo.PrivateBar",
@@ -100,7 +100,7 @@ Notice no access is specified here.
 There is a default access of everything.
 All methods, fields, constructors are reflectively accessible and the `.class` bytes are loadable as a resource.
 
-==== Contributing New Hints
+=== Contributing new hints
 
 The typical approach is:
 
@@ -117,7 +117,7 @@ It is possible that more dependencies may need to be added to the configuration 
 That is OK, so long as you ensure that they are provided scope.
 If you are adding a new `NativeImageConfiguration`, ensure that the `META-INF/services/*` file is updated to reference your new implementation.
 
-==== Is This the Way?
+=== Is this the way?
 
 As we play around with this extension mechanism to determine suitability, we are thinking through a number of pros and cons:
 

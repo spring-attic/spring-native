@@ -1,4 +1,4 @@
-= Spring Graal Native Reference Guide
+= Spring Graal Native reference guide
 :toc: left
 :toclevels: 4
 :numbered:
@@ -8,7 +8,7 @@
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 [[introduction]]
-This guide walks you through the various options for building GraalVM native-images for your Spring Boot applications.
+This guide walks you through the various options for building GraalVM native images for your Spring Boot applications.
 
 This involves compiling your application as normal and then running an extra native-image step that builds a self-contained platform-specific executable for that application.
 The executable should have a more predictable memory profile as well as fast startup.
@@ -19,7 +19,7 @@ However, it sometimes needs a few hints so that it can ensure it includes in the
 
 In particular, the following concerns apply:
 
-* If the application is going to reflect at runtime on some type, field, method, orconstructor, the native image must include the data to satisfy those reflection requests.
+* If the application is going to reflect at runtime on some type, field, method or constructor, the native image must include the data to satisfy those reflection requests.
 
 * If the application is going to load resources (such as `application.properties`), they must be included in the image.
 
@@ -82,7 +82,7 @@ include::troubleshooting.adoc[]
 
 include::extension_guide.adoc[]
 
-== Contact Us
+== Contact us
 
 Finally, before you post about it not working, please check the <<troubleshooting,troubleshooting guide>>, which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
 

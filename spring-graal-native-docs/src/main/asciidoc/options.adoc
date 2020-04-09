@@ -1,14 +1,14 @@
 [[options]]
-=== Options
+== Options
 
 You can tweak the behavior of GraalVM native by setting options.
 These are passed to `native-image` as command line parameters, in a `META-INF/native-image/native-image.properties` file with an `Arg` key or through the `<buildArgs>..</buildArgs>` block when invoking with Maven.
 
-==== GraalVM Options
+=== GraalVM options
 
 GraalVM offers options that are enabled by default and others that are not enabled by default (some of which are recommended, though).
 
-===== Options Enabled by Default
+==== Options enabled by default
 
 These options are enabled by default when using `spring-graal-native`, since they are mandatory to make a Spring application work when compiled as GraalVM native images.
 
@@ -16,9 +16,9 @@ These options are enabled by default when using `spring-graal-native`, since the
 
 * `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
 
-===== Options Recommended by Default
+==== Options recommended by default
 
-* `--no-server` means do not use the image-build server which can be sometimes unreliable.
+* `--no-server` means do not use the image-build server which can be sometimes unreliable, see https://github.com/oracle/graal/issues/1952[graal#1952] for more details.
 
 * `--verbose` makes image building output more verbose.
 
@@ -26,7 +26,7 @@ These options are enabled by default when using `spring-graal-native`, since the
 
 * `-H:+ReportExceptionStackTraces` provides more detail should something go wrong.
 
-===== Other Options
+==== Other options
 
 * `--initialize-at-build-time` initializes classes by default at build time without any class or package being specified.
 This option is currently (hopefully, temporarily) required for Netty-based applications but is not recommended for other applications, since it can trigger compatibility issues, especially regarding logging and static fields.
@@ -38,7 +38,7 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 
 * `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
 
-==== Feature Options
+=== Feature options
 
 The current feature options are as follows:
 
@@ -59,7 +59,7 @@ This is a good mode for the feature when you use the GraalVM agent to compute th
 * `-Dspring.graal.missing-selector-hints=warning` switches the feature from a hard error for missing hints to a warning.
 See the <<troubleshooting>> section for more details on this.
 
-==== Optional Options
+=== Optional options
 
 * `--enable-all-security-services` required for HTTPS and crypto.
 

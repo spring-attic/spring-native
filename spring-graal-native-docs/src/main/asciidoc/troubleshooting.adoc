@@ -1,9 +1,9 @@
 [[troubleshooting]]
-=== Troubleshooting
+== Troubleshooting
 
 While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
 Usually, the problem is a lack of configuration.
-GraalVM native-image probably was not told about the application intending to reflectively call something or load a resource.
+GraalVM `native-image` probably was not told about the application intending to reflectively call something or load a resource.
 However, there can also be more serious problems, the `native-image` crashing or the application using a third party library that includes code not compatible with `native-image`.
 
 This section explores some of the errors that can encountered and possible any fixes or workarounds.
@@ -13,17 +13,17 @@ The Spring team is actively working with the Graal team on issues.
 You can see the currently open issues https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
 This section tracks Spring-labelled issues on the Graal issue tracker.
 
-==== `native-image` is Failing
+=== `native-image` is failing
 
 The image can fail for a number of reasons. We have described the most common causes and their solutions here.
 
-===== Out of Memory when Building the Native Image
+==== Out of memory error when building the native image
 
 `native-image` consumes a lot of RAM.
 We have most success on 32G RAM desktop machines.
 16G is possible for smaller samples but 8G machines are likely to hit problems more often.
 
-===== You get a Weird Crash
+==== You get a weird crash
 
 If you get a "`weird crash`", check to see if you get the following error:
 
@@ -62,12 +62,12 @@ Error: Image build request failed with exit status 255
 This has been seen with Graal 20.0.
 The current workaround is to re-run your application, because the problem is intermittent.
 
-==== The Built Image Does Not Run
+=== The built image does not run
 
 If your built image does not run, you can try a number of fixes.
 This section describes those possible fixes.
 
-===== Missing Resource Bundles
+==== Missing resource bundles
 
 In some cases, when there is a problem, the error message tries to tell you exactly what to do, as follows:
 
@@ -83,7 +83,7 @@ Caused by: java.util.MissingResourceException:
 
 Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section in the `pom.xml` file.
 
-===== Getting `ClassNotFoundException`
+==== Getting `ClassNotFoundException`
 
 The following listing shows a typical `ClassNotFoundException`:
 
@@ -117,7 +117,7 @@ We might need `allDeclaredFields` if the code intends to reflect on those, too.
 The following entry satisfies the preceding error:
 
 ====
-[source,bash]
+[source,json]
 ----
 [
 {
@@ -131,13 +131,13 @@ The following entry satisfies the preceding error:
 
 Recompiling should pick up this extra configuration, and the resultant image include metadata to satisfy reflection of `AuthConfigFactoryImpl`.
 
-==== Where Has My Logging Gone?
+=== Where has my logging gone?
 
 In standard operation, `native-image` uses a server to optimize compilation speeds.
 Using the server has been known to produce native images that are missing logging.
 In this case, add `--no-server` to the arguments being passed to `native-image`.
 
-===== No Access Hint Found for Import Selector: XXX
+==== No access hint found for import selector: XXX
 
 The feature chases down configuration references to other configurations (`@Import` usages).
 However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
@@ -156,7 +156,7 @@ It is possible that, in your case, you do not need what the selector is doing.
 To do so, specify the `-Dspring.graal.missing-selector-hints=warning` optionto cause log messages about the problem but not a hard fail.
 Note that using warnings rather than errors can cause serious problems for your application.
 
-==== Diagnosing Issues with the Feature
+=== Diagnosing issues with the feature
 
 Sometimes, you want to use the feature but cannot.
 Maybe you like that the feature offers that more optimal mode of discarding unnecessary configuration at image-build time, which the agent mode does not.
@@ -191,7 +191,7 @@ ls -l native-image-config
 
 Now, we want to compare `native-image-config/reflect-config.json` with the configuration being produced by the feature.
 Luckily, the feature supports a dump mode, where it puts it out on disk for us to see.
-Add the following to the maven `<buildArgs>...</buildArgs>` section or as a parameter in the direct call to native-image:
+Add the following to the maven `<buildArgs>...</buildArgs>` section or as a parameter in the direct call to `native-image`:
 
 ====
 [source,bash]
@@ -264,7 +264,7 @@ mkdir -p src/main/resources/META-INF/native-image
 Now create `src/main/resources/META-INF/native-image/reflect-config.json` with content similar to the following (including the first one from the diff in this example):
 
 ====
-[source,bash]
+[source,json]
 ----
 [
 {"name":"org.springframework.context.ApplicationEventPublisherAware","allPublicMethods":true}

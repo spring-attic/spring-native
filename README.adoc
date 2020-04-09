@@ -7,13 +7,14 @@ image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-gra
 This project goal is to provide experimental support for building https://spring.io/projects/spring-boot[Spring Boot] applications as https://www.graalvm.org/docs/reference-manual/native-image/[GraalVM native images].
 Watch this https://www.youtube.com/watch?v=3eoAxphAUIg[Running Spring Boot applications as GraalVM native images] Devoxx talk video for more details.
 
-It is mainly composed of 5 parts:
+It is mainly composed of 6 parts:
 
 - `spring-graal-native-feature`: this module is Spring GraalVM feature. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
 - `spring-graal-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
 - `spring-graal-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
 - `spring-graal-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
-- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests. 
+- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+- `spring-graal-native-docs`: contains the asciidoc documentation sources.
 
 == Scope and status
 
@@ -25,6 +26,8 @@ This feature supports:
 - GraalVM 20.0.0
 - Spring Boot 2.3.0.M4
 
+Spring team collaborates with GraalVM native team by raising issues in their bug tracker, with the goal to improve the production-readiness of native-images. These bugs on GraalVM issue tracker https://github.com/oracle/graal/labels/spring[are identified by the `spring` label].
+
 == Quick start
 
 For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}/reference/index.html[documentation].
@@ -33,7 +36,7 @@ For detailed information and walkthroughs of applying the techniques to your pro
 
 From GraalVM builds:
 
-- Install GraalVM from https://github.com/graalvm/graalvm-ce-builds/releases[here].
+- Install GraalVM from https://github.com/graalvm/graalvm-ce-builds/releases[here] (dev builds are also available https://github.com/graalvm/graalvm-ce-dev-builds/releases[here]).
 - Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
