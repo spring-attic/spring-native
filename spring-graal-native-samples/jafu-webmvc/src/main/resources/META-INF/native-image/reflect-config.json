@@ -64,20 +64,6 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.web.context.ConfigurableWebApplicationContext",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.web.context.WebApplicationContext",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.context.ConfigurableApplicationContext",
-    "allDeclaredConstructors": true
-  },
-  {
     "name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
@@ -94,11 +80,6 @@
   },
   {
     "name": "org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
   },
