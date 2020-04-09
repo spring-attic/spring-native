@@ -5,6 +5,11 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graal-native
+:version: 0.6.0.BUILD-SNAPSHOT
+:repository: snapshot
+:boot-version: 2.3.0.M3
+:boot-repository: milestone
+:graal-version: 20.0.0
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 [[introduction]]
