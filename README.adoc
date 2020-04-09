@@ -45,7 +45,7 @@ From GraalVM builds:
 Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
 
 - https://sdkman.io/install[Install SDKMAN]
-- Install GraalVM with `sdk install java 20.0.0.r8-grl` for Java 8 or `sdk install java 20.0.0.r11-grl` for Java 11
+- Install GraalVM with `sdk install java {graal-version}.r8-grl` for Java 8 or `sdk install java {graal-version}.r11-grl` for Java 11
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 === Artifacts
