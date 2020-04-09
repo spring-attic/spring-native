@@ -5,7 +5,7 @@ This section describes how to extend Spring Graal Native.
 
 === Extending the feature
 
-We are experimenting with extension models, as you will see if you look in the `spring-graal-native` module within the project.
+We are experimenting with extension models, as you will see if you look in the `spring-graal-native-configuration` module within the project.
 Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application.
 
 What the configuration module is trying to achieve is to tie the access to certain types to the Spring configuration that needs them.
@@ -80,7 +80,7 @@ That is deliberate.
 Notice the use of direct class references in the hints rather than strings.
 This type safety is a little more robust.
 If we upgrade a Spring version and the configuration module no longer compiles, we know something has changed that needs to be addressed.
-We may not have noticed if we use only `String` references.
+We may not have noticed if we use only string references.
 The reason these package names match Spring package names is visibility.
 With this setup, the hint can refer to a type with only package visibility in the original code.
 What about private classes?

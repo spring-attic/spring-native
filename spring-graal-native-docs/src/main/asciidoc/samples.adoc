@@ -13,6 +13,6 @@ Running `native-image` instances takes a long time and eats RAM.
 The samples show the wide variety of tech that is working fine: Tomcat, Netty, Thymeleaf, JPA, and others.
 The pet clinic sample brings multiple technologies together in one application.
 
-{project-home}/tree/master/spring-graal-native-samples/jafu[`jafu`] and {project-home}/tree/master/spring-graal-native-samples/jafu-webmvc[`jafu-webmvc`] samples are based on the https://github.com/spring-projects-experimental/spring-fu[Spring Fu experimental project] and are designed to demonstrate how leveraging Spring infrastructure in a functional way with less reflection ends up to smaller native images that consume less memory.
+{project-home}/tree/master/spring-graal-native-samples/jafu[`jafu`] and {project-home}/tree/master/spring-graal-native-samples/jafu-webmvc[`jafu-webmvc`] samples are based on the https://github.com/spring-projects-experimental/spring-fu[Spring Fu experimental project] and are designed to demonstrate how leveraging Spring infrastructure in a functional way ends up to smaller native images that consume less memory.
 
 If you are starting to build your first Spring Boot application, we recommend you follow one of the guides.

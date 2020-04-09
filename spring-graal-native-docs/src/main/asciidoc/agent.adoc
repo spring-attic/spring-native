@@ -1,6 +1,8 @@
 [[agent]]
 === Using the GraalVM agent
 
+The feature is a work in progress, it doesn't understand all of Spring yet, but perhaps more importantly it doesn't understand what else your app might be doing with various other non-Spring related dependencies.
+In situations like this it can be useful to try the agent which may catch 'other things' your application is doing.
 You can attach the GraalVM agent to an application and, during the course of the application's execution, it produce the necessary configuration files for a subsequent `native-image` build.
 As the application runs, it observes the types being reflectively accessed, the resources being loaded, and the proxies being requested, and it captures this information in `.json` files.
 
@@ -188,7 +190,7 @@ However, in some Boot applications, you may need to make some tweaks to ensure t
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
 Boot 2.2 added the option to avoid creating these kinds of `native-image` incompatible proxies for configuration class contents, and this happens to suit `native-image` compilation.
-The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
+The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What%27s-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
 The following example is from the `webflux-netty` sample:
@@ -306,7 +308,7 @@ This is a realistic situation right now.
 You have to work a little harder while the agent is missing things.
 We do that now to troubleshoot this problem.
 
-You should get the folloiwng exceptions when you launch it:
+You should get the following exceptions when you launch it:
 
 ====
 [source,bash]
@@ -364,7 +366,7 @@ To do so, open `src/main/resources/META-INF/native-image/reflect-config.json` an
 ----
 ====
 
-The startup time is <100ms, compared to ~1500ms when starting the fat jar.
+It should now work after a rebuild. The startup time is <100ms, compared to ~1500ms when starting the fat jar.
 
 ==== Summary
 
