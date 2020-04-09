@@ -37,7 +37,7 @@ There are two primary ways to communicate this information to the build process:
 
 * Through JSON files on the classpath.
 
-* Through a feature (from GraalVM) that participates in the image-build process and, after analyzing the application being compiled, calls APIs to register information about reflection, resources, proxies, and so on.
+* Through a GraalVM feature that participates in the image-build process and, after analyzing the application being compiled, calls APIs to register information about reflection, resources, proxies, and so on.
 
 Some projects are starting to include the necessary JSON files in their default distributions (for example, Netty).
 

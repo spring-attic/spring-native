@@ -30,7 +30,7 @@ You may already be ready to go with your own project.
 
 IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
 
-If needed, upgrade the project to Spring Boot {boot-version} and add the following repositories to the `pom.xml` file:
+If needed, upgrade the project to Spring Boot {boot-version} (it may work with 2.2.X versions of Boot if upgrading is tricky) and add the following repositories to the `pom.xml` file:
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -80,7 +80,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
           <configuration>
-            <buildArgs>-Dspring.graal.mode=initialization-only --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
+            <buildArgs>-Dspring.graal.remove-unused-autoconfig=true --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
           </configuration>
           <executions>
             <execution>
@@ -158,8 +158,9 @@ The following listing shows the dependencies to add:
 ====
 
 * What is `spring-graal-native`?
-The `spring-graal-native` behavior is partially driven by hints for any reflective or resource accesses that are not obvious from what it can see in the Spring application being built into a native image. Such hints are included in `spring-graal-native` as well.
-These hints let Spring Graal Native capture what needs to be reflectively accessible or loadable as resources when that is not obvious from a basic analysis of the application.
+The `spring-graal-native` dependency brings together several components. It includes the GraalVM feature implementation.
+It includes the temporary substitutions (a GraalVM term) for patching around issues with some classes whilst we wait for more correct fixes in these classes. 
+The feature behaviour is actually driven by a set of annotations that encapsulate boot knowledge that is non obvious from a high level static analysis of the code, for example a particular ImportSelector may required reflective access to a type. This knowledge is also included in the `spring-graal-native` dependency.
 
 * The `spring-context-indexer` has been in Spring for a while.
 In a native image, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
@@ -188,7 +189,7 @@ However, in some Boot applications, it may be necessary to make some tweaks to e
 The only kind of proxy allowed with native images is a JDK proxy.
 It is not possible to use CGLIB or some other kind of generated proxy.
 Boot 2.2, added the option to avoid creating these kinds of native image incompatible proxies for configuration class contents and this happens to suit native image compilation.
-The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x#core-container[here].
+The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What%27s-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
 The following example comes from the `webflux-netty` sample:
