@@ -33,27 +33,33 @@ cd gs-rest-service/complete
 
 IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
 
-Upgrade the project to Spring Boot 2.3.0.M3.
-
-If using a milestone (or snapshot) of boot, you also need to add the following repositories to the `pom.xml` file:
+If needed, upgrade the project to Spring Boot {boot-version} and add the following repositories to the `pom.xml` file:
 
 ====
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
 <pluginRepositories>
     <!-- ... -->
     <pluginRepository>
-        <id>spring-milestone</id>
-        <name>Spring Milestone</name>
-        <url>https://repo.spring.io/milestone</url>
+        <id>spring-{boot-repository}</id>
+        <name>Spring {boot-repository}</name>
+        <url>https://repo.spring.io/{boot-repository}</url>
     </pluginRepository>
 </pluginRepositories>
+----
+====
+
+And
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
 <repositories>
     <!-- ... -->
     <repository>
-        <id>spring-milestone</id>
-        <name>Spring Milestone</name>
-        <url>https://repo.spring.io/milestone</url>
+        <id>spring-{boot-repository}</id>
+        <name>Spring {boot-repository}</name>
+        <url>https://repo.spring.io/{boot-repository}</url>
     </repository>
 </repositories>
 ----
@@ -64,7 +70,7 @@ If using a milestone (or snapshot) of boot, you also need to add the following r
 GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin] that we are going to bring in here. Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
 
 ====
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
 <profiles>
   <profile>
@@ -74,7 +80,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
         <plugin>
           <groupId>org.graalvm.nativeimage</groupId>
           <artifactId>native-image-maven-plugin</artifactId>
-          <version>20.0.0</version>
+          <version>{graal-version}</version>
           <configuration>
             <buildArgs>-Dspring.graal.mode=initialization-only --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
           </configuration>
@@ -112,14 +118,14 @@ Hence, using the server to aid compilation is turned off here.
 If necessary, add the repository for the `spring-graal-native` dependency, as follows:
 
 ====
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
 <repositories>
 	<!-- ... -->
 	<repository>
-		<id>spring-snapshot</id>
-		<name>Spring Snapshots</name>
-		<url>https://repo.spring.io/snapshot</url>
+		<id>spring-{repository}</id>
+		<name>Spring {repository}/name>
+		<url>https://repo.spring.io/{repository}</url>
 	</repository>
 </repositories>
 ----
@@ -130,32 +136,35 @@ If necessary, add the repository for the `spring-graal-native` dependency, as fo
 The following listing adds the needed dependencies:
 
 ====
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
-<dependency>
-  <groupId>org.springframework</groupId>
-  <artifactId>spring-context-indexer</artifactId>
-</dependency>
+<dependencies>
+    <!-- ... -->
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-graal-native</artifactId>
+        <version>{version}</version>
+    </dependency>
 
-<dependency>
-    <groupId>org.springframework.experimental</groupId>
-    <artifactId>spring-graal-native</artifactId>
-    <version>0.6.0.BUILD-SNAPSHOT</version>
-</dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-indexer</artifactId>
+    </dependency>
+</dependencies>
 ----
 ====
-
-* The `spring-context-indexer` has been in Spring for a while.
-In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
-The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
-If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
-The indexer can be used for this whether building a native image or running your application as a standard Java application.
 
 * Why do we need `spring-graal-native`?
 This is discussed in more detail later in this section.
 Basically, the feature is being used in a lightweight mode here where it is not providing all the configuration.
 Rather, it provides only the initialization configuration.
 That is because the agent does not compute this information.
+
+* The `spring-context-indexer` has been in Spring for a while.
+In a `native-image`, all notion of classpath is lost, so it is not possible to explore the classpath to find components at runtime.
+The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
+If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
+The indexer can be used for this whether building a native image or running your application as a standard Java application.
 
 ===== Set `the start-class` element
 

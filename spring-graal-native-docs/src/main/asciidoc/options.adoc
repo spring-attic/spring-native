@@ -30,7 +30,7 @@ These options are enabled by default when using `spring-graal-native`, since the
 
 * `--initialize-at-build-time` initializes classes by default at build time without any class or package being specified.
 This option is currently (hopefully, temporarily) required for Netty-based applications but is not recommended for other applications, since it can trigger compatibility issues, especially regarding logging and static fields.
-See https://github.com/spring-projects-experimental/spring-graal-native/issues/8[this issue] for more details.
+See {project-home}/issues/8[this issue] for more details.
 You can use it with specific classes or package specified if needed.
 
 * `-H:+PrintAnalysisCallTree` helps to find what classes, methods, and fields are used and why.

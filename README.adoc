@@ -1,5 +1,7 @@
 :version: 0.6.0.BUILD-SNAPSHOT
-:repository-url: https://repo.spring.io/snapshot
+:repository: snapshot
+:boot-version: 2.3.0.M3
+:graal-version: 20.0.0
 :documentation-url: {repository-url}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
 
 image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
@@ -23,8 +25,8 @@ Supporting a wider and clearly defined range of Spring Boot applications, as wel
 
 This feature supports:
 
-- GraalVM 20.0.0
-- Spring Boot 2.3.0.M4
+- GraalVM {{graal-version}}
+- Spring Boot {boot-version}
 
 Spring team collaborates with GraalVM native team by raising issues in their bug tracker, with the goal to improve the production-readiness of native-images. These bugs on GraalVM issue tracker https://github.com/oracle/graal/labels/spring[are identified by the `spring` label].
 
@@ -48,8 +50,8 @@ Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versi
 
 === Artifacts
 
-- Artifact: {repository-url}/org/springframework/experimental/spring-graal-native/{version}/spring-graal-native-{version}.jar[`org.springframework.experimental:spring-graal-native:{version}`]
-- Repository: `{repository-url}`
+- Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native/{version}/spring-graal-native-{version}.jar[`org.springframework.experimental:spring-graal-native:{version}`]
+- Repository: https://repo.spring.io/`{repository}`
 
 === Play with the samples
 

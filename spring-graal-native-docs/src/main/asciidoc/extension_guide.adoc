@@ -5,7 +5,7 @@ This section describes how to extend Spring Graal Native.
 
 === Extending the feature
 
-We are experimenting with extension models, as you will see if you look in the `spring-graal-native-configuration` module within the project.
+We are experimenting with extension models, as you will see if you look in the `spring-graal-native` module within the project.
 Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application.
 
 What the configuration module is trying to achieve is to tie the access to certain types to the Spring configuration that needs them.

@@ -1,7 +1,7 @@
 [[samples]]
 == Samples
 
-There are numerous samples in the https://github.com/spring-projects-experimental/spring-graal-native/tree/master/spring-graal-native-samples[`spring-graal-native-samples`] subfolder of the root project.
+There are numerous samples in the {project-home}/tree/master/spring-graal-native-samples[`spring-graal-native-samples`] subfolder of the root project.
 These show the feature in use with different technologies.
 
 The samples do not all currently use Maven. Instead, they are built for us to play around with a little more easily.
@@ -13,6 +13,6 @@ Running `native-image` instances takes a long time and eats RAM.
 The samples show the wide variety of tech that is working fine: Tomcat, Netty, Thymeleaf, JPA, and others.
 The pet clinic sample brings multiple technologies together in one application.
 
-https://github.com/spring-projects-experimental/spring-graal-native/tree/master/spring-graal-native-samples/jafu[`jafu`] and https://github.com/spring-projects-experimental/spring-graal-native/tree/master/spring-graal-native-samples/jafu-webmc`[jafu-webmvc`] samples are based on the https://github.com/spring-projects-experimental/spring-fu[Spring Fu experimental project] and are designed to demonstrate how leveraging Spring infrastructure in a functional way with less reflection ends up to smaller native images that consume less memory.
+{project-home}/tree/master/spring-graal-native-samples/jafu[`jafu`] and {project-home}/tree/master/spring-graal-native-samples/jafu-webmvc[`jafu-webmvc`] samples are based on the https://github.com/spring-projects-experimental/spring-fu[Spring Fu experimental project] and are designed to demonstrate how leveraging Spring infrastructure in a functional way with less reflection ends up to smaller native images that consume less memory.
 
 If you are starting to build your first Spring Boot application, we recommend you follow one of the guides.
