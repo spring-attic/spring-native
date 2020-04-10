@@ -3,7 +3,7 @@
 ARTIFACT=function-aws
 MAINCLASS=com.example.demo.DemoApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
+FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.6.1.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
