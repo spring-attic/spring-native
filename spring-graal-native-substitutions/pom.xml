@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-graal-native-parent</artifactId>
-		<version>0.7.0.BUILD-SNAPSHOT</version>
+		<version>0.6.1.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>spring-graal-native-substitutions</artifactId>
-	<version>0.7.0.BUILD-SNAPSHOT</version>
+	<version>0.6.1.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Spring Graal native substitutions</name>

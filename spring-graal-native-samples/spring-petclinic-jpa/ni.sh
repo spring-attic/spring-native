@@ -4,7 +4,7 @@ export LIBPATH=`find ../../BOOT-INF/lib | tr '\n' ':'`
 export CP=.:$LIBPATH
 
 # Our feature being on the classpath is what triggers it
-export CP=$CP:../../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
+export CP=$CP:../../../../../spring-graal-native/target/spring-graal-native-0.6.1.BUILD-SNAPSHOT.jar
 
 printf "\n\nCompile\n"
 
