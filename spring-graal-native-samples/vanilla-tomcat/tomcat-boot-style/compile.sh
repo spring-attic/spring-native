@@ -24,6 +24,11 @@ rm -f $ARTIFACT
 
 CP=../$JAR
 
+if [ ! -f "$FEATURE" ]; then
+    printf "${RED}FAILURE${NC}: $FEATURE does not exist, please build the root project before building this sample.\n"
+    exit 1
+fi
+
 echo "Generating reflection files for $ARTIFACT"
 rm -rf graal/META-INF 2>/dev/null
 mkdir -p graal/META-INF/native-image
