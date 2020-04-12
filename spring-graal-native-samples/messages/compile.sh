@@ -24,6 +24,11 @@ cp -R META-INF BOOT-INF/classes
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
 CP=BOOT-INF/classes:$LIBPATH
 
+if [ ! -f "$FEATURE" ]; then
+    printf "${RED}FAILURE${NC}: $FEATURE does not exist, please build the root project before building this sample.\n"
+    exit 1
+fi
+
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \

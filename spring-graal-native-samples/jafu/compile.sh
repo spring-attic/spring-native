@@ -22,6 +22,11 @@ cd target/native-image
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
+if [ ! -f "$FEATURE" ]; then
+    printf "${RED}FAILURE${NC}: $FEATURE does not exist, please build the root project before building this sample.\n"
+    exit 1
+fi
+
 # Avoids clashing substitutions from this project deps and the feature deps
 rm BOOT-INF/lib/svm-20.*.jar
 
