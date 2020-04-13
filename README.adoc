@@ -1,4 +1,4 @@
-:version: 0.6.0.RELEASE
+:version: 0.6.1.RELEASE
 :repository: milestone
 :boot-version: 2.3.0.M4
 :graal-version: 20.0.0
