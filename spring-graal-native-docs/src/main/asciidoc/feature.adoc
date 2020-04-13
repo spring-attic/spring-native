@@ -6,9 +6,17 @@ This is a practical guide, so we perform this for real on the https://spring.io/
 
 ==== Download and install GraalVM
 
-Although the `native-image` build is invoked through Maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice Java 8 and Java 11 versions are available.
-Although either should work, we have had more issues with the Java 11 one, so playing it safe would be selecting the Java 8 version.
+From GraalVM builds:
+
+- Install GraalVM {graal-version} Java 8 distribution from https://github.com/graalvm/graalvm-ce-builds/releases[here]
+- Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
+
+- https://sdkman.io/install[Install SDKMAN]
+- Install GraalVM with `sdk install java {graal-version}.r8-grl`
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 ==== Set up the sample project
 
@@ -30,7 +38,21 @@ You may already be ready to go with your own project.
 
 IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
 
-If needed, upgrade the project to Spring Boot {boot-version} (it may work with 2.2.X versions of Boot if upgrading is tricky) and add the following repositories to the `pom.xml` file:
+Upgrade the project to Spring Boot {boot-version}:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{boot-version}</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+----
+====
+
+And add the following repositories to the `pom.xml` file if needed:
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -80,7 +102,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
           <configuration>
-            <buildArgs>-Dspring.graal.remove-unused-autoconfig=true --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
+            <buildArgs>-Dspring.graal.remove-unused-autoconfig=true --no-fallback -H:+ReportExceptionStackTraces --no-server</buildArgs>
           </configuration>
           <executions>
             <execution>
@@ -124,17 +146,17 @@ If necessary, add the repository for the `spring-graal-native` dependency, as fo
 [source,xml,subs="attributes,verbatim"]
 ----
 <repositories>
-	<!-- ... -->
-	<repository>
-		<id>spring-{repository}</id>
-		<name>Spring {repository}/name>
-		<url>https://repo.spring.io/{repository}</url>
-	</repository>
+    <!-- ... -->
+    <repository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </repository>
 </repositories>
 ----
 ====
 
-===== Add the appropriate dependencies
+===== Add and update the appropriate dependencies
 
 The following listing shows the dependencies to add:
 
@@ -168,14 +190,39 @@ The indexer actually produces a list of components at Java compile time and capt
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or just running your application as a standard Java application.
 
+You should also exclude the `tomcat-embed-websocket` dependency from the `spring-boot-starter-web` for now (we are working on https://github.com/apache/tomcat/pull/274[a Tomcat contribution] to avoid this):
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<dependencies>
+    <!-- ... -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
+----
+====
+
 ===== Set the `start-class` element
 
-The native image build needs to know the entry point to your application. It does consult a few places to find it, but, in our sample, we set it in the properties section of the `pom.xml`, as follows:
+The native image build needs to know the entry point to your application. It does consult a few places to find it.
+However, in our sample we should set it in the `properties section` of the `pom.xml` file, as follows:
 
 ====
 [source,xml]
 ----
-<start-class>com.example.restservice.RestServiceApplication</start-class>
+<properties>
+    <!-- ... -->
+    <start-class>com.example.restservice.RestServiceApplication</start-class>
+</properties>
 ----
 ====
 
@@ -192,26 +239,18 @@ Boot 2.2, added the option to avoid creating these kinds of native image incompa
 The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What%27s-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
-The following example comes from the `webflux-netty` sample:
+
+Adapt `RestServiceApplication.java` accordingly:
 
 ====
 [source,java]
 ----
 @SpringBootApplication(proxyBeanMethods = false)
-public class DemoApplication {
+public class RestServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
-
-	@RestController
-	class Foo {
-
-		@GetMapping("/")
-		public String greet() {
-			return "hi!";
-		}
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RestServiceApplication.class, args);
+    }
 
 }
 ----
@@ -227,7 +266,7 @@ mvn -Pgraal clean package
 ====
 
 Did it build cleanly?
-If so, the resultant executable is in the target folder named after the `start-class` (in this case, `com.example.restservice.RestServiceApplication`).
+If so, the resultant executable is in the target folder named after the `start-class` (in this case, `com.example.restservice.restserviceapplication`).
 
 Did it fail? See the <<troubleshooting>> section.
 
@@ -238,7 +277,7 @@ To run your application, you need to run the following executable:
 ====
 [source,bash]
 ----
-./target/com.example.restservice.RestServiceApplication
+./target/com.example.restservice.restserviceapplication
 
 ...
 Mar 18, 2020 3:26:16 PM org.springframework.boot.web.embedded.tomcat.TomcatWebServer start

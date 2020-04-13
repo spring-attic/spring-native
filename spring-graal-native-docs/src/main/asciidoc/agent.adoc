@@ -13,9 +13,17 @@ NOTE: Currently, there are agent bugs, and we cover those, including how they ma
 
 ==== Download and install GraalVM
 
-Although the `native-image` build is going to be invoked through Maven, the agent is shipped with GraalVM and we need to install it by following {project-home}#install-graalvm-native[these instructions].
-Notice that Java 8 and Java 11 versions are available.
-Although either should work, we have had more issues with the Java 11 one, so playing it safe would be selecting the Java 8 version.
+From GraalVM builds:
+
+- Install GraalVM {graal-version} Java 8 distribution from https://github.com/graalvm/graalvm-ce-builds/releases[here]
+- Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
+
+- https://sdkman.io/install[Install SDKMAN]
+- Install GraalVM with `sdk install java {graal-version}.r8-grl`
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 ==== Setup the sample project
 
@@ -35,13 +43,28 @@ cd gs-rest-service/complete
 
 IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
 
-If needed, upgrade the project to Spring Boot {boot-version} and add the following repositories to the `pom.xml` file:
+Upgrade the project to Spring Boot {boot-version}:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{boot-version}</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+----
+====
+
+And add the following repositories to the `pom.xml` file if needed:
 
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
 <pluginRepositories>
     <!-- ... -->
+
     <pluginRepository>
         <id>spring-{boot-repository}</id>
         <name>Spring {boot-repository}</name>
@@ -58,6 +81,7 @@ And
 ----
 <repositories>
     <!-- ... -->
+
     <repository>
         <id>spring-{boot-repository}</id>
         <name>Spring {boot-repository}</name>
@@ -84,7 +108,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
           <configuration>
-            <buildArgs>-Dspring.graal.mode=initialization-only --no-fallback --allow-incomplete-classpath --report-unsupported-elements-at-runtime -H:+ReportExceptionStackTraces --no-server</buildArgs>
+            <buildArgs>-Dspring.graal.mode=initialization-only --no-fallback -H:+ReportExceptionStackTraces --no-server</buildArgs>
           </configuration>
           <executions>
             <execution>
@@ -124,9 +148,10 @@ If necessary, add the repository for the `spring-graal-native` dependency, as fo
 ----
 <repositories>
 	<!-- ... -->
+
 	<repository>
 		<id>spring-{repository}</id>
-		<name>Spring {repository}/name>
+		<name>Spring {repository}</name>
 		<url>https://repo.spring.io/{repository}</url>
 	</repository>
 </repositories>
@@ -142,6 +167,7 @@ The following listing adds the needed dependencies:
 ----
 <dependencies>
     <!-- ... -->
+
     <dependency>
         <groupId>org.springframework.experimental</groupId>
         <artifactId>spring-graal-native</artifactId>
@@ -170,13 +196,16 @@ The indexer can be used for this whether building a native image or running your
 
 ===== Set `the start-class` element
 
-The native image build needs to know the entry point to your application. It consults a few places to find it.
-However, in our sample, we set it in the properties section of the `pom.xml` file:
+The native image build needs to know the entry point to your application. It does consult a few places to find it.
+However, in our sample we should set it in the `properties section` of the `pom.xml` file, as follows:
 
 ====
 [source,xml]
 ----
-<start-class>com.example.restservice.RestServiceApplication</start-class>
+<properties>
+    <!-- ... -->
+    <start-class>com.example.restservice.RestServiceApplication</start-class>
+</properties>
 ----
 ====
 
@@ -193,26 +222,18 @@ Boot 2.2 added the option to avoid creating these kinds of `native-image` incomp
 The enhancement in question is discussed https://github.com/spring-projects/spring-framework/wiki/What%27s-New-in-Spring-Framework-5.x#core-container[here].
 Basically, applications need to switch to using `proxyBeanMethods=false` in their configuration annotations.
 The framework code has already all moved to this model.
-The following example is from the `webflux-netty` sample:
+
+Adapt `RestServiceApplication.java` accordingly:
 
 ====
 [source,java]
 ----
 @SpringBootApplication(proxyBeanMethods = false)
-public class DemoApplication {
+public class RestServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
-
-	@RestController
-	class Foo {
-
-		@GetMapping("/")
-		public String greet() {
-			return "hi!";
-		}
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RestServiceApplication.class, args);
+    }
 
 }
 ----
@@ -247,9 +268,9 @@ java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/
 
 It runs as normal.
 
-IMPORTANT: While it is up to you to make sure you exercise any codepaths you want to ensure are covered by the native image that will be built, exercising those paths may cause extra reflection access or resource loading and in other situations.
+IMPORTANT: While it is up to you to make sure you exercise any codepaths, you want to ensure they are covered by the native image that will be built, exercising those paths may cause extra reflection access or resource loading and in other situations. Here, go to the `http://localhost:8080/greeting` endpoint, otherwise some codepaths could be missed.
 
-Shutdown the app.
+Shutdown the app with CTRL + C for example.
 
 Notice the files that now exist in the folder:
 
@@ -288,7 +309,7 @@ mvn -Pgraal clean package
 ====
 
 Did it build cleanly?
-If so, the resultant executable is in the target folder named after the start-class (in this case, `com.example.restservice.RestServiceApplication`).
+If so, the resultant executable is in the target folder named after the start-class (in this case, `com.example.restservice.restserviceapplication`).
 
 Did it fail? See the <<troubleshooting>> section. As of this writing, this step works.
 
@@ -299,7 +320,7 @@ Run the following executable to run the application:
 ====
 [source,bash]
 ----
-./target/com.example.restservice.RestServiceApplication
+./target/com.example.restservice.restserviceapplication
 ----
 ====
 
@@ -323,7 +344,9 @@ Register the resource bundle using the option
 You can tweak the `pom.xml` file to add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section as another option.
 
 Recompile.
-Now it fails with the following error:
+
+Now it might launch.
+However, on curling to the endpoint (`curl http://localhost:8080/greeting`) it shows the following error:
 
 ====
 [source,bash]
@@ -337,8 +360,7 @@ Caused by: java.util.MissingResourceException:
 
 You can add that `-H:IncludeResourceBundles=javax.servlet.LocalStrings` to `pom.xml` `<buildArgs>` and recompile again.
 
-Now it might launch.
-However, on curling to the endpoint (`curl http://localhost:8080/greeting`) it shows the following error:
+Run the executable, curl to the endpoint (`curl http://localhost:8080/greeting`), it shows the following error:
 
 ====
 [source,bash]
@@ -351,7 +373,7 @@ Caused by: java.lang.ClassNotFoundException:
 
 This is what happens when the agent misses a reflective usage.
 This particular one is https://github.com/oracle/graal/issues/2198[issue 2198].
-It has been fixed but after Graal 20.0.
+It has been fixed but after GraalVM 20.0.0.
 In this situation, we can manually add this entry.
 To do so, open `src/main/resources/META-INF/native-image/reflect-config.json` and insert the following on line 2 (after the `[` on line 1):
 
