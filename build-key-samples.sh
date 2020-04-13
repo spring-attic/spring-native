@@ -13,8 +13,8 @@ do
 
   if [ -d "spring-graal-native-samples/$i/agent" ]; then
     (cd spring-graal-native-samples/$i/agent && ./build.sh)
-    if [ -f "spring-graal-native-samples/$i/agent/summary.csv" ]; then
-      cat spring-graal-native-samples/$i/agent/summary.csv >> samples-summary.csv
+    if [ -f "spring-graal-native-samples/$i/agent/target/native-image/summary.csv" ]; then
+      cat spring-graal-native-samples/$i/agent/target/native-image/summary.csv >> samples-summary.csv
     else
       echo `date +%Y%m%d-%H%M`,${i}-agent,ERROR,,,,, >> samples-summary.csv
     fi
