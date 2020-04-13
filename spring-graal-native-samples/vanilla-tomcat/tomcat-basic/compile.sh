@@ -5,7 +5,7 @@ set -e
 ARTIFACT=tomcat-basic
 MAINCLASS=com.example.tomcat.TomcatOnlyApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=../../../../../spring-graal-native/target/spring-graal-native-0.6.1.RELEASE.jar
+FEATURE=../../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
