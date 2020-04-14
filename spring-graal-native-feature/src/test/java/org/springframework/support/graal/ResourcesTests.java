@@ -22,7 +22,7 @@ import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
 
 import java.io.InputStream;
 
-public class ResourcesTest {
+public class ResourcesTests {
 
 	@Test
 	public void testApacheTomcatResources() throws Exception {

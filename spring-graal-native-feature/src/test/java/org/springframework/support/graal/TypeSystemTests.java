@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.springframework.graal.type.Type;
 import org.springframework.graal.type.TypeSystem;
 
-public class TypeSystemTest {
+public class TypeSystemTests {
 
 	private static TypeSystem typeSystem;
 
