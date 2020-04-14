@@ -29,7 +29,7 @@ import org.springframework.graal.support.SpringFeature;
  * @author Andy Clement
  */
 public class SpringConfiguration {
-    	
+
 	private TypeSystem typeSystem;
 
 	private final static Map<String, List<CompilationHint>> proposedHints = new HashMap<>();
@@ -71,12 +71,12 @@ public class SpringConfiguration {
 	
 	// TODO sort out callers so they use a proper dotted name
 	public List<CompilationHint> findProposedHints(String typename) {
-        List<CompilationHint> results = proposedHints.get(typename);     
-        return (results==null?Collections.emptyList():results);
+		List<CompilationHint> results = proposedHints.get(typename);
+		return (results==null?Collections.emptyList():results);
 	}
 
 	public static String[] findProposedFactoryGuards(String key) {
-        return proposedFactoryGuards.get(key);
+		return proposedFactoryGuards.get(key);
 	}
 
 }

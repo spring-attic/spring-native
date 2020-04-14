@@ -28,12 +28,12 @@ import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 @AutomaticFeature
 public class SpringFeature implements Feature {
 
-    private ReflectionHandler reflectionHandler;
+	private ReflectionHandler reflectionHandler;
 
-    private DynamicProxiesHandler dynamicProxiesHandler;
-    
-    private ResourcesHandler resourcesHandler;
-    
+	private DynamicProxiesHandler dynamicProxiesHandler;
+
+	private ResourcesHandler resourcesHandler;
+
 	private InitializationHandler buildTimeInitializationHandler;
 
 	public SpringFeature() {
@@ -43,7 +43,7 @@ public class SpringFeature implements Feature {
 				"\\___ \\| '_ \\| '__| | '_ \\ / _` | | |_ / _ \\/ _` | __| | | | '__/ _ \\\n"+
 				" ___) | |_) | |  | | | | | (_| | |  _|  __/ (_| | |_| |_| | | |  __/\n"+
 				"|____/| .__/|_|  |_|_| |_|\\__, | |_|  \\___|\\__,_|\\__|\\__,_|_|  \\___|\n"+
-			    "      |_|                 |___/                                     \n");
+				"      |_|                 |___/                                     \n");
 		if (!ConfigOptions.isVerbose()) {
 			System.out.println("Use -Dspring.graal.verbose=true on native-image call to see more detailed information from the feature");
 		}
@@ -52,38 +52,38 @@ public class SpringFeature implements Feature {
 			dynamicProxiesHandler = new DynamicProxiesHandler();
 			resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
 		}
-    	buildTimeInitializationHandler = new InitializationHandler();
+		buildTimeInitializationHandler = new InitializationHandler();
 	}
 
-    public boolean isInConfiguration(IsInConfigurationAccess access) {
-        return true;
-    }
+	public boolean isInConfiguration(IsInConfigurationAccess access) {
+		return true;
+	}
 
-    public List<Class<? extends Feature>> getRequiredFeatures() {
-    	List<Class<? extends Feature>> fs = new ArrayList<>();
-    	fs.add(DynamicProxyFeature.class); // Ensures DynamicProxyRegistry available
-    	fs.add(ResourcesFeature.class); // Ensures ResourcesRegistry available
-    	fs.add(ReflectionFeature.class); // Ensures RuntimeReflectionSupport available
-    	return fs;
-    }
-    
-    public void duringSetup(DuringSetupAccess access) {
+	public List<Class<? extends Feature>> getRequiredFeatures() {
+		List<Class<? extends Feature>> fs = new ArrayList<>();
+		fs.add(DynamicProxyFeature.class); // Ensures DynamicProxyRegistry available
+		fs.add(ResourcesFeature.class); // Ensures ResourcesRegistry available
+		fs.add(ReflectionFeature.class); // Ensures RuntimeReflectionSupport available
+		return fs;
+	}
+
+	public void duringSetup(DuringSetupAccess access) {
 		if (!ConfigOptions.isInitializationModeOnly()) {
-    		reflectionHandler.register(access);
+			reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
-    }
-    
-    public void beforeAnalysis(BeforeAnalysisAccess access) {
+	}
+
+	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		if (!ConfigOptions.isInitializationModeOnly()) {
 			resourcesHandler.register(access);
 		}
-    	buildTimeInitializationHandler.register(access);
+		buildTimeInitializationHandler.register(access);
 		if (!ConfigOptions.isInitializationModeOnly()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}
-    }
+	}
 
 	public static void log(String msg) {
 		if (ConfigOptions.isVerbose()) {

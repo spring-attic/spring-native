@@ -29,7 +29,7 @@ public abstract class ConfigOptions {
 
 	private final static boolean REMOVE_YAML_SUPPORT;
 	
-    private final static String DUMP_CONFIG;
+	private final static String DUMP_CONFIG;
 
 	private final static boolean VERBOSE;
 	
@@ -39,8 +39,8 @@ public abstract class ConfigOptions {
 	// about reflection/proxies/etc - this is useful if using the agent to produce that
 	// configuration data.
 	private final static String MODE; // 'default'/'initialization-only'
-    
-    static {
+
+	static {
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.graal.remove-unused-autoconfig", "false"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
@@ -58,9 +58,9 @@ public abstract class ConfigOptions {
 		MODE = System.getProperty("spring.graal.mode","default");
 		if (MODE.equals("initialization-only")) {
 			System.out.println("Feature operating in initialization-only mode, only supplying substitutions and initialization data");
-        } else if (!MODE.equals("default")) {
-            throw new IllegalStateException("Supported modes are 'default' or 'initialization-only', not '"+MODE+"'");
-        }
+		} else if (!MODE.equals("default")) {
+			throw new IllegalStateException("Supported modes are 'default' or 'initialization-only', not '"+MODE+"'");
+		}
 		SKIP_LOGBACK = Boolean.valueOf(System.getProperty("spring.graal.skip-logback", "false"));
 		if (SKIP_LOGBACK) {
 			System.out.println("Skipping logback configuration");
@@ -73,7 +73,7 @@ public abstract class ConfigOptions {
 		if (DUMP_CONFIG!=null) {
 			System.out.println("Dumping computed config to "+DUMP_CONFIG);
 		}
-    }
+	}
 
 	public static boolean shouldRemoveUnusedAutoconfig() {
 		return REMOVE_UNUSED_AUTOCONFIG;
@@ -83,27 +83,27 @@ public abstract class ConfigOptions {
 		return MISSING_SELECTOR_HINTS.equals("error");
 	}
 
-    public static boolean isVerbose() {
-        return VERBOSE;
-    }
+	public static boolean isVerbose() {
+		return VERBOSE;
+	}
 
-    public static boolean shouldDumpConfig() {
-        return DUMP_CONFIG != null;
-    }
+	public static boolean shouldDumpConfig() {
+		return DUMP_CONFIG != null;
+	}
 
-    public static boolean shouldSkipLogback() {
-        return SKIP_LOGBACK;
-    }
+	public static boolean shouldSkipLogback() {
+		return SKIP_LOGBACK;
+	}
 
 	public static boolean shouldRemoveYamlSupport() {
 		return REMOVE_YAML_SUPPORT;
 	}
 
-    public static boolean isInitializationModeOnly() {
-        return MODE.equals("initialization-only");
-    }
+	public static boolean isInitializationModeOnly() {
+		return MODE.equals("initialization-only");
+	}
 
 	public static String getDumpConfigLocation() {
-        return DUMP_CONFIG;
+		return DUMP_CONFIG;
 	}
 }
