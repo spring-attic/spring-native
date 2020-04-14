@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
-import org.springframework.graal.domain.buildtimeinit.InitializationDescriptor;
-import org.springframework.graal.domain.buildtimeinit.InitializationJsonMarshaller;
+import org.springframework.graal.domain.init.InitializationDescriptor;
+import org.springframework.graal.domain.init.InitializationJsonMarshaller;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 
 /**
