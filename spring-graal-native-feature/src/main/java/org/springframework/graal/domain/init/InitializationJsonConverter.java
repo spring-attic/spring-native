@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.graal.domain.buildtimeinit;
+package org.springframework.graal.domain.init;
 
 import org.springframework.graal.json.JSONArray;
 import org.springframework.graal.json.JSONObject;

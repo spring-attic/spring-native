@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.graal.domain.buildtimeinit;
+package org.springframework.graal.domain.init;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
