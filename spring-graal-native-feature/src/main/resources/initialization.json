@@ -87,7 +87,7 @@
   {"class": "org.slf4j.impl.StaticLoggerBinder"},
   {"class": "org.slf4j.LoggerFactory"},
   {"class": "org.slf4j.MDC"},
-  
+
   // Persistence
   {"class": "org.h2.Driver"},
   {"class": "org.h2.util.Bits"}, // This is due to the code using VarHandle in a multi release jar
@@ -110,7 +110,6 @@
   {"class": "org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator"},
   {"class": "org.hibernate.validator.internal.engine.ValidatorImpl"},
   {"class": "org.hibernate.validator.internal.engine.ValidatorFactoryImpl"},
-  {"class": "org.hibernate.validator.internal.engine.resolver.TraversableResolver"},
   {"class": "org.hibernate.validator.internal.engine.resolver.TraversableResolvers"},
   {"class": "org.hibernate.validator.internal.engine.scripting.DefaultScriptEvaluatorFactory"},
   {"package": "org.hibernate.validator.internal.engine.valueextraction"},
@@ -137,7 +136,6 @@
   {"class": "org.hibernate.validator.resourceloading.PlatformResourceBundleLocator$AggregateResourceBundleControl"},
 
   // Others
-  {"class": "app.main.Finder"},
   {"class": "com.google.protobuf.Extension"},
   {"class": "com.google.protobuf.ExtensionLite"},
   {"class": "com.google.protobuf.ExtensionRegistry"},
