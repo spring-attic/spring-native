@@ -1,0 +1,5 @@
+[
+{"name":"com.example.traditional.Reservation","allDeclaredFields":true,"allDeclaredConstructors":true,"allDeclaredMethods":true,"allPublicMethods":true},
+{"name":"com.example.traditional.ReservationRepository","allDeclaredMethods":true,"allPublicMethods":true},
+{"name":"com.example.traditional.Reservation_Instantiator_c7cq6j","methods":[{"name":"<init>","parameterTypes":[]}]}
+]

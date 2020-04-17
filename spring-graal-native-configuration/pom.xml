@@ -23,6 +23,11 @@
 	</properties>
 
 	<dependencies>
+                <dependency>
+                        <groupId>org.springframework.data</groupId>
+                        <artifactId>spring-data-r2dbc</artifactId>
+			<scope>provided</scope>
+                </dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

@@ -7,10 +7,12 @@ org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
 org.springframework.boot.autoconfigure.condition.Hints
 org.springframework.boot.autoconfigure.data.jpa.Hints
+org.springframework.boot.autoconfigure.data.r2dbc.Hints
 org.springframework.boot.autoconfigure.http.Hints
 org.springframework.boot.autoconfigure.jackson.Hints
 org.springframework.boot.autoconfigure.jdbc.Hints
 org.springframework.boot.autoconfigure.orm.jpa.Hints
+org.springframework.boot.autoconfigure.r2dbc.Hints
 org.springframework.boot.autoconfigure.security.servlet.Hints
 org.springframework.boot.autoconfigure.session.Hints
 org.springframework.boot.autoconfigure.task.Hints
