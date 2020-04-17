@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping;
+import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 public class BeanCountingApplicationListener
 		implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
