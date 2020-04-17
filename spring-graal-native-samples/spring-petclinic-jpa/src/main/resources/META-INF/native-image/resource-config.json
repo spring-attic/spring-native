@@ -1,6 +1,6 @@
 {
   "bundles": [
-    {"name":"messages.messages"}
+    {"name":"messages/messages"}
   ],
   "resources": [
     {"pattern": "META-INF/resources/webjars/.*"},
