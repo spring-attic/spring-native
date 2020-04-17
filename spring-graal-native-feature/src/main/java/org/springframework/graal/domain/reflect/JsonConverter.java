@@ -26,7 +26,7 @@ import org.springframework.graal.json.JSONObject;
  *
  * @author Andy Clement
  */
-class JsonConverter {
+public class JsonConverter {
 
 	public JSONArray toJsonArray(ReflectionDescriptor metadata) throws Exception {
 		JSONArray jsonArray = new JSONArray();
