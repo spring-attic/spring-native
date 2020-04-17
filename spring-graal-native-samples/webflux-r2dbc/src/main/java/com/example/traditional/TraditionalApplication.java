@@ -16,12 +16,6 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 @SpringBootApplication(proxyBeanMethods = false)
 public class TraditionalApplication {
 
-//	@Bean
-//	RouterFunction<ServerResponse> routes() { 
-//		return route().GET("/reservations", 
-//			r->ok().bodyValue("foo")).build();
-//	}
-
 	@Bean
 	RouterFunction<ServerResponse> routes(ReservationRepository rr) {
 		return route().GET("/reservations", r -> ok().body(rr.findAll(), Reservation.class)).build();
@@ -51,9 +45,6 @@ interface ReservationRepository extends ReactiveCrudRepository<Reservation, Inte
 
 }
 
-//@Data
-//@AllArgsConstructor
-//@NoArgsConstructor
 class Reservation {
 
 	@Id
@@ -84,7 +75,6 @@ class Reservation {
 	}
 
 	public Reservation() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public Integer getId() {

@@ -344,6 +344,26 @@ public class ResourcesHandler {
 		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
 		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
 		dynamicProxiesHandler.addProxy(repositoryInterfaces);
+		
+		
+		// webflux-r2dbc:
+		// interface ReservationRepository extends ReactiveCrudRepository<Reservation, Integer> {
+		// For this we seem to need:
+		// {"name":"com.example.traditional.Reservation",
+		//  "allDeclaredFields":true,"allDeclaredConstructors":true,"allDeclaredMethods":true,"allPublicMethods":true},
+		// {"name":"com.example.traditional.ReservationRepository",
+		//  "allDeclaredMethods":true,"allPublicMethods":true},
+		// {"name":"com.example.traditional.Reservation_Instantiator_c7cq6j",
+		//  "methods":[{"name":"<init>","parameterTypes":[]}]}
+		System.out.println("OOO");
+		if (type.implementsInterface("org/springframework/data/repository/reactive/ReactiveCrudRepository")) {
+			System.out.println("OOO "+type.getDottedName());
+			reflectionHandler.addAccess(type.getDottedName(), Flag.allDeclaredMethods,Flag.allPublicMethods);
+			// For our example this will be Reservation
+			String typeOfThingsInRepository = type.fetchReactiveCrudRepositoryType();
+			System.out.println("OOO "+typeOfThingsInRepository);
+			reflectionHandler.addAccess(typeOfThingsInRepository, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,Flag.allDeclaredFields);
+		}
 	}
 
 	private void processTransactionalTarget(Type type) {

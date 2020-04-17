@@ -216,6 +216,13 @@ public class TypeTests {
 	}
 	
 	@Test
+	public void findReactiveCrudTypeParameter() {
+		Type t = typeSystem.resolveName(Foo.class.getName());
+		String s = t.findTypeParameterInSupertype(FooI.class.getName(),0);
+		assertEquals(TestController1.class.getName(),s);
+	}
+	
+	@Test
 	public void typeParameters() {
 		Type extenderClass = typeSystem.resolveName(Extender.class.getName());
 		List<String> typesInSignature = extenderClass.getTypesInSignature();
@@ -253,6 +260,9 @@ public class TypeTests {
 	@ResponseBody
 	@interface RestController {}
 	
+	interface FooI<T,ID> { }
+	
+	static class Foo implements FooI<TestController1,Integer> {}
 	
 	@ResponseBody
 	static class TestController1 {}

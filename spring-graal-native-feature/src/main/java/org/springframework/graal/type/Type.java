@@ -1578,4 +1578,72 @@ public class Type {
 		return returnTypes;
 	}
 
+	public String findTypeParameterInSupertype(String supertype, int typeParameterNumber) {
+		if (node.signature == null) {
+			return null;
+		}
+		SignatureReader reader = new SignatureReader(node.signature);
+		TypeParamFinder tpm = new TypeParamFinder(supertype);
+		reader.accept(tpm);
+		return tpm.getTypeParameter(typeParameterNumber);
+	}
+	
+	static class TypeParamFinder extends SignatureVisitor {
+
+		String typeparameter;
+
+		List<String> types = null;
+
+		private String supertype;
+
+		private boolean nextIsBoundType = false;
+
+		private boolean collectTypeParams = false;
+
+		private List<String> typeParams = new ArrayList<>();
+
+		public TypeParamFinder(String supertype) {
+			super(Opcodes.ASM7);
+			this.supertype = supertype.replace(".", "/");
+		}
+
+		public String getTypeParameter(int typeParameterNumber2) {
+			if (typeParameterNumber2 > typeParams.size()) {
+				return null;
+			}
+			return typeParams.get(typeParameterNumber2).replace("/", ".");
+		}
+
+		@Override
+		public SignatureVisitor visitSuperclass() {
+			nextIsBoundType = true;
+			collectTypeParams = false;
+			return super.visitSuperclass();
+		}
+
+		@Override
+		public SignatureVisitor visitInterface() {
+			nextIsBoundType = true;
+			collectTypeParams = false;
+			return super.visitInterface();
+		}
+
+		@Override
+		public void visitClassType(String name) {
+			if (nextIsBoundType && name.equals(supertype)) {
+				// Hit the bound type of interest, the next few types are what we should collect
+				collectTypeParams = true;
+			} else if (collectTypeParams) {
+				typeParams.add(name);
+			}
+			super.visitClassType(name);
+			nextIsBoundType = false;
+		}
+
+	}
+
+	public String fetchReactiveCrudRepositoryType() {
+		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository",0);
+	}
+
 }

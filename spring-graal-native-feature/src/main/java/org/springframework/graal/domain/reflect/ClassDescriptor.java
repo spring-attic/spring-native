@@ -244,5 +244,41 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		}
 		return false;
 	}
+	
+	private boolean hasConstructors() {
+		if (methods != null) {
+			for (MethodDescriptor md : methods) {
+				if (md.getName().equals("<init>")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean hasMethods() {
+		if (methods != null) {
+			for (MethodDescriptor md : methods) {
+				if (!md.getName().equals("<init>")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public String toJsonString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		sb.append("\"name\":").append("\""+name+"\"");
+		if (hasConstructors()) {
+			sb.append(",\"allDeclaredConstructors\":true");
+		}
+		if (hasMethods()) {
+			sb.append(",\"allDeclaredMethods\":true");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
 
 }
