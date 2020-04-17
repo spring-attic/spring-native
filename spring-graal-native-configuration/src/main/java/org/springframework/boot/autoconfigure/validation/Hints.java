@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.validation;
 
+import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
+import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.engine.resolver.JPATraversableResolver;
@@ -39,7 +41,9 @@ import org.springframework.graal.type.AccessBits;
 			ValidationBootstrapParameters.class,
 			PlatformResourceBundleLocator.class,
 			ConfigurationImpl.class,
-			Messages.class
+			Messages.class,
+			ParameterizedMessageFactory.class,
+			DefaultFlowMessageFactory.class
 		}, 
 	typeNames = {
 		"org.hibernate.validator.internal.util.logging.Log_$logger",
