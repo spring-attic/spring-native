@@ -39,6 +39,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
+  -Dspring.graal.remove-yaml-support=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

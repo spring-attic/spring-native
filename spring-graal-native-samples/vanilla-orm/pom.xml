@@ -14,6 +14,11 @@
 		<version>2.3.0.M4</version>
 	</parent>
 
+	<properties>
+		<java.version>1.8</java.version>
+		<start-class>app.main.SampleApplication</start-class>
+	</properties>
+
 	<dependencies>
 		<!-- Should not be needed, see https://github.com/spring-projects-experimental/spring-graal-native/issues/97 -->
 		<dependency>
@@ -81,77 +86,13 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.mp911de.microbenchmark-runner</groupId>
-			<artifactId>microbenchmark-runner-junit5</artifactId>
-			<version>0.1.0.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot.experimental</groupId>
-			<artifactId>spring-boot-thin-launcher</artifactId>
-			<version>${thin.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
-
-	<properties>
-		<java.version>1.8</java.version>
-		<start-class>app.main.SampleApplication</start-class>
-		<jmh.version>1.21</jmh.version>
-		<thin.version>1.0.22.RELEASE</thin.version>
-	</properties>
-
-	<profiles>
-		<profile>
-			<id>tools.jar</id>
-			<activation>
-				<jdk>[1.8,1.9)</jdk>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.sun</groupId>
-					<artifactId>tools</artifactId>
-					<version>${java.version}</version>
-					<scope>system</scope>
-					<systemPath>${java.home}/../lib/tools.jar</systemPath>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.openjdk.jmh</groupId>
-							<artifactId>jmh-generator-annprocess</artifactId>
-							<version>${jmh.version}</version>
-						</path>
-						<path>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-context-indexer</artifactId>
-							<version>${spring-framework.version}</version>
-						</path>
-					</annotationProcessorPaths>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.hibernate.orm.tooling</groupId>
