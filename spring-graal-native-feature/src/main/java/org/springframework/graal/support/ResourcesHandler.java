@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.graalvm.nativeimage.ImageSingletons;
+import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
@@ -347,22 +348,27 @@ public class ResourcesHandler {
 		
 		
 		// webflux-r2dbc:
+		// Example:
 		// interface ReservationRepository extends ReactiveCrudRepository<Reservation, Integer> {
 		// For this we seem to need:
 		// {"name":"com.example.traditional.Reservation",
 		//  "allDeclaredFields":true,"allDeclaredConstructors":true,"allDeclaredMethods":true,"allPublicMethods":true},
 		// {"name":"com.example.traditional.ReservationRepository",
 		//  "allDeclaredMethods":true,"allPublicMethods":true},
+		// and register the Reservation type 
+		// We don't need this - optimization to have it?
 		// {"name":"com.example.traditional.Reservation_Instantiator_c7cq6j",
 		//  "methods":[{"name":"<init>","parameterTypes":[]}]}
-		System.out.println("OOO");
 		if (type.implementsInterface("org/springframework/data/repository/reactive/ReactiveCrudRepository")) {
-			System.out.println("OOO "+type.getDottedName());
+			try {
+				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(type.getDottedName()));
+			} catch (ClassNotFoundException cnfe) {
+				throw new IllegalStateException("Unexpected - why can inferred repository "+type.getDottedName()+" not be found?",cnfe);
+			}
 			reflectionHandler.addAccess(type.getDottedName(), Flag.allDeclaredMethods,Flag.allPublicMethods);
-			// For our example this will be Reservation
-			String typeOfThingsInRepository = type.fetchReactiveCrudRepositoryType();
-			System.out.println("OOO "+typeOfThingsInRepository);
+			String typeOfThingsInRepository = type.fetchReactiveCrudRepositoryType(); // For our example this will be Reservation
 			reflectionHandler.addAccess(typeOfThingsInRepository, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,Flag.allDeclaredFields);
+			SpringFeature.log("Dealing with a ReactiveCrudRepository for "+typeOfThingsInRepository);
 		}
 	}
 
