@@ -97,10 +97,7 @@
                         <version>20.0.0</version>
                         <configuration>
                             <buildArgs>
--H:+TraceClassInitialization --no-fallback -H:+ReportExceptionStackTraces --no-server --initialize-at-build-time=com.example.traditional.ReservationRepository
-<!--
--initialize-at-run-time=org.springframework.data.r2dbc.connectionfactory.ConnectionFactoryUtils -initialize-at-build-time=io.r2dbc.spi.IsolationLevel,io.r2dbc.spi -initialize-at-build-time=io.r2dbc.spi.ConstantPool,io.r2dbc.spi.Assert,io.r2dbc.spi.ValidationDepth -initialize-at-build-time=org.springframework.data.r2dbc.connectionfactory -H:+TraceClassInitialization -no-fallback -H:+ReportExceptionStackTraces -no-server -initialize-at-build-time=org.reactivestreams.Publisher  -initialize-at-build-time=com.example.traditional.ReservationRepository -initialize-at-run-time=io.netty.channel.unix.Socket  -initialize-at-run-time=io.netty.channel.unix.IovArray  -initialize-at-run-time=io.netty.channel.epoll.EpollEventLoop  -initialize-at-run-time=io.netty.channel.unix.Errors
--->
+-H:+TraceClassInitialization --no-fallback -H:+ReportExceptionStackTraces --no-server 
                             </buildArgs>
 <imageName>webflux-r2dbc</imageName>
                         </configuration>
