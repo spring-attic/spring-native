@@ -17,6 +17,10 @@
 
   // Netty
   {"class": "io.netty.channel.DefaultChannelId"},
+  {"class": "io.netty.channel.epoll.EpollEventLoop"},
+  {"class": "io.netty.channel.unix.Socket"},
+  {"class": "io.netty.channel.unix.Errors"},
+  {"class": "io.netty.channel.unix.IovArray"},
   {"class": "io.netty.channel.socket.InternetProtocolFamily"},
   {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
   {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
@@ -34,7 +38,10 @@
   {"class": "reactor.netty.tcp.TcpClient"},
   {"class": "reactor.netty.tcp.TcpServer"},
   {"class": "reactor.netty.http.server.HttpServer"},
-
+  
+  // Spring Data R2DBC
+  {"class": "org.springframework.data.r2dbc.connectionfactory.ConnectionFactoryUtils"},
+  
   // Others
   {"class": "org.apache.tomcat.jni.SSL"}, // Tomcat sample
   {"class": "org.h2.store.fs.FileNioMemData"}, // vanilla-jpa with --initialize-at-build-time
@@ -135,7 +142,14 @@
   {"class": "org.hibernate.validator.resourceloading.PlatformResourceBundleLocator$AggregateResourceBundle"},
   {"class": "org.hibernate.validator.resourceloading.PlatformResourceBundleLocator$AggregateResourceBundleControl"},
 
+  // Spring Data R2DBC
+  {"package": "org.springframework.data.r2dbc.connectionfactory"},
+  
+  // R2DBC related
+  {"package": "io.r2dbc.spi"},
+  
   // Others
+  {"class": "org.reactivestreams.Publisher"},
   {"class": "com.google.protobuf.Extension"},
   {"class": "com.google.protobuf.ExtensionLite"},
   {"class": "com.google.protobuf.ExtensionRegistry"},
