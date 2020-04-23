@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
 	</properties>
 
 	<dependencies>
