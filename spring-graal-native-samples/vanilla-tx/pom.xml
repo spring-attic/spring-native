@@ -14,6 +14,12 @@
 		<version>2.3.0.M4</version>
 	</parent>
 
+	<properties>
+		<java.version>1.8</java.version>
+		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
+		<start-class>app.main.SampleApplication</start-class>
+	</properties>
+
 	<dependencies>
 		<!-- Should not be needed, see https://github.com/spring-projects-experimental/spring-graal-native/issues/97 -->
 		<dependency>
@@ -56,11 +62,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<properties>
-		<java.version>1.8</java.version>
-		<start-class>app.main.SampleApplication</start-class>
-	</properties>
 
 	<build>
 		<plugins>
