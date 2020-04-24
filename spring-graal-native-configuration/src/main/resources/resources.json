@@ -53,7 +53,12 @@
 
     // Does this catch the logging/<eachDirectory>/*.properties?
     {"pattern": "org/springframework/boot/logging/.*.properties"},
-    {"pattern": "org/springframework/boot/logging/.*.xml"}
+    {"pattern": "org/springframework/boot/logging/.*.xml"},
+
+    // Kotlin
+    {"pattern":"META-INF/.*.kotlin_module$"},
+    {"pattern":"META-INF/services/.*"},
+    {"pattern":".*.kotlin_builtins"}
   ]
 }
 

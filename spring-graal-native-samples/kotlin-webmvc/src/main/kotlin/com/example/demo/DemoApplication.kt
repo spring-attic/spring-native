@@ -12,10 +12,13 @@ fun main(args: Array<String>) {
 	runApplication<KotlinCoroutinesApplication>(*args)
 }
 
+data class Bar(val message: String)
+
 @RestController
 class Foo {
+
 	@GetMapping("/")
-	fun greet(): String {
-		return "hi!"
+	fun greet(): Bar {
+		return Bar("hi!")
 	}
 }
