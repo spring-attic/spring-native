@@ -30,15 +30,6 @@ if [ ! -f "$FEATURE" ]; then
     exit 1
 fi
 
-echo "Generating reflection files for $ARTIFACT"
-rm -rf graal/META-INF 2>/dev/null
-mkdir -p graal/META-INF/native-image
-java -agentlib:native-image-agent=config-output-dir=graal/META-INF/native-image -cp $CP $MAINCLASS >> output.txt 2>&1 &
-PID=$!
-sleep 3
-curl -m 1 http://localhost:8080 > /dev/null 2>&1
-sleep 1 && kill $PID || kill -9 $PID
-
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
