@@ -20,9 +20,9 @@
   ["org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication"],
 
   // Persistence
-  ["javax.persistence.Id"],
-  ["javax.persistence.GeneratedValue"],
-  ["javax.persistence.Transient"],
+  //["javax.persistence.Id"],
+  //["javax.persistence.GeneratedValue"],
+  //["javax.persistence.Transient"],
   ["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo"],
   ["org.hibernate.jpa.HibernateEntityManager","org.springframework.orm.jpa.EntityManagerProxy"],
 
