@@ -1,0 +1,8 @@
+logging:
+  level:
+    root: DEBUG
+spring:
+  aop:
+    proxy-target-class: false
+    
+    
