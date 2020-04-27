@@ -1,0 +1,12 @@
+[
+  ["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"],
+  ["java.lang.reflect.WildcardType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"],
+  ["java.sql.Connection"],
+  ["org.springframework.batch.core.configuration.JobRegistry","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+  ["org.springframework.batch.core.explore.JobExplorer","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+  ["org.springframework.batch.core.launch.JobLauncher","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+  ["org.springframework.batch.core.repository.JobRepository","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"],
+  ["org.springframework.boot.context.properties.ConfigurationProperties","org.springframework.core.annotation.SynthesizedAnnotation"],
+  ["org.springframework.jdbc.datasource.ConnectionProxy"],
+  ["org.springframework.transaction.PlatformTransactionManager","org.springframework.aop.SpringProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
+]
