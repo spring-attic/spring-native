@@ -722,21 +722,7 @@ public class ResourcesHandler {
 		}
 
 		boolean passesTests = true;
-		Map<String, String> conditionalOnPropertyValues = type.getAnnotationValuesInHierarchy(
-				"Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;");
-		// depth==0 means we won't skip something inside something else. If we did that
-		// and the outer succeeded it will crash when digging
-		// through the inner stuff. For example:
-		// static class PooledDataSourceCondition extends AnyNestedCondition {
-		// ...
-		// @ConditionalOnProperty(prefix = "spring.datasource", name = "type")
-		// static class ExplicitType {
-		if (depth == 0 && ConfigOptions.shouldRemoveUnusedAutoconfig() && conditionalOnPropertyValues.size() != 0
-				&& (conditionalOnPropertyValues.get("matchIfMissing") == null
-						|| conditionalOnPropertyValues.get("matchIfMissing").equals("false"))) {
-			SpringFeature.log(spaces(depth) + "skipping " + type.getName() + " due to ConditionalOnPropertyCheck");
-			passesTests = false;
-		}
+		
 		TypeAccessRequestor tar = new TypeAccessRequestor();
 		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
