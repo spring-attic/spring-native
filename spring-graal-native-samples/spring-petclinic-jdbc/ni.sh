@@ -10,7 +10,6 @@ printf "\n\nCompile\n"
 
 #-H:+PrintUniverse \
 native-image \
-  -Dspring.graal.skip-logback=true \
   -Ddebug=true \
   -Dio.netty.noUnsafe=true \
   --no-server \

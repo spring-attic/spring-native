@@ -82,6 +82,9 @@
   {"package": "org.apache.logging.log4j"},
   {"package": "org.apache.logging.slf4j"},
   {"package": "org.jboss.logging"},
+  {"class": "org.slf4j.spi.LocationAwareLogger"},
+  {"class": "org.slf4j.Logger"},
+
   {"class": "org.slf4j.event.SubstituteLoggingEvent"},
   {"class": "org.slf4j.event.EventRecodingLogger"},
   {"class": "org.slf4j.helpers.FormattingTuple"},
