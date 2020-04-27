@@ -50,8 +50,6 @@ This is a good mode for the feature when you use the GraalVM agent to compute th
 
 * `-Dspring.graal.verbose=true` outputs lots of information about the feature behavior as it processes auto-configuration and chooses which to include.
 
-* `-Dspring.graal.skip-logback=true` skips Logback configuration.
-
 * `-Dspring.graal.remove-yaml-support=true` removes Yaml support from Spring Boot, enabling faster compilation and smaller executables.
 
 * `-Dspring.graal.dump-config=/tmp/dump.txt` dumps the configuration to the specified file.
@@ -64,3 +62,8 @@ See the <<troubleshooting>> section for more details on this.
 * `--enable-all-security-services` required for HTTPS and crypto.
 
 * `--static` builds a statically linked executable, useful to deploy on a `FROM scratch` Docker image.
+
+=== Unsupported options
+
+* `--initialize-at-build-time` without class or package specified is not supported since Spring GraalVM support is designed to work with runtime class initialization by default (a selected set of classes are enabled at buildtime).
+

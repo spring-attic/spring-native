@@ -36,7 +36,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   --no-server \
   --no-fallback \
-  --initialize-at-build-time \
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
