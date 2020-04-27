@@ -259,9 +259,8 @@ public class ReflectionHandler {
 			System.out.println(
 					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
 		}
-		if (!ConfigOptions.shouldSkipLogback()) {
-			registerLogback();
-		}
+		registerLogAdapterClassesIfNeeded();
+		registerLogback();
 
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
@@ -441,35 +440,53 @@ public class ReflectionHandler {
 		return true;
 	}
 
+	// Reproduce LogAdapter static initialization logic
+	private void registerLogAdapterClassesIfNeeded() {
+		final String LOG4J_SPI = "org.apache.logging.log4j.spi.ExtendedLogger";
+		final String LOG4J_SLF4J_PROVIDER = "org.apache.logging.slf4j.SLF4JProvider";
+		final String SLF4J_SPI = "org.slf4j.spi.LocationAwareLogger";
+		final String SLF4J_API = "org.slf4j.Logger";
+		final String JUL_API = "java.util.logging.Logger";
+
+		if (isPresent(LOG4J_SPI)) {
+			addAccess(LOG4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			if (isPresent(LOG4J_SLF4J_PROVIDER) && isPresent(SLF4J_SPI)) {
+				addAccess(LOG4J_SLF4J_PROVIDER, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				addAccess(SLF4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			}
+		}
+		else if (isPresent(SLF4J_SPI)) {
+			addAccess(SLF4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		}
+		else if (isPresent(SLF4J_API)) {
+			addAccess(SLF4J_API, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		}
+		else {
+			addAccess(JUL_API, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		}
+	}
+
+	private static boolean isPresent(String className) {
+		try {
+			Class.forName(className);
+			return true;
+		}
+		catch (ClassNotFoundException ex) {
+			return false;
+		}
+	}
+
 	// TODO this is horrible, it should be packaged with logback
 	// from PatternLayout
 	private String logBackPatterns[] = new String[] { 
 			"DateConverter", 
 			"LevelConverter", "ThreadConverter", "LoggerConverter", "MessageConverter", 
-			"LineSeparatorConverter", 
-//			"ch.qos.logback.core.pattern.IdentityCompositeConverter",
-//			"ch.qos.logback.core.pattern.ReplacingCompositeConverter",
-//			"PropertyConverter", 
-//			"ThrowableProxyConverter", "RootCauseFirstThrowableProxyConverter", 
-//			"ClassOfCallerConverter", "ContextNameConverter", "NopThrowableInformationConverter", 
-//			"RelativeTimeConverter", "ExtendedThrowableProxyConverter",
-//			"MethodOfCallerConverter", "LineOfCallerConverter", 
-//			"CallerDataConverter", "MarkerConverter",
-//			"FileOfCallerConverter", "MDCConverter",
-//			"color.BlackCompositeConverter",
-//			"color.RedCompositeConverter", "color.GreenCompositeConverter", "color.YellowCompositeConverter",
-//			"color.BlueCompositeConverter", "color.MagentaCompositeConverter", "color.CyanCompositeConverter",
-//			"color.WhiteCompositeConverter", "color.GrayCompositeConverter", "color.BoldRedCompositeConverter",
-//			"color.BoldGreenCompositeConverter", "color.BoldYellowCompositeConverter",
-//			"color.BoldBlueCompositeConverter", "color.BoldMagentaCompositeConverter",
-//			"color.BoldCyanCompositeConverter", "color.BoldWhiteCompositeConverter",
-//			"ch.qos.logback.classic.pattern.color.HighlightingCompositeConverter", "LocalSequenceNumberConverter",
+			"LineSeparatorConverter",
 			"org.springframework.boot.logging.logback.ColorConverter",
-//			"org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter",
 			"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" };
 
-// what would a reflection hint look like here? Would it specify maven coords for logback as a requirement on the classpath?
-// does logback have a feature? or meta data files for graal?
+	// what would a reflection hint look like here? Would it specify maven coords for logback as a requirement on the classpath?
+	// does logback have a feature? or meta data files for graal?
 	private void registerLogback() {
 		try {
 			addAccess("ch.qos.logback.core.Appender", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);

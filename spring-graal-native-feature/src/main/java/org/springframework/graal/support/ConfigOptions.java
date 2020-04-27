@@ -25,8 +25,6 @@ public abstract class ConfigOptions {
 
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
-	private final static boolean SKIP_LOGBACK;
-
 	private final static boolean REMOVE_YAML_SUPPORT;
 	
 	private final static String DUMP_CONFIG;
@@ -61,10 +59,6 @@ public abstract class ConfigOptions {
 		} else if (!MODE.equals("default")) {
 			throw new IllegalStateException("Supported modes are 'default' or 'initialization-only', not '"+MODE+"'");
 		}
-		SKIP_LOGBACK = Boolean.valueOf(System.getProperty("spring.graal.skip-logback", "false"));
-		if (SKIP_LOGBACK) {
-			System.out.println("Skipping logback configuration");
-		}
 		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-yaml-support", "false"));
 		if (REMOVE_YAML_SUPPORT) {
 			System.out.println("Skipping Yaml support");
@@ -89,10 +83,6 @@ public abstract class ConfigOptions {
 
 	public static boolean shouldDumpConfig() {
 		return DUMP_CONFIG != null;
-	}
-
-	public static boolean shouldSkipLogback() {
-		return SKIP_LOGBACK;
 	}
 
 	public static boolean shouldRemoveYamlSupport() {
