@@ -27,7 +27,7 @@
 		<protobuf.plugin.version>0.6.1</protobuf.plugin.version>
 		<protobuf.version>3.7.1</protobuf.version>
 		<grpc.version>1.22.1</grpc.version>
-		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
+		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 	</properties>
 
 	<dependencies>

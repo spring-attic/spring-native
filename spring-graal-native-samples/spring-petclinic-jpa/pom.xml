@@ -29,7 +29,7 @@
 
 		<jacoco.version>0.8.2</jacoco.version>
 
-		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
+		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 	</properties>
 
 	<dependencies>

@@ -15,7 +15,7 @@
 	<properties>
 		<graalvm.version>20.0.0</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
-		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
+		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 	</properties>
 
 	<modules>
