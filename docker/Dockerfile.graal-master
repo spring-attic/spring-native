@@ -1,0 +1,44 @@
+FROM ubuntu:focal
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG MAVEN_VERSION=3.5.3
+
+ENV JAVA_HOME=/opt/openjdk1.8.0_252-jvmci-20.1-b02
+ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:/opt/mx-master:$JAVA_HOME/bin:$PATH"
+
+RUN echo '#!/bin/bash\nmx -p /opt/graal/substratevm/ native-image "$@"' > /usr/bin/native-image && \
+    chmod +x /usr/bin/native-image
+
+RUN apt-get -y update \
+ && apt-get -y install git curl build-essential python unzip \
+ && cd /opt \
+ && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
+ && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
+ && rm apache-maven-${MAVEN_VERSION}-bin.zip \
+ && curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.5.0/grpcurl_1.5.0_linux_x86_64.tar.gz | tar -xz \
+ && rm LICENSE \
+ && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+ && apt-get -y install nodejs \
+ && curl -LO https://github.com/tecfu/tty-table/archive/master.zip \
+ && unzip master.zip \
+ && rm master.zip \
+ && cd tty-table-master \
+ && npm i -g \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN cd /opt \
+ && curl -LO https://github.com/graalvm/mx/archive/master.zip \
+ && unzip master.zip \
+ && rm master.zip \
+ && curl -L https://github.com/graalvm/openjdk8-jvmci-builder/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz | tar -xz \
+ && git clone https://github.com/oracle/graal.git \
+ && cd graal/substratevm \
+ && mx build \
+ && native-image --help
+
+RUN echo '#!/bin/bash\ngit clone https://github.com/spring-projects-experimental/spring-graal-native.git\ncd spring-graal-native\n./build.sh\n./build-samples.sh' > /root/build.sh && \
+    chmod +x /root/build.sh
+
+WORKDIR /root
+
+CMD ["/root/build.sh"]
