@@ -73,7 +73,9 @@ then
     fi
     echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > $SUMMARY_CSV_FILE
   fi
-  kill ${PID}
+  if ! kill ${PID} > /dev/null 2>&1; then
+    echo "Did not kill process, it ended on it's own" >&2
+  fi
   exit 0
 else
   cat $BUILD_OUTPUT_FILE
@@ -82,6 +84,8 @@ else
   if [ $SILENT == 'false' ]; then
     echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,-,,,, > $SUMMARY_CSV_FILE
   fi
-  kill ${PID}
+  if ! kill ${PID} > /dev/null 2>&1; then
+    echo "Did not kill process, it ended on it's own" >&2
+  fi
   exit 1
 fi
