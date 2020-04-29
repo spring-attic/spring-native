@@ -45,13 +45,13 @@ native-image \
   --no-fallback \
   -H:+TraceClassInitialization \
   -H:+ReportExceptionStackTraces \
-  -H:Name=$ARTIFACT \
+  -H:Name=$ARTIFACT-agent \
   -cp .:$CP:graal:$FEATURE \
   $MAINCLASS 2>&1 | tee output.txt
 
 # Test the application
 # The test script will look for it in the current folder
 cp ../../../verify.sh .
-${PWD%/*samples/*}/scripts/test.sh $ARTIFACT .
+${PWD%/*samples/*}/scripts/test.sh $ARTIFACT-agent .
 mkdir -p ../../../target/native-image/
 mv summary.csv ../../../target/native-image/
