@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=springmvc-tomcat
+APP=springmvc-tomcat
 MAINCLASS=com.example.tomcat.TomcatApplication
 VERSION=0.0.1-SNAPSHOT
 FEATURE=`find ${PWD%/*spring-graal-native*/*}/spring-graal-native/target -name "spring-graal-native-*.jar"`
@@ -10,7 +10,7 @@ cd ..
 mvn clean package
 cd agent
 rm -rf unpack
-unzip -q ../target/$ARTIFACT-$VERSION.jar -d unpack
+unzip -q ../target/$APP-$VERSION.jar -d unpack
 cd unpack/BOOT-INF/classes
 cp -R ../../META-INF .
 rm -rf graal
@@ -45,7 +45,7 @@ native-image \
   --no-fallback \
   -H:+TraceClassInitialization \
   -H:+ReportExceptionStackTraces \
-  -H:Name=$ARTIFACT \
+  -H:Name=$APP-agent \
   -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -cp .:$CP:graal:../../../graal:$FEATURE \
@@ -54,6 +54,6 @@ native-image \
 # Test the application
 # The test script will look for it in the current folder
 cp ../../../verify.sh .
-${PWD%/*samples/*}/scripts/test.sh $ARTIFACT .
+${PWD%/*samples/*}/scripts/test.sh $APP-agent .
 mkdir -p ../../../target/native-image/
 mv summary.csv ../../../target/native-image/
