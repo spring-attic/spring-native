@@ -1,0 +1,1 @@
+The agent at Graal 20.0 does not fully work for this sample - it misses a type that is listed in the graal subfolder and it fails to include the necessary resource bundles (they are encoded as parameters to the native-image command in build.sh).  With 20.1 the graal sub folder can perhaps be deleted as the type should be found. There is no solution yet for the resource bundles.
