@@ -1,4 +1,5 @@
 org.springframework.amqp.rabbit.annotation.Hints
+org.springframework.batch.core.configuration.annotation.Hints
 org.springframework.beans.factory.annotation.Hints
 org.springframework.beans.factory.config.Hints
 org.springframework.boot.Hints
@@ -25,6 +26,7 @@ org.springframework.boot.autoconfigure.web.reactive.function.client.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints
 org.springframework.boot.context.properties.Hints
 org.springframework.boot.context.Hints
+org.springframework.cache.annotation.Hints
 org.springframework.cloud.function.context.config.Hints
 org.springframework.cloud.function.web.mvc.Hints
 org.springframework.context.annotation.Hints
@@ -32,6 +34,9 @@ org.springframework.core.annotation.Hints
 org.springframework.data.jpa.repository.support.Hints
 org.springframework.data.web.config.Hints
 org.springframework.hateoas.config.Hints
+org.springframework.kafka.annotation.Hints
+org.springframework.scheduling.annotation.Hints
+org.springframework.security.config.annotation.method.configuration.Hints
 org.springframework.security.config.annotation.web.configuration.Hints
 org.springframework.security.config.annotation.web.reactive.Hints
 org.springframework.stereotype.Hints

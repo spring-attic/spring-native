@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context;
+package org.springframework.cache.annotation;
 
-import org.springframework.graal.extension.NativeImageHint;
-
-import java.util.ArrayList;
-
+import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 
-@NativeImageHint(typeInfos = {@TypeInfo(types= {TypeExcludeFilter.class,ArrayList.class})})
-public class Hints implements NativeImageConfiguration {
-}
+@NativeImageHint(trigger=CachingConfigurationSelector.class, typeInfos = {
+		@TypeInfo(types= {AutoProxyRegistrar.class,ProxyCachingConfiguration.class},typeNames= {
+				"org.springframework.cache.jcache.config.ProxyJCacheConfiguration",
+				"org.springframework.cache.aspectj.AspectJCachingConfiguration",
+				"org.springframework.cache.aspectj.AspectJJCacheConfiguration"
+
+		})})
+public class Hints implements NativeImageConfiguration { }
