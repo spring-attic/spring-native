@@ -3,6 +3,7 @@ org.springframework.batch.core.configuration.annotation.Hints
 org.springframework.beans.factory.annotation.Hints
 org.springframework.beans.factory.config.Hints
 org.springframework.boot.Hints
+org.springframework.boot.actuate.autoconfigure.web.server.Hints
 org.springframework.boot.autoconfigure.Hints
 org.springframework.boot.autoconfigure.aop.Hints
 org.springframework.boot.autoconfigure.cache.Hints
