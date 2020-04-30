@@ -133,10 +133,12 @@ public class Type {
 				if (itfs.size() == 0) {
 					interfaces = NO_INTERFACES;
 				} else {
-					interfaces = new Type[itfs.size()];
+					List<Type> interfacesOnClasspath = new ArrayList<>();
 					for (int i = 0; i < itfs.size(); i++) {
-						interfaces[i] = typeSystem.resolveSlashed(itfs.get(i));
+						Type t = typeSystem.resolveSlashed(itfs.get(i));
+						interfacesOnClasspath.add(t);
 					}
+					interfaces=interfacesOnClasspath.toArray(new Type[interfacesOnClasspath.size()]);
 				}
 			}
 		}
@@ -1066,6 +1068,7 @@ public class Type {
 				}
 			}
 		}
+		try {
 		if (isImportSelector() && hints.size() == 0) {
 			// Failing early as this will likely result in a problem later - fix is
 			// typically (right now) to add a new Hint in the configuration module
@@ -1074,6 +1077,9 @@ public class Type {
 			} else {
 				System.out.println("WARNING: No access hint found for import selector: " + getDottedName());
 			}
+		}
+		} catch (MissingTypeException mte) {
+			System.out.println("Unable to determine if type "+getName()+" is import selector - can't fully resolve hierarchy - ignoring");
 		}
 		return hints.size() == 0 ? Collections.emptyList() : hints;
 	}

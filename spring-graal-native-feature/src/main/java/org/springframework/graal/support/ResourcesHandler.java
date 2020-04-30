@@ -433,7 +433,10 @@ public class ResourcesHandler {
 		// parameterized type references so nothing is missed
 		List<String> relatedTypes = type.getTypesInSignature();
 		for (String relatedType: relatedTypes) {
-			registerHierarchy(ts.resolveSlashed(relatedType), visited, typesToMakeAccessible);
+			Type t = ts.resolveSlashed(relatedType,true);
+			if (t!=null) {
+			registerHierarchy(t, visited, typesToMakeAccessible);
+			}
 		}
 	}
 
@@ -710,7 +713,9 @@ public class ResourcesHandler {
 		Set<String> missingTypes = ts.findMissingTypesInHierarchyOfThisType(type);
 		if (!missingTypes.isEmpty()) {
 			SpringFeature.log(spaces(depth) + "for " + type.getName() + " missing types are " + missingTypes);
-			return false;
+			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+				return false;
+			}
 		}
 
 		Set<String> missingAnnotationTypes = ts.resolveCompleteFindMissingAnnotationTypes(type);
@@ -750,7 +755,9 @@ public class ResourcesHandler {
 						if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
 							if (hint.isSkipIfTypesMissing()) {
 								passesTests = false;
-								break;
+								if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+									break;
+								}
 							}
 						} else {
 							if (hint.isFollow()) {
@@ -788,7 +795,9 @@ public class ResourcesHandler {
 							// outermost processing to decide if they need registration.
 							passesTests = false;
 							// Once failing, no need to process other hints
-							break hints;
+							if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+								break hints;
+							}
 						}
 					}
 				}
@@ -974,9 +983,15 @@ public class ResourcesHandler {
 			}
 			// Follow transitively included inferred types only if necessary:
 			for (Type t : toFollow) {
-				boolean b = processType(t, visited, depth + 1);
-				if (!b) {
-					SpringFeature.log(spaces(depth) + "followed " + t.getName() + " and it failed validation");
+				try {
+					boolean b = processType(t, visited, depth + 1);
+					if (!b) {
+						SpringFeature.log(spaces(depth) + "followed " + t.getName() + " and it failed validation");
+					}
+				} catch (MissingTypeException mte) {
+					// Failed to follow that type because some element involved is not on the classpath 
+					// (Typically happens when not specifying discard-unused-autconfiguration)
+					SpringFeature.log("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
 				}
 			}
 			for (Map.Entry<String, Integer> t : tar.entrySet()) {
@@ -1016,9 +1031,15 @@ public class ResourcesHandler {
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
-					boolean b = processType(t, visited, depth + 1);
-					if (!b) {
-						SpringFeature.log(spaces(depth) + "verification of nested type " + t.getName() + " failed");
+					try {
+						boolean b = processType(t, visited, depth + 1);
+						if (!b) {
+							SpringFeature.log(spaces(depth) + "verification of nested type " + t.getName() + " failed");
+						}
+					} catch (MissingTypeException mte) {
+						// Failed to process that type because some element involved is not on the classpath 
+						// (Typically happens when not specifying discard-unused-autoconfiguration)
+						SpringFeature.log("Unable to completely process nested type "+t.getName()+": "+mte.getMessage());
 					}
 				}
 			}
