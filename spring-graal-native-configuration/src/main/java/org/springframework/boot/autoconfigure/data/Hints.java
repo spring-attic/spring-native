@@ -16,11 +16,35 @@
 package org.springframework.boot.autoconfigure.data;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 
+@NativeImageHint(trigger = CassandraReactiveRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = CassandraRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = CouchbaseReactiveRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = CouchbaseRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos= {
+		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
 @NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
 	// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
 	// TODO I've made PFB globally accessible as vanilla-jpa sample needed it and wasn't seeing it through this AbstractRepo config
