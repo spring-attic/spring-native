@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.context;
-
-import org.springframework.graal.extension.NativeImageHint;
-
-import java.util.ArrayList;
+package org.springframework.kafka.annotation;
 
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 
-@NativeImageHint(typeInfos = {@TypeInfo(types= {TypeExcludeFilter.class,ArrayList.class})})
-public class Hints implements NativeImageConfiguration {
-}
+@NativeImageHint(trigger=KafkaListenerConfigurationSelector.class, 
+	typeInfos = {@TypeInfo(types= { KafkaBootstrapConfiguration.class })})
+public class Hints implements NativeImageConfiguration { }

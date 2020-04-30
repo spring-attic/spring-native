@@ -18,6 +18,7 @@ package org.springframework.hateoas.config;
 import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
+import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 
 /*
 proposedHints.put(WebStackImportSelector,
@@ -39,7 +40,10 @@ public final static String HypermediaConfigurationImportSelector = "Lorg/springf
 			}));
 			*/
 @NativeImageHint(trigger=HypermediaConfigurationImportSelector.class,typeInfos= {
-	@TypeInfo(types= {HypermediaConfigurationImportSelector.class})	
-},follow=true) // TODO WTF is this one?
+	@TypeInfo(types= {
+		HypermediaConfigurationImportSelector.class,
+		EnableHypermediaSupport.class, HypermediaType.class, HypermediaType[].class,
+		MediaTypeConfigurationProvider.class
+	})})
 public class Hints implements NativeImageConfiguration {
 }
