@@ -65,20 +65,29 @@ public class ResourcesJsonMarshaller {
 		}
 	}
 
-	public static ResourcesDescriptor read(InputStream inputStream) throws Exception {
-		ResourcesDescriptor metadata = toResourcesDescriptor(new JSONObject(toString(inputStream)));
-		return metadata;
+	public static ResourcesDescriptor read(InputStream inputStream) {
+		try {
+			ResourcesDescriptor metadata = toResourcesDescriptor(new JSONObject(toString(inputStream)));
+			return metadata;
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to read ResourcesDescriptor from inputstream", e);
+		}
 	}
 	
 	private static ResourcesDescriptor toResourcesDescriptor(JSONObject object) throws Exception {
 		ResourcesDescriptor rd = new ResourcesDescriptor();
-		JSONArray array = object.getJSONArray("bundles");
-		for (int i=0;i<array.length();i++) {
-			rd.addBundle(array.getJSONObject(i).getString("name"));
+		JSONArray array = null;
+		if (object.has("bundles")) {
+			array = object.getJSONArray("bundles");
+			for (int i=0;i<array.length();i++) {
+				rd.addBundle(array.getJSONObject(i).getString("name"));
+			}
 		}
-		array = object.getJSONArray("resources");
-		for (int i=0;i<array.length();i++) {
+		if (object.has("resources")) {
+			array = object.getJSONArray("resources");
+			for (int i=0;i<array.length();i++) {
 			rd.add(array.getJSONObject(i).getString("pattern"));
+			}
 		}
 		return rd;
 	}
