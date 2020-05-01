@@ -34,6 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -41,6 +43,8 @@ import java.util.zip.ZipFile;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.springframework.graal.domain.resources.ResourcesDescriptor;
+import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -65,6 +69,8 @@ public class TypeSystem {
 
 	// Map of which application files contain particular packages
 	private Map<String, List<File>> appPackages = new HashMap<>();
+
+	private Map<String, ResourcesDescriptor> resourceConfigurations;
 
 	public static TypeSystem get(List<String> classpath) {
 		return new TypeSystem(classpath);
@@ -600,6 +606,144 @@ public class TypeSystem {
 		List<CompilationHint> declaredHints = resolveName(typename).getCompilationHints();
 		results.addAll(declaredHints);
 		return results;
+	}
+	
+	static class Tuple<K,V> {
+		private final K key;
+		private final V value;
+		Tuple(K key,V value) {
+			this.key = key;
+			this.value = value;
+		}
+		public K getKey() {
+			return key;
+		}
+		public V getValue() {
+			return value;
+		}
+		public String toString() { return key+": hasData?"+(value!=null); }
+	}
+
+	/**
+	 * Retrieve the map from files (possibly inside jar files) to {@link ResourcesDescriptor} objects parsed
+	 * from the contents of those files. This method is looking for files that start <tt>META-INF/native-image</tt>
+	 * and end with <tt>resource-config.json</tt>. If the file is a path into a jar it has the form
+	 * <tt>path/to/foo.jar!path/to/file</tt>.
+	 * 
+	 * @return map from files to @link {@link ResourcesDescriptor}
+	 */
+	public Map<String, ResourcesDescriptor> getResourceConfigurationsOnClasspath() {
+		if (this.resourceConfigurations == null) {
+			Map<String,ResourcesDescriptor> configs = new HashMap<>();
+			for (String s: classpath) {
+				File f = new File(s);
+				if (f.isDirectory()) {
+					searchDir(f, filepath -> { 
+						return filepath.contains("META-INF/native-image") && filepath.endsWith("resource-config.json");
+					}, 
+					ResourcesJsonMarshaller::read,
+					configs);
+				} else if (f.isFile() && f.toString().endsWith(".jar")) {
+					searchJar(f, filepath -> { 
+						return filepath.contains("META-INF/native-image") && filepath.endsWith("resource-config.json");
+					}, 
+					ResourcesJsonMarshaller::read,
+					configs);
+				}
+			}
+			if (configs.isEmpty()) {
+				this.resourceConfigurations = Collections.emptyMap();
+			} else {
+				this.resourceConfigurations = configs;
+			}
+		}
+		return this.resourceConfigurations;
+	}
+	
+
+	/**
+	 * Recursively search a specified directory. Any files that match the specified predicate will have
+	 * their contents converted by the supplied function and the resultant information stored in the collector map.
+	 * 
+	 * @param <T> The type of object produced by the converter function
+	 * @param dir the directory to recursively search
+	 * @param matchPredicate the predicate against which to match file paths
+	 * @param converter the converter that processes file contents to produce something of type T
+	 * @param collector the place to store mappings from matched file paths to T objects
+	 */
+	private <T> void searchDir(File dir, Predicate<String> matchPredicate, Function<InputStream, T> converter,
+			Map<String, T> collector) {
+		Path root = Paths.get(dir.toURI());
+		try {
+			List<Tuple<String, T>> found =
+					Files.walk(root).filter(p -> matchPredicate.test(p.toAbsolutePath().toString())).map(p -> {
+				try {
+					T t = converter.apply(Files.newInputStream(p));
+					return new Tuple<>(p.toString(), t);
+				} catch (Exception e) {
+					System.err.println("Unexpected problem reading " + p + ": " + e.getMessage());
+					return new Tuple<>(p.toString(), (T)null);
+				}
+			}).collect(Collectors.toList());
+			for (Tuple<String,T> t: found) {
+				collector.put(t.getKey(), t.getValue());
+			}
+		} catch (IOException ioe) {
+			throw new IllegalStateException("Unable to walk " + dir, ioe);
+		}
+	}
+
+	/**
+	 * Scan the entries in a specified jar file. Any entry paths that match the specified predicate will have
+	 * their contents converted by the supplied function and the resultant information stored in the collector map.
+	 * Jar file paths are of the form <tt>foo/bar/boo.jar!path/index/jar.txt</tt>.
+	 * 
+	 * @param <T> The type of object produced by the converter function
+	 * @param jar the jar to scan
+	 * @param matchPredicate the predicate against which to match file paths
+	 * @param converter the converter that processes file contents to produce something of type T
+	 * @param collector the place to store mappings from matched jar file paths to T objects
+	 */
+	private <T> void searchJar(File jar, Predicate<String> matchPredicate, Function<InputStream, T> converter, Map<String, T> collector) {
+		try {
+			try (ZipFile zf = new ZipFile(jar)) {
+				Enumeration<? extends ZipEntry> entries = zf.entries();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					String name = entry.getName();
+					if (matchPredicate.test(name)) {
+						collector.put(jar.toURI().getPath().toString()+"!"+name, converter.apply(zf.getInputStream(entry)));
+					}
+				}
+			}
+		} catch (FileNotFoundException fnfe) {
+			System.err.println("WARNING: Unable to find jar '" + jar + "' whilst scanning filesystem");
+		} catch (IOException ioe) {
+			throw new RuntimeException("Problem during scan of " + jar, ioe);
+		}
+	}
+
+	/**
+	 * Discover if there is any <tt>resource-config.json</tt> on the classpath for this type system that
+	 * contains an entry that would include <tt>META-INF/spring.factories</tt>.
+	 * 
+	 * @return the file path to the <tt>resource-config.json</tt> containing <tt>META-INF/spring.factories</tt> or null if there is none
+	 */
+	public String findAnyResourceConfigIncludingSpringFactoriesPattern() {
+		String existingConfigThatIncludesSpringFactories = null; 
+		Map<String,ResourcesDescriptor> resourceConfigurations = getResourceConfigurationsOnClasspath();
+		outer: for (Map.Entry<String,ResourcesDescriptor> resourceConfiguration: resourceConfigurations.entrySet()) {
+			List<String> patterns = resourceConfiguration.getValue().getPatterns();
+			for (String pattern: patterns) {
+				String slash = File.separator;
+				// Catches it raw or escaped (as the agent would do) - will not currently catch funky wildcarded variants
+				if (pattern.equals("META-INF"+slash+"spring.factories") || pattern.equals("\\QMETA-INF"+slash+"spring.factories\\E")) {
+					existingConfigThatIncludesSpringFactories = resourceConfiguration.getKey();
+					break outer;
+				}
+			}
+		}
+		return existingConfigThatIncludesSpringFactories;
 	}
 
 }

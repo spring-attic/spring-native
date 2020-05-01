@@ -76,22 +76,4 @@ public class ResourcesDescriptor {
 		}
 	}
 
-//	public boolean hasClassDescriptor(String string) {
-//		for (ProxyDescriptor cd: classDescriptors) {
-//			if (cd.getName().equals(string)) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//
-//	public ProxyDescriptor getClassDescriptor(String type) {
-//		for (ProxyDescriptor cd: classDescriptors) {
-//			if (cd.getName().equals(type)) {
-//				return cd;
-//			}
-//		}
-//		return null;
-//	}
-
 }

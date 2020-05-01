@@ -1415,6 +1415,12 @@ public class Type {
 				} else if (key.equals("follow")) {
 					Boolean b = (Boolean) value;
 					ch.setFollow(b);
+				} else if (key.equals("extractTypesFromAttributes")) {
+					// TODO handle this key
+//					annotation extractTypesFromAttributes=[value, type](class java.util.ArrayList)
+//					annotation extractTypesFromAttributes=[value, name](class java.util.ArrayList)
+//					annotation extractTypesFromAttributes=[value, name](class java.util.ArrayList)
+//					annotation extractTypesFromAttributes=[value](class java.util.ArrayList)
 				} else {
 					System.out.println("annotation " + key + "=" + value + "(" + value.getClass() + ")");
 				}

@@ -35,13 +35,12 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.graalvm.nativeimage.ImageSingletons;
-import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
+import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.graal.domain.reflect.Flag;
 import org.springframework.graal.domain.resources.ResourcesDescriptor;
 import org.springframework.graal.domain.resources.ResourcesJsonMarshaller;
@@ -610,6 +609,15 @@ public class ResourcesHandler {
 				}
 			}
 		}
+
+		if (forRemoval.size() > 0) {
+			String existingRC = ts.findAnyResourceConfigIncludingSpringFactoriesPattern();
+			if (existingRC != null) {
+				System.out.println("WARNING: unable to trim META-INF/spring.factories (for example to disable unused auto configurations)"+
+					" because an existing resource-config is directly including it: "+existingRC);
+				return;
+			}
+		}	
 
 		// Filter spring.factories if necessary
 		try {
