@@ -26,6 +26,7 @@ import org.springframework.graal.type.AccessBits;
 @NativeImageHint(typeInfos = {
 		// TODO What about some way to say "all annotations in this package"
 		@TypeInfo(types= {
+				ExceptionHandler.class,Mapping.class,RequestMethod[].class,
 				ModelAttribute.class,
 				InitBinder.class,
 				ResponseBody.class,RequestBody.class,RestController.class, RequestParam.class,

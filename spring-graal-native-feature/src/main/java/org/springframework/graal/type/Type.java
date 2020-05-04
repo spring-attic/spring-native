@@ -1301,7 +1301,8 @@ public class Type {
 			return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
 		for (AnnotationNode an : node.visibleAnnotations) {
-			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")) {
+			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;") ||
+				an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
 				List<Object> values = an.values;
 				if (values != null) {
 					for (int i = 0; i < values.size(); i += 2) {
