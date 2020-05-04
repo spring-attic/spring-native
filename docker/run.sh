@@ -1,1 +1,0 @@
-docker run springci/spring-graal-native

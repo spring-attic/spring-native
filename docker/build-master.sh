@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+docker build \
+  --build-arg JVMCI_URL=https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz \
+  --build-arg GRAAL_BRANCH=master \
+  -t springci/graalvm-ce:master-java8 - < $DIR/Dockerfile.graalvm-ce
+
+docker build \
+  --build-arg BASE_IMAGE=springci/graalvm-ce:master-java8 \
+  -t springci/spring-graal-native:master-java8 - < $DIR/Dockerfile.spring-graal-native
+
+docker build \
+  --build-arg BASE_IMAGE=springci/spring-graal-native:master-java8 \
+  --build-arg USER=$USER \
+  --build-arg USER_ID=$(id -u ${USER}) \
+  --build-arg USER_GID=$(id -g ${USER}) \
+  -t spring-graal-native-dev:master-java8 - < $DIR/Dockerfile.spring-graal-native-dev
+
+
+docker build \
+  --build-arg JVMCI_URL=https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz \
+  --build-arg GRAAL_BRANCH=master \
+  -t springci/graalvm-ce:master-java11 - < $DIR/Dockerfile.graalvm-ce
+
+docker build \
+  --build-arg BASE_IMAGE=springci/graalvm-ce:master-java11 \
+  -t springci/spring-graal-native:master-java11 - < $DIR/Dockerfile.spring-graal-native
+
+docker build \
+  --build-arg BASE_IMAGE=springci/spring-graal-native:master-java11 \
+  --build-arg USER=$USER \
+  --build-arg USER_ID=$(id -u ${USER}) \
+  --build-arg USER_GID=$(id -g ${USER}) \
+  -t spring-graal-native-dev:master-java11 - < $DIR/Dockerfile.spring-graal-native-dev
