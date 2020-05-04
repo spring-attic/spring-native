@@ -17,6 +17,9 @@ package org.springframework.context.annotation;
 
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
+import org.springframework.context.EmbeddedValueResolverAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.ConfigurationClassEnhancer.EnhancedConfiguration;
 import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.graal.extension.NativeImageHint;
@@ -42,6 +45,7 @@ proposedHints.put(AdviceModeImportSelector,
 @NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
+				EmbeddedValueResolverAware.class,EnvironmentAware.class,//EnhancedConfiguration.class,
 				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,
 				AnnotationScopeMetadataResolver.class,AutoConfigurationExcludeFilter.class,
 				EventListenerMethodProcessor.class,

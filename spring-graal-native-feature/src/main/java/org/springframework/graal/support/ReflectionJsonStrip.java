@@ -63,9 +63,11 @@ public class ReflectionJsonStrip {
 		json.append("[\n");
 		for (ClassDescriptor cd2 : cds2) {
 			if (getClassDescriptor(cds1, cd2.getName()) == null) {
+				System.out.println("Did not find "+cd2.getName()+" in the first file, including it in output");
 				// This one is not mentioned in the source, so we must include it in output
 				json.append(new JsonConverter().toJsonObject(cd2).toString() + ",\n");
 			} else {
+				/*
 				// In both, but are they different?
 				ClassDescriptor cd1 = getClassDescriptor(cds1, cd2.getName());
 				if (!cd1.equals(cd2)) {
@@ -75,12 +77,12 @@ public class ReflectionJsonStrip {
 					System.out.println(cd2.toString());
 					json.append(new JsonConverter().toJsonObject(cd2) + ",\n");
 				}
+				*/
 			}
 		}
 		json.setCharAt(json.length() - 2, ' '); // splat over last ,
 		json.append("\n]");
 		String output = json.toString();
-		System.out.println(output);
 		try (FileOutputStream fos = new FileOutputStream(newStrippedFile)) {
 			fos.write(output.getBytes());
 		}
