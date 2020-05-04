@@ -1,0 +1,34 @@
+FROM ubuntu:bionic
+
+ARG JVMCI_URL
+ARG GRAAL_BRANCH
+
+ENV JAVA_HOME=/opt/openjdk-jvmci
+ENV PATH="/opt/mx-master:$JAVA_HOME/bin:$PATH"
+
+RUN apt-get -y update \
+ && apt-get -y install git curl build-essential python unzip zlib1g-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN cd /opt \
+ && curl -LO https://github.com/graalvm/mx/archive/master.zip \
+ && unzip master.zip \
+ && rm master.zip \
+ && curl -L $JVMCI_URL | tar -xz \
+ && mv *jdk* openjdk-jvmci \
+ && git clone --single-branch --branch $GRAAL_BRANCH https://github.com/oracle/graal.git \
+ && cd graal/vm \
+ && mx --disable-polyglot --disable-libpolyglot --dynamicimports /substratevm build
+
+FROM ubuntu:bionic
+
+ENV JAVA_HOME=/opt/java
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
+RUN apt-get -y update \
+ && apt-get -y install build-essential zlib1g-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /opt/java
+
+COPY --from=0 /opt/graal/vm/latest_graalvm_home/. /opt/java/

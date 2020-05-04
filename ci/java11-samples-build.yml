@@ -4,8 +4,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: oracle/graalvm-ce
-    tag: 20.0.0-java11
+    repository: springci/graalvm-ce
+    tag: 20.1-dev-java11
 
 inputs:
   - name: spring-graal-native

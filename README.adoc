@@ -1,7 +1,8 @@
 :version: 0.6.1.RELEASE
 :repository: milestone
 :boot-version: 2.3.0.M4
-:graal-version: 20.0.0
+:graalvm-version: 20.0.0
+:graalvm-dev-version: 20.1-dev
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
 
 image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
@@ -21,12 +22,7 @@ It is mainly composed of 6 parts:
 == Scope and status
 
 This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples (work in progress).
-Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing efficiency (image size, memory consumption) and performances will happen as a second step.   
-
-This feature supports:
-
-- GraalVM {graal-version}
-- Spring Boot {boot-version}
+Supporting a wider and clearly defined range of Spring Boot applications, as well as optimizing efficiency (image size, memory consumption) and performances will happen as a second step.
 
 Spring team collaborates with GraalVM native team by raising issues in their bug tracker, with the goal to improve the production-readiness of native-images. These bugs on GraalVM issue tracker https://github.com/oracle/graal/labels/spring[are identified by the `spring` label].
 
@@ -36,27 +32,30 @@ For detailed information and walkthroughs of applying the techniques to your pro
 
 === Install GraalVM native
 
+If you are using Docker based builds descried above, the right GraalVM distribution is already installed, you can skip this section.
+
 From GraalVM builds:
 
-- Install GraalVM from https://github.com/graalvm/graalvm-ce-builds/releases[here] (dev builds are also available https://github.com/graalvm/graalvm-ce-dev-builds/releases[here]).
+- Install GraalVM {graalvm-version} from https://github.com/graalvm/graalvm-ce-builds/releases[here] (dev builds are also available from https://github.com/graalvm/graalvm-ce-dev-builds/releases[here]).
 - Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
 
 - https://sdkman.io/install[Install SDKMAN]
-- Install GraalVM with `sdk install java {graal-version}.r8-grl` for Java 8 or `sdk install java {graal-version}.r11-grl` for Java 11
+- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 === Artifacts
+
+The latest {version} release supports GraalVM {graalvm-version} and Spring Boot {boot-version}.
 
 - Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native/{version}/spring-graal-native-{version}.jar[`org.springframework.experimental:spring-graal-native:{version}`]
 - Repository: https://repo.spring.io/{repository}[`https://repo.spring.io/{repository}`]
 
 === Play with the samples
 
-- `git clone https://github.com/spring-projects-experimental/spring-graal-native`
-- In the project root, run `./build.sh` 
+- Download and extract https://github.com/spring-projects-experimental/spring-graal-native/archive/{version}.zip[sources from the latest release].
 - Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
@@ -64,8 +63,29 @@ Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versi
 
 == Contributing
 
-This project is in the spring-projects-experimental org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/reference/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
+This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/reference/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
 
+=== Use Docker based build environment
+
+In order to allow easily reproducible builds of `spring-graal-native`, dedicated Docker images are available for local development (and are also used in the CI).
+
+To use it:
+
+- https://docs.docker.com/engine/install/[Install Docker]
+- https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user]
+- Run `docker/build-{graalvm-dev-version}.sh` to build the Docker images
+- You can now invoke `run-{graalvm-dev-version}-java8.sh` or `run-{graalvm-dev-version}-java11.sh` to run the Docker container suitable to run `spring-graal-native` build scripts.
+- The `spring-graal-native` directory is shared between the host (where is typically the IDE) and the container (where you can run builds)
+
+=== Usual dev workflow
+
+- Import the root project in your IDE
+- Eventually import the sample you are working on as a distinct project in your IDE
+- Follow instructions from the "Use Docker based build environment" section above
+- Run `build.sh` from the root project if you have made modification to the feature, substitutions or configuration modules
+- Run `build.sh` from the sample you are working on
+
+To test the various samples You can also run `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples).
 
 == License
 

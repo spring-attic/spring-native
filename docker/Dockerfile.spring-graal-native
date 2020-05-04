@@ -1,0 +1,27 @@
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
+
+ARG MAVEN_VERSION=3.6.3
+
+ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
+
+RUN apt-get -y update \
+ && apt-get -y install git curl python unzip bc \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN cd /opt \
+ && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
+ && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
+ && rm apache-maven-${MAVEN_VERSION}-bin.zip \
+ && curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.5.0/grpcurl_1.5.0_linux_x86_64.tar.gz | tar -xz \
+ && rm LICENSE \
+ && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+ && apt-get -y install nodejs \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -LO https://github.com/tecfu/tty-table/archive/master.zip \
+ && unzip master.zip \
+ && rm master.zip \
+ && cd tty-table-master \
+ && npm i -g \
+ && cd .. \
+ && rm -rf tty-table-master
