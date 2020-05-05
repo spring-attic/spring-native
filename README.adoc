@@ -3,6 +3,7 @@
 :boot-version: 2.3.0.M4
 :graalvm-version: 20.0.0
 :graalvm-dev-version: 20.1-dev
+:boot-dev-version: 2.3.0.M4
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
 
 image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
@@ -64,6 +65,10 @@ The latest {version} release supports GraalVM {graalvm-version} and Spring Boot 
 == Contributing
 
 This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/reference/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
+
+=== Baseline
+
+The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {boot-dev-version}.
 
 === Use Docker based build environment
 
