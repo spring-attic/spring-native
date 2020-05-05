@@ -1,0 +1,17 @@
+== Concourse pipeline
+
+Ensure that you've setup the spring-graal-native target and can login
+
+[source]
+----
+$ fly -t spring-graal-native login -n spring-graal-native -c https://ci.spring.io
+----
+
+The pipeline can be deployed using the following command:
+
+[source]
+----
+$ fly -t spring-graal-native set-pipeline -p spring-graal-native -c ci/pipeline.yml
+----
+
+NOTE: This assumes that you have configured the appropriate secrets.
