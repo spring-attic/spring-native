@@ -15,10 +15,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: 20.1-dev-java8
-    params:
-      build_args:
-        JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
-        GRAALVM_BRANCH: release/graal-vm/20.1
   - name: graalvm-ce-20.1-dev-java11-image
     type: docker-image
     icon: docker
@@ -27,10 +23,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: 20.1-dev-java11
-    params:
-      build_args:
-        JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
-        GRAALVM_BRANCH: release/graal-vm/20.1
   - name: graalvm-ce-master-java8-image
     type: docker-image
     icon: docker
@@ -39,10 +31,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: master-java8
-    params:
-      build_args:
-        JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
-        GRAALVM_BRANCH: master
   - name: graalvm-ce-master-java11-image
     type: docker-image
     icon: docker
@@ -51,10 +39,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: master-java11
-    params:
-      build_args:
-        JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
-        GRAALVM_BRANCH: master
   - name: spring-graal-native-20.1-dev-java8-image
     type: docker-image
     icon: docker
@@ -63,9 +47,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: 20.1-dev-java8
-      params:
-        build_args:
-          BASE_IMAGE: springci/graalvm-ce:20.1-dev-java8
   - name: spring-graal-native-20.1-dev-java11-image
     type: docker-image
     icon: docker
@@ -74,9 +55,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: 20.1-dev-java11
-    params:
-      build_args:
-        BASE_IMAGE: springci/graalvm-ce:20.1-dev-java11
   - name: spring-graal-native-master-java8-image
     type: docker-image
     icon: docker
@@ -85,9 +63,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: master-java8
-    params:
-      build_args:
-        BASE_IMAGE: springci/graalvm-ce:master-java8
   - name: spring-graal-native-master-java11-image
     type: docker-image
     icon: docker
@@ -96,9 +71,6 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: master-java11
-    params:
-      build_args:
-        BASE_IMAGE: springci/graalvm-ce:master-java11
 jobs:
   - name: java8-key-samples-build
     public: true
@@ -153,15 +125,27 @@ jobs:
           - put: graalvm-ce-20.1-dev-java8-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
+              build_args:
+                JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
+                GRAALVM_BRANCH: release/graal-vm/20.1
           - put: graalvm-ce-20.1-dev-java11-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
+              build_args:
+                JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
+                GRAALVM_BRANCH: release/graal-vm/20.1
           - put: graalvm-ce-master-java8-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
+              build_args:
+                JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
+                GRAALVM_BRANCH: master
           - put: graalvm-ce-master-java11-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
+              build_args:
+                JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
+                GRAALVM_BRANCH: master
   - name: build-spring-graal-native-images
     public: true
     serial: true
@@ -172,15 +156,23 @@ jobs:
           - put: spring-graal-native-20.1-dev-java8-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
+              build_args:
+                BASE_IMAGE: springci/graalvm-ce:20.1-dev-java8
           - put: spring-graal-native-20.1-dev-java11-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
+              build_args:
+                BASE_IMAGE: springci/graalvm-ce:20.1-dev-java11
           - put: spring-graal-native-master-java8-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
+              build_args:
+                BASE_IMAGE: springci/graalvm-ce:master-java8
           - put: spring-graal-native-master-java11-image
             params:
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
+              build_args:
+                BASE_IMAGE: springci/graalvm-ce:master-java11
 
 groups:
   - name: "Build and test"
