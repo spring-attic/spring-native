@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
+RC=0
+
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
 for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc vanilla-thymeleaf vanilla-grpc vanilla-tx
 do
-  (cd spring-graal-native-samples/$i && ./build.sh)
+
+  if ! (cd spring-graal-native-samples/$i && ./build.sh); then
+    RC=1
+  fi
   if [ -f "spring-graal-native-samples/$i/target/native-image/summary.csv" ]; then
     cat spring-graal-native-samples/$i/target/native-image/summary.csv >> samples-summary.csv
   else
@@ -27,3 +32,5 @@ if ! [ -x "$(command -v tty-table)" ]; then
 else
   tail -n +2 samples-summary.csv | tty-table
 fi
+
+exit $RC
