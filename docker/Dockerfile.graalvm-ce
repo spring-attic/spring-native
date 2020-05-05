@@ -1,7 +1,7 @@
 FROM ubuntu:bionic
 
 ARG JVMCI_URL
-ARG GRAAL_BRANCH
+ARG GRAALVM_BRANCH
 
 ENV JAVA_HOME=/opt/openjdk-jvmci
 ENV PATH="/opt/mx-master:$JAVA_HOME/bin:$PATH"
@@ -16,7 +16,7 @@ RUN cd /opt \
  && rm master.zip \
  && curl -L $JVMCI_URL | tar -xz \
  && mv *jdk* openjdk-jvmci \
- && git clone --single-branch --branch $GRAAL_BRANCH https://github.com/oracle/graal.git \
+ && git clone --single-branch --branch $GRAALVM_BRANCH https://github.com/oracle/graal.git \
  && cd graal/vm \
  && mx --disable-polyglot --disable-libpolyglot --dynamicimports /substratevm build
 
