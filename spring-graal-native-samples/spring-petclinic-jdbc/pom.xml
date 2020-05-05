@@ -32,11 +32,6 @@
     </properties>
 
     <dependencies>
-        <!-- Should not be needed, see https://github.com/spring-projects-experimental/spring-graal-native/issues/97 -->
-        <dependency>
-            <groupId>org.reactivestreams</groupId>
-            <artifactId>reactive-streams</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>

@@ -37,11 +37,6 @@
 			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.reactivestreams</groupId>
-			<artifactId>reactive-streams</artifactId>
-			<version>1.0.3</version>
-		</dependency>
-		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 		</dependency>
