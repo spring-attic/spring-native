@@ -124,24 +124,28 @@ jobs:
       - in_parallel:
           - put: graalvm-ce-20.1-dev-java8-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
               build_args:
                 JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
                 GRAALVM_BRANCH: release/graal-vm/20.1
           - put: graalvm-ce-20.1-dev-java11-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
               build_args:
                 JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
                 GRAALVM_BRANCH: release/graal-vm/20.1
           - put: graalvm-ce-master-java8-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
               build_args:
                 JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.1-b02/openjdk-8u252+09-jvmci-20.1-b02-linux-amd64.tar.gz
                 GRAALVM_BRANCH: master
           - put: graalvm-ce-master-java11-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.graalvm-ce
               build_args:
                 JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.1-b02/labsjdk-ce-11.0.7+10-jvmci-20.1-b02-linux-amd64.tar.gz
@@ -155,21 +159,25 @@ jobs:
       - in_parallel:
           - put: spring-graal-native-20.1-dev-java8-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
               build_args:
                 BASE_IMAGE: springci/graalvm-ce:20.1-dev-java8
           - put: spring-graal-native-20.1-dev-java11-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
               build_args:
                 BASE_IMAGE: springci/graalvm-ce:20.1-dev-java11
           - put: spring-graal-native-master-java8-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
               build_args:
                 BASE_IMAGE: springci/graalvm-ce:master-java8
           - put: spring-graal-native-master-java11-image
             params:
+              build: spring-graal-native/docker
               dockerfile: spring-graal-native/docker/Dockerfile.spring-graal-native
               build_args:
                 BASE_IMAGE: springci/graalvm-ce:master-java11
