@@ -73,7 +73,7 @@ To use it:
 
 - https://docs.docker.com/engine/install/[Install Docker]
 - https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user]
-- Run `docker/build-{graalvm-dev-version}.sh` to build the Docker images
+- Run `docker/build-dev-images.sh` to build the Docker images
 - You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container suitable to run `spring-graal-native` build scripts.
 - The `spring-graal-native` directory is shared between the host (where is typically the IDE) and the container (where you can run builds)
 
