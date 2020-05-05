@@ -38,6 +38,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.graal.extension.NativeImageHint;
@@ -1656,6 +1657,119 @@ public class Type {
 
 	public String fetchReactiveCrudRepositoryType() {
 		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository",0);
+	}
+	
+	/**
+	 * Verify this type as a component, checking everything is set correctly for
+	 * native-image construction to succeed.
+	 * 
+	 * @throws VerificationException if anything looks wrong with the component
+	 */
+	public void verifyComponent() {
+		verifyProxyBeanMethodsSetting();
+	}
+
+	/**
+	 *  
+	 */
+	private void verifyProxyBeanMethodsSetting() {
+		List<Method> methodsWithAtBean = getMethodsWithAtBean();
+		System.out.println("methodsWithAtBean #"+methodsWithAtBean.size());
+		if (methodsWithAtBean.size() != 0) {
+			List<AnnotationNode> annos = collectAnnotations();
+			annos = filterAnnotations(annos,
+				an -> {
+					Type annotationType = typeSystem.Lresolve(an.desc);
+					return annotationType.hasMethod("proxyBeanMethods");
+				});
+			// Rule:
+			// At least one annotation in the list has to be setting proxyBeanMethods=false.
+			// Some may not supply it if they are being aliased by other values.
+			// TODO this does not check the default value for proxyBeanMethods
+			// TODO this does not verify/follow AliasFor usage
+			boolean atLeastSetFalseSomewhere = false;
+			for (AnnotationNode anode: annos) {
+				if (hasValue(anode, "proxyBeanMethods")) {
+					Boolean value = (Boolean)getValue(anode, "proxyBeanMethods");
+					if (!value) {
+						atLeastSetFalseSomewhere = true;
+					}
+				}
+			}
+			if (!atLeastSetFalseSomewhere) {
+				throw new VerificationException("Component "+this.getDottedName()+" does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
+			}
+		}
+	}
+	
+	/**
+	 * For an {@link AnnotationNode} retrieve the value for a particular attribute, will throw
+	 * an exception if no value is set for that attribute.
+	 * @param node the annotation node whose values should be checked
+	 * @param name the annotation attribute name being searched for
+	 * @return the value of that attribute if set on that annotation node
+	 * @throws IllegalStateException if that attribute name is not set
+	 */
+	private Object getValue(AnnotationNode anode, String name) {
+		List<Object> values = anode.values;
+		for (int i=0;i< values.size(); i+=2) {
+			if (values.get(i).toString().equals(name)) {
+				return values.get(i+1);
+			}
+		}
+		return new IllegalStateException("Attribute "+name+" not set on the specified annotation, precede this call to getValue() with a hasValue() check");
+	}
+
+	/**
+	 * For an {@link AnnotationNode} check if it specifies a value for a particular attribute.
+	 * 
+	 * @param node the annotation node whose values should be checked
+	 * @param name the annotation attribute name being searched for
+	 * @return true if the annotation did specify a value for that attribute
+	 */
+	private boolean hasValue(AnnotationNode node, String name) {
+		List<Object> values = node.values;
+		if (values != null) {
+			for (int i = 0; i < values.size(); i += 2) {
+				if (values.get(i).toString().equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean hasMethod(String methodName) {
+		List<MethodNode> methods = node.methods;
+		for (MethodNode method: methods) {
+			if (method.name.equals(methodName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private List<AnnotationNode> filterAnnotations(List<AnnotationNode> input, Predicate<AnnotationNode> filter) {
+		return input.stream().filter(filter).collect(Collectors.toList());
+	}
+
+	private List<AnnotationNode> collectAnnotations() {
+		List<AnnotationNode> resultsHolder = new ArrayList<>();
+		collectAnnotationsHelper(resultsHolder, new HashSet<String>());
+		return resultsHolder;
+	}
+
+	private void collectAnnotationsHelper(List<AnnotationNode> collector, Set<String> seen) {
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode anno: node.visibleAnnotations) {
+				if (!seen.add(anno.desc)) {
+					continue;
+				}
+				collector.add(anno);
+				Type annotationType = typeSystem.Lresolve(anno.desc);
+				annotationType.collectAnnotationsHelper(collector, seen);
+			}
+		}
 	}
 
 }

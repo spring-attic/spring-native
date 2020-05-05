@@ -193,12 +193,16 @@ public class ResourcesHandler {
 		// app.main.SampleApplication=org.springframework.stereotype.Component
 		// app.main.model.Foo=javax.persistence.Entity
 		// app.main.model.FooRepository=org.springframework.data.repository.Repository
+		System.out.println("PPP");
+		p.list(System.out);
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
 			boolean isRepository = false;
+			boolean isComponent = false;
 			String k = (String) keys.nextElement();
+			Type kType = ts.resolveDotted(k);
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
 			String vs = (String) p.get(k);
@@ -244,7 +248,6 @@ public class ResourcesHandler {
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
 				// for petclinic spring.components
 			}
-		Type kType = ts.resolveDotted(k);
 		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
 			processRepository2(kType);
 		}
@@ -255,6 +258,9 @@ public class ResourcesHandler {
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
 				String tt = st.nextToken();
+				if (tt.equals("org.springframework.stereotype.Component")) {
+					isComponent = true;
+				}
 				if (tt.equals("org.springframework.data.repository.Repository")) {
 					isRepository = true;
 				}
@@ -281,6 +287,9 @@ public class ResourcesHandler {
 				if (isRepository) {
 					processRepository(k);
 				}
+			}
+			if (isComponent && ConfigOptions.isVerifierOn()) {
+				kType.verifyComponent();
 			}
 		}
 		System.out.println("Registered " + registeredComponents + " entries");

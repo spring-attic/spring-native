@@ -32,7 +32,9 @@ public abstract class ConfigOptions {
 	private final static boolean VERBOSE;
 	
 	private final static String MISSING_SELECTOR_HINTS;
-
+	
+	private final static boolean VERIFIER_ON;
+	
 	// In light mode the feature only supplies initialization information and nothing
 	// about reflection/proxies/etc - this is useful if using the agent to produce that
 	// configuration data.
@@ -42,6 +44,10 @@ public abstract class ConfigOptions {
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.graal.remove-unused-autoconfig", "false"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
+		}
+		VERIFIER_ON = Boolean.valueOf(System.getProperty("spring.graal.verify","false"));
+		if(VERIFIER_ON) {
+			System.out.println("Verification turned on");
 		}
 		VERBOSE = Boolean.valueOf(System.getProperty("spring.graal.verbose","false"));
 		if (VERBOSE) {
@@ -79,6 +85,10 @@ public abstract class ConfigOptions {
 
 	public static boolean isVerbose() {
 		return VERBOSE;
+	}
+
+	public static boolean isVerifierOn() {
+		return VERIFIER_ON;
 	}
 
 	public static boolean shouldDumpConfig() {
