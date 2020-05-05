@@ -188,13 +188,16 @@ public class ResourcesHandler {
 	// sophisticated
 	// samples - such as one using @Imported configuration - write a testcase for
 	// that)
+	/**
+	 * Process a spring components properties object. The data within will look like:
+	 * <pre><code>
+	 * app.main.SampleApplication=org.springframework.stereotype.Component
+	 * app.main.model.Foo=javax.persistence.Entity
+	 * app.main.model.FooRepository=org.springframework.data.repository.Repository
+	 * </code></pre>
+	 * @param p the properties object containing spring components
+	 */
 	private void processSpringComponents(Properties p) {
-		// Example:
-		// app.main.SampleApplication=org.springframework.stereotype.Component
-		// app.main.model.Foo=javax.persistence.Entity
-		// app.main.model.FooRepository=org.springframework.data.repository.Repository
-		System.out.println("PPP");
-		p.list(System.out);
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
@@ -206,6 +209,9 @@ public class ResourcesHandler {
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
 			String vs = (String) p.get(k);
+			//if (kType.isAtConfiguration()) {
+			//	checkAndRegisterConfigurationType(k);
+			//}
 			try {
 				// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
 				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
