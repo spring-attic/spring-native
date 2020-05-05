@@ -86,22 +86,40 @@ jobs:
         trigger: true
       - task: build
         file: spring-graal-native/ci/java11-key-samples-build.yml
-  - name: java8-samples-build
+  - name: 20.1-dev-java8-samples-build
+    old_name: java8-samples-build
     public: true
     plan:
       - get: spring-graal-native
-      - get: every-day
+        passed: [build-spring-graal-native-images]
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java8-samples-build.yml
-  - name: java11-samples-build
+        file: spring-graal-native/ci/20.1-dev-java8-samples-build.yml
+  - name: 20.1-dev-java11-samples-build
+    old_name: java11-samples-build
     public: true
     plan:
       - get: spring-graal-native
-      - get: every-day
+        passed: [build-spring-graal-native-images]
         trigger: true
       - task: build
-        file: spring-graal-native/ci/java11-samples-build.yml
+        file: spring-graal-native/ci/20.1-dev-java11-samples-build.yml
+  - name: master-java8-samples-build
+    public: true
+    plan:
+      - get: spring-graal-native
+        passed: [build-spring-graal-native-images]
+        trigger: true
+      - task: build
+        file: spring-graal-native/ci/master-java8-samples-build.yml
+  - name: master-java11-samples-build
+    public: true
+    plan:
+      - get: spring-graal-native
+        passed: [build-spring-graal-native-images]
+        trigger: true
+      - task: build
+        file: spring-graal-native/ci/master-java11-samples-build.yml
   - name: deploy
     public: true
     plan:
@@ -156,6 +174,7 @@ jobs:
     plan:
       - get: spring-graal-native
         passed: [build-graalvm-ce-images]
+        trigger: true
       - in_parallel:
           - put: spring-graal-native-20.1-dev-java8-image
             params:
@@ -183,7 +202,7 @@ jobs:
                 BASE_IMAGE: springci/graalvm-ce:master-java11
 
 groups:
-  - name: "Build and test"
-    jobs: ["java8-key-samples-build", "java11-key-samples-build", "java8-samples-build", "java11-samples-build", "deploy"]
-  - name: "Build Docker images"
-    jobs: ["build-graalvm-ce-images", "build-spring-graal-native-images"]
+  - name: "Each commit builds"
+    jobs: ["java8-key-samples-build", "java11-key-samples-build", "deploy"]
+  - name: "Daily builds"
+    jobs: ["build-graalvm-ce-images", "build-spring-graal-native-images", "20.1-dev-java8-samples-build", "20.1-dev-java11-samples-build", "master-java8-samples-build", "master-java11-samples-build"]
