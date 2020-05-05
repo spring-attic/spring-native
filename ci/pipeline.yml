@@ -126,6 +126,7 @@ jobs:
       - get: spring-graal-native
         passed:
           - java8-key-samples-build
+          - java11-key-samples-build
         trigger: true
       - task: deploy
         file: spring-graal-native/ci/deploy.yml
