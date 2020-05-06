@@ -69,28 +69,29 @@ This project is in the `spring-projects-experimental` org indicating it is not a
 === Baseline
 
 The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {boot-dev-version}.
+Mac and Linux are supported, Windows in untested.
 
 === Use Docker based build environment
 
-In order to allow easily reproducible builds of `spring-graal-native`, dedicated Docker images are available for local development (and are also used in the CI).
+In order to allow easily reproducible builds of `spring-graal-native`, dedicated interactive Docker images are available for local development (and are also used in the CI).
 
 To use it:
 
-- https://docs.docker.com/engine/install/[Install Docker]
-- https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user]
-- Run `docker/build-dev-images.sh` to build the Docker images
-- You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container suitable to run `spring-graal-native` build scripts.
-- The `spring-graal-native` directory is shared between the host (where is typically the IDE) and the container (where you can run builds)
+- https://docs.docker.com/engine/install/[Install Docker].
+- https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
+- Run `docker/build-dev-images.sh` to build the `spring-graal-native-dev` Docker images dedicated for development, they are based (multi-stage builds) on the https://hub.docker.com/r/springci/graalvm-ce/tags[`graalvm-ce`] and https://hub.docker.com/r/springci/spring-graal-native/tags[`spring-graal-native`] images https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native?group=Daily%20builds[built on the CI].
+- You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container with an interactive shell suitable to run `spring-graal-native` build scripts (see "Usual dev workflow" section bellow for more details).
+- The `spring-graal-native` directory and the Maven home directory are shared between the host (where is typically the IDE) and the container (where you can run builds).
 
 === Usual dev workflow
 
-- Import the root project in your IDE
-- Eventually import the sample you are working on as a distinct project in your IDE
-- Follow instructions from the "Use Docker based build environment" section above
-- Run `build.sh` from the root project if you have made modification to the feature, substitutions or configuration modules
-- Run `build.sh` from the sample you are working on
+- Import the root project in your IDE.
+- Eventually import the sample you are working on as a distinct project in your IDE.
+- Follow instructions from the "Use Docker based build environment" section above.
+- Run the root project `build.sh` (from the host or the container) if you have made modification to the feature, substitutions or configuration modules.
+- Run `build.sh` of the sample you are working on from the container.
 
-To test the various samples You can also run `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples).
+To test the various samples You can also run the root `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples) from the container.
 
 == License
 
