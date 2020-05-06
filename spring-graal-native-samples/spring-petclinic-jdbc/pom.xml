@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.0.M4</version>
+        <version>2.3.0.RC1</version>
         <relativePath />
     </parent>
     <name>spring-petclinic-jdbc</name>
@@ -27,8 +27,6 @@
         <wro4j.version>1.8.0</wro4j.version>
 
         <jacoco.version>0.8.2</jacoco.version>
-
-        <spring-framework.version>5.2.6.RELEASE</spring-framework.version>
     </properties>
 
     <dependencies>
