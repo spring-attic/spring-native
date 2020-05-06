@@ -13,9 +13,9 @@
 	<url>https://github.com/spring-projects-experimental/spring-graal-native/</url>
 
 	<properties>
+		<!-- In fact using GraalVM 20.1-dev, but this is for graal-hotspot-library. Compat seems to be ok for now. -->
 		<graalvm.version>20.0.0</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
-		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 	</properties>
 
 	<modules>
@@ -31,7 +31,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>2.3.0.M4</version>
+				<version>2.3.0.RC1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
