@@ -41,39 +41,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<outputProperty>maven.compile.classpath</outputProperty>
-							<pathSeparator>:</pathSeparator>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!--
-					<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-compiler-plugin</artifactId>
-							<configuration>
-									<compilerArgs>
-											<arg>-Aorg.springframework.boot.reflectiveaccessannotationprocessor.classpath=${maven.compile.classpath}</arg>
-									</compilerArgs>
-									<annotationProcessors>
-											<annotationProcessor>
-													org.springframework.boot.reflectionprocessor.ReflectiveAccessAnnotationProcessor
-											</annotationProcessor>
-									</annotationProcessors>
-									<debug>true</debug>
-							</configuration>
-					</plugin>
-			-->
 		</plugins>
 	</build>
 
