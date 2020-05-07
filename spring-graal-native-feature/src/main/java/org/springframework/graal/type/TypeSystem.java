@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -322,7 +323,7 @@ public class TypeSystem {
 					}
 				}
 			}
-		} catch (FileNotFoundException fnfe) {
+		} catch (FileNotFoundException | NoSuchFileException fileIsntThere) {
 			System.err.println("WARNING: Unable to find jar '" + jar + "' whilst scanning filesystem");
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem during scan of " + jar, ioe);
@@ -744,6 +745,27 @@ public class TypeSystem {
 			}
 		}
 		return existingConfigThatIncludesSpringFactories;
+	}
+
+	/**
+	 * Check if there are guard type(s) for this key from a spring.factory file.  The key (and associated entries it points at)
+	 * should only be processed if one of the guard types exists. If none of them exist, this spring.factories entry is irrelevant.
+	 * @param key entry key from a spring.factories file
+	 * @return true if the key and associated value should be processed
+	 */
+	public boolean shouldBeProcessed(String key) {
+		String[] guardTypes = SpringConfiguration.findProposedFactoryGuards(key);
+		if (guardTypes == null) {
+			return true;
+		} else {
+			for (String guardType : guardTypes) {
+				Type resolvedType = resolveDotted(guardType, true);
+				if (resolvedType != null) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 }

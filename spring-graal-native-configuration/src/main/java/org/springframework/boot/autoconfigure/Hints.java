@@ -20,6 +20,7 @@ import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
+@NativeImageHint(trigger=AutoConfigurationImportSelector.class)
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
