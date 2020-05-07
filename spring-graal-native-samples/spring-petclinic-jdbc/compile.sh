@@ -42,7 +42,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -Dspring.graal.remove-yaml-support=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   -Ddebug=true \
-  --initialize-at-build-time=org.springframework.boot.validation.MessageInterpolatorFactory,org.hsqldb.jdbc.JDBCDriver,com.mysql.cj.jdbc.Driver,org.springframework.samples.petclinic.owner.PetRepository,org.springframework.samples.petclinic.owner.OwnerRepository,org.springframework.samples.petclinic.visit.VisitRepository,org.springframework.samples.petclinic.vet.VetRepository,org.springframework.samples.petclinic.owner.Pet,org.springframework.samples.petclinic.owner.Owner,org.springframework.samples.petclinic.model.NamedEntity,org.springframework.samples.petclinic.model.Person,org.springframework.samples.petclinic.model.BaseEntity,org.springframework.samples.petclinic.model.NamedEntity,org.springframework.samples.petclinic.visit.Visit,org.springframework.samples.petclinic.vet.Vet \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
