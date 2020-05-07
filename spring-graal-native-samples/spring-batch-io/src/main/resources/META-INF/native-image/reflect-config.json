@@ -1,0 +1,2282 @@
+[
+{
+  "name":"boolean[]"
+},
+{
+  "name":"ch.qos.logback.classic.pattern.DateConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.classic.pattern.LevelConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.classic.pattern.LineSeparatorConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.classic.pattern.LoggerConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.classic.pattern.MessageConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.classic.pattern.ThreadConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"ch.qos.logback.core.Appender"
+},
+{
+  "name":"com.example.batch.BatchConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"com.example.batch.CustomerCreditIncreaseProcessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"process","parameterTypes":["java.lang.Object"] }]
+},
+{
+  "name":"com.example.domain.CustomerCredit",
+  "allDeclaredFields":true,
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.fasterxml.jackson.core.Versioned",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"com.fasterxml.jackson.databind.Module",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"getDependencies","parameterTypes":[] }]
+},
+{
+  "name":"com.fasterxml.jackson.databind.ObjectMapper"
+},
+{
+  "name":"com.fasterxml.jackson.databind.deser.Deserializers[]"
+},
+{
+  "name":"com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.fasterxml.jackson.databind.module.SimpleModule",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"addAbstractTypeMapping","parameterTypes":["java.lang.Class","java.lang.Class"] }, 
+    {"name":"addDeserializer","parameterTypes":["java.lang.Class","com.fasterxml.jackson.databind.JsonDeserializer"] }, 
+    {"name":"addKeyDeserializer","parameterTypes":["java.lang.Class","com.fasterxml.jackson.databind.KeyDeserializer"] }, 
+    {"name":"addKeySerializer","parameterTypes":["java.lang.Class","com.fasterxml.jackson.databind.JsonSerializer"] }, 
+    {"name":"addSerializer","parameterTypes":["com.fasterxml.jackson.databind.JsonSerializer"] }, 
+    {"name":"addSerializer","parameterTypes":["java.lang.Class","com.fasterxml.jackson.databind.JsonSerializer"] }, 
+    {"name":"addValueInstantiator","parameterTypes":["java.lang.Class","com.fasterxml.jackson.databind.deser.ValueInstantiator"] }, 
+    {"name":"getModuleName","parameterTypes":[] }, 
+    {"name":"getTypeId","parameterTypes":[] }, 
+    {"name":"registerSubtypes","parameterTypes":["java.util.Collection"] }, 
+    {"name":"registerSubtypes","parameterTypes":["com.fasterxml.jackson.databind.jsontype.NamedType[]"] }, 
+    {"name":"registerSubtypes","parameterTypes":["java.lang.Class[]"] }, 
+    {"name":"setAbstractTypes","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver"] }, 
+    {"name":"setDeserializerModifier","parameterTypes":["com.fasterxml.jackson.databind.deser.BeanDeserializerModifier"] }, 
+    {"name":"setDeserializers","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleDeserializers"] }, 
+    {"name":"setKeyDeserializers","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleKeyDeserializers"] }, 
+    {"name":"setKeySerializers","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleSerializers"] }, 
+    {"name":"setMixInAnnotation","parameterTypes":["java.lang.Class","java.lang.Class"] }, 
+    {"name":"setSerializerModifier","parameterTypes":["com.fasterxml.jackson.databind.ser.BeanSerializerModifier"] }, 
+    {"name":"setSerializers","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleSerializers"] }, 
+    {"name":"setValueInstantiators","parameterTypes":["com.fasterxml.jackson.databind.module.SimpleValueInstantiators"] }, 
+    {"name":"setupModule","parameterTypes":["com.fasterxml.jackson.databind.Module$SetupContext"] }, 
+    {"name":"version","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.sun.proxy.$Proxy41",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"add","parameterTypes":["org.springframework.batch.core.StepExecution"] }, 
+    {"name":"addAdvice","parameterTypes":["int","org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvisor","parameterTypes":["int","org.springframework.aop.Advisor"] }, 
+    {"name":"addAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"addAll","parameterTypes":["java.util.Collection"] }, 
+    {"name":"createJobExecution","parameterTypes":["java.lang.String","org.springframework.batch.core.JobParameters"] }, 
+    {"name":"createJobExecution","parameterTypes":["org.springframework.batch.core.JobInstance","org.springframework.batch.core.JobParameters","java.lang.String"] }, 
+    {"name":"createJobInstance","parameterTypes":["java.lang.String","org.springframework.batch.core.JobParameters"] }, 
+    {"name":"getAdvisors","parameterTypes":[] }, 
+    {"name":"getDecoratedClass","parameterTypes":[] }, 
+    {"name":"getLastJobExecution","parameterTypes":["java.lang.String","org.springframework.batch.core.JobParameters"] }, 
+    {"name":"getLastStepExecution","parameterTypes":["org.springframework.batch.core.JobInstance","java.lang.String"] }, 
+    {"name":"getProxiedInterfaces","parameterTypes":[] }, 
+    {"name":"getStepExecutionCount","parameterTypes":["org.springframework.batch.core.JobInstance","java.lang.String"] }, 
+    {"name":"getTargetClass","parameterTypes":[] }, 
+    {"name":"getTargetSource","parameterTypes":[] }, 
+    {"name":"indexOf","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"indexOf","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"isExposeProxy","parameterTypes":[] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"isInterfaceProxied","parameterTypes":["java.lang.Class"] }, 
+    {"name":"isJobInstanceExists","parameterTypes":["java.lang.String","org.springframework.batch.core.JobParameters"] }, 
+    {"name":"isPreFiltered","parameterTypes":[] }, 
+    {"name":"isProxyTargetClass","parameterTypes":[] }, 
+    {"name":"removeAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"removeAdvisor","parameterTypes":["int"] }, 
+    {"name":"removeAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"replaceAdvisor","parameterTypes":["org.springframework.aop.Advisor","org.springframework.aop.Advisor"] }, 
+    {"name":"setExposeProxy","parameterTypes":["boolean"] }, 
+    {"name":"setPreFiltered","parameterTypes":["boolean"] }, 
+    {"name":"setTargetSource","parameterTypes":["org.springframework.aop.TargetSource"] }, 
+    {"name":"toProxyConfigString","parameterTypes":[] }, 
+    {"name":"update","parameterTypes":["org.springframework.batch.core.JobExecution"] }, 
+    {"name":"update","parameterTypes":["org.springframework.batch.core.StepExecution"] }, 
+    {"name":"updateExecutionContext","parameterTypes":["org.springframework.batch.core.JobExecution"] }, 
+    {"name":"updateExecutionContext","parameterTypes":["org.springframework.batch.core.StepExecution"] }
+  ]
+},
+{
+  "name":"com.sun.proxy.$Proxy43",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
+  "name":"com.sun.proxy.$Proxy44",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"addAdvice","parameterTypes":["int","org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvisor","parameterTypes":["int","org.springframework.aop.Advisor"] }, 
+    {"name":"addAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"getAdvisors","parameterTypes":[] }, 
+    {"name":"getDecoratedClass","parameterTypes":[] }, 
+    {"name":"getProxiedInterfaces","parameterTypes":[] }, 
+    {"name":"getTargetClass","parameterTypes":[] }, 
+    {"name":"getTargetSource","parameterTypes":[] }, 
+    {"name":"indexOf","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"indexOf","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"isExposeProxy","parameterTypes":[] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"isInterfaceProxied","parameterTypes":["java.lang.Class"] }, 
+    {"name":"isPreFiltered","parameterTypes":[] }, 
+    {"name":"isProxyTargetClass","parameterTypes":[] }, 
+    {"name":"removeAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"removeAdvisor","parameterTypes":["int"] }, 
+    {"name":"removeAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"replaceAdvisor","parameterTypes":["org.springframework.aop.Advisor","org.springframework.aop.Advisor"] }, 
+    {"name":"run","parameterTypes":["org.springframework.batch.core.Job","org.springframework.batch.core.JobParameters"] }, 
+    {"name":"setExposeProxy","parameterTypes":["boolean"] }, 
+    {"name":"setPreFiltered","parameterTypes":["boolean"] }, 
+    {"name":"setTargetSource","parameterTypes":["org.springframework.aop.TargetSource"] }, 
+    {"name":"toProxyConfigString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.sun.proxy.$Proxy45",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"addAdvice","parameterTypes":["int","org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvisor","parameterTypes":["int","org.springframework.aop.Advisor"] }, 
+    {"name":"addAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"getAdvisors","parameterTypes":[] }, 
+    {"name":"getDecoratedClass","parameterTypes":[] }, 
+    {"name":"getJob","parameterTypes":["java.lang.String"] }, 
+    {"name":"getJobNames","parameterTypes":[] }, 
+    {"name":"getProxiedInterfaces","parameterTypes":[] }, 
+    {"name":"getTargetClass","parameterTypes":[] }, 
+    {"name":"getTargetSource","parameterTypes":[] }, 
+    {"name":"indexOf","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"indexOf","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"isExposeProxy","parameterTypes":[] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"isInterfaceProxied","parameterTypes":["java.lang.Class"] }, 
+    {"name":"isPreFiltered","parameterTypes":[] }, 
+    {"name":"isProxyTargetClass","parameterTypes":[] }, 
+    {"name":"register","parameterTypes":["org.springframework.batch.core.configuration.JobFactory"] }, 
+    {"name":"removeAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"removeAdvisor","parameterTypes":["int"] }, 
+    {"name":"removeAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"replaceAdvisor","parameterTypes":["org.springframework.aop.Advisor","org.springframework.aop.Advisor"] }, 
+    {"name":"setExposeProxy","parameterTypes":["boolean"] }, 
+    {"name":"setPreFiltered","parameterTypes":["boolean"] }, 
+    {"name":"setTargetSource","parameterTypes":["org.springframework.aop.TargetSource"] }, 
+    {"name":"toProxyConfigString","parameterTypes":[] }, 
+    {"name":"unregister","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
+  "name":"com.sun.proxy.$Proxy46",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"addAdvice","parameterTypes":["int","org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"addAdvisor","parameterTypes":["int","org.springframework.aop.Advisor"] }, 
+    {"name":"addAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"findJobInstancesByJobName","parameterTypes":["java.lang.String","int","int"] }, 
+    {"name":"findRunningJobExecutions","parameterTypes":["java.lang.String"] }, 
+    {"name":"getAdvisors","parameterTypes":[] }, 
+    {"name":"getDecoratedClass","parameterTypes":[] }, 
+    {"name":"getJobExecution","parameterTypes":["java.lang.Long"] }, 
+    {"name":"getJobExecutions","parameterTypes":["org.springframework.batch.core.JobInstance"] }, 
+    {"name":"getJobInstance","parameterTypes":["java.lang.Long"] }, 
+    {"name":"getJobInstanceCount","parameterTypes":["java.lang.String"] }, 
+    {"name":"getJobInstances","parameterTypes":["java.lang.String","int","int"] }, 
+    {"name":"getJobNames","parameterTypes":[] }, 
+    {"name":"getLastJobExecution","parameterTypes":["org.springframework.batch.core.JobInstance"] }, 
+    {"name":"getLastJobInstance","parameterTypes":["java.lang.String"] }, 
+    {"name":"getProxiedInterfaces","parameterTypes":[] }, 
+    {"name":"getStepExecution","parameterTypes":["java.lang.Long","java.lang.Long"] }, 
+    {"name":"getTargetClass","parameterTypes":[] }, 
+    {"name":"getTargetSource","parameterTypes":[] }, 
+    {"name":"indexOf","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"indexOf","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"isExposeProxy","parameterTypes":[] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"isInterfaceProxied","parameterTypes":["java.lang.Class"] }, 
+    {"name":"isPreFiltered","parameterTypes":[] }, 
+    {"name":"isProxyTargetClass","parameterTypes":[] }, 
+    {"name":"removeAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"removeAdvisor","parameterTypes":["int"] }, 
+    {"name":"removeAdvisor","parameterTypes":["org.springframework.aop.Advisor"] }, 
+    {"name":"replaceAdvisor","parameterTypes":["org.springframework.aop.Advisor","org.springframework.aop.Advisor"] }, 
+    {"name":"setExposeProxy","parameterTypes":["boolean"] }, 
+    {"name":"setPreFiltered","parameterTypes":["boolean"] }, 
+    {"name":"setTargetSource","parameterTypes":["org.springframework.aop.TargetSource"] }, 
+    {"name":"toProxyConfigString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.zaxxer.hikari.HikariConfig",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"com.zaxxer.hikari.HikariConfigMXBean",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"com.zaxxer.hikari.HikariDataSource",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"int[]"
+},
+{
+  "name":"java.io.Closeable",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.io.Serializable",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.io.Serializable[]"
+},
+{
+  "name":"java.lang.AutoCloseable",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.Boolean",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.CharSequence[]"
+},
+{
+  "name":"java.lang.Class",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.ClassLoader",
+  "methods":[{"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int","java.security.ProtectionDomain"] }]
+},
+{
+  "name":"java.lang.Class[]"
+},
+{
+  "name":"java.lang.Comparable[]"
+},
+{
+  "name":"java.lang.Object",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.Object[]"
+},
+{
+  "name":"java.lang.String",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.String[]"
+},
+{
+  "name":"java.lang.annotation.Documented",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.annotation.Inherited",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.annotation.Repeatable",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.annotation.Retention",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.annotation.Target",
+  "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.reflect.AnnotatedElement",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.reflect.GenericDeclaration",
+  "allPublicMethods":true
+},
+{
+  "name":"java.lang.reflect.Proxy",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getInvocationHandler","parameterTypes":["java.lang.Object"] }, 
+    {"name":"getProxyClass","parameterTypes":["java.lang.ClassLoader","java.lang.Class[]"] }, 
+    {"name":"isProxyClass","parameterTypes":["java.lang.Class"] }, 
+    {"name":"newProxyInstance","parameterTypes":["java.lang.ClassLoader","java.lang.Class[]","java.lang.reflect.InvocationHandler"] }
+  ]
+},
+{
+  "name":"java.lang.reflect.Type",
+  "allPublicMethods":true
+},
+{
+  "name":"java.sql.DatabaseMetaData",
+  "methods":[{"name":"getDatabaseProductName","parameterTypes":[] }]
+},
+{
+  "name":"java.sql.Date"
+},
+{
+  "name":"java.sql.Statement[]"
+},
+{
+  "name":"java.sql.Timestamp"
+},
+{
+  "name":"java.sql.Types",
+  "allPublicFields":true
+},
+{
+  "name":"java.sql.Wrapper",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.EventListener",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.ResourceBundle",
+  "methods":[{"name":"getBundle","parameterTypes":["java.lang.String","java.util.Locale","java.lang.ClassLoader"] }]
+},
+{
+  "name":"java.util.concurrent.Executor"
+},
+{
+  "name":"javax.activation.MimeType"
+},
+{
+  "name":"javax.annotation.ManagedBean"
+},
+{
+  "name":"javax.annotation.PostConstruct",
+  "allDeclaredMethods":true
+},
+{
+  "name":"javax.annotation.Resource"
+},
+{
+  "name":"javax.naming.ldap.LdapContext"
+},
+{
+  "name":"javax.sql.CommonDataSource",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"javax.sql.DataSource",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"javax.sql.XADataSource"
+},
+{
+  "name":"javax.xml.ws.WebServiceRef"
+},
+{
+  "name":"long[]"
+},
+{
+  "name":"org.aopalliance.intercept.MethodInterceptor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.apache.logging.log4j.Level",
+  "methods":[{"name":"toLevel","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"org.apache.logging.log4j.LogManager",
+  "methods":[{"name":"getLogger","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"org.apache.logging.log4j.Logger",
+  "methods":[{"name":"log","parameterTypes":["org.apache.logging.log4j.Level","java.lang.Object","java.lang.Throwable"] }]
+},
+{
+  "name":"org.apache.logging.log4j.message.DefaultFlowMessageFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.apache.logging.log4j.message.ReusableMessageFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.apache.logging.log4j.spi.ExtendedLogger"
+},
+{
+  "name":"org.apache.logging.slf4j.SLF4JProvider"
+},
+{
+  "name":"org.hsqldb.Constraint[]"
+},
+{
+  "name":"org.hsqldb.Expression[]"
+},
+{
+  "name":"org.hsqldb.RangeGroup[]"
+},
+{
+  "name":"org.hsqldb.Routine[]"
+},
+{
+  "name":"org.hsqldb.dbinfo.DatabaseInformationFull",
+  "methods":[{"name":"<init>","parameterTypes":["org.hsqldb.Database"] }]
+},
+{
+  "name":"org.hsqldb.index.Index[]"
+},
+{
+  "name":"org.hsqldb.jdbcDriver",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.reactivestreams.Publisher"
+},
+{
+  "name":"org.slf4j.bridge.SLF4JBridgeHandler"
+},
+{
+  "name":"org.slf4j.spi.LocationAwareLogger"
+},
+{
+  "name":"org.springframework.aop.PointcutAdvisor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.aop.SpringProxy",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.aop.TargetClassAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"setBeforeExistingAdvisors","parameterTypes":["boolean"] }
+  ]
+},
+{
+  "name":"org.springframework.aop.framework.Advised",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.aop.framework.AopInfrastructureBean",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.aop.framework.ProxyConfig",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"copyFrom","parameterTypes":["org.springframework.aop.framework.ProxyConfig"] }, 
+    {"name":"isExposeProxy","parameterTypes":[] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"isOpaque","parameterTypes":[] }, 
+    {"name":"isOptimize","parameterTypes":[] }, 
+    {"name":"isProxyTargetClass","parameterTypes":[] }, 
+    {"name":"setExposeProxy","parameterTypes":["boolean"] }, 
+    {"name":"setFrozen","parameterTypes":["boolean"] }, 
+    {"name":"setOpaque","parameterTypes":["boolean"] }, 
+    {"name":"setOptimize","parameterTypes":["boolean"] }, 
+    {"name":"setProxyTargetClass","parameterTypes":["boolean"] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.aop.framework.ProxyProcessorSupport",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getOrder","parameterTypes":[] }, 
+    {"name":"setBeanClassLoader","parameterTypes":["java.lang.ClassLoader"] }, 
+    {"name":"setOrder","parameterTypes":["int"] }, 
+    {"name":"setProxyClassLoader","parameterTypes":["java.lang.ClassLoader"] }
+  ]
+},
+{
+  "name":"org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
+},
+{
+  "name":"org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"determineCandidateConstructors","parameterTypes":["java.lang.Class","java.lang.String"] }, 
+    {"name":"getEarlyBeanReference","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"isFrozen","parameterTypes":[] }, 
+    {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"postProcessAfterInstantiation","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"postProcessBeforeInstantiation","parameterTypes":["java.lang.Class","java.lang.String"] }, 
+    {"name":"postProcessProperties","parameterTypes":["org.springframework.beans.PropertyValues","java.lang.Object","java.lang.String"] }, 
+    {"name":"predictBeanType","parameterTypes":["java.lang.Class","java.lang.String"] }, 
+    {"name":"setAdvisorAdapterRegistry","parameterTypes":["org.springframework.aop.framework.adapter.AdvisorAdapterRegistry"] }, 
+    {"name":"setApplyCommonInterceptorsFirst","parameterTypes":["boolean"] }, 
+    {"name":"setCustomTargetSourceCreators","parameterTypes":["org.springframework.aop.framework.autoproxy.TargetSourceCreator[]"] }, 
+    {"name":"setFrozen","parameterTypes":["boolean"] }, 
+    {"name":"setInterceptorNames","parameterTypes":["java.lang.String[]"] }
+  ]
+},
+{
+  "name":"org.springframework.aop.framework.autoproxy.AbstractBeanFactoryAwareAdvisingPostProcessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.aop.scope.ScopedObject",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.aop.scope.ScopedProxyFactoryBean",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getAdvice","parameterTypes":[] }, 
+    {"name":"getAdviceBeanName","parameterTypes":[] }, 
+    {"name":"setAdvice","parameterTypes":["org.aopalliance.aop.Advice"] }, 
+    {"name":"setAdviceBeanName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.aop.support.AbstractPointcutAdvisor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"equals","parameterTypes":["java.lang.Object"] }, 
+    {"name":"getOrder","parameterTypes":[] }, 
+    {"name":"hashCode","parameterTypes":[] }, 
+    {"name":"isPerInstance","parameterTypes":[] }, 
+    {"name":"setOrder","parameterTypes":["int"] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.Job",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.Step",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.JobLocator",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.JobRegistry",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.ListableJobLocator",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.AbstractBatchConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"jobBuilders","parameterTypes":[] }, 
+    {"name":"setImportMetadata","parameterTypes":["org.springframework.core.type.AnnotationMetadata"] }, 
+    {"name":"stepBuilders","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.AbstractBatchConfiguration$$FastClassBySpringCGLIB$$24da2d91",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.BatchConfigurationSelector",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.BatchConfigurer",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.EnableBatchProcessing",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.JobBuilderFactory",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.ScopeConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"jobScope","parameterTypes":[] }, 
+    {"name":"stepScope","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.ScopeConfiguration$$EnhancerBySpringCGLIB$$948641a5",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"jobExplorer","parameterTypes":[] }, 
+    {"name":"jobLauncher","parameterTypes":[] }, 
+    {"name":"jobRegistry","parameterTypes":[] }, 
+    {"name":"jobRepository","parameterTypes":[] }, 
+    {"name":"transactionManager","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration$$EnhancerBySpringCGLIB$$a8a4f311",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
+  "methods":[
+    {"name":"jobBuilders","parameterTypes":[] }, 
+    {"name":"jobExplorer","parameterTypes":[] }, 
+    {"name":"jobLauncher","parameterTypes":[] }, 
+    {"name":"jobRegistry","parameterTypes":[] }, 
+    {"name":"jobRepository","parameterTypes":[] }, 
+    {"name":"stepBuilders","parameterTypes":[] }, 
+    {"name":"transactionManager","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration$$EnhancerBySpringCGLIB$$a8a4f311$$FastClassBySpringCGLIB$$bd7390f",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration$$FastClassBySpringCGLIB$$7b690be1",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.StepBuilderFactory",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.configuration.annotation.StepScope",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.batch.core.explore.JobExplorer",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.job.AbstractJob",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"execute","parameterTypes":["org.springframework.batch.core.JobExecution"] }, 
+    {"name":"getJobParametersIncrementer","parameterTypes":[] }, 
+    {"name":"getJobParametersValidator","parameterTypes":[] }, 
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"isRestartable","parameterTypes":[] }, 
+    {"name":"registerJobExecutionListener","parameterTypes":["org.springframework.batch.core.JobExecutionListener"] }, 
+    {"name":"setBeanName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setJobExecutionListeners","parameterTypes":["org.springframework.batch.core.JobExecutionListener[]"] }, 
+    {"name":"setJobParametersIncrementer","parameterTypes":["org.springframework.batch.core.JobParametersIncrementer"] }, 
+    {"name":"setJobParametersValidator","parameterTypes":["org.springframework.batch.core.JobParametersValidator"] }, 
+    {"name":"setJobRepository","parameterTypes":["org.springframework.batch.core.repository.JobRepository"] }, 
+    {"name":"setName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setRestartable","parameterTypes":["boolean"] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.job.SimpleJob",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getStep","parameterTypes":["java.lang.String"] }, 
+    {"name":"getStepNames","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.launch.JobLauncher",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.launch.JobOperator",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.launch.support.SimpleJobOperator",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.repository.JobRepository",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.core.scope.context.StepContext",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.step.AbstractStep",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"execute","parameterTypes":["org.springframework.batch.core.StepExecution"] }, 
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"getStartLimit","parameterTypes":[] }, 
+    {"name":"isAllowStartIfComplete","parameterTypes":[] }, 
+    {"name":"registerStepExecutionListener","parameterTypes":["org.springframework.batch.core.StepExecutionListener"] }, 
+    {"name":"setAllowStartIfComplete","parameterTypes":["boolean"] }, 
+    {"name":"setBeanName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setJobRepository","parameterTypes":["org.springframework.batch.core.repository.JobRepository"] }, 
+    {"name":"setName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setStartLimit","parameterTypes":["int"] }, 
+    {"name":"setStepExecutionListeners","parameterTypes":["org.springframework.batch.core.StepExecutionListener[]"] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.batch.core.step.StepLocator",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.core.step.tasklet.TaskletStep",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"afterPropertiesSet","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.batch.item.ItemProcessor",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.ItemReader",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.ItemStream",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.ItemStreamReader",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.item.ItemStreamSupport",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getExecutionContextKey","parameterTypes":["java.lang.String"] }, 
+    {"name":"setName","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
+  "name":"org.springframework.batch.item.ItemStreamWriter",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.ItemWriter",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.file.FlatFileItemReader",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.file.FlatFileItemWriter",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.file.ResourceAwareItemReaderItemStream",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.batch.item.file.ResourceAwareItemWriterItemStream",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.batch.item.support.AbstractFileItemWriter",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"close","parameterTypes":[] }, 
+    {"name":"open","parameterTypes":["org.springframework.batch.item.ExecutionContext"] }, 
+    {"name":"setAppendAllowed","parameterTypes":["boolean"] }, 
+    {"name":"setEncoding","parameterTypes":["java.lang.String"] }, 
+    {"name":"setFooterCallback","parameterTypes":["org.springframework.batch.item.file.FlatFileFooterCallback"] }, 
+    {"name":"setForceSync","parameterTypes":["boolean"] }, 
+    {"name":"setHeaderCallback","parameterTypes":["org.springframework.batch.item.file.FlatFileHeaderCallback"] }, 
+    {"name":"setLineSeparator","parameterTypes":["java.lang.String"] }, 
+    {"name":"setResource","parameterTypes":["org.springframework.core.io.Resource"] }, 
+    {"name":"setSaveState","parameterTypes":["boolean"] }, 
+    {"name":"setShouldDeleteIfEmpty","parameterTypes":["boolean"] }, 
+    {"name":"setShouldDeleteIfExists","parameterTypes":["boolean"] }, 
+    {"name":"setTransactional","parameterTypes":["boolean"] }, 
+    {"name":"update","parameterTypes":["org.springframework.batch.item.ExecutionContext"] }, 
+    {"name":"write","parameterTypes":["java.util.List"] }
+  ]
+},
+{
+  "name":"org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"close","parameterTypes":[] }, 
+    {"name":"isSaveState","parameterTypes":[] }, 
+    {"name":"open","parameterTypes":["org.springframework.batch.item.ExecutionContext"] }, 
+    {"name":"read","parameterTypes":[] }, 
+    {"name":"setCurrentItemCount","parameterTypes":["int"] }, 
+    {"name":"setMaxItemCount","parameterTypes":["int"] }, 
+    {"name":"setSaveState","parameterTypes":["boolean"] }, 
+    {"name":"update","parameterTypes":["org.springframework.batch.item.ExecutionContext"] }
+  ]
+},
+{
+  "name":"org.springframework.batch.item.support.AbstractItemStreamItemReader",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.batch.item.support.AbstractItemStreamItemWriter",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.beans.ExtendedBeanInfoFactory",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.beans.factory.Aware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.BeanClassLoaderAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.BeanFactoryAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.BeanNameAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.FactoryBean",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.InitializingBean",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.annotation.Autowired",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.beans.factory.annotation.Qualifier",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.annotation.Value",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.config.BeanFactoryPostProcessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.config.BeanPostProcessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
+  "allPublicFields":true
+},
+{
+  "name":"org.springframework.boot.ApplicationRunner",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.boot.ClearCachesApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.ExitCodeGenerator",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.boot.SpringBootConfiguration",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationPackage",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationPackages$BasePackages",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigurationPackages$Registrar",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigureAfter",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigureBefore",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.AutoConfigureOrder",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.BackgroundPreinitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.SharedMetadataReaderFactoryContextInitializer$SharedMetadataReaderFactoryBean",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.SpringBootApplication",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.aop.AopAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"getJobExplorer","parameterTypes":[] }, 
+    {"name":"getJobLauncher","parameterTypes":[] }, 
+    {"name":"getJobRepository","parameterTypes":[] }, 
+    {"name":"getTransactionManager","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration$DataSourceInitializerConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchConfigurerConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchConfigurerConfiguration$JdbcBatchConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchDataSource",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchDataSourceInitializer",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.BatchProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.JobExecutionExitCodeGenerator",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"getExitCode","parameterTypes":[] }, 
+    {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration$CacheConfigurationImportSelector",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.cache.CacheCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.cache.JCacheCacheConfiguration$JCacheAvailableCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoConfigurationImportListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnProperty",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnResource",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.OnBeanCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.OnClassCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.OnPropertyCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.OnResourceCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.condition.SearchStrategy"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration$ResourceBundleCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.flyway.FlywayMigrationScriptMissingFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration$GitResourceAvailableCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.info.ProjectInfoProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$PooledDataSourceAvailableCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$PooledDataSourceCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$PooledDataSourceConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration$Dbcp2"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration$Generic"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration$Hikari",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration$Tomcat"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration$Registrar",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
+    {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceJmxConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceJmxConfiguration$Hikari",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"setBeanClassLoader","parameterTypes":["java.lang.ClassLoader"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration$DataSourceTransactionManagerConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.JdbcProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.JdbcTemplateConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcTemplateConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration$HikariPoolDataSourceMetadataProviderConfiguration$$Lambda$238/1138193439",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"getDataSourcePoolMetadata","parameterTypes":["javax.sql.DataSource"] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
+},
+{
+  "name":"org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.task.TaskExecutionProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.task.TaskSchedulingProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.PlatformTransactionManagerCustomizer",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration$EnableTransactionManagementConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration$EnableTransactionManagementConfiguration$JdkDynamicAutoProxyConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration$TransactionTemplateConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.TransactionProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"customize","parameterTypes":["org.springframework.transaction.PlatformTransactionManager"] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration"
+},
+{
+  "name":"org.springframework.boot.availability.ApplicationAvailabilityProvider",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }]
+},
+{
+  "name":"org.springframework.boot.builder.ParentContextCloserApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.ContextIdApplicationContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.FileEncodingApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.TypeExcludeFilter",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.context.config.AnsiOutputApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.config.ConfigFileApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.config.DelegatingApplicationContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.config.DelegatingApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.event.EventPublishingRunListener",
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.SpringApplication","java.lang.String[]"] }]
+},
+{
+  "name":"org.springframework.boot.context.logging.ClasspathLoggingApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.logging.LoggingApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.properties.BoundConfigurationProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }]
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationProperties",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationPropertiesBinder$Factory",
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.context.properties.EnableConfigurationProperties",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.convert.DurationUnit",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.diagnostics.FailureAnalyzers",
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.context.ConfigurableApplicationContext"] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.BeanDefinitionOverrideFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.BindFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.ConnectorStartFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer"
+},
+{
+  "name":"org.springframework.boot.env.PropertiesPropertySourceLoader",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.env.YamlPropertySourceLoader",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.jackson.JsonComponentModule",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
+},
+{
+  "name":"org.springframework.boot.jdbc.AbstractDataSourceInitializer",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.loader.LaunchedURLClassLoader",
+  "methods":[{"name":"clearCache","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.logging.logback.ColorConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.logging.logback.LogbackLoggingSystem",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.ClassLoader"] }]
+},
+{
+  "name":"org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.task.TaskExecutorBuilder",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.task.TaskSchedulerBuilder",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cache.CacheManager"
+},
+{
+  "name":"org.springframework.cache.interceptor.CacheAspectSupport"
+},
+{
+  "name":"org.springframework.cglib.core.MethodWrapper$MethodWrapperKey",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.cglib.core.MethodWrapper$MethodWrapperKey$$KeyFactoryByCGLIB$$552be97a",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cglib.proxy.Enhancer$EnhancerKey",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.cglib.proxy.Enhancer$EnhancerKey$$KeyFactoryByCGLIB$$4ce19e8f",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.context.ApplicationContextAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.ApplicationEventPublisherAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.ApplicationListener",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.EnvironmentAware",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.ResourceLoaderAware",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.AnnotationConfigApplicationContext",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.context.annotation.AnnotationScopeMetadataResolver",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.context.annotation.AutoProxyRegistrar",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.context.annotation.Bean",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.CommonAnnotationBeanPostProcessor",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.context.annotation.ComponentScan",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.ComponentScan$Filter",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Conditional",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Configuration",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.ConfigurationClassEnhancer$EnhancedConfiguration",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.ConfigurationClassPostProcessor",
+  "allDeclaredFields":true,
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.context.annotation.Import",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.ImportAware",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Lazy",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Primary",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Role",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.annotation.Scope",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.context.event.DefaultEventListenerFactory",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.context.event.EventListenerMethodProcessor",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.context.support.PropertySourcesPlaceholderConfigurer"
+},
+{
+  "name":"org.springframework.core.AttributeAccessor",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.core.DecoratingProxy",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.core.Ordered",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.core.PriorityOrdered",
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.core.annotation.AliasFor",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.core.annotation.AnnotationAttributes[]"
+},
+{
+  "name":"org.springframework.core.annotation.Order",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.core.io.Resource",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.core.type.classreading.MetadataReaderFactory",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[{"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
+},
+{
+  "name":"org.springframework.jdbc.core.JdbcOperations",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.jdbc.core.JdbcTemplate",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","java.util.Collection","int","org.springframework.jdbc.core.ParameterizedPreparedStatementSetter"] }, 
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","java.util.List"] }, 
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","java.util.List","int[]"] }, 
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","org.springframework.jdbc.core.BatchPreparedStatementSetter"] }, 
+    {"name":"batchUpdate","parameterTypes":["java.lang.String[]"] }, 
+    {"name":"call","parameterTypes":["org.springframework.jdbc.core.CallableStatementCreator","java.util.List"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String","org.springframework.jdbc.core.CallableStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["org.springframework.jdbc.core.CallableStatementCreator","org.springframework.jdbc.core.CallableStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["org.springframework.jdbc.core.ConnectionCallback"] }, 
+    {"name":"execute","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator","org.springframework.jdbc.core.PreparedStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["org.springframework.jdbc.core.StatementCallback"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementSetter","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementSetter","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementSetter","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.ResultSetExtractor","java.lang.Object[]"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowCallbackHandler","java.lang.Object[]"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowMapper","java.lang.Object[]"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Class"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Class","java.lang.Object[]"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Object[]"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Object[]","java.lang.Class"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Object[]","int[]"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","java.lang.Class"] }, 
+    {"name":"queryForMap","parameterTypes":["java.lang.String"] }, 
+    {"name":"queryForMap","parameterTypes":["java.lang.String","java.lang.Object[]"] }, 
+    {"name":"queryForMap","parameterTypes":["java.lang.String","java.lang.Object[]","int[]"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Class"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Class","java.lang.Object[]"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowMapper","java.lang.Object[]"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Object[]","java.lang.Class"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Object[]","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","java.lang.Class"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.lang.Object[]","int[]","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForRowSet","parameterTypes":["java.lang.String"] }, 
+    {"name":"queryForRowSet","parameterTypes":["java.lang.String","java.lang.Object[]"] }, 
+    {"name":"queryForRowSet","parameterTypes":["java.lang.String","java.lang.Object[]","int[]"] }, 
+    {"name":"update","parameterTypes":["java.lang.String"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementSetter"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","java.lang.Object[]"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","java.lang.Object[]","int[]"] }, 
+    {"name":"update","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator"] }, 
+    {"name":"update","parameterTypes":["org.springframework.jdbc.core.PreparedStatementCreator","org.springframework.jdbc.support.KeyHolder"] }
+  ]
+},
+{
+  "name":"org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","java.util.Map[]"] }, 
+    {"name":"batchUpdate","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource[]"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String","java.util.Map","org.springframework.jdbc.core.PreparedStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String","org.springframework.jdbc.core.PreparedStatementCallback"] }, 
+    {"name":"execute","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.core.PreparedStatementCallback"] }, 
+    {"name":"getJdbcOperations","parameterTypes":[] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.util.Map","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.util.Map","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","java.util.Map","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.core.ResultSetExtractor"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.core.RowCallbackHandler"] }, 
+    {"name":"query","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.util.Map"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","java.util.Map","java.lang.Class"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource"] }, 
+    {"name":"queryForList","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","java.lang.Class"] }, 
+    {"name":"queryForMap","parameterTypes":["java.lang.String","java.util.Map"] }, 
+    {"name":"queryForMap","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.util.Map","java.lang.Class"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","java.util.Map","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","java.lang.Class"] }, 
+    {"name":"queryForObject","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.core.RowMapper"] }, 
+    {"name":"queryForRowSet","parameterTypes":["java.lang.String","java.util.Map"] }, 
+    {"name":"queryForRowSet","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","java.util.Map"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.support.KeyHolder"] }, 
+    {"name":"update","parameterTypes":["java.lang.String","org.springframework.jdbc.core.namedparam.SqlParameterSource","org.springframework.jdbc.support.KeyHolder","java.lang.String[]"] }
+  ]
+},
+{
+  "name":"org.springframework.jdbc.datasource.DelegatingDataSource"
+},
+{
+  "name":"org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType"
+},
+{
+  "name":"org.springframework.jdbc.datasource.init.DatabasePopulator"
+},
+{
+  "name":"org.springframework.jdbc.support.JdbcAccessor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"getDataSource","parameterTypes":[] }, 
+    {"name":"getExceptionTranslator","parameterTypes":[] }, 
+    {"name":"isLazyInit","parameterTypes":[] }, 
+    {"name":"setDataSource","parameterTypes":["javax.sql.DataSource"] }, 
+    {"name":"setDatabaseProductName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setExceptionTranslator","parameterTypes":["org.springframework.jdbc.support.SQLExceptionTranslator"] }, 
+    {"name":"setLazyInit","parameterTypes":["boolean"] }
+  ]
+},
+{
+  "name":"org.springframework.jmx.export.MBeanExporter"
+},
+{
+  "name":"org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler"
+},
+{
+  "name":"org.springframework.stereotype.Component",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.stereotype.Indexed",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.transaction.PlatformTransactionManager",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.ReactiveTransactionManager"
+},
+{
+  "name":"org.springframework.transaction.TransactionDefinition",
+  "allPublicFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.transaction.TransactionManager",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"setImportMetadata","parameterTypes":["org.springframework.core.type.AnnotationMetadata"] }, 
+    {"name":"transactionalEventListenerFactory","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.transaction.annotation.AnnotationTransactionAttributeSource",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"isCandidateClass","parameterTypes":["java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.transaction.annotation.EnableTransactionManagement",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.annotation.TransactionManagementConfigurationSelector",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.annotation.Transactional",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.transaction.event.TransactionalEventListenerFactory",
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[{"name":"getTransactionAttribute","parameterTypes":["java.lang.reflect.Method","java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.interceptor.TransactionAspectSupport",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"currentTransactionStatus","parameterTypes":[] }, 
+    {"name":"getTransactionAttributeSource","parameterTypes":[] }, 
+    {"name":"getTransactionManager","parameterTypes":[] }, 
+    {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }, 
+    {"name":"setTransactionAttributeSource","parameterTypes":["org.springframework.transaction.interceptor.TransactionAttributeSource"] }, 
+    {"name":"setTransactionAttributeSources","parameterTypes":["org.springframework.transaction.interceptor.TransactionAttributeSource[]"] }, 
+    {"name":"setTransactionAttributes","parameterTypes":["java.util.Properties"] }, 
+    {"name":"setTransactionManager","parameterTypes":["org.springframework.transaction.TransactionManager"] }, 
+    {"name":"setTransactionManagerBeanName","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
+  "name":"org.springframework.transaction.interceptor.TransactionAttributeSource",
+  "allPublicMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.interceptor.TransactionInterceptor",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.transaction.support.AbstractPlatformTransactionManager",
+  "allPublicFields":true
+},
+{
+  "name":"org.springframework.transaction.support.DefaultTransactionDefinition",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getIsolationLevel","parameterTypes":[] }, 
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"getPropagationBehavior","parameterTypes":[] }, 
+    {"name":"getTimeout","parameterTypes":[] }, 
+    {"name":"hashCode","parameterTypes":[] }, 
+    {"name":"isReadOnly","parameterTypes":[] }, 
+    {"name":"setIsolationLevel","parameterTypes":["int"] }, 
+    {"name":"setIsolationLevelName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPropagationBehavior","parameterTypes":["int"] }, 
+    {"name":"setPropagationBehaviorName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setReadOnly","parameterTypes":["boolean"] }, 
+    {"name":"setTimeout","parameterTypes":["int"] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.transaction.support.TransactionOperations",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
+  "name":"org.springframework.transaction.support.TransactionTemplate",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"equals","parameterTypes":["java.lang.Object"] }, 
+    {"name":"execute","parameterTypes":["org.springframework.transaction.support.TransactionCallback"] }
+  ]
+},
+{
+  "name":"org.springframework.util.ConcurrentReferenceHashMap$Segment[]"
+},
+{
+  "name":"org.yaml.snakeyaml.Yaml"
+}
+]
