@@ -33,7 +33,7 @@ fi
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  -Dspring.graal.mode=initialization-only \
+  -Dspring.graal.mode=agent \
   --verbose \
   --no-server \
   --no-fallback \

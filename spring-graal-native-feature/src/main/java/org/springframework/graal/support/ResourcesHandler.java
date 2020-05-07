@@ -78,6 +78,10 @@ public class ResourcesHandler {
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 	}
 
+	/**
+	 * Read in the static resource list from inside this project. Common resources for all Spring applications.
+	 * @return a ResourcesDescriptor describing the resources from the file
+	 */
 	public ResourcesDescriptor readStaticResourcesConfiguration() {
 		try {
 			InputStream s = this.getClass().getResourceAsStream("/resources.json");
@@ -89,43 +93,37 @@ public class ResourcesHandler {
 		}
 	}
 
+	/**
+	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
+	 * @param access provides API access to native image construction information
+	 */
 	public void register(BeforeAnalysisAccess access) {
 		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
 		ts = TypeSystem.get(cl.getClasspath());
-
-		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
+		ResourcesDescriptor rd = readStaticResourcesConfiguration();
+		System.out.println("Registering resources - #" + rd.getPatterns().size() + " patterns");
 		// Patterns can be added to the registry, resources can be directly registered
-		// against Resources:
+		// against the Resources object:
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
-		System.out.println("Registering resources - #" + rd.getPatterns().size() + " patterns");
-
-		for (String pattern : rd.getPatterns()) {
-			if (pattern.equals("META-INF/spring.factories")) {
-				continue; // leave to special handling...
-			}
-			resourcesRegistry.addResources(pattern);
+		if (ConfigOptions.isFunctionalMode() || ConfigOptions.isFeatureMode()) {
+			registerPatterns(rd);
+			registerResourceBundles(rd);
 		}
-		registerResourceBundles(rd);
-		processSpringFactories();
-		processExistingOrSynthesizedSpringComponentsFiles();
-		handleSpringConstantHints();
+		if (ConfigOptions.isFeatureMode()) {
+			processSpringFactories();
+			handleSpringConstantHints();
+			processExistingOrSynthesizedSpringComponentsFiles();
+		}
 	}
 
-	/**
-	 * Some types need reflective access in every Spring Boot application. When hints are scanned
-	 * these 'constants' are registered against the java.lang.Object key. 
-	 */
-	private void handleSpringConstantHints() {
-		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
-		SpringFeature.log("Registering fixed entries: " + constantHints);
-		for (CompilationHint ch : constantHints) {
-			Map<String, Integer> dependantTypes = ch.getDependantTypes();
-			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
-				reflectionHandler.addAccess(dependantType.getKey(), null, true,
-						AccessBits.getFlags(dependantType.getValue()));
+	private void registerPatterns(ResourcesDescriptor rd) {
+		for (String pattern : rd.getPatterns()) {
+			if (pattern.equals("META-INF/spring.factories")) {
+				continue; // leave to special handling which may trim these files...
 			}
+			resourcesRegistry.addResources(pattern);
 		}
 	}
 
@@ -141,10 +139,27 @@ public class ResourcesHandler {
 		}
 	}
 
+	/**
+	 * Some types need reflective access in every Spring Boot application. When hints are scanned
+	 * these 'constants' are registered against the java.lang.Object key. Because they won't have been 
+	 * registered in regular analysis, here we 
+	 */
+	private void handleSpringConstantHints() {
+		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		SpringFeature.log("Registering fixed entries: " + constantHints);
+		for (CompilationHint ch : constantHints) {
+			Map<String, Integer> dependantTypes = ch.getDependantTypes();
+			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
+				reflectionHandler.addAccess(dependantType.getKey(), null, true,
+						AccessBits.getFlags(dependantType.getValue()));
+			}
+		}
+	}
+
 	public void processExistingOrSynthesizedSpringComponentsFiles() {
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
-			log("Processing META-INF/spring.components files...");
+			log("Processing existing META-INF/spring.components files...");
 			while (springComponents.hasMoreElements()) {
 				URL springFactory = springComponents.nextElement();
 				Properties p = new Properties();
@@ -152,33 +167,38 @@ public class ResourcesHandler {
 				processSpringComponents(p);
 			}
 		} else {
-			System.out.println("Found no META-INF/spring.components -> synthesizing one...");
-			List<Entry<Type, List<Type>>> components = scanForSpringComponents();
-			List<Entry<Type, List<Type>>> filteredComponents = filterOutNestedTypes(components);
-			Properties p = new Properties();
-			for (Entry<Type, List<Type>> filteredComponent : filteredComponents) {
-				String k = filteredComponent.getKey().getDottedName();
-				p.put(k, filteredComponent.getValue().stream().map(t -> t.getDottedName())
-						.collect(Collectors.joining(",")));
-			}
-			System.out.println("Computed spring.components is ");
-			System.out.println("vvv");
-			for (Object k : p.keySet()) {
-				System.out.println(k + "=" + p.getProperty((String) k));
-			}
-			System.out.println("^^^");
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				p.store(baos, "");
-				baos.close();
-				byte[] bs = baos.toByteArray();
-				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-				Resources.registerResource("META-INF/spring.components", bais);
-			} catch (IOException e) {
-				throw new IllegalStateException(e);
-			}
+			log("Found no META-INF/spring.components -> synthesizing one...");
+			Properties p = synthesizeSpringComponents();
 			processSpringComponents(p);
 		}
+	}
+
+	private Properties synthesizeSpringComponents() {
+		Properties p = new Properties();
+		List<Entry<Type, List<Type>>> components = scanForSpringComponents();
+		List<Entry<Type, List<Type>>> filteredComponents = filterOutNestedTypes(components);
+		for (Entry<Type, List<Type>> filteredComponent : filteredComponents) {
+			String k = filteredComponent.getKey().getDottedName();
+			p.put(k, filteredComponent.getValue().stream().map(t -> t.getDottedName())
+					.collect(Collectors.joining(",")));
+		}
+		System.out.println("Computed spring.components is ");
+		System.out.println("vvv");
+		for (Object k : p.keySet()) {
+			System.out.println(k + "=" + p.getProperty((String) k));
+		}
+		System.out.println("^^^");
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			p.store(baos, "");
+			baos.close();
+			byte[] bs = baos.toByteArray();
+			ByteArrayInputStream bais = new ByteArrayInputStream(bs);
+			Resources.registerResource("META-INF/spring.components", bais);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+		return p;
 	}
 
 	// TODO shouldn't this code just call into processType like we do for discovered
@@ -209,9 +229,9 @@ public class ResourcesHandler {
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
 			String vs = (String) p.get(k);
-			//if (kType.isAtConfiguration()) {
-			//	checkAndRegisterConfigurationType(k);
-			//}
+//			if (kType.isAtConfiguration()) {
+//				checkAndRegisterConfigurationType(k);
+//			} else {
 			try {
 				// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
 				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -254,6 +274,7 @@ public class ResourcesHandler {
 				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
 				// for petclinic spring.components
 			}
+//		}
 		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
 			processRepository2(kType);
 		}
@@ -562,12 +583,12 @@ public class ResourcesHandler {
 			String k = (String) factoryKeys.nextElement();
 			SpringFeature.log("Adding all the classes for this key: " + k);
 			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
-				if (Type.shouldBeProcessed(k, ts)) {
+				if (ts.shouldBeProcessed(k)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
 					}
 				} else {
-					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing types");
+					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing guard types");
 				}
 			}
 		}
@@ -683,7 +704,7 @@ public class ResourcesHandler {
 
 	/**
 	 * Specific type references are used when registering types not easily identifiable from the
-	 * bytecode that we are simply capturing as specific references in the Compilation Hints defined
+	 * bytecode that we are simply capturing as specific references in the Hints defined
 	 * in the configuration module. Used for import selectors, import registrars, configuration.
 	 * For @Configuration types here, need only bean method access (not all methods), for 
 	 * other types (import selectors/etc) may not need any method reflective access at all

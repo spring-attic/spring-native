@@ -1,5 +1,5 @@
 native-image \
-  -Dspring.graal.mode=initialization-only \
+  -Dspring.graal.mode=agent \
   --no-server \
   --no-fallback \
   -H:+TraceClassInitialization \

@@ -1339,20 +1339,6 @@ public class Type {
 		return hasCtor;
 	}
 
-	public static boolean shouldBeProcessed(String key, TypeSystem ts) {
-		String[] guardTypes = SpringConfiguration.findProposedFactoryGuards(key);// .get(key);
-		if (guardTypes == null) {
-			return true;
-		} else {
-			for (String guardType : guardTypes) {
-				Type resolvedType = ts.resolveDotted(guardType, true);
-				if (resolvedType != null) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
 
 	/**
 	 * Find the @ConfigurationHint annotations on this type (may be more than one)
