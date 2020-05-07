@@ -38,6 +38,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
+  -H:+RemoveSaturatedTypeFlows \
   -Dspring.graal.remove-yaml-support=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   -Ddebug=true \
