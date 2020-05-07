@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.graalvm.nativeimage.hosted.Feature;
+import org.springframework.graal.support.ConfigOptions.Mode;
 
 import com.oracle.svm.core.annotate.AutomaticFeature;
 import com.oracle.svm.hosted.ResourcesFeature;
@@ -47,11 +48,9 @@ public class SpringFeature implements Feature {
 		if (!ConfigOptions.isVerbose()) {
 			System.out.println("Use -Dspring.graal.verbose=true on native-image call to see more detailed information from the feature");
 		}
-		if (!ConfigOptions.isInitializationModeOnly()) {
-			reflectionHandler = new ReflectionHandler();
-			dynamicProxiesHandler = new DynamicProxiesHandler();
-			resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
-		}
+		reflectionHandler = new ReflectionHandler();
+		dynamicProxiesHandler = new DynamicProxiesHandler();
+		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
 		buildTimeInitializationHandler = new InitializationHandler();
 	}
 
@@ -68,18 +67,18 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
-		if (!ConfigOptions.isInitializationModeOnly()) {
+		if (ConfigOptions.isFeatureMode()) {
 			reflectionHandler.register(access);
+		}
+		if (ConfigOptions.isFeatureMode()) {
 			dynamicProxiesHandler.register(access);
 		}
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
-		if (!ConfigOptions.isInitializationModeOnly()) {
-			resourcesHandler.register(access);
-		}
+		resourcesHandler.register(access);
 		buildTimeInitializationHandler.register(access);
-		if (!ConfigOptions.isInitializationModeOnly()) {
+		if (ConfigOptions.isFeatureMode()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}

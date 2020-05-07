@@ -40,7 +40,7 @@ sleep 3
 
 # Run native image to compile the application
 native-image \
-  -Dspring.graal.mode=initialization-only \
+  -Dspring.graal.mode=agent \
   --no-server \
   --no-fallback \
   -H:+TraceClassInitialization \

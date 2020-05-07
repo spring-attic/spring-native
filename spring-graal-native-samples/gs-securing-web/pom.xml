@@ -19,6 +19,7 @@
 		<start-class>com.example.securingweb.SecuringWebApplication</start-class>
 	</properties>
 
+<!--
 	<profiles>
 		<profile>
 			<id>graal</id>
@@ -31,8 +32,8 @@
 						<configuration>
 							<buildArgs>
 								-Dspring.graal.mode=initialization-only
-								--report-unsupported-elements-at-runtime --enable-all-security-services
-								-H:+ReportExceptionStackTraces --verbose
+								-report-unsupported-elements-at-runtime -enable-all-security-services
+								-H:+ReportExceptionStackTraces -verbose
 							</buildArgs>
 						</configuration>
 						<executions>
@@ -52,6 +53,7 @@
 			</build>
 		</profile>
 	</profiles>
+-->
 
 
 	<build>
@@ -69,11 +71,14 @@
 			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
 
+<!--
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graal-native</artifactId>
 			<version>0.6.0.BUILD-SNAPSHOT</version>
+<scope>provided</scope>
 		</dependency>
+-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
