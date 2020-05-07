@@ -15,6 +15,11 @@
  */
 package org.springframework.graal.support;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Encapsulate configurable feature behaviour.
  * 
@@ -35,12 +40,24 @@ public abstract class ConfigOptions {
 	
 	private final static boolean VERIFIER_ON;
 	
-	// In light mode the feature only supplies initialization information and nothing
-	// about reflection/proxies/etc - this is useful if using the agent to produce that
-	// configuration data.
-	private final static String MODE; // 'default'/'initialization-only'
+	private final static Mode MODE; // Default is 'feature'
+	
+	enum Mode {
+		AGENT, // initialization-only configuration provided from the feature
+		HYBRID, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
+		FEATURE, // Default mode, provide everything
+		FUNCTIONAL; // For functional style, feature provides initialization and resource configuration
+	}
 
 	static {
+		String modeValue = System.getProperty("spring.graal.mode","FEATURE");
+		Mode inferredMode = Mode.valueOf(modeValue.toUpperCase());
+		if (inferredMode == null) {
+			MODE = Mode.FEATURE;
+		} else {
+			MODE = inferredMode;
+		}
+		System.out.println("Feature operating in "+MODE+" mode");
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.graal.remove-unused-autoconfig", "false"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
@@ -58,12 +75,6 @@ public abstract class ConfigOptions {
 			System.out.println("Selectors missing hints will be reported as a warning, not an error");
 		} else if (!MISSING_SELECTOR_HINTS.equals("error")) {
 			throw new IllegalStateException("Supported values for 'spring.graal.missing-selector-hints' are 'error' (default) or 'warning'");
-		}
-		MODE = System.getProperty("spring.graal.mode","default");
-		if (MODE.equals("initialization-only")) {
-			System.out.println("Feature operating in initialization-only mode, only supplying substitutions and initialization data");
-		} else if (!MODE.equals("default")) {
-			throw new IllegalStateException("Supported modes are 'default' or 'initialization-only', not '"+MODE+"'");
 		}
 		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-yaml-support", "false"));
 		if (REMOVE_YAML_SUPPORT) {
@@ -99,11 +110,24 @@ public abstract class ConfigOptions {
 		return REMOVE_YAML_SUPPORT;
 	}
 
-	public static boolean isInitializationModeOnly() {
-		return MODE.equals("initialization-only");
+	public static boolean isAgentMode() {
+		return MODE==Mode.AGENT;
+	}
+	
+	public static boolean isHybridMode() {
+		return MODE==Mode.HYBRID;
+	}
+
+	public static boolean isFeatureMode() {
+		return MODE==Mode.FEATURE;
+	}
+
+	public static boolean isFunctionalMode() {
+		return MODE==Mode.FUNCTIONAL;
 	}
 
 	public static String getDumpConfigLocation() {
 		return DUMP_CONFIG;
 	}
+
 }

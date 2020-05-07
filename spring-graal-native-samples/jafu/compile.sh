@@ -41,7 +41,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  -Dspring.graal.mode=initialization-only \
+  -Dspring.graal.mode=functional \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
