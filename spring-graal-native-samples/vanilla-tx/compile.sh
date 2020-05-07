@@ -39,7 +39,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  --initialize-at-build-time=app.main.Finder \
   -Dspring.graal.verbose=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
