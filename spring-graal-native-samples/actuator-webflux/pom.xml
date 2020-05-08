@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>actuator</artifactId>
+	<artifactId>actuator-webflux</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>actuator</name>
 	<description>Demo project for Spring Boot</description>
