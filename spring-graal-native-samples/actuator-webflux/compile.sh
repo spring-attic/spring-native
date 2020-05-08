@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=actuator
+ARTIFACT=actuator-webflux
 MAINCLASS=com.example.actuator.ActuatorApplication
 VERSION=0.0.1-SNAPSHOT
 FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
