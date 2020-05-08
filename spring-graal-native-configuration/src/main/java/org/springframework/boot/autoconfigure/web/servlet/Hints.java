@@ -73,7 +73,7 @@ import org.springframework.web.util.HtmlUtils;
 @NativeImageHint(trigger=WebMvcAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types= {AnnotationConfigServletWebServerApplicationContext.class,
 				DefaultErrorViewResolver.class,
-				//WsContextListener.class,
+				WsContextListener.class,
 				// TODO Maybe the first and last of these 3 needs to be in a more generic configuration hint working for both reactive and servlet
 				ConfigurableWebApplicationContext.class,TomcatEmbeddedWebappClassLoader.class,WebApplicationContext.class,
 	ProtocolHandler.class,AbstractProtocol.class,AbstractHttp11Protocol.class,AbstractHttp11JsseProtocol.class,Http11NioProtocol.class,
