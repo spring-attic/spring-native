@@ -110,7 +110,7 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>20.0.0</version>
                         <configuration>
-                            <buildArgs>-H:+TraceClassInitialization --no-fallback -H:+ReportExceptionStackTraces --no-server</buildArgs>
+                            <buildArgs>--initialize-at-build-time=org.springframework.data.repository.reactive.ReactiveCrudRepository -H:+TraceClassInitialization --no-fallback -H:+ReportExceptionStackTraces --no-server</buildArgs>
                             <imageName>webflux-r2dbc</imageName>
                         </configuration>
                         <executions>
