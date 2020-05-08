@@ -44,9 +44,17 @@ The current feature options are as follows:
 
 * `-Dspring.graal.remove-unused-autoconfig=true` removes unused configurations, enabling faster compilation and smaller executables.
 
-* `-Dspring.graal.mode=initialization-only` flips the feature into a lightweight mode that only supplies substitutions and initialization configuration.
-It no longer sets reflection, resource, or proxy data, relying on the project to supply that.
-This is a good mode for the feature when you use the GraalVM agent to compute the project configuration, as discussed <<agent,here>>.
+* `-Dspring.graal.mode=agent|feature|functional|hybrid` switches how much configuration the feature actually provides
+to native-image.  The default is `feature` where it provides everything (including deep analysis of auto-configuration).
+`agent` should be used if only wishing the feature to provide substitutions and initialization configuration - in this
+mode you should have used the agent to collect the rest of the configuration.
+`functional` is when working with functional bean registration (Spring Fu style). In this mode the feature
+will provide initialization and resource configuration but nothing more.
+Finally, `hybrid` mode is where the agent is being used to provide a bulk of the configuration but the feature will
+provide initialization configuration and substitutions with a little more for resources, proxies, reflection based on
+a simpler analysis of the application - it does not do deep analysis of auto configuration as the agent will have caught that.
+This final mode is for when you've exercised some of your application with the agent but perhaps not everything - it may
+catch those other places you missed.
 
 * `-Dspring.graal.verbose=true` outputs lots of information about the feature behavior as it processes auto-configuration and chooses which to include.
 
