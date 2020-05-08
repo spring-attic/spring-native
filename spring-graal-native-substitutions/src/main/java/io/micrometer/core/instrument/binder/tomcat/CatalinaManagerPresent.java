@@ -15,22 +15,17 @@
  */
 package io.micrometer.core.instrument.binder.tomcat;
 
-import org.springframework.internal.svm.OnlyPresent;
+import java.util.function.BooleanSupplier;
 
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
+public class CatalinaManagerPresent implements BooleanSupplier {
 
-import io.micrometer.core.instrument.MeterRegistry;
+    @Override
+    public boolean getAsBoolean() {
+        try {
+            return Class.forName("org.apache.catalina.Manager", false, getClass().getClassLoader()) != null;
+        } catch (ClassNotFoundException | NoClassDefFoundError ex) {
+            return false;
+        }
+    }
 
-/**
- * Attempting to prevent TomcatMetrics getting into JMX tinkering.
- * 
- * @author Andy Clement
- */
-@TargetClass(className = "io.micrometer.core.instrument.binder.tomcat.TomcatMetrics", 
-    onlyWith = {OnlyPresent.class,CatalinaManagerPresent.class})
-public final class Target_TomcatMetrics {
-
-	@Substitute
-    public void bindTo(MeterRegistry registry) {}
 }
