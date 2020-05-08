@@ -40,10 +40,7 @@ import org.springframework.graal.extension.TypeInfo;
 			types= {
 			ConfigurationPropertiesBindingPostProcessor.class,
 			ConfigurationPropertiesBinder.Factory.class, 
-			ConfigurationPropertiesBeanDefinitionValidator.class,
-			ConfigurationPropertiesBinder.class,
-			DeprecatedConfigurationProperty.class,
-			NestedConfigurationProperty.class
+			ConfigurationPropertiesBeanDefinitionValidator.class
 			})	
 })
 @NativeImageHint(trigger = EnableConfigurationProperties.class)

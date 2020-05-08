@@ -17,7 +17,6 @@ package org.springframework.boot.autoconfigure.aop;
 
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
-import org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor;
 import org.springframework.aop.framework.ProxyConfig;
 import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
@@ -33,7 +32,6 @@ import org.springframework.graal.type.AccessBits;
 		@TypeInfo(types= {
 			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
 			AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class,
-			AbstractAdvisingBeanPostProcessor.class,
 			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class
 			},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })

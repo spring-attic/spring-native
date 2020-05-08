@@ -16,14 +16,12 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.springframework.graal.extension.NativeImageHint;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 @NativeImageHint(trigger=OnWebApplicationCondition.class,typeInfos = {
-	@TypeInfo(types= {GenericWebApplicationContext.class,WebApplicationObjectSupport.class,ApplicationObjectSupport.class})	
+	@TypeInfo(types= {GenericWebApplicationContext.class})	
 })
 @NativeImageHint(trigger=ConditionalOnWebApplication.class, 
 	typeInfos= {
