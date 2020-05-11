@@ -7,7 +7,7 @@ FEATURE=`find ${PWD%/*spring-graal-native*/*}/spring-graal-native/target -name "
 
 echo "================ BUILDING THE PROJECT AND UNPACKING THE FAT JAR =========="
 cd ..
-mvn -B clean package
+mvn -ntp clean package
 cd agent
 rm -rf unpack
 unzip -q ../target/$ARTIFACT-$VERSION.jar -d unpack

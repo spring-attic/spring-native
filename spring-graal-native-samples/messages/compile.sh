@@ -12,7 +12,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -B package > target/native-image/output.txt
+mvn -ntp package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
