@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -B -DskipTests package > target/native-image/output.txt
+mvn -B package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
@@ -36,7 +36,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   --no-server \
   --no-fallback \
-  -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   -Dspring.graal.remove-unused-autoconfig=true \
