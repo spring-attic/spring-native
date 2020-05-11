@@ -39,6 +39,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
+  -H:ReflectionConfigurationFiles=../../tomcat-reflection-for-websockets.json \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
   -Dspring.graal.remove-unused-autoconfig=true \
   -Dspring.graal.remove-yaml-support=true \
