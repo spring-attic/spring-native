@@ -22,6 +22,7 @@ org.springframework.boot.autoconfigure.task.Hints
 org.springframework.boot.autoconfigure.thymeleaf.Hints
 org.springframework.boot.autoconfigure.transaction.Hints
 org.springframework.boot.autoconfigure.validation.Hints
+org.springframework.boot.autoconfigure.websocket.servlet.Hints
 org.springframework.boot.autoconfigure.web.reactive.Hints
 org.springframework.boot.autoconfigure.web.reactive.function.client.Hints
 org.springframework.boot.autoconfigure.web.servlet.Hints
