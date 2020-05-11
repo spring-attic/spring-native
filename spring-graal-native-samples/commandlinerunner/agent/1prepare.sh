@@ -1,5 +1,5 @@
 cd ..
-mvn clean package
+mvn -B clean package
 cd agent
 rm -rf unpack
 unzip ../target/commandlinerunner-0.0.1-SNAPSHOT.jar -d unpack

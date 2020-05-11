@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -B -DskipTests package > target/native-image/output.txt
+mvn -B package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 echo "Unpacking $JAR"
@@ -34,8 +34,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
 -Dspring.graal.dump-config=/tmp/rc.json \
   --verbose \
---initialize-at-build-time=javax.el.ListELResolver,javax.el.BeanELResolver,javax.el.MapELResolver,javax.el.CompositeELResolver \
--Dspring.graal.verbose=true \
+  --initialize-at-build-time=javax.el.ListELResolver,javax.el.BeanELResolver,javax.el.MapELResolver,javax.el.CompositeELResolver \
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
@@ -43,7 +42,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -Dspring.graal.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
-#  -Dspring.graal.verbose=true \
 if [[ -f $ARTIFACT ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"

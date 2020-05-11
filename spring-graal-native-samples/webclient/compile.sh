@@ -13,7 +13,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -B -DskipTests package > target/native-image/output.txt
+mvn -B package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
@@ -38,7 +38,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
-  -Dspring.graal.verbose=true \
   -Dspring.graal.remove-unused-autoconfig=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt

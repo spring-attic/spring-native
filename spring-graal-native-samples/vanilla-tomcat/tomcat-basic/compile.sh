@@ -15,7 +15,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -B -DskipTests package > target/native-image/output.txt
+mvn -B package > target/native-image/output.txt
 
 cd target/native-image
 
@@ -49,7 +49,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:EnableURLProtocols=http,jar \
   -H:ResourceConfigurationFiles=../../tomcat-resource.json \
   -H:ReflectionConfigurationFiles=../../tomcat-reflection.json \
-  -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
   -H:+ReportExceptionStackTraces \
   --no-fallback \
