@@ -225,10 +225,13 @@ public class ResourcesHandler {
 			boolean isRepository = false;
 			boolean isComponent = false;
 			String k = (String) keys.nextElement();
+			String vs = (String) p.get(k);
+			if (vs.equals("package-info")) {
+				continue;
+			}
 			Type kType = ts.resolveDotted(k);
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
-			String vs = (String) p.get(k);
 //			if (kType.isAtConfiguration()) {
 //				checkAndRegisterConfigurationType(k);
 //			} else {
