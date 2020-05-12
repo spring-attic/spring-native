@@ -2,7 +2,7 @@
 
 ARTIFACT=spring-petclinic-jpa
 MAINCLASS=org.springframework.samples.petclinic.PetClinicApplication
-VERSION=2.1.0.BUILD-SNAPSHOT
+VERSION=2.3.0.BUILD-SNAPSHOT
 FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
