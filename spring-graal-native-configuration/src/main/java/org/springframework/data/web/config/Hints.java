@@ -31,7 +31,12 @@ proposedHints.put(SpringDataWebConfigurationSelector,
 		}));
 */
 @NativeImageHint(trigger = SpringDataWebConfigurationImportSelector.class, typeInfos = {
-	@TypeInfo(types= {HateoasAwareSpringDataWebConfiguration.class,SpringDataWebConfiguration.class})	
+	@TypeInfo(types= {
+			HateoasAwareSpringDataWebConfiguration.class,
+			SpringDataWebConfiguration.class,
+			ProjectingArgumentResolverRegistrar.class,
+			SpringDataJacksonConfiguration.class
+	})
 },abortIfTypesMissing = true,follow=true) 
 /*
 public final static String SpringDataWebQueryDslSelector = "Lorg/springframework/data/web/config/EnableSpringDataWebSupport$QuerydslActivator;";

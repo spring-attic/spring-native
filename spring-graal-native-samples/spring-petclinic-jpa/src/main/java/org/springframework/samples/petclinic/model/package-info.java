@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.samples.petclinic.vet.VetRepository;
-
-@SpringBootTest
-class PetclinicIntegrationTests {
-
-	@Autowired
-	private VetRepository vets;
-
-	@Test
-	void testFindAll() throws Exception {
-		vets.findAll();
-		vets.findAll(); // served from cache
-	}
-
-}
+/**
+ * The classes in this package represent utilities used by the domain.
+ */
+package org.springframework.samples.petclinic.model;
