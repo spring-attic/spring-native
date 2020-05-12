@@ -9,6 +9,7 @@ target
 .project
 unpack
 verbose.log
+bin/
 .sts4-cache/
 .attach_pid*
 .idea

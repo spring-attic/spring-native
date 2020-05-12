@@ -22,7 +22,7 @@ import org.springframework.graal.type.AccessBits;
 
 @NativeImageHint(trigger=AutoConfigurationImportSelector.class)
 @NativeImageHint(typeInfos = {
-	@TypeInfo(types = { AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
+	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeImageHint(typeInfos = { 

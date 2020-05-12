@@ -40,6 +40,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 				AdditionExpression.class,
 				ThymeleafReactiveView.class
 				}, typeNames= {
+						"org.thymeleaf.spring5.expression.Mvc$Spring41MvcUriComponentsBuilderDelegate",
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				},
 				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)

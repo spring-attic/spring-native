@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.web.server;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
@@ -21,7 +21,6 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.WebMvcServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties;
@@ -33,7 +32,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration.SameManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
@@ -57,7 +56,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
@@ -65,9 +63,8 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.actuate.health.AbstractHealthAggregator;
@@ -113,13 +110,13 @@ import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsP
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
-import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 
-@NativeImageHint(trigger = ManagementContextConfigurationImportSelector.class, typeInfos = { 
+// TODO mega overlap with the hint created for reactive actuator - need to rationalize
+@NativeImageHint(trigger = WebMvcEndpointManagementContextConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
 		CloudPlatform.class, // TODO unsure exactly which configuration pulls this in - could optimize maybe
 		Endpoint.class,
@@ -127,6 +124,7 @@ import org.springframework.graal.extension.TypeInfo;
 		WebEndpoint.class,
 		ManagementPortType.class,
 		ManagementContextType.class,
+		org.apache.catalina.Manager.class,
 
 		LogFileWebEndpoint.class,
 		CorsEndpointProperties.class,
@@ -134,9 +132,6 @@ import org.springframework.graal.extension.TypeInfo;
 		// TODO push out to hint on reactive actuator endpoint (need a webmvc actuator sample too!)
 		WebFluxEndpointHandlerMapping.class,
 		ControllerEndpointHandlerMapping.class,
-
-		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
-		WebMvcServletEndpointManagementContextConfiguration.class,
 		
 //		 ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
 //			TomcatReactiveWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
@@ -148,8 +143,6 @@ import org.springframework.graal.extension.TypeInfo;
 	ApiVersion.class,
 	// these two for java.lang.IllegalStateException: Failed to extract parameter names for public org.springframework.boot.actuate.health.HealthComponent org.springframework.boot.actuate.health.HealthEndpoint.healthForPath(java.lang.String[])
 	Selector.class,Match.class,
-	HttpTraceRepository.class,
-		EnableManagementContext.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
@@ -157,9 +150,7 @@ import org.springframework.graal.extension.TypeInfo;
 		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration.class,
-
-		ServletEndpointRegistrar.class,
-		AbstractWebMvcEndpointHandlerMapping.class,	
+		
 		// These collected from agent needs against actuator sample
 		org.reactivestreams.Publisher.class,
 		AuditEventRepository.class, AuditEventsEndpoint.class,
@@ -183,9 +174,6 @@ import org.springframework.graal.extension.TypeInfo;
 		ManagementContextFactory.class,
 		ManagementContextType.class,
 		MappingsEndpointAutoConfiguration.class,
-		EnableManagementContext.class,
-		ManagementContextConfigurationImportSelector.class,
-		SameManagementContextConfiguration.class,
 		ManagementPortType.class,
 		BeansEndpoint.class,
 		CachesEndpoint.class,
@@ -248,7 +236,7 @@ import org.springframework.graal.extension.TypeInfo;
 		ScheduledTasksEndpoint.class,
 		DiskSpaceHealthIndicator.class,
 		HttpTraceEndpoint.class,
-
+		
 		// Additional for webmvc actuator sample
 		WebMvcEndpointHandlerMapping.class,
 		ControllerEndpointHandlerMapping.class
@@ -257,15 +245,10 @@ import org.springframework.graal.extension.TypeInfo;
 		// TODO this next one, actuator looks like the first thing pushing on it but surely it isn't the only user and this should have a different trigger?
 		"org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
 
-		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
 		"org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",
-
-		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
-		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
-		"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
 		
 		// these are from agent output for actuator sample
 		"org.springframework.boot.actuate.health.HealthEndpointGroups$1",
