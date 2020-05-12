@@ -15,8 +15,8 @@
  */
 package org.springframework.boot.context.properties;
 
-import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.NativeImageConfiguration;
+import org.springframework.graal.extension.NativeImageHint;
 import org.springframework.graal.extension.TypeInfo;
 
 //THis one seems gone in latest spring??!
@@ -40,7 +40,10 @@ import org.springframework.graal.extension.TypeInfo;
 			types= {
 			ConfigurationPropertiesBindingPostProcessor.class,
 			ConfigurationPropertiesBinder.Factory.class, 
-			ConfigurationPropertiesBeanDefinitionValidator.class
+			ConfigurationPropertiesBeanDefinitionValidator.class,
+			ConfigurationPropertiesBinder.class,
+			DeprecatedConfigurationProperty.class,
+			NestedConfigurationProperty.class
 			})	
 })
 @NativeImageHint(trigger = EnableConfigurationProperties.class)

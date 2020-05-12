@@ -16,10 +16,15 @@
 package org.springframework.core.annotation;
 
 import org.springframework.graal.extension.NativeImageHint;
+import org.springframework.core.DecoratingProxy;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.graal.extension.NativeImageConfiguration;
 import org.springframework.graal.extension.TypeInfo;
 import org.springframework.graal.type.AccessBits;
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {Order.class,AnnotationAttributes.class,AnnotationAttributes[].class,
-TypeMappedAnnotation[].class },access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
+@NativeImageHint( typeInfos = {@TypeInfo(types= {
+	Order.class,AnnotationAttributes.class,AnnotationAttributes[].class,
+	DecoratingProxy.class,PriorityOrdered.class,AliasFor.class,
+	TypeMappedAnnotation[].class
+},access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
 public class Hints implements NativeImageConfiguration { }
