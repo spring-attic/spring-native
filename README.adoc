@@ -8,7 +8,11 @@
 
 image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
 
+
+
 To run, cd into spring-graal-native-samples, then into springmvc-tomcat. You can then run the app normally running "mvn spring-boot:run" or you can run it as a native image using "./target/springmvc-tomcat"
+
+
 
 This project goal is to provide experimental support for building https://spring.io/projects/spring-boot[Spring Boot] applications as https://www.graalvm.org/docs/reference-manual/native-image/[GraalVM native images].
 Watch this https://www.youtube.com/watch?v=3eoAxphAUIg[Running Spring Boot applications as GraalVM native images] Devoxx talk video for more details.
