@@ -16,6 +16,7 @@ public class GreetingController {
 			Model model) {
 		model.addAttribute("greeting", new Greeting(name));
 		return "greeting";
+
 	}
 
 }
