@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<start-class>com.example.tomcat.TomcatApplication</start-class>
 	</properties>
 
 	<dependencies>
