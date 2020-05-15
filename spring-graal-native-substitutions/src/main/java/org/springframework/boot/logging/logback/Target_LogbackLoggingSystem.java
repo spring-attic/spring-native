@@ -8,10 +8,11 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.internal.svm.LogbackIsAround;
 import org.springframework.internal.svm.OnlyPresent;
 import org.springframework.internal.svm.RemoveXmlSupport;
 
-@TargetClass(className = "org.springframework.boot.logging.logback.LogbackLoggingSystem", onlyWith = { OnlyPresent.class, RemoveXmlSupport.class })
+@TargetClass(className = "org.springframework.boot.logging.logback.LogbackLoggingSystem", onlyWith = { OnlyPresent.class, LogbackIsAround.class, RemoveXmlSupport.class })
 final class Target_LogbackLoggingSystem {
 
 	@Substitute
