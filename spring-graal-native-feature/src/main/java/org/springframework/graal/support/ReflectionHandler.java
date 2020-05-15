@@ -260,7 +260,7 @@ public class ReflectionHandler {
 					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
 		}
 		registerLogAdapterClassesIfNeeded();
-		registerLogback();
+		registerLogbackIfNeeded();
 
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
@@ -487,7 +487,10 @@ public class ReflectionHandler {
 
 	// what would a reflection hint look like here? Would it specify maven coords for logback as a requirement on the classpath?
 	// does logback have a feature? or meta data files for graal?
-	private void registerLogback() {
+	private void registerLogbackIfNeeded() {
+		if (!isPresent("ch.qos.logback.core.Appender")) {
+			return;
+		}
 		try {
 			addAccess("ch.qos.logback.core.Appender", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		} catch (NoClassDefFoundError e) {
