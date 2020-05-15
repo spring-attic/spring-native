@@ -70,10 +70,30 @@
   {"class": "org.springframework.transaction.annotation.Propagation"},
   {"class": "org.springframework.util.unit.DataUnit"},
   {"class": "org.springframework.util.unit.DataSize"},
+  // To avoid XML parsers to be included
+  {"class": "org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration" },
+  {"class": "org.springframework.http.MediaType" },
+  {"class": "org.springframework.http.codec.support.BaseDefaultCodecs" },
+  {"class": "org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" },
+  {"class": "org.springframework.util.ClassUtils" },
+  {"class": "org.springframework.util.ConcurrentReferenceHashMap" },
+  {"class": "org.springframework.util.CollectionUtils" },
+  {"class": "org.springframework.util.LinkedCaseInsensitiveMap" },
+  {"class": "org.springframework.util.MimeType" },
+  {"class": "org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport" },
+  {"class": "org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService" },
+  {"class": "org.springframework.web.client.RestTemplate" },
+  {"class": "org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" },
+  {"class": "org.springframework.beans.factory.xml.XmlBeanDefinitionReader" },
+  {"class": "org.springframework.util.ReflectionUtils" },
 
   // Spring Boot
   {"class": "org.springframework.boot.CommandLineRunner"},
   {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},
+
+  // Tomcat, to avoid XML parsers and crypto classes
+  {"class": "org.apache.catalina.servlets.DefaultServlet" },
+  {"class": "org.apache.catalina.Globals" },
 
   // Logging
   {"package": "ch.qos.logback.core"},

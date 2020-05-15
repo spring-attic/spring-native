@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import reactor.netty.DisposableServer;
+
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
@@ -28,42 +30,7 @@ import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.web.reactive.HandlerResult;
 
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelInboundHandler;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import reactor.netty.DisposableServer;
-
 @NativeImageHint(trigger=WebFluxAutoConfiguration.class,typeInfos = {
-	// These two believed through WebFluxConfigurationSupport, CodecConfigurer.properties
-		// TODO this feels wrong,  a lot of entries here are just super types of some core set of base types (e.g. ServerBootstrapAcceptor)
-		// we should be able to add all those supertypes (e.g. if methods being exposed maybe that is the trigger to add supers)
-		// This TypeInfo for vanilla-jpa sample
-		@TypeInfo(types= {ChannelInboundHandlerAdapter.class,ChannelHandlerAdapter.class,
-				ChannelHandler.class,ChannelInboundHandler.class},
-				typeNames = {
-						"io.netty.channel.ChannelInitializer",
-						"io.netty.channel.DefaultChannelPipeline$HeadContext",
-						"io.netty.channel.DefaultChannelPipeline$TailContext",
-						"reactor.netty.channel.BootstrapHandlers$BootstrapInitializerHandler",
-						"io.netty.channel.ChannelDuplexHandler",
-						"io.netty.channel.CombinedChannelDuplexHandler",
-						"io.netty.channel.AbstractChannelHandlerContext",
-						"io.netty.channel.ChannelHandlerContext",
-						"io.netty.handler.codec.http.HttpServerCodec",
-						"reactor.netty.channel.ChannelOperationsHandler",
-						"reactor.netty.http.server.HttpTrafficHandler",
-						"io.netty.channel.ChannelDuplexHandler",
-						"io.netty.channel.ChannelFutureListener",
-						"io.netty.channel.DefaultChannelPipeline",
-						"io.netty.channel.ChannelPipeline",
-						"io.netty.channel.ChannelInboundInvoker",
-						"io.netty.channel.ChannelOutboundInvoker",
-						"io.netty.channel.ChannelHandler",
-						"io.netty.util.concurrent.GenericFutureListener",
-						"io.netty.bootstrap.ServerBootstrap$1",
-						"io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor"},
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
 	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
 			ClientCodecConfigurer.class, ServerCodecConfigurer.class, // TODO Also put in regular web auto config?
 			HandlerResult.class,
@@ -72,18 +39,9 @@ import reactor.netty.DisposableServer;
 			// TODO Aren't these also needed for non reactive auto configuration web? Is there a common configuration supertype between those
 			// configurations that they can be hung off
 			typeNames= {
-//					{
-//					// DelegatingWebFluxConfiguration (used by webfluxconfigurationsupport)
-//						"name": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
-//						"allDeclaredConstructors": true,
-//						"allDeclaredMethods": true
-//					}
-				"com.sun.xml.internal.stream.XMLInputFactoryImpl",
 				"com.fasterxml.jackson.databind.ObjectMapper", 
 				"com.fasterxml.jackson.core.JsonGenerator",
-				"com.fasterxml.jackson.dataformat.smile.SmileFactory", 
-				"javax.xml.bind.Binder", 
-				
+				"com.fasterxml.jackson.dataformat.smile.SmileFactory",
 				"com.google.protobuf.Message", 
 				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 			},

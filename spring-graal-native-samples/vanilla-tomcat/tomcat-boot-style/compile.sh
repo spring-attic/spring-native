@@ -5,7 +5,6 @@ set -e
 ARTIFACT=tomcat-boot-style
 MAINCLASS=com.example.tomcat.TomcatOnlyApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=../../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -23,11 +22,6 @@ JAR="${ARTIFACT}-${VERSION}-jar-with-dependencies.jar"
 rm -f $ARTIFACT
 
 CP=../$JAR
-
-if [ ! -f "$FEATURE" ]; then
-    printf "${RED}FAILURE${NC}: $FEATURE does not exist, please build the root project before building this sample.\n"
-    exit 1
-fi
 
 echo "Generating reflection files for $ARTIFACT"
 rm -rf graal/META-INF 2>/dev/null

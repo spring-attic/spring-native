@@ -60,6 +60,12 @@ catch those other places you missed.
 
 * `-Dspring.graal.remove-yaml-support=true` removes Yaml support from Spring Boot, enabling faster compilation and smaller executables.
 
+* `-Dspring.graal.remove-xml-support=true` removes XML support from Spring Boot, enabling faster compilation and smaller executables.
+
+* `-Dspring.graal.remove-spel-support=true` removes SpEL support from Spring Boot, enabling faster compilation and smaller executables.
+
+* `-Dspring.graal.remove-jmx-support=true` removes JMX support from Spring Boot, enabling faster compilation and smaller executables.
+
 * `-Dspring.graal.dump-config=/tmp/dump.txt` dumps the configuration to the specified file.
 
 * `-Dspring.graal.missing-selector-hints=warning` switches the feature from a hard error for missing hints to a warning.

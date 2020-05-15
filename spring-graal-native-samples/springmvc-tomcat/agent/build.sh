@@ -3,7 +3,6 @@
 APP=springmvc-tomcat
 MAINCLASS=com.example.tomcat.TomcatApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=`find ${PWD%/*spring-graal-native*/*}/spring-graal-native/target -name "spring-graal-native-*.jar"`
 
 echo "================ BUILDING THE PROJECT AND UNPACKING THE FAT JAR =========="
 cd ..
@@ -43,12 +42,14 @@ native-image \
   -Dspring.graal.mode=agent \
   --no-server \
   --no-fallback \
-  -H:+TraceClassInitialization \
-  -H:+ReportExceptionStackTraces \
   -H:Name=$APP-agent \
+  -Dspring.graal.remove-yaml-support=true \
+  -Dspring.graal.remove-xml-support=true \
+  -Dspring.graal.remove-spel-support=true \
+  -Dspring.graal.remove-jmx-support=true \
   -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
-  -cp .:$CP:graal:../../../graal:$FEATURE \
+  -cp .:$CP:graal:../../../graal \
   $MAINCLASS 2>&1 | tee output.txt
 
 # Test the application

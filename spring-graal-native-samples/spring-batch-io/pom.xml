@@ -17,12 +17,14 @@
 	<description>Port of some of the Spring Batch's IO samples</description>
 	<properties>
 		<java.version>1.8</java.version>
-<!--
-		<spring-framework.version>5.2.6.BUILD-SNAPSHOT</spring-framework.version>
--->
 		<start-class>com.example.batch.BatchConfiguration</start-class>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graal-native</artifactId>
+			<version>0.7.0.BUILD-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-core</artifactId>

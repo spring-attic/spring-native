@@ -3,7 +3,6 @@
 ARTIFACT=jafu-webmvc
 MAINCLASS=com.example.jafu.DemoApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=../../../../spring-graal-native/target/spring-graal-native-0.7.0.BUILD-SNAPSHOT.jar
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -22,16 +21,8 @@ cd target/native-image
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
-if [ ! -f "$FEATURE" ]; then
-    printf "${RED}FAILURE${NC}: $FEATURE does not exist, please build the root project before building this sample.\n"
-    exit 1
-fi
-
-# Avoids clashing substitutions from this project deps and the feature deps
-rm BOOT-INF/lib/svm-20.*.jar
-
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
-CP=BOOT-INF/classes:$LIBPATH:$FEATURE
+CP=BOOT-INF/classes:$LIBPATH
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
@@ -41,8 +32,10 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-fallback \
   -H:EnableURLProtocols=http \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
   -Dspring.graal.mode=functional \
+  -Dspring.graal.remove-yaml-support=true \
+  -Dspring.graal.remove-xml-support=true \
+  -Dspring.graal.remove-spel-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

@@ -59,9 +59,11 @@ import com.oracle.svm.hosted.ImageClassLoader;
 
 public class ResourcesHandler {
 	
-	private final static String EnableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
+	private final static String enableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 
-	private final static String PropertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
+	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
+
+	private final static String applicationListenerKey = "org.springframework.context.ApplicationListener";
 
 	private TypeSystem ts;
 
@@ -585,10 +587,11 @@ public class ResourcesHandler {
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
 			SpringFeature.log("Adding all the classes for this key: " + k);
-			if (!k.equals(EnableAutoconfigurationKey) && !k.equals(PropertySourceLoaderKey)) {
+			if (!k.equals(enableAutoconfigurationKey) && !k.equals(propertySourceLoaderKey) && !k.equals(applicationListenerKey)) {
 				if (ts.shouldBeProcessed(k)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
+
 					}
 				} else {
 					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing guard types");
@@ -596,8 +599,31 @@ public class ResourcesHandler {
 			}
 		}
 
+		// Handle ApplicationListener
+		String applicationListenerValues = (String) p.get(applicationListenerKey);
+		if (applicationListenerValues != null) {
+			List<String> applicationListeners = new ArrayList<>();
+			for (String s : applicationListenerValues.split(",")) {
+				// BackgroundPreinitializer is REALLY not a good fit with native images (load eagerly lot of classes)
+				if (!s.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
+					registerTypeReferencedBySpringFactoriesKey(s);
+					applicationListeners.add(s);
+				} else {
+					forRemoval.add(s);
+				}
+			}
+			System.out.println("Processing spring.factories - ApplicationListener lists #"
+					+ applicationListeners.size() + " application listeners");
+			SpringFeature.log("These application listeners are remaining in the ApplicationListener key value:");
+			for (int c = 0; c < applicationListeners.size(); c++) {
+				SpringFeature.log((c + 1) + ") " + applicationListeners.get(c));
+			}
+			p.put(applicationListenerKey, String.join(",", applicationListeners));
+
+		}
+
 		// Handle PropertySourceLoader
-		String propertySourceLoaderValues = (String) p.get(PropertySourceLoaderKey);
+		String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
 		if (propertySourceLoaderValues != null) {
 			List<String> propertySourceLoaders = new ArrayList<>();
 			for (String s : propertySourceLoaderValues.split(",")) {
@@ -615,12 +641,12 @@ public class ResourcesHandler {
 			for (int c = 0; c < propertySourceLoaders.size(); c++) {
 				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
 			}
-			p.put(PropertySourceLoaderKey, String.join(",", propertySourceLoaders));
+			p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 
 		}
 
 		// Handle EnableAutoConfiguration
-		String enableAutoConfigurationValues = (String) p.get(EnableAutoconfigurationKey);
+		String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
 		if (enableAutoConfigurationValues != null) {
 			List<String> configurations = new ArrayList<>();
 			for (String s : enableAutoConfigurationValues.split(",")) {
@@ -641,7 +667,7 @@ public class ResourcesHandler {
 				System.out.println(
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
-				p.put(EnableAutoconfigurationKey, String.join(",", configurations));
+				p.put(enableAutoconfigurationKey, String.join(",", configurations));
 				SpringFeature.log("These configurations are remaining in the EnableAutoConfiguration key value:");
 				for (int c = 0; c < configurations.size(); c++) {
 					SpringFeature.log((c + 1) + ") " + configurations.get(c));
@@ -753,6 +779,12 @@ public class ResourcesHandler {
 
 	private boolean processType(Type type, Set<String> visited, int depth) {
 		SpringFeature.log(spaces(depth) + "Analyzing " + type.getDottedName());
+
+		if (ConfigOptions.shouldRemoveJmxSupport()) {
+			if (type.getDottedName().toLowerCase().contains("jmx")) {
+				return false;
+			}
+		}
 
 		// Check the hierarchy of the type, if bits are missing resolution of this
 		// type at runtime will not work - that suggests that in this particular

@@ -4,7 +4,9 @@ dependency-reduced-pom.xml
 .vscode
 .factorypath
 log.txt
-target
+target/
+.gradle/
+build/
 .classpath
 .project
 unpack

@@ -3,7 +3,6 @@
 ARTIFACT=webflux-netty
 MAINCLASS=com.example.demo.DemoApplication
 VERSION=0.0.1-SNAPSHOT
-FEATURE=`find ${PWD%/*spring-graal-native*/*}/spring-graal-native/target -name "spring-graal-native-*.jar"`
 
 echo "================ BUILDING THE PROJECT AND UNPACKING THE FAT JAR =========="
 cd ..
@@ -46,7 +45,11 @@ native-image \
   -H:+TraceClassInitialization \
   -H:+ReportExceptionStackTraces \
   -H:Name=$ARTIFACT-agent \
-  -cp .:$CP:graal:$FEATURE \
+  -Dspring.graal.remove-yaml-support=true \
+  -Dspring.graal.remove-xml-support=true \
+  -Dspring.graal.remove-spel-support=true \
+  -Dspring.graal.remove-jmx-support=true \
+  -cp .:$CP:graal \
   $MAINCLASS 2>&1 | tee output.txt
 
 # Test the application

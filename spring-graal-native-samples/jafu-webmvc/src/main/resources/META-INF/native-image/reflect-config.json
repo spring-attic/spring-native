@@ -1,20 +1,5 @@
 [
   {
-    "name": "org.apache.catalina.servlets.DefaultServlet",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.springframework.web.servlet.view.BeanNameViewResolver",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
@@ -64,16 +49,6 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$StaticResourceConfigurer",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory$LoaderHidingResourceRoot",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.apache.catalina.valves.ErrorReportValve",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
@@ -104,11 +79,6 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.springframework.web.servlet.function.support.RouterFunctionMapping",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
@@ -124,22 +94,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "org.springframework.web.servlet.function.support.HandlerFunctionAdapter",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
   },
