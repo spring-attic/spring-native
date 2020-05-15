@@ -31,6 +31,12 @@ public abstract class ConfigOptions {
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
 	private final static boolean REMOVE_YAML_SUPPORT;
+
+	private final static boolean REMOVE_XML_SUPPORT;
+
+	private final static boolean REMOVE_SPEL_SUPPORT;
+
+	private final static boolean REMOVE_JMX_SUPPORT;
 	
 	private final static String DUMP_CONFIG;
 
@@ -78,7 +84,19 @@ public abstract class ConfigOptions {
 		}
 		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-yaml-support", "false"));
 		if (REMOVE_YAML_SUPPORT) {
-			System.out.println("Skipping Yaml support");
+			System.out.println("Removing Yaml support");
+		}
+		REMOVE_XML_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-xml-support", "false"));
+		if (REMOVE_XML_SUPPORT) {
+			System.out.println("Removing XML support");
+		}
+		REMOVE_SPEL_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-spel-support", "false"));
+		if (REMOVE_SPEL_SUPPORT) {
+			System.out.println("Removing SpEL support");
+		}
+		REMOVE_JMX_SUPPORT = Boolean.valueOf(System.getProperty("spring.graal.remove-jmx-support", "false"));
+		if (REMOVE_JMX_SUPPORT) {
+			System.out.println("Removing JMX support");
 		}
 		DUMP_CONFIG = System.getProperty("spring.graal.dump-config");
 		if (DUMP_CONFIG!=null) {
@@ -108,6 +126,18 @@ public abstract class ConfigOptions {
 
 	public static boolean shouldRemoveYamlSupport() {
 		return REMOVE_YAML_SUPPORT;
+	}
+
+	public static boolean shouldRemoveXmlSupport() {
+		return REMOVE_XML_SUPPORT;
+	}
+
+	public static boolean shouldRemoveSpelSupport() {
+		return REMOVE_SPEL_SUPPORT;
+	}
+
+	public static boolean shouldRemoveJmxSupport() {
+		return REMOVE_JMX_SUPPORT;
 	}
 
 	public static boolean isAgentMode() {
