@@ -20,8 +20,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveSpelSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveSpelSupport;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.internal.svm;
+package org.hibernate.jpa.boot.internal;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
+
+import org.springframework.graalvm.substitutions.OnlyPresent;
 
 /**
  * Workaround for

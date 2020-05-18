@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.internal.svm;
+package org.springframework.data.projection;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -23,6 +23,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.graalvm.substitutions.OnlyPresent;
 
 /**
  * @author Andy Clement

@@ -3,7 +3,6 @@ package org.springframework.context.support;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
-import com.oracle.svm.core.annotate.TargetElement;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -19,9 +18,8 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveSpelSupport;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveSpelSupport;
 import org.springframework.util.ClassUtils;
 
 @TargetClass(className = "org.springframework.context.support.AbstractApplicationContext", onlyWith = { OnlyPresent.class, RemoveSpelSupport.class })

@@ -1,4 +1,4 @@
-package org.springframework.internal.svm;
+package org.springframework.beans.factory.support;
 
 import java.lang.reflect.Constructor;
 
@@ -6,7 +6,7 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.graalvm.substitutions.OnlyPresent;
 import org.springframework.lang.Nullable;
 
 @TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy", onlyWith = OnlyPresent.class)

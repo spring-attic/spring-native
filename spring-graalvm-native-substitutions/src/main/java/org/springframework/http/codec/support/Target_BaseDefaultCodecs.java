@@ -25,9 +25,8 @@ import org.springframework.http.codec.multipart.MultipartHttpMessageReader;
 import org.springframework.http.codec.multipart.MultipartHttpMessageWriter;
 import org.springframework.http.codec.multipart.SynchronossPartHttpMessageReader;
 import org.springframework.http.codec.protobuf.ProtobufDecoder;
-import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 import org.springframework.lang.Nullable;
 
 @TargetClass(className = "org.springframework.http.codec.support.BaseDefaultCodecs", onlyWith = { OnlyPresent.class, RemoveXmlSupport.class })
