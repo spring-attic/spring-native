@@ -27,7 +27,6 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  -Dspring.graal.mode=agent \
   --verbose \
   --no-server \
   --no-fallback \
