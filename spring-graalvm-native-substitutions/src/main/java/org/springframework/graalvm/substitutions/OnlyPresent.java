@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.internal.svm;
+package org.springframework.graalvm.substitutions;
 
 import java.util.function.Predicate;
 

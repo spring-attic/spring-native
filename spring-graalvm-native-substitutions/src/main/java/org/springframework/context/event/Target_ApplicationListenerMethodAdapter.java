@@ -7,8 +7,8 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 

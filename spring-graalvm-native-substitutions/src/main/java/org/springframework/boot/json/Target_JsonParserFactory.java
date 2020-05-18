@@ -1,12 +1,10 @@
-package org.springframework.internal.svm;
+package org.springframework.boot.json;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.boot.json.GsonJsonParser;
-import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.json.JsonParser;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveYamlSupport;
 import org.springframework.util.ClassUtils;
 
 @TargetClass(className = "org.springframework.boot.json.JsonParserFactory", onlyWith = { RemoveYamlSupport.class, OnlyPresent.class })

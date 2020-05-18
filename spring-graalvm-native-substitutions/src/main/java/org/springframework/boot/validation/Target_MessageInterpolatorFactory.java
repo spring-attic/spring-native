@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.internal.svm;
+package org.springframework.boot.validation;
 
 import javax.validation.MessageInterpolator;
 
@@ -22,6 +22,8 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.graalvm.substitutions.MessageInterpolatorIsAround;
+import org.springframework.graalvm.substitutions.OnlyPresent;
 import org.springframework.util.ClassUtils;
 
 /**

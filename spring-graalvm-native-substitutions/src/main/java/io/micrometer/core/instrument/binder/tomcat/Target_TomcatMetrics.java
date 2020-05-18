@@ -15,7 +15,7 @@
  */
 package io.micrometer.core.instrument.binder.tomcat;
 
-import org.springframework.internal.svm.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyPresent;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;

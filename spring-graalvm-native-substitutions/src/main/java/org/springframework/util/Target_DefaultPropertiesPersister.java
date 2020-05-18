@@ -8,8 +8,8 @@ import java.util.Properties;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "org.springframework.util.DefaultPropertiesPersister", onlyWith = { OnlyPresent.class, RemoveXmlSupport.class })
 final class Target_DefaultPropertiesPersister {

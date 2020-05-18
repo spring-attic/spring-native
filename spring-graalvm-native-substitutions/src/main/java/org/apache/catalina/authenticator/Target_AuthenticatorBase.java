@@ -8,8 +8,7 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.OnlyPresent;
 
 @TargetClass(className = "org.apache.catalina.authenticator.AuthenticatorBase", onlyWith = { OnlyPresent.class })
 final class Target_AuthenticatorBase {

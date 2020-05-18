@@ -11,9 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.internal.svm.FormHttpMessageConverterIsAround;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.FormHttpMessageConverterIsAround;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "org.springframework.web.filter.FormContentFilter", onlyWith = { OnlyPresent.class, FormHttpMessageConverterIsAround.class, RemoveXmlSupport.class })
 final class Target_FormContentFilter {

@@ -11,9 +11,9 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.internal.svm.FormHttpMessageConverterIsAround;
-import org.springframework.internal.svm.OnlyPresent;
-import org.springframework.internal.svm.RemoveXmlSupport;
+import org.springframework.graalvm.substitutions.FormHttpMessageConverterIsAround;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "org.springframework.web.servlet.function.support.RouterFunctionMapping", onlyWith = { OnlyPresent.class, FormHttpMessageConverterIsAround.class, RemoveXmlSupport.class })
 final class Target_RouterFunctionMapping {

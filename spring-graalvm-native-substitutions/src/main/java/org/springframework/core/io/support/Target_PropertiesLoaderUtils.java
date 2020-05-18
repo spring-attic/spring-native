@@ -1,4 +1,4 @@
-package org.springframework.internal.svm;
+package org.springframework.core.io.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,8 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.core.io.Resource;
+import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
