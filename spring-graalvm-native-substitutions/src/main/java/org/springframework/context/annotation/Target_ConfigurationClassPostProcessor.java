@@ -9,16 +9,14 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.commons.logging.Log;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.graalvm.substitutions.OnlyPresent;
-import org.springframework.util.ClassUtils;
 
+// CGLIB support removal
 @TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", onlyWith = OnlyPresent.class)
 public final class Target_ConfigurationClassPostProcessor {
 
@@ -27,9 +25,6 @@ public final class Target_ConfigurationClassPostProcessor {
 
 	@Alias
 	private Log logger;
-
-	@Alias
-	private static String IMPORT_REGISTRY_BEAN_NAME;
 
 	@Substitute
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
@@ -69,24 +64,5 @@ public final class Target_ConfigurationClassPostProcessor {
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
-	}
-}
-
-@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", innerClass = "ImportAwareBeanPostProcessor", onlyWith = OnlyPresent.class)
-final class Target_ImportAwareBeanPostProcessor {
-
-	@Alias
-	private BeanFactory beanFactory;
-
-	@Substitute
-	public Object postProcessBeforeInitialization(Object bean, String beanName) {
-		if (bean instanceof ImportAware) {
-			ImportRegistry ir = this.beanFactory.getBean(ConfigurationClassPostProcessor.class.getName() + ".importRegistry", ImportRegistry.class);
-			AnnotationMetadata importingClass = ir.getImportingClassFor(ClassUtils.getUserClass(bean).getName());
-			if (importingClass != null) {
-				((ImportAware) bean).setImportMetadata(importingClass);
-			}
-		}
-		return bean;
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.graalvm.substitutions.OnlyPresent;
 import org.springframework.lang.Nullable;
 
+// CGLIB support removal
 @TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy", onlyWith = OnlyPresent.class)
 public final class Target_CglibSubclassingInstantiationStrategy {
 
