@@ -4,21 +4,21 @@
 :graalvm-version: 20.0.0
 :graalvm-dev-version: 20.1-dev
 :boot-dev-version: 2.3.0.RELEASE
-:documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
+:documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
-image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graal-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
+image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
 
 This project goal is to provide experimental support for building https://spring.io/projects/spring-boot[Spring Boot] applications as https://www.graalvm.org/docs/reference-manual/native-image/[GraalVM native images].
 Watch this https://www.youtube.com/watch?v=3eoAxphAUIg[Running Spring Boot applications as GraalVM native images] Devoxx talk video for more details.
 
 It is mainly composed of 6 parts:
 
-- `spring-graal-native-feature`: this module is Spring GraalVM feature. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
-- `spring-graal-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-graal-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
-- `spring-graal-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
-- `spring-graal-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
-- `spring-graal-native-docs`: contains the asciidoc documentation sources.
+- `spring-graalvm-native-feature`: this module is Spring GraalVM feature. A feature here is a GraalVM term meaning a plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+- `spring-graalvm-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
+- `spring-graalvm-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
+- `spring-graalvm-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
+- `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+- `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
 
 == Scope and status
 
@@ -51,13 +51,13 @@ Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versi
 
 The latest {version} release supports GraalVM {graalvm-version} and Spring Boot {boot-version}.
 
-- Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native/{version}/spring-graal-native-{version}.jar[`org.springframework.experimental:spring-graal-native:{version}`]
+- Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native/{version}/spring-graalvm-native-{version}.jar[`org.springframework.experimental:spring-graalvm-native:{version}`]
 - Repository: https://repo.spring.io/{repository}[`https://repo.spring.io/{repository}`]
 
 === Play with the samples
 
-- Download and extract https://github.com/spring-projects-experimental/spring-graal-native/archive/{version}.zip[sources from the latest release].
-- Go into the samples folder and pick one (e.g. `cd spring-graal-native-samples/commandlinerunner`)
+- Download and extract https://github.com/spring-projects-experimental/spring-graalvm-native/archive/{version}.zip[sources from the latest release].
+- Go into the samples folder and pick one (e.g. `cd spring-graalvm-native-samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
 `build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[samples documentation].
@@ -73,15 +73,15 @@ Mac and Linux are supported, Windows in untested.
 
 === Use Docker based build environment
 
-In order to allow easily reproducible builds of `spring-graal-native`, dedicated interactive Docker images are available for local development (and are also used in the CI).
+In order to allow easily reproducible builds of `spring-graalvm-native`, dedicated interactive Docker images are available for local development (and are also used in the CI).
 
 To use it:
 
 - https://docs.docker.com/engine/install/[Install Docker].
 - https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
-- Run `docker/build-dev-images.sh` to build the `spring-graal-native-dev` Docker images dedicated for development, they are based (multi-stage builds) on the https://hub.docker.com/r/springci/graalvm-ce/tags[`graalvm-ce`] and https://hub.docker.com/r/springci/spring-graal-native/tags[`spring-graal-native`] images https://ci.spring.io/teams/spring-graal-native/pipelines/spring-graal-native?group=Daily%20builds[built on the CI].
-- You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container with an interactive shell suitable to run `spring-graal-native` build scripts (see "Usual dev workflow" section bellow for more details).
-- The `spring-graal-native` directory and the Maven home directory are shared between the host (where is typically the IDE) and the container (where you can run builds).
+- Run `docker/build-dev-images.sh` to build the `spring-graalvm-native-dev` Docker images dedicated for development, they are based (multi-stage builds) on the https://hub.docker.com/r/springci/graalvm-ce/tags[`graalvm-ce`] and https://hub.docker.com/r/springci/spring-graalvm-native/tags[`spring-graalvm-native`] images https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native?group=Daily%20builds[built on the CI].
+- You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container with an interactive shell suitable to run `spring-graalvm-native` build scripts (see "Usual dev workflow" section bellow for more details).
+- The `spring-graalvm-native` directory and the Maven home directory are shared between the host (where is typically the IDE) and the container (where you can run builds).
 
 === Usual dev workflow
 

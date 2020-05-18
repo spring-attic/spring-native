@@ -1,0 +1,143 @@
+[[extension_guide]]
+== Extension guide
+
+This section describes how to extend Spring GraalVM Native.
+
+=== Extending the feature
+
+We are experimenting with extension models, as you will see if you look in the `spring-graalvm-native-configuration` module within the project.
+Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application.
+
+What the configuration module is trying to achieve is to tie the access to certain types to the Spring configuration that needs them.
+Then, for any given application, if we know the likely active configurations, we can expose only the types most likely to be needed.
+
+This section walks through the structure of this hint data and finishes with how to add more configuration for areas we have not yet looked at.
+Perhaps you want to work on one and submit it as a PR.
+
+=== Hints
+
+So the giant `.json` file the feature project used to include has been decomposed into lots of `@NativeImageHint` annotations.
+Each of these hints specifies a set of types that need accessibility, what kind of accessibility is needed, and, optionally, a trigger.
+
+These `@NativeImageHint` should be hosted in one of two places.
+
+First, in the `spring-graalvm-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.graal.extension.NativeImageConfiguration` interface (defined by the feature).
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.graal.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
+
+Second, they can be put directly onto Spring configuration classes, and they are picked up by the feature.
+
+In this way, if you are experimenting with making your application into a native image, you can keep the hint configuration separate from the application code (the first case above).
+Once you are happy with it, you can keep it directly with your configuration.
+The first option also lets hints be provided for code you do not know or otherwise have access to change or rebuild.
+
+=== Triggered
+
+A trigger in a `NativeImageHint` is optional.
+If there is a trigger, it is a Spring configuration class name.
+If that configuration is thought to be active in a particular application, the specified types in the hint are made accessible.
+If there is no trigger, there are two possibilities:
+
+* The trigger is inferred if the hint is on a Spring configuration type.
+(It is inferred to be the name of that configuration).
+
+* If purely being used on a type that implements `NativeImageConfiguration`, it is assumed that the specified types must always be accessible.
+This is useful for some common types to which any application, regardless of active configurations, needs access.
+
+=== What do hints look like?
+
+The following listing shows a hint:
+
+====
+[source,java]
+----
+@NativeImageHint(trigger = JacksonAutoConfiguration.class,
+  typeInfos = {
+    @TypeInfo(types = { JsonGenerator.class },
+    access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS
+			 | AccessBits.PUBLIC_CONSTRUCTORS)
+  })
+----
+====
+
+Basically, it is that optional trigger and a series of `@TypeInfo` annotations.
+Here, the trigger is `JacksonAutoConfiguration`, and the hint as a whole reads: _if it looks like `JacksonAutoConfiguration` is active in this application, the `JsonGenerator` type should be made reflectively accessible and the methods and constructors within it should be visible_.
+One `@TypeInfo` can list multiple types if they share a similar access need, or there may be multiple `@TypeInfo` entries in one hint if different groups of types need different kinds of access.
+
+=== Optimizing which hints are acted on
+
+With the feature operating during native image construction, it is in a closed world system.
+This means that the full classpath is known for this application and cannot be extended later.
+The feature can, therefore, perform configuration condition checks such as `@ConditionalOnClass` as the image is built and know whether configuration attached to that condition can be active.
+If configuration looks like it is active, the relevant hints are enacted.
+The feature also chases down references between configurations (`@Import`) and looks for hints on any that get pulled in.
+
+This means that, for any application, there is some 'tree' of configurations active with hints scattered across them.
+
+=== Structure of the `spring-boot-graal-configuration` module
+
+In the `spring-boot-graal-configuration`, numerous package names look like Spring package names.
+That is deliberate.
+Notice the use of direct class references in the hints rather than strings.
+This type safety is a little more robust.
+If we upgrade a Spring version and the configuration module no longer compiles, we know something has changed that needs to be addressed.
+We may not have noticed if we use only string references.
+The reason these package names match Spring package names is visibility.
+With this setup, the hint can refer to a type with only package visibility in the original code.
+What about private classes?
+There is a fallback, in that `@TypeInfo` can specify names as strings if it absolutely must, as follows:
+
+====
+[source,java]
+----
+@TypeInfo(
+  typeNames="com.foo.PrivateBar",
+  types= {PublicBar.class}
+)
+----
+====
+
+Notice no access is specified here.
+There is a default access of everything.
+All methods, fields, constructors are reflectively accessible and the `.class` bytes are loadable as a resource.
+
+=== Contributing new hints
+
+The typical approach is:
+
+. Notice an error if your application when you try to build it or run it -- a `classnotfound`, `methodnotfound`, or similar error.
+If you are using a piece of Spring we don't have a sample for, this is likely to happen.
+
+. Try to determine which configuration classes give rise to the need for that reflective access to occur.
+Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
+
+. If there is already a `NativeImageConfiguration` implementation for that configuration, augment it with the extra type info.
+If there is not, create one and attach a `@NativeImageHint` to it, to identify the triggering configuration and the classes that need to be exposed.
+You also need to set the accessibility in the annotation (in the `@TypeInfo`).
+It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
+That is OK, so long as you ensure that they are provided scope.
+If you are adding a new `NativeImageConfiguration`, ensure that the `META-INF/services/*` file is updated to reference your new implementation.
+
+=== Is this the way?
+
+As we play around with this extension mechanism to determine suitability, we are thinking through a number of pros and cons:
+
+Pros:
+
+* The type safety of using direct class references is nice.
+Grouping types and knowing the trigger that causes their need to be accessible makes the system easier to reason about and debug.
+
+* When looking at one entry in a giant json file, you may have no idea why that is needed.
+With the hint structure, you can know exactly which configuration causes it to be needed.
+
+Cons:
+
+* Currently, it only works to the granularity of 'all methods' or 'all constructors'.
+Ideally, it should let individual methods and constructors be specified. How, the annotations may become unpleasant.
+
+* We cannot specify proxies through this mechanism (or JNI config or the other flavors).
+
+* Not being able to use direct class references for everything is not ideal.
+It looks like split packages, which is not nice.
+
+So, it is an experiment.
+We are sure to refactor a few more times before we are done.

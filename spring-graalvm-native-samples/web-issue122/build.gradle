@@ -1,0 +1,25 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.0.RC1'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'eclipse'
+}
+
+group = 'net.yisu.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+	implementation 'org.springframework.experimental:spring-graalvm-native:0.7.0.BUILD-SNAPSHOT'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+
+	compile group: 'org.json', name: 'json', version: '20171018'
+}
+
