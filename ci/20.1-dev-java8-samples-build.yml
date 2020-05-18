@@ -4,11 +4,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: springci/spring-graal-native
+    repository: springci/spring-graalvm-native
     tag: 20.1-dev-java8
 
 inputs:
-  - name: spring-graal-native
+  - name: spring-graalvm-native
 
 run:
-  path: spring-graal-native/ci/build-samples.sh
+  path: spring-graalvm-native/ci/build-samples.sh

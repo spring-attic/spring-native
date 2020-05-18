@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.springframework.experimental</groupId>
-	<artifactId>spring-graal-native-parent</artifactId>
+	<artifactId>spring-graalvm-native-build</artifactId>
 	<version>0.7.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Graal native parent</name>
+	<name>Spring GraalVM Native build</name>
 	<description>Parent POM for GraalVM native experimental support for Spring Boot applications</description>
-	<url>https://github.com/spring-projects-experimental/spring-graal-native/</url>
+	<url>https://github.com/spring-projects-experimental/spring-graalvm-native/</url>
 
 	<properties>
 		<!-- In fact using GraalVM 20.1-dev, but this is for graal-hotspot-library. Compat seems to be ok for now. -->
@@ -19,11 +19,11 @@
 	</properties>
 
 	<modules>
-		<module>spring-graal-native-feature</module>
-		<module>spring-graal-native-configuration</module>
-		<module>spring-graal-native-substitutions</module>
-		<module>spring-graal-native-docs</module>
-		<module>spring-graal-native</module>
+		<module>spring-graalvm-native-feature</module>
+		<module>spring-graalvm-native-configuration</module>
+		<module>spring-graalvm-native-substitutions</module>
+		<module>spring-graalvm-native-docs</module>
+		<module>spring-graalvm-native</module>
 	</modules>
 
 	<dependencyManagement>
@@ -78,7 +78,7 @@
 											<password>${artifactory.password}</password>
 											<repoKey>libs-milestone-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-											<excludePatterns>*/spring-graal-native-feature-*.*,*/spring-graal-native-configuration-*.*,*/spring-graal-native-substitutions-*.*,*/spring-graal-native-docs-*.pom</excludePatterns>
+											<excludePatterns>*/spring-graalvm-native-feature-*.*,*/spring-graalvm-native-configuration-*.*,*/spring-graalvm-native-substitutions-*.*,*/spring-graalvm-native-docs-*.pom</excludePatterns>
 										</publisher>
 									</configuration>
 								</execution>

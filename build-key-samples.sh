@@ -7,19 +7,19 @@ echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Start
 for i in commandlinerunner webflux-netty springmvc-tomcat jafu jafu-webmvc vanilla-thymeleaf vanilla-grpc vanilla-tx
 do
 
-  if ! (cd spring-graal-native-samples/$i && ./build.sh); then
+  if ! (cd spring-graalvm-native-samples/$i && ./build.sh); then
     RC=1
   fi
-  if [ -f "spring-graal-native-samples/$i/target/native-image/summary.csv" ]; then
-    cat spring-graal-native-samples/$i/target/native-image/summary.csv >> samples-summary.csv
+  if [ -f "spring-graalvm-native-samples/$i/target/native-image/summary.csv" ]; then
+    cat spring-graalvm-native-samples/$i/target/native-image/summary.csv >> samples-summary.csv
   else
     echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
   fi
 
-  if [ -d "spring-graal-native-samples/$i/agent" ]; then
-    (cd spring-graal-native-samples/$i/agent && ./build.sh)
-    if [ -f "spring-graal-native-samples/$i/agent/target/native-image/summary.csv" ]; then
-      cat spring-graal-native-samples/$i/agent/target/native-image/summary.csv >> samples-summary.csv
+  if [ -d "spring-graalvm-native-samples/$i/agent" ]; then
+    (cd spring-graalvm-native-samples/$i/agent && ./build.sh)
+    if [ -f "spring-graalvm-native-samples/$i/agent/target/native-image/summary.csv" ]; then
+      cat spring-graalvm-native-samples/$i/agent/target/native-image/summary.csv >> samples-summary.csv
     else
       echo `date +%Y%m%d-%H%M`,${i}-agent,ERROR,,,,, >> samples-summary.csv
     fi

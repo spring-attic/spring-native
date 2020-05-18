@@ -12,7 +12,7 @@ params:
   ARTIFACTORY_PASSWORD:
 
 inputs:
-  - name: spring-graal-native
+  - name: spring-graalvm-native
 
 run:
-  path: spring-graal-native/ci/deploy.sh
+  path: spring-graalvm-native/ci/deploy.sh
