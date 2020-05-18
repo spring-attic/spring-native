@@ -6,7 +6,7 @@
 :boot-dev-version: 2.3.0.RELEASE
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
-image:https://ci.spring.io/api/v1/teams/spring-graal-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
+image:https://ci.spring.io/api/v1/teams/spring-graalvm-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
 
 This project goal is to provide experimental support for building https://spring.io/projects/spring-boot[Spring Boot] applications as https://www.graalvm.org/docs/reference-manual/native-image/[GraalVM native images].
 Watch this https://www.youtube.com/watch?v=3eoAxphAUIg[Running Spring Boot applications as GraalVM native images] Devoxx talk video for more details.
