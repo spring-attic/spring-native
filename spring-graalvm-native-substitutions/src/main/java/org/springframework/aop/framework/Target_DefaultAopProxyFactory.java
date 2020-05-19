@@ -8,8 +8,9 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.aop.SpringProxy;
 import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveCglibSupport;
 
-@TargetClass(className = "org.springframework.aop.framework.DefaultAopProxyFactory", onlyWith = OnlyPresent.class)
+@TargetClass(className = "org.springframework.aop.framework.DefaultAopProxyFactory", onlyWith = { OnlyPresent.class, RemoveCglibSupport.class })
 public final class Target_DefaultAopProxyFactory {
 
 	@Substitute

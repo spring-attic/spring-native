@@ -15,9 +15,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveCglibSupport;
 
-// CGLIB support removal
-@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", onlyWith = OnlyPresent.class)
+@TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", onlyWith = { OnlyPresent.class, RemoveCglibSupport.class })
 public final class Target_ConfigurationClassPostProcessor {
 
 	@Alias
