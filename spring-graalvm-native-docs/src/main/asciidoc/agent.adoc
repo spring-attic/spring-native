@@ -57,40 +57,6 @@ Upgrade the project to Spring Boot {boot-version}:
 ----
 ====
 
-And add the following repositories to the `pom.xml` file if needed:
-
-====
-[source,xml,subs="attributes,verbatim"]
-----
-<pluginRepositories>
-    <!-- ... -->
-
-    <pluginRepository>
-        <id>spring-{boot-repository}</id>
-        <name>Spring {boot-repository}</name>
-        <url>https://repo.spring.io/{boot-repository}</url>
-    </pluginRepository>
-</pluginRepositories>
-----
-====
-
-And
-
-====
-[source,xml,subs="attributes,verbatim"]
-----
-<repositories>
-    <!-- ... -->
-
-    <repository>
-        <id>spring-{boot-repository}</id>
-        <name>Spring {boot-repository}</name>
-        <url>https://repo.spring.io/{boot-repository}</url>
-    </repository>
-</repositories>
-----
-====
-
 ===== Add the Maven plugin
 
 GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin] that we are going to bring in here. Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
