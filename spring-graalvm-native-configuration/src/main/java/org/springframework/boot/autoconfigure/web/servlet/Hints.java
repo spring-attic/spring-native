@@ -85,6 +85,7 @@ import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
+import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.ViewResolverComposite;
@@ -98,7 +99,8 @@ import org.springframework.web.util.HtmlUtils;
 		AcceptHeaderLocaleResolver.class,FixedThemeResolver.class,BeanNameUrlHandlerMapping.class,RequestMappingHandlerMapping.class,RouterFunctionMapping.class,
 		HttpRequestHandlerAdapter.class,SimpleControllerHandlerAdapter.class,RequestMappingHandlerAdapter.class,
 		HandlerFunctionAdapter.class,ExceptionHandlerExceptionResolver.class,ResponseStatusExceptionResolver.class,
-		DefaultHandlerExceptionResolver.class,DefaultRequestToViewNameTranslator.class,InternalResourceViewResolver.class,SessionFlashMapManager.class,
+		DefaultHandlerExceptionResolver.class,DefaultRequestToViewNameTranslator.class,InternalResourceViewResolver.class,
+		InternalResourceView.class, SessionFlashMapManager.class,
 		// vvv these are pulled in due to actuator testing but probably necessary for general app support
 		MatchableHandlerMapping.class,SimpleUrlHandlerMapping.class,HandlerMappingIntrospector.class,
 		AbstractDetectingUrlHandlerMapping.class,AbstractHandlerMapping.class,AbstractHandlerMethodMapping.class,
