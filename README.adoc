@@ -83,6 +83,12 @@ To use it:
 - You can now invoke `docker/run-{graalvm-dev-version}-java8.sh` or `docker/run-{graalvm-dev-version}-java11.sh` to run the Docker container with an interactive shell suitable to run `spring-graalvm-native` build scripts (see "Usual dev workflow" section bellow for more details).
 - The `spring-graalvm-native` directory and the Maven home directory are shared between the host (where is typically the IDE) and the container (where you can run builds).
 
+You can also directly use the base images available on Docker hub:
+
+ - Ubuntu bionic + GraalVM native: https://hub.docker.com/r/springci/graalvm-ce/tags
+
+ - Ubuntu bionic + GraalVM native + utilities required to build `spring-graalvm-native`: https://hub.docker.com/r/springci/spring-graalvm-native/tags
+
 === Usual dev workflow
 
 - Import the root project in your IDE.
