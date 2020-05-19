@@ -7,22 +7,22 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveCglibSupport;
 import org.springframework.lang.Nullable;
 
-// CGLIB support removal
-@TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy", onlyWith = OnlyPresent.class)
+@TargetClass(className = "org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy", onlyWith = { OnlyPresent.class, RemoveCglibSupport.class })
 public final class Target_CglibSubclassingInstantiationStrategy {
 
 	@Substitute
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
-		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
+		throw new UnsupportedOperationException("Unsupported operation since CGLIB support has been removed");
 	}
 
 	@Substitute
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName,
 			BeanFactory owner, @Nullable Constructor<?> ctor, Object... args) {
 
-		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
+		throw new UnsupportedOperationException("Unsupported operation since CGLIB support has been removed");
 	}
 
 }

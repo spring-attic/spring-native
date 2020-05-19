@@ -31,13 +31,11 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
   -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.native.remove-spel-support=true \
-  -Ddebug=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
