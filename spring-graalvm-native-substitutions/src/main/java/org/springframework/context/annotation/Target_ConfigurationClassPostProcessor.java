@@ -64,5 +64,10 @@ public final class Target_ConfigurationClassPostProcessor {
 				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
 			}
 		}
+		if (configBeanDefs.isEmpty()) {
+			// nothing to enhance -> return immediately
+			return;
+		}
+		throw new BeanDefinitionStoreException("@Configuration classes need to be marked as proxyBeanMethods=false. Found: " + configBeanDefs.keySet());
 	}
 }
