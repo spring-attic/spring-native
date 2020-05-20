@@ -33,6 +33,17 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<!-- <scope>test</scope> is commented as a workaround in order to wait for a fix for https://github.com/oracle/graal/pull/2422#issuecomment-631043276 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -50,13 +61,17 @@
 			</build>
 		</profile>
 		<profile>
-			<id>graal</id>
+			<id>native</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
 						<version>20.1.0</version>
+						<configuration>
+							<imageName>commandlinerunner-agent</imageName>
+							<buildArgs>--no-server --no-fallback -Dspring.native.mode=agent -Dspring.native.remove-yaml-support=true -Dspring.native.remove-spel-support=true -Dspring.native.remove-xml-support=true -Dspring.native.remove-jmx-support=true</buildArgs>
+						</configuration>
 						<executions>
 							<execution>
 								<goals>
@@ -69,6 +84,13 @@
 					<plugin>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>-agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image</argLine>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
