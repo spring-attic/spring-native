@@ -8,11 +8,12 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.RemoveSpelSupport;
 import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-@TargetClass(className = "org.springframework.context.event.ApplicationListenerMethodAdapter", onlyWith = { OnlyPresent.class, RemoveXmlSupport.class })
+@TargetClass(className = "org.springframework.context.event.ApplicationListenerMethodAdapter", onlyWith = { OnlyPresent.class, RemoveSpelSupport.class })
 final class Target_ApplicationListenerMethodAdapter {
 
 	@Delete
