@@ -19,7 +19,7 @@ final class Target_SpringFactoriesLoader {
 	@Alias
 	private static Log logger;
 
-	// Workaround in order to wait for a fix for https://github.com/oracle/graal/pull/2422#issuecomment-631043276
+	// Workaround in order to wait for a fix for https://github.com/oracle/graal/issues/2490
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
