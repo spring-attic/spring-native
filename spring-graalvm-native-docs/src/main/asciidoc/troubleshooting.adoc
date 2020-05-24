@@ -196,7 +196,7 @@ Add the following to the maven `<buildArgs>...</buildArgs>` section or as a para
 ====
 [source,bash]
 ----
--DdumpConfig=/a/b/c/feature-reflect-config.json
+-Dspring.native.dump-config=/a/b/c/feature-reflect-config.json
 ----
 ====
 
