@@ -89,7 +89,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
-							<argLine>-agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image</argLine>
+							<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image</argLine>
 						</configuration>
 					</plugin>
 				</plugins>
