@@ -234,6 +234,18 @@ public class ResourcesHandler {
 			Type kType = ts.resolveDotted(k);
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
+			
+			// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
+			// exposed
+			Entry<Type, List<Type>> metaAnnotated = kType.getMetaComponentTaggedAnnotations();
+			if (metaAnnotated != null) {
+				for (Type t: metaAnnotated.getValue()) {
+					String name = t.getDottedName();
+					reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
+					resourcesRegistry.addResources(name.replace(".", "/")+".class");
+				}
+			}
+
 //			if (kType.isAtConfiguration()) {
 //				checkAndRegisterConfigurationType(k);
 //			} else {
