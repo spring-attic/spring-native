@@ -12,6 +12,7 @@ public class NativePropertiesListener implements ApplicationListener<Application
 		ConfigurableEnvironment environment = event.getEnvironment();
 		Properties props = new Properties();
 		props.put("server.servlet.register-default-servlet", "false");
-		environment.getPropertySources().addFirst(new PropertiesPropertySource("myProps", props));
+		props.put("spring.aop.proxy-target-class", "false");
+		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
 	}
 }
