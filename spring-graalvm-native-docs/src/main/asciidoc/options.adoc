@@ -68,6 +68,9 @@ catch those other places you missed.
 
 * `-Dspring.native.dump-config=/tmp/dump.txt` dumps the configuration to the specified file.
 
+* `-Dspring.native.verify=true` switches on the verifier mode.
+See the <<troubleshooting>> section for more details on this experimental option.
+
 * `-Dspring.native.missing-selector-hints=warning` switches the feature from a hard error for missing hints to a warning.
 See the <<troubleshooting>> section for more details on this.
 
