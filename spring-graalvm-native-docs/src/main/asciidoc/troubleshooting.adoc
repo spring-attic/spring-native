@@ -131,6 +131,15 @@ The following entry satisfies the preceding error:
 
 Recompiling should pick up this extra configuration, and the resultant image include metadata to satisfy reflection of `AuthConfigFactoryImpl`.
 
+=== Verifying your application is suitable for native-image construction
+
+Rather than simplying failing with a difficult to debug error, there is the beginnings of a verification
+system in the feature that will try to give an early warning of what might be the problem. This mode is
+turned on via the option `-Dspring.native.verify=true`. It isn't the default because it is a work in progress.
+Currently it will warn about failing to specify `proxyBeanMethods=false` on components but the framework is
+there now to take it further than that as we observe common problems that could be more aggressively checked
+earlier.
+
 === Where has my logging gone?
 
 In standard operation, `native-image` uses a server to optimize compilation speeds.
