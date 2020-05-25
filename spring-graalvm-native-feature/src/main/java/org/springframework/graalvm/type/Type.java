@@ -909,6 +909,24 @@ public class Type {
 			return null;
 		}
 	}
+	
+	public Entry<Type, List<Type>> getMetaComponentTaggedAnnotations() {
+		if (dimensions > 0)
+			return null;
+		List<Type> relevantAnnotations = new ArrayList<>();
+		List<Type> indexedTypesInHierachy = getAnnotatedElementsInHierarchy(
+				a -> a.desc.equals("Lorg/springframework/stereotype/Component;"),true);
+		for (Type t: indexedTypesInHierachy) {
+			if (t.isAnnotation()) {
+				relevantAnnotations.add(t);
+			}
+		}
+		if (!relevantAnnotations.isEmpty()) {
+			return new AbstractMap.SimpleImmutableEntry<Type, List<Type>>(this, relevantAnnotations);
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Find usage of javax annotations in hierarchy (including meta usage).
@@ -953,10 +971,14 @@ public class Type {
 	}
 
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
-		return getAnnotatedElementsInHierarchy(p, new HashSet<>());
+		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), false);
+	}
+	
+	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, boolean includeInterim) {
+		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), includeInterim);
 	}
 
-	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen) {
+	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen, boolean includeInterim) {
 		if (dimensions > 0)
 			return Collections.emptyList();
 		List<Type> results = new ArrayList<>();
@@ -968,7 +990,12 @@ public class Type {
 					} else {
 						Type annoType = typeSystem.Lresolve(an.desc, true);
 						if (annoType != null) {
-							List<Type> ts = annoType.getAnnotatedElementsInHierarchy(p, seen);
+							List<Type> ts = annoType.getAnnotatedElementsInHierarchy(p, seen, includeInterim);
+							if (ts.size()!=0 && includeInterim) {
+								// Include interim enables us to catch intermediate annotations on the route to
+								// the one that passes the predicate test.
+								results.add(this);
+							}
 							results.addAll(ts);
 						}
 					}
