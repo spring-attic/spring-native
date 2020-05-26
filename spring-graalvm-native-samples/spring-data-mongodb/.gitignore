@@ -17,4 +17,4 @@ bin/
 .idea
 *.iml
 test-output.txt
-/?/
+/?/.m2/
