@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ARTIFACT=springdata-mongodb
-MAINCLASS=com.example.data.mongo.SDMongoApplication
+ARTIFACT=spring-data-mongodb
+MAINCLASS=com.example.data.mongo.MongoApplication
 VERSION=2.3.0.BUILD-SNAPSHOT
 
 GREEN='\033[0;32m'
@@ -31,18 +31,12 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --no-server \
   --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
-  -H:+TraceClassInitialization \
   -H:+PrintAnalysisCallTree \
-  --initialize-at-build-time=org.springframework.data.mongodb.core.MongoTemplate \
-  --initialize-at-build-time=org.springframework.data.mongodb.repository.support.SimpleMongoRepository \
-  --initialize-at-build-time=com.example.data.mongo.OrderRepositoryImpl \
-  -Dspring.native.verbose=true \
   -Dspring.native.remove-unused-autoconfig=true \
-  -Dspring.native.remove-yaml-support=true \
+  -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.native.remove-spel-support=true \
-  -Ddebug=true \
+  -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

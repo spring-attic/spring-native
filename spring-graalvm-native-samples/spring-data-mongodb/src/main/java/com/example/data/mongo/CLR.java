@@ -1,58 +1,37 @@
-/*
- * Copyright 2012-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.data.mongo;
 
 import java.util.Date;
 import java.util.List;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings.Builder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.data.mongodb.repository.support.MongoRepositoryFactory;
-import org.springframework.data.repository.core.support.RepositoryComposition.RepositoryFragments;
+import org.springframework.stereotype.Component;
 
-//@SpringBootApplication(proxyBeanMethods = false)
-public class SDMongoApplication {
+@Component
+public class CLR implements CommandLineRunner {
 
-	private final static LineItem product1 = new LineItem("p1", 1.23);
-	private final static LineItem product2 = new LineItem("p2", 0.87, 2);
-	private final static LineItem product3 = new LineItem("p3", 5.33);
+	@Autowired
+	private MongoTemplate template;
 
-	public static void main(String[] args) throws Exception {
+	@Autowired
+	private OrderRepository repository;
 
-		ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(Config.class);
-		MongoTemplate template = ctx.getBean("mongoTemplate", MongoTemplate.class);
+	@Override
+	public void run(String... args) throws Exception {
+
+		LineItem product1 = new LineItem("p1", 1.23);
+		LineItem product2 = new LineItem("p2", 0.87, 2);
+		LineItem product3 = new LineItem("p3", 5.33);
 
 		System.out.println("\n\n\n---- INT REPO ----");
-//		MongoRepositoryFactory factory = new MongoRepositoryFactory(template);
-//		OrderRepository repository = factory.getRepository(OrderRepository.class, RepositoryFragments.just(new OrderRepositoryImpl(template)));
 
-		OrderRepository repository = ctx.getBean(OrderRepository.class);
 		System.out.println("-----------------\n\n\n");
 
 		// Basic save find via repository
@@ -149,22 +128,22 @@ public class SDMongoApplication {
 		}
 
 		// Custom Implementation
-		{
-
-			// does not work with the @enable annotation :(
-
-			System.out.println("---- CUSTOM IMPLEMENTATION ----");
-			repository.deleteAll();
-
-			Order order = new Order("c42", new Date()).//
-					addItem(product1).addItem(product2).addItem(product3);
-			order = repository.save(order);
-
-			Invoice invoice = repository.getInvoiceFor(order);
-			System.out.println("invoice: " + invoice);
-
-			System.out.println("-----------------\n\n\n");
-		}
+//		{
+//
+//			// does not work with the @enable annotation :(
+//
+//			System.out.println("---- CUSTOM IMPLEMENTATION ----");
+//			repository.deleteAll();
+//
+//			Order order = new Order("c42", new Date()).//
+//					addItem(product1).addItem(product2).addItem(product3);
+//			order = repository.save(order);
+//
+//			Invoice invoice = repository.getInvoiceFor(order);
+//			System.out.println("invoice: " + invoice);
+//
+//			System.out.println("-----------------\n\n\n");
+//		}
 
 		// Result Projection
 		{
@@ -194,28 +173,6 @@ public class SDMongoApplication {
 			System.out.println("result: " + result);
 
 			System.out.println("-----------------\n\n\n");
-		}
-
-//			Thread.currentThread().join();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableMongoRepositories
-	static class Config extends AbstractMongoClientConfiguration {
-
-		@Override
-		protected String getDatabaseName() {
-			return "test";
-		}
-
-		@Override
-		protected void configureClientSettings(Builder builder) {
-			builder.applyConnectionString(new ConnectionString("mongodb://host.docker.internal:27017"));
-		}
-
-		@Override
-		protected boolean autoIndexCreation() {
-			return true;
 		}
 	}
 }
