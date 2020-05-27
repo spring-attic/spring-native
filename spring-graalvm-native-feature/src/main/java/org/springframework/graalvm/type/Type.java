@@ -1642,11 +1642,11 @@ public class Type {
 			this.supertype = supertype.replace(".", "/");
 		}
 
-		public String getTypeParameter(int typeParameterNumber2) {
-			if (typeParameterNumber2 > typeParams.size()) {
+		public String getTypeParameter(int typeParameterNumber) {
+			if (typeParameterNumber >= typeParams.size()) {
 				return null;
 			}
-			return typeParams.get(typeParameterNumber2).replace("/", ".");
+			return typeParams.get(typeParameterNumber).replace("/", ".");
 		}
 
 		@Override
@@ -1683,6 +1683,10 @@ public class Type {
 
 	public String fetchCrudRepositoryType() {
 		return findTypeParameterInSupertype("org.springframework.data.repository.CrudRepository",0);
+	}
+
+	public String fetchJpaRepositoryType() {
+		return findTypeParameterInSupertype("org.springframework.data.jpa.repository.JpaRepository",0);
 	}
 	
 	/**

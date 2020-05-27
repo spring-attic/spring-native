@@ -70,27 +70,29 @@ import org.springframework.graalvm.type.TypeSystem;
 // so we register the hierarchy for that which gives us OrderRepositoryImpl (F) and OrderRepositoryCustom (G)
 //
 /**
- * Basic spring.components entry processor for Spring Data. Crafted initially to handle the mongodb case.
- * This ComponentProcessor implementation is listed in the META-INF/services 
- * file org.springframework.graalvm.extension.ComponentProcessor and that is how it is picked up by the 
- * feature runtime.
+ * Basic spring.components entry processor for Spring Data. Crafted initially to
+ * handle the mongodb case. This ComponentProcessor implementation is listed in
+ * the META-INF/services file
+ * org.springframework.graalvm.extension.ComponentProcessor and that is how it
+ * is picked up by the feature runtime.
  * 
  * @author Andy Clement
  */
 public class SpringDataComponentProcessor implements ComponentProcessor {
-	
+
 	private static String repositoryName;
 	private static String queryAnnotationName;
-	
+
 	static {
 		try {
 			repositoryName = Repository.class.getName();
 			queryAnnotationName = QueryAnnotation.class.getName();
 		} catch (NoClassDefFoundError ncdfe) {
-			// This component processor isn't useful anyway in this run, so OK that these aren't here
+			// This component processor isn't useful anyway in this run, so OK that these
+			// aren't here
 		}
 	}
-	
+
 	@Override
 	public boolean handle(String key, List<String> values) {
 		return repositoryName != null && values.contains(repositoryName);
@@ -98,59 +100,78 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	@Override
 	public void process(NativeImageContext imageContext, String key, List<String> values) {
-		System.out.println("SDCP: Processing "+key);
-		TypeSystem typeSystem = imageContext.getTypeSystem();
-
-		imageContext.addProxy(key,
-				repositoryName, 
-				"org.springframework.transaction.interceptor.TransactionalProxy",
-				"org.springframework.aop.framework.Advised",
-				"org.springframework.core.DecoratingProxy");
-		imageContext.addReflectiveAccess(key,Flag.allDeclaredMethods,Flag.allDeclaredConstructors);
-
-		Type applicationRepositoryType = typeSystem.resolveName(key);
-		
-		System.out.println("SDCP: Application repository type "+applicationRepositoryType.getName());
-		String thingInApplicationRepository = applicationRepositoryType.fetchCrudRepositoryType();
-		
-		Type thingInApplicationRepositoryType = typeSystem.resolveName(thingInApplicationRepository);
-
-		// Grab get* methods from the type of the thing in the repository type
-		// TODO recurse into types where they are application types? (e.g. LineItem where get returns List<LineItem>)
-		List<Method> methods = thingInApplicationRepositoryType.getMethods(m -> m.getName().startsWith("get"));
-		for (Method method: methods) {
-			Set<Type> signatureTypes = method.getSignatureTypes(true);
-			// System.out.println("SDCP: method "+method.getName()+" has return types "+signatureTypes);
-			for (Type signatureType: signatureTypes) {
-				imageContext.addReflectiveAccess(signatureType.getDottedName(),Flag.allDeclaredConstructors,Flag.allDeclaredMethods,Flag.allDeclaredFields);
+		try {
+			TypeSystem typeSystem = imageContext.getTypeSystem();
+			Type applicationRepositoryType = typeSystem.resolveName(key);
+			String thingInApplicationRepository = null;
+			// This is a little crude - works for the code seen so far but I'm sure
+			// insufficient
+			thingInApplicationRepository = applicationRepositoryType.fetchJpaRepositoryType();
+			if (thingInApplicationRepository == null) {
+				thingInApplicationRepository = applicationRepositoryType.fetchCrudRepositoryType();
 			}
-		}
-		
-		imageContext.addReflectiveAccess(thingInApplicationRepository, Flag.allDeclaredMethods, Flag.allDeclaredConstructors, Flag.allDeclaredFields);
-		
-		// Grab the find* methods
-		methods = applicationRepositoryType.getMethods(m -> m.getName().startsWith("find"));
 
-		// Let's add the methods with @QueryAnnotations on (including meta usage of QueryAnnotation)
-		methods.addAll(applicationRepositoryType.getMethodsWithAnnotationName(queryAnnotationName, true));
-		
-		// For each of those, let's ensure reflective access to return types
-		for (Method method: methods) {
-			Set<Type> signatureTypes = method.getSignatureTypes(true);
-			// System.out.println("SDCP: method "+method.getName()+" has return types "+signatureTypes);
-			for (Type signatureType: signatureTypes) {
-				String signatureTypeName = signatureType.getDottedName();
-				imageContext.addReflectiveAccess(signatureTypeName,Flag.allDeclaredConstructors,Flag.allDeclaredMethods,Flag.allDeclaredFields);
-				if (signatureTypeName.endsWith("Projection")) {
-					imageContext.addProxy(signatureTypeName, "org.springframework.data.projection.TargetAware","org.springframework.aop.SpringProxy","org.springframework.core.DecoratingProxy");
+			if (thingInApplicationRepository == null) {
+				// give up!
+				System.out.println("SDCP: Unable to work out repository contents for repository " + key);
+				return;
+			}
+
+			imageContext.addProxy(key, repositoryName, "org.springframework.transaction.interceptor.TransactionalProxy",
+					"org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy");
+			imageContext.addReflectiveAccess(key, Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
+
+
+			Type thingInApplicationRepositoryType = typeSystem.resolveName(thingInApplicationRepository);
+
+			// Grab get* methods from the type of the thing in the repository type
+			// TODO recurse into types where they are application types? (e.g. LineItem
+			// where get returns List<LineItem>)
+			List<Method> methods = thingInApplicationRepositoryType.getMethods(m -> m.getName().startsWith("get"));
+			for (Method method : methods) {
+				Set<Type> signatureTypes = method.getSignatureTypes(true);
+				// System.out.println("SDCP: method "+method.getName()+" has return types
+				// "+signatureTypes);
+				for (Type signatureType : signatureTypes) {
+					imageContext.addReflectiveAccess(signatureType.getDottedName(), Flag.allDeclaredConstructors,
+							Flag.allDeclaredMethods, Flag.allDeclaredFields);
 				}
 			}
-		}
-		
-		// Check for an Impl of the repository
-		Type applicationRepositoryImplType = typeSystem.resolveName(key+"Impl",true);
-		if (applicationRepositoryImplType != null) {
-			imageContext.addReflectiveAccessHierarchy(applicationRepositoryImplType,Flag.allDeclaredConstructors,Flag.allDeclaredMethods);
+
+			imageContext.addReflectiveAccess(thingInApplicationRepository, Flag.allDeclaredMethods,
+					Flag.allDeclaredConstructors, Flag.allDeclaredFields);
+
+			// Grab the find* methods
+			methods = applicationRepositoryType.getMethods(m -> m.getName().startsWith("find"));
+
+			// Let's add the methods with @QueryAnnotations on (including meta usage of
+			// QueryAnnotation)
+			methods.addAll(applicationRepositoryType.getMethodsWithAnnotationName(queryAnnotationName, true));
+
+			// For each of those, let's ensure reflective access to return types
+			for (Method method : methods) {
+				Set<Type> signatureTypes = method.getSignatureTypes(true);
+				// System.out.println("SDCP: method "+method.getName()+" has return types
+				// "+signatureTypes);
+				for (Type signatureType : signatureTypes) {
+					String signatureTypeName = signatureType.getDottedName();
+					imageContext.addReflectiveAccess(signatureTypeName, Flag.allDeclaredConstructors,
+							Flag.allDeclaredMethods, Flag.allDeclaredFields);
+					if (signatureTypeName.endsWith("Projection")) {
+						imageContext.addProxy(signatureTypeName, "org.springframework.data.projection.TargetAware",
+								"org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy");
+					}
+				}
+			}
+
+			// Check for an Impl of the repository
+			Type applicationRepositoryImplType = typeSystem.resolveName(key + "Impl", true);
+			if (applicationRepositoryImplType != null) {
+				imageContext.addReflectiveAccessHierarchy(applicationRepositoryImplType, Flag.allDeclaredConstructors,
+						Flag.allDeclaredMethods);
+			}
+		} catch (Throwable t) {
+			System.out.println("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
 		}
 	}
 
