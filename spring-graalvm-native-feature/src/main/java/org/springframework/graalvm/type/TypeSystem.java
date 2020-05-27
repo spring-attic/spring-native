@@ -46,6 +46,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.graalvm.extension.ComponentProcessor;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -766,6 +767,10 @@ public class TypeSystem {
 			}
 			return false;
 		}
+	}
+
+	public List<ComponentProcessor> getComponentProcessors() {
+		return SpringConfiguration.getComponentProcessors();
 	}
 
 }

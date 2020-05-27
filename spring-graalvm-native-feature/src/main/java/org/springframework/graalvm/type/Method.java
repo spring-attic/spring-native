@@ -88,17 +88,49 @@ public class Method {
 	static class TypesFromSignatureCollector extends SignatureVisitor {
 
 		Set<String> types = null;
+		private boolean returnTypeOnly;
+		private boolean captureTypes = false;
 		
-		public TypesFromSignatureCollector() {
+		public TypesFromSignatureCollector(boolean returnTypeOnly) {
 			super(Opcodes.ASM7);
+			this.returnTypeOnly = returnTypeOnly;
+			if (!returnTypeOnly) {
+				this.captureTypes=true;
+			}
+		}
+		
+		@Override
+		public SignatureVisitor visitReturnType() {
+			if (this.returnTypeOnly) {
+				captureTypes = true;
+			}	
+			return super.visitReturnType();
+		}
+		
+		@Override
+		public SignatureVisitor visitExceptionType() {
+			if (this.returnTypeOnly) {
+				captureTypes = false;
+			}
+			return super.visitExceptionType();
+		}
+		
+		@Override
+		public SignatureVisitor visitParameterType() {
+			if (this.returnTypeOnly) {
+				captureTypes = false;
+			}
+			return super.visitParameterType();
 		}
 		
 		@Override
 		public void visitClassType(String name) {
-			if (types == null) {
-				types = new HashSet<String>();
+			if (captureTypes) {
+				if (types == null) {
+					types = new HashSet<String>();
+				}
+				types.add(name);
 			}
-			types.add(name);
 		}
 		
 		public Set<String> getTypes() {
@@ -111,30 +143,43 @@ public class Method {
 				
 	}
 
+	public Set<Type> getSignatureTypes() {
+		return getSignatureTypes(false);
+	}
+
 	/**
 	 * @return full list of types involved in the signature, including those embedded in generics.
 	 */
-	public Set<Type> getSignatureTypes() {
+	public Set<Type> getSignatureTypes(boolean returnTypeOnly) {
 		Set<Type> signatureTypes = new HashSet<>();
 		if (mn.signature == null) {
 			org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
-			Type t = typeSystem.resolve(methodType.getReturnType(), true);
-			if (t == null) {
-				SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
-			} else {
-				signatureTypes.add(t);
-			}
-			for (org.objectweb.asm.Type at: methodType.getArgumentTypes()) {
+			org.objectweb.asm.Type returnType = methodType.getReturnType();
+			Type t = null;
+			if (returnType.getDescriptor().length()!=1) {
 				t = typeSystem.resolve(methodType.getReturnType(), true);
 				if (t == null) {
-					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+at.getDescriptor());
+					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
 				} else {
 					signatureTypes.add(t);
-				}	
+				}
+			}
+			if (!returnTypeOnly) {
+				for (org.objectweb.asm.Type at : methodType.getArgumentTypes()) {
+					if (at.getDescriptor().length()!=1) {
+						t = typeSystem.resolve(methodType.getReturnType(), true);
+						if (t == null) {
+							SpringFeature.log("Can't resolve the type used in this @Bean method: " + mn.name + mn.desc
+									+ ": " + at.getDescriptor());
+						} else {
+							signatureTypes.add(t);
+						}
+					}
+				}
 			}
 		} else {
 			SignatureReader reader = new SignatureReader(mn.signature);
-			TypesFromSignatureCollector tc = new TypesFromSignatureCollector();
+			TypesFromSignatureCollector tc = new TypesFromSignatureCollector(returnTypeOnly);
 			reader.accept(tc);
 			Set<String> collectedTypes = tc.getTypes();
 			for (String s: collectedTypes) {
