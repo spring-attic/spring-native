@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -44,6 +45,8 @@ import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.graalvm.extension.ComponentProcessor;
+import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Hint;
@@ -298,10 +301,12 @@ public class ResourcesHandler {
 		if (kType != null && kType.isAtResponseBody()) {
 			processResponseBodyComponent(kType);
 		}
+			List<String> values = new ArrayList<>();
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
 			while (st.hasMoreElements()) {
 				String tt = st.nextToken();
+				values.add(tt);
 				if (tt.equals("org.springframework.stereotype.Component")) {
 					isComponent = true;
 				}
@@ -335,8 +340,62 @@ public class ResourcesHandler {
 			if (isComponent && ConfigOptions.isVerifierOn()) {
 				kType.verifyComponent();
 			}
+			List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+			for (ComponentProcessor componentProcessor: componentProcessors) {
+				if (componentProcessor.handle(k,values)) {
+					componentProcessor.process(new NativeImageContextImpl(), k, values);
+				}
+			}
 		}
 		System.out.println("Registered " + registeredComponents + " entries");
+	}
+	
+	class NativeImageContextImpl implements NativeImageContext {
+
+		@Override
+		public boolean addProxy(List<String> interfaces) {
+			dynamicProxiesHandler.addProxy(interfaces);
+			return true;
+		}
+
+		@Override
+		public boolean addProxy(String... interfaces) {
+			if (interfaces != null) {
+				dynamicProxiesHandler.addProxy(Arrays.asList(interfaces));
+			}
+			return true;
+		}
+
+		@Override
+		public TypeSystem getTypeSystem() {
+			return ts;
+		}
+
+		@Override
+		public void addReflectiveAccess(String key, Flag... flags) {
+			reflectionHandler.addAccess(key,flags);
+		}
+		
+
+		@Override
+		public void addReflectiveAccessHierarchy(Type type, Flag... flags) {
+			registerHierarchy(type, new HashSet<>(), flags);
+		}
+		
+		private void registerHierarchy(Type type, Set<String> visited, Flag... flags) {
+			String typename = type.getDottedName();
+			if (visited.add(typename)) {
+				addReflectiveAccess(typename, flags);
+				List<String> relatedTypes = type.getTypesInSignature();
+				for (String relatedType: relatedTypes) {
+					Type t = ts.resolveSlashed(relatedType,true);
+					if (t!=null) {
+						registerHierarchy(t, visited, flags);
+					}
+				}
+			}
+		}
+		
 	}
 	
 	private void processResponseBodyComponent(Type t) {

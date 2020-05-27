@@ -254,6 +254,10 @@ public class Type {
 				: node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
 						.collect(Collectors.toList());
 	}
+	
+	public List<Method> getMethodsWithAnnotationName(String string, boolean checkMetaUsage) {
+		return getMethodsWithAnnotation("L"+string.replace(".", "/")+";",checkMetaUsage);
+	}
 
 	public List<Method> getMethodsWithAnnotation(String string, boolean checkMetaUsage) {
 		if (dimensions > 0) {
@@ -271,6 +275,11 @@ public class Type {
 			}
 		}
 		return results == null ? Collections.emptyList() : results;
+	}
+	
+	public List<Method> getMethods() {
+		return dimensions > 0 ? Collections.emptyList()
+				: node.methods.stream().map(m -> wrap(m)).collect(Collectors.toList());
 	}
 
 	public List<Method> getMethodsWithAtBean() {
@@ -1671,6 +1680,10 @@ public class Type {
 	public String fetchReactiveCrudRepositoryType() {
 		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository",0);
 	}
+
+	public String fetchCrudRepositoryType() {
+		return findTypeParameterInSupertype("org.springframework.data.repository.CrudRepository",0);
+	}
 	
 	/**
 	 * Verify this type as a component, checking everything is set correctly for
@@ -1783,6 +1796,12 @@ public class Type {
 				annotationType.collectAnnotationsHelper(collector, seen);
 			}
 		}
+	}
+
+	public List<Method> getMethods(Predicate<Method> predicate) {
+		return dimensions > 0 ? Collections.emptyList()
+				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m))
+						.collect(Collectors.toList());
 	}
 
 }

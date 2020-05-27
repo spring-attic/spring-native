@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.support.SpringFeature;
 
@@ -35,6 +36,8 @@ public class SpringConfiguration {
 	private final static Map<String, List<CompilationHint>> proposedHints = new HashMap<>();
 	
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
+	
+	private final static List<ComponentProcessor> processors = new ArrayList<>();
 
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
@@ -56,6 +59,12 @@ public class SpringConfiguration {
 				}
 			}
 		}
+		SpringFeature.log("Discovering component processors...");
+		ServiceLoader<ComponentProcessor> componentProcessors = ServiceLoader.load(ComponentProcessor.class);
+		for (ComponentProcessor componentProcessor: componentProcessors) {
+			SpringFeature.log("SpringConfiguration: processing component processor: "+componentProcessor.getClass().getName());
+			processors.add(componentProcessor);
+		}
 	}
 
 	static {
@@ -73,6 +82,10 @@ public class SpringConfiguration {
 	public List<CompilationHint> findProposedHints(String typename) {
 		List<CompilationHint> results = proposedHints.get(typename);
 		return (results==null?Collections.emptyList():results);
+	}
+	
+	public static List<ComponentProcessor> getComponentProcessors() {
+		return processors;
 	}
 
 	public static String[] findProposedFactoryGuards(String key) {
