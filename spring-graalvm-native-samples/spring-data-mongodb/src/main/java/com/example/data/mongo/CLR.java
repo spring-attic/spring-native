@@ -128,22 +128,19 @@ public class CLR implements CommandLineRunner {
 		}
 
 		// Custom Implementation
-//		{
-//
-//			// does not work with the @enable annotation :(
-//
-//			System.out.println("---- CUSTOM IMPLEMENTATION ----");
-//			repository.deleteAll();
-//
-//			Order order = new Order("c42", new Date()).//
-//					addItem(product1).addItem(product2).addItem(product3);
-//			order = repository.save(order);
-//
-//			Invoice invoice = repository.getInvoiceFor(order);
-//			System.out.println("invoice: " + invoice);
-//
-//			System.out.println("-----------------\n\n\n");
-//		}
+		{
+			System.out.println("---- CUSTOM IMPLEMENTATION ----");
+			repository.deleteAll();
+
+			Order order = new Order("c42", new Date()).//
+					addItem(product1).addItem(product2).addItem(product3);
+			order = repository.save(order);
+
+			Invoice invoice = repository.getInvoiceFor(order);
+			System.out.println("invoice: " + invoice);
+
+			System.out.println("-----------------\n\n\n");
+		}
 
 		// Result Projection
 		{
