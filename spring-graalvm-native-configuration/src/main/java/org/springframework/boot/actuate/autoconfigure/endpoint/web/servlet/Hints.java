@@ -39,6 +39,7 @@ import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
@@ -47,6 +48,7 @@ import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -187,6 +189,8 @@ import org.springframework.graalvm.extension.TypeInfo;
 		EndpointExtension.class,
 		FilteredEndpoint.class,
 		ReadOperation.class,
+		WriteOperation.class,
+		DeleteOperation.class,
 		OperationInvokerAdvisor.class,
 		ParameterValueMapper.class,
 		ConversionServiceParameterValueMapper.class,
