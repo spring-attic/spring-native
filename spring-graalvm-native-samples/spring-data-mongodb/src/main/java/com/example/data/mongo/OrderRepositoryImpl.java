@@ -32,6 +32,7 @@ import org.springframework.stereotype.Indexed;
  * @author Oliver Gierke
  */
 @Indexed
+@Component
 class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 	private final MongoOperations operations;

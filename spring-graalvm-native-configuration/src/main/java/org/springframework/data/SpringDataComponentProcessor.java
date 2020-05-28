@@ -100,6 +100,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	@Override
 	public void process(NativeImageContext imageContext, String key, List<String> values) {
+
 		try {
 			TypeSystem typeSystem = imageContext.getTypeSystem();
 			Type applicationRepositoryType = typeSystem.resolveName(key);
@@ -169,6 +170,15 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			if (applicationRepositoryImplType != null) {
 				imageContext.addReflectiveAccessHierarchy(applicationRepositoryImplType, Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);
+				for (Method method : applicationRepositoryImplType.getMethods()) {
+
+					Set<Type> signatureTypes = method.getSignatureTypes(true);
+					for (Type signatureType : signatureTypes) {
+						String signatureTypeName = signatureType.getDottedName();
+						imageContext.addReflectiveAccess(signatureTypeName, Flag.allDeclaredConstructors,
+								Flag.allDeclaredMethods, Flag.allDeclaredFields);
+					}
+				}
 			}
 		} catch (Throwable t) {
 			System.out.println("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
