@@ -26,4 +26,4 @@ RUN apt-get -y update \
  && rm -rf /var/cache/apt/archives \
  && rm -rf /var/lib/apt/lists/*
 
-CMD /usr/bin/mongod --fork --dbpath /tmp --logpath /var/log/mongodb/mongod.log && /bin/bash
+CMD /usr/bin/mongod --fork --dbpath /tmp --logpath /tmp/mongod.log && /bin/bash
