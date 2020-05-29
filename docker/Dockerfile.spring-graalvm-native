@@ -6,10 +6,9 @@ ARG MAVEN_VERSION=3.6.3
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 
 RUN apt-get -y update \
- && apt-get -y install git curl python unzip bc bsdmainutils \
- && rm -rf /var/lib/apt/lists/*
-
-RUN cd /opt \
+ && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server \
+ && mkdir -p /data/db \
+ && cd /opt \
  && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
  && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
  && rm apache-maven-${MAVEN_VERSION}-bin.zip \
@@ -17,11 +16,15 @@ RUN cd /opt \
  && rm LICENSE \
  && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
  && apt-get -y install nodejs \
- && rm -rf /var/lib/apt/lists/* \
  && curl -LO https://github.com/tecfu/tty-table/archive/master.zip \
  && unzip master.zip \
  && rm master.zip \
  && cd tty-table-master \
  && npm i -g \
  && cd .. \
- && rm -rf tty-table-master
+ && rm -rf tty-table-master \
+ && npm cache clean --force \
+ && rm -rf /var/cache/apt/archives \
+ && rm -rf /var/lib/apt/lists/*
+
+CMD /usr/bin/mongod --fork --logpath /var/log/mongodb/mongod.log && /bin/bash
