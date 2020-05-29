@@ -38,5 +38,6 @@ public interface NativeImageContext {
 	void addReflectiveAccess(String key, Flag... flags);
 
 	void addReflectiveAccessHierarchy(Type type, Flag... flags);
-	
+
+	boolean hasReflectionConfigFor(String key);
 }
