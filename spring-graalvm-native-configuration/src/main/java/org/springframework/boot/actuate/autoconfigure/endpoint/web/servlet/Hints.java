@@ -18,6 +18,10 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ApplicationConditionEvaluation;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndCondition;
+import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndConditions;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
@@ -34,6 +38,9 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.beans.BeansEndpoint;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
+import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
@@ -116,6 +123,11 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
 // TODO mega overlap with the hint created for reactive actuator - need to rationalize
 @NativeImageHint(trigger = WebMvcEndpointManagementContextConfiguration.class, typeInfos = { 
@@ -139,6 +151,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 //			TomcatReactiveWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
 //			UndertowWebServerFactoryCustomizer.class, NettyWebServerFactoryCustomizer.class,
 		Link.class, // serialization problem for this if hit /actuator
+		BeanSerializer.class,
 	HealthComponent.class,	
 	HealthEndpoint.class,
 	HealthContributor.class,
@@ -243,7 +256,127 @@ import org.springframework.graalvm.extension.TypeInfo;
 		
 		// Additional for webmvc actuator sample
 		WebMvcEndpointHandlerMapping.class,
-		ControllerEndpointHandlerMapping.class
+		ControllerEndpointHandlerMapping.class,
+
+		// Hitting /beans endpoint
+		ClassSerializer.class,
+		ApplicationBeans.class,
+		BeanDescriptor.class,
+		ContextBeans.class,
+		
+		// Hitting /conditions endpoint
+		ApplicationConditionEvaluation.class,
+		ContextConditionEvaluation.class,
+		MessageAndCondition.class,
+		MessageAndConditions.class,
+		MultiValueMap.class,
+		LinkedMultiValueMap.class,
+		
+		// Hitting /configprops endpoint
+		com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.class,
+		com.fasterxml.jackson.annotation.JsonInclude.Include.class,
+		com.fasterxml.jackson.annotation.PropertyAccessor.class,
+		com.fasterxml.jackson.core.JsonGenerator.Feature.class,
+		com.fasterxml.jackson.core.JsonParser.Feature.class,
+		com.fasterxml.jackson.databind.DeserializationFeature.class,
+		com.fasterxml.jackson.databind.MapperFeature.class,
+		com.fasterxml.jackson.databind.SerializationFeature.class,
+		com.fasterxml.jackson.databind.cfg.ConfigFeature.class,
+		com.fasterxml.jackson.databind.ser.BeanSerializerModifier[].class,
+		com.fasterxml.jackson.databind.ser.std.FileSerializer.class,
+		io.micrometer.core.instrument.simple.CountingMode.class,
+		java.io.File.class,
+		java.lang.Character.class,
+		java.lang.Cloneable.class,
+		java.lang.Comparable.class,
+		java.nio.charset.Charset.class,
+		java.util.Locale.class,
+		org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show.class,
+		org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status.class,
+		org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties.Git.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.AutoTimeProperties.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Distribution.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.ClientRequest.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary[].class,
+		org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties.Servlet.class,
+		org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties.class,
+		org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor.class,
+		org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties.class,
+		org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode.class,
+		org.springframework.boot.actuate.metrics.AutoTimer.class,
+		org.springframework.boot.autoconfigure.info.ProjectInfoProperties.Build.class,
+		org.springframework.boot.autoconfigure.info.ProjectInfoProperties.Git.class,
+		org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt.class,
+		org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Opaquetoken.class,
+		org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Pool.class,
+		org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown.class,
+		org.springframework.boot.autoconfigure.task.TaskSchedulingProperties.Pool.class,
+		org.springframework.boot.autoconfigure.task.TaskSchedulingProperties.Shutdown.class,
+		org.springframework.boot.autoconfigure.web.ErrorProperties.class,
+		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute.class,
+		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace.class,
+		org.springframework.boot.autoconfigure.web.ErrorProperties.Whitelabel.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Cache.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Cache.Cachecontrol.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Chain.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Content.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Fixed.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.FORMAT.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Threads.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Netty.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Mbeanregistry.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Remoteip.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Resource.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Threads.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Options.class,
+		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Threads.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Async.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Contentnegotiation.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.LocaleResolver.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Pathmatch.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Servlet.class,
+		org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.View.class,
+		org.springframework.boot.web.server.Shutdown.class,
+		org.springframework.core.io.AbstractFileResolvingResource.class,
+		org.springframework.core.io.AbstractResource.class,
+		org.springframework.core.io.ClassPathResource.class,
+		org.springframework.core.io.InputStreamSource.class,
+		org.springframework.core.io.Resource.class,
+		org.springframework.util.unit.DataSize.class,
+		
+		// Hitting /env endpoint
+		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
+		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,
+		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor.class,
+		
+		// Hitting /mappings endpoint
+		org.springframework.boot.actuate.web.mappings.HandlerMethodDescription.class,
+		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings.class,
+		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappings.class,
+		org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletMappingDescription.class,
+		org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletMappingDetails.class,
+		org.springframework.boot.actuate.web.mappings.servlet.FilterRegistrationMappingDescription.class,
+		org.springframework.boot.actuate.web.mappings.servlet.RegistrationMappingDescription.class,
+		org.springframework.boot.actuate.web.mappings.servlet.RequestMappingConditionsDescription.class,
+		org.springframework.boot.actuate.web.mappings.servlet.RequestMappingConditionsDescription.MediaTypeExpressionDescription.class,
+		org.springframework.boot.actuate.web.mappings.servlet.ServletRegistrationMappingDescription.class,
+		org.springframework.web.bind.annotation.RequestMethod.class,
+		
+		// Hitting /metrics endpoint
+		org.springframework.boot.actuate.metrics.MetricsEndpoint.ListNamesResponse.class
 	}, typeNames = {
 			
 		// TODO this next one, actuator looks like the first thing pushing on it but surely it isn't the only user and this should have a different trigger?
