@@ -1345,7 +1345,7 @@ public class Type {
 						if (values.get(i).equals("value")) {
 							List<org.objectweb.asm.Type> types = (List<org.objectweb.asm.Type>) values.get(i + 1);
 							for (org.objectweb.asm.Type type : types) {
-								Type t = typeSystem.Lresolve(type.getDescriptor());
+								Type t = typeSystem.Lresolve(type.getDescriptor(),true);
 								if (t != null) {
 									result.add(t);
 								}
