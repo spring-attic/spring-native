@@ -62,7 +62,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
 ----
 <profiles>
   <profile>
-    <id>graal</id>
+    <id>native</id>
     <build>
       <plugins>
         <plugin>
@@ -229,7 +229,7 @@ public class RestServiceApplication {
 ====
 [source,bash]
 ----
-mvn -Pgraal clean package
+mvn -Pnative clean package
 ----
 ====
 

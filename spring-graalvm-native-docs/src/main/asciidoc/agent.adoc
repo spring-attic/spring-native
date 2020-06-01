@@ -66,7 +66,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
 ----
 <profiles>
   <profile>
-    <id>graal</id>
+    <id>native</id>
     <build>
       <plugins>
         <plugin>
@@ -235,13 +235,17 @@ java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/
 
 It runs as normal.
 
-IMPORTANT: While it is up to you to make sure you exercise any codepaths, you want to ensure they are covered by the native image that will be built, exercising those paths may cause extra reflection access or resource loading and in other situations. Here, go to the `http://localhost:8080/greeting` endpoint, otherwise some codepaths could be missed.
+IMPORTANT-1: While it is up to you to make sure you exercise any codepaths, you want to ensure they are covered by the native image that will be built, exercising those paths may cause extra reflection access or resource loading and in other situations. Here, go to the `http://localhost:8080/greeting` endpoint, otherwise some codepaths could be missed.
 
-ALSO-IMPORTANT: Notice the setting of `org.graalvm.nativeimage.imagecode`. Some behaviours in the framework code
+IMPORTANT-2: Notice the setting of `org.graalvm.nativeimage.imagecode`. Some behaviours in the framework code
 may be different if it recognizes it is in a native image (perhaps working around features not supported in
 native-images). Ideally those are the codepaths we want to exercise when running with the agent, hence
 setting it when attaching the agent. There is a GraalVM https://github.com/oracle/graal/issues/2395[issue open]
 to cover having the agent do this by default.
+
+IMPORTANT-3: The agent has improved greatly recently but still may miss some things. There is an experimental
+flag that will extend the agent behaviour to potentially catch more things, this is specified as part of the
+agentlib parameter if you wish to try it: `-agentlib:native-image-agent=experimental-class-loader-support,config-output-dir=src/main/resources/META-INF/native-image`.
 
 Shutdown the app with CTRL + C for example.
 
@@ -277,7 +281,7 @@ The following command builds the application:
 ====
 [source,bash]
 ----
-mvn -Pgraal clean package
+mvn -Pnative clean package
 ----
 ====
 
@@ -333,35 +337,8 @@ Caused by: java.util.MissingResourceException:
 
 You can add that `-H:IncludeResourceBundles=javax.servlet.LocalStrings` to `pom.xml` `<buildArgs>` and recompile again.
 
-Run the executable, curl to the endpoint (`curl http://localhost:8080/greeting`), it shows the following error:
-
-====
-[source,bash]
-----
-Caused by: java.lang.ClassNotFoundException:
-  org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl
-	at com.oracle.svm.core.hub.ClassForNameSupport.forName(ClassForNameSupport.java:60) ~[na:na]
-----
-====
-
-This is what happens when the agent misses a reflective usage.
-This particular one is https://github.com/oracle/graal/issues/2198[issue 2198].
-It has been fixed but after GraalVM 20.0.0.
-In this situation, we can manually add this entry.
-To do so, open `src/main/resources/META-INF/native-image/reflect-config.json` and insert the following on line 2 (after the `[` on line 1):
-
-====
-[source,json]
-----
-{
- "name":"org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl",
- "allDeclaredConstructors":true,
- "allDeclaredMethods":true
-},
-----
-====
-
-It should now work after a rebuild. The startup time is <100ms, compared to ~1500ms when starting the fat jar.
+Run the executable, curl to the endpoint (`curl http://localhost:8080/greeting`). It should respond
+correctly. The startup time is <100ms, compared to ~1500ms when starting the fat jar.
 
 ==== Summary
 
