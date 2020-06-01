@@ -165,6 +165,25 @@ It is possible that, in your case, you do not need what the selector is doing.
 To do so, specify the `-Dspring.native.missing-selector-hints=warning` option to cause log messages about the problem but not a hard fail.
 Note that using warnings rather than errors can cause serious problems for your application.
 
+=== Working with snapshots
+
+Snapshots are regularly published and obviously ahead of releases and milestones. If you wish to use the snapshot versions you should use the following repository:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<repositories>
+    <!-- ... -->
+    <repository>
+        <id>spring-snapshots</id>
+        <name>Spring Snapshots</name>
+        <url>https://repo.spring.io/snapshot</url>
+    </repository>
+</repositories>
+----
+====
+
+
 === Diagnosing issues with the feature
 
 Sometimes, you want to use the feature but cannot.
