@@ -98,6 +98,7 @@ options:
 -h, --help                show brief help
 -j, --java=VERSION        specify Java version to use, can be 8 or 11, 8 by default
 -g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, 20.1-dev by default
+-w, --workdir             specify the working directory, should be an absolute path, current one by default
 -p, --pull                force container image refresh
 ```
 
