@@ -26,7 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -352,6 +354,8 @@ public class ResourcesHandler {
 	
 	class NativeImageContextImpl implements NativeImageContext {
 
+		final HashMap<String, Flag[]> reflectiveFlags = new LinkedHashMap<>();
+
 		@Override
 		public boolean addProxy(List<String> interfaces) {
 			dynamicProxiesHandler.addProxy(interfaces);
@@ -373,9 +377,17 @@ public class ResourcesHandler {
 
 		@Override
 		public void addReflectiveAccess(String key, Flag... flags) {
-			reflectionHandler.addAccess(key,flags);
+
+			reflectionHandler.addAccess(key, flags);
+
+			// TODO: is there a way to ask the ReflectionRegistry? If not maye keep track of flag changes.
+			reflectiveFlags.put(key, flags);
 		}
-		
+
+		@Override
+		public boolean hasReflectionConfigFor(String key) {
+			return reflectiveFlags.containsKey(key);
+		}
 
 		@Override
 		public void addReflectiveAccessHierarchy(Type type, Flag... flags) {
