@@ -33,8 +33,7 @@ import org.springframework.data.repository.query.QueryByExampleExecutor;
  * @author Oliver Gierke
  * @author Christoph Strobl
  */
-//public interface OrderRepository extends CrudRepository<Order, String>, OrderRepositoryCustom, QueryByExampleExecutor<Order> {
-public interface OrderRepository extends CrudRepository<Order, String>, QueryByExampleExecutor<Order> {
+public interface OrderRepository extends CrudRepository<Order, String>, OrderRepositoryCustom, QueryByExampleExecutor<Order> {
 
 	List<Order> findByCustomerId(String customerId);
 
