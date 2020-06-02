@@ -94,4 +94,4 @@ docker image ls | grep spring-graalvm-native-dev | grep ${GRAALVM_VERSION}-java$
   --build-arg USER_GID=$(id -g ${USER}) \
   -t spring-graalvm-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION} - < $DOCKER_DIR/$DEV_IMAGE
 
-docker run --hostname docker -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR -v $HOME/.m2:$CONTAINER_HOME/.m2 -it -w $CONTAINER_WORK_DIR -u $(id -u ${USER}):$(id -g ${USER}) spring-graalvm-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
+docker run --hostname docker -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it -w $CONTAINER_WORK_DIR -u $(id -u ${USER}):$(id -g ${USER}) spring-graalvm-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
