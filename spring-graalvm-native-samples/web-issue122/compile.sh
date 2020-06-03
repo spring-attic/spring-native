@@ -30,8 +30,6 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
-  --no-server \
   -H:EnableURLProtocols=http,jar \
   -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \

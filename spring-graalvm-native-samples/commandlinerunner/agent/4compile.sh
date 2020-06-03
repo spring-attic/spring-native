@@ -1,8 +1,6 @@
 native-image \
-  -Dspring.native.mode=agent \
-  --no-server \
-  --no-fallback \
   -H:Name=commandlinerunner-agent \
+  -Dspring.native.mode=agent \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-spel-support=true \
   -Dspring.native.remove-jmx-support=true \

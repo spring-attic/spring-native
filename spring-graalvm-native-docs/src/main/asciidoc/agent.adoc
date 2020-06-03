@@ -74,7 +74,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
           <configuration>
-            <buildArgs>-Dspring.native.mode=agent --no-fallback -H:+ReportExceptionStackTraces --no-server</buildArgs>
+            <buildArgs>-Dspring.native.mode=agent</buildArgs>
           </configuration>
           <executions>
             <execution>

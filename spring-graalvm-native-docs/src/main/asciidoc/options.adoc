@@ -16,13 +16,15 @@ These options are enabled by default when using `spring-graalvm-native`, since t
 
 * `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
 
-==== Options recommended by default
+* `--no-fallback` enforces native image only runtime and disable fallback on regular JVM.
 
 * `--no-server` means do not use the image-build server which can be sometimes unreliable, see https://github.com/oracle/graal/issues/1952[graal#1952] for more details.
 
-* `--verbose` makes image building output more verbose.
+* `--install-exit-handlers` allows to react to a shutdown request from Docker.
 
-* `--no-fallback` enforces native image only runtime and disable fallback on regular JVM
+==== Options recommended by default
+
+* `--verbose` makes image building output more verbose.
 
 * `-H:+ReportExceptionStackTraces` provides more detail should something go wrong.
 
@@ -37,6 +39,8 @@ You can use it with specific classes or package specified if needed.
 You can find more details in GraalVM https://github.com/oracle/graal/blob/master/substratevm/REPORTS.md[reports documentation].
 
 * `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
+
+* `-H:+RemoveSaturatedTypeFlows` reduces build time and decrease build memory consumption, especially for big projects.
 
 === Feature options
 

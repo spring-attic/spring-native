@@ -40,10 +40,6 @@ sleep 3
 # Run native image to compile the application
 native-image \
   -Dspring.native.mode=agent \
-  --no-server \
-  --no-fallback \
-  -H:+TraceClassInitialization \
-  -H:+ReportExceptionStackTraces \
   -H:Name=$ARTIFACT-agent \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-xml-support=true \

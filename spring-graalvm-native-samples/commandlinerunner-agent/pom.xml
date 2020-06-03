@@ -70,7 +70,7 @@
 						<version>20.1.0</version>
 						<configuration>
 							<imageName>commandlinerunner-agent</imageName>
-							<buildArgs>--no-server --no-fallback -Dspring.native.mode=agent -Dspring.native.remove-spel-support=true -Dspring.native.remove-jmx-support=true</buildArgs>
+							<buildArgs>--no-fallback -Dspring.native.mode=agent -Dspring.native.remove-spel-support=true -Dspring.native.remove-jmx-support=true</buildArgs>
 						</configuration>
 						<executions>
 							<execution>
