@@ -28,10 +28,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --no-server \
-  --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   --enable-all-security-services \

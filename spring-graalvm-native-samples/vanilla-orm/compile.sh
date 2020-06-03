@@ -28,10 +28,8 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --no-server \
-  --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
+  -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
@@ -46,5 +44,3 @@ else
   printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
   exit 1
 fi
-
-# Run with ./vanilla-orm -Dhibernate.dialect=org.hibernate.dialect.H2Dialect

@@ -28,10 +28,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 time native-image \
   --verbose \
-  --no-server \
-  --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
   -Dspring.native.remove-unused-autoconfig=true \
   --initialize-at-build-time=org.hsqldb.jdbc.JDBCDriver \
   --initialize-at-build-time=org.springframework.batch.core.JobParameters \

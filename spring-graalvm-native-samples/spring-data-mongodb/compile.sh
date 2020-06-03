@@ -28,10 +28,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --no-server \
-  --no-fallback \
   -H:Name=$ARTIFACT \
-  -H:+PrintAnalysisCallTree \
   -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-jmx-support=true \

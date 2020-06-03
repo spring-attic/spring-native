@@ -28,8 +28,6 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --no-server \
-  --no-fallback \
   -H:Name=$ARTIFACT \
   -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-unused-autoconfig=true \
@@ -37,7 +35,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -Dspring.native.remove-jmx-support=true \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-spel-support=true \
-  -Ddebug=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
