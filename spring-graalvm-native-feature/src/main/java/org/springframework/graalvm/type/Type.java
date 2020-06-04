@@ -904,19 +904,39 @@ public class Type {
 	 * </pre>
 	 */
 	public Entry<Type, List<Type>> getRelevantStereotypes() {
-		if (dimensions > 0)
+		if (dimensions > 0) {
 			return null;
+		}
 		List<Type> relevantAnnotations = new ArrayList<>();
-		List<Type> indexedTypesInHierachy = getAnnotatedElementsInHierarchy(
-				a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
-		relevantAnnotations.addAll(indexedTypesInHierachy);
-		List<Type> types = getJavaxAnnotationsInHierarchy();
-		relevantAnnotations.addAll(types);
+		collectRelevantStereotypes(this, new HashSet<>(), relevantAnnotations);
+		List<Type> types = getJavaxAnnotations();
+		for (Type t: types) {
+			if (!relevantAnnotations.contains(t)) {
+				relevantAnnotations.add(t);
+			}
+		}
 		if (!relevantAnnotations.isEmpty()) {
 			return new AbstractMap.SimpleImmutableEntry<Type, List<Type>>(this, relevantAnnotations);
 		} else {
 			return null;
 		}
+	}
+	
+	private void collectRelevantStereotypes(Type type, Set<Type> seen, List<Type> collector) {
+		if (type == null || type.dimensions>0 || !seen.add(type)) {
+			return;
+		}
+		List<Type> ts = type.getAnnotatedElementsInHierarchy(
+				a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
+		for (Type t: ts) {
+			if (!collector.contains(t)) {
+				collector.add(t);
+			}
+		}
+		for (Type inttype: type.getInterfaces()) {
+			collectRelevantStereotypes(inttype, seen, collector);
+		}
+		collectRelevantStereotypes(type.getSuperclass(),seen,collector);
 	}
 	
 	public Entry<Type, List<Type>> getMetaComponentTaggedAnnotations() {
@@ -938,13 +958,10 @@ public class Type {
 	}
 
 	/**
-	 * Find usage of javax annotations in hierarchy (including meta usage).
-	 * 
-	 * @return list of types in the hierarchy of this type that are affected by a
-	 *         javax annotation
+	 * @return list of javax.* annotations on this type, directly specified or meta-specified.
 	 */
-	List<Type> getJavaxAnnotationsInHierarchy() {
-		return getJavaxAnnotationsInHierarchy(new HashSet<>());
+	List<Type> getJavaxAnnotations() {
+		return getJavaxAnnotations(new HashSet<>());
 	}
 
 	private boolean isAnnotated(String Ldescriptor) {
@@ -993,8 +1010,9 @@ public class Type {
 		List<Type> results = new ArrayList<>();
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				if (seen.add(an.desc)) {
-					if (p.test(an)) {
+				boolean match = p.test(an);
+				if (match || seen.add(an.desc)) {
+					if (match) {
 						results.add(this);
 					} else {
 						Type annoType = typeSystem.Lresolve(an.desc, true);
@@ -1014,7 +1032,7 @@ public class Type {
 		return results.size() > 0 ? results : Collections.emptyList();
 	}
 
-	private List<Type> getJavaxAnnotationsInHierarchy(Set<String> seen) {
+	private List<Type> getJavaxAnnotations(Set<String> seen) {
 		if (dimensions > 0)
 			return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
@@ -1026,17 +1044,11 @@ public class Type {
 						if (annoType.getDottedName().startsWith("javax.")) {
 							result.add(annoType);
 						} else {
-							List<Type> ts = annoType.getJavaxAnnotationsInHierarchy(seen);
+							List<Type> ts = annoType.getJavaxAnnotations(seen);
 							result.addAll(ts);
 						}
 					}
 				}
-			}
-		}
-		Type[] intfaces = getInterfaces();
-		for (Type intface : intfaces) {
-			if (seen.add(intface.getDottedName())) {
-				result.addAll(intface.getJavaxAnnotationsInHierarchy(seen));
 			}
 		}
 		return result;
@@ -1806,6 +1818,17 @@ public class Type {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m))
 						.collect(Collectors.toList());
+	}
+
+	public boolean equals(Object that) {
+		return (that instanceof Type) && 
+				(((Type)that).name.equals(this.name)) && 
+				(((Type)that).dimensions==this.dimensions) &&
+				(((Type)that).node.equals(this.node));
+	}
+	
+	public int hashCode() {
+		return node.hashCode()*37;
 	}
 
 }
