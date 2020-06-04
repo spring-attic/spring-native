@@ -75,8 +75,8 @@ Mac and Linux are supported, Windows is untested.
 
 In order to allow easily reproducible builds of `spring-graalvm-native`, dedicated interactive Docker images are available for local development (tested on Linux and Mac) and are also used in the CI:
 
-- https://github.com/spring-projects-experimental/spring-graalvm-native/blob/master/docker/Dockerfile.graalvm-ce[`graalvm-ce`]: base image with Ubuntu bionic + GraalVM native, built daily by the CI and available from https://hub.docker.com/r/springci/graalvm-ce/tags[Docker hub].
-- https://github.com/spring-projects-experimental/spring-graalvm-native/blob/master/docker/Dockerfile.spring-graalvm-native[`spring-graalvm-native`]: base image with `graalvm-ce` + utilities required to build the project, available from https://hub.docker.com/r/springci/spring-graalvm-native/tags[Docker hub].
+- https://github.com/spring-projects-experimental/spring-graalvm-native/blob/master/docker/Dockerfile.graalvm-ce[`graalvm-ce`]: base image with Ubuntu bionic + GraalVM native, built daily by the CI and available from https://hub.docker.com/r/springci/graalvm-ce/tags[Docker hub] or locally via `docker/build-graalvm-ce-images.sh`.
+- https://github.com/spring-projects-experimental/spring-graalvm-native/blob/master/docker/Dockerfile.spring-graalvm-native[`spring-graalvm-native`]: base image with `graalvm-ce` + utilities required to build the project, available from https://hub.docker.com/r/springci/spring-graalvm-native/tags[Docker hub] or locally via `docker/build-spring-graalvm-native-images.sh`.
 - https://github.com/spring-projects-experimental/spring-graalvm-native/blob/master/docker/Dockerfile.spring-graalvm-native-dev[`spring-graalvm-native-dev`]: local image built via `docker/build-dev-images.sh` designed to share the same user between the host and the container
 
 To use it:
@@ -99,7 +99,8 @@ options:
 -j, --java=VERSION        specify Java version to use, can be 8 or 11, 8 by default
 -g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, 20.1-dev by default
 -w, --workdir             specify the working directory, should be an absolute path, current one by default
--p, --pull                force container image refresh
+-p, --pull                force pulling of remote container images
+-r, --rebuild             force container image rebuild
 ```
 
 === Usual dev workflow
