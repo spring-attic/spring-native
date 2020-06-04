@@ -3,6 +3,7 @@
 JAVA_VERSION=8
 GRAALVM_VERSION=20.1-dev
 PULL=false
+REBUILD=false
 HOST_WORK_DIR="$( pwd )"
 
 while test $# -gt 0; do
@@ -17,7 +18,8 @@ while test $# -gt 0; do
       echo "-j, --java=VERSION        specify Java version to use, can be 8 or 11, 8 by default"
       echo "-g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, 20.1-dev by default"
       echo "-w, --workdir=/foo        specify the working directory, should be an absolute path, current one by default"
-      echo "-p, --pull                force container image refresh"
+      echo "-p, --pull                force pulling of remote container images"
+      echo "-r, --rebuild             force container image rebuild"
       exit 0
       ;;
     -j)
@@ -63,12 +65,21 @@ while test $# -gt 0; do
       shift
       ;;
     -p)
-
       export PULL=true
+      export REBUILD=true
       shift
       ;;
     --pull)
       export PULL=true
+      export REBUILD=true
+      shift
+      ;;
+    -r)
+      export REBUILD=true
+      shift
+      ;;
+    --rebuild)
+      export REBUILD=true
       shift
       ;;
     *)
@@ -87,7 +98,9 @@ if [ "$PULL" = true ] ; then
     docker pull springci/spring-graalvm-native:${GRAALVM_VERSION}-java${JAVA_VERSION}
 fi
 
-docker image ls | grep spring-graalvm-native-dev | grep ${GRAALVM_VERSION}-java${JAVA_VERSION} >/dev/null 2>&1 || docker build \
+docker image ls | grep spring-graalvm-native-dev | grep ${GRAALVM_VERSION}-java${JAVA_VERSION} >/dev/null 2>&1 || export REBUILD=true
+
+test "$REBUILD" = false || docker build \
   --build-arg BASE_IMAGE=springci/spring-graalvm-native:${GRAALVM_VERSION}-java${JAVA_VERSION} \
   --build-arg USER=$USER \
   --build-arg USER_ID=$(id -u ${USER}) \

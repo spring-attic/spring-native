@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 ARG JVMCI_URL
 ARG GRAALVM_BRANCH
