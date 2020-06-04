@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0'
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,12 @@ import java.util.Properties;
 
 public class MavenWrapperDownloader {
 
-    private static final String WRAPPER_VERSION = "0.5.4";
+    private static final String WRAPPER_VERSION = "0.5.5";
     /**
      * Default URL to download the maven-wrapper.jar from, if no 'downloadUrl' is provided.
      */
     private static final String DEFAULT_DOWNLOAD_URL = "https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/"
-        + WRAPPER_VERSION + "/maven-wrapper-" + WRAPPER_VERSION + " .jar";
+        + WRAPPER_VERSION + "/maven-wrapper-" + WRAPPER_VERSION + ".jar";
 
     /**
      * Path to the maven-wrapper.properties file, which might contain a downloadUrl property to
