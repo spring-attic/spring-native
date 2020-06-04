@@ -18,5 +18,12 @@
   },
   {
     "name": "kotlin.KotlinVersion$Companion[]"
+  },
+  {
+    "name": "org.hibernate.query.spi.QueryImplementor",
+    "allPublicMethods": true,
+    "allDeclaredFields":true,
+    "allDeclaredMethods":true,
+    "allDeclaredConstructors":true
   }
 ]

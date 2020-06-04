@@ -35,11 +35,18 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 				TransactionalRepositoryFactoryBeanSupport.class,
 				JpaEvaluationContextExtension.class,
 				PropertiesBasedNamedQueries.class, // TODO what is the right trigger for this one? Basically, are there other auto configs that trigger which would need it?
-				RepositoryFragmentsFactoryBean.class // TODO ditto
+				RepositoryFragmentsFactoryBean.class, // TODO ditto
+				org.springframework.data.jpa.repository.Query.class,
+				org.springframework.data.jpa.repository.query.Procedure.class,
+				org.springframework.data.jpa.repository.EntityGraph.class,
+				org.springframework.data.jpa.repository.Lock.class,
+				org.springframework.data.jpa.repository.Modifying.class,
+				org.springframework.data.jpa.repository.QueryHints.class,
+				org.springframework.data.jpa.repository.Temporal.class
 		},typeNames= {
 				"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 				"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)
+				},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.RESOURCE)
 	})
 // TODO Why can't I make this conditional on JpaReposAutoConfig above? The vanilla-orm sample needs this but JpaRepositoriesAutoConfiguration is not active in that sample
 //@ConfigurationHint(typeInfos= {@TypeInfo(types= {PersistenceAnnotationBeanPostProcessor.class})}) // temporarily moved this to be HibernateJpaConfiguration dependant

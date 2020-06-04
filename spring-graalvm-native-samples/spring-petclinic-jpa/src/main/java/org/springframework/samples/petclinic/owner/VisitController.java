@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,19 +61,19 @@ class VisitController {
 	 * @param petId
 	 * @return Pet
 	 */
-	@ModelAttribute
-	public void loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
-		Visit visit = new Visit();
+	@ModelAttribute("visit")
+	public Visit loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
 		Pet pet = this.pets.findById(petId);
 		pet.setVisitsInternal(this.visits.findByPetId(petId));
-		pet.addVisit(visit);
 		model.put("pet", pet);
-		model.put("visit", visit);
+		Visit visit = new Visit();
+		pet.addVisit(visit);
+		return visit;
 	}
 
 	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
 	@GetMapping("/owners/*/pets/{petId}/visits/new")
-	public String initNewVisitForm() {
+	public String initNewVisitForm(@PathVariable("petId") int petId, Map<String, Object> model) {
 		return "pets/createOrUpdateVisitForm";
 	}
 
