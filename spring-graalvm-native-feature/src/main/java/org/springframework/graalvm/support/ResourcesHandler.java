@@ -225,6 +225,10 @@ public class ResourcesHandler {
 	 * @param p the properties object containing spring components
 	 */
 	private void processSpringComponents(Properties p) {
+
+		NativeImageContext context = new NativeImageContextImpl();
+		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
@@ -342,13 +346,15 @@ public class ResourcesHandler {
 			if (isComponent && ConfigOptions.isVerifierOn()) {
 				kType.verifyComponent();
 			}
-			List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+
 			for (ComponentProcessor componentProcessor: componentProcessors) {
 				if (componentProcessor.handle(k,values)) {
-					componentProcessor.process(new NativeImageContextImpl(), k, values);
+					componentProcessor.process(context, k, values);
 				}
 			}
 		}
+
+		componentProcessors.forEach(ComponentProcessor::printSummary);
 		System.out.println("Registered " + registeredComponents + " entries");
 	}
 	
