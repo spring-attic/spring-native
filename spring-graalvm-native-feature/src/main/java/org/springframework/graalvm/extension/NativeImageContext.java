@@ -40,4 +40,8 @@ public interface NativeImageContext {
 	void addReflectiveAccessHierarchy(Type type, Flag... flags);
 
 	boolean hasReflectionConfigFor(String key);
+
+	default boolean hasReflectionConfigFor(Type type) {
+		return hasReflectionConfigFor(type.getDottedName());
+	}
 }
