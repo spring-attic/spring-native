@@ -53,10 +53,6 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-transport-native-epoll</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>jakarta.validation</groupId>
 					<artifactId>jakarta.validation-api</artifactId>
 				</exclusion>
