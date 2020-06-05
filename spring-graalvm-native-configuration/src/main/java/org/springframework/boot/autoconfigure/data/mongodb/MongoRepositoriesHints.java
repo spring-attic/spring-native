@@ -29,8 +29,8 @@ import org.springframework.graalvm.type.AccessBits;
 		@TypeInfo(types = {MongoRepositoryFactoryBean.class, RepositoryFactoryBeanSupport.class, MongoRepositoryConfigurationExtension.class,
 				MappingContext.class, PropertiesBasedNamedQueries.class, RepositoryFragmentsFactoryBean.class,
 				QueryByExampleExecutor.class, MongoConfigurationSupport.class, SimpleMongoRepository.class,
-				BeforeConvertCallback.class, BeforeSaveCallback.class, AfterSaveCallback.class, AfterConvertCallback.class,
-				Query.class, Aggregation.class }),
+				BeforeConvertCallback.class, BeforeSaveCallback.class, AfterSaveCallback.class, AfterConvertCallback.class
+		}),
 		@TypeInfo(types = { Properties.class, BeanFactory.class },access = AccessBits.CLASS)
 })
 public class MongoRepositoriesHints implements NativeImageConfiguration {
