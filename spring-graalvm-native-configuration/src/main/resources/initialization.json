@@ -17,7 +17,7 @@
 
   // Netty
   {"class": "io.netty.channel.DefaultChannelId"},
-  {"class": "io.netty.channel.epoll.EpollEventLoop"},
+  {"package": "io.netty.channel.epoll"},
   {"class": "io.netty.channel.unix.Socket"},
   {"class": "io.netty.channel.unix.Errors"},
   {"class": "io.netty.channel.unix.IovArray"},
