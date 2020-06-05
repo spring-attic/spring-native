@@ -17,7 +17,10 @@ package org.springframework.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -27,10 +30,10 @@ import org.springframework.data.repository.Repository;
 import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
+import org.springframework.graalvm.support.SpringFeature;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 // This is an example from the mongodb sample.
@@ -88,8 +91,13 @@ import org.springframework.util.StringUtils;
  */
 public class SpringDataComponentProcessor implements ComponentProcessor {
 
+	private static final String LOG_PREFIX = "SDCP: ";
+	private static final Pattern REPOSITORY_METHOD_PATTERN = Pattern.compile("^(find|read|get|query|search|stream|count|exists|delete|remove).*");
+
 	private static String repositoryName;
 	private static String queryAnnotationName;
+
+	private final SpringDataComponentLog log = SpringDataComponentLog.instance();
 
 	static {
 		try {
@@ -116,9 +124,11 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 			if (repositoryDomainType == null) {
 				// give up!
-				System.out.println("SDCP: Unable to work out repository contents for repository " + key);
+				System.out.println(LOG_PREFIX + "Unable to work out repository contents for repository " + key);
 				return;
 			}
+
+			log.repositoryFoundForType(repositoryType, repositoryDomainType);
 
 			imageContext.addProxy(key, repositoryName, "org.springframework.transaction.interceptor.TransactionalProxy",
 					"org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy");
@@ -141,18 +151,17 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			customImplementations.add(customImplementation);
 		}
 
-		System.out.println("SDCP: Inspecting repository interfaces " + repositoryType.getDottedName());
+		log.message("Inspecting repository interfaces " + repositoryType.getDottedName());
 		for (Type repoInterface : repositoryType.getInterfaces()) {
 
 			if (repoInterface.isPartOfDomain("org.springframework.data")) {
 
-				System.out.println("SDCP: Skipping spring data interface " + repoInterface.getDottedName());
+				log.message("Skipping spring data interface " + repoInterface.getDottedName());
 				continue;
 			}
 
-			System.out.println("SDCP: Detected non spring data interface " + repoInterface.getDottedName());
+			log.message("Detected non spring data interface " + repoInterface.getDottedName());
 			String customImplementationName = repoInterface.getName() + customRepositoryImplementationPostfix();
-			System.out.println("SDCP: Resolving custom implementation for " + customImplementationName);
 
 			Type applicationRepositoryImplType = imageContext.getTypeSystem().resolveName(customImplementationName, true);
 			if (applicationRepositoryImplType != null) {
@@ -162,7 +171,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		for (Type customImpl : customImplementations) {
 
-			System.out.println("SDCP: Registering custom repository implementation " + customImpl.getDottedName());
+			log.customImplementationFound(customImplementation);
+
 			imageContext.addReflectiveAccessHierarchy(customImpl, Flag.allDeclaredConstructors,
 					Flag.allDeclaredMethods);
 
@@ -194,7 +204,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 				if (isProjectionInterface(repositoryDomainType, signatureType)) {
 
-					System.out.println(String.format("SDCP: registering proxy for '%s'. Might be projection return type of %s#%s", signatureType.getDottedName(), repositoryName, method.getName()));
+					log.message(String.format("Registering proxy for '%s'. Might be projection return type of %s#%s", signatureType.getDottedName(), repositoryName, method.getName()));
 
 					imageContext.addProxy(signatureType.getDottedName(), "org.springframework.data.projection.TargetAware",
 							"org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy");
@@ -207,7 +217,6 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		return signatureType.isInterface() && !signatureType.isPartOfDomain("java.") && !signatureType.isPartOfDomain("org.springframework.data.") && !signatureType.isAssignableFrom(repositoryDomainType);
 	}
 
-	@Nullable
 	private Type resolveRepositoryDomainType(Type repositoryType, TypeSystem typeSystem) {
 
 		for (String repositoryDeclarationName : repositoryDeclarationNames()) {
@@ -216,7 +225,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 			if (StringUtils.hasText(domainTypeName)) {
 
-				System.out.println(String.format("SDCP: Found %s for domain type %s.", repositoryDeclarationName, domainTypeName));
+				log.message(String.format("Found %s for domain type %s.", repositoryDeclarationName, domainTypeName));
 				return typeSystem.resolveName(domainTypeName);
 			}
 		}
@@ -244,23 +253,15 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			return;
 		}
 
-		System.out.println(String.format("SDCP: registering reflective access for %s", domainType.getDottedName()));
+		log.message(String.format("Registering reflective access for %s", domainType.getDottedName()));
 
 		imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allDeclaredMethods,
 				Flag.allDeclaredConstructors, Flag.allDeclaredFields);
 
-		domainType.getAnnotations().forEach(it -> {
-			if(registerSpringDataAnnotation(it, imageContext)) {
-				System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", it.getDottedName()));
-			}
-		});
+		domainType.getAnnotations().forEach(it -> registerSpringDataAnnotation(it, imageContext));
 
 		domainType.getFields().forEach(field -> {
-			field.getAnnotations().forEach(it -> {
-				if(registerSpringDataAnnotation(it, imageContext)) {
-					System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", it.getDottedName()));
-				}
-			});
+			field.getAnnotations().forEach(it -> registerSpringDataAnnotation(it, imageContext));
 		});
 
 		List<Method> methods = domainType.getMethods(m -> m.getName().startsWith("get"));
@@ -269,7 +270,6 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			registerSpringDataAnnotations(method, imageContext);
 
 			Set<Type> signatureTypes = method.getSignatureTypes(true);
-			System.out.println(String.format("SDCP: method %s#%s has return types %s", domainType.getDottedName(), method.getName(), signatureTypes));
 
 			for (Type signatureType : signatureTypes) {
 
@@ -285,17 +285,12 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 				}
 			}
 		}
-
-
 	}
 
 	protected boolean isQueryMethod(Method m) {
 
 		// TODO: is there a way to check this via org.springframework.data.repository.query.parser.PartTree
-		String pattern = "^(find|read|get|query|search|stream|count|exists|delete|remove).*";
-		boolean matches = Pattern.compile(pattern).matcher(m.getName()).matches();
-
-		return matches;
+		return REPOSITORY_METHOD_PATTERN.matcher(m.getName()).matches();
 	}
 
 	protected Set<String> storeSpecificRepositoryDeclarationNames() {
@@ -319,21 +314,64 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	private void registerSpringDataAnnotations(Method method, NativeImageContext context) {
 
 		for (Type annotation : method.getAnnotationTypes()) {
-			if (registerSpringDataAnnotation(annotation, context)) {
-				System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", annotation.getDottedName()));
-			}
+			registerSpringDataAnnotation(annotation, context);
 		}
 	}
 
-	private boolean registerSpringDataAnnotation(Type annotation, NativeImageContext context) {
+	private void registerSpringDataAnnotation(Type annotation, NativeImageContext context) {
 
 		if (annotation.isPartOfDomain("org.springframework.data") && !context.hasReflectionConfigFor(annotation)) {
 
 			context.addReflectiveAccess(annotation.getDottedName(), Flag.allDeclaredConstructors,
 					Flag.allDeclaredMethods, Flag.allDeclaredFields);
 			context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
-			return true;
+
+			log.annotationFound(annotation);
 		}
-		return false;
+	}
+
+	@Override
+	public void printSummary() {
+		log.printSummary();
+	}
+
+	static class SpringDataComponentLog {
+
+		HashMap<Type, Type> repositoryInterfaces = new LinkedHashMap<>();
+		Set<Type> annotations = new LinkedHashSet<>();
+		Set<Type> customImplementations = new LinkedHashSet<>();
+
+		static SpringDataComponentLog instance() {
+			return new SpringDataComponentLog();
+		}
+
+		void message(String msg) {
+			SpringFeature.log(LOG_PREFIX + msg);
+		}
+
+		void repositoryFoundForType(Type repo, Type domainType) {
+
+			repositoryInterfaces.put(repo, domainType);
+			SpringFeature.log(String.format(LOG_PREFIX + "Registering repository '%s' for type '%s'.", repo.getDottedName(), domainType.getDottedName()));
+		}
+
+
+		void annotationFound(Type annotation) {
+
+			annotations.add(annotation);
+			SpringFeature.log(String.format(LOG_PREFIX + "Registering annotation '%s'.", annotation.getDottedName()));
+		}
+
+		void customImplementationFound(Type customImplementation) {
+
+			customImplementations.add(customImplementation);
+			SpringFeature.log(String.format(LOG_PREFIX + "Registering custom repository implementation '%s'.", customImplementation.getDottedName()));
+		}
+
+		void printSummary() {
+
+			System.out.println(String.format(LOG_PREFIX + "Found %s repositories, %s custom implementations registered %s annotations.",
+					repositoryInterfaces.size(), customImplementations.size(), annotations.size()));
+		}
 	}
 }
