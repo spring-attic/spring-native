@@ -186,6 +186,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		// For each of those, let's ensure reflective access to return types
 		for (Method method : methods) {
 
+			registerSpringDataAnnotations(method, imageContext);
+
 			for (Type signatureType : method.getSignatureTypes(true)) {
 
 				registerDomainType(signatureType, imageContext);
@@ -241,14 +243,30 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		if (domainType.isPartOfDomain("org.springframework.data.domain") || imageContext.hasReflectionConfigFor(domainType.getDottedName())) {
 			return;
 		}
-		
+
 		System.out.println(String.format("SDCP: registering reflective access for %s", domainType.getDottedName()));
 
 		imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allDeclaredMethods,
 				Flag.allDeclaredConstructors, Flag.allDeclaredFields);
 
+		domainType.getAnnotations().forEach(it -> {
+			if(registerSpringDataAnnotation(it, imageContext)) {
+				System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", it.getDottedName()));
+			}
+		});
+
+		domainType.getFields().forEach(field -> {
+			field.getAnnotations().forEach(it -> {
+				if(registerSpringDataAnnotation(it, imageContext)) {
+					System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", it.getDottedName()));
+				}
+			});
+		});
+
 		List<Method> methods = domainType.getMethods(m -> m.getName().startsWith("get"));
 		for (Method method : methods) {
+
+			registerSpringDataAnnotations(method, imageContext);
 
 			Set<Type> signatureTypes = method.getSignatureTypes(true);
 			System.out.println(String.format("SDCP: method %s#%s has return types %s", domainType.getDottedName(), method.getName(), signatureTypes));
@@ -267,6 +285,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 				}
 			}
 		}
+
+
 	}
 
 	protected boolean isQueryMethod(Method m) {
@@ -296,5 +316,24 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		return "Impl";
 	}
 
+	private void registerSpringDataAnnotations(Method method, NativeImageContext context) {
 
+		for (Type annotation : method.getAnnotationTypes()) {
+			if (registerSpringDataAnnotation(annotation, context)) {
+				System.out.println(String.format("SDCP: Registering Spring Data annotation %s.", annotation.getDottedName()));
+			}
+		}
+	}
+
+	private boolean registerSpringDataAnnotation(Type annotation, NativeImageContext context) {
+
+		if (annotation.isPartOfDomain("org.springframework.data") && !context.hasReflectionConfigFor(annotation)) {
+
+			context.addReflectiveAccess(annotation.getDottedName(), Flag.allDeclaredConstructors,
+					Flag.allDeclaredMethods, Flag.allDeclaredFields);
+			context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
+			return true;
+		}
+		return false;
+	}
 }
