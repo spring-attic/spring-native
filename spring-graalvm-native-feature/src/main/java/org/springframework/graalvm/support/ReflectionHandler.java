@@ -136,6 +136,18 @@ public class ReflectionHandler {
 		}
 	}
 
+	public void registerFunctional(DuringSetupAccess a) {
+		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+		cl = access.getImageClassLoader();
+		rra = new ReflectionRegistryAdapter(rrs, cl);
+		getConstantData();
+
+		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
+			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		}
+	}
+
 	public void register(DuringSetupAccess a) {
 		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
