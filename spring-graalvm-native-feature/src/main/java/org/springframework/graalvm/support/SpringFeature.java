@@ -67,9 +67,10 @@ public class SpringFeature implements Feature {
 	public void duringSetup(DuringSetupAccess access) {
 		if (ConfigOptions.isFeatureMode()) {
 			reflectionHandler.register(access);
-		}
-		if (ConfigOptions.isFeatureMode()) {
 			dynamicProxiesHandler.register(access);
+		}
+		if (ConfigOptions.isFunctionalMode()) {
+			reflectionHandler.registerFunctional(access);
 		}
 	}
 
