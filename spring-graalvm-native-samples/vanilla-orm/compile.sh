@@ -31,7 +31,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

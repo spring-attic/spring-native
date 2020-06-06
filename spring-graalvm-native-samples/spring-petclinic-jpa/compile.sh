@@ -30,7 +30,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:Name=$ARTIFACT \
   -H:+RemoveSaturatedTypeFlows \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.native.remove-spel-support=true \

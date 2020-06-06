@@ -32,7 +32,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   --enable-all-security-services \
-  -Dspring.native.remove-unused-autoconfig=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

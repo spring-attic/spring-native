@@ -29,8 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

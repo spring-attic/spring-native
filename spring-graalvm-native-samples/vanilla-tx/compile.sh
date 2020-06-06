@@ -29,7 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-spel-support=true \
   -Dspring.native.remove-jmx-support=true \

@@ -46,8 +46,6 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 
 The current feature options are as follows:
 
-* `-Dspring.native.remove-unused-autoconfig=true` removes unused configurations, enabling faster compilation and smaller executables.
-
 * `-Dspring.native.mode=agent|feature|functional` switches how much configuration the feature actually provides
 to native-image.  The default is `feature` where it provides everything (including deep analysis of auto-configuration).
 `agent` should be used if only wishing the feature to provide substitutions and initialization configuration - in this
@@ -72,6 +70,8 @@ See the <<troubleshooting>> section for more details on this experimental option
 
 * `-Dspring.native.missing-selector-hints=warning` switches the feature from a hard error for missing hints to a warning.
 See the <<troubleshooting>> section for more details on this.
+
+* `-Dspring.native.remove-unused-autoconfig=false` disables removal of unused configurations.
 
 === Optional options
 
