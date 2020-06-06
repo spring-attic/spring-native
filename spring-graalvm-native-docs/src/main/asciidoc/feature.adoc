@@ -89,7 +89,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
 ----
 ====
 
-You can specificy additional <<options>> via a `<buildArgs>..</buildArgs>` block.
+You can specify additional <<options>> via a `<configuration><buildArgs>..</buildArgs></configuration>` block.
 
 ===== Add the repository for `spring-graalvm-native`
 
