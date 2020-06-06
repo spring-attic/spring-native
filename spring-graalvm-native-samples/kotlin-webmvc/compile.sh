@@ -30,7 +30,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:EnableURLProtocols=http \
   -H:Name=$ARTIFACT \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-spel-support=true \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-yaml-support=true \

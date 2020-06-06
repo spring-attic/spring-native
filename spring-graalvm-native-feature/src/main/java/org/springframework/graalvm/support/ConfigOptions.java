@@ -59,7 +59,7 @@ public abstract class ConfigOptions {
 			MODE = inferredMode;
 		}
 		System.out.println("Feature operating in "+MODE+" mode");
-		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "false"));
+		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
 		}

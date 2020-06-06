@@ -29,7 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   --initialize-at-build-time=javax.el.ListELResolver,javax.el.BeanELResolver,javax.el.MapELResolver,javax.el.CompositeELResolver \
   -H:Name=$ARTIFACT \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.dump-config=/tmp/rc.json \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

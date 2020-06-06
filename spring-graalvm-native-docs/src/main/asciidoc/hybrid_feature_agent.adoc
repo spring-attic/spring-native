@@ -71,9 +71,6 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <groupId>org.graalvm.nativeimage</groupId>
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
-          <configuration>
-            <buildArgs>-Dspring.native.remove-unused-autoconfig=true</buildArgs>
-          </configuration>
           <executions>
             <execution>
               <goals>

@@ -30,7 +30,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:Name=$ARTIFACT \
   --enable-all-security-services \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-spel-support=true \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-jmx-support=true \

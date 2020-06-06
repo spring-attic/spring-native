@@ -31,12 +31,8 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:EnableURLProtocols=http,jar \
-  -H:+TraceClassInitialization \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
-  --no-fallback \
   -Dsun.rmi.transport.tcp.maxConnectionThreads=0 \
-  -Dspring.native.remove-unused-autoconfig=true \
   -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
