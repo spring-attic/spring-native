@@ -38,7 +38,7 @@ public class SpringConfiguration {
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
 	
 	private final static List<ComponentProcessor> processors = new ArrayList<>();
-
+	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
 		SpringFeature.log("SpringConfiguration: Discovering hints");
@@ -48,6 +48,13 @@ public class SpringConfiguration {
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
 				List<CompilationHint> hints = t.getCompilationHints();
+				try {
+					hints.addAll(hintProvider.computeHints(typeSystem));
+				} catch (NoClassDefFoundError ncdfe) {
+					System.out.println("WARNING: Hint provider computeHints() method in "+
+						hintProvider.getClass().getName()+" threw a NoClassDefFoundError for "+ncdfe.getMessage()+
+						": it is better if they handle that internally in case they are computing a variety of hints");
+				}
 				SpringFeature.log("Found "+hints.size()+" hints: "+hints);
 				for (CompilationHint hint: hints) {
 				  List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());

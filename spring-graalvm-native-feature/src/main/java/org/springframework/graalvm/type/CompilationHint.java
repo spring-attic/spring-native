@@ -55,6 +55,10 @@ public class CompilationHint {
 		specificTypes.put(className, accessBits);
 	}
 
+	public void addDependantType(Class<?> clazz, Integer accessBits) {
+		specificTypes.put(clazz.getName(), accessBits);
+	}
+
 	public void setAbortIfTypesMissing(Boolean b) {
 		skipIfTypesMissing = b;
 	}
@@ -66,5 +70,6 @@ public class CompilationHint {
 	public void setFollow(Boolean b) {
 		follow = b;
 	}
+
 	
 }
