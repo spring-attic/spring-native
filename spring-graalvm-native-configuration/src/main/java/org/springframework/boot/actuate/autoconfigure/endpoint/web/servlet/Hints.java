@@ -216,7 +216,7 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 		EndpointWebExtension.class,
 		WebEndpoint.class,
 		WebEndpointDiscoverer.class,
-		AbstractWebFluxEndpointHandlerMapping.class,
+		// AbstractWebFluxEndpointHandlerMapping.class,
 		EnvironmentEndpoint.class,
 		AbstractHealthAggregator.class,
 		AbstractHealthIndicator.class,

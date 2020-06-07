@@ -15,6 +15,10 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
@@ -37,6 +41,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration.SameManagementContextConfiguration;
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
@@ -127,6 +132,9 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.TypeSystem;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -145,9 +153,6 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 		LogFileWebEndpoint.class,
 		CorsEndpointProperties.class,
 
-		// TODO push out to hint on reactive actuator endpoint (need a webmvc actuator sample too!)
-		WebFluxEndpointHandlerMapping.class,
-		ControllerEndpointHandlerMapping.class,
 
 		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
 		WebMvcServletEndpointManagementContextConfiguration.class,
@@ -166,12 +171,10 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 	HttpTraceRepository.class,
 		EnableManagementContext.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
-		org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration.class,
-		org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration.class,
 
 		ServletEndpointRegistrar.class,
 		AbstractWebMvcEndpointHandlerMapping.class,	
@@ -256,12 +259,6 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 		HeapDumpWebEndpoint.class,
 		ThreadDumpEndpoint.class,
 		MetricsEndpoint.class,
-		DefaultWebClientExchangeTagsProvider.class,
-		MetricsWebClientCustomizer.class,
-		WebClientExchangeTagsProvider.class,
-		DefaultWebFluxTagsProvider.class,
-		MetricsWebFilter.class,
-		WebFluxTagsProvider.class,
 		ScheduledTasksEndpoint.class,
 		DiskSpaceHealthIndicator.class,
 		HttpTraceEndpoint.class,
@@ -388,7 +385,9 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 		org.springframework.web.bind.annotation.RequestMethod.class,
 		
 		// Hitting /metrics endpoint
-		org.springframework.boot.actuate.metrics.MetricsEndpoint.ListNamesResponse.class
+		org.springframework.boot.actuate.metrics.MetricsEndpoint.ListNamesResponse.class,
+
+		org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration.class
 
 	}, typeNames = {
 			
@@ -415,16 +414,63 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 		"org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryPostProcessor",
 		"org.springframework.boot.actuate.autoconfigure.metrics.NoOpMeterRegistryConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-		"org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping$WebFluxLinksHandler",
-		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler",
-		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
-		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.endpoint.web.MappingWebEndpointPathMapper",
 		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredReactiveHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
 	})})
 public class Hints implements NativeImageConfiguration {
+
+	@Override
+	public List<CompilationHint> computeHints(TypeSystem typeSystem) {
+		try {
+			List<CompilationHint> hints = new ArrayList<>();
+			// There are many types in the actuator jar so the check for whether they are
+			// truly required isn't
+			// trivial. (For example actuator jar contains
+			// AbstractWebFluxEndpointHandlerMapping but this may
+			// not be a webflux application).
+
+			// Similar to check in OnWebApplicationCondition
+			boolean isWebfluxApplication = typeSystem.resolveName("org.springframework.web.reactive.HandlerResult",
+					true) != null;
+			if (isWebfluxApplication) {
+				CompilationHint ch = new CompilationHint();
+				ch.setTargetType(ManagementContextConfigurationImportSelector.class.getName());
+				ch.addDependantType(AbstractWebFluxEndpointHandlerMapping.class.getName(), AccessBits.ALL);
+				ch.addDependantType(ControllerEndpointHandlerMapping.class.getName(), AccessBits.ALL);
+				ch.addDependantType(WebFluxEndpointHandlerMapping.class.getName(), AccessBits.ALL);
+				ch.addDependantType(
+						"org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping$WebFluxLinksHandler",
+						AccessBits.ALL);
+				ch.addDependantType(
+						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler",
+						AccessBits.ALL);
+				ch.addDependantType(
+						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
+						AccessBits.ALL);
+				ch.addDependantType(
+						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
+						AccessBits.ALL);
+				ch.addDependantType(
+						"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
+						AccessBits.ALL);
+				ch.addDependantType(DefaultWebClientExchangeTagsProvider.class, AccessBits.ALL);
+				ch.addDependantType(WebClientExchangeTagsProvider.class, AccessBits.ALL);
+				ch.addDependantType(MetricsWebFilter.class, AccessBits.ALL);
+				ch.addDependantType(DefaultWebFluxTagsProvider.class, AccessBits.ALL);
+				ch.addDependantType(WebFluxTagsProvider.class, AccessBits.ALL);
+				ch.addDependantType(MetricsWebClientCustomizer.class, AccessBits.ALL);
+				ch.addDependantType(WebFluxEndpointManagementContextConfiguration.class, AccessBits.ALL);
+				ch.addDependantType(ReactiveManagementChildContextConfiguration.class, AccessBits.ALL);
+				hints.add(ch);
+			}
+			return hints;
+		} catch (NoClassDefFoundError ncdfe) {
+			// these hints aren't useful because types are not around
+			return Collections.emptyList();
+		}
+	}
+
 }
