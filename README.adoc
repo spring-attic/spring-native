@@ -71,7 +71,7 @@ This project is in the `spring-projects-experimental` org indicating it is not a
 The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {boot-dev-version}.
 Mac and Linux are supported, Windows is untested.
 
-== Using Docker based build environment
+== Using container-based build environment
 
 In order to allow easily reproducible builds of `spring-graalvm-native`, dedicated interactive Docker images are available for local development (tested on Linux and Mac) and are also used in the CI:
 
