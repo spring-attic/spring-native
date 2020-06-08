@@ -92,7 +92,20 @@ import org.springframework.util.StringUtils;
 public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private static final String LOG_PREFIX = "SDCP: ";
+	private static final String SPRING_DATA_NAMESPACE = "org.springframework.data";
+	private static final String SPRING_DATA_DOMAIN_NAMESPACE = "org.springframework.data.domain";
+
+	// TODO: is there a way to check via org.springframework.data.repository.query.parser.PartTree
 	private static final Pattern REPOSITORY_METHOD_PATTERN = Pattern.compile("^(find|read|get|query|search|stream|count|exists|delete|remove).*");
+
+	private static final Set<String> REPOSITORY_DECLARATION_NAMES = new HashSet<>(
+			Arrays.asList(
+					"org.springframework.data.repository.Repository",
+					"org.springframework.data.repository.CrudRepository",
+					"org.springframework.data.repository.PagingAndSortingRepository",
+					"org.springframework.data.repository.reactive.ReactiveCrudRepository",
+					"org.springframework.data.repository.reactive.ReactiveSortingRepository"
+			));
 
 	private static String repositoryName;
 	private static String queryAnnotationName;
@@ -146,15 +159,20 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		List<Type> customImplementations = new ArrayList<>();
 
-		Type customImplementation = imageContext.getTypeSystem().resolveName(repositoryType.getName() + customRepositoryImplementationPostfix(), true);
-		if (customImplementation != null) {
-			customImplementations.add(customImplementation);
+		{
+			log.message("Looking for custom repository implementations of " + repositoryType.getDottedName());
+			Type customImplementation = imageContext.getTypeSystem().resolveName(repositoryType.getName() + customRepositoryImplementationPostfix(), true);
+			if (customImplementation != null) {
+
+				log.customImplementationFound(repositoryType, customImplementation);
+				customImplementations.add(customImplementation);
+			}
 		}
 
-		log.message("Inspecting repository interfaces " + repositoryType.getDottedName());
+		log.message("Inspecting repository interfaces for potential extensions.");
 		for (Type repoInterface : repositoryType.getInterfaces()) {
 
-			if (repoInterface.isPartOfDomain("org.springframework.data")) {
+			if (isPartOfSpringData(repoInterface)) {
 
 				log.message("Skipping spring data interface " + repoInterface.getDottedName());
 				continue;
@@ -163,15 +181,15 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			log.message("Detected non spring data interface " + repoInterface.getDottedName());
 			String customImplementationName = repoInterface.getName() + customRepositoryImplementationPostfix();
 
-			Type applicationRepositoryImplType = imageContext.getTypeSystem().resolveName(customImplementationName, true);
-			if (applicationRepositoryImplType != null) {
-				customImplementations.add(applicationRepositoryImplType);
+			Type customImplementation = imageContext.getTypeSystem().resolveName(customImplementationName, true);
+			if (customImplementation != null) {
+
+				log.customImplementationFound(repoInterface, customImplementation);
+				customImplementations.add(customImplementation);
 			}
 		}
 
 		for (Type customImpl : customImplementations) {
-
-			log.customImplementationFound(customImplementation);
 
 			imageContext.addReflectiveAccessHierarchy(customImpl, Flag.allDeclaredConstructors,
 					Flag.allDeclaredMethods);
@@ -214,7 +232,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 	private boolean isProjectionInterface(Type repositoryDomainType, Type signatureType) {
-		return signatureType.isInterface() && !signatureType.isPartOfDomain("java.") && !signatureType.isPartOfDomain("org.springframework.data.") && !signatureType.isAssignableFrom(repositoryDomainType);
+		return signatureType.isInterface() && !signatureType.isPartOfDomain("java.") && !isPartOfSpringData(repositoryDomainType) && !signatureType.isAssignableFrom(repositoryDomainType);
 	}
 
 	private Type resolveRepositoryDomainType(Type repositoryType, TypeSystem typeSystem) {
@@ -235,21 +253,16 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private Set<String> repositoryDeclarationNames() {
 
-		Set<String> repositoryDeclarationNames = new HashSet<>(
-				Arrays.asList(
-						"org.springframework.data.repository.Repository",
-						"org.springframework.data.repository.CrudRepository",
-						"org.springframework.data.repository.PagingAndSortingRepository"));
-
 		// TOOD: add reactive, kotlin and RxJava variants
-
+		LinkedHashSet<String> repositoryDeclarationNames = new LinkedHashSet<>(REPOSITORY_DECLARATION_NAMES);
 		repositoryDeclarationNames.addAll(storeSpecificRepositoryDeclarationNames());
+
 		return repositoryDeclarationNames;
 	}
 
 	private void registerDomainType(Type domainType, NativeImageContext imageContext) {
 
-		if (domainType.isPartOfDomain("org.springframework.data.domain") || imageContext.hasReflectionConfigFor(domainType.getDottedName())) {
+		if (domainType.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || imageContext.hasReflectionConfigFor(domainType.getDottedName())) {
 			return;
 		}
 
@@ -288,8 +301,6 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 	protected boolean isQueryMethod(Method m) {
-
-		// TODO: is there a way to check this via org.springframework.data.repository.query.parser.PartTree
 		return REPOSITORY_METHOD_PATTERN.matcher(m.getName()).matches();
 	}
 
@@ -301,13 +312,16 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		return new HashSet<>(Arrays.asList( //
 				"org.springframework.data.mongodb.repository.MongoRepository", //
 				"org.springframework.data.jpa.repository.JpaRepository",
-				"org.springframework.data.r2dbc.repository.R2dbcRepository"
+				"org.springframework.data.r2dbc.repository.R2dbcRepository",
+				"org.springframework.data.mongodb.repository.ReactiveMongoRepository"
 				));
 	}
 
 	protected String customRepositoryImplementationPostfix() {
 
 		// TODO: we need to check for customization
+		// maybe we can get the calling configuration so we could check for customization
+
 		return "Impl";
 	}
 
@@ -320,7 +334,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private void registerSpringDataAnnotation(Type annotation, NativeImageContext context) {
 
-		if (annotation.isPartOfDomain("org.springframework.data") && !context.hasReflectionConfigFor(annotation)) {
+		if (!context.hasReflectionConfigFor(annotation) && isPartOfSpringData(annotation)) {
 
 			context.addReflectiveAccess(annotation.getDottedName(), Flag.allDeclaredConstructors,
 					Flag.allDeclaredMethods, Flag.allDeclaredFields);
@@ -333,6 +347,10 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	@Override
 	public void printSummary() {
 		log.printSummary();
+	}
+
+	boolean isPartOfSpringData(Type type) {
+		return type.isPartOfDomain(SPRING_DATA_NAMESPACE);
 	}
 
 	static class SpringDataComponentLog {
@@ -362,15 +380,15 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			SpringFeature.log(String.format(LOG_PREFIX + "Registering annotation '%s'.", annotation.getDottedName()));
 		}
 
-		void customImplementationFound(Type customImplementation) {
+		void customImplementationFound(Type repositoryInterface, Type customImplementation) {
 
 			customImplementations.add(customImplementation);
-			SpringFeature.log(String.format(LOG_PREFIX + "Registering custom repository implementation '%s'.", customImplementation.getDottedName()));
+			SpringFeature.log(String.format(LOG_PREFIX + "Registering custom repository implementation '%s' for '%s'.", customImplementation.getDottedName(), repositoryInterface.getDottedName()));
 		}
 
 		void printSummary() {
 
-			System.out.println(String.format(LOG_PREFIX + "Found %s repositories, %s custom implementations registered %s annotations.",
+			System.out.println(String.format(LOG_PREFIX + "Found %s repositories, %s custom implementations and registered %s annotations used by domain types.",
 					repositoryInterfaces.size(), customImplementations.size(), annotations.size()));
 		}
 	}
