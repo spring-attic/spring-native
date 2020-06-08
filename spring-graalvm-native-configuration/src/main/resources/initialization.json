@@ -20,6 +20,7 @@
   {"package": "io.netty.channel.epoll"},
   {"class": "io.netty.channel.unix.Socket"},
   {"class": "io.netty.channel.unix.Errors"},
+  {"class": "io.netty.channel.unix.Limits"},
   {"class": "io.netty.channel.unix.IovArray"},
   {"class": "io.netty.channel.socket.InternetProtocolFamily"},
   {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
