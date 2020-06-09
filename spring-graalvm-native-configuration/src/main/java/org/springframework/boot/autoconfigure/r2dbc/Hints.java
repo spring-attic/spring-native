@@ -15,22 +15,24 @@
  */
 package org.springframework.boot.autoconfigure.r2dbc;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
-
-import reactor.core.publisher.Mono;
 
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
 		@TypeInfo(typeNames = {
 				// TODO review org.springframework.data.r2dbc.dialect.DialectResolver - there is some 
 				// factory loading in there.
 				"org.springframework.data.r2dbc.dialect.DialectResolver$BuiltInDialectProvider"
-		},types= {
+		}, types = {
 				// Can't find it now but there was some form of wrapper list in R2DBC that listed this plus others
-				Mono.class
-		},access = AccessBits.DECLARED_CONSTRUCTORS)
-	})
+				Mono.class,
+				Flux.class
+		}, access = AccessBits.DECLARED_CONSTRUCTORS)
+})
 public class Hints implements NativeImageConfiguration {
 }

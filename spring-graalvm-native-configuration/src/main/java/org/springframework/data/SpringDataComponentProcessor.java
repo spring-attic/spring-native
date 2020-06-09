@@ -262,7 +262,9 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		return new HashSet<>(Arrays.asList( //
 				"org.springframework.data.mongodb.repository.MongoRepository", //
-				"org.springframework.data.jpa.repository.JpaRepository"));
+				"org.springframework.data.jpa.repository.JpaRepository",
+				"org.springframework.data.r2dbc.repository.R2dbcRepository"
+				));
 	}
 
 	protected String customRepositoryImplementationPostfix() {
