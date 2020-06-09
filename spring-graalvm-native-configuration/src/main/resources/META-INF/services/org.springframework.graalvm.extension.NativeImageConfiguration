@@ -13,6 +13,7 @@ org.springframework.boot.autoconfigure.data.Hints
 org.springframework.boot.autoconfigure.data.jpa.Hints
 org.springframework.boot.autoconfigure.data.mongodb.Hints
 org.springframework.boot.autoconfigure.data.r2dbc.Hints
+org.springframework.boot.autoconfigure.h2.Hints
 org.springframework.boot.autoconfigure.http.Hints
 org.springframework.boot.autoconfigure.jackson.Hints
 org.springframework.boot.autoconfigure.jdbc.Hints
