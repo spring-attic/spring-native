@@ -4,7 +4,7 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graalvm-native
-:version: 0.7.0.BUILD-SNAPSHOT
+:version: 0.7.0-SNAPSHOT
 :repository: snapshot
 :boot-version: 2.3.0.RELEASE
 :graal-version: 20.1.0
