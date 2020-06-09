@@ -30,10 +30,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-indexer</artifactId>
         </dependency>
-   <!--     <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>
@@ -104,7 +100,7 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>20.1.0</version>
                         <configuration>
-                            <buildArgs>--initialize-at-build-time=org.springframework.data.repository.reactive.ReactiveCrudRepository -Dspring.native.remove-spel-support=true</buildArgs>
+                            <buildArgs>-Dspring.native.remove-xml-support=true -Dspring.native.remove-spel-support=true -Dspring.native.remove-yaml-support=true -Dspring.native.remove-jmx-support=true</buildArgs>
                             <imageName>webflux-r2dbc</imageName>
                         </configuration>
                         <executions>
