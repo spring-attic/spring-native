@@ -1,7 +1,7 @@
-:version: 0.6.1.RELEASE
+:version: 0.7.0
 :repository: milestone
-:boot-version: 2.3.0.M4
-:graalvm-version: 20.0.0
+:boot-version: 2.3.0.RELEASE
+:graalvm-version: 20.1.0
 :graalvm-dev-version: 20.1.0
 :boot-dev-version: 2.3.0.RELEASE
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graal-native-docs/{version}/spring-graal-native-docs-{version}.zip!
