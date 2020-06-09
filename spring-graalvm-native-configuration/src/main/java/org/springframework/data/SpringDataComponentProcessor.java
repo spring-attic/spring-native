@@ -15,7 +15,6 @@
  */
 package org.springframework.data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -110,7 +109,6 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	public void process(NativeImageContext imageContext, String key, List<String> values) {
 
 		try {
-
 			TypeSystem typeSystem = imageContext.getTypeSystem();
 			Type repositoryType = typeSystem.resolveName(key);
 
@@ -128,59 +126,26 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 			registerRepositoryDomainType(repositoryDomainType, imageContext);
 			computeQueryMethods(imageContext, repositoryType, repositoryDomainType);
-			detectCustomRepositoryImplementations(repositoryType, typeSystem, imageContext);
 
-		} catch (Throwable t) {
-			System.out.println("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
-		}
-	}
+			// Check for an Impl of the repository
+			Type applicationRepositoryImplType = typeSystem.resolveName(key + customRepositoryImplementationPostfix(), true);
 
-	private void detectCustomRepositoryImplementations(Type repositoryType, TypeSystem typeSystem, NativeImageContext imageContext) {
+			if (applicationRepositoryImplType != null) {
+				imageContext.addReflectiveAccessHierarchy(applicationRepositoryImplType, Flag.allDeclaredConstructors,
+						Flag.allDeclaredMethods);
+				for (Method method : applicationRepositoryImplType.getMethods()) {
 
-		List<Type> customImplementations = new ArrayList<>();
-
-		Type customImplementation = typeSystem.resolveName(repositoryType.getName() + customRepositoryImplementationPostfix(), true);
-		if(customImplementation != null) {
-			customImplementations.add(customImplementation);
-		}
-
-		System.out.println("SDCP: Inspecting repository interfaces " + repositoryType.getDottedName());
-		for(Type repoInterface : repositoryType.getInterfaces()) {
-
-			if(repoInterface.getDottedName().startsWith("org.springframework.data")) {
-
-				System.out.println("SDCP: Skipping spring data interface " + repoInterface.getDottedName());
-				continue;
-			}
-
-			System.out.println("SDCP: Detected non spring data interface " + repoInterface.getDottedName());
-			String customImplementationName = repoInterface.getName() + customRepositoryImplementationPostfix();
-			System.out.println("SDCP: Resolving custom implementation for " + customImplementationName);
-
-			Type applicationRepositoryImplType = typeSystem.resolveName(customImplementationName, true);
-			if(applicationRepositoryImplType != null) {
-				customImplementations.add(applicationRepositoryImplType);
-			}
-		}
-
-		for(Type customImpl : customImplementations) {
-
-			System.out.println("SDCP: Registering custom repository implementation " + customImpl.getDottedName());
-			imageContext.addReflectiveAccessHierarchy(customImpl, Flag.allDeclaredConstructors,
-					Flag.allDeclaredMethods);
-
-			for (Method method : customImpl.getMethods()) {
-
-				Set<Type> signatureTypes = method.getSignatureTypes(true);
-				for (Type signatureType : signatureTypes) {
-					String signatureTypeName = signatureType.getDottedName();
-					if (!imageContext.hasReflectionConfigFor(signatureTypeName)) {
-						registerRepositoryDomainType(signatureType, imageContext);
+					Set<Type> signatureTypes = method.getSignatureTypes(true);
+					for (Type signatureType : signatureTypes) {
+						String signatureTypeName = signatureType.getDottedName();
+						imageContext.addReflectiveAccess(signatureTypeName, Flag.allDeclaredConstructors,
+								Flag.allDeclaredMethods, Flag.allDeclaredFields);
 					}
 				}
 			}
+		} catch (Throwable t) {
+			System.out.println("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
 		}
-
 	}
 
 	private void computeQueryMethods(NativeImageContext imageContext, Type repositoryType, Type repositoryDomainType) {
