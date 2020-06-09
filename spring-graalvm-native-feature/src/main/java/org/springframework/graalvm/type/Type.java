@@ -16,8 +16,20 @@
 package org.springframework.graalvm.type;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -35,7 +47,6 @@ import org.springframework.graalvm.support.SpringFeature;
 
 /**
  * @author Andy Clement
- * @author Christoph Strobl
  */
 public class Type {
 
@@ -71,12 +82,7 @@ public class Type {
 
 	private int dimensions = 0; // >0 for array types
 
-	private final Lazy<List<Field>> fields;
-	private final Lazy<List<Method>> methods;
-	private final Lazy<List<Type>> annotations;
-
 	private Type(TypeSystem typeSystem, ClassNode node, int dimensions) {
-
 		this.typeSystem = typeSystem;
 		this.node = node;
 		this.dimensions = dimensions;
@@ -86,15 +92,8 @@ public class Type {
 				this.name += "[]";
 			}
 			this.dottedName = name.replace("/", ".");
-			this.fields = Lazy.of(this::resolveFields);
-			this.methods = Lazy.of(this::resolveMethods);
-			this.annotations = Lazy.of(this::resolveAnnotations);
-		} else {
-
-			this.fields = Lazy.empty();
-			this.methods = Lazy.empty();
-			this.annotations = Lazy.empty();
 		}
+
 	}
 
 	public static Type forClassNode(TypeSystem typeSystem, ClassNode node, int dimensions) {
@@ -130,8 +129,8 @@ public class Type {
 	public Type[] getInterfaces() {
 		if (interfaces == null) {
 			if (dimensions != 0) {
-				interfaces = new Type[]{typeSystem.resolveSlashed("java/lang/Cloneable"),
-						typeSystem.resolveSlashed("java/io/Serializable")};
+				interfaces = new Type[] { typeSystem.resolveSlashed("java/lang/Cloneable"),
+						typeSystem.resolveSlashed("java/io/Serializable") };
 			} else {
 				List<String> itfs = node.interfaces;
 				if (itfs.size() == 0) {
@@ -142,7 +141,7 @@ public class Type {
 						Type t = typeSystem.resolveSlashed(itfs.get(i));
 						interfacesOnClasspath.add(t);
 					}
-					interfaces = interfacesOnClasspath.toArray(new Type[interfacesOnClasspath.size()]);
+					interfaces=interfacesOnClasspath.toArray(new Type[interfacesOnClasspath.size()]);
 				}
 			}
 		}
@@ -152,7 +151,6 @@ public class Type {
 	public boolean isPartOfDomain(String packageName) {
 		return belongsToPackage(packageName, true);
 	}
-
 	public boolean belongsToPackage(String packageName, boolean orPartOfSubPackage) {
 		return orPartOfSubPackage ? dottedName.startsWith(packageName) : getPackageName().equals(packageName);
 	}
@@ -161,9 +159,7 @@ public class Type {
 		return dottedName.substring(0, dottedName.indexOf('.'));
 	}
 
-	/**
-	 * @return List of slashed interface types
-	 */
+	/** @return List of slashed interface types */
 	public List<String> getInterfacesStrings() {
 		if (dimensions != 0) {
 			List<String> itfs = new ArrayList<>();
@@ -175,16 +171,14 @@ public class Type {
 		}
 	}
 
-	/**
-	 * @return slashed supertype name
-	 */
+	/** @return slashed supertype name */
 	public String getSuperclassString() {
 		return dimensions > 0 ? "java/lang/Object" : node.superName;
 	}
 
 	/**
 	 * Compute all the types referenced in the signature of this type.
-	 *
+	 * 
 	 * @return
 	 */
 	public List<String> getTypesInSignature() {
@@ -232,6 +226,7 @@ public class Type {
 				return types;
 			}
 		}
+
 	}
 
 	public boolean extendsClass(String clazzname) {
@@ -271,11 +266,11 @@ public class Type {
 		// System.out.println("looking through methods "+node.methods+" for "+string);
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
-				.collect(Collectors.toList());
+						.collect(Collectors.toList());
 	}
-
+	
 	public List<Method> getMethodsWithAnnotationName(String string, boolean checkMetaUsage) {
-		return getMethodsWithAnnotation("L" + string.replace(".", "/") + ";", checkMetaUsage);
+		return getMethodsWithAnnotation("L"+string.replace(".", "/")+";",checkMetaUsage);
 	}
 
 	public List<Method> getMethodsWithAnnotation(String string, boolean checkMetaUsage) {
@@ -295,24 +290,10 @@ public class Type {
 		}
 		return results == null ? Collections.emptyList() : results;
 	}
-
+	
 	public List<Method> getMethods() {
-		return methods.get();
-	}
-
-	private List<Method> resolveMethods() {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().map(m -> wrap(m)).collect(Collectors.toList());
-	}
-
-
-	public List<Field> getFields() {
-		return fields.get();
-	}
-
-	private List<Field> resolveFields() {
-		return dimensions > 0 ? Collections.emptyList()
-				: node.fields.stream().map(it -> new Field(it, typeSystem)).collect(Collectors.toList());
 	}
 
 	public List<Method> getMethodsWithAtBean() {
@@ -372,11 +353,11 @@ public class Type {
 	}
 
 	private List<Type> toAnnotations(List<AnnotationNode> visibleAnnotations) {
-		if (visibleAnnotations == null) {
+		if (visibleAnnotations==null) {
 			return Collections.emptyList();
 		}
 		List<Type> result = new ArrayList<>();
-		for (AnnotationNode an : visibleAnnotations) {
+		for (AnnotationNode an: visibleAnnotations) {
 			result.add(typeSystem.Lresolve(an.desc));
 		}
 		return result;
@@ -699,6 +680,7 @@ public class Type {
 		} catch (MissingTypeException mte) {
 			return false;
 		}
+
 	}
 
 	public boolean isAtConfiguration() {
@@ -741,6 +723,7 @@ public class Type {
 		return false;
 	}
 
+	List<Type> annotations = null;
 
 	public static final List<Type> NO_ANNOTATIONS = Collections.emptyList();
 
@@ -878,25 +861,21 @@ public class Type {
 		return collectedResults;
 	}
 
-	public List<Type> getAnnotations() {
-		return annotations.get();
-	}
-
-	private List<Type> resolveAnnotations() {
-
+	private List<Type> getAnnotations() {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		List<Type> annotations = new ArrayList<>();
-		if (node.visibleAnnotations != null) {
-			for (AnnotationNode an : node.visibleAnnotations) {
-				try {
-					annotations.add(this.typeSystem.Lresolve(an.desc));
-				} catch (MissingTypeException mte) {
-					// that's ok you weren't relying on it anyway!
+		if (annotations == null) {
+			annotations = new ArrayList<>();
+			if (node.visibleAnnotations != null) {
+				for (AnnotationNode an : node.visibleAnnotations) {
+					try {
+						annotations.add(this.typeSystem.Lresolve(an.desc));
+					} catch (MissingTypeException mte) {
+						// that's ok you weren't relying on it anyway!
+					}
 				}
 			}
-		}
 //			if (node.invisibleAnnotations != null) {
 //			for (AnnotationNode an: node.invisibleAnnotations) {
 //				try {
@@ -906,8 +885,9 @@ public class Type {
 //				}
 //			}
 //			}
-		if (annotations.size() == 0) {
-			annotations = NO_ANNOTATIONS;
+			if (annotations.size() == 0) {
+				annotations = NO_ANNOTATIONS;
+			}
 		}
 		return annotations;
 	}
@@ -928,6 +908,7 @@ public class Type {
 	/**
 	 * Discover any uses of @Indexed or javax annotations, via direct/meta or
 	 * interface usage. Example output:
+	 * 
 	 * <pre>
 	 * <code>
 	 * org.springframework.samples.petclinic.PetClinicApplication=org.springframework.stereotype.Component
@@ -943,7 +924,7 @@ public class Type {
 		List<Type> relevantAnnotations = new ArrayList<>();
 		collectRelevantStereotypes(this, new HashSet<>(), relevantAnnotations);
 		List<Type> types = getJavaxAnnotations();
-		for (Type t : types) {
+		for (Type t: types) {
 			if (!relevantAnnotations.contains(t)) {
 				relevantAnnotations.add(t);
 			}
@@ -954,31 +935,31 @@ public class Type {
 			return null;
 		}
 	}
-
+	
 	private void collectRelevantStereotypes(Type type, Set<Type> seen, List<Type> collector) {
-		if (type == null || type.dimensions > 0 || !seen.add(type)) {
+		if (type == null || type.dimensions>0 || !seen.add(type)) {
 			return;
 		}
 		List<Type> ts = type.getAnnotatedElementsInHierarchy(
 				a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
-		for (Type t : ts) {
+		for (Type t: ts) {
 			if (!collector.contains(t)) {
 				collector.add(t);
 			}
 		}
-		for (Type inttype : type.getInterfaces()) {
+		for (Type inttype: type.getInterfaces()) {
 			collectRelevantStereotypes(inttype, seen, collector);
 		}
-		collectRelevantStereotypes(type.getSuperclass(), seen, collector);
+		collectRelevantStereotypes(type.getSuperclass(),seen,collector);
 	}
-
+	
 	public Entry<Type, List<Type>> getMetaComponentTaggedAnnotations() {
 		if (dimensions > 0)
 			return null;
 		List<Type> relevantAnnotations = new ArrayList<>();
 		List<Type> indexedTypesInHierachy = getAnnotatedElementsInHierarchy(
-				a -> a.desc.equals("Lorg/springframework/stereotype/Component;"), true);
-		for (Type t : indexedTypesInHierachy) {
+				a -> a.desc.equals("Lorg/springframework/stereotype/Component;"),true);
+		for (Type t: indexedTypesInHierachy) {
 			if (t.isAnnotation()) {
 				relevantAnnotations.add(t);
 			}
@@ -1032,7 +1013,7 @@ public class Type {
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), false);
 	}
-
+	
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, boolean includeInterim) {
 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), includeInterim);
 	}
@@ -1051,7 +1032,7 @@ public class Type {
 						Type annoType = typeSystem.Lresolve(an.desc, true);
 						if (annoType != null) {
 							List<Type> ts = annoType.getAnnotatedElementsInHierarchy(p, seen, includeInterim);
-							if (ts.size() != 0 && includeInterim) {
+							if (ts.size()!=0 && includeInterim) {
 								// Include interim enables us to catch intermediate annotations on the route to
 								// the one that passes the predicate test.
 								results.add(this);
@@ -1150,17 +1131,17 @@ public class Type {
 			}
 		}
 		try {
-			if (isImportSelector() && hints.size() == 0) {
-				// Failing early as this will likely result in a problem later - fix is
-				// typically (right now) to add a new Hint in the configuration module
-				if (ConfigOptions.areMissingSelectorHintsAnError()) {
-					throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
-				} else {
-					System.out.println("WARNING: No access hint found for import selector: " + getDottedName());
-				}
+		if (isImportSelector() && hints.size() == 0) {
+			// Failing early as this will likely result in a problem later - fix is
+			// typically (right now) to add a new Hint in the configuration module
+			if (ConfigOptions.areMissingSelectorHintsAnError()) {
+				throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
+			} else {
+				System.out.println("WARNING: No access hint found for import selector: " + getDottedName());
 			}
+		}
 		} catch (MissingTypeException mte) {
-			System.out.println("Unable to determine if type " + getName() + " is import selector - can't fully resolve hierarchy - ignoring");
+			System.out.println("Unable to determine if type "+getName()+" is import selector - can't fully resolve hierarchy - ignoring");
 		}
 		return hints.size() == 0 ? Collections.emptyList() : hints;
 	}
@@ -1206,12 +1187,12 @@ public class Type {
 
 	private void addInners(List<String> propertiesTypes) {
 		List<String> extras = new ArrayList<>();
-		for (String propertiesType : propertiesTypes) {
-			Type type = typeSystem.Lresolve(propertiesType, true);
-			if (type != null) {
+		for (String propertiesType: propertiesTypes) {
+			Type type = typeSystem.Lresolve(propertiesType,true);
+			if (type !=null) {
 				// TODO recurse all the way down
 				List<Type> nestedTypes = type.getNestedTypes();
-				for (Type nestedType : nestedTypes) {
+				for (Type nestedType: nestedTypes) {
 					extras.add(nestedType.getDescriptor());
 				}
 			}
@@ -1258,7 +1239,7 @@ public class Type {
 			}
 			System.out.println(this.getName()
 					+ " has inners " + nestMembers.stream().map(f -> "oo=" + this.getDescriptor() + "::o=" + f.outerName
-					+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
+							+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
 					+ "  >> " + result);
 		}
 		return result.toArray(new Type[0]);
@@ -1383,14 +1364,14 @@ public class Type {
 		List<Type> result = new ArrayList<>();
 		for (AnnotationNode an : node.visibleAnnotations) {
 			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;") ||
-					an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
+				an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
 				List<Object> values = an.values;
 				if (values != null) {
 					for (int i = 0; i < values.size(); i += 2) {
 						if (values.get(i).equals("value")) {
 							List<org.objectweb.asm.Type> types = (List<org.objectweb.asm.Type>) values.get(i + 1);
 							for (org.objectweb.asm.Type type : types) {
-								Type t = typeSystem.Lresolve(type.getDescriptor(), true);
+								Type t = typeSystem.Lresolve(type.getDescriptor(),true);
 								if (t != null) {
 									result.add(t);
 								}
@@ -1426,7 +1407,7 @@ public class Type {
 	 * and from them build CompilationHints, taking care to convert class references
 	 * to strings because they may not be resolvable. TODO ok to discard those that
 	 * aren't resolvable at this point?
-	 *
+	 * 
 	 * @return
 	 */
 	public List<CompilationHint> unpackConfigurationHints() {
@@ -1496,7 +1477,7 @@ public class Type {
 		}
 		if (ch.getTargetType() == null) {
 			ch.setTargetType("java.lang.Object");// TODO should be set from annotation default value, not duplicated
-			// here
+													// here
 		}
 		return ch;
 	}
@@ -1526,6 +1507,7 @@ public class Type {
 			if (resolvedType != null) {
 				ch.addDependantType(typeName, accessRequired == -1 ? inferTypeKind(resolvedType) : accessRequired);
 			}
+
 		}
 	}
 
@@ -1666,7 +1648,7 @@ public class Type {
 		reader.accept(tpm);
 		return tpm.getTypeParameter(typeParameterNumber);
 	}
-
+	
 	static class TypeParamFinder extends SignatureVisitor {
 
 		String typeparameter;
@@ -1718,24 +1700,25 @@ public class Type {
 			super.visitClassType(name);
 			nextIsBoundType = false;
 		}
+
 	}
 
 	public String fetchReactiveCrudRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository", 0);
+		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository",0);
 	}
 
 	public String fetchCrudRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.repository.CrudRepository", 0);
+		return findTypeParameterInSupertype("org.springframework.data.repository.CrudRepository",0);
 	}
 
 	public String fetchJpaRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.jpa.repository.JpaRepository", 0);
+		return findTypeParameterInSupertype("org.springframework.data.jpa.repository.JpaRepository",0);
 	}
-
+	
 	/**
 	 * Verify this type as a component, checking everything is set correctly for
 	 * native-image construction to succeed.
-	 *
+	 * 
 	 * @throws VerificationException if anything looks wrong with the component
 	 */
 	public void verifyComponent() {
@@ -1743,60 +1726,59 @@ public class Type {
 	}
 
 	/**
-	 *
+	 *  
 	 */
 	private void verifyProxyBeanMethodsSetting() {
 		List<Method> methodsWithAtBean = getMethodsWithAtBean();
-		System.out.println("methodsWithAtBean #" + methodsWithAtBean.size());
+		System.out.println("methodsWithAtBean #"+methodsWithAtBean.size());
 		if (methodsWithAtBean.size() != 0) {
 			List<AnnotationNode> annos = collectAnnotations();
 			annos = filterAnnotations(annos,
-					an -> {
-						Type annotationType = typeSystem.Lresolve(an.desc);
-						return annotationType.hasMethod("proxyBeanMethods");
-					});
+				an -> {
+					Type annotationType = typeSystem.Lresolve(an.desc);
+					return annotationType.hasMethod("proxyBeanMethods");
+				});
 			// Rule:
 			// At least one annotation in the list has to be setting proxyBeanMethods=false.
 			// Some may not supply it if they are being aliased by other values.
 			// TODO this does not check the default value for proxyBeanMethods
 			// TODO this does not verify/follow AliasFor usage
 			boolean atLeastSetFalseSomewhere = false;
-			for (AnnotationNode anode : annos) {
+			for (AnnotationNode anode: annos) {
 				if (hasValue(anode, "proxyBeanMethods")) {
-					Boolean value = (Boolean) getValue(anode, "proxyBeanMethods");
+					Boolean value = (Boolean)getValue(anode, "proxyBeanMethods");
 					if (!value) {
 						atLeastSetFalseSomewhere = true;
 					}
 				}
 			}
 			if (!atLeastSetFalseSomewhere) {
-				throw new VerificationException("Component " + this.getDottedName() + " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
+				throw new VerificationException("Component "+this.getDottedName()+" does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
 			}
 		}
 	}
-
+	
 	/**
 	 * For an {@link AnnotationNode} retrieve the value for a particular attribute, will throw
 	 * an exception if no value is set for that attribute.
-	 *
-	 * @param anode the annotation node whose values should be checked
+	 * @param node the annotation node whose values should be checked
 	 * @param name the annotation attribute name being searched for
 	 * @return the value of that attribute if set on that annotation node
 	 * @throws IllegalStateException if that attribute name is not set
 	 */
 	private Object getValue(AnnotationNode anode, String name) {
 		List<Object> values = anode.values;
-		for (int i = 0; i < values.size(); i += 2) {
+		for (int i=0;i< values.size(); i+=2) {
 			if (values.get(i).toString().equals(name)) {
-				return values.get(i + 1);
+				return values.get(i+1);
 			}
 		}
-		return new IllegalStateException("Attribute " + name + " not set on the specified annotation, precede this call to getValue() with a hasValue() check");
+		return new IllegalStateException("Attribute "+name+" not set on the specified annotation, precede this call to getValue() with a hasValue() check");
 	}
 
 	/**
 	 * For an {@link AnnotationNode} check if it specifies a value for a particular attribute.
-	 *
+	 * 
 	 * @param node the annotation node whose values should be checked
 	 * @param name the annotation attribute name being searched for
 	 * @return true if the annotation did specify a value for that attribute
@@ -1815,14 +1797,14 @@ public class Type {
 
 	public boolean hasMethod(String methodName) {
 		List<MethodNode> methods = node.methods;
-		for (MethodNode method : methods) {
+		for (MethodNode method: methods) {
 			if (method.name.equals(methodName)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
+	
 	private List<AnnotationNode> filterAnnotations(List<AnnotationNode> input, Predicate<AnnotationNode> filter) {
 		return input.stream().filter(filter).collect(Collectors.toList());
 	}
@@ -1835,7 +1817,7 @@ public class Type {
 
 	private void collectAnnotationsHelper(List<AnnotationNode> collector, Set<String> seen) {
 		if (node.visibleAnnotations != null) {
-			for (AnnotationNode anno : node.visibleAnnotations) {
+			for (AnnotationNode anno: node.visibleAnnotations) {
 				if (!seen.add(anno.desc)) {
 					continue;
 				}
@@ -1849,17 +1831,18 @@ public class Type {
 	public List<Method> getMethods(Predicate<Method> predicate) {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m))
-				.collect(Collectors.toList());
+						.collect(Collectors.toList());
 	}
 
 	public boolean equals(Object that) {
-		return (that instanceof Type) &&
-				(((Type) that).name.equals(this.name)) &&
-				(((Type) that).dimensions == this.dimensions) &&
-				(((Type) that).node.equals(this.node));
+		return (that instanceof Type) && 
+				(((Type)that).name.equals(this.name)) && 
+				(((Type)that).dimensions==this.dimensions) &&
+				(((Type)that).node.equals(this.node));
+	}
+	
+	public int hashCode() {
+		return node.hashCode()*37;
 	}
 
-	public int hashCode() {
-		return node.hashCode() * 37;
-	}
 }
