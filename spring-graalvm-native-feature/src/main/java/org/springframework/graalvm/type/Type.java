@@ -78,7 +78,6 @@ public class Type {
 	private Type[] interfaces;
 
 	private String name;
-	private String dottedName;
 
 	private int dimensions = 0; // >0 for array types
 
@@ -91,9 +90,7 @@ public class Type {
 			for (int i = 0; i < dimensions; i++) {
 				this.name += "[]";
 			}
-			this.dottedName = name.replace("/", ".");
 		}
-
 	}
 
 	public static Type forClassNode(TypeSystem typeSystem, ClassNode node, int dimensions) {
@@ -108,7 +105,7 @@ public class Type {
 	}
 
 	public String getDottedName() {
-		return dottedName;
+		return name.replace("/", ".");
 	}
 
 	public Type getSuperclass() {
@@ -146,17 +143,6 @@ public class Type {
 			}
 		}
 		return interfaces;
-	}
-
-	public boolean isPartOfDomain(String packageName) {
-		return belongsToPackage(packageName, true);
-	}
-	public boolean belongsToPackage(String packageName, boolean orPartOfSubPackage) {
-		return orPartOfSubPackage ? dottedName.startsWith(packageName) : getPackageName().equals(packageName);
-	}
-
-	public String getPackageName() {
-		return dottedName.substring(0, dottedName.indexOf('.'));
 	}
 
 	/** @return List of slashed interface types */
