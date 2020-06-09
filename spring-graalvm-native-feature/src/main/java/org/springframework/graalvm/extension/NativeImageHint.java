@@ -44,22 +44,22 @@ public @interface NativeImageHint {
 	 * is supplying hints about types that must be exposed when @Import is being used.  If no value is specified it
 	 * is considered to be a hint about the type upon which the hint annotation is specified.
 	 */
-	public Class<?> trigger() default Object.class;
+	Class<?> trigger() default Object.class;
 
 	/**
 	 * A set of type infos indicated which types should be made accessible (as resources and/or via reflection)
 	 */
-	public TypeInfo[] typeInfos() default {};
+	TypeInfo[] typeInfos() default {};
 	
 	// TODO sort out these 3 members:
 	/**
 	 * Names of the annotation attributes on the target type which contain type names (as class references or strings).
 	 * The types referenced will be exposed for reflection.
 	 */
-	public String[] extractTypesFromAttributes() default {};
+	String[] extractTypesFromAttributes() default {};
 
-	public boolean abortIfTypesMissing() default false;
+	boolean abortIfTypesMissing() default false;
 	
-	public boolean follow() default false; // TODO get rid of this, infer from types involved (means moving to per type follow setting)
+	boolean follow() default false; // TODO get rid of this, infer from types involved (means moving to per type follow setting)
 	
 }

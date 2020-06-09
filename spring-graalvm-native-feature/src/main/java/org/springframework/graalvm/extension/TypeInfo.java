@@ -31,12 +31,12 @@ import org.springframework.graalvm.type.AccessBits;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TypeInfo {
 	
-	public Class<?>[] types() default {};
+	Class<?>[] types() default {};
 
-	public String[] typeNames() default {};
+	String[] typeNames() default {};
 
-	public int access() default AccessBits.ALL;
+	int access() default AccessBits.ALL;
 
 	// TODO How to specify particular constructors/methods/fields? Does it matter?
-	// public MemberInfo[] members() default {}; ?
+	// MemberInfo[] members() default {}; ?
 }
