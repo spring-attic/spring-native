@@ -32,5 +32,4 @@ public interface ComponentProcessor {
 
 	void process(NativeImageContext imageContext, String key, List<String> values);
 
-	default void printSummary() {}
 }
