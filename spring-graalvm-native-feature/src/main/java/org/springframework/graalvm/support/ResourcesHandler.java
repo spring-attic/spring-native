@@ -815,9 +815,15 @@ public class ResourcesHandler {
 
 	private boolean processType(String config, Set<String> visited) {
 		SpringFeature.log("\n\nProcessing configuration type " + config);
-		boolean b = processType(ts.resolveDotted(config), visited, 0);
-		SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
-		return b;
+		Type resolvedConfigType = ts.resolveDotted(config,true);
+		if (resolvedConfigType==null) {
+			SpringFeature.log("Configuration type " + config + " is missing - presuming stripped out - considered failed validation");
+			return false;
+		} else {
+			boolean b = processType(resolvedConfigType, visited, 0);
+			SpringFeature.log("Configuration type " + config + " has " + (b ? "passed" : "failed") + " validation");
+			return b;
+		}
 	}
 
 	/**
