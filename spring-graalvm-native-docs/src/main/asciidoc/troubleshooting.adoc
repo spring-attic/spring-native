@@ -19,48 +19,9 @@ The image can fail for a number of reasons. We have described the most common ca
 
 ==== Out of memory error when building the native image
 
-`native-image` consumes a lot of RAM.
-We have most success on 32G RAM desktop machines.
+`native-image` consumes a lot of RAM. We have most success on 32G RAM desktop machines.
 16G is possible for smaller samples but 8G machines are likely to hit problems more often.
-
-==== You get a weird crash
-
-If you get a "`weird crash`", check to see if you get the following error:
-
-====
-[source,bash]
-----
-Exception during JVMCI compiler initialization:
-Exception in thread "main": java.lang.ExceptionInInitializerError
-java.lang.ExceptionInInitializerError
-	at com.oracle.svm.core.hub.ClassInitializationInfo.initialize(ClassInitializationInfo.java:290)
-	at java.lang.Class.ensureInitialized(DynamicHub.java:496)
-	at java.lang.System.getenv(System.java:897)
-	at org.graalvm.libgraal.jni.JNIUtil.traceLevel(JNIUtil.java:268)
-	at org.graalvm.libgraal.jni.JNIUtil.trace(JNIUtil.java:292)
-	at org.graalvm.libgraal.jni.HotSpotToSVMScope.<init>(HotSpotToSVMScope.java:114)
-	at org.graalvm.compiler.hotspot.management.libgraal.HotSpotGraalManagement.defineClassesInHotSpot(HotSpotGraalManagement.java:170)
-	at org.graalvm.compiler.hotspot.management.libgraal.HotSpotGraalManagement.initialize(HotSpotGraalManagement.java:115)
-	at org.graalvm.compiler.hotspot.HotSpotGraalRuntime.<init>(HotSpotGraalRuntime.java:178)
-	at org.graalvm.compiler.hotspot.HotSpotGraalCompilerFactory.createCompiler(HotSpotGraalCompilerFactory.java:156)
-	at org.graalvm.compiler.hotspot.HotSpotGraalCompilerFactory.createCompiler(HotSpotGraalCompilerFactory.java:134)
-	at org.graalvm.compiler.hotspot.HotSpotGraalCompilerFactory.createCompiler(HotSpotGraalCompilerFactory.java:52)
-	at jdk.vm.ci.hotspot.HotSpotJVMCIRuntime.getCompiler(HotSpotJVMCIRuntime.java:599)
-	at jdk.vm.ci.hotspot.HotSpotJVMCIRuntime.compileMethod(HotSpotJVMCIRuntime.java:667)
-	at com.oracle.svm.jni.JNIJavaCallWrappers.jniInvoke_VA_LIST_Nonvirtual:Ljdk_vm_ci_hotspot_HotSpotJVMCIRuntime_2_0002ecompileMethod_00028Ljdk_vm_ci_hotspot_HotSpotResolvedJavaMethod_2IJI_00029Ljdk_vm_ci_hotspot_HotSpotCompilationRequestResult_2(JNIJavaCallWrappers.java:0)
-Caused by: java.lang.ArrayIndexOutOfBoundsException: Index 83 out of bounds for length 82
-	at com.oracle.svm.jni.functions.JNIFunctions.SetObjectArrayElement(JNIFunctions.java:683)
-	at java.lang.ProcessEnvironment.environ(ProcessEnvironment.java)
-	at java.lang.ProcessEnvironment.<clinit>(ProcessEnvironment.java:70)
-	at com.oracle.svm.core.hub.ClassInitializationInfo.invokeClassInitializer(ClassInitializationInfo.java:350)
-	at com.oracle.svm.core.hub.ClassInitializationInfo.initialize(ClassInitializationInfo.java:270)
-	... 14 more
-Error: Image build request failed with exit status 255
-----
-====
-
-This has been seen with Graal 20.0.
-The current workaround is to re-run your application, because the problem is intermittent.
+You can use `-H:+RemoveSaturatedTypeFlows` `native-image` option to reduce the amount of memory required.
 
 === The built image does not run
 
@@ -139,12 +100,6 @@ turned on via the option `-Dspring.native.verify=true`. It isn't the default bec
 Currently it will warn about failing to specify `proxyBeanMethods=false` on components but the framework is
 there now to take it further than that as we observe common problems that could be more aggressively checked
 earlier.
-
-=== Where has my logging gone?
-
-In standard operation, `native-image` uses a server to optimize compilation speeds.
-Using the server has been known to produce native images that are missing logging.
-In this case, add `--no-server` to the arguments being passed to `native-image`.
 
 ==== No access hint found for import selector: XXX
 

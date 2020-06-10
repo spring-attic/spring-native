@@ -96,14 +96,8 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
 ----
 ====
 
-The important part is the `<buildArgs>..</buildArgs>` block that shows the options we pass to the `native-image` operation and the `spring-graalvm-native` feature.
+The important part is the `<configuration><buildArgs>..</buildArgs></configuration>` block that shows the options we pass to the `native-image` operation and the `spring-graalvm-native` feature.
 Those prefixed `-D` are aimed at the feature.
-
-NOTE: Notice the `--no-server` option.
-Like a Gradle daemon, the server here is supposed to help accelerate subsequent builds.
-Unfortunately, there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation.
-In particular, we have seen logging disappear the server is used to aid compilation.
-Hence, using the server to aid compilation is turned off here.
 
 ===== Add the repository for `spring-graalvm-native`
 
