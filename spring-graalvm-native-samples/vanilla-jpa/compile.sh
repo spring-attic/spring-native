@@ -29,6 +29,9 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:+RemoveSaturatedTypeFlows \
+  -Dspring.native.remove-yaml-support=true \
+  -Dspring.native.remove-jmx-support=true \
+  -Dspring.native.remove-spel-support=true \
   -H:Name=$ARTIFACT \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
