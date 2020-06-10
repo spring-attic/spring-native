@@ -21,8 +21,8 @@ Each of these hints specifies a set of types that need accessibility, what kind 
 
 These `@NativeImageHint` should be hosted in one of two places.
 
-First, in the `spring-graalvm-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.graal.extension.NativeImageConfiguration` interface (defined by the feature).
-Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.graal.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
+First, in the `spring-graalvm-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.graalvm.extension.NativeImageConfiguration` interface (defined by the feature).
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.graalvm.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
 
 Second, they can be put directly onto Spring configuration classes, and they are picked up by the feature.
 
@@ -73,9 +73,9 @@ The feature also chases down references between configurations (`@Import`) and l
 
 This means that, for any application, there is some 'tree' of configurations active with hints scattered across them.
 
-=== Structure of the `spring-boot-graal-configuration` module
+=== Structure of the `spring-graalvm-native-configuration` module
 
-In the `spring-boot-graal-configuration`, numerous package names look like Spring package names.
+In the `spring-graalvm-native-configuration`, numerous package names look like Spring package names.
 That is deliberate.
 Notice the use of direct class references in the hints rather than strings.
 This type safety is a little more robust.
@@ -111,7 +111,7 @@ If you are using a piece of Spring we don't have a sample for, this is likely to
 Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
 
 . If there is already a `NativeImageConfiguration` implementation for that configuration, augment it with the extra type info.
-If there is not, create one and attach a `@NativeImageHint` to it, to identify the triggering configuration and the classes that need to be exposed.
+If there is not, create one, attach a `@NativeImageHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.graalvm.extension.NativeImageConfiguration` .
 You also need to set the accessibility in the annotation (in the `@TypeInfo`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.

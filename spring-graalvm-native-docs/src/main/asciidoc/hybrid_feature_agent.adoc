@@ -91,19 +91,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
 ----
 ====
 
-The important part is the `<buildArgs>..</buildArgs>` block that shows the options we are passing to the `native-image` operation and the `spring-graalvm-native` feature.
-Those prefixed `-D` are aimed at the feature.
-
-NOTE: Notice the `--no-server` option.
-Like a Gradle daemon, the server here is supposed to help accelerate subsequent builds.
-Unfortunately, there is an https://github.com/oracle/graal/issues/1952[issue] where the server causes different results to come out of the compilation.
-In particular, we have seen logging disappear if the server is used to aid compilation.
-Hence using the server to aid compilation is turned off here.
-
-We can use the `-Dspring.native.remove-unused-autoconfig=true` option to evaluate some of the Spring Boot conditions at image-build time.
-For example, it applies to `@ConditionalOnClass`.
-Because `native-image` runs at a point when the full classpath is known, we can know for certain if a class is around.
-If it is not around, the auto-configuration conditional on that class can be discarded and not have an impact on the image startup. More details on options are discussed <<options,here>>.
+You can specify additional <<options>> via a `<configuration><buildArgs>..</buildArgs></configuration>` block.
 
 ===== Add the repository for `spring-graalvm-native`
 
