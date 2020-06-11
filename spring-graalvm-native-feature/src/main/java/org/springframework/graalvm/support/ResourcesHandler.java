@@ -164,6 +164,9 @@ public class ResourcesHandler {
 	}
 
 	public void processExistingOrSynthesizedSpringComponentsFiles() {
+
+		NativeImageContext context = new NativeImageContextImpl();
+
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
 			log("Processing existing META-INF/spring.components files...");
@@ -171,12 +174,12 @@ public class ResourcesHandler {
 				URL springFactory = springComponents.nextElement();
 				Properties p = new Properties();
 				loadSpringFactoryFile(springFactory, p);
-				processSpringComponents(p);
+				processSpringComponents(p, context);
 			}
 		} else {
 			log("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
-			processSpringComponents(p);
+			processSpringComponents(p, context);
 		}
 	}
 
@@ -224,7 +227,10 @@ public class ResourcesHandler {
 	 * </code></pre>
 	 * @param p the properties object containing spring components
 	 */
-	private void processSpringComponents(Properties p) {
+	private void processSpringComponents(Properties p, NativeImageContext context) {
+
+		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
@@ -312,9 +318,6 @@ public class ResourcesHandler {
 				if (tt.equals("org.springframework.stereotype.Component")) {
 					isComponent = true;
 				}
-				if (tt.equals("org.springframework.data.repository.Repository")) {
-					isRepository = true;
-				}
 				try {
 					Type baseType = ts.resolveDotted(tt);
 
@@ -335,26 +338,25 @@ public class ResourcesHandler {
 					t.printStackTrace();
 					System.out.println("Problems with value " + tt);
 				}
-				if (isRepository) {
-					processRepository(k);
-				}
 			}
 			if (isComponent && ConfigOptions.isVerifierOn()) {
 				kType.verifyComponent();
 			}
-			List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+
 			for (ComponentProcessor componentProcessor: componentProcessors) {
 				if (componentProcessor.handle(k,values)) {
-					componentProcessor.process(new NativeImageContextImpl(), k, values);
+					componentProcessor.process(context, k, values);
 				}
 			}
 		}
+
+		componentProcessors.forEach(ComponentProcessor::printSummary);
 		System.out.println("Registered " + registeredComponents + " entries");
 	}
 	
 	class NativeImageContextImpl implements NativeImageContext {
 
-		final HashMap<String, Flag[]> reflectiveFlags = new LinkedHashMap<>();
+		private final HashMap<String, Flag[]> reflectiveFlags = new LinkedHashMap<>();
 
 		@Override
 		public boolean addProxy(List<String> interfaces) {
@@ -387,6 +389,16 @@ public class ResourcesHandler {
 		@Override
 		public boolean hasReflectionConfigFor(String key) {
 			return reflectiveFlags.containsKey(key);
+		}
+
+		@Override
+		public void initializeAtBuildTime(Type type) {
+
+			try {
+				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(type.getDottedName()));
+			} catch (ClassNotFoundException cnfe) {
+				throw new IllegalStateException("Unexpected - type " + type.getDottedName() +" cannot be found!",cnfe);
+			}
 		}
 
 		@Override
@@ -436,63 +448,6 @@ public class ResourcesHandler {
 		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
 		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
 		dynamicProxiesHandler.addProxy(repositoryInterfaces);
-	}
-
-	/**
-	 * Crude basic repository processing - needs more analysis to only add the
-	 * interfaces the runtime will be asking for when requesting the proxy.
-	 * 
-	 * @param repositoryName type name of the repository
-	 */
-	private void processRepository(String repositoryName) {
-		SpringFeature.log("Processing repository: "+repositoryName+" - adding proxy implementing Repository, TransactionalProxy, Advised, DecoratingProxy");
-		Type type = ts.resolveDotted(repositoryName);
-		// Example proxy:
-		// ["app.main.model.FooRepository",
-		// "org.springframework.data.repository.Repository",
-		// "org.springframework.transaction.interceptor.TransactionalProxy",
-		// "org.springframework.aop.framework.Advised",
-		// "org.springframework.core.DecoratingProxy"]
-		List<String> repositoryInterfaces = new ArrayList<>();
-		repositoryInterfaces.add(type.getDottedName());
-		repositoryInterfaces.add("org.springframework.data.repository.Repository");
-		repositoryInterfaces.add("org.springframework.transaction.interceptor.TransactionalProxy");
-		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
-		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
-		dynamicProxiesHandler.addProxy(repositoryInterfaces);
-		
-		// TODO why do we need two proxies here? (vanilla-jpa seems to need both when upgraded from boot 2.2 to 2.3)
-		repositoryInterfaces.clear();
-		repositoryInterfaces.add(type.getDottedName());
-		repositoryInterfaces.add("org.springframework.aop.SpringProxy");
-		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
-		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
-		dynamicProxiesHandler.addProxy(repositoryInterfaces);
-		
-		
-		// webflux-r2dbc:
-		// Example:
-		// interface ReservationRepository extends ReactiveCrudRepository<Reservation, Integer> {
-		// For this we seem to need:
-		// {"name":"com.example.traditional.Reservation",
-		//  "allDeclaredFields":true,"allDeclaredConstructors":true,"allDeclaredMethods":true,"allPublicMethods":true},
-		// {"name":"com.example.traditional.ReservationRepository",
-		//  "allDeclaredMethods":true,"allPublicMethods":true},
-		// and register the Reservation type 
-		// We don't need this - optimization to have it?
-		// {"name":"com.example.traditional.Reservation_Instantiator_c7cq6j",
-		//  "methods":[{"name":"<init>","parameterTypes":[]}]}
-		if (type.implementsInterface("org/springframework/data/repository/reactive/ReactiveCrudRepository")) {
-			try {
-				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(type.getDottedName()));
-			} catch (ClassNotFoundException cnfe) {
-				throw new IllegalStateException("Unexpected - why can inferred repository "+type.getDottedName()+" not be found?",cnfe);
-			}
-			reflectionHandler.addAccess(type.getDottedName(), Flag.allDeclaredMethods,Flag.allPublicMethods);
-			String typeOfThingsInRepository = type.fetchReactiveCrudRepositoryType(); // For our example this will be Reservation
-			reflectionHandler.addAccess(typeOfThingsInRepository, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,Flag.allDeclaredFields);
-			SpringFeature.log("Dealing with a ReactiveCrudRepository for "+typeOfThingsInRepository);
-		}
 	}
 
 	private void processTransactionalTarget(Type type) {

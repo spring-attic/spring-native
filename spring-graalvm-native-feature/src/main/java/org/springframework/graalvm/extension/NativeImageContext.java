@@ -35,9 +35,19 @@ public interface NativeImageContext {
 
 	TypeSystem getTypeSystem();
 
+	default void addReflectiveAccess(Type type, Flag... flags) {
+		addReflectiveAccess(type.getDottedName(), flags);
+	}
+
 	void addReflectiveAccess(String key, Flag... flags);
 
 	void addReflectiveAccessHierarchy(Type type, Flag... flags);
 
 	boolean hasReflectionConfigFor(String key);
+
+	void initializeAtBuildTime(Type type);
+
+	default boolean hasReflectionConfigFor(Type type) {
+		return hasReflectionConfigFor(type.getDottedName());
+	}
 }
