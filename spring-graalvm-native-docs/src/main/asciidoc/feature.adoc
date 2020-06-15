@@ -143,27 +143,6 @@ The indexer actually produces a list of components at Java compile time and capt
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or just running your application as a standard Java application.
 
-You should also exclude the `tomcat-embed-websocket` dependency from the `spring-boot-starter-web` for now (we are working on https://github.com/apache/tomcat/pull/274[a Tomcat contribution] to avoid this):
-
-====
-[source,xml,subs="attributes,verbatim"]
-----
-<dependencies>
-    <!-- ... -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <exclusions>
-            <exclusion>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-websocket</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-</dependencies>
-----
-====
-
 ===== Set the `start-class` element
 
 The native image build needs to know the entry point to your application. It does consult a few places to find it.
