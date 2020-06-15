@@ -115,7 +115,7 @@ final class Target_BeanDefinitionLoader {
 
 	@Substitute
 	private int load(Class<?> source) {
-		if (isComponent(source)) {
+		if (isEligible(source)) {
 			this.annotatedReader.register(source);
 			return 1;
 		}
@@ -123,7 +123,7 @@ final class Target_BeanDefinitionLoader {
 	}
 
 	@Alias
-	private boolean isComponent(Class<?> type) {
+	private boolean isEligible(Class<?> type) {
 		return false;
 	}
 

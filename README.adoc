@@ -1,9 +1,9 @@
 :version: 0.7.0
 :repository: milestone
-:boot-version: 2.3.0.RELEASE
+:boot-version: 2.3.1.RELEASE
 :graalvm-version: 20.1.0
 :graalvm-dev-version: 20.1.0
-:boot-dev-version: 2.3.0.RELEASE
+:boot-dev-version: 2.3.1.RELEASE
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
 image:https://ci.spring.io/api/v1/teams/spring-graalvm-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/documentation-blue.svg["Documentation", link="{documentation-url}/reference/index.html"]
