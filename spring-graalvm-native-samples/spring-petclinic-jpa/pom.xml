@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-graalvm-native</artifactId>
-            <version>0.8.0-SNAPSHOT</version>
+            <version>0.7.1-SNAPSHOT</version>
         </dependency>
         <!-- Spring and Spring Boot dependencies -->
         <dependency>
