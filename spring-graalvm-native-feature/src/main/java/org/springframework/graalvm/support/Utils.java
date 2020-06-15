@@ -16,6 +16,7 @@
 package org.springframework.graalvm.support;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.springframework.graalvm.type.ConstantPoolScanner;
 
@@ -23,6 +24,10 @@ public class Utils {
 
 	public static ConstantPoolScanner scanClass(File f) {
 		return new ConstantPoolScanner(f);
+	}
+
+	public static ConstantPoolScanner scanClass(Path p) {
+		return new ConstantPoolScanner(p);
 	}
 
 }

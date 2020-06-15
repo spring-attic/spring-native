@@ -21,6 +21,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -121,8 +129,11 @@ public class ResourcesHandler {
 		if (ConfigOptions.isFeatureMode()) {
 			processSpringFactories();
 			handleSpringConstantHints();
-			processExistingOrSynthesizedSpringComponentsFiles();
 		}
+		if (ConfigOptions.isFeatureMode() || ConfigOptions.isHybridMode()) {
+			handleSpringComponents();
+		}
+
 	}
 
 	private void registerPatterns(ResourcesDescriptor rd) {
@@ -163,23 +174,29 @@ public class ResourcesHandler {
 		}
 	}
 
-	public void processExistingOrSynthesizedSpringComponentsFiles() {
-
+	/**
+	 * Discover existing spring.components or synthesize one if none are found. If not running
+	 * in hybrid mode then process the spring.components entries.
+	 */
+	public void handleSpringComponents() {
 		NativeImageContext context = new NativeImageContextImpl();
-
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
 			log("Processing existing META-INF/spring.components files...");
-			while (springComponents.hasMoreElements()) {
-				URL springFactory = springComponents.nextElement();
-				Properties p = new Properties();
-				loadSpringFactoryFile(springFactory, p);
-				processSpringComponents(p, context);
+			if (!ConfigOptions.isHybridMode()) {
+				while (springComponents.hasMoreElements()) {
+					URL springFactory = springComponents.nextElement();
+					Properties p = new Properties();
+					loadSpringFactoryFile(springFactory, p);
+					processSpringComponents(p, context);
+				}
 			}
 		} else {
 			log("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
-			processSpringComponents(p, context);
+			if (!ConfigOptions.isHybridMode()) {
+				processSpringComponents(p, context);
+			}
 		}
 	}
 
@@ -235,7 +252,6 @@ public class ResourcesHandler {
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
-			boolean isRepository = false;
 			boolean isComponent = false;
 			String k = (String) keys.nextElement();
 			String vs = (String) p.get(k);
@@ -548,7 +564,7 @@ public class ResourcesHandler {
 	}
 
 	private List<Entry<Type, List<Type>>> scanForSpringComponents() {
-		return findDirectories(ts.getClasspath()).flatMap(this::findClasses).map(this::typenameOfClass)
+		return findDirectoriesOrTargetDirJar(ts.getClasspath()).flatMap(this::findClasses).map(this::typenameOfClass)
 				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
@@ -561,36 +577,92 @@ public class ResourcesHandler {
 		return ts.resolveSlashed(slashedClassname).getRelevantStereotypes();
 	}
 
-	private String typenameOfClass(File f) {
-		return Utils.scanClass(f).getClassname();
+	private String typenameOfClass(Path p) {
+		return Utils.scanClass(p).getClassname();
 	}
 
-	private Stream<File> findClasses(File dir) {
-		ArrayList<File> classfiles = new ArrayList<>();
-		walk(dir, classfiles);
+	private Stream<Path> findClasses(Path path) {
+		ArrayList<Path> classfiles = new ArrayList<>();
+		if (Files.isDirectory(path)) {
+//			System.out.println("Walking dir");
+			walk(path, classfiles);
+		} else {
+//			System.out.println("Walking jar");
+			walkJar(path, classfiles);
+		}
 		return classfiles.stream();
 	}
 
-	private void walk(File dir, ArrayList<File> classfiles) {
-		File[] fs = dir.listFiles();
-		for (File f : fs) {
-			if (f.isDirectory()) {
-				walk(f, classfiles);
-			} else if (f.getName().endsWith(".class")) {
-				classfiles.add(f);
+	static class ClassCollectorFileVisitor implements FileVisitor<Path> {
+		
+		private List<Path> collector = new ArrayList<>();
+
+		List<Path> getClassFiles() {
+			return collector;
+		}
+
+		@Override
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			if (file.getFileName().toString().endsWith(".class")) {
+				collector.add(file);
 			}
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+
+		
+	}
+
+	private void walkJar(Path jarfile, ArrayList<Path> classfiles) {
+		try {
+			FileSystem jarfs = FileSystems.newFileSystem(jarfile,null);
+			Iterable<Path> rootDirectories = jarfs.getRootDirectories();
+			ClassCollectorFileVisitor x = new ClassCollectorFileVisitor();
+			for (Path path: rootDirectories) {
+				Files.walkFileTree(path, x);
+			}
+			classfiles.addAll(x.getClassFiles());
+		} catch (IOException e) {
+			throw new IllegalStateException("Problem opening "+jarfile,e);
 		}
 	}
 
-	private Stream<File> findDirectories(List<String> classpath) {
-		List<File> directories = new ArrayList<>();
+	private void walk(Path dir, ArrayList<Path> classfiles) {
+		try {
+			ClassCollectorFileVisitor x = new ClassCollectorFileVisitor();
+			Files.walkFileTree(dir, x);
+			classfiles.addAll(x.getClassFiles());
+		} catch (IOException e) {
+			throw new IllegalStateException("Problem walking directory "+dir, e);
+			
+		}
+	}
+	
+	private Stream<Path> findDirectoriesOrTargetDirJar(List<String> classpath) {
+		List<Path> result = new ArrayList<>();
 		for (String classpathEntry : classpath) {
 			File f = new File(classpathEntry);
 			if (f.isDirectory()) {
-				directories.add(f);
+				result.add(Paths.get(f.toURI()));
+			} else if (f.isFile() && f.getName().endsWith(".jar") && f.getParent().endsWith(File.separator+"target")) {
+				result.add(Paths.get(f.toURI()));
 			}
 		}
-		return directories.stream();
+		return result.stream();
 	}
 
 	/**
