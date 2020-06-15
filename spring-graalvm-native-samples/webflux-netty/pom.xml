@@ -17,9 +17,14 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+        <start-class>com.example.demo.DemoApplication</start-class>
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native</artifactId>
@@ -32,7 +37,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<!-- <scope>test</scope> is commented as a workaround in order to wait for a fix for https://github.com/oracle/graal/issues/2490 -->
 			<exclusions>
 				<exclusion>
 					<groupId>org.junit.vintage</groupId>
@@ -50,6 +55,45 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>hybrid-native</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image</argLine>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.graalvm.nativeimage</groupId>
+						<artifactId>native-image-maven-plugin</artifactId>
+						<version>20.1.0</version>
+						<configuration>
+							<imageName>webflux-netty</imageName>
+							<buildArgs>--no-fallback -Dspring.native.mode=hybrid -Dspring.native.remove-spel-support=true -Dspring.native.remove-jmx-support=true -Dspring.native.remove-yaml-support=true -Dspring.native.remove-xml-support=true</buildArgs>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>native-image</goal>
+								</goals>
+								<phase>package</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 
 	<pluginRepositories>
 		<pluginRepository>

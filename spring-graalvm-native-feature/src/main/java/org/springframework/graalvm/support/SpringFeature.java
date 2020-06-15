@@ -72,6 +72,9 @@ public class SpringFeature implements Feature {
 		if (ConfigOptions.isFunctionalMode()) {
 			reflectionHandler.registerFunctional(access);
 		}
+		if (ConfigOptions.isHybridMode()) {
+			reflectionHandler.registerHybrid(access);
+		}
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,11 +101,23 @@ public class ConstantPoolScanner {
 	public ConstantPoolScanner(File f) {
 		this(readBytes(f));
 	}
+
+	public ConstantPoolScanner(Path p) {
+		this(readBytes(p));
+	}
 	
 	public static byte[] readBytes(File f) {
 		try {
 			byte[] bytes = Files.readAllBytes(Paths.get(f.toURI()));
 			return bytes;
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static byte[] readBytes(Path p) {
+		try {
+			return Files.readAllBytes(p);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
