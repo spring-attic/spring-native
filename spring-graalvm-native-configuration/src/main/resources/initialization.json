@@ -71,6 +71,7 @@
   {"class": "org.springframework.transaction.annotation.Propagation"},
   {"class": "org.springframework.util.unit.DataUnit"},
   {"class": "org.springframework.util.unit.DataSize"},
+  {"class": "org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter"},
   // To avoid XML parsers to be included
   {"class": "org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration" },
   {"class": "org.springframework.http.MediaType" },
