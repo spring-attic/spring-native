@@ -41,8 +41,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 				DefaultErrorViewResolver.class,
 				// TODO Maybe the first and last of these 3 needs to be in a more generic configuration hint working for both reactive and servlet
 				ConfigurableWebApplicationContext.class,TomcatEmbeddedWebappClassLoader.class,WebApplicationContext.class,
-				ErrorPage.class,DefaultErrorViewResolver.class,BeanNameViewResolver.class,  ErrorPageRegistrarBeanPostProcessor.class,
-				Encoding.class},
+				ErrorPage.class,DefaultErrorViewResolver.class,BeanNameViewResolver.class,  ErrorPageRegistrarBeanPostProcessor.class},
 				typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler"}),
 		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)},abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
