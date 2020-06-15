@@ -1,4 +1,4 @@
-:version: 0.7.0
+:version: 0.7.1
 :repository: milestone
 :boot-version: 2.3.1.RELEASE
 :graalvm-version: 20.1.0
