@@ -15,13 +15,14 @@
  */
 package org.springframework.boot.autoconfigure.http;
 
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
 @NativeImageHint(trigger=HttpMessageConvertersAutoConfiguration.class,typeInfos= {
-	@TypeInfo(types= {HttpMessageConverters.class,FormHttpMessageConverter.class})	
+	@TypeInfo(types= {HttpMessageConverters.class,FormHttpMessageConverter.class, Encoding.class})
 })
 public class HttpMessageConverterHints implements NativeImageConfiguration {
 }
