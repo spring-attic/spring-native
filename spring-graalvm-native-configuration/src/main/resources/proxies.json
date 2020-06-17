@@ -13,6 +13,10 @@
   // Spring Data
   ["org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"],
   ["org.springframework.data.annotation.QueryAnnotation", "org.springframework.core.annotation.SynthesizedAnnotation"],
+  ["org.springframework.data.keyvalue.annotation.KeySpace","org.springframework.core.annotation.SynthesizedAnnotation"],
+  ["org.springframework.data.redis.connection.DefaultedRedisConnection"],
+  ["org.springframework.data.redis.connection.ReactiveRedisConnection"],
+  ["org.springframework.data.redis.connection.StringRedisConnection", "org.springframework.data.redis.connection.DecoratedRedisConnection"],
 
   // Spring Security
   ["org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication", "org.springframework.core.annotation.SynthesizedAnnotation"],
@@ -29,5 +33,8 @@
   ["org.springframework.boot.actuate.endpoint.annotation.EndpointExtension", "org.springframework.core.annotation.SynthesizedAnnotation"],
 
   // hibernate
-  ["org.hibernate.query.spi.QueryImplementor"]
+  ["org.hibernate.query.spi.QueryImplementor"],
+
+  // Lettuce
+  ["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"]
 ]
