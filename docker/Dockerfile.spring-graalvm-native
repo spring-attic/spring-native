@@ -6,7 +6,7 @@ ARG MAVEN_VERSION=3.6.3
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 
 RUN apt-get -y update \
- && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server build-essential gdb \
+ && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server redis-server build-essential gdb \
  && cd /opt \
  && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
  && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
