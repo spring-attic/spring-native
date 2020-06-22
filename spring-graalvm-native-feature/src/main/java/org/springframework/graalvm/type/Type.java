@@ -1862,4 +1862,22 @@ public class Type {
 	public int hashCode() {
 		return node.hashCode() * 37;
 	}
+
+	/**
+	 * TODO: This is a little crude, relying on patterns rather than classfile encoded data.
+	 * @return the guessed enclosing type, if resolvable
+	 */
+	public Type getEnclosingType() {
+		String n = this.getDottedName();
+		int idx = n.lastIndexOf("$");
+		if (idx == -1) {
+			return null;
+		}
+		Type t = typeSystem.resolveDotted(n.substring(0,idx),true);
+		if (t == null) {
+			return null;
+		} else {
+			return t;
+		}
+	}
 }

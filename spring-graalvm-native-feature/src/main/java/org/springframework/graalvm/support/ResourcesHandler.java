@@ -983,11 +983,15 @@ public class ResourcesHandler {
 								SpringFeature.log(spaces(depth) + "will follow " + t);
 								toFollow.add(t);
 							}
-						} else if (hint.isSkipIfTypesMissing() && depth == 0) {
+						} else if (hint.isSkipIfTypesMissing()  && (depth == 0 || isNestedConfiguration(type))) {
 							// TODO If processing secondary type (depth>0) we can't skip things as we don't
 							// know if the top level type that refers to us is going to fail or not. Ideally we should
 							// pass in the tar and accumulate types in secondary type processing and leave it to the
 							// outermost processing to decide if they need registration.
+							// Update: the isNestedConfiguration() clause allows us to discard nested configurations that are failing a COC check.
+							// This works if they are simply included in a setup due to being lexically inside an outer configuration - if they
+							// are being explicitly referenced via some other mechanism (e.g. @Import) this will need a bit of rework (the outer
+							// call into here should tell us how this configuration is being made so we can make a smarter decision).
 							passesTests = false;
 							// Once failing, no need to process other hints
 							if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1242,6 +1246,14 @@ public class ResourcesHandler {
 		return passesTests;
 	}
 	
+	/**
+	 * Crude guess at nested configuration.
+	 */
+	private boolean isNestedConfiguration(Type type) {
+		boolean b = type.isAtConfiguration() && type.getEnclosingType()!=null;
+		return b;
+	}
+
 	private void registerAnnotationChain(int depth, TypeAccessRequestor tar, List<Type> annotationChain) {
 		SpringFeature.log(spaces(depth) + "attempting registration of " + annotationChain.size()
 				+ " elements of annotation chain");
