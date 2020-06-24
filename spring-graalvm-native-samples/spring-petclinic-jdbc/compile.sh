@@ -2,7 +2,7 @@
 
 ARTIFACT=spring-petclinic-jdbc
 MAINCLASS=org.springframework.samples.petclinic.PetClinicApplication
-VERSION=2.3.0.BUILD-SNAPSHOT
+VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -32,8 +32,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-jmx-support=true \
-  -Dspring.native.remove-xml-support=true \
-  -Dspring.native.remove-spel-support=true \
+  -Dspring.xml.ignore=true \
+  -Dspring.spel.ignore=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

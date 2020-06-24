@@ -42,8 +42,7 @@ import org.springframework.web.reactive.HandlerResult;
 				"com.fasterxml.jackson.databind.ObjectMapper", 
 				"com.fasterxml.jackson.core.JsonGenerator",
 				"com.fasterxml.jackson.dataformat.smile.SmileFactory",
-				"com.google.protobuf.Message", 
-				"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
+				"com.google.protobuf.Message"
 			},
 			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS
 		),

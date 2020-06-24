@@ -42,8 +42,8 @@ native-image \
   -Dspring.native.mode=agent \
   -H:Name=$APP-agent \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.remove-xml-support=true \
-  -Dspring.native.remove-spel-support=true \
+  -Dspring.xml.ignore=true \
+  -Dspring.spel.ignore=true \
   -Dspring.native.remove-jmx-support=true \
   -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \

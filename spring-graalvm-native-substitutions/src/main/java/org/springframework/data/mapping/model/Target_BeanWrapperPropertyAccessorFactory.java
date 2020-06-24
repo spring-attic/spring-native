@@ -5,10 +5,9 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentPropertyAccessor;
-import org.springframework.graalvm.substitutions.OnlyPresent;
-import org.springframework.graalvm.substitutions.RemoveCglibSupport;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.springframework.data.mapping.model.BeanWrapperPropertyAccessorFactory", onlyWith = { OnlyPresent.class, RemoveCglibSupport.class })
+@TargetClass(className = "org.springframework.data.mapping.model.BeanWrapperPropertyAccessorFactory", onlyWith = { OnlyIfPresent.class })
 public final class Target_BeanWrapperPropertyAccessorFactory implements PersistentPropertyAccessorFactory {
 
 	@Alias

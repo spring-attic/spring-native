@@ -18,7 +18,7 @@ package org.springframework.graalvm.substitutions;
 
 import java.util.function.Predicate;
 
-public class OnlyPresent implements Predicate<String> {
+public class OnlyIfPresent implements Predicate<String> {
 
 	@Override
 	public boolean test(String type) {
