@@ -20,7 +20,7 @@ import java.net.URL;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 
 /**
  * Workaround for
@@ -44,7 +44,7 @@ import org.springframework.graalvm.substitutions.OnlyPresent;
  * org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager.determineDefaultPersistenceUnitRootUrl(DefaultPersistenceUnitManager.java:636)
  * @author Andy Clement
  */
-@TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = OnlyPresent.class)
+@TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = OnlyIfPresent.class)
 public final class Target_DefaultPersistenceUnitManager {
 
 	@Substitute

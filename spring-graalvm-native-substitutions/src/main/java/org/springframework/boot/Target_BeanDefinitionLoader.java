@@ -21,12 +21,12 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-@TargetClass(className = "org.springframework.boot.BeanDefinitionLoader", onlyWith = { OnlyPresent.class, RemoveXmlSupport.class })
+@TargetClass(className = "org.springframework.boot.BeanDefinitionLoader", onlyWith = { OnlyIfPresent.class, RemoveXmlSupport.class })
 final class Target_BeanDefinitionLoader {
 
 	@Delete

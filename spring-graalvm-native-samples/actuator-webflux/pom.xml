@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
+		<version>2.4.0-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -31,13 +31,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
-			<exclusions>
-              			<exclusion>
-                                <groupId>io.netty</groupId>
-                                <artifactId>netty-codec-http2</artifactId>
-                               </exclusion>
-                       </exclusions>
-
 		</dependency>
 
 		<dependency>
@@ -67,70 +60,70 @@
 		</plugins>
 	</build>
 	<repositories>
-				<repository>
-						<id>central</id>
-						<url>https://repo.maven.apache.org/maven2</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
-				</repository>
-				<repository>
-						<id>spring-release</id>
-						<name>Spring release</name>
-						<url>https://repo.spring.io/release</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
-				</repository>
-				<repository>
-						<id>spring-snapshot</id>
-						<name>Spring Snapshots</name>
-						<url>https://repo.spring.io/snapshot</url>
-						<snapshots>
-								<enabled>true</enabled>
-						</snapshots>
-				</repository>
-				<repository>
-						<id>spring-milestone</id>
-						<name>Spring Milestone</name>
-						<url>https://repo.spring.io/milestone</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
-				</repository>
+			<repository>
+				<id>central</id>
+				<url>https://repo.maven.apache.org/maven2</url>
+				<snapshots>
+						<enabled>false</enabled>
+				</snapshots>
+			</repository>
+			<repository>
+				<id>spring-release</id>
+				<name>Spring release</name>
+				<url>https://repo.spring.io/release</url>
+				<snapshots>
+						<enabled>false</enabled>
+				</snapshots>
+			</repository>
+			<repository>
+				<id>spring-snapshot</id>
+				<name>Spring Snapshots</name>
+				<url>https://repo.spring.io/snapshot</url>
+				<snapshots>
+						<enabled>true</enabled>
+				</snapshots>
+			</repository>
+			<repository>
+				<id>spring-milestone</id>
+				<name>Spring Milestone</name>
+				<url>https://repo.spring.io/milestone</url>
+				<snapshots>
+						<enabled>false</enabled>
+				</snapshots>
+			</repository>
 		</repositories>
 
 		<pluginRepositories>
 				<pluginRepository>
-						<id>central</id>
-						<url>https://repo.maven.apache.org/maven2</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
+					<id>central</id>
+					<url>https://repo.maven.apache.org/maven2</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
 				</pluginRepository>
 				<pluginRepository>
-						<id>spring-release</id>
-						<name>Spring release</name>
-						<url>https://repo.spring.io/release</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
+					<id>spring-release</id>
+					<name>Spring release</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
 				</pluginRepository>
 				<pluginRepository>
-						<id>spring-snapshot</id>
-						<name>Spring Snapshots</name>
-						<url>https://repo.spring.io/snapshot</url>
-						<snapshots>
-								<enabled>true</enabled>
-						</snapshots>
+					<id>spring-snapshot</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+							<enabled>true</enabled>
+					</snapshots>
 				</pluginRepository>
 				<pluginRepository>
-						<id>spring-milestone</id>
-						<name>Spring Milestone</name>
-						<url>https://repo.spring.io/milestone</url>
-						<snapshots>
-								<enabled>false</enabled>
-						</snapshots>
+					<id>spring-milestone</id>
+					<name>Spring Milestone</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
 				</pluginRepository>
 		</pluginRepositories>
 

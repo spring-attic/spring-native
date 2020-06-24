@@ -8,9 +8,9 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.apache.catalina.authenticator.AuthenticatorBase", onlyWith = { OnlyPresent.class })
+@TargetClass(className = "org.apache.catalina.authenticator.AuthenticatorBase", onlyWith = { OnlyIfPresent.class })
 final class Target_AuthenticatorBase {
 
 	@Alias

@@ -10,10 +10,10 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.graalvm.substitutions.MappingJackson2XmlHttpMessageConverterIsAround;
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.graalvm.substitutions.RemoveXmlSupport;
 
-@TargetClass(className = "org.springframework.boot.autoconfigure.http.HttpMessageConverters", onlyWith = { OnlyPresent.class, MappingJackson2XmlHttpMessageConverterIsAround.class, RemoveXmlSupport.class })
+@TargetClass(className = "org.springframework.boot.autoconfigure.http.HttpMessageConverters", onlyWith = { OnlyIfPresent.class, MappingJackson2XmlHttpMessageConverterIsAround.class, RemoveXmlSupport.class })
 final class Target_HttpMessageConverters {
 
 	@Substitute

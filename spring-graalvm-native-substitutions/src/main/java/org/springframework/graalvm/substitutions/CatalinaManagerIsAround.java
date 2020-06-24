@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micrometer.core.instrument.binder.tomcat;
+package org.springframework.graalvm.substitutions;
 
 import java.util.function.BooleanSupplier;
 
-public class CatalinaManagerPresent implements BooleanSupplier {
+public class CatalinaManagerIsAround implements BooleanSupplier {
 
     @Override
     public boolean getAsBoolean() {

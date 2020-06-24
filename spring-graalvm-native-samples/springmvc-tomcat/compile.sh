@@ -31,9 +31,9 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:EnableURLProtocols=http \
   -H:Name=$ARTIFACT \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.remove-xml-support=true \
-  -Dspring.native.remove-spel-support=true \
   -Dspring.native.remove-jmx-support=true \
+  -Dspring.xml.ignore=true \
+  -Dspring.spel.ignore=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

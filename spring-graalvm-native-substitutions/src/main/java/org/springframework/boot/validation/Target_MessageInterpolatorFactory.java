@@ -23,7 +23,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.graalvm.substitutions.MessageInterpolatorIsAround;
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.util.ClassUtils;
  * 
  * @author Andy Clement
  */
-@TargetClass(className="org.springframework.boot.validation.MessageInterpolatorFactory", onlyWith = { MessageInterpolatorIsAround.class, OnlyPresent.class})
+@TargetClass(className="org.springframework.boot.validation.MessageInterpolatorFactory", onlyWith = { MessageInterpolatorIsAround.class, OnlyIfPresent.class})
 public final class Target_MessageInterpolatorFactory {
 
 	@Substitute

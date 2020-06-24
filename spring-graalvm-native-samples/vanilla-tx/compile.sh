@@ -30,7 +30,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:Name=$ARTIFACT \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.remove-spel-support=true \
+  -Dspring.spel.ignore=true \
   -Dspring.native.remove-jmx-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

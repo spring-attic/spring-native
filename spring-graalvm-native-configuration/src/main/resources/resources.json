@@ -9,7 +9,6 @@
     // vvv r2dbc
     {"pattern": "\\QMETA-INF/services/io.r2dbc.spi.ConnectionFactoryProvider\\E"},
     // vvv springmvc-tomcat
-    {"pattern": "org/springframework/web/servlet/DispatcherServlet.properties"},
     {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
     // ^^^ springmvc-tomcat
 	// vvv vanilla-tx

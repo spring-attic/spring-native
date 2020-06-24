@@ -5,9 +5,9 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.core.env.Environment;
-import org.springframework.graalvm.substitutions.OnlyPresent;
+import org.springframework.graalvm.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.springframework.boot.SpringApplicationBannerPrinter", onlyWith = OnlyPresent.class)
+@TargetClass(className = "org.springframework.boot.SpringApplicationBannerPrinter", onlyWith = OnlyIfPresent.class)
 public final class Target_SpringApplicationBannerPrinter {
 
 	@Alias

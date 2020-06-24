@@ -42,8 +42,8 @@ native-image \
   -Dspring.native.mode=agent \
   -H:Name=$ARTIFACT-agent \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.remove-xml-support=true \
-  -Dspring.native.remove-spel-support=true \
+  -Dspring.xml.ignore=true \
+  -Dspring.spel.ignore=true \
   -Dspring.native.remove-jmx-support=true \
   -cp .:$CP:graal \
   $MAINCLASS 2>&1 | tee output.txt
