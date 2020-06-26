@@ -20,6 +20,13 @@ It is mainly composed of 6 parts:
 - `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
 
+It supports the {documentation-url}/reference/index.html#_feature_options[following modes]:
+
+- `feature` is the default mode, it provides resource, initialization, proxy and reflection (using auto-configuration hints) configuration for native images as well as substitutions.
+- `agent` should be used if only wishing to provide initialization configuration and substitutions.
+- `hybrid` is a work-in-progress mode which is a mix between the 2 previous modes. The agent is used for Spring Boot auto-configuration and the feature and hints are used for user beans like `@Controller`.
+- `functional` is when working with functional bean registration (https://github.com/spring-projects-experimental/spring-fu[Spring Fu] style). In this mode the feature will provide initialization, resource configuration and substitutions.
+
 == Scope and status
 
 This project status is alpha, that means that we are currently mainly working on the software design and on supporting the features of the current samples (work in progress).
