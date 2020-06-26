@@ -201,7 +201,8 @@
   {"class": "com.google.protobuf.ExtensionRegistry"},
   {"class": "com.rabbitmq.client.SocketChannelConfigurator"},
   {"package": "javax.transaction"},
-  {"class": "org.aopalliance.aop.Advice"}
+  {"class": "org.aopalliance.aop.Advice"},
+  {"class": "io.lettuce.core.metrics.DefaultCommandLatencyCollector"}
 ]
 }
 
