@@ -20,7 +20,7 @@ It is mainly composed of 6 parts:
 - `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
 
-It supports the {documentation-url}/reference/index.html#_feature_options[following modes]:
+It supports the {documentation-url}/reference/index.html#_feature_options[following modes] using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 
 - `feature` is the default mode, it provides resource, initialization, proxy and reflection (using auto-configuration hints) configuration for native images as well as substitutions.
 - `agent` should be used if only wishing to provide initialization configuration and substitutions.
