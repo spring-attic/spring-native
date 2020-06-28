@@ -9,11 +9,12 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.commons.logging.Log;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.graalvm.substitutions.NotFunctionalMode;
 import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { OnlyIfPresent.class })
+@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { NotFunctionalMode.class, OnlyIfPresent.class })
 final class Target_SpringFactoriesLoader {
 
 	@Alias

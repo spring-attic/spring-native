@@ -158,6 +158,9 @@ public class ReflectionHandler {
 		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
 			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
+
+		registerLogAdapterClassesIfNeeded();
+		registerLogbackIfNeeded();
 	}
 
 	public void register(DuringSetupAccess a) {
