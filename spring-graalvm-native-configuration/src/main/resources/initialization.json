@@ -51,6 +51,20 @@
 ],
 "buildTimeInitialization":
 [
+  // Functional spring.factories
+  {"class": "org.springframework.boot.SpringBootFactories"},
+  {"class": "org.springframework.core.ResolvableType"},
+  {"class": "org.springframework.boot.context.properties.source.ConfigurationPropertyName"},
+  {"class": "org.springframework.boot.context.logging.LoggingApplicationListener"},
+  {"class": "org.springframework.boot.context.logging.ClasspathLoggingApplicationListener"},
+  {"class": "org.springframework.boot.context.config.ConfigFileApplicationListener"},
+  {"class": "org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor"},
+  {"class": "org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor"},
+  {"class": "org.springframework.boot.context.FileEncodingApplicationListener"},
+  {"class": "org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer"},
+  {"class": "org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter"},
+  {"class": "org.springframework.init.func.FunctionalInstallerListener"},
+
   // Spring Framework
   {"class": "org.springframework.aop.TargetSource"},
   {"class": "org.springframework.aop.framework.Advised"},
