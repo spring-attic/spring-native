@@ -126,7 +126,7 @@ public class ResourcesHandler {
 			registerPatterns(rd);
 			registerResourceBundles(rd);
 		}
-		if (ConfigOptions.isFeatureMode() || ConfigOptions.isFunctionalMode()) {
+		if (ConfigOptions.isFeatureMode()) {
 			processSpringFactories();
 			handleSpringConstantHints();
 		}
@@ -692,18 +692,16 @@ public class ResourcesHandler {
 		loadSpringFactoryFile(springFactory, p);
 		int excludedAutoConfigCount = 0;
 		Enumeration<Object> factoryKeys = p.keys();
-		
-		boolean specialHandlingForEnableAutoConfiguration = !ConfigOptions.isFunctionalMode();
 
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
 			SpringFeature.log("Adding all the classes for this key: " + k);
-			if (!(k.equals(enableAutoconfigurationKey) && specialHandlingForEnableAutoConfiguration) 
-				&& !k.equals(propertySourceLoaderKey) && !k.equals(applicationListenerKey)) {
+			if (!k.equals(enableAutoconfigurationKey) && !k.equals(propertySourceLoaderKey) && !k.equals(applicationListenerKey)) {
 				if (ts.shouldBeProcessed(k)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
+
 					}
 				} else {
 					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing guard types");
@@ -757,34 +755,32 @@ public class ResourcesHandler {
 
 		}
 
-		if (specialHandlingForEnableAutoConfiguration) {
-			// Handle EnableAutoConfiguration
-			String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
-			if (enableAutoConfigurationValues != null) {
-				List<String> configurations = new ArrayList<>();
-				for (String s : enableAutoConfigurationValues.split(",")) {
-					configurations.add(s);
-				}
-				System.out.println("Processing spring.factories - EnableAutoConfiguration lists #"
-						+ configurations.size() + " configurations");
-				for (String config : configurations) {
-					if (!checkAndRegisterConfigurationType(config)) {
-						if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-							excludedAutoConfigCount++;
-							SpringFeature.log("Excluding auto-configuration " + config);
-							forRemoval.add(config);
-						}
+		// Handle EnableAutoConfiguration
+		String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
+		if (enableAutoConfigurationValues != null) {
+			List<String> configurations = new ArrayList<>();
+			for (String s : enableAutoConfigurationValues.split(",")) {
+				configurations.add(s);
+			}
+			System.out.println("Processing spring.factories - EnableAutoConfiguration lists #" + configurations.size()
+					+ " configurations");
+			for (String config : configurations) {
+				if (!checkAndRegisterConfigurationType(config)) {
+					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+						excludedAutoConfigCount++;
+						SpringFeature.log("Excluding auto-configuration " + config);
+						forRemoval.add(config);
 					}
 				}
-				if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-					System.out.println(
-							"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
-					configurations.removeAll(forRemoval);
-					p.put(enableAutoconfigurationKey, String.join(",", configurations));
-					SpringFeature.log("These configurations are remaining in the EnableAutoConfiguration key value:");
-					for (int c = 0; c < configurations.size(); c++) {
-						SpringFeature.log((c + 1) + ") " + configurations.get(c));
-					}
+			}
+			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+				System.out.println(
+						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
+				configurations.removeAll(forRemoval);
+				p.put(enableAutoconfigurationKey, String.join(",", configurations));
+				SpringFeature.log("These configurations are remaining in the EnableAutoConfiguration key value:");
+				for (int c = 0; c < configurations.size(); c++) {
+					SpringFeature.log((c + 1) + ") " + configurations.get(c));
 				}
 			}
 		}
