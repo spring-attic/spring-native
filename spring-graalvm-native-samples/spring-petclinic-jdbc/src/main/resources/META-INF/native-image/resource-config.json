@@ -1,8 +1,5 @@
 {
   "bundles": [
     {"name":"messages/messages"}
-  ],
-  "resources": [
-    {"pattern": "templates/owners/ownersList.html"}
   ]
 }
