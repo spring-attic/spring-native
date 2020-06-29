@@ -1747,7 +1747,6 @@ public class Type {
 	 */
 	private void verifyProxyBeanMethodsSetting() {
 		List<Method> methodsWithAtBean = getMethodsWithAtBean();
-		System.out.println("methodsWithAtBean #" + methodsWithAtBean.size());
 		if (methodsWithAtBean.size() != 0) {
 			List<AnnotationNode> annos = collectAnnotations();
 			annos = filterAnnotations(annos,
@@ -1770,7 +1769,7 @@ public class Type {
 				}
 			}
 			if (!atLeastSetFalseSomewhere) {
-				throw new VerificationException("Component " + this.getDottedName() + " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
+				System.out.println("[verification] Warning: component " + this.getDottedName() + " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
 			}
 		}
 	}

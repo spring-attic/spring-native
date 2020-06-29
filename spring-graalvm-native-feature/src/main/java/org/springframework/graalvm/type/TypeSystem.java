@@ -73,9 +73,22 @@ public class TypeSystem {
 	private Map<String, List<File>> appPackages = new HashMap<>();
 
 	private Map<String, ResourcesDescriptor> resourceConfigurations;
+	
+	// Map from classpaths to TypeSystems managing those classpaths
+	private static Map<String, TypeSystem> typeSystems = new HashMap<>();
 
-	public static TypeSystem get(List<String> classpath) {
-		return new TypeSystem(classpath);
+	// A map from the types whose clinits make isPresent checks to the types that they are checking the presence
+	// of (the parameters to the isPresent calls)
+	private Map<String,List<String>> typesMakingIsPresentChecksInStaticInitializers;
+
+	public static synchronized TypeSystem get(List<String> classpath) {
+		String classpathString = classpath.toString();
+		TypeSystem ts = typeSystems.get(classpathString);
+		if (ts == null) {
+			ts = new TypeSystem(classpath);
+			typeSystems.put(classpathString, ts);
+		}
+		return ts;
 	}
 
 	public TypeSystem(List<String> classpath) {
@@ -772,5 +785,41 @@ public class TypeSystem {
 	public List<ComponentProcessor> getComponentProcessors() {
 		return SpringConfiguration.getComponentProcessors();
 	}
+
+	public synchronized Map<String,List<String>> getSpringClassesMakingIsPresentChecks() {
+		if (typesMakingIsPresentChecksInStaticInitializers == null) {
+			for (String classpathentry : classpath) {
+				if (classpathentry.endsWith(".jar") && classpathentry.contains("spring") && !classpathentry.contains("test")) {
+					try {
+						try (ZipFile zf = new ZipFile(classpathentry)) {
+							Enumeration<? extends ZipEntry> entries = zf.entries();
+							while (entries.hasMoreElements()) {
+								ZipEntry entry = entries.nextElement();
+								String name = entry.getName();
+								if (name.endsWith(".class")) {
+									List<String> presenceCheckedTypes = IsPresentDetectionVisitor.run(zf.getInputStream(entry));
+									if (presenceCheckedTypes != null) {
+										if (typesMakingIsPresentChecksInStaticInitializers == null) {
+											typesMakingIsPresentChecksInStaticInitializers = new HashMap<>();
+										}
+										typesMakingIsPresentChecksInStaticInitializers.put(name.substring(0,name.length()-6).replace('/', '.'),presenceCheckedTypes);
+									}
+								}
+							}
+						}
+					} catch (FileNotFoundException fnfe) {
+						System.err.println("WARNING: Unable to find jar '" + classpathentry + "' whilst scanning filesystem for isPresent() checking Spring classes");
+					} catch (IOException ioe) {
+						throw new RuntimeException("Problem during isPresent() checking scan of " + classpathentry, ioe);
+					}
+				}
+			}
+			if (typesMakingIsPresentChecksInStaticInitializers == null) {
+				typesMakingIsPresentChecksInStaticInitializers = Collections.emptyMap();
+			}
+		}
+		return typesMakingIsPresentChecksInStaticInitializers;
+	}
+
 
 }
