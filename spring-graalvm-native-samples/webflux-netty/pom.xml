@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<!-- <scope>test</scope> is commented as a workaround in order to wait for a fix for https://github.com/oracle/graal/issues/2490 -->
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.junit.vintage</groupId>
