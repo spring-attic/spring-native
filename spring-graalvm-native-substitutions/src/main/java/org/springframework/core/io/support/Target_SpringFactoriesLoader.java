@@ -8,37 +8,27 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.SpringBootFactories;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.graalvm.substitutions.NotFunctionalMode;
+import org.springframework.graalvm.substitutions.FunctionalMode;
 import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
-@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { NotFunctionalMode.class, OnlyIfPresent.class })
+@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { FunctionalMode.class, OnlyIfPresent.class })
 final class Target_SpringFactoriesLoader {
 
 	@Alias
 	private static Log logger;
 
-	// Workaround in order to wait for a fix for https://github.com/oracle/graal/issues/2490
+	@SuppressWarnings("unchecked")
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
-		Assert.notNull(factoryType, "'factoryType' must not be null");
-		ClassLoader classLoaderToUse = classLoader;
-		if (classLoaderToUse == null) {
-			classLoaderToUse = SpringFactoriesLoader.class.getClassLoader();
+		List<T> result = (List<T>) SpringBootFactories.factories.get(factoryType);
+		if (result == null) {
+			return new ArrayList<>();
 		}
-		List<String> factoryImplementationNames = loadFactoryNames(factoryType, classLoaderToUse);
-		if (logger.isTraceEnabled()) {
-			logger.trace("Loaded [" + factoryType.getName() + "] names: " + factoryImplementationNames);
-		}
-		List<T> result = new ArrayList<>(factoryImplementationNames.size());
-		for (String factoryImplementationName : factoryImplementationNames) {
-			if (!factoryImplementationName.startsWith("org.springframework.boot.test") && !factoryImplementationName.startsWith("org.springframework.test")) {
-				result.add(instantiateFactory(factoryImplementationName, factoryType, classLoaderToUse));
-			}
-		}
-		AnnotationAwareOrderComparator.sort(result);
+		// Error when using it, and we probably should do that at build time
+		// AnnotationAwareOrderComparator.sort(result);
 		return result;
 	}
 
