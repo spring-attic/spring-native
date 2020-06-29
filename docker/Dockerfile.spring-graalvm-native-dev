@@ -5,7 +5,7 @@ ARG USER
 ARG USER_ID
 ARG USER_GID
 
-RUN groupadd --gid "${USER_GID}" "${USER}" && \
+RUN (groupadd --gid "${USER_GID}" "${USER}" || echo "No groupadd needed") && \
     useradd \
       --uid ${USER_ID} \
       --gid ${USER_GID} \

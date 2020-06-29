@@ -91,7 +91,7 @@ done
 DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/docker" >/dev/null 2>&1 && pwd )"
 CONTAINER_HOME=/home/$USER
 CONTAINER_WORK_DIR=$CONTAINER_HOME/spring-graalvm-native
-DEV_IMAGE=$(test $OSTYPE = "darwin" && echo "Dockerfile.spring-graalvm-native-dev-mac" || echo "Dockerfile.spring-graalvm-native-dev")
+DEV_IMAGE=Dockerfile.spring-graalvm-native-dev
 
 if [ "$PULL" = true ] ; then
     echo "Updating container image if needed"
