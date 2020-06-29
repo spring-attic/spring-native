@@ -2,7 +2,7 @@
 
 ARTIFACT=spring-data-redis
 MAINCLASS=com.example.data.redis.RedisApplication
-VERSION=2.3.1.BUILD-SNAPSHOT
+VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -29,7 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -Dspring.native.verbose=true \
   -Dspring.native.remove-xml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.native.remove-spel-support=true \

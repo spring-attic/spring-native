@@ -2,7 +2,7 @@
 
 ARTIFACT=spring-data-mongodb
 MAINCLASS=com.example.data.mongo.MongoApplication
-VERSION=2.3.0.BUILD-SNAPSHOT
+VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
