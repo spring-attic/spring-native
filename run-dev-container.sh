@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 JAVA_VERSION=8
-GRAALVM_VERSION=20.1-dev
+GRAALVM_VERSION=master
 PULL=false
 REBUILD=false
 HOST_WORK_DIR="$( pwd )"
@@ -16,7 +16,7 @@ while test $# -gt 0; do
       echo "options:"
       echo "-h, --help                show brief help"
       echo "-j, --java=VERSION        specify Java version to use, can be 8 or 11, 8 by default"
-      echo "-g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, 20.1-dev by default"
+      echo "-g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, master by default"
       echo "-w, --workdir=/foo        specify the working directory, should be an absolute path, current one by default"
       echo "-p, --pull                force pulling of remote container images"
       echo "-r, --rebuild             force container image rebuild"
