@@ -122,15 +122,15 @@ public class ResourcesHandler {
 		// against the Resources object:
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
-		if (ConfigOptions.isFunctionalMode() || ConfigOptions.isFeatureMode()) {
+		if (ConfigOptions.isFunctionalMode() || ConfigOptions.isDefaultMode()) {
 			registerPatterns(rd);
 			registerResourceBundles(rd);
 		}
-		if (ConfigOptions.isFeatureMode()) {
+		if (ConfigOptions.isDefaultMode()) {
 			processSpringFactories();
 			handleSpringConstantHints();
 		}
-		if (ConfigOptions.isFeatureMode() || ConfigOptions.isHybridMode()) {
+		if (ConfigOptions.isDefaultMode() || ConfigOptions.isHybridMode()) {
 			handleSpringComponents();
 		}
 

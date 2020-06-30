@@ -143,7 +143,7 @@ public abstract class ConfigOptions {
 		return MODE==Mode.HYBRID;
 	}
 
-	public static boolean isFeatureMode() {
+	public static boolean isDefaultMode() {
 		return MODE==Mode.DEFAULT;
 	}
 
