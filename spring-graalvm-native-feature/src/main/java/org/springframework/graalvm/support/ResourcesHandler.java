@@ -924,6 +924,7 @@ public class ResourcesHandler {
 		boolean passesTests = true;
 		
 		TypeAccessRequestor tar = new TypeAccessRequestor();
+		
 		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
 			SpringFeature.log(spaces(depth) + hints.size() + " hints on " + type.getDottedName() + " are: ");
@@ -940,8 +941,7 @@ public class ResourcesHandler {
 
 				// This is used for hints that didn't gather data from the bytecode but had them
 				// directly encoded. For example when a CompilationHint on an ImportSelector
-				// encodes
-				// the types that might be returned from it.
+				// encodes the types that might be returned from it.
 				Map<String, Integer> specificNames = hint.getSpecificTypes();
 				if (specificNames.size() > 0) {
 					SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
@@ -1004,6 +1004,12 @@ public class ResourcesHandler {
 				List<Type> annotationChain = hint.getAnnotationChain();
 				registerAnnotationChain(depth, tar, annotationChain);
 			}
+		}
+
+		// TODO think about pulling out into extension mechanism for condition evaluators
+		// Special handling for @ConditionalOnWebApplication
+		if (!type.checkConditionalOnWebApplication() && (depth == 0 || isNestedConfiguration(type))) {
+			passesTests = false;
 		}
 
 		// TODO this should be pushed earlier and access requests put into tar
