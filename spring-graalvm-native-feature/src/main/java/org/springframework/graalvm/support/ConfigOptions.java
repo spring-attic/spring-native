@@ -43,6 +43,10 @@ public abstract class ConfigOptions {
 	
 	private final static Mode MODE; // Default is 'feature'
 	
+	// Temporary, for exploration
+	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
+	private final static boolean SKIP_AT_BEAN_SIGNATURE_TYPES;
+
 	enum Mode {
 		DEFAULT, // Default mode, provide everything
 		AGENT, // initialization-only configuration provided from the feature
@@ -51,6 +55,14 @@ public abstract class ConfigOptions {
 	}
 
 	static {
+		SKIP_AT_BEAN_HINT_PROCESSING = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-hint-processing", "false"));
+		if (SKIP_AT_BEAN_HINT_PROCESSING) {
+			System.out.println("Skipping @Bean hint processing");
+		}
+		SKIP_AT_BEAN_SIGNATURE_TYPES = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-signature-types-processing", "false"));
+		if (SKIP_AT_BEAN_SIGNATURE_TYPES) {
+			System.out.println("Skipping @Bean signature type processing");
+		}
 		String modeValue = System.getProperty("spring.native.mode","DEFAULT");
 		Mode inferredMode = Mode.valueOf(modeValue.toUpperCase());
 		if (inferredMode == null) {
@@ -153,6 +165,16 @@ public abstract class ConfigOptions {
 
 	public static String getDumpConfigLocation() {
 		return DUMP_CONFIG;
+	}
+
+	public static boolean isSkipAtBeanHintProcessing() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static boolean isSkipAtBeanSignatureTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
