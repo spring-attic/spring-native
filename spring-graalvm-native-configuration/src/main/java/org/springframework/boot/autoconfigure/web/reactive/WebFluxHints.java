@@ -33,18 +33,7 @@ import org.springframework.web.reactive.HandlerResult;
 @NativeImageHint(trigger=WebFluxAutoConfiguration.class,typeInfos = {
 	@TypeInfo(types= {DefaultClientCodecConfigurer.class,DefaultServerCodecConfigurer.class,
 			ClientCodecConfigurer.class, ServerCodecConfigurer.class, // TODO Also put in regular web auto config?
-			HandlerResult.class,
-			},
-			// These are from BaseDefaultCodecs - not sure on needed visibility
-			// TODO Aren't these also needed for non reactive auto configuration web? Is there a common configuration supertype between those
-			// configurations that they can be hung off
-			typeNames= {
-				"com.fasterxml.jackson.databind.ObjectMapper", 
-				"com.fasterxml.jackson.core.JsonGenerator",
-				"com.fasterxml.jackson.dataformat.smile.SmileFactory",
-				"com.google.protobuf.Message"
-			},
-			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS
+			HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS
 		),
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
