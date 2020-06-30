@@ -1879,4 +1879,38 @@ public class Type {
 			return t;
 		}
 	}
+
+	/**
+	 * Check if there is a @ConditionalOnWebApplication annotation on this type. If there is, check that web application condition
+	 * immediately (which is related to whether a certain type is on the classpath).
+	 * 
+	 * @return false if there is an @COWA and the specified web application type requirement cannot be met, otherwise true
+	 */
+	public boolean checkConditionalOnWebApplication() {
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode an : node.visibleAnnotations) {
+				if (an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;")) {
+					List<Object> values = an.values;
+					if (values != null) {
+						for (int i = 0; i < values.size(); i += 2) {
+							if (values.get(i).equals("type")) {
+								// [Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication$Type;, SERVLET]
+								String webApplicationType = ((String[]) values.get(i + 1))[1];
+								// SERVLET, REACTIVE, ANY
+								if (webApplicationType.equals("SERVLET")) {
+									// If GenericWebApplicationContext not around this check on SERVLET cannot pass
+									return typeSystem.resolveDotted("org.springframework.web.context.support.GenericWebApplicationContext",true)!=null;
+								}
+								if (webApplicationType.equals("REACTIVE")) {
+									// If HandlerResult not around this check on REACTIVE cannot pass
+									return typeSystem.resolveDotted("org.springframework.web.reactive.HandlerResult",true)!=null;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
 }

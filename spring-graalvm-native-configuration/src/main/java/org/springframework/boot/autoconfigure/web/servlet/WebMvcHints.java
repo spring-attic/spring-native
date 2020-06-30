@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.concurrent.Callable;
 
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
-
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
 import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
