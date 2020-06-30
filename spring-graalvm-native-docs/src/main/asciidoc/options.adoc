@@ -52,8 +52,8 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 
 The current feature options are as follows:
 
-* `-Dspring.native.mode=agent|feature|functional` switches how much configuration the feature actually provides
-to native-image.  The default is `feature` where it provides everything (including deep analysis of auto-configuration).
+* `-Dspring.native.mode=default|agent|functional` switches how much configuration the feature actually provides
+to native-image.  By default, it provides everything (including deep analysis of auto-configuration).
 `agent` should be used if only wishing the feature to provide substitutions and initialization configuration - in this
 mode you should have used the agent to collect the rest of the configuration.
 `functional` is when working with functional bean registration (Spring Fu style). In this mode the feature
