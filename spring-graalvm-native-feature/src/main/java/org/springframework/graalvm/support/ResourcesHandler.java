@@ -1084,14 +1084,13 @@ public class ResourcesHandler {
 					SpringFeature.log(spaces(depth) + "processing " + atBeanMethods.size() + " @Bean methods");
 				}
 				for (Method atBeanMethod : atBeanMethods) {
+					if (!ConfigOptions.isSkipAtBeanSignatureTypes()) {
 					Type returnType = atBeanMethod.getReturnType();
 					if (returnType == null) {
 						// I believe null means that type is not on the classpath so skip further
 						// analysis
 						continue;
 					} else {
-
-
 						// We will need access to Supplier and Flux because of this return type
 						Set<Type> ts = atBeanMethod.getSignatureTypes();
 						for (Type t: ts) {
@@ -1099,6 +1098,7 @@ public class ResourcesHandler {
 							tar.request(t.getDottedName(),
 									AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
 						}
+					}
 					}
 
 					// Processing this kind of thing, parameter types need to be exposed
@@ -1126,6 +1126,8 @@ public class ResourcesHandler {
 					// @ConditionalOnMissingBean
 					// @Bean
 					// public BuildProperties buildProperties() throws Exception {
+					
+					if (!ConfigOptions.isSkipAtBeanHintProcessing()) {
 					List<Hint> methodHints = atBeanMethod.getHints();
 					SpringFeature.log(spaces(depth) + "hints on method " + atBeanMethod + ":\n" + methodHints);
 					for (Hint hint : methodHints) {
@@ -1172,6 +1174,7 @@ public class ResourcesHandler {
 
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(depth, tar, annotationChain);
+					}
 					}
 
 					// Register other runtime visible annotations from the @Bean method. For example
