@@ -27,6 +27,8 @@
         <wro4j.version>1.8.0</wro4j.version>
 
         <jacoco.version>0.8.2</jacoco.version>
+
+        <spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
     </properties>
 
     <dependencies>

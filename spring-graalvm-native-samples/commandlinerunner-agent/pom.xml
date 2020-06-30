@@ -18,6 +18,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<start-class>com.example.commandlinerunner.CommandlinerunnerApplication</start-class>
+		<spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
 	</properties>
 	<dependencies>
 		<dependency>
