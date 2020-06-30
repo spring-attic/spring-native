@@ -11,9 +11,10 @@ import org.springframework.boot.context.event.EventPublishingRunListener;
 import org.springframework.boot.diagnostics.DiagnosticsProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.graalvm.substitutions.FunctionalMode;
 import org.springframework.graalvm.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.springframework.boot.SpringApplication", onlyWith = { OnlyIfPresent.class })
+@TargetClass(className = "org.springframework.boot.SpringApplication", onlyWith = { FunctionalMode.class, OnlyIfPresent.class })
 final class Target_SpringApplication {
 
 	@SuppressWarnings("unchecked")

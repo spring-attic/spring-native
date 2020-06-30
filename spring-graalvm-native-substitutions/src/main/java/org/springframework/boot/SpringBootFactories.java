@@ -69,7 +69,7 @@ public abstract class SpringBootFactories {
 
 		// PropertySourceLoader
 		factories.add(PropertySourceLoader.class, new PropertiesPropertySourceLoader());
-		if (!removeYamlSupport) {
+		if (removeYamlSupport) {
 			factories.add(PropertySourceLoader.class, new YamlPropertySourceLoader());
 		}
 
