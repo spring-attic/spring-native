@@ -44,17 +44,17 @@ public abstract class ConfigOptions {
 	private final static Mode MODE; // Default is 'feature'
 	
 	enum Mode {
+		DEFAULT, // Default mode, provide everything
 		AGENT, // initialization-only configuration provided from the feature
 		HYBRID, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
-		FEATURE, // Default mode, provide everything
 		FUNCTIONAL; // For functional style, feature provides initialization and resource configuration
 	}
 
 	static {
-		String modeValue = System.getProperty("spring.native.mode","FEATURE");
+		String modeValue = System.getProperty("spring.native.mode","DEFAULT");
 		Mode inferredMode = Mode.valueOf(modeValue.toUpperCase());
 		if (inferredMode == null) {
-			MODE = Mode.FEATURE;
+			MODE = Mode.DEFAULT;
 		} else {
 			MODE = inferredMode;
 		}
@@ -144,7 +144,7 @@ public abstract class ConfigOptions {
 	}
 
 	public static boolean isFeatureMode() {
-		return MODE==Mode.FEATURE;
+		return MODE==Mode.DEFAULT;
 	}
 
 	public static boolean isFunctionalMode() {
