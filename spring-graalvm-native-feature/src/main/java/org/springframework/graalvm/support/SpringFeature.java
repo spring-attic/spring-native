@@ -65,7 +65,7 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
-		if (ConfigOptions.isFeatureMode()) {
+		if (ConfigOptions.isDefaultMode()) {
 			reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
@@ -80,7 +80,7 @@ public class SpringFeature implements Feature {
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		resourcesHandler.register(access);
 		buildTimeInitializationHandler.register(access);
-		if (ConfigOptions.isFeatureMode()) {
+		if (ConfigOptions.isDefaultMode()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}
