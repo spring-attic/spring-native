@@ -91,6 +91,9 @@
   {"class": "org.springframework.context.annotation.ConfigurationClassPostProcessor"},
   {"class": "org.springframework.context.annotation.ConfigurationClassEnhancer"},
   {"class": "org.springframework.aop.framework.DefaultAopProxyFactory"},
+  {"class": "org.springframework.jdbc.support.JdbcAccessor"},
+  {"class": "org.springframework.jdbc.support.JdbcTransactionManager"},
+  {"class": "org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader"},
 
   // For SPEL removal
   {"class": "org.springframework.context.support.AbstractApplicationContext" },
