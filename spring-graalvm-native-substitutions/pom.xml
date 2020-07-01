@@ -91,6 +91,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native-configuration</artifactId>
 			<version>0.8.0-SNAPSHOT</version>
