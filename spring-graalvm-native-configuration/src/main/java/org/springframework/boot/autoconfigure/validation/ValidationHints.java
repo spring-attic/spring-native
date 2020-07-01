@@ -22,7 +22,6 @@ import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.engine.resolver.JPATraversableResolver;
 import org.hibernate.validator.internal.engine.resolver.TraversableResolvers;
 import org.hibernate.validator.internal.util.logging.Messages;
-import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
@@ -38,7 +37,6 @@ import org.springframework.graalvm.type.AccessBits;
 			AbstractMessageInterpolator.class,
 			JPATraversableResolver.class,
 			TraversableResolvers.class,
-			ValidationBootstrapParameters.class,
 			PlatformResourceBundleLocator.class,
 			ConfigurationImpl.class,
 			Messages.class,
