@@ -128,7 +128,8 @@ public abstract class SpringBootFactories {
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getInvalidConfigurationPropertyValueFailureAnalyzer());
 
 		if (isAutoconfigurePresent) {
-			factories.add(FailureAnalyzer.class, AutoconfigureAnalyzerProvider.getNoSuchBeanDefinitionFailureAnalyzer());
+			// No NoSuchBeanDefinitionFailureAnalyzer since it triggers usage of org.springframework.core.type.classreading stuff
+			//factories.add(FailureAnalyzer.class, AutoconfigureAnalyzerProvider.getNoSuchBeanDefinitionFailureAnalyzer());
 			if (isFlywayPresent) {
 				factories.add(FailureAnalyzer.class, FlywayProvider.getFlywayMigrationScriptMissingFailureAnalyzer());
 			}
