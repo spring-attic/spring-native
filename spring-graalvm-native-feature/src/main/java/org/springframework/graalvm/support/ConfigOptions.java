@@ -168,13 +168,11 @@ public abstract class ConfigOptions {
 	}
 
 	public static boolean isSkipAtBeanHintProcessing() {
-		// TODO Auto-generated method stub
-		return false;
+		return SKIP_AT_BEAN_HINT_PROCESSING;
 	}
 
 	public static boolean isSkipAtBeanSignatureTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		return SKIP_AT_BEAN_SIGNATURE_TYPES;
 	}
 
 }
