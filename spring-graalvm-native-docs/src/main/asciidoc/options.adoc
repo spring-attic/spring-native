@@ -38,6 +38,8 @@ You can use it with specific classes or package specified if needed.
 * `-H:+PrintAnalysisCallTree` helps to find what classes, methods, and fields are used and why.
 You can find more details in GraalVM https://github.com/oracle/graal/blob/master/substratevm/REPORTS.md[reports documentation].
 
+* `-H:ReportAnalysisForbiddenType=com.example.Foo` helps to find why the specified class is included in the native image.
+
 * `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
 
 * `-H:+RemoveSaturatedTypeFlows` reduces build time and decrease build memory consumption, especially for big projects.
