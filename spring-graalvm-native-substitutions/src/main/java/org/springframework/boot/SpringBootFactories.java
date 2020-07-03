@@ -87,9 +87,9 @@ public abstract class SpringBootFactories {
 		}
 
 		// ApplicationListener
-		factories.add(ApplicationListener.class, new ClearCachesApplicationListener());
+		//factories.add(ApplicationListener.class, new ClearCachesApplicationListener());
 		factories.add(ApplicationListener.class, new ParentContextCloserApplicationListener());
-		factories.add(ApplicationListener.class, new CloudFoundryVcapEnvironmentPostProcessor());
+		//factories.add(ApplicationListener.class, new CloudFoundryVcapEnvironmentPostProcessor());
 		factories.add(ApplicationListener.class, new FileEncodingApplicationListener());
 		factories.add(ApplicationListener.class, new AnsiOutputApplicationListener());
 		factories.add(ApplicationListener.class, new ConfigFileApplicationListener());
@@ -106,10 +106,10 @@ public abstract class SpringBootFactories {
 		factories.add(ApplicationListener.class, new NativePropertiesListener());
 
 		// EnvironmentPostProcessor
-		factories.add(EnvironmentPostProcessor.class, new CloudFoundryVcapEnvironmentPostProcessor());
+		//factories.add(EnvironmentPostProcessor.class, new CloudFoundryVcapEnvironmentPostProcessor());
 		factories.add(EnvironmentPostProcessor.class, new SpringApplicationJsonEnvironmentPostProcessor());
 		factories.add(EnvironmentPostProcessor.class, new SystemEnvironmentPropertySourceEnvironmentPostProcessor());
-		factories.add(EnvironmentPostProcessor.class, new DebugAgentEnvironmentPostProcessor());
+		//factories.add(EnvironmentPostProcessor.class, new DebugAgentEnvironmentPostProcessor());
 
 		// FailureAnalyzer
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getBeanCurrentlyInCreationFailureAnalyzer());

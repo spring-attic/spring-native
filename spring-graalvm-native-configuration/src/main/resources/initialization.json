@@ -94,6 +94,13 @@
   {"class": "org.springframework.jdbc.support.JdbcAccessor"},
   {"class": "org.springframework.jdbc.support.JdbcTransactionManager"},
   {"class": "org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader"},
+  {"class": "org.springframework.core.annotation.TypeMappedAnnotations"},
+  {"class": "org.springframework.core.io.support.SpringFactoriesLoader"},
+
+  // Caches
+  {"class": "org.springframework.util.ReflectionUtils"},
+  {"class": "org.springframework.core.annotation.AnnotationUtils"},
+  {"class": "org.springframework.beans.CachedIntrospectionResults"},
 
   // For SPEL removal
   {"class": "org.springframework.context.support.AbstractApplicationContext" },
