@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.json.JSONArray;
 import org.springframework.graalvm.json.JSONObject;
 
@@ -66,11 +67,15 @@ public class JsonMarshaller {
 		}
 	}
 
-	public static ReflectionDescriptor read(InputStream inputStream) throws Exception {
-		ReflectionDescriptor metadata = toReflectionDescriptor(new JSONArray(toString(inputStream)));
-		return metadata;
+	public static ReflectionDescriptor read(InputStream inputStream) {
+		try {
+			ReflectionDescriptor metadata = toReflectionDescriptor(new JSONArray(toString(inputStream)));
+			return metadata;
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to read ReflectionDescriptor from inputstream", e);
+		}
 	}
-	
+
 	private static ReflectionDescriptor toReflectionDescriptor(JSONArray array) throws Exception {
 		ReflectionDescriptor rd = new ReflectionDescriptor();
 		for (int i=0;i<array.length();i++) {

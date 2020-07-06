@@ -70,6 +70,11 @@ public class DynamicProxiesHandler {
 		dynamicProxySupport.addProxyClass(interfaces);
 	}
 
+	public void registerHybrid(DuringSetupAccess a) {
+		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+		imageClassLoader = access.getImageClassLoader();
+	}
+
 	public void register(DuringSetupAccess a) {
 		ProxiesDescriptor pd = compute();
 		System.out.println("Attempting proxy registration of #"+pd.getProxyDescriptors().size()+" proxies");

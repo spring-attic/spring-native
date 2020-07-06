@@ -16,10 +16,21 @@
 package org.springframework.boot.autoconfigure;
 
 import org.springframework.graalvm.extension.NativeImageHint;
+
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
+@NativeImageHint(trigger=ImportAutoConfigurationImportSelector.class, typeInfos={
+		@TypeInfo(types= { 
+				ImportAutoConfiguration.class }, typeNames = {
+				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
+			})
+})
 @NativeImageHint(trigger=AutoConfigurationImportSelector.class)
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },

@@ -37,6 +37,7 @@ org.springframework.boot.context.ContextHints
 org.springframework.cache.annotation.CachingHints
 org.springframework.cloud.function.context.config.ContextFunctionCatalogHints
 org.springframework.cloud.function.web.mvc.RequestProcessorHints
+org.springframework.cloud.gateway.config.GatewayHints
 org.springframework.context.annotation.ContextAnnotationHints
 org.springframework.core.annotation.CoreAnnotationHints
 org.springframework.data.jpa.repository.support.EntityManagerHints

@@ -44,6 +44,8 @@ import java.util.zip.ZipFile;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.springframework.graalvm.domain.reflect.JsonMarshaller;
+import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
@@ -73,6 +75,8 @@ public class TypeSystem {
 	private Map<String, List<File>> appPackages = new HashMap<>();
 
 	private Map<String, ResourcesDescriptor> resourceConfigurations;
+	
+	private Map<String, ReflectionDescriptor> reflectionConfigurations;
 	
 	// Map from classpaths to TypeSystems managing those classpaths
 	private static Map<String, TypeSystem> typeSystems = new HashMap<>();
@@ -673,6 +677,35 @@ public class TypeSystem {
 			}
 		}
 		return this.resourceConfigurations;
+	}
+	
+
+	public Map<String, ReflectionDescriptor> getReflectionConfigurationsOnClasspath() {
+		if (this.reflectionConfigurations == null) {
+			Map<String,ReflectionDescriptor> configs = new HashMap<>();
+			for (String s: classpath) {
+				File f = new File(s);
+				if (f.isDirectory()) {
+					searchDir(f, filepath -> { 
+						return filepath.contains("META-INF/native-image") && filepath.endsWith("reflect-config.json");
+					},
+					JsonMarshaller::read,
+					configs);
+				} else if (f.isFile() && f.toString().endsWith(".jar")) {
+					searchJar(f, filepath -> { 
+						return filepath.contains("META-INF/native-image") && filepath.endsWith("reflect-config.json");
+					}, 
+					JsonMarshaller::read,
+					configs);
+				}
+			}
+			if (configs.isEmpty()) {
+				this.reflectionConfigurations = Collections.emptyMap();
+			} else {
+				this.reflectionConfigurations = configs;
+			}
+		}
+		return this.reflectionConfigurations;
 	}
 	
 
