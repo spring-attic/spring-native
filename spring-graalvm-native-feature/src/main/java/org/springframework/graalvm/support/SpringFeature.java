@@ -65,7 +65,7 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
-		if (ConfigOptions.isDefaultMode()) {
+		if (ConfigOptions.isDefaultMode() || ConfigOptions.isHybridMode()) {
 			reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
@@ -74,6 +74,7 @@ public class SpringFeature implements Feature {
 		}
 		if (ConfigOptions.isHybridMode()) {
 			reflectionHandler.registerHybrid(access);
+			dynamicProxiesHandler.registerHybrid(access);
 		}
 	}
 

@@ -28,6 +28,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
 import org.springframework.graalvm.support.ConfigOptions;
@@ -47,11 +48,14 @@ public class Type {
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	public final static String AtSpringBootApplication = "Lorg/springframework/boot/autoconfigure/SpringBootApplication;";
+	public final static String AtController = "Lorg/springframework/stereotype/Controller;";
 	public final static String AtRepository = "Lorg/springframework/stereotype/Repository;";
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
 	public final static String ImportSelector = "Lorg/springframework/context/annotation/ImportSelector;";
+	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
 
 	public final static Type MISSING = new Type(null, null, 0);
@@ -706,6 +710,14 @@ public class Type {
 			return false;
 		}
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
+	}
+
+	public boolean isAtSpringBootApplication() {
+		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtSpringBootApplication),new HashSet<>());
+	}
+
+	public boolean isAtController() {
+		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtController),new HashSet<>());
 	}
 
 	public boolean isAbstractNestedCondition() {
@@ -1912,5 +1924,23 @@ public class Type {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * For annotation types this will return true if any of the members of the annotation
+	 * are using @AliasFor (implying they need a proxy at runtime)
+	 * For example:
+	 * <pre><code>
+	 * @AliasFor(annotation = RequestMapping.class)
+	 * String name() default "";
+	 * </code></pre>
+	 */
+	public boolean hasAliasForMarkedMembers() {
+		for (Method m: getMethods()) {
+			if (m.hasAliasForAnnotation()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

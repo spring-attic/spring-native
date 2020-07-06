@@ -53,6 +53,7 @@ import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.graalvm.domain.reflect.Flag;
+import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
@@ -122,18 +123,21 @@ public class ResourcesHandler {
 		// against the Resources object:
 		// resourcesRegistry.addResources("*");
 		// Resources.registerResource(relativePath, inputstream);
-		if (ConfigOptions.isFunctionalMode() || ConfigOptions.isDefaultMode()) {
+		if (ConfigOptions.isFunctionalMode() ||
+			ConfigOptions.isDefaultMode() ||
+			ConfigOptions.isHybridMode()) {
 			registerPatterns(rd);
 			registerResourceBundles(rd);
 		}
-		if (ConfigOptions.isDefaultMode()) {
+		if (ConfigOptions.isDefaultMode() ||
+			ConfigOptions.isHybridMode()) {
 			processSpringFactories();
 			handleSpringConstantHints();
 		}
-		if (ConfigOptions.isDefaultMode() || ConfigOptions.isHybridMode()) {
+		if (ConfigOptions.isDefaultMode() ||
+			ConfigOptions.isHybridMode()) {
 			handleSpringComponents();
 		}
-
 	}
 
 	private void registerPatterns(ResourcesDescriptor rd) {
@@ -183,18 +187,22 @@ public class ResourcesHandler {
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		if (springComponents.hasMoreElements()) {
 			log("Processing existing META-INF/spring.components files...");
-			if (!ConfigOptions.isHybridMode()) {
-				while (springComponents.hasMoreElements()) {
-					URL springFactory = springComponents.nextElement();
-					Properties p = new Properties();
-					loadSpringFactoryFile(springFactory, p);
+			while (springComponents.hasMoreElements()) {
+				URL springFactory = springComponents.nextElement();
+				Properties p = new Properties();
+				loadSpringFactoryFile(springFactory, p);
+				if (ConfigOptions.isHybridMode()) {
+					processSpringComponentsHybrid(p, context);
+				} else {
 					processSpringComponents(p, context);
 				}
 			}
 		} else {
 			log("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
-			if (!ConfigOptions.isHybridMode()) {
+			if (ConfigOptions.isHybridMode()) {
+				processSpringComponentsHybrid(p, context);
+			} else {
 				processSpringComponents(p, context);
 			}
 		}
@@ -226,6 +234,46 @@ public class ResourcesHandler {
 			throw new IllegalStateException(e);
 		}
 		return p;
+	}
+	
+	private void processSpringComponentsHybrid(Properties p, NativeImageContext context) {
+		Enumeration<Object> keys = p.keys();
+		while (keys.hasMoreElements()) {
+			String key = (String)keys.nextElement();
+			String valueString = (String)p.get(key);
+			if (valueString.equals("package-info")) {
+				continue;
+			}
+			Type keyType = ts.resolveDotted(key);
+			// The context start/stop test may not exercise the @SpringBootApplication class
+			if (keyType.isAtSpringBootApplication()) {
+				System.out.println("HYBRID: adding access to "+keyType+" since @SpringBootApplication");
+				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
+				resourcesRegistry.addResources(key.replace(".", "/")+".class");
+			}
+			if (keyType.isAtController()) {
+				System.out.println("HYBRID: Processing controller "+key);
+				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
+				// Example:
+				// @GetMapping("/greeting")
+				// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+				for (Method mapping: mappings) {
+					for (int pi=0;pi<mapping.getParameterCount();pi++) {
+						List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
+						for (Type parameterAnnotationType: parameterAnnotationTypes) {
+							if (parameterAnnotationType.hasAliasForMarkedMembers()) {
+								List<String> interfaces = new ArrayList<>();
+								interfaces.add(parameterAnnotationType.getDottedName());
+								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+								System.out.println("Adding dynamic proxy for "+interfaces);
+								dynamicProxiesHandler.addProxy(interfaces);
+							}
+						}
+						
+					}
+				}
+			}
+		}
 	}
 
 	// TODO shouldn't this code just call into processType like we do for discovered
@@ -694,6 +742,7 @@ public class ResourcesHandler {
 		Enumeration<Object> factoryKeys = p.keys();
 
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
+		if (!ConfigOptions.isHybridMode()) {
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
 			SpringFeature.log("Adding all the classes for this key: " + k);
@@ -701,14 +750,15 @@ public class ResourcesHandler {
 				if (ts.shouldBeProcessed(k)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
-
 					}
 				} else {
 					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing guard types");
 				}
 			}
 		}
+		}
 
+		if (!ConfigOptions.isHybridMode()) {
 		// Handle ApplicationListener
 		String applicationListenerValues = (String) p.get(applicationListenerKey);
 		if (applicationListenerValues != null) {
@@ -731,7 +781,9 @@ public class ResourcesHandler {
 			p.put(applicationListenerKey, String.join(",", applicationListeners));
 
 		}
+		}
 
+		if (!ConfigOptions.isHybridMode()) {
 		// Handle PropertySourceLoader
 		String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
 		if (propertySourceLoaderValues != null) {
@@ -752,8 +804,14 @@ public class ResourcesHandler {
 				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
 			}
 			p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
-
 		}
+		}
+		/*
+		if (ConfigOptions.isHybridMode()) {
+			ConfigOptions.setRemoval(false);
+		}
+		*/
+
 
 		// Handle EnableAutoConfiguration
 		String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
@@ -977,8 +1035,16 @@ public class ResourcesHandler {
 							SpringFeature.log(spaces(depth) + "inferred type " + s + " not found");
 						}
 						if (exists) {
-							// TODO if already there, should we merge access required values?
-							tar.request(s, inferredType.getValue());
+							
+							// Inferred types are how we follow configuration classes, we don't need to add these - 
+							// we could rely on the existing config (from the surefire run) to tell us whether to follow some
+							// things here..
+							// Do we not follow if it is @Configuration and missing from the existing other file? 
+							
+							//if (!ConfigOptions.isHybridMode()) {
+								tar.request(s, inferredType.getValue());
+							//}
+							
 							if (hint.isFollow()) {
 								SpringFeature.log(spaces(depth) + "will follow " + t);
 								toFollow.add(t);
@@ -1190,7 +1256,15 @@ public class ResourcesHandler {
 				}
 			}
 			// Follow transitively included inferred types only if necessary:
+
+
 			for (Type t : toFollow) {
+				boolean shouldFollow = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
+				System.out.println("HYBRID: Was going to follow "+t.getDottedName()+" (found when looking at "+type.getName()+") - was mentioned in existing config? "+shouldFollow);
+				if (ConfigOptions.isHybridMode() && t.isAtConfiguration() && !shouldFollow) {
+					System.out.println("HYBRID: Not following "+t.getDottedName()+" from "+type.getName()+" - not mentioned in existing reflect configuration");
+					continue;
+				}
 				try {
 					boolean b = processType(t, visited, depth + 1);
 					if (!b) {
@@ -1255,6 +1329,16 @@ public class ResourcesHandler {
 		return passesTests;
 	}
 	
+	private boolean existingReflectionConfigContains(String s) {
+		Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts.getReflectionConfigurationsOnClasspath();
+		for (ReflectionDescriptor rd: reflectionConfigurationsOnClasspath.values()) {
+			if (rd.hasClassDescriptor(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Crude guess at nested configuration.
 	 */

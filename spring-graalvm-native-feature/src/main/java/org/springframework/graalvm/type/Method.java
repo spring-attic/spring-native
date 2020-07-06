@@ -69,6 +69,30 @@ public class Method {
 		return hints.size()==0?Collections.emptyList():hints;
 	}
 	
+	public List<Type> getParameterAnnotationTypes(int parameterIndex) {
+		List<Type> results = null;
+		System.out.println("Method is "+toString()+
+				" pi = "+parameterIndex+
+				" total = "+(mn.visibleParameterAnnotations==null?"null":mn.visibleParameterAnnotations.length));
+		if (mn.visibleParameterAnnotations!= null) {
+			if (parameterIndex < mn.visibleParameterAnnotations.length) {
+				List<AnnotationNode> pas = mn.visibleParameterAnnotations[parameterIndex];
+				if (pas != null) {
+					for (AnnotationNode an: pas) {
+						Type annotationType = typeSystem.Lresolve(an.desc, true);
+						if (annotationType != null) {
+							if (results == null) {
+								results = new ArrayList<>();
+							}
+							results.add(annotationType);
+						}
+					}
+				}
+			}
+		}
+		return results == null? Collections.emptyList():results;
+	}
+	
 	public List<Type> getAnnotationTypes() {
 		List<Type> results = null;
 		if (mn.visibleAnnotations!= null) {
@@ -213,6 +237,37 @@ public class Method {
 			}
 		}
 		return results==null?Collections.emptyList():results;
+	}
+
+	public boolean isAtMapping() {
+		if (mn.visibleAnnotations!= null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				if (an.desc.equals(Type.AtMapping)) {
+					return true;
+				}
+				Type annotationType = typeSystem.Lresolve(an.desc, true);
+				boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping));
+				if (metaUsage) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public int getParameterCount() {
+		return mn.parameters==null?0:mn.parameters.size();
+	}
+
+	public boolean hasAliasForAnnotation() {
+		if (mn.visibleAnnotations!= null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				if (an.desc.equals(Type.AtAliasFor)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 
