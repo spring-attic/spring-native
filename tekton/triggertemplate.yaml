@@ -1,0 +1,39 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: github-template
+spec:
+  params:
+    - name: gitrevision
+    - name: gitrepositoryurl
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: TaskRun
+      metadata:
+        generateName: github-run-
+      spec:
+        taskSpec:
+          inputs:
+            resources:
+              - name: source
+                type: git
+          steps:
+            - image: ubuntu
+              script: |
+                #! /bin/bash
+                ls -al $(inputs.resources.source.path)
+        podTemplate:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001 
+        inputs:
+          resources:
+            - name: source
+              resourceSpec:
+                type: git
+                params:
+                  - name: revision
+                    value: $(params.gitrevision)
+                  - name: url
+                    value: $(tt.params.gitrepositoryurl)
