@@ -71,9 +71,9 @@ public class Method {
 	
 	public List<Type> getParameterAnnotationTypes(int parameterIndex) {
 		List<Type> results = null;
-		System.out.println("Method is "+toString()+
-				" pi = "+parameterIndex+
-				" total = "+(mn.visibleParameterAnnotations==null?"null":mn.visibleParameterAnnotations.length));
+		//System.out.println("Method is "+toString()+
+		//		" pi = "+parameterIndex+
+		//		" total = "+(mn.visibleParameterAnnotations==null?"null":mn.visibleParameterAnnotations.length));
 		if (mn.visibleParameterAnnotations!= null) {
 			if (parameterIndex < mn.visibleParameterAnnotations.length) {
 				List<AnnotationNode> pas = mn.visibleParameterAnnotations[parameterIndex];

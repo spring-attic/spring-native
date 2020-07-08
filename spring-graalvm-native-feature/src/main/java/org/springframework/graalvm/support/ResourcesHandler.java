@@ -1035,7 +1035,7 @@ public class ResourcesHandler {
 							SpringFeature.log(spaces(depth) + "inferred type " + s + " not found");
 						}
 						if (exists) {
-							
+							// TODO
 							// Inferred types are how we follow configuration classes, we don't need to add these - 
 							// we could rely on the existing config (from the surefire run) to tell us whether to follow some
 							// things here..
@@ -1256,11 +1256,8 @@ public class ResourcesHandler {
 				}
 			}
 			// Follow transitively included inferred types only if necessary:
-
-
 			for (Type t : toFollow) {
 				boolean shouldFollow = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
-				System.out.println("HYBRID: Was going to follow "+t.getDottedName()+" (found when looking at "+type.getName()+") - was mentioned in existing config? "+shouldFollow);
 				if (ConfigOptions.isHybridMode() && t.isAtConfiguration() && !shouldFollow) {
 					System.out.println("HYBRID: Not following "+t.getDottedName()+" from "+type.getName()+" - not mentioned in existing reflect configuration");
 					continue;
