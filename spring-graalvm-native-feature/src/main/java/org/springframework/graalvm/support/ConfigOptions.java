@@ -23,7 +23,7 @@ package org.springframework.graalvm.support;
  */
 public abstract class ConfigOptions {
 
-	private static boolean REMOVE_UNUSED_AUTOCONFIG;
+	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
 	private final static boolean REMOVE_YAML_SUPPORT;
 
@@ -173,10 +173,6 @@ public abstract class ConfigOptions {
 
 	public static boolean isSkipAtBeanSignatureTypes() {
 		return SKIP_AT_BEAN_SIGNATURE_TYPES;
-	}
-
-	protected static void setRemoval(boolean b) {
-		REMOVE_UNUSED_AUTOCONFIG = b;
 	}
 
 }
