@@ -154,7 +154,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.spel.ignore=true -Dspring.xml.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+                            <argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.xml.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
 <!--
 							<excludes>
 							  <exclude>**/*Test.java</exclude>
@@ -174,7 +174,7 @@
                         <version>20.1.0</version>
                         <configuration>
                             <imageName>${start-class}</imageName>
-                            <buildArgs>-H:+PrintAOTCompilation -H:+PrintHeapHistogram -H:EnableURLProtocols=http --no-fallback -Dspring.native.mode=hybrid -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
+                            <buildArgs>-H:+PrintAOTCompilation -H:+PrintHeapHistogram -H:EnableURLProtocols=http --no-fallback -Dspring.native.mode=hybrid -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
                         </configuration>
                         <executions>
                             <execution>
