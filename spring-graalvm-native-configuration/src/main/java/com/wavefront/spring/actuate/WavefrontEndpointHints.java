@@ -1,8 +1,14 @@
 package com.wavefront.spring.actuate;
 
-import com.sun.management.GarbageCollectionNotificationInfo;
-import com.sun.management.OperatingSystemMXBean;
-import com.sun.management.UnixOperatingSystemMXBean;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
@@ -42,7 +48,6 @@ import org.springframework.graalvm.extension.TypeInfo;
 				io.micrometer.core.instrument.binder.tomcat.TomcatMetrics.class,
 				io.micrometer.core.instrument.composite.CompositeMeterRegistry.class,
 				io.micrometer.core.instrument.config.MeterFilter.class,
-				io.micrometer.core.instrument.config.MeterFilter.class,
 				io.micrometer.core.instrument.config.MeterRegistryConfig.class,
 				io.micrometer.core.instrument.push.PushMeterRegistry.class,
 				io.micrometer.core.instrument.push.PushRegistryConfig.class,
@@ -53,9 +58,15 @@ import org.springframework.graalvm.extension.TypeInfo;
 				org.springframework.web.client.RestTemplate.class,
 				org.springframework.http.client.SimpleClientHttpRequestFactory.class,
 				ControllerEndpoint.class,
-				UnixOperatingSystemMXBean.class,
-				OperatingSystemMXBean.class,
-				GarbageCollectionNotificationInfo.class
+				JvmGcMetrics.class,
+				JvmMemoryMetrics.class,
+				JvmThreadMetrics.class,
+				LogbackMetrics.class,
+				FileDescriptorMetrics.class,
+				ProcessorMetrics.class,
+				UptimeMetrics.class,
+				TomcatMetrics.class,
+				CompositeMeterRegistry.class,
 }, typeNames = {"com.wavefront.opentracing.reporting.Reporter",
 				"com.wavefront.spring.autoconfigure.AccountManagementEnvironmentPostProcessor",
 				"com.wavefront.spring.autoconfigure.WavefrontMetricsConfiguration",
