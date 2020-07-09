@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.0-SNAPSHOT</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>wavefront</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>tomcat</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
+		<tomcat.version>9.0.37-dev</tomcat.version>
+		<wavefront.version>2.0.0-SNAPSHOT</wavefront.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graalvm-native</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-indexer</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-websocket</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.wavefront</groupId>
+				<artifactId>wavefront-spring-boot-bom</artifactId>
+				<version>${wavefront.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Hoxton.SR6</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+			<repository>
+					<id>central</id>
+					<url>https://repo.maven.apache.org/maven2</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-release</id>
+					<name>Spring release</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-snapshot</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+							<enabled>true</enabled>
+					</snapshots>
+			</repository>
+			<repository>
+					<id>spring-milestone</id>
+					<name>Spring Milestone</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</repository>
+	</repositories>
+
+	<pluginRepositories>
+			<pluginRepository>
+					<id>central</id>
+					<url>https://repo.maven.apache.org/maven2</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-release</id>
+					<name>Spring release</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-snapshot</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+							<enabled>true</enabled>
+					</snapshots>
+			</pluginRepository>
+			<pluginRepository>
+					<id>spring-milestone</id>
+					<name>Spring Milestone</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+							<enabled>false</enabled>
+					</snapshots>
+			</pluginRepository>
+	</pluginRepositories>
+	
+
+</project>
