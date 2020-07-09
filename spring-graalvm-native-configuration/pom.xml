@@ -211,6 +211,13 @@
 			<artifactId>spring-data-mongodb</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-spring-boot</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 		<dependency>
 			<groupId>junit</groupId>
