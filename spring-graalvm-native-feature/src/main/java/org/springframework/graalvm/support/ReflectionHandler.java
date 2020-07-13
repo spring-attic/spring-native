@@ -524,8 +524,7 @@ public class ReflectionHandler {
 			System.out.println("Logback not found, skipping registration logback types");
 			return;
 		}
-		addAccess("org.springframework.boot.logging.logback.LogbackLoggingSystem", Flag.allDeclaredConstructors,
-				Flag.allDeclaredMethods);
+		addAccess("org.springframework.boot.logging.logback.LogbackLoggingSystem", Flag.allDeclaredConstructors);
 
 		for (String p : logBackPatterns) {
 			if (p.startsWith("org")) {
