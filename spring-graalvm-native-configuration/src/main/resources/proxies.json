@@ -36,30 +36,5 @@
   ["org.hibernate.query.spi.QueryImplementor"],
 
   // Lettuce
-  ["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"],
-
-  // Wavefront
-  ["org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath", "org.springframework.boot.web.servlet.ServletContextInitializer", "org.springframework.core.Ordered"],
-  ["io.micrometer.wavefront.WavefrontConfig", "io.micrometer.core.instrument.push.PushRegistryConfig"],
-  ["com.wavefront.sdk.common.WavefrontSender", "java.lang.Runnable"],
-  ["java.util.List", "java.util.RandomAccess", "java.lang.Cloneable", "java.io.Serializable", "java.util.Collection"],
-  ["org.springframework.aop.scope.ScopedObject", "java.io.Serializable", "org.springframework.aop.framework.AopInfrastructureBean", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"],
-  ["brave.sampler.SamplerFunction", "java.lang.Comparable", "java.io.Serializable"],
-  ["org.springframework.core.task.AsyncListenableTaskExecutor", "org.springframework.scheduling.SchedulingTaskExecutor", "org.springframework.beans.factory.BeanNameAware", "org.springframework.beans.factory.InitializingBean", "org.springframework.beans.factory.DisposableBean", "java.util.concurrent.ThreadFactory", "java.io.Serializable"],
-  ["org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"],
-  ["org.springframework.cloud.sleuth.annotation.SleuthMethodInvocationProcessor", "org.springframework.beans.factory.BeanFactoryAware"],
-  ["org.springframework.context.ApplicationContextAware", "org.springframework.core.env.EnvironmentCapable", "org.springframework.context.EnvironmentAware", "javax.servlet.Servlet", "javax.servlet.ServletConfig", "java.io.Serializable"],
-  ["org.springframework.beans.factory.BeanFactoryAware", "org.springframework.beans.factory.InitializingBean", "org.springframework.web.servlet.HandlerAdapter", "org.springframework.core.Ordered", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"],
-  ["org.springframework.web.servlet.handler.MatchableHandlerMapping", "org.springframework.context.EmbeddedValueResolverAware", "org.springframework.beans.factory.InitializingBean", "org.springframework.web.servlet.HandlerMapping", "org.springframework.core.Ordered", "org.springframework.beans.factory.BeanNameAware", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"],
-  ["org.springframework.web.servlet.handler.MatchableHandlerMapping", "org.springframework.web.servlet.HandlerMapping", "org.springframework.core.Ordered", "org.springframework.beans.factory.BeanNameAware", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"],
-  ["org.springframework.beans.factory.InitializingBean", "org.springframework.web.servlet.HandlerMapping", "org.springframework.core.Ordered", "org.springframework.beans.factory.BeanNameAware", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"],
-  ["org.springframework.web.servlet.HandlerAdapter", "org.springframework.core.Ordered"],
-  ["org.springframework.web.servlet.HandlerExceptionResolver", "org.springframework.core.Ordered"],
-  ["org.springframework.web.servlet.ViewResolver", "org.springframework.core.Ordered", "org.springframework.beans.factory.InitializingBean", "org.springframework.context.ApplicationContextAware", "org.springframework.web.context.ServletContextAware"],
-  ["org.springframework.core.Ordered", "org.springframework.web.servlet.ViewResolver", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"],
-  ["org.springframework.beans.factory.InitializingBean", "org.springframework.web.servlet.handler.MatchableHandlerMapping", "org.springframework.web.servlet.HandlerMapping", "org.springframework.core.Ordered", "org.springframework.beans.factory.BeanNameAware", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"], ["org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory", "org.springframework.context.ResourceLoaderAware", "org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory", "org.springframework.boot.web.server.ConfigurableWebServerFactory"],
-  ["org.springframework.boot.web.servlet.ServletContextInitializer", "org.springframework.core.Ordered"],
-  ["org.springframework.boot.web.servlet.filter.OrderedFilter", "javax.servlet.Filter", "org.springframework.beans.factory.BeanNameAware", "org.springframework.context.EnvironmentAware", "org.springframework.core.env.EnvironmentCapable", "org.springframework.web.context.ServletContextAware", "org.springframework.beans.factory.InitializingBean", "org.springframework.beans.factory.DisposableBean"],
-  ["org.springframework.http.converter.GenericHttpMessageConverter", "org.springframework.http.converter.HttpMessageConverter"],
-  ["org.springframework.web.servlet.ViewResolver", "org.springframework.core.Ordered", "org.springframework.web.context.ServletContextAware", "org.springframework.context.ApplicationContextAware"]
+  ["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"]
 ]
