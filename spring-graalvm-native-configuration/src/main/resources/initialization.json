@@ -96,6 +96,7 @@
   {"class": "org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader"},
   {"class": "org.springframework.core.annotation.TypeMappedAnnotations"},
   {"class": "org.springframework.core.io.support.SpringFactoriesLoader"},
+  {"class": "org.springframework.http.codec.CodecConfigurerFactory"},
 
   // Caches
   {"class": "org.springframework.util.ReflectionUtils"},

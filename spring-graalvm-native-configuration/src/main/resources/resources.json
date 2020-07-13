@@ -34,7 +34,6 @@
     {"pattern": "application.yml"},
     {"pattern": "application.properties"},
     {"pattern": "logging.properties"},
-    {"pattern": "org/springframework/http/codec/CodecConfigurer.properties"},
     {"pattern": "META-INF/resources/webjars/.*"},
     
     // vvv vanilla-jpa
