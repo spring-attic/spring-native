@@ -40,7 +40,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 			types= {
 			ConfigurationPropertiesBindingPostProcessor.class,
 			ConfigurationPropertiesBinder.Factory.class, 
-			ConfigurationPropertiesBeanDefinitionValidator.class,
+			//ConfigurationPropertiesBeanDefinitionValidator.class, // Gone in 2.4.0 SNAPSHOTs
 			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
 			NestedConfigurationProperty.class
