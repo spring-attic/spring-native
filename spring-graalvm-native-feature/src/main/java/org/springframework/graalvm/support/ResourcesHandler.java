@@ -960,16 +960,6 @@ public class ResourcesHandler {
 			}
 		}
 
-		// Disable refresh scope related stuff which creates a lot of proxies and is not useful with native images
-		if (type.getDottedName().equals("org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
-		|| type.getDottedName().equals("org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration")
-				|| type.getDottedName().equals("org.springframework.cloud.autoconfigure.RefreshAutoConfiguration")
-				|| type.getDottedName().equals("org.springframework.cloud.autoconfigure.RefreshEndpointAutoConfiguration")
-				|| type.getDottedName().equals("org.springframework.cloud.bootstrap.LoggingSystemShutdownListener")
-				|| type.getDottedName().equals("org.springframework.cloud.autoconfigure.WritableEnvironmentEndpointAutoConfiguration")) {
-			return false;
-		}
-
 		// Check the hierarchy of the type, if bits are missing resolution of this
 		// type at runtime will not work - that suggests that in this particular
 		// run the types are not on the classpath and so this type isn't being used.

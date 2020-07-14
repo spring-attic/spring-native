@@ -13,6 +13,7 @@ public class NativePropertiesListener implements ApplicationListener<Application
 		Properties props = new Properties();
 		props.put("server.servlet.register-default-servlet", "false");
 		props.put("spring.aop.proxy-target-class", "false");
+		props.put("spring.cloud.refresh.enabled", "false");
 		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
 	}
 }
