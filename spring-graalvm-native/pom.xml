@@ -54,6 +54,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<createSourcesJar>true</createSourcesJar>
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
