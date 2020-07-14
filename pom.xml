@@ -21,6 +21,7 @@
 		<module>spring-graalvm-native-feature</module>
 		<module>spring-graalvm-native-configuration</module>
 		<module>spring-graalvm-native-substitutions</module>
+		<module>spring-graalvm-native-tools</module>
 		<module>spring-graalvm-native-docs</module>
 		<module>spring-graalvm-native</module>
 	</modules>
