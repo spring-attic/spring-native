@@ -168,6 +168,7 @@
   {"class": "org.slf4j.MDC"},
 
   // Persistence
+
   {"class": "org.h2.Driver"},
   {"class": "org.h2.util.Bits"}, // This is due to the code using VarHandle in a multi release jar
   {"class": "org.hibernate.EntityMode"},
