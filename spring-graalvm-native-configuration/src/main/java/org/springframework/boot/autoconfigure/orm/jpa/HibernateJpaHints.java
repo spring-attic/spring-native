@@ -29,9 +29,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotEmpty;
 
+import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
@@ -113,15 +112,7 @@ import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLoca
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
-import org.hibernate.validator.HibernateValidatorConfiguration;
-import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
-import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence;
-import org.hibernate.validator.internal.engine.ConfigurationImpl;
-import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
-import org.hibernate.validator.internal.util.logging.Log;
-import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
-import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -131,8 +122,6 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Repository;
-
-import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 @SuppressWarnings("deprecation")
 @NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
@@ -197,7 +186,6 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 				// TODO expose package contents again?
 				ParameterizedMessageFactory.class,
 				PersistenceAnnotationBeanPostProcessor.class,
-				Log.class, // TODO validator related? Should be elsewhere?
 				// From DefaultIdentifierGeneratorFactory?
 				UUIDGenerator.class,GUIDGenerator.class,UUIDHexGenerator.class,Assigned.class,IdentityGenerator.class,
 				SelectGenerator.class,SequenceStyleGenerator.class,SequenceHiLoGenerator.class,IncrementGenerator.class,
@@ -205,14 +193,7 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 			SingleTableEntityPersister.class,CollectionDataAccess.class,PersistentClass.class,
 			PersisterCreationContext.class,
-			
-			// related to hibernate validator
-			ParameterMessageInterpolator.class,AbstractMessageInterpolator.class,ValidationBootstrapParameters.class,
-			HibernateValidatorConfiguration.class,ConfigurationImpl.class,
-			// TODO lots of validators like the NotEmptyValidatorForCharSequence - should expose package contents?
-			NotEmpty.class,ConstraintDescriptorImpl.class,Digits.class,NotEmptyValidatorForCharSequence.class,
-			DigitsValidatorForCharSequence.class,
-			
+
 			DataSourceInitializedPublisher.class,
 			// related to Naming.applyNamingStrategies
 			SpringImplicitNamingStrategy.class,SpringPhysicalNamingStrategy.class,
@@ -224,7 +205,6 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 			Session.class,EventListener.class
 		}, typeNames = {
 			"org.hibernate.internal.EntityManagerMessageLogger_$logger",
-			"org.hibernate.validator.internal.util.logging.Log_$logger",
 			"org.hibernate.internal.CoreMessageLogger_$logger",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.annotations.common.util.impl.Log_$logger",

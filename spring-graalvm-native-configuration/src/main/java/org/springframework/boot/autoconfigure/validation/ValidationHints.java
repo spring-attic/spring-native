@@ -15,16 +15,24 @@
  */
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
+
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.hibernate.validator.HibernateValidatorConfiguration;
+import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
+import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.engine.resolver.JPATraversableResolver;
 import org.hibernate.validator.internal.engine.resolver.TraversableResolvers;
+import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.util.logging.Messages;
+import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -39,11 +47,21 @@ import org.springframework.graalvm.type.AccessBits;
 			TraversableResolvers.class,
 			PlatformResourceBundleLocator.class,
 			ConfigurationImpl.class,
+			TraversableResolvers.class,
 			Messages.class,
 			ParameterizedMessageFactory.class,
-			DefaultFlowMessageFactory.class
+			DefaultFlowMessageFactory.class,
+			ValidationBootstrapParameters.class,
+			HibernateValidatorConfiguration.class,
+			ConfigurationImpl.class,
+			NotEmpty.class,
+			ConstraintDescriptorImpl.class,
+			Digits.class,
+			NotEmptyValidatorForCharSequence.class,
+			DigitsValidatorForCharSequence.class
 		}, 
 	typeNames = {
+		"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 		"org.hibernate.validator.internal.util.logging.Log_$logger",
 		"org.hibernate.validator.internal.util.logging.Log"
 	},
