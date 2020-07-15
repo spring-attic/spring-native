@@ -51,6 +51,16 @@ public @interface NativeImageHint {
 	 */
 	TypeInfo[] typeInfos() default {};
 	
+	/**
+	 * A set of proxy infos which indicate which sets of types need a proxy if the trigger is active.
+	 */
+	ProxyInfo[] proxyInfos() default {};
+	
+	/**
+	 * A set of ResourceInfos which specify which resources need including if the trigger is active.
+	 */
+	ResourcesInfo[] resourcesInfos() default {};
+	
 	// TODO sort out these 3 members:
 	/**
 	 * Names of the annotation attributes on the target type which contain type names (as class references or strings).

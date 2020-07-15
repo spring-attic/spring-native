@@ -42,6 +42,30 @@ public class DynamicProxiesHandler {
 		}
 	}
 	
+	public boolean addProxy(org.springframework.graalvm.type.ProxyDescriptor pd) {
+		String[] types = pd.getTypes();
+		Class<?>[] interfaces = new Class<?>[types.length];
+		boolean isOK = true;
+		for (int i=0;i<types.length;i++) {
+			String type = types[i];
+			Class<?> clazz = imageClassLoader.findClassByName(type, false);
+			if (clazz == null) {
+				isOK=false;
+				break;
+			}
+			if (!clazz.isInterface()) {
+				throw new RuntimeException("In ProxyDescriptor: "+pd+" the type \"" + type + "\" is not an interface.");
+			}
+			interfaces[i] = clazz;
+		}
+		if (isOK) {
+			addProxy(interfaces);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public boolean addProxy(List<String> interfaceNames) {
 		boolean isOK = true;
 		Class<?>[] interfaces = new Class<?>[interfaceNames.size()];
@@ -53,7 +77,7 @@ public class DynamicProxiesHandler {
 				break;
 			}
 			if (!clazz.isInterface()) {
-				throw new RuntimeException("The class \"" + className + "\" is not an interface.");
+				throw new RuntimeException("The type \"" + className + "\" is not an interface.");
 			}
 			interfaces[i] = clazz;
 		}
