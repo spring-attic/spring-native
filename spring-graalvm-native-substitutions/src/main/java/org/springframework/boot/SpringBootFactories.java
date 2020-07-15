@@ -82,9 +82,7 @@ public abstract class SpringBootFactories {
 		}
 		factories.add(ApplicationContextInitializer.class, new ServerPortInfoApplicationContextInitializer());
 		if (isAutoconfigurePresent) {
-			if (!isSpringInitPresent) {
-				factories.add(ApplicationContextInitializer.class, AutoconfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
-			}
+			//factories.add(ApplicationContextInitializer.class, AutocoNo nnfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
 			factories.add(ApplicationContextInitializer.class, new ConditionEvaluationReportLoggingListener());
 		}
 
