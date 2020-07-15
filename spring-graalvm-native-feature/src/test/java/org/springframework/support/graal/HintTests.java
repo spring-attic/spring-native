@@ -16,6 +16,8 @@
 package org.springframework.support.graal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.util.Collections;
@@ -25,7 +27,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.extension.ProxyInfo;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.type.Hint;
+import org.springframework.graalvm.type.ProxyDescriptor;
+import org.springframework.graalvm.type.ResourcesDescriptor;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
 
@@ -49,6 +55,47 @@ public class HintTests {
 
 	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1 {
+	}
+	
+	@Test
+	public void proxies() {
+		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
+		List<Hint> hints = testClass.getHints();
+		assertEquals(1,hints.size());
+		Hint hint = hints.get(0);
+		List<ProxyDescriptor> proxies= hint.getProxyDescriptors();
+		assertEquals(1,proxies.size());
+		String[] types = proxies.get(0).getTypes();
+		assertEquals("java.lang.String",types[0]);
+		assertEquals("java.lang.Integer",types[1]);
+	}
+
+	@NativeImageHint(proxyInfos = { @ProxyInfo(types = { String.class,Integer.class }) })
+	static class TestClass2 {
+	}
+
+	@Test
+	public void resources() {
+		Type testClass = typeSystem.resolveName(TestClass3.class.getName());
+		List<Hint> hints = testClass.getHints();
+		assertEquals(1,hints.size());
+		Hint hint = hints.get(0);
+		List<ResourcesDescriptor> resourcesDescriptors = hint.getResourceDescriptors();
+		assertEquals(2,resourcesDescriptors.size());
+		String[] patterns = resourcesDescriptors.get(0).getPatterns();
+		assertEquals("aaa",patterns[0]);
+		assertEquals("bbb",patterns[1]);
+		assertFalse(resourcesDescriptors.get(0).isBundle());
+		patterns = resourcesDescriptors.get(1).getPatterns();
+		assertEquals("ccc",patterns[0]);
+		assertTrue(resourcesDescriptors.get(1).isBundle());
+	}
+
+	@NativeImageHint(resourcesInfos = { 
+			@ResourcesInfo(patterns = { "aaa","bbb" }),
+			@ResourcesInfo(patterns = { "ccc" }, isBundle = true)
+	})
+	static class TestClass3 {
 	}
 
 }

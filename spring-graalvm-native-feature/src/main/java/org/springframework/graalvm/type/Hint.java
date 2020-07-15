@@ -45,14 +45,23 @@ public class Hint {
 	// These are pulled from the particular application of the hint (e.g. @ConditionalOnClass has a hint and when
 	// @COC seen, these are the types pulled from the @COC)
 	private Map<String, Integer> inferredTypes;
+	
+	private List<ProxyDescriptor> proxyDescriptors;
+	
+	private List<ResourcesDescriptor> resourcesDescriptors;
+	
 
 	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
-			boolean follow, Map<String, Integer> specificTypes,Map<String,Integer> inferredTypes) {
+			boolean follow, Map<String, Integer> specificTypes,
+			Map<String,Integer> inferredTypes,
+			List<ProxyDescriptor> proxyDescriptors, List<ResourcesDescriptor> resourcesDescriptors) {
 		this.annotationChain = annotationChain;
 		this.skipIfTypesMissing = skipIfTypesMissing;
 		this.follow = follow;
 		this.specificTypes = specificTypes;
 		this.inferredTypes = inferredTypes;
+		this.proxyDescriptors = proxyDescriptors;
+		this.resourcesDescriptors = resourcesDescriptors;
 	}
 
 	public List<Type> getAnnotationChain() {
@@ -131,6 +140,14 @@ public class Hint {
 		}
 		s.append(dname);
 		return s.toString();
+	}
+	
+	public List<ResourcesDescriptor> getResourceDescriptors() {
+		return resourcesDescriptors;
+	}
+
+	public List<ProxyDescriptor> getProxyDescriptors() {
+		return proxyDescriptors;
 	}
 
 }

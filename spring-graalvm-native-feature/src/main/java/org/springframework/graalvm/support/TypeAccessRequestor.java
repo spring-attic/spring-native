@@ -15,10 +15,15 @@
  */
 package org.springframework.graalvm.support;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.springframework.graalvm.type.ProxyDescriptor;
+import org.springframework.graalvm.type.ResourcesDescriptor;
 
 /**
  * @author Andy Clement
@@ -26,6 +31,10 @@ import java.util.Set;
 public class TypeAccessRequestor {
 
 	private Map<String, Integer> requestedAccesses = new HashMap<>();
+	
+	private List<ProxyDescriptor> requestedProxies = new ArrayList<>();
+	
+	private List<ResourcesDescriptor> requestedResources = new ArrayList<>();
 	
 	public void request(String type, Integer accessRequired) {
 		if (type.indexOf("/")!=-1) {
@@ -43,4 +52,21 @@ public class TypeAccessRequestor {
 		return requestedAccesses.entrySet();
 	}
 
+	public void requestProxyDescriptors(List<ProxyDescriptor> proxyDescriptors) {
+		requestedProxies.addAll(proxyDescriptors);
+	}
+	
+	public void requestResourcesDescriptors(List<ResourcesDescriptor> resourcesDescriptors) {
+		requestedResources.addAll(resourcesDescriptors);
+	}
+	
+	public List<ProxyDescriptor> getRequestedProxies() {
+		return requestedProxies;
+	}
+	
+	public List<ResourcesDescriptor> getRequestedResources() {
+		return requestedResources;
+	}
+
 }
+	

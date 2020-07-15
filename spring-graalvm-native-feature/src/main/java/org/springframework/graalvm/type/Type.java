@@ -1145,7 +1145,7 @@ public class Type {
 			s.add(this);
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
-						Collections.emptyMap()));
+						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1196,7 +1196,8 @@ public class Type {
 				for (CompilationHint hints2a : hints2) {
 					hints.add(new Hint(new ArrayList<>(annotationChain), hints2a.skipIfTypesMissing, hints2a.follow,
 							hints2a.getDependantTypes(),
-							asMap(typesCollectedFromAnnotation, hints2a.skipIfTypesMissing)));
+							asMap(typesCollectedFromAnnotation, hints2a.skipIfTypesMissing),
+							hints2a.getProxyDescriptors(),hints2a.getResourcesDescriptors()));
 				}
 			}
 			// check for meta annotation
@@ -1489,6 +1490,16 @@ public class Type {
 					for (AnnotationNode typeInfo : typeInfos) {
 						unpackTypeInfo(typeInfo, ch);
 					}
+				} else if (key.equals("proxyInfos")) {
+					List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
+					for (AnnotationNode proxyInfo : proxyInfos) {
+						unpackProxyInfo(proxyInfo, ch);
+					}
+				} else if (key.equals("resourcesInfos")) {
+					List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
+					for (AnnotationNode resourcesInfo : resourcesInfos) {
+						unpackResourcesInfo(resourcesInfo, ch);
+					}
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1540,6 +1551,64 @@ public class Type {
 			}
 		}
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void unpackProxyInfo(AnnotationNode typeInfo, CompilationHint ch) {
+		List<Object> values = typeInfo.values;
+		List<org.objectweb.asm.Type> types = new ArrayList<>();
+		List<String> typeNames = new ArrayList<>();
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("types")) {
+				types = (ArrayList<org.objectweb.asm.Type>) value;
+			} else if (key.equals("typeNames")) {
+				typeNames = (ArrayList<String>) value;
+			}
+		}
+		// Note: Proxies hints will get discarded immediately if types are not around
+		List<String> proxyTypes = new ArrayList<>();
+		boolean typeMissing = false;
+		for (org.objectweb.asm.Type type : types) {
+			String typeName = type.getClassName();
+			Type resolvedType = typeSystem.resolveName(typeName, true);
+			if (resolvedType != null) {
+				proxyTypes.add(typeName);
+			} else {
+				typeMissing = true;
+			}
+		}
+		for (String typeName : typeNames) {
+			Type resolvedType = typeSystem.resolveName(typeName, true);
+			if (resolvedType != null) {
+				proxyTypes.add(typeName);
+			} else {
+				typeMissing = true;
+			}
+		}
+		if (!typeMissing) {
+			ch.addProxyDescriptor(new ProxyDescriptor(proxyTypes.toArray(new String[0])));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void unpackResourcesInfo(AnnotationNode typeInfo, CompilationHint ch) {
+		List<Object> values = typeInfo.values;
+		List<String> patterns = null;
+		Boolean isBundle = null;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("patterns")) {
+				patterns = (ArrayList<String>) value;
+			} else if (key.equals("isBundle")) {
+				isBundle = (Boolean) value;
+			}
+		}
+		ch.addResourcesDescriptor(new ResourcesDescriptor(patterns.toArray(new String[0]),isBundle==null?false:isBundle));
+	}
+
 
 	private int inferTypeKind(Type t) {
 		if (t == null) {

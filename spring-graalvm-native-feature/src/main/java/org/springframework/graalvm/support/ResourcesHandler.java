@@ -63,6 +63,7 @@ import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Hint;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.MissingTypeException;
+import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
 
@@ -175,7 +176,26 @@ public class ResourcesHandler {
 				reflectionHandler.addAccess(dependantType.getKey(), null, true,
 						AccessBits.getFlags(dependantType.getValue()));
 			}
+			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
+			for (ProxyDescriptor pd: proxyDescriptors) {
+				dynamicProxiesHandler.addProxy(pd);
+			}
+			List<org.springframework.graalvm.type.ResourcesDescriptor> resourcesDescriptors = ch.getResourcesDescriptors();
+			for (org.springframework.graalvm.type.ResourcesDescriptor rd: resourcesDescriptors) {
+				registerResourcesDescriptor(rd);
+			}
 		}
+	}
+	
+	public void registerResourcesDescriptor(org.springframework.graalvm.type.ResourcesDescriptor rd) {
+		String[] patterns = rd.getPatterns();
+		for (String pattern: patterns) {
+			if (rd.isBundle()) {
+				resourcesRegistry.addResourceBundles(pattern);
+			} else {
+				resourcesRegistry.addResources(pattern);
+			}
+		}	
 	}
 
 	/**
@@ -1069,6 +1089,8 @@ public class ResourcesHandler {
 
 				List<Type> annotationChain = hint.getAnnotationChain();
 				registerAnnotationChain(depth, tar, annotationChain);
+				tar.requestProxyDescriptors(hint.getProxyDescriptors());
+				tar.requestResourcesDescriptors(hint.getResourceDescriptors());
 			}
 		}
 
@@ -1272,6 +1294,12 @@ public class ResourcesHandler {
 					// (Typically happens when not specifying discard-unused-autconfiguration)
 					SpringFeature.log("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
 				}
+			}
+			for (ProxyDescriptor proxyDescriptor : tar.getRequestedProxies()) {
+				dynamicProxiesHandler.addProxy(proxyDescriptor);
+			}
+			for (org.springframework.graalvm.type.ResourcesDescriptor rd : tar.getRequestedResources()) {
+				registerResourcesDescriptor(rd);
 			}
 			for (Map.Entry<String, Integer> t : tar.entrySet()) {
 				String dname = t.getKey();

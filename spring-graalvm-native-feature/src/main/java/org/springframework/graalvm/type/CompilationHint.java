@@ -15,15 +15,19 @@
  */
 package org.springframework.graalvm.type;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CompilationHint {
 	private String targetType;
 	private Map<String, Integer> specificTypes = new LinkedHashMap<>();
+	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
 
 	public boolean follow = false;
 	public boolean skipIfTypesMissing = false;
+	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
 	
 	public CompilationHint() {
 	}
@@ -71,5 +75,20 @@ public class CompilationHint {
 		follow = b;
 	}
 
+	public void addProxyDescriptor(ProxyDescriptor pd) {
+		proxyDescriptor.add(pd);
+	}
+	
+	public List<ProxyDescriptor> getProxyDescriptors() {
+		return proxyDescriptor;
+	}
+	
+	public void addResourcesDescriptor(ResourcesDescriptor rd) {
+		this.resourceDescriptors.add(rd);
+	}
+	
+	public List<ResourcesDescriptor> getResourcesDescriptors() {
+		return resourceDescriptors;
+	}
 	
 }
