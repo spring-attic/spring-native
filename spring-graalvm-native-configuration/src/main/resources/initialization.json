@@ -227,7 +227,9 @@
   {"class": "com.rabbitmq.client.SocketChannelConfigurator"},
   {"package": "javax.transaction"},
   {"class": "org.aopalliance.aop.Advice"},
-  {"class": "io.lettuce.core.metrics.DefaultCommandLatencyCollector"}
+  {"class": "io.lettuce.core.metrics.DefaultCommandLatencyCollector"},
+
+  {"class": "org.postgresql.PGProperty"}
 ]
 }
 
