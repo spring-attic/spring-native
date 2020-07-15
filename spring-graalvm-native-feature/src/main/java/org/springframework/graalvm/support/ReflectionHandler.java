@@ -158,9 +158,20 @@ public class ReflectionHandler {
 		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
 			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
+		registerWebApplicationTypeClasses();
 
 		registerLogAdapterClassesIfNeeded();
 		registerLogbackIfNeeded();
+	}
+
+	private void registerWebApplicationTypeClasses() {
+		if (rra.resolveType("org.springframework.web.reactive.DispatcherHandler") !=null && rra.resolveType("org.springframework.web.servlet.DispatcherServlet") == null && rra.resolveType("org.glassfish.jersey.servlet.ServletContainer") == null) {
+			addAccess("org.springframework.web.reactive.DispatcherHandler");
+		} else
+		if (rra.resolveType("javax.servlet.Servlet") !=null && rra.resolveType("org.springframework.web.context.ConfigurableWebApplicationContext") != null) {
+			addAccess("javax.servlet.Servlet");
+			addAccess("org.springframework.web.context.ConfigurableWebApplicationContext");
+		}
 	}
 
 	public void register(DuringSetupAccess a) {
@@ -288,6 +299,8 @@ public class ReflectionHandler {
 		}
 		registerLogAdapterClassesIfNeeded();
 		registerLogbackIfNeeded();
+
+		registerWebApplicationTypeClasses();
 
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
