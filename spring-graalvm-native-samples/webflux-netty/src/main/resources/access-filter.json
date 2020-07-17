@@ -8,4 +8,6 @@
     {"excludeClasses": "org.springframework.boot.test.**"},
     {"excludeClasses": "com.example.demo.test.**"}
   ]
-}
+  }
+  
+  
