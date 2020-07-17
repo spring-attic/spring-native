@@ -1,23 +1,32 @@
 package org.springframework.cloud.sleuth;
 
+import javax.annotation.Resource;
+
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.weaver.reflect.Java15AnnotationFinder;
+import org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate;
+
+import org.springframework.aop.aspectj.annotation.AbstractAspectJAdvisorFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.ConfigBuilder;
+import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
 import org.springframework.cloud.sleuth.autoconfig.TraceAutoConfiguration;
+import org.springframework.cloud.sleuth.instrument.web.client.TraceWebClientAutoConfiguration;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 
 @NativeImageHint(trigger = TraceAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types = { javax.annotation.Resource.class,
-				org.aspectj.lang.annotation.Around.class,
-				org.springframework.aop.aspectj.annotation.AbstractAspectJAdvisorFactory.class,
-				org.aspectj.weaver.reflect.Java15AnnotationFinder.class,
-				org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate.class,
-				org.springframework.scheduling.annotation.Async.class,
-				org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory.class,
-				org.springframework.cloud.client.circuitbreaker.ConfigBuilder.class,
-				org.springframework.web.context.request.async.WebAsyncTask.class,
-				org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties.class,
-				org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties.SimpleServiceInstance.class,
-				org.springframework.cloud.sleuth.instrument.web.client.TraceWebClientAutoConfiguration.class
+		@TypeInfo(types = { Resource.class,
+				Around.class,
+				AbstractAspectJAdvisorFactory.class,
+				Java15AnnotationFinder.class,
+				Java15ReflectionBasedReferenceTypeDelegate.class,
+				CircuitBreakerFactory.class,
+				ConfigBuilder.class,
+				SimpleDiscoveryProperties.class,
+				SimpleDiscoveryProperties.SimpleServiceInstance.class,
+				TraceWebClientAutoConfiguration.class
 		}, typeNames = {
 				"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$OnAnyLoadBalancerImplementationPresentCondition",
 				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean",
