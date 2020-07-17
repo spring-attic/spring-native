@@ -69,6 +69,9 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <groupId>org.graalvm.nativeimage</groupId>
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
+          <configuration>
+            <mainClass>com.example.restservice.RestServiceApplication</mainClass>
+          </configuration>
           <executions>
             <execution>
               <goals>
@@ -89,7 +92,9 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
 ----
 ====
 
-You can specify additional <<options>> via a `<configuration><buildArgs>..</buildArgs></configuration>` block.
+The native image build needs to know the entry point to your application hence the `<mainClass>` element.
+
+You can specify additional <<options>> via a `<configuration><buildArgs>...</buildArgs></configuration>` block.
 
 ===== Add the repository for `spring-graalvm-native`
 
@@ -127,6 +132,7 @@ The following listing shows the dependencies to add:
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-indexer</artifactId>
+      <scope>provided</scope>
     </dependency>
 </dependencies>
 ----
@@ -142,21 +148,6 @@ In a native image, all notion of classpath is lost, so it is not possible to exp
 The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or just running your application as a standard Java application.
-
-===== Set the `start-class` element
-
-The native image build needs to know the entry point to your application. It does consult a few places to find it.
-However, in our sample we should set it in the `properties section` of the `pom.xml` file, as follows:
-
-====
-[source,xml]
-----
-<properties>
-    <!-- ... -->
-    <start-class>com.example.restservice.RestServiceApplication</start-class>
-</properties>
-----
-====
 
 ===== Update the source code
 
