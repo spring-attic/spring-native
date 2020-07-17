@@ -32,6 +32,7 @@ import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
 import org.springframework.graalvm.support.ConfigOptions;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -1145,7 +1146,7 @@ public class Type {
 			s.add(this);
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
-						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors()));
+						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getModes()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1197,7 +1198,9 @@ public class Type {
 					hints.add(new Hint(new ArrayList<>(annotationChain), hints2a.skipIfTypesMissing, hints2a.follow,
 							hints2a.getDependantTypes(),
 							asMap(typesCollectedFromAnnotation, hints2a.skipIfTypesMissing),
-							hints2a.getProxyDescriptors(),hints2a.getResourcesDescriptors()));
+							hints2a.getProxyDescriptors(),
+							hints2a.getResourcesDescriptors(),
+							hints2a.getModes()));
 				}
 			}
 			// check for meta annotation
@@ -1485,6 +1488,12 @@ public class Type {
 					 * (ArrayList<org.objectweb.asm.Type>)value; for (org.objectweb.asm.Type type:
 					 * types) { ch.addDependantType(type.getClassName(), inferTypeKind(type)); }
 					 */
+				} else if (key.equals("modes")) {
+					List<String[]> modes = (List<String[]>) value;
+					for (String[] mode: modes) {
+						// [Lorg/springframework/graalvm/support/Mode;, AGENT]
+						ch.addMode(Mode.valueOf(mode[1]));
+					}
 				} else if (key.equals("typeInfos")) {
 					List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
 					for (AnnotationNode typeInfo : typeInfos) {

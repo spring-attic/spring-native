@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,12 +268,12 @@ public class ResourcesHandler {
 			Type keyType = ts.resolveDotted(key);
 			// The context start/stop test may not exercise the @SpringBootApplication class
 			if (keyType.isAtSpringBootApplication()) {
-				System.out.println("HYBRID: adding access to "+keyType+" since @SpringBootApplication");
+				System.out.println("hybrid: adding access to "+keyType+" since @SpringBootApplication");
 				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
 				resourcesRegistry.addResources(key.replace(".", "/")+".class");
 			}
 			if (keyType.isAtController()) {
-				System.out.println("HYBRID: Processing controller "+key);
+				System.out.println("hybrid: Processing controller "+key);
 				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
 				// Example:
 				// @GetMapping("/greeting")
@@ -1016,28 +1017,32 @@ public class ResourcesHandler {
 		if (!hints.isEmpty()) {
 			hints: for (Hint hint : hints) {
 				SpringFeature.log(spaces(depth) + "processing hint " + hint);
-
+				boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(type, hint);
 				// This is used for hints that didn't gather data from the bytecode but had them
 				// directly encoded. For example when a CompilationHint on an ImportSelector
 				// encodes the types that might be returned from it.
-				Map<String, Integer> specificNames = hint.getSpecificTypes();
-				if (specificNames.size() > 0) {
-					SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size() + " specific types");
-					for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
-						String specificTypeName = specificNameEntry.getKey();
-						if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
-							if (hint.isSkipIfTypesMissing()) {
-								passesTests = false;
-								if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-									break;
+				if (hintExplicitReferencesValidInCurrentMode) {
+					Map<String, Integer> specificNames = hint.getSpecificTypes();
+					if (specificNames.size() > 0) {
+						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
+								+ " specific types");
+						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
+							String specificTypeName = specificNameEntry.getKey();
+							if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
+								if (hint.isSkipIfTypesMissing()) {
+									passesTests = false;
+									if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+										break;
+									}
 								}
-							}
-						} else {
-							if (hint.isFollow()) {
-								// TODO I suspect only certain things need following, specific types lists could
-								// specify that in a suffix (like access required)
-								SpringFeature.log(spaces(depth) + "will follow specific type reference " + specificTypeName);
-								toFollow.add(ts.resolveDotted(specificTypeName));
+							} else {
+								if (hint.isFollow()) {
+									// TODO I suspect only certain things need following, specific types lists could
+									// specify that in a suffix (like access required)
+									SpringFeature.log(
+											spaces(depth) + "will follow specific type reference " + specificTypeName);
+									toFollow.add(ts.resolveDotted(specificTypeName));
+								}
 							}
 						}
 					}
@@ -1089,8 +1094,10 @@ public class ResourcesHandler {
 
 				List<Type> annotationChain = hint.getAnnotationChain();
 				registerAnnotationChain(depth, tar, annotationChain);
-				tar.requestProxyDescriptors(hint.getProxyDescriptors());
-				tar.requestResourcesDescriptors(hint.getResourceDescriptors());
+				if (hintExplicitReferencesValidInCurrentMode) {
+					tar.requestProxyDescriptors(hint.getProxyDescriptors());
+					tar.requestResourcesDescriptors(hint.getResourceDescriptors());
+				}
 			}
 		}
 
@@ -1281,7 +1288,7 @@ public class ResourcesHandler {
 			for (Type t : toFollow) {
 				boolean shouldFollow = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
 				if (ConfigOptions.isHybridMode() && t.isAtConfiguration() && !shouldFollow) {
-					System.out.println("HYBRID: Not following "+t.getDottedName()+" from "+type.getName()+" - not mentioned in existing reflect configuration");
+					System.out.println("hybrid: Not following "+t.getDottedName()+" from "+type.getName()+" - not mentioned in existing reflect configuration");
 					continue;
 				}
 				try {
@@ -1354,6 +1361,18 @@ public class ResourcesHandler {
 		return passesTests;
 	}
 	
+	private boolean isHintValidForCurrentMode(Type currentType, Hint hint) {
+		Mode currentMode = ConfigOptions.getMode();
+		if (hint.getModes().size() == 0) {
+			return true; // No mode restrictions specified in hint 
+		}
+		if (!hint.getModes().contains(currentMode)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	private boolean existingReflectionConfigContains(String s) {
 		Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts.getReflectionConfigurationsOnClasspath();
 		for (ReflectionDescriptor rd: reflectionConfigurationsOnClasspath.values()) {

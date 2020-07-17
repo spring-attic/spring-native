@@ -47,13 +47,6 @@ public abstract class ConfigOptions {
 	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
 	private final static boolean SKIP_AT_BEAN_SIGNATURE_TYPES;
 
-	enum Mode {
-		DEFAULT, // Default mode, provide everything
-		AGENT, // initialization-only configuration provided from the feature
-		HYBRID, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
-		FUNCTIONAL; // For functional style, feature provides initialization and resource configuration
-	}
-
 	static {
 		SKIP_AT_BEAN_HINT_PROCESSING = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-hint-processing", "false"));
 		if (SKIP_AT_BEAN_HINT_PROCESSING) {
@@ -173,6 +166,10 @@ public abstract class ConfigOptions {
 
 	public static boolean isSkipAtBeanSignatureTypes() {
 		return SKIP_AT_BEAN_SIGNATURE_TYPES;
+	}
+
+	public static Mode getMode() {
+		return MODE;
 	}
 
 }
