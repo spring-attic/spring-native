@@ -74,6 +74,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graal-version}</version>
           <configuration>
+            <mainClass>com.example.restservice.RestServiceApplication</mainClass>
             <buildArgs>-Dspring.native.mode=agent</buildArgs>
           </configuration>
           <executions>
@@ -95,6 +96,8 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
 </profiles>
 ----
 ====
+
+The native image build needs to know the entry point to your application hence the `<mainClass>` element.
 
 The important part is the `<configuration><buildArgs>..</buildArgs></configuration>` block that shows the options we pass to the `native-image` operation and the `spring-graalvm-native` feature.
 Those prefixed `-D` are aimed at the feature.
@@ -137,6 +140,7 @@ The following listing adds the needed dependencies:
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-indexer</artifactId>
+      <scope>provided</scope>
     </dependency>
 </dependencies>
 ----
@@ -153,21 +157,6 @@ In a `native-image`, all notion of classpath is lost, so it is not possible to e
 The indexer actually produces a list of components at Java compile time and captures it in a `spring.components` file in the built application.
 If Spring starts and finds this file, it uses it instead of attempting to explore the classpath.
 The indexer can be used for this whether building a native image or running your application as a standard Java application.
-
-===== Set `the start-class` element
-
-The native image build needs to know the entry point to your application. It does consult a few places to find it.
-However, in our sample we should set it in the `properties section` of the `pom.xml` file, as follows:
-
-====
-[source,xml]
-----
-<properties>
-    <!-- ... -->
-    <start-class>com.example.restservice.RestServiceApplication</start-class>
-</properties>
-----
-====
 
 ===== Update the source code
 

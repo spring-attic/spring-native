@@ -18,7 +18,6 @@
 		<java.version>1.8</java.version>
 		<spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
 		<tomcat.version>9.0.37-dev</tomcat.version>
-		<start-class>com.example.tomcat.TomcatApplication</start-class>
 	</properties>
 
 	<dependencies>
@@ -165,8 +164,9 @@
 						<artifactId>native-image-maven-plugin</artifactId>
 						<version>20.1.0</version>
 						<configuration>
-							<imageName>${start-class}</imageName>
-							<buildArgs>-H:+PrintAOTCompilation -H:+PrintHeapHistogram -H:EnableURLProtocols=http --no-fallback -Dspring.native.mode=hybrid -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
+							<mainClass>com.example.tomcat.TomcatApplication</mainClass>
+							<imageName>${project.artifactId}</imageName>
+							<buildArgs>-H:+PrintAOTCompilation -H:+PrintHeapHistogram -H:EnableURLProtocols=http -Dspring.native.mode=hybrid -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
 						</configuration>
 						<executions>
 							<execution>

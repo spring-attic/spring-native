@@ -16,7 +16,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>app.main.SampleApplication</start-class>
 		<spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
 		<tomcat.version>9.0.37-dev</tomcat.version>
 	</properties>

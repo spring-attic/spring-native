@@ -16,7 +16,6 @@
 
 	<properties>
 		<java.version>8</java.version>
-		<start-class>com.example.securingweb.SecuringWebApplication</start-class>
 		<spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
 		<tomcat.version>9.0.37-dev</tomcat.version>
 	</properties>
