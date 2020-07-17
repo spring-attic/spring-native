@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.extension.ProxyInfo;
 import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.type.Hint;
@@ -96,6 +97,26 @@ public class HintTests {
 			@ResourcesInfo(patterns = { "ccc" }, isBundle = true)
 	})
 	static class TestClass3 {
+	}
+	
+
+	@Test
+	public void modeRestrictions() {
+		Type testClass = typeSystem.resolveName(TestClass4.class.getName());
+		List<Hint> hints = testClass.getHints();
+		assertEquals(1,hints.size());
+		Hint hint = hints.get(0);
+		List<Mode> modes = hint.getModes();
+		assertEquals(3,modes.size());
+		assertEquals("AGENT",modes.get(0).toString());
+		assertEquals("FUNCTIONAL",modes.get(1).toString());
+		assertEquals("DEFAULT",modes.get(2).toString());
+	}
+
+	@NativeImageHint(modes= {Mode.AGENT, Mode.FUNCTIONAL, Mode.DEFAULT}, resourcesInfos = { 
+			@ResourcesInfo(patterns = { "aaa","bbb" })
+	})
+	static class TestClass4 {
 	}
 
 }

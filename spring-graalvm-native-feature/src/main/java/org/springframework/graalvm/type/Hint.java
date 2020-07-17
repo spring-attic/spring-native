@@ -18,6 +18,8 @@ package org.springframework.graalvm.type;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.graalvm.support.Mode;
+
 /**
  * Represents an inferred application of @CompilationHint.
  * 
@@ -50,11 +52,15 @@ public class Hint {
 	
 	private List<ResourcesDescriptor> resourcesDescriptors;
 	
+	private List<Mode> modes;
+	
 
 	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
 			boolean follow, Map<String, Integer> specificTypes,
 			Map<String,Integer> inferredTypes,
-			List<ProxyDescriptor> proxyDescriptors, List<ResourcesDescriptor> resourcesDescriptors) {
+			List<ProxyDescriptor> proxyDescriptors,
+			List<ResourcesDescriptor> resourcesDescriptors,
+			List<Mode> modes) {
 		this.annotationChain = annotationChain;
 		this.skipIfTypesMissing = skipIfTypesMissing;
 		this.follow = follow;
@@ -62,6 +68,7 @@ public class Hint {
 		this.inferredTypes = inferredTypes;
 		this.proxyDescriptors = proxyDescriptors;
 		this.resourcesDescriptors = resourcesDescriptors;
+		this.modes = modes;
 	}
 
 	public List<Type> getAnnotationChain() {
@@ -148,6 +155,10 @@ public class Hint {
 
 	public List<ProxyDescriptor> getProxyDescriptors() {
 		return proxyDescriptors;
+	}
+
+	public List<Mode> getModes() {
+		return modes;
 	}
 
 }

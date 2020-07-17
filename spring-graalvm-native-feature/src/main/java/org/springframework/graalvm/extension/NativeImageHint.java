@@ -18,6 +18,7 @@ package org.springframework.graalvm.extension;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import org.springframework.graalvm.support.Mode;
 
 /**
  * NativeImageHint annotations should be placed either on Spring configuration/registrar/import-selectors or on some
@@ -45,6 +46,12 @@ public @interface NativeImageHint {
 	 * is considered to be a hint about the type upon which the hint annotation is specified.
 	 */
 	Class<?> trigger() default Object.class;
+	
+	/**
+	 * If specified, the hints will only apply if the trigger is valid *and* the feature is operating
+	 * in one of the specified modes.
+	 */
+	Mode[] modes() default {};
 
 	/**
 	 * A set of type infos indicated which types should be made accessible (as resources and/or via reflection)

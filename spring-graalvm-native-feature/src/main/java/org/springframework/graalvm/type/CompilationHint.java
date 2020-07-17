@@ -20,14 +20,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.graalvm.support.Mode;
+
 public class CompilationHint {
 	private String targetType;
 	private Map<String, Integer> specificTypes = new LinkedHashMap<>();
 	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
-
 	public boolean follow = false;
 	public boolean skipIfTypesMissing = false;
 	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
+	private List<Mode> modes = new ArrayList<>();
 	
 	public CompilationHint() {
 	}
@@ -84,11 +86,19 @@ public class CompilationHint {
 	}
 	
 	public void addResourcesDescriptor(ResourcesDescriptor rd) {
-		this.resourceDescriptors.add(rd);
+		resourceDescriptors.add(rd);
 	}
 	
 	public List<ResourcesDescriptor> getResourcesDescriptors() {
 		return resourceDescriptors;
+	}
+	
+	public void addMode(Mode mode) {
+		modes.add(mode);
+	}
+
+	public List<Mode> getModes() { 
+		return modes;
 	}
 	
 }
