@@ -11,4 +11,7 @@ RUN (groupadd --gid "${USER_GID}" "${USER}" || echo "No groupadd needed") && \
       --gid ${USER_GID} \
       --create-home \
       --shell /bin/bash \
-      ${USER}
+      ${USER} && \
+      chown -R ${USER_ID}:${USER_GID} /var/lib/mysql && \
+      chown -R ${USER_ID}:${USER_GID} /var/log/mysql && \
+      chown -R ${USER_ID}:${USER_GID} /var/run/mysqld
