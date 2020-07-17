@@ -30,6 +30,7 @@ import org.h2.store.fs.FilePathZip;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -40,7 +41,7 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 @NativeImageHint(trigger=DataSourceInitializationConfiguration.Registrar.class,
 	typeInfos= {@TypeInfo(types=DataSourceInitializerPostProcessor.class,access=AccessBits.FULL_REFLECTION)})
-@NativeImageHint(trigger=EmbeddedDataSourceConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=EmbeddedDataSourceConfiguration.class, typeInfos= {
 		@TypeInfo(types=EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(
@@ -49,11 +50,63 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 						"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
 				types= {
 						FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}),
-		})
+})
 @NativeImageHint(trigger=Hikari.class,typeInfos= {
 		@TypeInfo(types= {HikariDataSource.class,HikariConfig.class,MVTableEngine.class,Statement.class,Statement[].class,
 				// TODO what is the right place for this one? (and its array variant)
 				IConcurrentBagEntry[].class,IConcurrentBagEntry.class})
 	})
+// MySQL JDBC driver
+@NativeImageHint(trigger=DataSourceAutoConfiguration.class, typeInfos= {
+		@TypeInfo(
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS,
+				types= {com.mysql.cj.conf.url.FailoverConnectionUrl.class,
+						com.mysql.cj.conf.url.FailoverDnsSrvConnectionUrl.class,
+						com.mysql.cj.conf.url.LoadBalanceConnectionUrl.class,
+						com.mysql.cj.conf.url.LoadBalanceDnsSrvConnectionUrl.class,
+						com.mysql.cj.conf.url.ReplicationConnectionUrl.class,
+						com.mysql.cj.conf.url.ReplicationDnsSrvConnectionUrl.class,
+						com.mysql.cj.conf.url.SingleConnectionUrl.class,
+						com.mysql.cj.conf.url.XDevApiConnectionUrl.class,
+						com.mysql.cj.conf.url.XDevApiDnsSrvConnectionUrl.class,
+						com.mysql.cj.exceptions.AssertionFailedException.class,
+						com.mysql.cj.exceptions.CJCommunicationsException.class,
+						com.mysql.cj.exceptions.CJConnectionFeatureNotAvailableException.class,
+						com.mysql.cj.exceptions.CJException.class,
+						com.mysql.cj.exceptions.CJOperationNotSupportedException.class,
+						com.mysql.cj.exceptions.CJPacketTooBigException.class,
+						com.mysql.cj.exceptions.CJTimeoutException.class,
+						com.mysql.cj.exceptions.ClosedOnExpiredPasswordException.class,
+						com.mysql.cj.exceptions.ConnectionIsClosedException.class,
+						com.mysql.cj.exceptions.DataConversionException.class,
+						com.mysql.cj.exceptions.DataReadException.class,
+						com.mysql.cj.exceptions.DataTruncationException.class,
+						com.mysql.cj.exceptions.DeadlockTimeoutRollbackMarker.class,
+						com.mysql.cj.exceptions.FeatureNotAvailableException.class,
+						com.mysql.cj.exceptions.InvalidConnectionAttributeException.class,
+						com.mysql.cj.exceptions.NumberOutOfRange.class,
+						com.mysql.cj.exceptions.OperationCancelledException.class,
+						com.mysql.cj.exceptions.PasswordExpiredException.class,
+						com.mysql.cj.exceptions.PropertyNotModifiableException.class,
+						com.mysql.cj.exceptions.RSAException.class,
+						com.mysql.cj.exceptions.SSLParamsException.class,
+						com.mysql.cj.exceptions.StatementIsClosedException.class,
+						com.mysql.cj.exceptions.StreamingNotifiable.class,
+						com.mysql.cj.exceptions.UnableToConnectException.class,
+						com.mysql.cj.exceptions.UnsupportedConnectionStringException.class,
+						com.mysql.cj.exceptions.WrongArgumentException.class,
+						com.mysql.cj.jdbc.Driver.class,
+						com.mysql.cj.jdbc.ha.NdbLoadBalanceExceptionChecker.class,
+						com.mysql.cj.jdbc.ha.StandardLoadBalanceExceptionChecker.class,
+						com.mysql.cj.log.StandardLogger.class,
+						com.mysql.cj.protocol.AsyncSocketFactory.class,
+						com.mysql.cj.protocol.NamedPipeSocketFactory.class,
+						com.mysql.cj.protocol.SocksProxySocketFactory.class,
+						com.mysql.cj.protocol.StandardSocketFactory.class}),
+}, resourcesInfos = {
+		@ResourcesInfo(isBundle = true, patterns = {
+			"com.mysql.cj.LocalizedErrorMessages"
+		})
+})
 public class JdbcHints implements NativeImageConfiguration {
 }

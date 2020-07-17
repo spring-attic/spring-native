@@ -6,7 +6,14 @@ ARG MAVEN_VERSION=3.6.3
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 
 RUN apt-get -y update \
- && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server redis-server build-essential gdb \
+ && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb \
+ && mkdir -p /var/run/mysqld \
+ && mkdir -p /var/log/mysql \
+ && echo "mysqld_safe --skip-grant-tables &" > /tmp/config.sh \
+ && echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config.sh \
+ && echo "mysql -e 'CREATE DATABASE IF NOT EXISTS petclinic;'" >> /tmp/config.sh \
+ && echo "mysql -e 'ALTER DATABASE petclinic DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'" >> /tmp/config.sh \
+ && chmod +x /tmp/config.sh \
  && cd /opt \
  && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
  && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
@@ -26,4 +33,4 @@ RUN apt-get -y update \
  && rm -rf /var/cache/apt/archives \
  && rm -rf /var/lib/apt/lists/*
 
-CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /bin/bash
+CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/config.sh && /bin/bash

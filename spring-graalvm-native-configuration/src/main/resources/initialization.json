@@ -47,7 +47,8 @@
   {"class": "org.apache.tomcat.jni.SSL"}, // Tomcat sample
   {"class": "org.h2.store.fs.FileNioMemData"}, // vanilla-jpa with --initialize-at-build-time
   {"class": "ch.qos.logback.classic.spi.PackagingDataCalculator"},
-  {"class": "sun.reflect.misc.Trampoline"}
+  {"class": "sun.reflect.misc.Trampoline"},
+  {"class": "java.sql.DriverManager"}
 ],
 "buildTimeInitialization":
 [
