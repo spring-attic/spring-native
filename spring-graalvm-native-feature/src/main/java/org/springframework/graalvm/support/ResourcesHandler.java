@@ -192,7 +192,11 @@ public class ResourcesHandler {
 		String[] patterns = rd.getPatterns();
 		for (String pattern: patterns) {
 			if (rd.isBundle()) {
-				resourcesRegistry.addResourceBundles(pattern);
+				try {
+					resourcesRegistry.addResourceBundles(pattern);
+				} catch (MissingResourceException mre) {
+					SpringFeature.log("WARNING: resource bundle "+pattern+" could not be registered");
+				}
 			} else {
 				resourcesRegistry.addResources(pattern);
 			}
