@@ -15,6 +15,7 @@ import org.springframework.cloud.sleuth.instrument.web.client.TraceWebClientAuto
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger = TraceAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = { Resource.class,
@@ -29,10 +30,14 @@ import org.springframework.graalvm.extension.TypeInfo;
 				TraceWebClientAutoConfiguration.class
 		}, typeNames = {
 				"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$OnAnyLoadBalancerImplementationPresentCondition",
-				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean",
+				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean"
+		}, access = AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(typeNames = {
 				"org.springframework.cloud.sleuth.sampler.SamplerCondition$TracingCustomizerAvailable",
 				"org.springframework.cloud.sleuth.sampler.SamplerCondition$SpanHandlerAvailable",
 				"org.springframework.cloud.sleuth.sampler.SamplerCondition$ReporterAvailable"
-		})})
+		})
+
+})
 public class TraceHints  implements NativeImageConfiguration  {
 }
