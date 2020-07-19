@@ -36,16 +36,26 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 
 
 @NativeImageHint(trigger=WebMvcAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types= {AnnotationConfigServletWebServerApplicationContext.class,
+		@TypeInfo(types= {
+				AnnotationConfigServletWebServerApplicationContext.class,
+				ConfigurableWebApplicationContext.class,
+				TomcatEmbeddedWebappClassLoader.class,
+				WebApplicationContext.class,
+				ErrorPage.class,
 				DefaultErrorViewResolver.class,
-				// TODO Maybe the first and last of these 3 needs to be in a more generic configuration hint working for both reactive and servlet
-				ConfigurableWebApplicationContext.class,TomcatEmbeddedWebappClassLoader.class,WebApplicationContext.class,
-				ErrorPage.class,DefaultErrorViewResolver.class,BeanNameViewResolver.class,  ErrorPageRegistrarBeanPostProcessor.class},
-				typeNames= {"org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler"}),
-		@TypeInfo(types= {Callable.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)},abortIfTypesMissing = true)
+				BeanNameViewResolver.class,
+				ErrorPageRegistrarBeanPostProcessor.class},
+				access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(
+				typeNames = "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
+				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
+		@TypeInfo(
+				types = Callable.class,
+				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+}, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
-		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
+		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class WebMvcHints implements NativeImageConfiguration {
 }
