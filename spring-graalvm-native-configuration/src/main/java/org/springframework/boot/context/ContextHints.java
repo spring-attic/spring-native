@@ -15,13 +15,11 @@
  */
 package org.springframework.boot.context;
 
-import org.springframework.graalvm.extension.NativeImageHint;
-
-import java.util.ArrayList;
-
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
-@NativeImageHint(typeInfos = {@TypeInfo(types= {TypeExcludeFilter.class,ArrayList.class})})
+@NativeImageHint(typeInfos = {@TypeInfo(types= TypeExcludeFilter.class, access = AccessBits.LOAD_AND_CONSTRUCT)})
 public class ContextHints implements NativeImageConfiguration {
 }
