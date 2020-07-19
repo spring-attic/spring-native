@@ -33,17 +33,15 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 		@TypeInfo(
 				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
-				SpringResourceTemplateResolver.class,Fields.class,
+				SpringResourceTemplateResolver.class,
 				ThymeleafView.class,
-// Surely one of many... I wonder if there is a better way for these rather than conditional on autoconfig, conditional on jar presence? (maven coords?)
-				Temporals.class,
-				AdditionExpression.class,
 				ThymeleafReactiveView.class
 				}, typeNames= {
 						"org.thymeleaf.spring5.expression.Mvc$Spring41MvcUriComponentsBuilderDelegate",
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				},
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+				access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
 public class ThymeleafHints implements NativeImageConfiguration {
 }
