@@ -18,38 +18,25 @@ package org.springframework.boot.context.properties;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
-//THis one seems gone in latest spring??!
-//EnableConfigurationPropertiesImportSelector has
-//@CompilationHint(skipIfTypesMissing=true, follow=false, name={
-//	 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar",
-//	 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar"})
-//proposedHints.put(EnableConfigurationPropertiesImportSelector,
-//		new CompilationHint(false,false, new String[] {
-//		 	"org.springframework.boot.context.properties.EnableConfigurationPropertiesImportSelector$ConfigurationPropertiesBeanRegistrar:REGISTRAR",
-//		 	"org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessorRegistrar:REGISTRAR"}
-//		));	
-//@ConfigurationHint(value=EnableConfigurationPropertiesImportSelector.class)
-//TODO do configuration properties chain?
-//@EnableConfigurationProperties has @CompilationHint(skipIfTypesMissing=false, follow=false)
-@NativeImageHint(trigger = EnableConfigurationPropertiesRegistrar.class,typeInfos = {
-	@TypeInfo(
-			// TODO version handling - this type isn't in 2.2.3 but in 2.3.0.M2 ! How can we make sure
-			// we keep up and verify when things might not be compatible?
-			typeNames="org.springframework.boot.context.properties.BoundConfigurationProperties",
-			types= {
+@NativeImageHint(trigger = EnableConfigurationPropertiesRegistrar.class, typeInfos = {
+	@TypeInfo(types= {
+			BoundConfigurationProperties.class,
 			ConfigurationPropertiesBindingPostProcessor.class,
-			ConfigurationPropertiesBinder.Factory.class, 
-			//ConfigurationPropertiesBeanDefinitionValidator.class, // Gone in 2.4.0 SNAPSHOTs
+			ConfigurationPropertiesBinder.Factory.class,
 			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
 			NestedConfigurationProperty.class
-			})	
+			}, access = AccessBits.LOAD_AND_CONSTRUCT)
 })
 @NativeImageHint(trigger = EnableConfigurationProperties.class)
-@NativeImageHint(typeInfos = {@TypeInfo(types= {
-		ConfigurationPropertiesScan.class,ConfigurationPropertiesScanRegistrar.class,
-		ConfigurationBeanFactoryMetadata.class
-		})})
+@NativeImageHint(typeInfos = {
+		@TypeInfo(types= {
+				ConfigurationPropertiesScan.class,
+				ConfigurationPropertiesScanRegistrar.class,
+				ConfigurationBeanFactoryMetadata.class
+		}, access = AccessBits.LOAD_AND_CONSTRUCT)
+})
 public class ConfigurationPropertiesHints implements NativeImageConfiguration {
 }
