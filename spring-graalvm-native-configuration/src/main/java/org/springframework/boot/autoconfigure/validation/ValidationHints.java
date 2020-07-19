@@ -15,8 +15,28 @@
  */
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Negative;
+import javax.validation.constraints.NegativeOrZero;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
@@ -54,16 +74,38 @@ import org.springframework.graalvm.type.AccessBits;
 			ValidationBootstrapParameters.class,
 			HibernateValidatorConfiguration.class,
 			ConfigurationImpl.class,
-			NotEmpty.class,
 			ConstraintDescriptorImpl.class,
-			Digits.class,
 			NotEmptyValidatorForCharSequence.class,
 			DigitsValidatorForCharSequence.class
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 				"org.hibernate.validator.internal.util.logging.Log_$logger",
 				"org.hibernate.validator.internal.util.logging.Log"}
-		, access = AccessBits.LOAD_AND_CONSTRUCT)
+		, access = AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types = {
+				AssertFalse.class,
+				AssertTrue.class,
+				DecimalMax.class,
+				DecimalMin.class,
+				Digits.class,
+				Email.class,
+				Future.class,
+				FutureOrPresent.class,
+				Max.class,
+				Min.class,
+				Negative.class,
+				NegativeOrZero.class,
+				NotBlank.class,
+				NotEmpty.class,
+				NotNull.class,
+				Null.class,
+				Past.class,
+				PastOrPresent.class,
+				Pattern.class,
+				Positive.class,
+				PositiveOrZero.class,
+				Size.class
+		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
 public class ValidationHints implements NativeImageConfiguration {
 }
