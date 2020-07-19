@@ -1024,23 +1024,23 @@ public class Type {
 		return false;
 	}
 
-//	// TODO this is broken, don't use!
-//	public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
-//		if (dimensions > 0) {
-//			return false;
-//		}
-//		if (checkMetaUsage) {
-//			return isMetaAnnotated(Ldescriptor);
-//		}
-//		if (node.visibleAnnotations != null) {
-//			for (AnnotationNode an : node.visibleAnnotations) {
-//				if (an.desc.equals(Ldescriptor)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	// TODO this is broken, don't use!
+	public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
+		if (dimensions > 0) {
+			return false;
+		}
+		if (checkMetaUsage) {
+			return isMetaAnnotated(Ldescriptor);
+		}
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode an : node.visibleAnnotations) {
+				if (an.desc.equals(Ldescriptor)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), false);
@@ -2020,17 +2020,5 @@ public class Type {
 			}
 		}
 		return false;
-	}
-
-	public boolean isConditional() {
-		// Extends Condition or has @Conditional related annotation on it
-		if (implementsInterface("org/springframework/context/annotation/Condition") ||
-				isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
-			System.out.println("Condition check on "+getName()+" passed!");
-			return true;
-		} else {
-			System.out.println("Condition check on "+getName()+" failed!");
-			return false;
-		}
 	}
 }

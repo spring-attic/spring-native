@@ -1183,26 +1183,22 @@ public class ResourcesHandler {
 					SpringFeature.log(spaces(depth) + "processing " + atBeanMethods.size() + " @Bean methods");
 				}
 				for (Method atBeanMethod : atBeanMethods) {
-//					if (!ConfigOptions.isSkipAtBeanSignatureTypes()) {
-						Type returnType = atBeanMethod.getReturnType();
-						if (returnType == null) {
-							// I believe null means that type is not on the classpath so skip further
-							// analysis
-							continue;
-						} else {
-							// We will need access to Supplier and Flux because of this return type
-							tar.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
-							
-							/*
-							Set<Type> ts = atBeanMethod.getSignatureTypes();
-							for (Type t: ts) {
-								SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
-								tar.request(t.getDottedName(),
-										AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
-							}
-							*/
+					if (!ConfigOptions.isSkipAtBeanSignatureTypes()) {
+					Type returnType = atBeanMethod.getReturnType();
+					if (returnType == null) {
+						// I believe null means that type is not on the classpath so skip further
+						// analysis
+						continue;
+					} else {
+						// We will need access to Supplier and Flux because of this return type
+						Set<Type> ts = atBeanMethod.getSignatureTypes();
+						for (Type t: ts) {
+							SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
+							tar.request(t.getDottedName(),
+									AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
 						}
-//					}
+					}
+					}
 
 					// Processing this kind of thing, parameter types need to be exposed
 					// @Bean
@@ -1350,11 +1346,9 @@ public class ResourcesHandler {
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			// if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
-			SpringFeature.log(spaces(depth)+" processing nested types of "+type.getName());
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
-					if (!(t.isAtConfiguration() || t.isConditional())) continue;
 					try {
 						boolean b = processType(t, visited, depth + 1);
 						if (!b) {
@@ -1407,13 +1401,6 @@ public class ResourcesHandler {
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
-			if (i==0 && ConfigOptions.isHybridMode()) {
-				boolean beingReflectedUponInIncomingConfiguration = existingReflectionConfigContains(t.getDottedName());
-				if (!beingReflectedUponInIncomingConfiguration) {
-					System.out.println("HYBRID: IGNORE: We could skip this "+t.getDottedName());
-					break;
-				}
-			}
 			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
 		}
 	}
