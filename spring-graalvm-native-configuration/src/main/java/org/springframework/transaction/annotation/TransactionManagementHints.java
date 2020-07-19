@@ -23,21 +23,11 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration;
 import org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration;
 
-/*
-proposedHints.put(TransactionManagementConfigurationSelector,
-		new CompilationHint(false, true, new String[] { 
-		// TODO really the 'skip if missing' can be different for each one here...
-			"org.springframework.context.annotation.AutoProxyRegistrar",
-			"org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration",
-			"org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration",
-			"org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration"
-		}));
-		*/
 // TODO really the 'skip if missing' can be different for each one here...
-@NativeImageHint(trigger=TransactionManagementConfigurationSelector.class,typeInfos = {
-	@TypeInfo(types= {AutoProxyRegistrar.class, ProxyTransactionManagementConfiguration.class,AspectJJtaTransactionManagementConfiguration.class,	
-			AspectJTransactionManagementConfiguration.class })
-},follow=true)
+@NativeImageHint(trigger=TransactionManagementConfigurationSelector.class, typeInfos = {
+	@TypeInfo(types= {AutoProxyRegistrar.class, ProxyTransactionManagementConfiguration.class,AspectJJtaTransactionManagementConfiguration.class, AspectJTransactionManagementConfiguration.class },
+	access = AccessBits.LOAD_AND_CONSTRUCT)
+}, follow=true)
 @NativeImageHint(typeInfos= {
 		@TypeInfo(types= {Transactional.class,javax.transaction.Transactional.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types= {Propagation.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
