@@ -18,20 +18,26 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(typeInfos = { @TypeInfo(types = {
-	SpringApplication.class,
-	SpringBootConfiguration.class,
-	LogManager.class,
+		SpringApplication.class,
+		SpringBootConfiguration.class,
+		LogManager.class,
 		JavaLoggingSystem.class,
-	// Caused by: java.lang.IllegalArgumentException: Unable to find field cause on class java.lang.Throwable!
-	// at org.springframework.data.util.ReflectionUtils.findRequiredField(ReflectionUtils.java:222)
-	// at org.springframework.data.mapping.model.AbstractPersistentProperty.<clinit>(AbstractPersistentProperty.java:51)
-	Throwable.class
+		// Caused by: org.springframework.beans.TypeMismatchException: Failed to convert property value of type 'java.lang.String'
+		// to required type 'org.springframework.core.io.Resource[]' for property 'locations'; nested exception is
+		// java.lang.IllegalArgumentException: Class org.springframework.core.io.InputStreamSource[] is instantiated reflectively but was
+		// never registered. Register the class by using org.graalvm.nativeimage.hosted.RuntimeReflection
+		InputStreamSource[].class,
+		// Caused by: java.lang.IllegalArgumentException: Unable to find field cause on class java.lang.Throwable!
+		// at org.springframework.data.util.ReflectionUtils.findRequiredField(ReflectionUtils.java:222)
+		// at org.springframework.data.mapping.model.AbstractPersistentProperty.<clinit>(AbstractPersistentProperty.java:51)
+		Throwable.class
   }, access = AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class SpringApplicationHints implements NativeImageConfiguration {
