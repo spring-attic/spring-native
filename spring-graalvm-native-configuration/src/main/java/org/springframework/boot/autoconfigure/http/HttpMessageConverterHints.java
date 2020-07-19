@@ -19,10 +19,12 @@ import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
-@NativeImageHint(trigger=HttpMessageConvertersAutoConfiguration.class,typeInfos= {
-	@TypeInfo(types= {HttpMessageConverters.class,FormHttpMessageConverter.class, Encoding.class})
+@NativeImageHint(trigger=HttpMessageConvertersAutoConfiguration.class, typeInfos= {
+	@TypeInfo(types= {FormHttpMessageConverter.class}, access = AccessBits.DECLARED_FIELDS),
+	@TypeInfo(types= {Encoding.class}, access = AccessBits.DECLARED_CONSTRUCTORS)
 })
 public class HttpMessageConverterHints implements NativeImageConfiguration {
 }
