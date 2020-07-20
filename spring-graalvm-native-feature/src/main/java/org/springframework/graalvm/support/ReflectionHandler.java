@@ -521,7 +521,7 @@ public class ReflectionHandler {
 	private String logBackPatterns[] = new String[] { 
 			"DateConverter", 
 			"LevelConverter", "ThreadConverter", "LoggerConverter", "MessageConverter", 
-			"LineSeparatorConverter",
+			"LineSeparatorConverter", "MDCConverter",
 			"org.springframework.boot.logging.logback.ColorConverter",
 			"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" };
 
