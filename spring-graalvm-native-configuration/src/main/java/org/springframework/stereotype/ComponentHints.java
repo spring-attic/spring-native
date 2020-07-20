@@ -15,13 +15,16 @@
  */
 package org.springframework.stereotype;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(typeInfos = {
-	@TypeInfo(types= {Component.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+	@TypeInfo(types= {Component.class,PostConstruct.class, Resource.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 })
 public class ComponentHints implements NativeImageConfiguration {
 }

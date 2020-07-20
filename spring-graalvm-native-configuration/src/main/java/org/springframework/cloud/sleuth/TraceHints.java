@@ -1,5 +1,6 @@
 package org.springframework.cloud.sleuth;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.aspectj.lang.annotation.Around;
@@ -10,6 +11,9 @@ import org.springframework.aop.aspectj.annotation.AbstractAspectJAdvisorFactory;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.ConfigBuilder;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
+import org.springframework.cloud.sleuth.annotation.ContinueSpan;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
+import org.springframework.cloud.sleuth.annotation.NewSpanParser;
 import org.springframework.cloud.sleuth.autoconfig.TraceAutoConfiguration;
 import org.springframework.cloud.sleuth.instrument.web.client.TraceWebClientAutoConfiguration;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
@@ -18,8 +22,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger = TraceAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types = { Resource.class,
-				Around.class,
+		@TypeInfo(types = {
 				AbstractAspectJAdvisorFactory.class,
 				Java15AnnotationFinder.class,
 				Java15ReflectionBasedReferenceTypeDelegate.class,
@@ -27,7 +30,9 @@ import org.springframework.graalvm.type.AccessBits;
 				ConfigBuilder.class,
 				SimpleDiscoveryProperties.class,
 				SimpleDiscoveryProperties.SimpleServiceInstance.class,
-				TraceWebClientAutoConfiguration.class
+				TraceWebClientAutoConfiguration.class,
+				ContinueSpan.class,
+				NewSpan.class
 		}, typeNames = {
 				"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$OnAnyLoadBalancerImplementationPresentCondition",
 				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean"
@@ -35,9 +40,11 @@ import org.springframework.graalvm.type.AccessBits;
 		@TypeInfo(typeNames = {
 				"org.springframework.cloud.sleuth.sampler.SamplerCondition$TracingCustomizerAvailable",
 				"org.springframework.cloud.sleuth.sampler.SamplerCondition$SpanHandlerAvailable",
-				"org.springframework.cloud.sleuth.sampler.SamplerCondition$ReporterAvailable"
+				"org.springframework.cloud.sleuth.sampler.SamplerCondition$ReporterAvailable",
+				"org.springframework.cloud.sleuth.annotation.SleuthAdvisorConfig",
+				"org.springframework.cloud.sleuth.annotation.SleuthAdvisorConfig$AnnotationClassOrMethodOrArgsPointcut",
+				"org.springframework.cloud.sleuth.annotation.SleuthAdvisorConfig$AnnotationClassOrMethodFilter"
 		})
-
 })
 public class TraceHints  implements NativeImageConfiguration  {
 }
