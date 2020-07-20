@@ -25,12 +25,19 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 
 // TODO really the 'skip if missing' can be different for each one here...
 @NativeImageHint(trigger=TransactionManagementConfigurationSelector.class, typeInfos = {
-	@TypeInfo(types= {AutoProxyRegistrar.class, ProxyTransactionManagementConfiguration.class,AspectJJtaTransactionManagementConfiguration.class, AspectJTransactionManagementConfiguration.class },
-	access = AccessBits.LOAD_AND_CONSTRUCT)
+	@TypeInfo(types= {
+			AutoProxyRegistrar.class,
+			ProxyTransactionManagementConfiguration.class,
+			AspectJJtaTransactionManagementConfiguration.class,
+			AspectJTransactionManagementConfiguration.class
+	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1", access = AccessBits.LOAD_AND_CONSTRUCT)
 }, follow=true)
 @NativeImageHint(typeInfos= {
-		@TypeInfo(types= {Transactional.class,javax.transaction.Transactional.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types= {Propagation.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
+		@TypeInfo(types= {
+				Transactional.class,
+				javax.transaction.Transactional.class
+		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+		@TypeInfo(types= Propagation.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
 public class TransactionManagementHints implements NativeImageConfiguration {
 }
