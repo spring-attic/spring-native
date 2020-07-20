@@ -10,3 +10,4 @@ chown -R mysql:mysql /var/run/mysqld
 cd spring-graalvm-native
 ./build.sh
 ./build-samples.sh
+killall /usr/sbin/mysqld
