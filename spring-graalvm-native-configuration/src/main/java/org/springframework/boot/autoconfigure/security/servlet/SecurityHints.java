@@ -44,7 +44,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
 @NativeImageHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
-		@TypeInfo(types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
+		@TypeInfo(
+				// This one is interesting. This type is the return value of an @Bean method but needs DECLARED_METHODS
+				// which the default @Bean processing doesn't currently include (because not all @Bean methods need it
+				// and if you add it for all the memory jump is a little annoying - 3M on gs-securing-web)
+				typeNames = "org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",
+				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
 				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
 		@TypeInfo(types= {
 				// From DefaultAuthenticationEventPublisher
