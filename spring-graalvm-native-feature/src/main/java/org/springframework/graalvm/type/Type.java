@@ -2038,21 +2038,15 @@ public class Type {
 	 * So this method is checking if a class is meta annotated with @Import
 	 */
 	public boolean isMetaImportAnnotated() {
-		boolean b = isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
-		if (b) {
-			System.out.println("Found this is @Import meta'd: "+getDottedName());
-		}
-		return b;
+		return isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
 	}
 
 	public boolean isConditional() {
 		// Extends Condition or has @Conditional related annotation on it
 		if (implementsInterface("org/springframework/context/annotation/Condition") ||
 				isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
-			System.out.println("Condition check on "+getName()+" passed!");
 			return true;
 		} else {
-			System.out.println("Condition check on "+getName()+" failed!");
 			return false;
 		}
 	}

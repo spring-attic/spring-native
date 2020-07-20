@@ -1192,7 +1192,6 @@ public class ResourcesHandler {
 						} else {
 							// We will need access to Supplier and Flux because of this return type
 							tar.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
-							
 							/*
 							Set<Type> ts = atBeanMethod.getSignatureTypes();
 							for (Type t: ts) {
@@ -1350,11 +1349,13 @@ public class ResourcesHandler {
 		// If the outer type is failing a test, we don't need to go into nested types...
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			// if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
-			SpringFeature.log(spaces(depth)+" processing nested types of "+type.getName());
+//			SpringFeature.log(spaces(depth)+" processing nested types of "+type.getName());
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
-					if (!(t.isAtConfiguration() || t.isConditional()) || t.isMetaImportAnnotated()) continue;
+					if (!(t.isAtConfiguration() || t.isConditional() || t.isMetaImportAnnotated())) {
+						continue;
+					}
 					try {
 						boolean b = processType(t, visited, depth + 1);
 						if (!b) {
