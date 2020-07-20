@@ -180,7 +180,6 @@
   {"class": "javax.persistence.SynchronizationType"},
 
   // Validation
-  {"package": "javax.validation"},
   {"package": "org.hibernate.validator.constraints"},
   {"package": "org.hibernate.validator.internal.engine"},
   {"package": "org.hibernate.validator.internal.engine.groups"},
