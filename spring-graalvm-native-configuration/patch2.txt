@@ -1,0 +1,134 @@
+diff --git a/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/support/ResourcesHandler.java b/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/support/ResourcesHandler.java
+index e6c680e..523d8dc 100644
+--- a/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/support/ResourcesHandler.java
++++ b/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/support/ResourcesHandler.java
+@@ -1183,22 +1183,26 @@ public class ResourcesHandler {
+ 					SpringFeature.log(spaces(depth) + "processing " + atBeanMethods.size() + " @Bean methods");
+ 				}
+ 				for (Method atBeanMethod : atBeanMethods) {
+-					if (!ConfigOptions.isSkipAtBeanSignatureTypes()) {
+-					Type returnType = atBeanMethod.getReturnType();
+-					if (returnType == null) {
+-						// I believe null means that type is not on the classpath so skip further
+-						// analysis
+-						continue;
+-					} else {
+-						// We will need access to Supplier and Flux because of this return type
+-						Set<Type> ts = atBeanMethod.getSignatureTypes();
+-						for (Type t: ts) {
+-							SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
+-							tar.request(t.getDottedName(),
+-									AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
++//					if (!ConfigOptions.isSkipAtBeanSignatureTypes()) {
++						Type returnType = atBeanMethod.getReturnType();
++						if (returnType == null) {
++							// I believe null means that type is not on the classpath so skip further
++							// analysis
++							continue;
++						} else {
++							// We will need access to Supplier and Flux because of this return type
++							tar.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
++							
++							/*
++							Set<Type> ts = atBeanMethod.getSignatureTypes();
++							for (Type t: ts) {
++								SpringFeature.log("Processing @Bean method "+atBeanMethod.getName()+"(): adding "+t.getDottedName());
++								tar.request(t.getDottedName(),
++										AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
++							}
++							*/
+ 						}
+-					}
+-					}
++//					}
+ 
+ 					// Processing this kind of thing, parameter types need to be exposed
+ 					// @Bean
+@@ -1346,9 +1350,11 @@ public class ResourcesHandler {
+ 		// If the outer type is failing a test, we don't need to go into nested types...
+ 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+ 			// if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
++			SpringFeature.log(spaces(depth)+" processing nested types of "+type.getName());
+ 			List<Type> nestedTypes = type.getNestedTypes();
+ 			for (Type t : nestedTypes) {
+ 				if (visited.add(t.getName())) {
++					if (!(t.isAtConfiguration() || t.isConditional())) continue;
+ 					try {
+ 						boolean b = processType(t, visited, depth + 1);
+ 						if (!b) {
+@@ -1401,6 +1407,13 @@ public class ResourcesHandler {
+ 		for (int i = 0; i < annotationChain.size(); i++) {
+ 			// i=0 is the annotated type, i>0 are all annotation types
+ 			Type t = annotationChain.get(i);
++			if (i==0 && ConfigOptions.isHybridMode()) {
++				boolean beingReflectedUponInIncomingConfiguration = existingReflectionConfigContains(t.getDottedName());
++				if (!beingReflectedUponInIncomingConfiguration) {
++					System.out.println("HYBRID: IGNORE: We could skip this "+t.getDottedName());
++					break;
++				}
++			}
+ 			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
+ 		}
+ 	}
+diff --git a/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/type/Type.java b/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/type/Type.java
+index 8f88e07..26c9d02 100644
+--- a/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/type/Type.java
++++ b/spring-graalvm-native-feature/src/main/java/org/springframework/graalvm/type/Type.java
+@@ -1024,23 +1024,23 @@ public class Type {
+ 		return false;
+ 	}
+ 
+-	// TODO this is broken, don't use!
+-	public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
+-		if (dimensions > 0) {
+-			return false;
+-		}
+-		if (checkMetaUsage) {
+-			return isMetaAnnotated(Ldescriptor);
+-		}
+-		if (node.visibleAnnotations != null) {
+-			for (AnnotationNode an : node.visibleAnnotations) {
+-				if (an.desc.equals(Ldescriptor)) {
+-					return true;
+-				}
+-			}
+-		}
+-		return false;
+-	}
++//	// TODO this is broken, don't use!
++//	public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
++//		if (dimensions > 0) {
++//			return false;
++//		}
++//		if (checkMetaUsage) {
++//			return isMetaAnnotated(Ldescriptor);
++//		}
++//		if (node.visibleAnnotations != null) {
++//			for (AnnotationNode an : node.visibleAnnotations) {
++//				if (an.desc.equals(Ldescriptor)) {
++//					return true;
++//				}
++//			}
++//		}
++//		return false;
++//	}
+ 
+ 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
+ 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), false);
+@@ -2021,4 +2021,16 @@ public class Type {
+ 		}
+ 		return false;
+ 	}
++
++	public boolean isConditional() {
++		// Extends Condition or has @Conditional related annotation on it
++		if (implementsInterface("org/springframework/context/annotation/Condition") ||
++				isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
++			System.out.println("Condition check on "+getName()+" passed!");
++			return true;
++		} else {
++			System.out.println("Condition check on "+getName()+" failed!");
++			return false;
++		}
++	}
+ }
