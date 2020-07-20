@@ -15,6 +15,8 @@
  */
 package org.springframework.cloud.function.context.config;
 
+import java.util.function.Supplier;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -22,7 +24,7 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.messaging.MessageHeaders;
 
 @NativeImageHint(trigger=ContextFunctionCatalogAutoConfiguration.class, 
-		typeInfos = {@TypeInfo(types= {MessageHeaders.class},
+		typeInfos = {@TypeInfo(types= {MessageHeaders.class,Supplier.class},
 		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
 public class ContextFunctionCatalogHints implements NativeImageConfiguration {
 }
