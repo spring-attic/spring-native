@@ -2022,6 +2022,29 @@ public class Type {
 		return false;
 	}
 
+	/**
+	 * Example: see @EnableR2dbcRepositories in R2dbcRepositoresAutoConfigureRegistrar:
+	 * <pre><code>
+	 * @EnableR2dbcRepositories 
+	 * private static class EnableR2dbcRepositoriesConfiguration { }
+	 * </code></pre>
+	 * The @Enable... thing looks like this:
+	 * <pre><code>
+	 * @Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME) @Documented @Inherited
+	 * @Import(R2dbcRepositoriesRegistrar.class) 
+	 * public @interface EnableR2dbcRepositories {
+	 * </code></pre>
+	 * 
+	 * So this method is checking if a class is meta annotated with @Import
+	 */
+	public boolean isMetaImportAnnotated() {
+		boolean b = isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
+		if (b) {
+			System.out.println("Found this is @Import meta'd: "+getDottedName());
+		}
+		return b;
+	}
+
 	public boolean isConditional() {
 		// Extends Condition or has @Conditional related annotation on it
 		if (implementsInterface("org/springframework/context/annotation/Condition") ||

@@ -23,6 +23,8 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
+import io.r2dbc.pool.ConnectionPool;
+
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
 		@TypeInfo(typeNames = {
 				// TODO review org.springframework.data.r2dbc.dialect.DialectResolver - there is some 
@@ -32,7 +34,9 @@ import org.springframework.graalvm.type.AccessBits;
 				// Can't find it now but there was some form of wrapper list in R2DBC that listed this plus others
 				Mono.class,
 				Flux.class
-		}, access = AccessBits.DECLARED_CONSTRUCTORS)
+		}, access = AccessBits.DECLARED_CONSTRUCTORS),
+		// Enables 'dispose' method to be found
+		@TypeInfo(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)
 })
 public class R2dbcHints implements NativeImageConfiguration {
 }

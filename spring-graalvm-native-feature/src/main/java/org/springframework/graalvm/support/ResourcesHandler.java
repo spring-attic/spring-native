@@ -1354,7 +1354,7 @@ public class ResourcesHandler {
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
-					if (!(t.isAtConfiguration() || t.isConditional())) continue;
+					if (!(t.isAtConfiguration() || t.isConditional()) || t.isMetaImportAnnotated()) continue;
 					try {
 						boolean b = processType(t, visited, depth + 1);
 						if (!b) {
