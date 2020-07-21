@@ -137,6 +137,7 @@
   {"class": "org.springframework.boot.validation.MessageInterpolatorFactory"},
   {"class": "org.springframework.boot.BeanDefinitionLoader"},
   {"class": "org.springframework.boot.logging.logback.LogbackLoggingSystem"},
+  {"class": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory"},
 
   // Tomcat, to avoid XML parsers and crypto classes
   {"class": "org.apache.catalina.servlets.DefaultServlet" },
