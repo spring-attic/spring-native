@@ -10,6 +10,7 @@ org.springframework.boot.autoconfigure.AutoConfigurationHints
 org.springframework.boot.autoconfigure.aop.AopHints
 org.springframework.boot.autoconfigure.cache.CacheHints
 org.springframework.boot.autoconfigure.condition.ConditionalHints
+org.springframework.boot.autoconfigure.context.MessageSourceHints
 org.springframework.boot.autoconfigure.data.RepositoriesHints
 org.springframework.boot.autoconfigure.data.SpringDataCommonsHints
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints
