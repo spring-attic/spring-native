@@ -1619,12 +1619,19 @@ public class Type {
 	}
 
 
+	private int inferTypeKind(org.objectweb.asm.Type type) {
+		Type t = typeSystem.resolve(type, true);
+		return inferTypeKind(t);
+	}
+
 	private int inferTypeKind(Type t) {
 		if (t == null) {
 			return AccessBits.ALL;
 		}
-		if (t.isAtConfiguration()) {
+		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
 			return AccessBits.CONFIGURATION;
+		} else if (t.isArray()) {
+			return AccessBits.CLASS;
 		} else {
 			return AccessBits.ALL; // TODO this is wrong!
 		}
@@ -1647,20 +1654,6 @@ public class Type {
 			}
 		}
 		return chs;
-	}
-
-	private int inferTypeKind(org.objectweb.asm.Type type) {
-		Type t = typeSystem.resolve(type, true);
-		if (t == null) {
-			// TODO All because of type might be array and we aren't resolving that quite
-			// right yet
-			return AccessBits.ALL;
-		}
-		if (t.isAtConfiguration()) {
-			return AccessBits.CONFIGURATION;
-		} else {
-			return AccessBits.ALL; // TODO this is wrong!
-		}
 	}
 
 	public List<CompilationHint> getCompilationHints() {

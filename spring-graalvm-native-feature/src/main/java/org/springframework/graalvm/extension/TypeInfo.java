@@ -35,7 +35,7 @@ public @interface TypeInfo {
 
 	String[] typeNames() default {};
 
-	int access() default AccessBits.ALL;
+	int access() default AccessBits.LOAD_AND_CONSTRUCT;
 
 	// TODO How to specify particular constructors/methods/fields? Does it matter?
 	// MemberInfo[] members() default {}; ?
