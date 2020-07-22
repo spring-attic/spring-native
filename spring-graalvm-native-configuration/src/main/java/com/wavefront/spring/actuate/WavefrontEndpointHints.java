@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.Conditi
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -104,6 +105,6 @@ import org.springframework.web.client.RestTemplate;
 				ControllerEndpoint.class,
 				SimpleClientHttpRequestFactory.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
-})
+}, resourcesInfos = @ResourcesInfo(patterns = "build", isBundle = true))
 public class WavefrontEndpointHints implements NativeImageConfiguration {
 }

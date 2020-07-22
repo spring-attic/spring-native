@@ -29,7 +29,6 @@
         <jacoco.version>0.8.2</jacoco.version>
 
         <spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
-        <tomcat.version>9.0.37-dev</tomcat.version>
     </properties>
 
     <dependencies>
@@ -188,6 +187,22 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-graalvm-library-optimizer</artifactId>
+				<executions>
+					<execution>
+						<id>optimize-tomcat</id>
+						<phase>package</phase>
+						<goals>
+							<goal>spring-graalvm-optimize-jar</goal>
+						</goals>
+						<configuration>
+							<enabled>true</enabled>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 
