@@ -104,8 +104,18 @@ public class CompilationSummary {
 				throw new IllegalStateException("Unable to match '" + line + "' "
 						+ (!matched ? "" : "(groupCount=" + matcher.groupCount() + ")"));
 			}
-			return new Compiled(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4),
-					matcher.group(5));
+			String returnType = matcher.group(1);
+			String type = matcher.group(2);
+			String method = matcher.group(3);
+			String parameterString = matcher.group(4);
+			String reason = matcher.group(5);
+			if (type.startsWith("com.oracle.svm.reflect")) {
+				int u = type.lastIndexOf("_");
+				if (u !=-1) {
+					type = type.substring(0,u);
+				}
+			}
+			return new Compiled(returnType, type, method, parameterString, reason);
 		}
 
 		public String getPackageName() {

@@ -30,7 +30,11 @@ public class ReportNode {
 	public void sortChildren() {
 		if (children.size()>1) {
 			Collections.sort(children,(n1,n2) -> {
-				return n2.totalChildren()-n1.totalChildren();
+				int score = n2.totalChildren()-n1.totalChildren();
+				if (score !=0) {
+					return score;
+				}
+				return n1.data.compareTo(n2.data);
 			});
 			for (ReportNode c: children) {
 				c.sortChildren();
