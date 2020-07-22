@@ -221,13 +221,27 @@ public class TypeSystem {
 
 	public Type resolve(org.objectweb.asm.Type type, boolean silent) {
 		try {
-			String desc = type.getDescriptor();
-			return resolve(desc.substring(1, desc.length() - 1));
+			String desc = type.getDescriptor(); //[[Lorg/springframework/amqp/rabbit/annotation/RabbitBootstrapConfiguration;
+			int dims = 0;
+			while (desc.charAt(dims)=='[') { dims++; }
+			if (dims>0) {
+				StringBuilder s = new StringBuilder();
+				s.append(desc.substring(1+dims,desc.length()-1));
+				for (int i=0;i<dims;i++) {
+					s.append("[]");
+				}
+				Type tt = resolveSlashed(s.toString(),silent);
+				System.out.println("Resolved: "+desc+" "+s.toString()+" to "+tt);
+				return tt;
+			} else {
+				return resolve(desc.substring(1, desc.length() - 1));
+			}
 		} catch (MissingTypeException mte) {
-			if (silent)
+			if (silent) {
 				return null;
-			else
+			} else {
 				throw mte;
+			}
 		}
 	}
 
