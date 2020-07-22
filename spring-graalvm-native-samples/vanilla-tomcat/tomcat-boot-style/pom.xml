@@ -11,5 +11,24 @@
 	<artifactId>tomcat-boot-style</artifactId>
 	<name>tomcat-boot-style</name>
 	<description>Demo project for Apache Tomcat with Graal using Spring Boot style initialization code.</description>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.experimental</groupId>
+                <artifactId>spring-graalvm-library-optimizer</artifactId>
+                <executions>
+                    <execution>
+                        <id>optimize-tomcat</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>spring-graalvm-optimize-jar</goal>
+                        </goals>
+                        <configuration>
+                            <enabled>false</enabled>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
