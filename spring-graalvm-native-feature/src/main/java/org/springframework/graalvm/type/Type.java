@@ -1241,20 +1241,9 @@ public class Type {
 			Type type = typeSystem.Lresolve(t, true);
 			int ar = -1;
 			if (usingForVisibilityCheck) {
-				ar = AccessBits.CLASS;// TypeKind.EXISTENCE_CHECK;
+				ar = AccessBits.CLASS;
 			} else {
-				if (type != null && (type.isCondition() || type.isEventListener())) {
-					ar = AccessBits.RESOURCE | AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;// TypeKind.RESOURCE_AND_INSTANTIATION;//AccessRequired.RESOURCE_CTORS_ONLY;
-					if (type.isAbstractNestedCondition()) {
-						// Need to pull in member types of this condition
-						// Type[] memberTypes = type.getMemberTypes();
-						// for (Type memberType: memberTypes) {
-						// // map.put(memberType.getDottedName(), AccessRequired.RESOURCE_ONLY);
-						// }
-					}
-				} else {
-					ar = AccessBits.EVERYTHING;// TypeKind.EVERYTHING;
-				}
+				ar = inferTypeKind(type);
 			}
 			map.put(fromLdescriptorToDotted(t), ar);
 		}
@@ -1325,11 +1314,19 @@ public class Type {
 	}
 
 	public boolean isImportSelector() {
-		return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
 	}
 
 	public boolean isImportRegistrar() {
-		return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
 	}
 
 	public static String fromLdescriptorToSlashed(String Ldescriptor) {
@@ -1628,12 +1625,14 @@ public class Type {
 		if (t == null) {
 			return AccessBits.ALL;
 		}
-		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
+		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {// || t.isConditional()) {
 			return AccessBits.CONFIGURATION;
+		} else if (t.isImportSelector() || t.isImportRegistrar()) {
+			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else {
-			return AccessBits.ALL; // TODO this is wrong!
+			return AccessBits.FULL_REFLECTION; // pessimistic
 		}
 	}
 

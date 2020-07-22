@@ -231,7 +231,6 @@ public class TypeSystem {
 					s.append("[]");
 				}
 				Type tt = resolveSlashed(s.toString(),silent);
-				System.out.println("Resolved: "+desc+" "+s.toString()+" to "+tt);
 				return tt;
 			} else {
 				return resolve(desc.substring(1, desc.length() - 1));

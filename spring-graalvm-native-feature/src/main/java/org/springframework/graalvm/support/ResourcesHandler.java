@@ -1006,7 +1006,7 @@ public class ResourcesHandler {
 
 		boolean passesTests = true;
 		
-		TypeAccessRequestor tar = new TypeAccessRequestor();
+		TypeAccessRequestor accessRequestor = new TypeAccessRequestor();
 		
 		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
@@ -1032,7 +1032,7 @@ public class ResourcesHandler {
 								+ " specific types");
 						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
 							String specificTypeName = specificNameEntry.getKey();
-							if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), tar)) {
+							if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
 								if (hint.isSkipIfTypesMissing()) {
 									passesTests = false;
 									if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1071,7 +1071,7 @@ public class ResourcesHandler {
 							// Do we not follow if it is @Configuration and missing from the existing other file? 
 							
 							//if (!ConfigOptions.isHybridMode()) {
-								tar.request(s, inferredType.getValue());
+								accessRequestor.request(s, inferredType.getValue());
 							//}
 							
 							if (hint.isFollow()) {
@@ -1097,10 +1097,10 @@ public class ResourcesHandler {
 				}
 
 				List<Type> annotationChain = hint.getAnnotationChain();
-				registerAnnotationChain(depth, tar, annotationChain);
+				registerAnnotationChain(depth, accessRequestor, annotationChain);
 				if (hintExplicitReferencesValidInCurrentMode) {
-					tar.requestProxyDescriptors(hint.getProxyDescriptors());
-					tar.requestResourcesDescriptors(hint.getResourceDescriptors());
+					accessRequestor.requestProxyDescriptors(hint.getProxyDescriptors());
+					accessRequestor.requestResourcesDescriptors(hint.getResourceDescriptors());
 				}
 			}
 		}
@@ -1129,7 +1129,7 @@ public class ResourcesHandler {
 			// TODO need this guard? if (isConfiguration(configType)) {
 			// }
 			// if (type.isAtConfiguration()) {
-			registerHierarchy(type, new HashSet<>(), tar);
+			registerHierarchy(type, new HashSet<>(), accessRequestor);
 			// }
 
 			Type s = type.getSuperclass();
@@ -1162,7 +1162,7 @@ public class ResourcesHandler {
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					tar.request(t.getDottedName(), AccessBits.CLASS);
+					accessRequestor.request(t.getDottedName(), AccessBits.CLASS);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -1191,7 +1191,7 @@ public class ResourcesHandler {
 							continue;
 						} else {
 							// We will need access to Supplier and Flux because of this return type
-							tar.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+							accessRequestor.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
 							/*
 							Set<Type> ts = atBeanMethod.getSignatureTypes();
 							for (Type t: ts) {
@@ -1244,7 +1244,7 @@ public class ResourcesHandler {
 						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
 								+ " specific types");
 						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
-							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), tar);
+							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), accessRequestor);
 						}
 
 						Map<String, Integer> inferredTypes = hint.getInferredTypes();
@@ -1264,7 +1264,7 @@ public class ResourcesHandler {
 							}
 							if (exists) {
 								// TODO if already there, should we merge access required values?
-								tar.request(s, inferredType.getValue());
+								accessRequestor.request(s, inferredType.getValue());
 								if (hint.isFollow()) {
 									toFollow.add(t);
 								}
@@ -1275,7 +1275,7 @@ public class ResourcesHandler {
 						}
 
 						List<Type> annotationChain = hint.getAnnotationChain();
-						registerAnnotationChain(depth, tar, annotationChain);
+						registerAnnotationChain(depth, accessRequestor, annotationChain);
 					}
 					}
 
@@ -1287,7 +1287,7 @@ public class ResourcesHandler {
 					// public static LocalValidatorFactoryBean defaultValidator() {
 					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
 					for (Type annotationOnMethod : annotationsOnMethod) {
-						tar.request(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
+						accessRequestor.request(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
 					}
 				}
 			}
@@ -1309,25 +1309,25 @@ public class ResourcesHandler {
 					SpringFeature.log("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
 				}
 			}
-			for (ProxyDescriptor proxyDescriptor : tar.getRequestedProxies()) {
+			for (ProxyDescriptor proxyDescriptor : accessRequestor.getRequestedProxies()) {
 				dynamicProxiesHandler.addProxy(proxyDescriptor);
 			}
-			for (org.springframework.graalvm.type.ResourcesDescriptor rd : tar.getRequestedResources()) {
+			for (org.springframework.graalvm.type.ResourcesDescriptor rd : accessRequestor.getRequestedResources()) {
 				registerResourcesDescriptor(rd);
 			}
-			for (Map.Entry<String, Integer> t : tar.entrySet()) {
-				String dname = t.getKey();
+			for (Map.Entry<String, Integer> accessRequest : accessRequestor.entrySet()) {
+				String dname = accessRequest.getKey();
 
 				// Let's produce a message if this computed value is also in reflect.json
 				// This is a sign we can probably remove that entry from reflect.json (maybe
 				// depend if inferred access required matches declared)
 				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
 					System.out.println("This is in the constant data, does it need to stay in there? " + dname
-							+ "  (dynamically requested access is " + t.getValue() + ")");
+							+ "  (dynamically requested access is " + accessRequest.getValue() + ")");
 				}
 
-				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(t.getValue()));
-				Flag[] flags = AccessBits.getFlags(t.getValue());
+				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(accessRequest.getValue()));
+				Flag[] flags = AccessBits.getFlags(accessRequest.getValue());
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
@@ -1338,7 +1338,7 @@ public class ResourcesHandler {
 				} else {
 					reflectionHandler.addAccess(dname, null, true, flags);
 				}
-				if (AccessBits.isResourceAccessRequired(t.getValue())) {
+				if (AccessBits.isResourceAccessRequired(accessRequest.getValue())) {
 					resourcesRegistry.addResources(
 							dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
 									+ ".class");
