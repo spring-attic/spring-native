@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -301,13 +300,6 @@ public class ResourcesHandler {
 		}
 	}
 
-	// TODO shouldn't this code just call into processType like we do for discovered
-	// configuration?
-	// (Then we have consistent processing across library and user code - without it
-	// I think this code below will prove insufficient when we get more
-	// sophisticated
-	// samples - such as one using @Imported configuration - write a testcase for
-	// that)
 	/**
 	 * Process a spring components properties object. The data within will look like:
 	 * <pre><code>
@@ -318,9 +310,7 @@ public class ResourcesHandler {
 	 * @param p the properties object containing spring components
 	 */
 	private void processSpringComponents(Properties p, NativeImageContext context) {
-
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
-
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
@@ -346,58 +336,62 @@ public class ResourcesHandler {
 				}
 			}
 
-//			if (kType.isAtConfiguration()) {
-//				checkAndRegisterConfigurationType(k);
-//			} else {
-			try {
-				// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
-				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-				// reflectionHandler.addAccess(k,Flag.allPublicConstructors,
-				// Flag.allPublicMethods, Flag.allDeclaredClasses);
-				// TODO assess which kinds of thing requiring what kind of access - here we see an Entity might require field reflective access where others don't
-				// I think as a component may have autowired fields (and an entity may have interesting fields) - you kind of always need to expose fields
-				// There is a type in vanilla-orm called Bootstrap that shows this need
-				boolean includeFields = true;
-				if (includeFields) {
-					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-							Flag.allDeclaredClasses, Flag.allDeclaredFields);
-				} else {
-					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-							Flag.allDeclaredClasses);
+			if (kType.isAtConfiguration()) {
+				// Treat user configuration (from spring.components) the same as configuration
+				// discovered via spring.factories
+				checkAndRegisterConfigurationType(k);
+			} else {
+				try {
+					// reflectionHandler.addAccess(k,Flag.allDeclaredConstructors,
+					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(k,Flag.allPublicConstructors,
+					// Flag.allPublicMethods, Flag.allDeclaredClasses);
+					// TODO assess which kinds of thing requiring what kind of access - here we see
+					// an Entity might require field reflective access where others don't
+					// I think as a component may have autowired fields (and an entity may have
+					// interesting fields) - you kind of always need to expose fields
+					// There is a type in vanilla-orm called Bootstrap that shows this need
+					boolean includeFields = true;
+					if (includeFields) {
+						reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+								Flag.allDeclaredClasses, Flag.allDeclaredFields);
+					} else {
+						reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+								Flag.allDeclaredClasses);
 
-				}
-				resourcesRegistry.addResources(k.replace(".", "/") + ".class");
-				// Register nested types of the component
-				Type baseType = ts.resolveDotted(k);
-				
-				if (baseType != null) {
-					// System.out.println("Checking if type "+baseType+" has transactional methods: "+baseType.hasTransactionalMethods());
-					if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { // TODO should this check the values against this key or for the annotation presence?
-						processTransactionalTarget(baseType);
 					}
-				}
+					resourcesRegistry.addResources(k.replace(".", "/") + ".class");
+					// Register nested types of the component
+					Type baseType = ts.resolveDotted(k);
 
-				for (Type t : baseType.getNestedTypes()) {
-					String n = t.getName().replace("/", ".");
-					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-							Flag.allDeclaredClasses);
-					resourcesRegistry.addResources(t.getName() + ".class");
+					if (baseType != null) {
+						// TODO should this check the values against this key or for the annotation presence?
+						if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { 
+							processTransactionalTarget(baseType);
+						}
+					}
+
+					for (Type t : baseType.getNestedTypes()) {
+						String n = t.getName().replace("/", ".");
+						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+								Flag.allDeclaredClasses);
+						resourcesRegistry.addResources(t.getName() + ".class");
+					}
+					registerHierarchy(baseType, new HashSet<>(), null);
+				} catch (Throwable t) {
+					SpringFeature.log("WHAT?" + t.toString());
+					t.printStackTrace();
+					// assuming ok for now - see
+					// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
+					// for petclinic spring.components
 				}
-				registerHierarchy(baseType, new HashSet<>(), null);
-			} catch (Throwable t) {
-				SpringFeature.log("WHAT?"+t.toString());
-				t.printStackTrace();
-				// assuming ok for now - see
-				// SBG: ERROR: CANNOT RESOLVE org.springframework.samples.petclinic.model ???
-				// for petclinic spring.components
 			}
-//		}
-		if (kType!=null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
-			processRepository2(kType);
-		}
-		if (kType != null && kType.isAtResponseBody()) {
-			processResponseBodyComponent(kType);
-		}
+			if (kType != null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
+				processRepository2(kType);
+			}
+			if (kType != null && kType.isAtResponseBody()) {
+				processResponseBodyComponent(kType);
+			}
 			List<String> values = new ArrayList<>();
 			StringTokenizer st = new StringTokenizer(vs, ",");
 			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
@@ -410,8 +404,10 @@ public class ResourcesHandler {
 				try {
 					Type baseType = ts.resolveDotted(tt);
 
-					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors, Flag.allPublicMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
+					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
+					// Flag.allPublicMethods, Flag.allDeclaredClasses);
 //					reg(tt);
 					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
 					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
@@ -1373,7 +1369,7 @@ public class ResourcesHandler {
 			List<Type> nestedTypes = type.getNestedTypes();
 			for (Type t : nestedTypes) {
 				if (visited.add(t.getName())) {
-					if (!(t.isAtConfiguration() || t.isConditional() || t.isMetaImportAnnotated())) {
+					if (!(t.isAtConfiguration() || t.isConditional() || t.isMetaImportAnnotated() || t.isComponent())) {
 						continue;
 					}
 					try {
