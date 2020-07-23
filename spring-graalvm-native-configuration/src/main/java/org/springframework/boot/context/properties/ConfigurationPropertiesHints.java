@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.context.properties;
 
+import java.util.ArrayList;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -27,8 +29,14 @@ import org.springframework.graalvm.type.AccessBits;
 			ConfigurationPropertiesBinder.Factory.class,
 			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
-			NestedConfigurationProperty.class
-			}, access = AccessBits.LOAD_AND_CONSTRUCT)
+			NestedConfigurationProperty.class,
+			ArrayList.class
+			}, typeNames = {
+			"java.io.Serializable[]",
+			"java.lang.Comparable[]",
+			"java.lang.CharSequence[]",
+			"java.lang.String[]"
+	})
 })
 @NativeImageHint(trigger = EnableConfigurationProperties.class)
 @NativeImageHint(typeInfos = {
@@ -36,7 +44,7 @@ import org.springframework.graalvm.type.AccessBits;
 				ConfigurationPropertiesScan.class,
 				ConfigurationPropertiesScanRegistrar.class,
 				ConfigurationBeanFactoryMetadata.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT)
+		})
 })
 public class ConfigurationPropertiesHints implements NativeImageConfiguration {
 }
