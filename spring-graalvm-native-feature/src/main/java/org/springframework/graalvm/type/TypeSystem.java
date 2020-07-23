@@ -26,6 +26,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -34,6 +35,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -49,6 +51,7 @@ import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
+import org.springframework.graalvm.support.SpringFeature;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -76,6 +79,8 @@ public class TypeSystem {
 
 	private Map<String, ResourcesDescriptor> resourceConfigurations;
 	
+	private List<String> excludedAutoConfigurations;
+
 	private Map<String, ReflectionDescriptor> reflectionConfigurations;
 	
 	// Map from classpaths to TypeSystems managing those classpaths
@@ -690,6 +695,49 @@ public class TypeSystem {
 			}
 		}
 		return this.resourceConfigurations;
+	}
+	
+	public List<String> getExcludedAutoConfigurations() {
+		if (this.excludedAutoConfigurations == null) {
+			excludedAutoConfigurations = new ArrayList<>();
+			Map<String, List<String>> collectedExclusions = new HashMap<>();
+			for (String s: classpath) {
+				File f = new File(s);
+				if (f.isDirectory()) {
+					searchDir(f, filepath -> { 
+						return  filepath.contains("application") && filepath.endsWith(".properties");
+					},
+					TypeSystem::findExcludedAutoconfigurationsInPropertiesFile,
+					collectedExclusions);
+				} else if (f.isFile() && f.toString().endsWith(".jar")) {
+					searchJar(f, filepath -> { 
+						return filepath.contains("application") && filepath.endsWith(".properties");
+					}, 
+					TypeSystem::findExcludedAutoconfigurationsInPropertiesFile,
+					collectedExclusions);
+				}
+			}
+			for (Map.Entry<String,List<String>> entry: collectedExclusions.entrySet()) {
+				excludedAutoConfigurations.addAll(entry.getValue());
+			}
+			SpringFeature.log("INFO: these spring auto configuration exclusions have been detected: "+excludedAutoConfigurations);
+		}
+		return this.excludedAutoConfigurations;
+	}
+	
+	public static List<String> findExcludedAutoconfigurationsInPropertiesFile(InputStream is) {
+		try {
+			Properties p = new Properties();
+			p.load(is);
+			String value = p.getProperty("spring.autoconfigure.exclude");
+			if (value == null) {
+				return Collections.emptyList();
+			} else {
+				return Arrays.asList(value.split(","));
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to read properties file",e);
+		}
 	}
 	
 

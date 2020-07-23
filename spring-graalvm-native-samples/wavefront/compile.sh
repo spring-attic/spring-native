@@ -30,6 +30,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:EnableURLProtocols=http,https \
   -H:Name=$ARTIFACT \
+  -Dspring.native.ignore-hints-on-excluded-config=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.xml.ignore=true \
