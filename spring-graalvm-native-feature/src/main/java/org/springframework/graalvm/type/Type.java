@@ -54,6 +54,7 @@ public class Type {
 	public final static String AtRepository = "Lorg/springframework/stereotype/Repository;";
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
+	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
 	public final static String ImportSelector = "Lorg/springframework/context/annotation/ImportSelector;";
 	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
@@ -2031,6 +2032,10 @@ public class Type {
 	 */
 	public boolean isMetaImportAnnotated() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
+	}
+	
+	public boolean isComponent() {
+		return isMetaAnnotated(fromLdescriptorToSlashed(AtComponent));
 	}
 
 	public boolean isConditional() {
