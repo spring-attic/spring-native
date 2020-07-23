@@ -92,7 +92,6 @@ public abstract class SpringBootFactories {
 		//factories.add(ApplicationListener.class, new CloudFoundryVcapEnvironmentPostProcessor());
 		factories.add(ApplicationListener.class, new FileEncodingApplicationListener());
 		factories.add(ApplicationListener.class, new AnsiOutputApplicationListener());
-		factories.add(ApplicationListener.class, new ConfigFileApplicationListener());
 		factories.add(ApplicationListener.class, new DelegatingApplicationListener());
 		factories.add(ApplicationListener.class, new ClasspathLoggingApplicationListener());
 		factories.add(ApplicationListener.class, new LoggingApplicationListener());
@@ -109,6 +108,7 @@ public abstract class SpringBootFactories {
 		//factories.add(EnvironmentPostProcessor.class, new CloudFoundryVcapEnvironmentPostProcessor());
 		factories.add(EnvironmentPostProcessor.class, new SpringApplicationJsonEnvironmentPostProcessor());
 		factories.add(EnvironmentPostProcessor.class, new SystemEnvironmentPropertySourceEnvironmentPostProcessor());
+		factories.add(EnvironmentPostProcessor.class, new ConfigFileApplicationListener());
 		//factories.add(EnvironmentPostProcessor.class, new DebugAgentEnvironmentPostProcessor());
 
 		// FailureAnalyzer
