@@ -38,7 +38,9 @@ import org.springframework.graalvm.type.AccessBits;
 			"java.lang.String[]"
 	})
 })
-@NativeImageHint(trigger = EnableConfigurationProperties.class)
+@NativeImageHint(trigger = EnableConfigurationProperties.class,
+	typeInfos={@TypeInfo(types= {ConstructorBinding.class})}
+)
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types= {
 				ConfigurationPropertiesScan.class,
