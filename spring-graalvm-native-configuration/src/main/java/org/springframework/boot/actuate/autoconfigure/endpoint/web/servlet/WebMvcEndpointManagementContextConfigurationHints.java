@@ -16,7 +16,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.WebMvcServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
@@ -47,26 +46,20 @@ import org.springframework.graalvm.type.TypeSystem;
 
 // The configurations related to actuator are in this key in spring.factories:
 // org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration
-// NOT EnableAutoConfiguration - this means Spring GraalVM Native is not fully processing them
-// For now - rather than activating type chasing processing for that key as well, let's
-// hook these hints on AutoConfigurations.
-// So the management configuration is WebMvcEndpointManagementContextConfiguration
-@NativeImageHint(trigger=WebEndpointAutoConfiguration.class, 
-	importInfos = { CommonWebActuatorTypes.class},
+// NOT the EnableAutoConfiguration key. There is special handling of the ManagementContextConfiguration
+// key that will handle hints against these (so we can use a ...ContextConfiguration trigger class
+// here - we don't have to use a standard auto config visible through EnableAutoConfiguration).
+// If we wanted to use a standard config, we'd trigger on WebEndpointAutoConfiguration
+@NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
+	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
  		@TypeInfo(types = {
-		HttpTraceEndpoint.class,
-		LogFileWebEndpoint.class,
 		WebMvcEndpointHandlerMapping.class,
-		ServletEndpointRegistrar.class,
 		AbstractWebMvcEndpointHandlerMapping.class,	
 		WebMvcServletEndpointManagementContextConfiguration.class,
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
-		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration.class,
-		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration.class,
-		HttpTraceRepository.class,
 		org.springframework.boot.autoconfigure.web.ErrorProperties.class,
 		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute.class,
 		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace.class,
@@ -115,11 +108,6 @@ import org.springframework.graalvm.type.TypeSystem;
 		// This reactive one is required even though not a webflux app, awesome...
 		ReactiveManagementChildContextConfiguration.class,
 	}, typeNames = {
-		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
-		"org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration$SameManagementContextConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.endpoint.web.MappingWebEndpointPathMapper",
-		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",

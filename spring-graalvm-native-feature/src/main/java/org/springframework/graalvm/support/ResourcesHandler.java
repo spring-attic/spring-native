@@ -49,6 +49,8 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.xml.transform.stream.StreamSource;
+
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
@@ -79,6 +81,8 @@ public class ResourcesHandler {
 	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
 
 	private final static String applicationListenerKey = "org.springframework.context.ApplicationListener";
+	
+	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
 
 	private TypeSystem ts;
 
@@ -767,7 +771,10 @@ public class ResourcesHandler {
 		while (factoryKeys.hasMoreElements()) {
 			String k = (String) factoryKeys.nextElement();
 			SpringFeature.log("Adding all the classes for this key: " + k);
-			if (!k.equals(enableAutoconfigurationKey) && !k.equals(propertySourceLoaderKey) && !k.equals(applicationListenerKey)) {
+			if (!k.equals(enableAutoconfigurationKey) && 
+				!k.equals(propertySourceLoaderKey) && 
+				!k.equals(managementContextConfigurationKey) && 
+				!k.equals(applicationListenerKey)) {
 				if (ts.shouldBeProcessed(k)) {
 					for (String v : p.getProperty(k).split(",")) {
 						registerTypeReferencedBySpringFactoriesKey(v);
@@ -827,13 +834,10 @@ public class ResourcesHandler {
 			p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 		}
 		}
-		/*
-		if (ConfigOptions.isHybridMode()) {
-			ConfigOptions.setRemoval(false);
-		}
-		*/
 
-
+		boolean modified = processConfigurationsWithKey(p, managementContextConfigurationKey);
+		
+		// TODO refactor this chunk to call processConfigurationsWithKey()
 		// Handle EnableAutoConfiguration
 		String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
 		if (enableAutoConfigurationValues != null) {
@@ -875,7 +879,7 @@ public class ResourcesHandler {
 
 		// Filter spring.factories if necessary
 		try {
-			if (forRemoval.size() == 0) {
+			if (forRemoval.size() == 0 && !modified) {
 				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
 				SpringFeature.log("  removed " + forRemoval.size() + " classes");
@@ -892,6 +896,41 @@ public class ResourcesHandler {
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	/**
+	 * Find the configurations referred to by the specified key in the specified properties object.
+	 * Process each configuration and if it fails conditional checks (e.g. @ConditionalOnClass)
+	 * then it is considered inactive and removed. The key is rewritten with a new list of configurations
+	 * with inactive ones removed.
+	 * @param p the properties object
+	 * @param configurationsKey the key into the properties object whose value is a configurations list
+	 * 
+	 * @return true if inactive configurations were discovered and removed
+	 */
+	private boolean processConfigurationsWithKey(Properties p, String configurationsKey) {
+		boolean modified = false;
+		List<String> inactiveConfigurations = new ArrayList<>();
+		String configurationsValue = (String)p.get(configurationsKey);
+		if (configurationsValue != null) {
+			List<String> configurations = Stream.of(configurationsValue.split(",")).collect(Collectors.toList());
+			for (String configuration: configurations) {
+				if (!checkAndRegisterConfigurationType(configuration)) {
+					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+						SpringFeature.log("Excluding auto-configuration (key="+configurationsKey+") =" +configuration);
+						inactiveConfigurations.add(configuration);
+					}
+				}
+			}
+			if (ConfigOptions.shouldRemoveUnusedAutoconfig() && inactiveConfigurations.size()>0) {
+				int totalConfigurations = configurations.size();
+				configurations.removeAll(inactiveConfigurations);
+				p.put(configurationsKey, String.join(",", configurations));
+				SpringFeature.log("Removed "+inactiveConfigurations.size()+" of the "+totalConfigurations+" configurations specified for the key "+configurationsKey);
+				modified = true;
+			}
+		}
+		return modified;
 	}
 
 	private void loadSpringFactoryFile(URL springFactory, Properties p) {

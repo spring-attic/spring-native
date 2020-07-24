@@ -1548,7 +1548,6 @@ public class Type {
 	}
 	
 	private void processImportInfos(CompilationHint ch, Object value) {
-		System.out.println(">II");
 		List<org.objectweb.asm.Type> importInfos = (ArrayList<org.objectweb.asm.Type>) value;
 		for (org.objectweb.asm.Type importInfo: importInfos) {
 			String className = importInfo.getClassName();
@@ -1556,7 +1555,6 @@ public class Type {
 			if (resolvedImportInfo == null) {
 				throw new IllegalStateException("Cannot find importInfos referenced type: "+className);
 			}
-			System.out.println("II: resolved II "+className);
 			ClassNode node = resolvedImportInfo.getClassNode();
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {

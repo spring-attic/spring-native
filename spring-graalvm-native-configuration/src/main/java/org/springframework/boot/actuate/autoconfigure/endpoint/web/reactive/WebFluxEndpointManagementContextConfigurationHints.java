@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CommonWebActuatorTypes;
 import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration;
 import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping;
@@ -31,7 +31,10 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.TypeSystem;
 
-@NativeImageHint(trigger=WebEndpointAutoConfiguration.class, typeInfos = {
+
+@NativeImageHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
+	importInfos = { CommonWebActuatorTypes.class},
+	typeInfos = {
 	@TypeInfo(types = {
 		AbstractWebFluxEndpointHandlerMapping.class,
 		ControllerEndpointHandlerMapping.class,
