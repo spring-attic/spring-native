@@ -1,0 +1,73 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.boot.actuate.autoconfigure.endpoint;
+
+import org.springframework.boot.actuate.context.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
+import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
+import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.Link;
+import org.springframework.boot.actuate.logging.LoggersEndpoint;
+import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
+import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
+import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.TypeInfo;
+
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+
+// TODO what is the 'entrypoint' trigger configuration to actuator? EndpointAutoConfiguration seems something 'common'
+@NativeImageHint(trigger = EndpointAutoConfiguration.class, typeInfos = { 
+	@TypeInfo(types = {
+		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
+		DeleteOperation.class, Selector.class, Match.class, EndpointFilter.class,
+		EndpointsSupplier.class, EndpointConverter.class, EndpointDiscoverer.class, FilteredEndpoint.class,
+		Link.class, BeanSerializer.class, ApiVersion.class,
+		ExposeExcludePropertyEndpointFilter.class,
+		org.reactivestreams.Publisher.class,
+
+		ShutdownEndpoint.class,
+		CloudPlatform.class,
+		OperationInvokerAdvisor.class,
+		ParameterValueMapper.class,
+		ConversionServiceParameterValueMapper.class,
+		LoggersEndpoint.class,
+		ThreadDumpEndpoint.class,
+		ScheduledTasksEndpoint.class,
+		DiskSpaceHealthIndicator.class,
+	}, typeNames = {
+		// TODO this next one, actuator looks like the first thing pushing on it but surely it isn't the only user and this should have a different trigger?
+		"org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
+		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
+	})
+})
+public class EndpointAutoConfigurationHints implements NativeImageConfiguration {
+}
