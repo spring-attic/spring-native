@@ -1594,7 +1594,6 @@ public class Type {
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
-		System.out.println("type:"+type.getClassName());
 			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferTypeKind(type) : accessRequired);
 		}
 		for (String typeName : typeNames) {
