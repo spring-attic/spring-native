@@ -50,9 +50,9 @@ public abstract class ConfigOptions {
 	private final static boolean SKIP_AT_BEAN_SIGNATURE_TYPES;
 
 	static {
-		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","false"));
-		if (IGNORE_HINTS_ON_EXCLUDED_CONFIG) {
-			System.out.println("Ignoring hints on excluded configuration (excluded via spring.autoconfigure.exclude property in application.properties)");
+		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","true"));
+		if (!IGNORE_HINTS_ON_EXCLUDED_CONFIG) {
+			System.out.println("Currently not processing any spring.autoconfigure.exclude property in application.properties)");
 		}
 		SKIP_AT_BEAN_HINT_PROCESSING = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-hint-processing", "false"));
 		if (SKIP_AT_BEAN_HINT_PROCESSING) {

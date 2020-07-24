@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.web;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.WebMvcServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.WebMvcServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextConfigurationImportSelectorHints;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -36,31 +34,27 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
-import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.client.MetricsWebClientCustomizer;
-import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.TypeSystem;
 
-// Hitting ?
-@NativeImageHint(trigger=WebEndpointAutoConfiguration.class, typeInfos = {
-	@TypeInfo(types = {
+// The configurations related to actuator are in this key in spring.factories:
+// org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration
+// NOT EnableAutoConfiguration - this means Spring GraalVM Native is not fully processing them
+// For now - rather than activating type chasing processing for that key as well, let's
+// hook these hints on AutoConfigurations.
+// So the management configuration is WebMvcEndpointManagementContextConfiguration
+@NativeImageHint(trigger=WebEndpointAutoConfiguration.class, 
+	importInfos = { CommonWebActuatorTypes.class},
+ 	typeInfos = {
+ 		@TypeInfo(types = {
 		HttpTraceEndpoint.class,
 		LogFileWebEndpoint.class,
 		WebMvcEndpointHandlerMapping.class,
@@ -118,7 +112,8 @@ import org.springframework.graalvm.type.TypeSystem;
 		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration.class,
-		ReactiveManagementChildContextConfiguration.class
+		// This reactive one is required even though not a webflux app, awesome...
+		ReactiveManagementChildContextConfiguration.class,
 	}, typeNames = {
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
 		"org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration$SameManagementContextConfiguration",
@@ -132,60 +127,13 @@ import org.springframework.graalvm.type.TypeSystem;
 		"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
 	})
 })
-public class WebEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class WebMvcEndpointManagementContextConfigurationHints implements NativeImageConfiguration {
 
 	@Override
-	public List<CompilationHint> computeHints(TypeSystem typeSystem) {
-		try {
-			List<CompilationHint> hints = new ArrayList<>();
-			// There are many types in the actuator jar so the check for whether they are
-			// truly required isn't trivial. (For example actuator jar contains 
-			// AbstractWebFluxEndpointHandlerMapping but this may not be a webflux application).
-
-			// Similar to check in OnWebApplicationCondition
-			boolean isWebfluxApplication = typeSystem.resolveName("org.springframework.web.reactive.HandlerResult", true) != null;
-			if (isWebfluxApplication) {
-				CompilationHint ch = new CompilationHint();
-				// TODO These probably shouldn't be ALL
-				ch.setTargetType(WebEndpointAutoConfiguration.class.getName());
-				ch.addDependantType(AbstractWebFluxEndpointHandlerMapping.class.getName(), AccessBits.ALL);
-				ch.addDependantType(ControllerEndpointHandlerMapping.class.getName(), AccessBits.ALL);
-				ch.addDependantType(WebFluxEndpointHandlerMapping.class.getName(), AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping$WebFluxLinksHandler",
-						AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler",
-						AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
-						AccessBits.ALL);
-				ch.addDependantType("org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration",
-						AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
-						AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
-						AccessBits.ALL);
-				ch.addDependantType(
-						"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping",
-						AccessBits.ALL);
-				ch.addDependantType(DefaultWebClientExchangeTagsProvider.class, AccessBits.ALL);
-				ch.addDependantType(WebClientExchangeTagsProvider.class, AccessBits.ALL);
-				ch.addDependantType(MetricsWebFilter.class, AccessBits.ALL);
-				ch.addDependantType(DefaultWebFluxTagsProvider.class, AccessBits.ALL);
-				ch.addDependantType(WebFluxTagsProvider.class, AccessBits.ALL);
-				ch.addDependantType("org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping",AccessBits.ALL);
-				ch.addDependantType(MetricsWebClientCustomizer.class, AccessBits.ALL);
-				ch.addDependantType(WebFluxEndpointManagementContextConfiguration.class, AccessBits.ALL);
-				hints.add(ch);
-			}
-			return hints;
-		} catch (NoClassDefFoundError ncdfe) {
-			// these hints aren't useful because types are not around
-			return Collections.emptyList();
-		}
+	public boolean isValid(TypeSystem typeSystem) {
+		// Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(SERVLET))
+		boolean isWebMvcApplication = typeSystem.resolveName("org.springframework.web.context.support.GenericWebApplicationContext", true) != null;
+		return isWebMvcApplication;
 	}
 
 }

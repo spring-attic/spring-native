@@ -59,6 +59,12 @@ public @interface NativeImageHint {
 	TypeInfo[] typeInfos() default {};
 	
 	/**
+	 * A set of types that have @TypeInfo/@ProxyInfo/etc annotations on them that should be pulled in as type infos for this hint.
+	 * Using this mechanism a set of TypeInfos can be shared by two hints without duplication (e.g. webflux and webmvc). 
+	 */
+	Class<?>[] importInfos() default {};
+
+	/**
 	 * A set of proxy infos which indicate which sets of types need a proxy if the trigger is active.
 	 */
 	ProxyInfo[] proxyInfos() default {};
@@ -78,5 +84,6 @@ public @interface NativeImageHint {
 	boolean abortIfTypesMissing() default false;
 	
 	boolean follow() default false; // TODO get rid of this, infer from types involved (means moving to per type follow setting)
+	
 	
 }
