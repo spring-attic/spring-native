@@ -31,6 +31,8 @@ import org.objectweb.asm.tree.MethodNode;
 import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
+import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.support.SpringFeature;
@@ -1493,20 +1495,13 @@ public class Type {
 						ch.addMode(Mode.valueOf(mode[1]));
 					}
 				} else if (key.equals("typeInfos")) {
-					List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
-					for (AnnotationNode typeInfo : typeInfos) {
-						unpackTypeInfo(typeInfo, ch);
-					}
+					processTypeInfoList(ch, value);
+				} else if (key.equals("importInfos")) {
+					processImportInfos(ch, value);
 				} else if (key.equals("proxyInfos")) {
-					List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
-					for (AnnotationNode proxyInfo : proxyInfos) {
-						unpackProxyInfo(proxyInfo, ch);
-					}
+					processProxyInfo(ch, value);
 				} else if (key.equals("resourcesInfos")) {
-					List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
-					for (AnnotationNode resourcesInfo : resourcesInfos) {
-						unpackResourcesInfo(resourcesInfo, ch);
-					}
+					processResourcesInfos(ch, value);
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1531,6 +1526,56 @@ public class Type {
 		return ch;
 	}
 
+	private void processResourcesInfos(CompilationHint ch, Object value) {
+		List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode resourcesInfo : resourcesInfos) {
+			unpackResourcesInfo(resourcesInfo, ch);
+		}
+	}
+
+	private void processTypeInfoList(CompilationHint ch, Object value) {
+		List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode typeInfo : typeInfos) {
+			unpackTypeInfo(typeInfo, ch);
+		}
+	}
+
+	private void processProxyInfo(CompilationHint ch, Object value) {
+		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode proxyInfo : proxyInfos) {
+			unpackProxyInfo(proxyInfo, ch);
+		}
+	}
+	
+	private void processImportInfos(CompilationHint ch, Object value) {
+		System.out.println(">II");
+		List<org.objectweb.asm.Type> importInfos = (ArrayList<org.objectweb.asm.Type>) value;
+		for (org.objectweb.asm.Type importInfo: importInfos) {
+			String className = importInfo.getClassName();
+			Type resolvedImportInfo = typeSystem.resolveDotted(className,true);
+			if (resolvedImportInfo == null) {
+				throw new IllegalStateException("Cannot find importInfos referenced type: "+className);
+			}
+			System.out.println("II: resolved II "+className);
+			ClassNode node = resolvedImportInfo.getClassNode();
+			if (node.visibleAnnotations != null) {
+				for (AnnotationNode an : node.visibleAnnotations) {
+					if (fromLdescriptorToDotted(an.desc).equals(TypeInfo.class.getName())) {
+						unpackTypeInfo(an, ch);
+//						processTypeInfoList(ch, an.values);
+					} else if (fromLdescriptorToDotted(an.desc).equals(TypeInfos.class.getName())) {
+						processTypeInfosList(ch, an);
+					}
+				}
+			}
+			
+		}
+	}
+
+	ClassNode getClassNode() {
+		return node;
+	}
+
 	@SuppressWarnings("unchecked")
 	private void unpackTypeInfo(AnnotationNode typeInfo, CompilationHint ch) {
 		List<Object> values = typeInfo.values;
@@ -1549,6 +1594,7 @@ public class Type {
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
+		System.out.println("type:"+type.getClassName());
 			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferTypeKind(type) : accessRequired);
 		}
 		for (String typeName : typeNames) {
@@ -1559,7 +1605,6 @@ public class Type {
 		}
 	}
 	
-
 	@SuppressWarnings("unchecked")
 	private void unpackProxyInfo(AnnotationNode typeInfo, CompilationHint ch) {
 		List<Object> values = typeInfo.values;
@@ -1654,6 +1699,23 @@ public class Type {
 			}
 		}
 		return chs;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void processTypeInfosList(CompilationHint ch, AnnotationNode an) {
+		List<Object> values = an.values;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("value")) {
+				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee, org.objectweb.asm.tree.AnnotationNode@68fb2c38]
+				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
+				for (int j = 0; j < annotationNodes.size(); j++) {
+					unpackTypeInfo(annotationNodes.get(j),ch);
+//					processTypeInfoList(ch, annotationNodes.get(j));
+				}
+			}
+		}
 	}
 
 	public List<CompilationHint> getCompilationHints() {

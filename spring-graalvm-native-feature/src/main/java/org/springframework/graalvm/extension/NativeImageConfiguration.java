@@ -26,4 +26,13 @@ public interface NativeImageConfiguration {
 	// TODO using typeSystem here is a little basic but a good starting
 	// point (doesn't enable us to ask 'springy' questions)
 	default List<CompilationHint> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
+	
+	/**
+	 * Implementing this method enables hints on the NativeImageConfiguration implementation to be
+	 * conditional on some programmatic test.
+	 * 
+	 * @param typeSystem a type system which can be used to query types available in the closed world
+	 * @return true if the hints on this configuration are valid
+	 */
+	default boolean isValid(TypeSystem typeSystem) { return true; }
 }

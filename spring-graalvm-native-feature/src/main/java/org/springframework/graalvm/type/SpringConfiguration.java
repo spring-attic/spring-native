@@ -47,6 +47,10 @@ public class SpringConfiguration {
 			SpringFeature.log("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
+				boolean valid = hintProvider.isValid(typeSystem);
+				if (!valid) {
+					continue;
+				}
 				List<CompilationHint> hints = t.getCompilationHints();
 				try {
 					hints.addAll(hintProvider.computeHints(typeSystem));
