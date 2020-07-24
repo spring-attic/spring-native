@@ -1,4 +1,5 @@
 com.wavefront.spring.actuate.WavefrontEndpointHints
+com.wavefront.spring.actuate.WavefrontHints
 org.springframework.amqp.rabbit.annotation.RabbitHints
 org.springframework.batch.core.configuration.annotation.BatchHints
 org.springframework.beans.factory.annotation.BeanFactoryAnnotationHints

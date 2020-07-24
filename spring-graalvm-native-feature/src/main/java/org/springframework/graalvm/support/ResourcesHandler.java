@@ -1003,19 +1003,12 @@ public class ResourcesHandler {
 		if (ConfigOptions.isIgnoreHintsOnExcludedConfig() && type.isAtConfiguration()) {
 			if (isIgnored(type)) {
 				String n = type.getDottedName();
-				
-				if (!n.equals("org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration")) {
-					SpringFeature.log("INFO: skipping hints on "+type.getName()+" because it is excluded in this application");
-					// You may wonder why this is not false? That is because if we return false it will be deleted from
-					// spring.factories. Then later when Spring processes the spring exclude autoconfig key that contains this
-					// name - it will fail with an error that it doesn't refer to a valid configuration. So here we return true,
-					// which isn't optimal but we do skip all the hint processing and further chasing from this configuration.
-					return true;
-					/*
-				} else {
-					SpringFeature.log("INFO: should skip hints on "+type.getName()+" but not on the nice list: "+type.getDottedName());
-					*/
-				}
+				SpringFeature.log("INFO: skipping hints on "+type.getName()+" because it is excluded in this application");
+				// You may wonder why this is not false? That is because if we return false it will be deleted from
+				// spring.factories. Then later when Spring processes the spring exclude autoconfig key that contains this
+				// name - it will fail with an error that it doesn't refer to a valid configuration. So here we return true,
+				// which isn't optimal but we do skip all the hint processing and further chasing from this configuration.
+				return true;
 			}
 		}
 
