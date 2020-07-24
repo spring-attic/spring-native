@@ -44,7 +44,6 @@ import org.springframework.graalvm.extension.TypeInfo;
 
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
-// TODO what is the 'entrypoint' trigger configuration to actuator? EndpointAutoConfiguration seems something 'common'
 @NativeImageHint(trigger = EndpointAutoConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
 		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
