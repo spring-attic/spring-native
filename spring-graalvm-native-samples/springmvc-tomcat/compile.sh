@@ -34,6 +34,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -Dspring.native.remove-jmx-support=true \
   -Dspring.xml.ignore=true \
   -Dspring.spel.ignore=true \
+  -H:-UseServiceLoaderFeature \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
