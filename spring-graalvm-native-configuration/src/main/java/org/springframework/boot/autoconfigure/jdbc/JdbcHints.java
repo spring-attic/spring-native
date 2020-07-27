@@ -90,12 +90,12 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 				access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
 		@TypeInfo(
 				typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
-				types= {FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class},
-				access=AccessBits.LOAD_AND_CONSTRUCT)})
+				types= {MVTableEngine.class, Statement.class, Statement[].class, FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class,FilePathNio.class,FilePathNioMapped.class,FilePathAsync.class,FilePathZip.class,FilePathRetryOnInterrupt.class}
+		)})
 
 @NativeImageHint(trigger=Hikari.class, typeInfos= {
-		@TypeInfo(types= {HikariDataSource.class,MVTableEngine.class,Statement.class,Statement[].class, IConcurrentBagEntry[].class,IConcurrentBagEntry.class},
-				access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types= {HikariDataSource.class, IConcurrentBagEntry[].class,IConcurrentBagEntry.class}
+		),
 	@TypeInfo(types = HikariConfig.class, access = AccessBits.FULL_REFLECTION)})
 
 // MySQL JDBC driver
