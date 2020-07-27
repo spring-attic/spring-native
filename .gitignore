@@ -18,3 +18,4 @@ bin/
 *.iml
 test-output.txt
 /?/
+generated/
