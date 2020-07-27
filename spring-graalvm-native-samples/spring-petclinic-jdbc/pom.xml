@@ -169,22 +169,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-graalvm-library-optimizer</artifactId>
-				<executions>
-					<execution>
-						<id>optimize-tomcat</id>
-						<phase>package</phase>
-						<goals>
-							<goal>spring-graalvm-optimize-jar</goal>
-						</goals>
-						<configuration>
-							<enabled>true</enabled>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
         </plugins>
     </build>
 
