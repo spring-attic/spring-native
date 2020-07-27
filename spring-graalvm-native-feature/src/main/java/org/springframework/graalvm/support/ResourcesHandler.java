@@ -746,11 +746,17 @@ public class ResourcesHandler {
 	private void registerTypeReferencedBySpringFactoriesKey(String s) {
 		try {
 			Type t = ts.resolveDotted(s, true);
+			if (t == null) {
+				t = ts.tryAndResolveAsInner(s);
+			}
 			if (t != null) {
+				// This 'name' may not be the same as 's' if 's' referred to an inner type -
+				// 'name' will include the right '$' characters.
+				String name = t.getDottedName();
 				if (t.hasOnlySimpleConstructor()) {
-					reflectionHandler.addAccess(s, new String[][] { { "<init>" } }, false);
+					reflectionHandler.addAccess(name, new String[][] { { "<init>" } }, false);
 				} else {
-					reflectionHandler.addAccess(s, Flag.allDeclaredConstructors);
+					reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
 				}
 			}
 		} catch (NoClassDefFoundError ncdfe) {
