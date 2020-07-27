@@ -19,6 +19,7 @@ import java.time.LocalDate;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
 
 /**
@@ -29,6 +30,7 @@ import org.springframework.samples.petclinic.model.BaseEntity;
  */
 public class Visit extends BaseEntity {
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @NotEmpty
