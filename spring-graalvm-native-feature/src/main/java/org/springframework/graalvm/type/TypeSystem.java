@@ -915,5 +915,21 @@ public class TypeSystem {
 		return typesMakingIsPresentChecksInStaticInitializers;
 	}
 
+	public Type tryAndResolveAsInner(String typename) {
+		// typename may be a.b.c.Outer.Inner
+		String attempting = typename;
+		int dotIndex = attempting.lastIndexOf(".");
+		while (dotIndex != -1 && (dotIndex+1)<attempting.length()) {
+			String toTry = attempting.substring(0,dotIndex)+"$"+attempting.substring(dotIndex+1);
+			Type t = resolveDotted(toTry);
+			if (t != null) {
+				return t;
+			}
+			attempting = toTry;
+			dotIndex = attempting.lastIndexOf(".");
+		}
+		return null;
+	}
+
 
 }
