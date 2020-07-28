@@ -746,9 +746,6 @@ public class ResourcesHandler {
 	private void registerTypeReferencedBySpringFactoriesKey(String s) {
 		try {
 			Type t = ts.resolveDotted(s, true);
-			if (t == null) {
-				t = ts.tryAndResolveAsInner(s);
-			}
 			if (t != null) {
 				// This 'name' may not be the same as 's' if 's' referred to an inner type -
 				// 'name' will include the right '$' characters.
