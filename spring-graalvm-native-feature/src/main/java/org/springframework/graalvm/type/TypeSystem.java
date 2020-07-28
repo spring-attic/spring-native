@@ -149,17 +149,42 @@ public class TypeSystem {
 	}
 
 	public Type resolveSlashed(String slashedTypeName, boolean allowNotFound) {
-		Type type = typeCache.get(slashedTypeName);
-		if (type == Type.MISSING) {
+		Type resolvedType = typeCache.get(slashedTypeName);
+		if (resolvedType == Type.MISSING) {
+			return null;
+		}
+		if (resolvedType != null) {
+			return resolvedType;
+		}
+		resolvedType = findType(slashedTypeName);
+		if (resolvedType == null) {
+			// It may be an inner type but slashedTypeName is com/foo/example/Outer/Inner
+			String current = slashedTypeName;
+			int lastSlash = current.lastIndexOf(".");
+			while (lastSlash != -1 && (lastSlash+1)<current.length()) {
+				String attempt = current.substring(0,lastSlash)+"$"+current.substring(lastSlash+1);
+				resolvedType = findType(attempt);
+				if (resolvedType != null) {
+					break;
+				}
+				current = attempt;
+			}
+		}
+		if (resolvedType != null) {
+			typeCache.put(slashedTypeName, resolvedType);
+			return resolvedType;
+		} else {
+			// cache a missingtype so we don't go looking again!
+			typeCache.put(slashedTypeName, Type.MISSING);
 			if (allowNotFound) {
 				return null;
 			} else {
 				throw new MissingTypeException(slashedTypeName);
 			}
 		}
-		if (type != null) {
-			return type;
-		}
+	}
+		
+	private Type findType(String slashedTypeName) {
 		int dimensions = 0;
 		String typeToLocate = slashedTypeName;
 		if (slashedTypeName.endsWith("[]")) {
@@ -176,13 +201,7 @@ public class TypeSystem {
 			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(typeToLocate + ".class");
 			if (resourceAsStream == null) {
-				// cache a missingtype so we don't go looking again!
-				typeCache.put(slashedTypeName, Type.MISSING);
-				if (allowNotFound) {
-					return null;
-				} else {
-					throw new MissingTypeException(slashedTypeName);
-				}
+				return null;
 			}
 			try {
 				bytes = loadFromStream(resourceAsStream);
@@ -193,9 +212,7 @@ public class TypeSystem {
 		ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, ClassReader.SKIP_DEBUG);
-		type = Type.forClassNode(this, node,dimensions);
-		typeCache.put(slashedTypeName, type);
-		return type;
+		return Type.forClassNode(this, node, dimensions);
 	}
 
 	private String toSlashedName(String dottedTypeName) {
@@ -914,22 +931,5 @@ public class TypeSystem {
 		}
 		return typesMakingIsPresentChecksInStaticInitializers;
 	}
-
-	public Type tryAndResolveAsInner(String typename) {
-		// typename may be a.b.c.Outer.Inner
-		String attempting = typename;
-		int dotIndex = attempting.lastIndexOf(".");
-		while (dotIndex != -1 && (dotIndex+1)<attempting.length()) {
-			String toTry = attempting.substring(0,dotIndex)+"$"+attempting.substring(dotIndex+1);
-			Type t = resolveDotted(toTry);
-			if (t != null) {
-				return t;
-			}
-			attempting = toTry;
-			dotIndex = attempting.lastIndexOf(".");
-		}
-		return null;
-	}
-
 
 }
