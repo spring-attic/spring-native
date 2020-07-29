@@ -111,7 +111,7 @@ public class BootOptimizerForApacheTomcatEmbedCore
                             String modifiedName = name.replace("embed-core", "embed-core-optimized");
                             getLog().info("Removing from JAR: " + name + "to: " + modifiedName);
                             Path path = Paths.get(new File(f, modifiedName).getAbsolutePath());
-                            Files.delete(path);
+                            Files.deleteIfExists(path);
                             Files.move(file, path);
                             foundTomcatLibrary.set(file);
                             newTomcatLibrary.set(path);
