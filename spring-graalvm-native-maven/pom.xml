@@ -12,8 +12,7 @@
 
 	<name>Spring GraalVM Native maven plugins</name>
 
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<url>https://github.com/fhanik/spring-graal-native</url>
 
 	<prerequisites>
 		<maven>${maven.version}</maven>
@@ -145,7 +144,6 @@
 		<profile>
 			<id>run-its</id>
 			<build>
-
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

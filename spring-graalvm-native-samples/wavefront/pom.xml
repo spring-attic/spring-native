@@ -85,10 +85,19 @@
 				<artifactId>spring-graalvm-library-optimizer</artifactId>
 				<executions>
 					<execution>
-						<id>optimize-tomcat</id>
-						<phase>package</phase>
+						<id>remove-apache-tomcat-reflection</id>
 						<goals>
-							<goal>spring-graalvm-optimize-jar</goal>
+							<goal>spring-graalvm-remove-apache-tomcat-reflection</goal>
+						</goals>
+						<configuration>
+							<enabled>true</enabled>
+							<generatedSourcesLocation>generated/src/main/java/</generatedSourcesLocation>
+						</configuration>
+					</execution>
+					<execution>
+						<id>optimize-apache-tomcat-embed-core</id>
+						<goals>
+							<goal>spring-graalvm-optimize-apache-tomcat</goal>
 						</goals>
 						<configuration>
 							<enabled>true</enabled>
