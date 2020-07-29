@@ -152,7 +152,11 @@ public class TypeSystem {
 	public Type resolveSlashed(String slashedTypeName, boolean allowNotFound) {
 		Type resolvedType = typeCache.get(slashedTypeName);
 		if (resolvedType == Type.MISSING) {
-			return null;
+			if (allowNotFound) {
+				return null;
+			} else {
+				throw new MissingTypeException(slashedTypeName);
+			}
 		}
 		if (resolvedType != null) {
 			return resolvedType;
