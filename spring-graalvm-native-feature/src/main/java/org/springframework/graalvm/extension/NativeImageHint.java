@@ -74,6 +74,12 @@ public @interface NativeImageHint {
 	 */
 	ResourcesInfo[] resourcesInfos() default {};
 	
+	/**
+	 * A set of InitializationInfos which specify which classes/packages should be initialized
+	 * explicitly at runtime/buildtime.
+	 */
+	InitializationInfo[] initializationInfos() default {};
+	
 	// TODO sort out these 3 members:
 	/**
 	 * Names of the annotation attributes on the target type which contain type names (as class references or strings).
