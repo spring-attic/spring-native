@@ -20,6 +20,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
  * Generates org.apache.tomcat.util.XReflectionIntrospectionUtils class that does setProperty
@@ -51,14 +52,17 @@ public class BootOptimizerForApacheTomcatGenerateNonReflectionUtils
     /**
      * The Maven project.
      */
-    @Parameter(defaultValue = "generated/src/main/java/", readonly = true, required = false)
-    private String generatedSourcesLocation;
+	@Parameter(defaultValue = "${project.build.directory}/generated-sources/tomcat", required = false)
+    private File generatedSourcesLocation;
 
     /**
      * Maven project helper utils.
      */
     @Component
     protected MavenProjectHelper projectHelper;
+
+	@Component
+	private BuildContext buildContext;
 
     private ClassLoader projectClassLoader = null;
 
@@ -72,14 +76,17 @@ public class BootOptimizerForApacheTomcatGenerateNonReflectionUtils
 
             if (isTomcatPresent()) {
 
-                File destinationDirectory = new File(project.getBasedir(), generatedSourcesLocation);
-                if (!destinationDirectory.exists()) {
-                    destinationDirectory.mkdirs();
+                if (buildContext.hasDelta(generatedSourcesLocation)) {
+                    
+                    if (!generatedSourcesLocation.exists()) {
+                        generatedSourcesLocation.mkdirs();
+                    }
+                    getLog().info("Generating Non Reflection Code for Apache Tomcat to: " +
+                    generatedSourcesLocation.getAbsolutePath());
+                    generateXReflectionSources(generatedSourcesLocation.getAbsolutePath());
+                    project.addCompileSourceRoot(generatedSourcesLocation.getAbsolutePath());
+
                 }
-                getLog().info("Generating Non Reflection Code for Apache Tomcat to: " +
-                    destinationDirectory.getAbsolutePath());
-                generateXReflectionSources(generatedSourcesLocation);
-                project.addCompileSourceRoot(generatedSourcesLocation);
 
             } else {
                 getLog().info("No Apache Tomcat Library Present. Skipping Apache Tomcat optimization");
