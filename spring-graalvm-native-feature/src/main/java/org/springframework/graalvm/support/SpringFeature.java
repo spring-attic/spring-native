@@ -33,7 +33,7 @@ public class SpringFeature implements Feature {
 
 	private ResourcesHandler resourcesHandler;
 
-	private InitializationHandler buildTimeInitializationHandler;
+	private InitializationHandler initializationHandler;
 
 	public SpringFeature() {
 		System.out.println(
@@ -48,8 +48,8 @@ public class SpringFeature implements Feature {
 		}
 		reflectionHandler = new ReflectionHandler();
 		dynamicProxiesHandler = new DynamicProxiesHandler();
-		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler);
-		buildTimeInitializationHandler = new InitializationHandler();
+		initializationHandler = new InitializationHandler();
+		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler,initializationHandler);
 	}
 
 	public boolean isInConfiguration(IsInConfigurationAccess access) {
@@ -80,7 +80,7 @@ public class SpringFeature implements Feature {
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		resourcesHandler.register(access);
-		buildTimeInitializationHandler.register(access);
+		initializationHandler.register(access);
 		if (ConfigOptions.isDefaultMode()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();

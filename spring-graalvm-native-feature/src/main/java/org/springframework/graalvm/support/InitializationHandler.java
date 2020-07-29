@@ -80,5 +80,28 @@ public class InitializationHandler {
 			}
 		}
 	}
+
+	public void registerInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
+		List<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
+		if (buildtimeClasses.size()!=0) {
+			buildtimeClasses.stream()
+			.map(c -> cl.findClassByName(c, false)).filter(Objects::nonNull)
+			.forEach(RuntimeClassInitialization::initializeAtBuildTime);
+		}
+		List<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
+		if (runtimeClasses.size()!=0) {
+			buildtimeClasses.stream()
+			.map(c -> cl.findClassByName(c, false)).filter(Objects::nonNull)
+			.forEach(RuntimeClassInitialization::initializeAtRunTime);
+		}
+		List<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
+		if (buildtimePackages.size()!=0) {
+			RuntimeClassInitialization.initializeAtBuildTime(buildtimeClasses.toArray(new String[0]));
+		}
+		List<String> runtimePackages = initializationDescriptor.getRuntimePackages();
+		if (runtimePackages.size()!=0) {
+			RuntimeClassInitialization.initializeAtRunTime(buildtimeClasses.toArray(new String[0]));
+		}
+	}
 	
 }

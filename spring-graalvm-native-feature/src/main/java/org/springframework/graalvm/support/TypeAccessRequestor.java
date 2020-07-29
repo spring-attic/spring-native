@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.ResourcesDescriptor;
 
@@ -35,6 +36,8 @@ public class TypeAccessRequestor {
 	private List<ProxyDescriptor> requestedProxies = new ArrayList<>();
 	
 	private List<ResourcesDescriptor> requestedResources = new ArrayList<>();
+
+	private List<InitializationDescriptor> requestedInitializations = new ArrayList<>();
 	
 	public void request(String type, Integer accessRequired) {
 		if (type.indexOf("/")!=-1) {
@@ -59,6 +62,10 @@ public class TypeAccessRequestor {
 	public void requestResourcesDescriptors(List<ResourcesDescriptor> resourcesDescriptors) {
 		requestedResources.addAll(resourcesDescriptors);
 	}
+
+	public void requestInitializationDescriptors(List<InitializationDescriptor> initializationDescriptors) {
+		requestedInitializations.addAll(initializationDescriptors);
+	}
 	
 	public List<ProxyDescriptor> getRequestedProxies() {
 		return requestedProxies;
@@ -66,6 +73,10 @@ public class TypeAccessRequestor {
 	
 	public List<ResourcesDescriptor> getRequestedResources() {
 		return requestedResources;
+	}
+
+	public List<InitializationDescriptor> getRequestedInitializations() {
+		return requestedInitializations;
 	}
 
 }
