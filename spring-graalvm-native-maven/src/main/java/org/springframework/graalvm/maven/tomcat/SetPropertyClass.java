@@ -96,12 +96,12 @@ final class SetPropertyClass {
 
         SetPropertyClass that = (SetPropertyClass) o;
 
-        return clazz.equals(that.clazz);
+        return clazz.getName().equals(that.clazz.getName());
     }
 
     @Override
     public int hashCode() {
-        return clazz.hashCode();
+        return clazz.getName().hashCode();
     }
 
     public SetPropertyClass getParent() {
