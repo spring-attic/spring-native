@@ -745,6 +745,9 @@ public class Type {
 			return false;
 		}
 		for (Type t : this.getAnnotations()) {
+			if (t== null) {
+				continue;
+			}
 			String tname = t.getName();
 			if (tname.equals(slashedTypeDescriptor)) {
 				return true;
