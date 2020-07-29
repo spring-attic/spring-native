@@ -60,6 +60,7 @@ import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
+import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Hint;
@@ -763,82 +764,85 @@ public class ResourcesHandler {
 	}
 
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
+		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
 		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
 		loadSpringFactoryFile(springFactory, p);
 		int excludedAutoConfigCount = 0;
 		Enumeration<Object> factoryKeys = p.keys();
+		boolean modified = false;
+		
 
+		if (!ConfigOptions.isHybridMode()) {
+			Properties filteredProperties = new Properties();
+			for (Map.Entry<Object, Object> factoriesEntry : p.entrySet()) {
+				String key = (String) factoriesEntry.getKey();
+				String valueString = (String) factoriesEntry.getValue();
+				List<String> values = new ArrayList<>();
+				for (String value : valueString.split(",")) {
+					values.add(value);
+				}
+				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
+					if (springFactoriesProcessor.filter(springFactory, key, values)) {
+						modified = true;
+					}
+				}
+				if (modified) {
+					filteredProperties.put(key, String.join(",", values));
+				} else {
+					filteredProperties.put(key, valueString);
+				}
+			}
+			p = filteredProperties;
+		}
+
+		factoryKeys = p.keys();
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
 		if (!ConfigOptions.isHybridMode()) {
-		while (factoryKeys.hasMoreElements()) {
-			String k = (String) factoryKeys.nextElement();
-			SpringFeature.log("Adding all the classes for this key: " + k);
-			if (!k.equals(enableAutoconfigurationKey) && 
-				!k.equals(propertySourceLoaderKey) && 
-				!k.equals(managementContextConfigurationKey) && 
-				!k.equals(applicationListenerKey)) {
-				if (ts.shouldBeProcessed(k)) {
-					for (String v : p.getProperty(k).split(",")) {
-						registerTypeReferencedBySpringFactoriesKey(v);
+			while (factoryKeys.hasMoreElements()) {
+				String k = (String) factoryKeys.nextElement();
+				SpringFeature.log("Adding all the classes for this key: " + k);
+				if (!k.equals(enableAutoconfigurationKey) 
+						&& !k.equals(propertySourceLoaderKey)
+						&& !k.equals(managementContextConfigurationKey) 
+						) {
+					if (ts.shouldBeProcessed(k)) {
+						for (String v : p.getProperty(k).split(",")) {
+							registerTypeReferencedBySpringFactoriesKey(v);
+						}
+					} else {
+						SpringFeature
+								.log("Skipping processing spring.factories key " + k + " due to missing guard types");
 					}
-				} else {
-					SpringFeature.log("Skipping processing spring.factories key " + k + " due to missing guard types");
 				}
 			}
-		}
 		}
 
 		if (!ConfigOptions.isHybridMode()) {
-		// Handle ApplicationListener
-		String applicationListenerValues = (String) p.get(applicationListenerKey);
-		if (applicationListenerValues != null) {
-			List<String> applicationListeners = new ArrayList<>();
-			for (String s : applicationListenerValues.split(",")) {
-				// BackgroundPreinitializer is REALLY not a good fit with native images (load eagerly lot of classes)
-				if (!s.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
-					registerTypeReferencedBySpringFactoriesKey(s);
-					applicationListeners.add(s);
-				} else {
-					forRemoval.add(s);
+			// Handle PropertySourceLoader
+			String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
+			if (propertySourceLoaderValues != null) {
+				List<String> propertySourceLoaders = new ArrayList<>();
+				for (String s : propertySourceLoaderValues.split(",")) {
+					if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
+							|| !ConfigOptions.shouldRemoveYamlSupport()) {
+						registerTypeReferencedBySpringFactoriesKey(s);
+						propertySourceLoaders.add(s);
+					} else {
+						forRemoval.add(s);
+					}
 				}
-			}
-			System.out.println("Processing spring.factories - ApplicationListener lists #"
-					+ applicationListeners.size() + " application listeners");
-			SpringFeature.log("These application listeners are remaining in the ApplicationListener key value:");
-			for (int c = 0; c < applicationListeners.size(); c++) {
-				SpringFeature.log((c + 1) + ") " + applicationListeners.get(c));
-			}
-			p.put(applicationListenerKey, String.join(",", applicationListeners));
-
-		}
-		}
-
-		if (!ConfigOptions.isHybridMode()) {
-		// Handle PropertySourceLoader
-		String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
-		if (propertySourceLoaderValues != null) {
-			List<String> propertySourceLoaders = new ArrayList<>();
-			for (String s : propertySourceLoaderValues.split(",")) {
-				if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
-						|| !ConfigOptions.shouldRemoveYamlSupport()) {
-					registerTypeReferencedBySpringFactoriesKey(s);
-					propertySourceLoaders.add(s);
-				} else {
-					forRemoval.add(s);
+				System.out.println("Processing spring.factories - PropertySourceLoader lists #"
+						+ propertySourceLoaders.size() + " property source loaders");
+				SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
+				for (int c = 0; c < propertySourceLoaders.size(); c++) {
+					SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
 				}
+				p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 			}
-			System.out.println("Processing spring.factories - PropertySourceLoader lists #"
-					+ propertySourceLoaders.size() + " property source loaders");
-			SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
-			for (int c = 0; c < propertySourceLoaders.size(); c++) {
-				SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
-			}
-			p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
-		}
 		}
 
-		boolean modified = processConfigurationsWithKey(p, managementContextConfigurationKey);
+		modified = processConfigurationsWithKey(p, managementContextConfigurationKey) || modified;
 		
 		// TODO refactor this chunk to call processConfigurationsWithKey()
 		// Handle EnableAutoConfiguration
