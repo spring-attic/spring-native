@@ -28,6 +28,8 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.graalvm.domain.init.InitializationDescriptor;
+import org.springframework.graalvm.extension.InitializationTime;
 import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
@@ -1149,7 +1151,7 @@ public class Type {
 			s.add(this);
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
-						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getModes()));
+						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getInitializationDescriptors(),hintxx.getModes()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1203,6 +1205,7 @@ public class Type {
 							asMap(typesCollectedFromAnnotation, hints2a.skipIfTypesMissing),
 							hints2a.getProxyDescriptors(),
 							hints2a.getResourcesDescriptors(),
+							hints2a.getInitializationDescriptors(),
 							hints2a.getModes()));
 				}
 			}
@@ -1502,6 +1505,8 @@ public class Type {
 					processProxyInfo(ch, value);
 				} else if (key.equals("resourcesInfos")) {
 					processResourcesInfos(ch, value);
+				} else if (key.equals("initializationInfos")) {
+					processInitializationInfos(ch, value);
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1530,6 +1535,13 @@ public class Type {
 		List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode resourcesInfo : resourcesInfos) {
 			unpackResourcesInfo(resourcesInfo, ch);
+		}
+	}
+
+	private void processInitializationInfos(CompilationHint ch, Object value) {
+		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode initializationInfo : initializationInfos) {
+			unpackInitializationInfos(initializationInfo, ch);
 		}
 	}
 
@@ -1657,6 +1669,54 @@ public class Type {
 		}
 		ch.addResourcesDescriptor(new ResourcesDescriptor(patterns.toArray(new String[0]),isBundle==null?false:isBundle));
 	}
+
+	@SuppressWarnings("unchecked")
+	private void unpackInitializationInfos(AnnotationNode typeInfo, CompilationHint ch) {
+//		Class<?>[] types() default {};
+//		String[] typeNames() default {};
+//		String[] packageNames() default {};
+//		InitializationTime initTime();
+		List<Object> values = typeInfo.values;
+		List<org.objectweb.asm.Type> types = new ArrayList<>();
+		List<String> typeNames = new ArrayList<>();
+		List<String> packageNames = new ArrayList<>();
+		InitializationTime initTime = null;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("types")) {
+				types = (ArrayList<org.objectweb.asm.Type>) value;
+			} else if (key.equals("typeNames")) {
+				typeNames = (ArrayList<String>) value;
+			} else if (key.equals("packageNames")) {
+				packageNames = (ArrayList<String>) value;
+			} else if (key.equals("initTime")) {
+				initTime = InitializationTime.valueOf(((String[])value)[1]);
+			}
+		}
+		for (org.objectweb.asm.Type type : types) {
+			String typeName = type.getClassName();
+			typeNames.add(typeName);
+		}
+		InitializationDescriptor id = new InitializationDescriptor();
+		if (initTime == InitializationTime.BUILD) {
+			for (String typeName: typeNames) {
+				id.addBuildtimeClass(typeName);
+			}
+			for (String packageName: packageNames) {
+				id.addBuildtimePackage(packageName);
+			}
+		} else {
+			for (String typeName: typeNames) {
+				id.addRuntimeClass(typeName);
+			}
+			for (String packageName: packageNames) {
+				id.addRuntimePackage(packageName);
+			}
+		}
+		ch.addInitializationDescriptor(id);
+	}
+
 
 
 	private int inferTypeKind(org.objectweb.asm.Type type) {

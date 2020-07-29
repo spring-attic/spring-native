@@ -18,6 +18,7 @@ package org.springframework.graalvm.type;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.support.Mode;
 
 /**
@@ -52,6 +53,8 @@ public class Hint {
 	
 	private List<ResourcesDescriptor> resourcesDescriptors;
 	
+	private List<InitializationDescriptor> initializationDescriptors;
+	
 	private List<Mode> modes;
 	
 
@@ -60,6 +63,7 @@ public class Hint {
 			Map<String,Integer> inferredTypes,
 			List<ProxyDescriptor> proxyDescriptors,
 			List<ResourcesDescriptor> resourcesDescriptors,
+			List<InitializationDescriptor> initializationDescriptors,
 			List<Mode> modes) {
 		this.annotationChain = annotationChain;
 		this.skipIfTypesMissing = skipIfTypesMissing;
@@ -68,6 +72,7 @@ public class Hint {
 		this.inferredTypes = inferredTypes;
 		this.proxyDescriptors = proxyDescriptors;
 		this.resourcesDescriptors = resourcesDescriptors;
+		this.initializationDescriptors = initializationDescriptors;
 		this.modes = modes;
 	}
 
@@ -159,6 +164,10 @@ public class Hint {
 
 	public List<Mode> getModes() {
 		return modes;
+	}
+
+	public List<InitializationDescriptor> getInitializationDescriptors() {
+		return initializationDescriptors;
 	}
 
 }
