@@ -54,6 +54,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
+import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
@@ -95,9 +96,12 @@ public class ResourcesHandler {
 
 	private DynamicProxiesHandler dynamicProxiesHandler;
 
-	public ResourcesHandler(ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler) {
+	private InitializationHandler initializationHandler;
+
+	public ResourcesHandler(ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler) {
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
+		this.initializationHandler = initializationHandler;
 	}
 
 	/**
@@ -1155,6 +1159,7 @@ public class ResourcesHandler {
 				if (hintExplicitReferencesValidInCurrentMode) {
 					accessRequestor.requestProxyDescriptors(hint.getProxyDescriptors());
 					accessRequestor.requestResourcesDescriptors(hint.getResourceDescriptors());
+					accessRequestor.requestInitializationDescriptors(hint.getInitializationDescriptors());
 				}
 			}
 		}
@@ -1362,6 +1367,9 @@ public class ResourcesHandler {
 					// (Typically happens when not specifying discard-unused-autconfiguration)
 					SpringFeature.log("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
 				}
+			}
+			for (InitializationDescriptor initializationDescriptor : accessRequestor.getRequestedInitializations()) {
+				initializationHandler.registerInitializationDescriptor(initializationDescriptor);
 			}
 			for (ProxyDescriptor proxyDescriptor : accessRequestor.getRequestedProxies()) {
 				dynamicProxiesHandler.addProxy(proxyDescriptor);
