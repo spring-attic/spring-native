@@ -161,7 +161,7 @@ public class TypeSystem {
 		if (resolvedType == null) {
 			// It may be an inner type but slashedTypeName is com/foo/example/Outer/Inner
 			String current = slashedTypeName;
-			int lastSlash = current.lastIndexOf(".");
+			int lastSlash = current.lastIndexOf("/");
 			while (lastSlash != -1 && (lastSlash+1)<current.length()) {
 				String attempt = current.substring(0,lastSlash)+"$"+current.substring(lastSlash+1);
 				resolvedType = findType(attempt);
@@ -169,6 +169,7 @@ public class TypeSystem {
 					break;
 				}
 				current = attempt;
+				lastSlash = current.lastIndexOf("/");
 			}
 		}
 		if (resolvedType != null) {
