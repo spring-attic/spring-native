@@ -24,6 +24,7 @@ import java.util.ServiceLoader;
 
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -38,6 +39,8 @@ public class SpringConfiguration {
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
 	
 	private final static List<ComponentProcessor> processors = new ArrayList<>();
+
+	private final static List<SpringFactoriesProcessor> springFactoriesProcessors = new ArrayList<>();
 	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
@@ -73,8 +76,14 @@ public class SpringConfiguration {
 		SpringFeature.log("Discovering component processors...");
 		ServiceLoader<ComponentProcessor> componentProcessors = ServiceLoader.load(ComponentProcessor.class);
 		for (ComponentProcessor componentProcessor: componentProcessors) {
-			SpringFeature.log("SpringConfiguration: processing component processor: "+componentProcessor.getClass().getName());
+			SpringFeature.log("SpringConfiguration: found component processor: "+componentProcessor.getClass().getName());
 			processors.add(componentProcessor);
+		}
+		SpringFeature.log("Discovering spring.factories processors...");
+		ServiceLoader<SpringFactoriesProcessor> sfps = ServiceLoader.load(SpringFactoriesProcessor.class);
+		for (SpringFactoriesProcessor springFactoryProcessor: sfps) {
+			SpringFeature.log("SpringConfiguration: found spring.factories processor: "+springFactoryProcessor.getClass().getName());
+			springFactoriesProcessors.add(springFactoryProcessor);
 		}
 	}
 
@@ -95,8 +104,12 @@ public class SpringConfiguration {
 		return (results==null?Collections.emptyList():results);
 	}
 	
-	public static List<ComponentProcessor> getComponentProcessors() {
+	public List<ComponentProcessor> getComponentProcessors() {
 		return processors;
+	}
+	
+	public List<SpringFactoriesProcessor> getSpringFactoriesProcessors() {
+		return springFactoriesProcessors;
 	}
 
 	public static String[] findProposedFactoryGuards(String key) {

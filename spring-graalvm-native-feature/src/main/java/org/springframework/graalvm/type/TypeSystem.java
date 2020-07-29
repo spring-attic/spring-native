@@ -51,6 +51,7 @@ import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
+import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -617,6 +618,12 @@ public class TypeSystem {
 			return annotations;
 		}
 	}
+	
+	private void ensureSpringConfigurationDiscovered() {
+		if (hintLocator == null) {
+			hintLocator = new SpringConfiguration(this);
+		}
+	}
 
 	private void ensureScanned() {
 		if (annotatedTypes == null) {
@@ -651,7 +658,8 @@ public class TypeSystem {
 			}
 		}
 		if (hintLocator == null) {
-			hintLocator = new SpringConfiguration(this);
+			ensureSpringConfigurationDiscovered();
+			
 		}
 		// The result should include hints directly on the type as well
 		// as discovered hints from separate configuration
@@ -894,7 +902,13 @@ public class TypeSystem {
 	}
 
 	public List<ComponentProcessor> getComponentProcessors() {
-		return SpringConfiguration.getComponentProcessors();
+		ensureSpringConfigurationDiscovered();
+		return hintLocator.getComponentProcessors();
+	}
+	
+	public List<SpringFactoriesProcessor> getSpringFactoryProcessors() {
+		ensureSpringConfigurationDiscovered();
+		return hintLocator.getSpringFactoriesProcessors();
 	}
 
 	public synchronized Map<String,List<String>> getSpringClassesMakingIsPresentChecks() {
