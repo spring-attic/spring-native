@@ -33,6 +33,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
  * Goal which touches a timestamp file.
@@ -72,6 +73,9 @@ public class BootOptimizerForApacheTomcatEmbedCore
     @Component
     protected MavenProjectHelper projectHelper;
 
+	@Component
+	private BuildContext buildContext;
+
     private Map<String, String> fileSystemProps = new HashMap<>();
 
     public BootOptimizerForApacheTomcatEmbedCore() {
@@ -91,7 +95,7 @@ public class BootOptimizerForApacheTomcatEmbedCore
 
         try {
 
-            if (!enabled) {
+            if (!enabled || !bootJar.exists()) {
                 getLog().info("Skipping Boot Library Optimization: "+this.finalName+".jar");
                 return;
             }
@@ -130,8 +134,11 @@ public class BootOptimizerForApacheTomcatEmbedCore
                     Path replacementJar = Paths.get(new File(this.outputDirectory, replacementFileName).getAbsolutePath());
                     processTomcatEmbedCoreOptimizations(replacementJar);
                     getLog().info("Updating Boot Jar With: "+replacementJar.toString());
-                    //update the Spring Boot JAR with the newly downloaded replacement
+                    // update the Spring Boot JAR with the newly downloaded replacement
                     Files.copy(replacementJar, destination, StandardCopyOption.REPLACE_EXISTING);
+                    buildContext.refresh(bootJar);
+                    Files.delete(replacementJar);
+                    buildContext.refresh(replacementJar.toFile());
                 }
             }
         } catch (URISyntaxException e) {

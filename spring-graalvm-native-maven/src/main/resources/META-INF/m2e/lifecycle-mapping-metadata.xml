@@ -20,6 +20,7 @@
             <action>
                 <execute>
                     <runOnConfiguration>true</runOnConfiguration>
+					<runOnIncremental>true</runOnIncremental>
                 </execute>
             </action>
         </pluginExecution>
