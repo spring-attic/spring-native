@@ -146,6 +146,7 @@ public final class ObjectReflectionPropertyInspector {
         if (!sourceFileLocation.exists()) {
             sourceFileLocation.mkdirs();
         }
+        new File(sourceFileLocation, className + ".java").delete();
         ReflectionLessCodeGenerator.generateCode(sourceFileLocation, className, packageName, baseClasses);
     }
 
