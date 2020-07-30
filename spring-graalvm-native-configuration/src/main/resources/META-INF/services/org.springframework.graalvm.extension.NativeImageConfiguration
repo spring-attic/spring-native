@@ -31,6 +31,7 @@ org.springframework.boot.autoconfigure.data.mongodb.MongoRepositoriesHints
 org.springframework.boot.autoconfigure.data.redis.RedisDataSupportHints
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesHints
 org.springframework.boot.autoconfigure.http.HttpMessageConverterHints
+org.springframework.boot.autoconfigure.integration.IntegrationHints
 org.springframework.boot.autoconfigure.jackson.JacksonHints
 org.springframework.boot.autoconfigure.jdbc.JdbcHints
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaHints

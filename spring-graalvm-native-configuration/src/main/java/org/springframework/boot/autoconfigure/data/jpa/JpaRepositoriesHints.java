@@ -19,11 +19,16 @@ import org.springframework.data.jpa.repository.support.JpaEvaluationContextExten
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
-@NativeImageHint(trigger = JpaRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeImageHint(trigger = JpaRepositoriesAutoConfiguration.class, 
+	resourcesInfos = {
+			@ResourcesInfo(patterns="META-INF/jpa-named-queries.properties")
+	},
+	typeInfos = {
 		@TypeInfo(types = {
 				SharedEntityManagerCreator.class, // TODO is this one in the right place?
 				JpaRepositoryFactoryBean.class,
