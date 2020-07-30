@@ -17,10 +17,14 @@ package org.springframework.amqp.rabbit.annotation;
 
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
 
 // There is no Rabbit sample currently in the repo to confirm this is correct
-@NativeImageHint(trigger=RabbitListenerConfigurationSelector.class, typeInfos = {
+@NativeImageHint(trigger=RabbitListenerConfigurationSelector.class, 
+	resourcesInfos = {
+			@ResourcesInfo(patterns="rabbitmq-amqp-client.properties")
+	},
+	typeInfos = {
 		@TypeInfo(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true,follow=true)
 public class RabbitHints implements NativeImageConfiguration { }
