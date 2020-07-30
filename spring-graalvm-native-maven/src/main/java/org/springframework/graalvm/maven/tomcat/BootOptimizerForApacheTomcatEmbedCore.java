@@ -147,9 +147,9 @@ public class BootOptimizerForApacheTomcatEmbedCore extends AbstractMojo {
                             return FileVisitResult.CONTINUE;
                         } else if (name.startsWith("classpath.idx")) {
                             getLog().info("Updating classpath.idx");
-                            String idx = Files.readString(file);
+                            String idx = new String(Files.readAllBytes(file));
                             idx = idx.replaceAll("embed-core-([0-9])", "embed-core-optimized-$1");
-                            Files.writeString(file, idx);
+                            Files.write(file, idx.getBytes());
                             return FileVisitResult.CONTINUE;
                             
                         } else {
