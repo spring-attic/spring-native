@@ -20,15 +20,29 @@ import java.util.logging.LogManager;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
-@NativeImageHint(typeInfos = { @TypeInfo(types = {
-		SpringApplication.class,
-		SpringBootConfiguration.class,
-		LogManager.class,
-		JavaLoggingSystem.class
-  }, access = AccessBits.LOAD_AND_CONSTRUCT)
-})
+@NativeImageHint(
+	resourcesInfos = {
+		@ResourcesInfo(patterns= {
+			"banner.txt",
+			"META-INF/spring.components",
+			"application.yml",
+			"application.properties",
+			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
+			"META-INF/services/.*"
+			})
+	},
+	typeInfos = { 
+		@TypeInfo(types = {
+			SpringApplication.class,
+			SpringBootConfiguration.class,
+			LogManager.class,
+			JavaLoggingSystem.class
+		}, access = AccessBits.LOAD_AND_CONSTRUCT)
+	}
+)
 public class SpringApplicationHints implements NativeImageConfiguration {
 }
