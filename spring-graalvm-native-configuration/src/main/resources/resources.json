@@ -17,15 +17,10 @@
     {"pattern": "banner.txt"},
     {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
 	{"pattern": "org/springframework/http/mime.types"},
-    {"pattern": "META-INF/spring.components"},
-    {"pattern": "META-INF/spring.factories"},
     {"pattern": "org/springframework/boot/logging/java/logging.properties"},
-    {"pattern": "META-INF/services/javax.validation.spi.ValidationProvider"}, // make pattern?
     {"pattern": "hibernate.properties"},
     {"pattern": "org/hibernate/.*.xsd"},
     {"pattern": "org/hibernate/.*.dtd"},
-    {"pattern": "application.yml"},
-    {"pattern": "application.properties"},
     {"pattern": "logging.properties"},
     {"pattern": "META-INF/resources/webjars/.*"},
     
@@ -45,7 +40,6 @@
 
     // Kotlin
     {"pattern":"META-INF/.*.kotlin_module$"},
-    {"pattern":"META-INF/services/.*"},
     {"pattern":".*.kotlin_builtins"}
   ]
 }
