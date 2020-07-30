@@ -90,6 +90,7 @@ To use it:
 
 - https://docs.docker.com/engine/install/[Install Docker].
 - https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
+- On Mac, ensure in the Docker preferences resources tab that you give it enough memory, ideally 10G or more, otherwise you may see out of memory issues when building images.
 - Run `run-dev-container.sh` to run the Docker container with an interactive shell suitable to run `spring-graalvm-native` build scripts (see bellow for more documentation).
 - The first time, it will download remote based images built by the https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native?group=Daily%20builds[CI].
 - The current and the Maven home directories are shared between the host (where is typically the IDE) and the container (where you can run builds).
