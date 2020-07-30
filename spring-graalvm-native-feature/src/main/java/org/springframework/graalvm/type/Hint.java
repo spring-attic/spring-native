@@ -104,6 +104,8 @@ public class Hint {
 		s.append(",follow=").append(follow);
 		s.append(",specificTypes=").append(shorten(specificTypes));
 		s.append(",inferredTypes=").append(shorten(inferredTypes));
+		s.append(",resourcesDescriptors=").append(resourcesDescriptors);
+		s.append(",initializationDescriptors=").append(initializationDescriptors);
 		s.append("}");
 		return s.toString();
 	}

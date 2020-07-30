@@ -7,7 +7,8 @@
   ],
     "resources": [
     // vvv springmvc-tomcat
-    {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
+    // accessed from org.apache.catalina.startup.Tomcat
+ //   {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
     // ^^^ springmvc-tomcat
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
