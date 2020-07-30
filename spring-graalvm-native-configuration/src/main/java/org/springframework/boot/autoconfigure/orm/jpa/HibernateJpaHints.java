@@ -118,6 +118,7 @@ import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
@@ -128,7 +129,11 @@ import org.springframework.stereotype.Repository;
 	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
 			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
 })
-@NativeImageHint(trigger=HibernateJpaConfiguration.class,typeInfos= {
+@NativeImageHint(trigger=HibernateJpaConfiguration.class,
+	resourcesInfos = {
+			@ResourcesInfo(patterns={"hibernate.properties","org/hibernate/.*.xsd","org/hibernate/.*.dtd"})
+	},
+	typeInfos= {
 		@TypeInfo(types= {
 				// petclinic
 				// TODO what about having a way to specify everything in a package? More resilient and less verbose? do those things matter?

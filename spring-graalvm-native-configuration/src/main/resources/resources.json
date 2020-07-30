@@ -1,15 +1,5 @@
 {
-    "bundles": [
-    // vvv springmvc-tomcat
-    {"name":"javax.servlet.LocalStrings"},
-    {"name":"javax.servlet.http.LocalStrings"}
-    // ^^^ springmvc-tomcat
-  ],
     "resources": [
-    // vvv springmvc-tomcat
-    // accessed from org.apache.catalina.startup.Tomcat
- //   {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
-    // ^^^ springmvc-tomcat
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
     {"pattern": "static/.*"},
@@ -19,21 +9,12 @@
     {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
 	{"pattern": "org/springframework/http/mime.types"},
     {"pattern": "org/springframework/boot/logging/java/logging.properties"},
-    {"pattern": "hibernate.properties"},
-    {"pattern": "org/hibernate/.*.xsd"},
-    {"pattern": "org/hibernate/.*.dtd"},
     {"pattern": "logging.properties"},
     {"pattern": "META-INF/resources/webjars/.*"},
     
-    // vvv vanilla-jpa
-    {"pattern": "META-INF/jpa-named-queries.properties"},
-    // ^^^ vanilla-jpa
-
     // vvv vanilla-tx
     {"pattern": "schema.sql"},
     // ^^^ vanilla-tx
-    
-    {"pattern": "META-INF/spring.integration.default.properties"},
 
     // Does this catch the logging/<eachDirectory>/*.properties?
     {"pattern": "org/springframework/boot/logging/.*.properties"},
