@@ -18,18 +18,16 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.concurrent.Callable;
 
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
-
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryConfiguration.EmbeddedTomcat;
 import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -59,6 +57,10 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
+})
+@NativeImageHint(trigger=EmbeddedTomcat.class,resourcesInfos = {
+		// Accessed from org.apache.catalina.startup.Tomcat
+		@ResourcesInfo(patterns="org/apache/catalina/startup/MimeTypeMappings.properties")
 })
 public class WebMvcHints implements NativeImageConfiguration {
 }
