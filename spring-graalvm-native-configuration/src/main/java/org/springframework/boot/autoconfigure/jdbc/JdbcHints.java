@@ -97,7 +97,10 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 		@TypeInfo(types= {HikariDataSource.class, IConcurrentBagEntry[].class,IConcurrentBagEntry.class}
 		),
 	@TypeInfo(types = HikariConfig.class, access = AccessBits.FULL_REFLECTION)})
-
+@NativeImageHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
+		// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
+		@ResourcesInfo(patterns = "org/springframework/jdbc/support/sql-error-codes.xml")
+})
 // MySQL JDBC driver
 @NativeImageHint(trigger=DataSourceAutoConfiguration.class, typeInfos= {
 		@TypeInfo(types= {

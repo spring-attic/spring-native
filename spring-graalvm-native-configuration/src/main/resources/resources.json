@@ -9,11 +9,6 @@
     // vvv springmvc-tomcat
     {"pattern": "org/apache/catalina/startup/MimeTypeMappings.properties"},
     // ^^^ springmvc-tomcat
-	// vvv vanilla-tx
-	{"pattern": "org/springframework/context/annotation/AdviceModeImportSelector.class"},
-	{"pattern": "org/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class"},
-	{"pattern": "org/springframework/transaction/annotation/AbstractTransactionManagementConfiguration.class"},
-	// ^^^ vanilla-tx
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
     {"pattern": "static/.*"},
@@ -39,7 +34,6 @@
     // ^^^ vanilla-jpa
 
     // vvv vanilla-tx
-    {"pattern": "org/springframework/jdbc/support/sql-error-codes.xml"},
     {"pattern": "schema.sql"},
     // ^^^ vanilla-tx
     
