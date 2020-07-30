@@ -1,5 +1,13 @@
 package org.springframework.graalvm.maven.tomcat;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +32,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -38,14 +48,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 /**
  * Goal which touches a timestamp file.
  */
-@Mojo(
-    name = "spring-graalvm-optimize-apache-tomcat",
-    defaultPhase = LifecyclePhase.PACKAGE,
-    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME
-)
-public class BootOptimizerForApacheTomcatEmbedCore
-    extends AbstractMojo {
+@Mojo(name = "spring-graalvm-optimize-apache-tomcat", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+public class BootOptimizerForApacheTomcatEmbedCore extends AbstractMojo {
 
     @Parameter(defaultValue = "true", required = false)
     private boolean enabled = true;
@@ -73,8 +77,14 @@ public class BootOptimizerForApacheTomcatEmbedCore
     @Component
     protected MavenProjectHelper projectHelper;
 
-	@Component
-	private BuildContext buildContext;
+    @Component
+    private BuildContext buildContext;
+
+    @Parameter(defaultValue = "${session}", readonly = true, required = true)
+    private MavenSession session;
+
+    @Component
+    private BuildPluginManager pluginManager;
 
     private Map<String, String> fileSystemProps = new HashMap<>();
 
@@ -83,43 +93,65 @@ public class BootOptimizerForApacheTomcatEmbedCore
         fileSystemProps.put("create", "false");
     }
 
-    public void execute()
-        throws MojoExecutionException {
+    public void execute() throws MojoExecutionException {
         final File f = outputDirectory;
 
         if (!f.exists()) {
             f.mkdirs();
         }
 
-        File bootJar = new File(this.outputDirectory, this.finalName+".jar");
+        File bootJar = new File(this.outputDirectory, this.finalName + ".jar");
 
         try {
 
-            if (!enabled || !bootJar.exists()) {
-                getLog().info("Skipping Boot Library Optimization: "+this.finalName+".jar");
+            if (!enabled) {
+                getLog().info("Skipping Boot Library Optimization: " + this.finalName + ".jar");
                 return;
             }
 
-            getLog().info("Processing Boot library: "+this.finalName+".jar");
+            URI uri = new URI("jar:file:" + bootJar.getAbsolutePath());
+            try (FileSystem zipfs = FileSystems.newFileSystem(uri, fileSystemProps)) {
 
-            URI uri = new URI("jar:file:"+bootJar.getAbsolutePath());
+                if (!bootJar.exists() || !Files.exists(zipfs.getPath("BOOT-INF/lib"))) {
+                    getLog().info("Creating Boot executable: " + this.finalName + ".jar");
+                    project.getProperties().setProperty("spring-boot.repackage.skip", "false");
+                    String bootVersion = project.getProperties().getProperty("spring-boot.version", "2.4.0-SNAPSHOT");
+                    executeMojo(
+                            plugin(groupId("org.springframework.boot"), artifactId("spring-boot-maven-plugin"),
+                                    version(bootVersion)),
+                            goal("repackage"), configuration(), executionEnvironment(project, session, pluginManager));
+
+                }
+                project.getProperties().setProperty("spring-boot.repackage.skip", "true");
+
+            } catch (IOException e) {
+                throw new MojoExecutionException("Error optimizing file: " + bootJar.getAbsolutePath(), e);
+            }
+            getLog().info("Processing Boot executable: " + this.finalName + ".jar");
+
             try (FileSystem zipfs = FileSystems.newFileSystem(uri, fileSystemProps)) {
                 AtomicReference<Path> foundTomcatLibrary = new AtomicReference<>();
                 AtomicReference<Path> newTomcatLibrary = new AtomicReference<>();
                 Files.walkFileTree(zipfs.getPath("/"), new SimpleFileVisitor<Path>() {
                     @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                        throws IOException {
-                        String name =file.getFileName().toString();
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        String name = file.getFileName().toString();
                         if (name.startsWith("tomcat-embed-core")) {
                             String modifiedName = name.replace("embed-core", "embed-core-optimized");
-                            getLog().info("Removing from JAR: " + name + "to: " + modifiedName);
+                            getLog().info("Removing from JAR: " + name + " to: " + modifiedName);
                             Path path = Paths.get(new File(f, modifiedName).getAbsolutePath());
                             Files.deleteIfExists(path);
                             Files.move(file, path);
                             foundTomcatLibrary.set(file);
                             newTomcatLibrary.set(path);
-                            return FileVisitResult.TERMINATE;
+                            return FileVisitResult.CONTINUE;
+                        } else if (name.startsWith("classpath.idx")) {
+                            getLog().info("Updating classpath.idx");
+                            String idx = Files.readString(file);
+                            idx = idx.replaceAll("embed-core-([0-9])", "embed-core-optimized-$1");
+                            Files.writeString(file, idx);
+                            return FileVisitResult.CONTINUE;
+                            
                         } else {
                             return FileVisitResult.CONTINUE;
                         }
@@ -129,11 +161,12 @@ public class BootOptimizerForApacheTomcatEmbedCore
                 if (destination != null) {
                     String replacementFileName = newTomcatLibrary.get().getFileName().toString();
                     String name = destination.toString();
-                    getLog().info("Replacing '" + name + "' with '" + replacementFileName+"'");
+                    getLog().info("Replacing '" + name + "' with '" + replacementFileName + "'");
                     destination = zipfs.getPath(name.replaceFirst("tomcat-embed.*\\.jar", replacementFileName));
-                    Path replacementJar = Paths.get(new File(this.outputDirectory, replacementFileName).getAbsolutePath());
+                    Path replacementJar = Paths
+                            .get(new File(this.outputDirectory, replacementFileName).getAbsolutePath());
                     processTomcatEmbedCoreOptimizations(replacementJar);
-                    getLog().info("Updating Boot Jar With: "+replacementJar.toString());
+                    getLog().info("Updating Boot Jar With: " + replacementJar.toString());
                     // update the Spring Boot JAR with the newly downloaded replacement
                     Files.copy(replacementJar, destination, StandardCopyOption.REPLACE_EXISTING);
                     buildContext.refresh(bootJar);
@@ -148,17 +181,14 @@ public class BootOptimizerForApacheTomcatEmbedCore
         }
     }
 
-
-
     private void processTomcatEmbedCoreOptimizations(Path tempFilePath) throws MojoExecutionException {
         FileOptimizationMatcher matcher = new FileOptimizationMatcher();
         try (FileSystem zipfs = FileSystems.newFileSystem(tempFilePath, null)) {
-            //walk the file tree
+            // walk the file tree
             Files.walkFileTree(zipfs.getPath("/"), new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                    throws IOException {
-                    String name =file.toAbsolutePath().toString().substring(1);
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    String name = file.toAbsolutePath().toString().substring(1);
                     if (matcher.match(name) == MatcherResult.DELETE) {
                         getLog().debug("Optimizing/removing in tomcat-embed-core: " + name);
                         Files.delete(file);
@@ -166,21 +196,21 @@ public class BootOptimizerForApacheTomcatEmbedCore
                     return FileVisitResult.CONTINUE;
                 }
             });
-            //replace the graalvm reflection/resource files
+            // replace the graalvm reflection/resource files
             Properties replaceTheseFiles = new Properties();
-            replaceTheseFiles.load(getClass().getResourceAsStream("/org/apache/tomcat/embed/tomcat-embed-core/default-replacements.properties"));
+            replaceTheseFiles.load(getClass()
+                    .getResourceAsStream("/org/apache/tomcat/embed/tomcat-embed-core/default-replacements.properties"));
             for (String file : replaceTheseFiles.stringPropertyNames()) {
-                getLog().info("Optimizing: " + file + " in: "+tempFilePath.getFileName().toString());
+                getLog().info("Optimizing: " + file + " in: " + tempFilePath.getFileName().toString());
                 Path path = zipfs.getPath("/" + file);
                 Files.copy(
-                    getClass().getResourceAsStream("/org/apache/tomcat/embed/tomcat-embed-core/"+replaceTheseFiles.getProperty(file)),
-                    path,
-                    StandardCopyOption.REPLACE_EXISTING
-                );
+                        getClass().getResourceAsStream(
+                                "/org/apache/tomcat/embed/tomcat-embed-core/" + replaceTheseFiles.getProperty(file)),
+                        path, StandardCopyOption.REPLACE_EXISTING);
             }
 
         } catch (IOException e) {
-            throw new MojoExecutionException("Unable to optimize file: "+tempFilePath.toString(), e);
+            throw new MojoExecutionException("Unable to optimize file: " + tempFilePath.toString(), e);
         }
     }
 
@@ -207,7 +237,6 @@ public class BootOptimizerForApacheTomcatEmbedCore
             return keep && foundOneMatch ? MatcherResult.KEEP : MatcherResult.DELETE;
         }
 
-
         private void loadMatchersFromStream(InputStream is) throws MojoExecutionException {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
@@ -215,18 +244,17 @@ public class BootOptimizerForApacheTomcatEmbedCore
                     try {
                         matchers.add(new MatcherPattern(line));
                     } catch (IllegalArgumentException e) {
-                        //invalid pattern
+                        // invalid pattern
                     }
                 }
             } catch (IOException e) {
-                throw new MojoExecutionException("Unable to load resource: "+resource, e);
+                throw new MojoExecutionException("Unable to load resource: " + resource, e);
             }
         }
     }
 
     private enum MatcherResult {
-        DELETE,
-        KEEP
+        DELETE, KEEP
     }
 
     private class MatcherPattern {
@@ -238,14 +266,12 @@ public class BootOptimizerForApacheTomcatEmbedCore
             if (line.startsWith("files.include=") || line.startsWith("files.exclude=")) {
                 if (line.startsWith("files.include=")) {
                     this.include = true;
-                }
-                else if (line.startsWith("files.exclude=")) {
+                } else if (line.startsWith("files.exclude=")) {
                     this.include = false;
                 }
-                this.pattern = line.substring(line.indexOf("=")+1);
-            }
-            else {
-                throw new IllegalArgumentException("Invalid pattern line: "+ line);
+                this.pattern = line.substring(line.indexOf("=") + 1);
+            } else {
+                throw new IllegalArgumentException("Invalid pattern line: " + line);
             }
             this.matcher = new AntPathMatcher("/");
         }
@@ -258,6 +284,5 @@ public class BootOptimizerForApacheTomcatEmbedCore
             return this.matcher.match(this.pattern, filePath);
         }
     }
-
 
 }
