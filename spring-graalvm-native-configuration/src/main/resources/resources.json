@@ -2,12 +2,6 @@
     "resources": [
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
-//   {"pattern": "logging.properties"},
-    
-    // Does this catch the logging/<eachDirectory>/*.properties?
-//    {"pattern": "org/springframework/boot/logging/java/logging.properties"},
- //   {"pattern": "org/springframework/boot/logging/.*.properties"},
-  //  {"pattern": "org/springframework/boot/logging/.*.xml"},
 
     // Kotlin
     {"pattern":"META-INF/.*.kotlin_module$"},
