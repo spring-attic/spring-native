@@ -1161,7 +1161,8 @@ public class Type {
 			s.add(this);
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
-						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getInitializationDescriptors(),hintxx.getModes()));
+						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getInitializationDescriptors(),
+						hintxx.getModes()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1562,17 +1563,17 @@ public class Type {
 		}
 	}
 
-	private void processFieldInfoList(CompilationHint ch, Object value) {
+	private void processFieldInfoList(List<FieldDescriptor> fds, Object value) {
 		List<AnnotationNode> fieldInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode fieldInfo : fieldInfos) {
-			unpackFieldInfo(fieldInfo, ch);
+			unpackFieldInfo(fieldInfo, fds);
 		}
 	}
 
-	private void processMethodInfoList(CompilationHint ch, Object value) {
+	private void processMethodInfoList(List<MethodDescriptor> mds, Object value) {
 		List<AnnotationNode> methodInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode methodInfo : methodInfos) {
-			unpackMethodInfo(methodInfo, ch);
+			unpackMethodInfo(methodInfo, mds);
 		}
 	}
 
@@ -1628,6 +1629,8 @@ public class Type {
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
 		int accessRequired = -1;
+		List<MethodDescriptor> mds = new ArrayList<>();
+		List<FieldDescriptor> fds = new ArrayList<>();
 		for (int i = 0; i < values.size(); i += 2) {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
@@ -1638,28 +1641,71 @@ public class Type {
 			} else if (key.equals("typeNames")) {
 				typeNames = (ArrayList<String>) value;
 			} else if (key.equals("methods")) {
-				processMethodInfoList(ch, value);
+				processMethodInfoList(mds, value);
 			} else if (key.equals("fields")) {
-				processFieldInfoList(ch, value);
+				processFieldInfoList(fds, value);
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
-			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferTypeKind(type) : accessRequired);
+			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferTypeKind(type) : accessRequired,mds,fds);
 		}
 		for (String typeName : typeNames) {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
-				ch.addDependantType(typeName, accessRequired == -1 ? inferTypeKind(resolvedType) : accessRequired);
+				ch.addDependantType(typeName, accessRequired == -1 ? inferTypeKind(resolvedType) : accessRequired,mds,fds);
 			}
 		}
 	}
 
-	private void unpackFieldInfo(AnnotationNode fieldInfo, CompilationHint ch) {
-		
+	private void unpackFieldInfo(AnnotationNode fieldInfo, List<FieldDescriptor> fds) {
+		List<Object> values = fieldInfo.values;
+		String name = null;
+		boolean allowUnsafeAccess = false; // default is false
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("allowUnsafeAccess")) {
+				allowUnsafeAccess = (Boolean)value;
+			} else if (key.equals("name")) {
+				name = (String) value;
+			}
+		}
+		fds.add(new FieldDescriptor(name, allowUnsafeAccess));
 	}
 
-	private void unpackMethodInfo(AnnotationNode fieldInfo, CompilationHint ch) {
-		
+	private void unpackMethodInfo(AnnotationNode methodInfo, List<MethodDescriptor> mds) {
+		List<Object> values = methodInfo.values;
+		List<org.objectweb.asm.Type> parameterTypes = new ArrayList<>();
+		String name = null;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("parameterTypes")) {
+				parameterTypes = (ArrayList<org.objectweb.asm.Type>) value;
+			} else if (key.equals("name")) {
+				name = (String) value;
+			}
+		}
+		boolean unresolvable = false;
+		List<String> resolvedParameterTypes = new ArrayList<>();
+		for (org.objectweb.asm.Type ptype: parameterTypes) {
+			String typeName = ptype.getClassName();
+			Type resolvedType = typeSystem.resolveName(typeName, true);
+			if (resolvedType != null) {
+				resolvedParameterTypes.add(typeName);
+			} else {
+				unresolvable = true;
+			}
+		}
+		if (unresolvable) {
+			StringBuilder message = new StringBuilder();
+			for (org.objectweb.asm.Type ptype: parameterTypes) {
+				message.append(ptype.getClassName()).append(" ");
+			}
+			SpringFeature.log("Unable to fully resolve method "+name+"("+message.toString().trim()+")");
+		} else {
+			mds.add(new MethodDescriptor(name, resolvedParameterTypes));
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

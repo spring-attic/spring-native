@@ -63,6 +63,7 @@ import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Hint;
 import org.springframework.graalvm.type.Method;
@@ -180,10 +181,10 @@ public class ResourcesHandler {
 		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
 		SpringFeature.log("Registering fixed entries: " + constantHints);
 		for (CompilationHint ch : constantHints) {
-			Map<String, Integer> dependantTypes = ch.getDependantTypes();
-			for (Map.Entry<String, Integer> dependantType : dependantTypes.entrySet()) {
-				reflectionHandler.addAccess(dependantType.getKey(), null, true,
-						AccessBits.getFlags(dependantType.getValue()));
+			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
+			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
+				reflectionHandler.addAccess(dependantType.getKey(), null, null, true,
+						AccessBits.getFlags(dependantType.getValue().getAccessBits()));
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 			for (ProxyDescriptor pd: proxyDescriptors) {
@@ -192,6 +193,10 @@ public class ResourcesHandler {
 			List<org.springframework.graalvm.type.ResourcesDescriptor> resourcesDescriptors = ch.getResourcesDescriptors();
 			for (org.springframework.graalvm.type.ResourcesDescriptor rd: resourcesDescriptors) {
 				registerResourcesDescriptor(rd);
+			}
+			List<InitializationDescriptor> ids = ch.getInitializationDescriptors();
+			for (InitializationDescriptor id: ids) {
+				initializationHandler.registerInitializationDescriptor(id);
 			}
 		}
 	}
@@ -756,7 +761,7 @@ public class ResourcesHandler {
 				// 'name' will include the right '$' characters.
 				String name = t.getDottedName();
 				if (t.hasOnlySimpleConstructor()) {
-					reflectionHandler.addAccess(name, new String[][] { { "<init>" } }, false);
+					reflectionHandler.addAccess(name, new String[][] { { "<init>" } },null, false);
 				} else {
 					reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
 				}
@@ -1084,13 +1089,13 @@ public class ResourcesHandler {
 				// directly encoded. For example when a CompilationHint on an ImportSelector
 				// encodes the types that might be returned from it.
 				if (hintExplicitReferencesValidInCurrentMode) {
-					Map<String, Integer> specificNames = hint.getSpecificTypes();
+					Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
 					if (specificNames.size() > 0) {
 						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
 								+ " specific types");
-						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
+						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 							String specificTypeName = specificNameEntry.getKey();
-							if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
+							if (!registerSpecific(specificTypeName, specificNameEntry.getValue().getAccessBits(), accessRequestor)) {
 								if (hint.isSkipIfTypesMissing()) {
 									passesTests = false;
 									if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1176,9 +1181,9 @@ public class ResourcesHandler {
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isCondition()) {
 				if (type.hasOnlySimpleConstructor()) {
-					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } }, true);
+					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } },null, true);
 				} else {
-					reflectionHandler.addAccess(configNameDotted, null, true, Flag.allDeclaredConstructors);
+					reflectionHandler.addAccess(configNameDotted, null, null, true, Flag.allDeclaredConstructors);
 				}
 			} else {
 				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
@@ -1299,11 +1304,11 @@ public class ResourcesHandler {
 						// when a CompilationHint on an ImportSelector encodes the types that might be
 						// returned from it.
 						// (see the static initializer in Type for examples)
-						Map<String, Integer> specificNames = hint.getSpecificTypes();
+						Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
 						SpringFeature.log(spaces(depth) + "attempting registration of " + specificNames.size()
 								+ " specific types");
-						for (Map.Entry<String, Integer> specificNameEntry : specificNames.entrySet()) {
-							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue(), accessRequestor);
+						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
+							registerSpecific(specificNameEntry.getKey(), specificNameEntry.getValue().getAccessBits(), accessRequestor);
 						}
 
 						Map<String, Integer> inferredTypes = hint.getInferredTypes();
@@ -1393,12 +1398,12 @@ public class ResourcesHandler {
 				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 					Type resolvedType = ts.resolveDotted(dname, true);
 					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } }, true);
+						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
 					} else {
-						reflectionHandler.addAccess(dname, null, true, flags);
+						reflectionHandler.addAccess(dname, null, null, true, flags);
 					}
 				} else {
-					reflectionHandler.addAccess(dname, null, true, flags);
+					reflectionHandler.addAccess(dname, null, null, true, flags);
 				}
 				if (AccessBits.isResourceAccessRequired(accessRequest.getValue())) {
 					resourcesRegistry.addResources(

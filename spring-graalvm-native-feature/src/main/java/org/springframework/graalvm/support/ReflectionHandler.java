@@ -41,6 +41,9 @@ import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.domain.reflect.JsonMarshaller;
 import org.springframework.graalvm.domain.reflect.MethodDescriptor;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
+import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.AccessDescriptor;
+import org.springframework.graalvm.type.Type;
 
 import com.oracle.svm.core.hub.ClassForNameSupport;
 import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
@@ -339,19 +342,46 @@ public class ReflectionHandler {
 	 *         access, otherwise null
 	 */
 	public Class<?> addAccess(String typename, Flag...flags) {
-		return addAccess(typename, null, false, flags);
+		return addAccess(typename, null, null, false, flags);
+	}
+	
+	public Class<?> addAccess(String typename, boolean silent, AccessDescriptor ad) {
+		if (ad.noMembersSpecified()) {
+			return addAccess(typename, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+		} else {
+			List<org.springframework.graalvm.type.MethodDescriptor> mds = ad.getMethodDescriptors();
+			String[][] methodsAndConstructors = new String[mds.size()][];
+			for (int m=0;m<mds.size();m++) {
+				org.springframework.graalvm.type.MethodDescriptor methodDescriptor = mds.get(m);
+				methodsAndConstructors[m] = new String[methodDescriptor.getParameterTypes().size()+1];
+				methodsAndConstructors[m][0] = methodDescriptor.getName();
+				List<String> ps = methodDescriptor.getParameterTypes();
+				for (int p=0;p<ps.size();p++) {
+					methodsAndConstructors[m][p+1]=ps.get(p);
+				}
+			}
+			List<org.springframework.graalvm.type.FieldDescriptor> fds = ad.getFieldDescriptors();
+			String[][] fields = new String[fds.size()][];
+			for (int m=0;m<mds.size();m++) {
+				org.springframework.graalvm.type.FieldDescriptor fieldDescriptor = fds.get(m);
+				if (fieldDescriptor.isAllowUnsafeAccess()) {
+					fields[m]=new String[] {fieldDescriptor.getName(),Boolean.toString(fieldDescriptor.isAllowUnsafeAccess())};
+				} else {
+					fields[m]=new String[] {fieldDescriptor.getName()};
+				}
+			}
+			return addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+		}
 	}
 
-	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, boolean silent, Flag... flags) {
+	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
 		includeInDump(typename, methodsAndConstructors, flags);
 		// This can return null if, for example, the supertype of the specified type is
-		// not
-		// on the classpath. In a simple app there may be a number of types coming in
-		// from
-		// spring-boot-autoconfigure but they extend types not on the classpath.
+		// not on the classpath. In a simple app there may be a number of types coming in
+		// from spring-boot-autoconfigure but they extend types not on the classpath.
 		Class<?> type = rra.resolveType(typename);
 		if (type == null) {
 			SpringFeature.log("WARNING: Possible problem, cannot resolve " + typename);
@@ -367,6 +397,9 @@ public class ReflectionHandler {
 		// need graal bug to tidy this up
 		ClassForNameSupport.registerClass(type);
 		// TODO need a checkType() kinda guard on here? (to avoid rogue printouts from graal)
+		boolean specificConstructorsSpecified = false;
+		boolean specificMethodsSpecified = false;
+		boolean specificFieldsSpecified = false;
 		if (methodsAndConstructors != null) {
 			for (String[] methodOrCtor : methodsAndConstructors) {
 				String name = methodOrCtor[0];
@@ -377,13 +410,27 @@ public class ReflectionHandler {
 				}
 				try {
 					if (name.equals("<init>")) {
+						specificConstructorsSpecified=true;
 						rra.registerConstructor(type, params);
 					} else {
+						specificMethodsSpecified=true;
 						rra.registerMethod(type, name, params);
 					}
 				} catch (NoSuchMethodException nsme) {
 					throw new IllegalStateException(
 							"Problem registering member " + name + " for reflective access on type " + type, nsme);
+				}
+			}
+		}
+		if (fields != null) {
+			for (String[] field : fields) {
+				String name = field[0];
+				boolean allowUnsafeAccess = Boolean.valueOf(field.length>1?field[1]:"false");
+				try {
+					rra.registerField(type, name, false, allowUnsafeAccess);
+				} catch (NoSuchFieldException nsfe) {
+					throw new IllegalStateException(
+							"Problem registering field " + name + " for reflective access on type " + type, nsfe);
 				}
 			}
 		}
@@ -398,31 +445,49 @@ public class ReflectionHandler {
 						}
 						break;
 					case allDeclaredFields:
+						if (specificFieldsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getDeclaredFields())) {
 							rra.registerDeclaredFields(type);
 						}
 						break;
 					case allPublicFields:
+						if (specificFieldsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getFields())) {
 							rra.registerPublicFields(type);
 						}
 						break;
 					case allDeclaredConstructors:
+						if (specificConstructorsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getDeclaredConstructors())) {
 							rra.registerDeclaredConstructors(type);
 						}
 						break;
 					case allPublicConstructors:
+						if (specificConstructorsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getConstructors())) {
 							rra.registerPublicConstructors(type);
 						}
 						break;
 					case allDeclaredMethods:
+						if (specificMethodsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getDeclaredMethods())) {
 							rra.registerDeclaredMethods(type);
 						}
 						break;
 					case allPublicMethods:
+						if (specificMethodsSpecified) {
+							throw new IllegalStateException();
+						}
 						if (verify(type.getMethods())) {
 							rra.registerPublicMethods(type);
 						}
@@ -541,13 +606,13 @@ public class ReflectionHandler {
 
 		for (String p : logBackPatterns) {
 			if (p.startsWith("org")) {
-				addAccess(p, new String[][] { { "<init>" } }, false);
+				addAccess(p, new String[][] { { "<init>" } },null, false);
 			} else if (p.startsWith("ch.")) {
-				addAccess(p, new String[][] { { "<init>" } }, false);
+				addAccess(p, new String[][] { { "<init>" } },null, false);
 			} else if (p.startsWith("color.")) {
-				addAccess("ch.qos.logback.core.pattern." + p, new String[][] { { "<init>" } }, false);
+				addAccess("ch.qos.logback.core.pattern." + p, new String[][] { { "<init>" } }, null,false);
 			} else {
-				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, false);
+				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, null,false);
 			}
 		}
 	}
