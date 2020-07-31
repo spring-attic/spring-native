@@ -28,7 +28,9 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.reactive.HandlerResult;
 
-@NativeImageHint(trigger=WebFluxAutoConfiguration.class,typeInfos = {
+@NativeImageHint(trigger=WebFluxAutoConfiguration.class,
+	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+	typeInfos = {
 	@TypeInfo(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
@@ -42,10 +44,6 @@ import org.springframework.web.reactive.HandlerResult;
 				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 // TODO deletable once confirmed tomcat version will contain these from now on (also see WebMvcHints)
-@NativeImageHint(trigger=EmbeddedTomcat.class,resourcesInfos = {
-		// Accessed from org.apache.catalina.startup.Tomcat
-		@ResourcesInfo(patterns="org/apache/catalina/startup/MimeTypeMappings.properties"),
-		@ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
-})
+@NativeImageHint(trigger=EmbeddedTomcat.class, importInfos = CommonWebInfos.class)
 public class WebFluxHints implements NativeImageConfiguration {
 }

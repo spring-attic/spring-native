@@ -15,6 +15,7 @@
  */
 package org.springframework.graalvm.extension;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -25,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * 
  * @author Andy Clement
  */
+@Repeatable(ResourcesInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResourcesInfo {
 	

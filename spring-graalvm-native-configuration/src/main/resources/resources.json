@@ -1,21 +1,16 @@
 {
     "resources": [
+    {"pattern": "banner.txt"},
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
     {"pattern": "static/.*"},
     {"pattern": "templates/.*"},
     // vvv petclinic
-    {"pattern": "banner.txt"},
-    {"pattern": "org/springframework/web/util/HtmlCharacterEntityReferences.properties"},
 	{"pattern": "org/springframework/http/mime.types"},
     {"pattern": "org/springframework/boot/logging/java/logging.properties"},
     {"pattern": "logging.properties"},
     {"pattern": "META-INF/resources/webjars/.*"},
     
-    // vvv vanilla-tx
-    {"pattern": "schema.sql"},
-    // ^^^ vanilla-tx
-
     // Does this catch the logging/<eachDirectory>/*.properties?
     {"pattern": "org/springframework/boot/logging/.*.properties"},
     {"pattern": "org/springframework/boot/logging/.*.xml"},

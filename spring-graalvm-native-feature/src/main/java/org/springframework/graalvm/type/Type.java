@@ -18,6 +18,7 @@ package org.springframework.graalvm.type;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,10 +30,16 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
+import org.springframework.graalvm.extension.InitializationInfo;
+import org.springframework.graalvm.extension.InitializationInfos;
 import org.springframework.graalvm.extension.InitializationTime;
 import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
+import org.springframework.graalvm.extension.ProxyInfo;
+import org.springframework.graalvm.extension.ProxyInfos;
+import org.springframework.graalvm.extension.ResourcesInfo;
+import org.springframework.graalvm.extension.ResourcesInfos;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
@@ -1544,7 +1551,7 @@ public class Type {
 	private void processInitializationInfos(CompilationHint ch, Object value) {
 		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode initializationInfo : initializationInfos) {
-			unpackInitializationInfos(initializationInfo, ch);
+			unpackInitializationInfo(initializationInfo, ch);
 		}
 	}
 
@@ -1573,11 +1580,23 @@ public class Type {
 			ClassNode node = resolvedImportInfo.getClassNode();
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
-					if (fromLdescriptorToDotted(an.desc).equals(TypeInfo.class.getName())) {
+					String annotationClassname = fromLdescriptorToDotted(an.desc);
+					if (annotationClassname.equals(TypeInfo.class.getName())) {
 						unpackTypeInfo(an, ch);
-//						processTypeInfoList(ch, an.values);
-					} else if (fromLdescriptorToDotted(an.desc).equals(TypeInfos.class.getName())) {
+					} else if (annotationClassname.equals(TypeInfos.class.getName())) {
 						processTypeInfosList(ch, an);
+					} else if (annotationClassname.equals(ResourcesInfo.class.getName())) {
+						unpackResourcesInfo(an, ch);
+					} else if (annotationClassname.equals(ResourcesInfos.class.getName())) {
+						processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno,ch));
+					} else if (annotationClassname.equals(ProxyInfo.class.getName())) {
+						unpackProxyInfo(an, ch);
+					} else if (annotationClassname.equals(ProxyInfos.class.getName())) {
+						processRepeatableInfosList(an, anno -> unpackProxyInfo(anno,ch));
+					} else if (annotationClassname.equals(InitializationInfo.class.getName())) {
+						unpackInitializationInfo(an, ch);
+					} else if (annotationClassname.equals(InitializationInfos.class.getName())) {
+						processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno,ch));
 					}
 				}
 			}
@@ -1674,7 +1693,7 @@ public class Type {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void unpackInitializationInfos(AnnotationNode typeInfo, CompilationHint ch) {
+	private void unpackInitializationInfo(AnnotationNode typeInfo, CompilationHint ch) {
 //		Class<?>[] types() default {};
 //		String[] typeNames() default {};
 //		String[] packageNames() default {};
@@ -1772,7 +1791,22 @@ public class Type {
 				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
 				for (int j = 0; j < annotationNodes.size(); j++) {
 					unpackTypeInfo(annotationNodes.get(j),ch);
-//					processTypeInfoList(ch, annotationNodes.get(j));
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void processRepeatableInfosList(AnnotationNode an, Consumer<AnnotationNode> c) {
+		List<Object> values = an.values;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("value")) {
+				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee, org.objectweb.asm.tree.AnnotationNode@68fb2c38]
+				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
+				for (int j = 0; j < annotationNodes.size(); j++) {
+					c.accept(annotationNodes.get(j));
 				}
 			}
 		}

@@ -15,24 +15,15 @@
  */
 package org.springframework.graalvm.extension;
 
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Used by {@link NativeImageHint} annotations to indicate which types sets of types need proxies.
- * Class references via the <tt>types()</tt> member are the preferred form of use but sometimes due
- * to accessibility restrictions the type names may need to be specified in the <tt>typeNames()</tt>
- * member.
+ * Repeatable annotation container for {@link ProxyInfo} annotations.
  * 
  * @author Andy Clement
  */
-@Repeatable(ProxyInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProxyInfo {
-	
-	Class<?>[] types() default {};
-
-	String[] typeNames() default {};
-
+public @interface ProxyInfos {
+	ProxyInfo[] value();
 }

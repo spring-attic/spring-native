@@ -13,28 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.graalvm.extension;
+package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.springframework.graalvm.extension.ResourcesInfo;
 
-/**
- * Used by {@link NativeImageHint} annotations to indicate which classes/packages
- * should be initialized explicitly at buildtime or runtime.
- * 
- * @author Andy Clement
- */
-@Repeatable(InitializationInfos.class)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface InitializationInfo {
-	
-	Class<?>[] types() default {};
-	
-	String[] typeNames() default {};
-	
-	String[] packageNames() default {};
-	
-	InitializationTime initTime();
+// Accessed from org.apache.catalina.startup.Tomcat
+@ResourcesInfo(patterns= "org/apache/catalina/startup/MimeTypeMappings.properties")
+@ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
+public class CommonWebInfos {
 
 }
