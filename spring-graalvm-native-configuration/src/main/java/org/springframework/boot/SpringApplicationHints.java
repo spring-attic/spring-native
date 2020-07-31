@@ -32,7 +32,12 @@ import org.springframework.graalvm.type.AccessBits;
 			"application.yml",
 			"application.properties",
 			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
-			"META-INF/services/.*"
+			"META-INF/services/.*",
+		    // Do these two catch the logging/<eachDirectory>/*.properties?
+		    "org/springframework/boot/logging/.*.properties",
+		    "org/springframework/boot/logging/.*.xml",
+		    "logging.properties",
+		    "org/springframework/boot/logging/java/logging.properties"
 			})
 	},
 	typeInfos = { 
