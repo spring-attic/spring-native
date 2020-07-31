@@ -25,7 +25,7 @@ import org.springframework.graalvm.support.Mode;
 
 public class CompilationHint {
 	private String targetType;
-	private Map<String, Integer> specificTypes = new LinkedHashMap<>();
+	private Map<String, AccessDescriptor> specificTypes = new LinkedHashMap<>();
 	public boolean follow = false;
 	public boolean skipIfTypesMissing = false;
 	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
@@ -55,16 +55,16 @@ public class CompilationHint {
 		return targetType;
 	}
 	
-	public Map<String, Integer> getDependantTypes() {
+	public Map<String, AccessDescriptor> getDependantTypes() {
 		return specificTypes;
 	}
 
-	public void addDependantType(String className, Integer accessBits) {
-		specificTypes.put(className, accessBits);
+	public void addDependantType(String className, Integer accessBits,List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
+		specificTypes.put(className, new AccessDescriptor(accessBits,mds,fds));
 	}
 
-	public void addDependantType(Class<?> clazz, Integer accessBits) {
-		specificTypes.put(clazz.getName(), accessBits);
+	public void addDependantType(Class<?> clazz, Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
+		specificTypes.put(clazz.getName(), new AccessDescriptor(accessBits,mds,fds));
 	}
 
 	public void setAbortIfTypesMissing(Boolean b) {
@@ -110,5 +110,5 @@ public class CompilationHint {
 	public List<InitializationDescriptor> getInitializationDescriptors() {
 		return initializationDescriptors;
 	}
-	
+
 }

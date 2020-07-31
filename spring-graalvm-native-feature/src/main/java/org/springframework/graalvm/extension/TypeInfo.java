@@ -39,7 +39,7 @@ public @interface TypeInfo {
 
 	int access() default AccessBits.LOAD_AND_CONSTRUCT;
 
-	MethodInfo[] members() default {};
+	MethodInfo[] methods() default {};
 
 	FieldInfo[] fields() default {};
 }

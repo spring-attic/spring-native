@@ -16,23 +16,30 @@
 package org.springframework.support.graal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
-import org.springframework.graalvm.extension.ProxyInfo;
+import org.springframework.graalvm.domain.reflect.FieldDescriptor;
+import org.springframework.graalvm.extension.FieldInfo;
 import org.springframework.graalvm.extension.InitializationInfo;
 import org.springframework.graalvm.extension.InitializationTime;
+import org.springframework.graalvm.extension.MethodInfo;
+import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ProxyInfo;
 import org.springframework.graalvm.extension.ResourcesInfo;
+import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.Mode;
+import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.Hint;
 import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.ResourcesDescriptor;
@@ -55,6 +62,10 @@ public class HintTests {
 		Type testClass = typeSystem.resolveName(TestClass1.class.getName());
 		List<Hint> hints = testClass.getHints();
 		assertEquals(1,hints.size());
+		Map<String, AccessDescriptor> specificTypes = hints.get(0).getSpecificTypes();
+		System.out.println(specificTypes);
+		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String[]");
+		assertNotNull(accessDescriptor);
 	}
 
 	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
@@ -101,7 +112,6 @@ public class HintTests {
 	})
 	static class TestClass3 {
 	}
-	
 
 	@Test
 	public void modeRestrictions() {
@@ -162,6 +172,52 @@ public class HintTests {
 					initTime = InitializationTime.BUILD)
 	})
 	static class TestClass5 {
+	}
+
+	@Test
+	public void methods() {
+		Type testClass = typeSystem.resolveName(TestClass6.class.getName());
+		List<Hint> hints = testClass.getHints();
+		assertEquals(1,hints.size());
+		Hint hint = hints.get(0);
+		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
+		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
+		assertNotNull(accessDescriptor);
+		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals("foo(java.lang.String)",accessDescriptor.getMethodDescriptors().get(0).toString());
+		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
+	}
+
+	@NativeImageHint(typeInfos = {
+		@TypeInfo(typeNames = "java.lang.String",
+				methods= @MethodInfo(name="foo",parameterTypes = String.class)
+		)
+	})
+	static class TestClass6 {
+	}
+
+	@Test
+	public void fields() {
+		Type testClass = typeSystem.resolveName(TestClass7.class.getName());
+		List<Hint> hints = testClass.getHints();
+		assertEquals(1,hints.size());
+		Hint hint = hints.get(0);
+		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
+		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
+		assertNotNull(accessDescriptor);
+		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals(0,accessDescriptor.getMethodDescriptors().size());
+		org.springframework.graalvm.type.FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
+		assertEquals("foo",fd.getName());
+		assertTrue(fd.isAllowUnsafeAccess());
+	}
+
+	@NativeImageHint(typeInfos = {
+		@TypeInfo(typeNames = "java.lang.String",
+				fields= @FieldInfo(name="foo",allowUnsafeAccess = true)
+		)
+	})
+	static class TestClass7 {
 	}
 
 }

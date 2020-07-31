@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
@@ -106,10 +107,10 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(Integer.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
-		assertEquals((Integer) AccessBits.ALL, dts.get("java.lang.String"));
-		assertEquals((Integer) AccessBits.ALL, dts.get("java.lang.Float"));
+		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
+		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.Float").getAccessBits());
 	}
 
 	@Test
@@ -119,14 +120,14 @@ public class TypeTests {
 		assertEquals(2, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(Integer.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
-		assertEquals((Integer) AccessBits.ALL, dts.get("java.lang.String"));
+		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
 		ch = compilationHints.get(1);
 		assertEquals(String.class.getName(), ch.getTargetType());
 		dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
-		assertEquals((Integer) AccessBits.ALL, dts.get("java.lang.Float"));
+		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.Float").getAccessBits());
 	}
 
 	@Test
@@ -136,9 +137,9 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(String.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
-		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float"));
+		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
 	}
 
 	@Test
@@ -148,10 +149,10 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(String.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
-		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float"));
-		assertEquals((Integer) AccessBits.RESOURCE, dts.get("java.lang.Integer"));
+		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
+		assertEquals((Integer) AccessBits.RESOURCE, dts.get("java.lang.Integer").getAccessBits());
 	}
 
 	@Test
@@ -161,10 +162,10 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(String.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
-		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float"));
-		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.String"));
+		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
+		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.String").getAccessBits());
 	}
 
 	@Test
@@ -174,7 +175,7 @@ public class TypeTests {
 		assertEquals(1, compilationHints.size());
 		CompilationHint ch = compilationHints.get(0);
 		assertEquals(Object.class.getName(), ch.getTargetType());
-		Map<String, Integer> dts = ch.getDependantTypes();
+		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(3, dts.size());
 		System.out.println(dts);
 		// java.lang.String=31

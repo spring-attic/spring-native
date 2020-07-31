@@ -43,7 +43,7 @@ public class Hint {
 	private boolean follow;
 
 	// These are the types pulled directly from the compilation hint (e.g. for ImportSelectors/registrars)
-	private Map<String, Integer> specificTypes;
+	private Map<String, AccessDescriptor> specificTypes;
 
 	// These are pulled from the particular application of the hint (e.g. @ConditionalOnClass has a hint and when
 	// @COC seen, these are the types pulled from the @COC)
@@ -54,12 +54,13 @@ public class Hint {
 	private List<ResourcesDescriptor> resourcesDescriptors;
 	
 	private List<InitializationDescriptor> initializationDescriptors;
-	
+
 	private List<Mode> modes;
-	
+
 
 	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
-			boolean follow, Map<String, Integer> specificTypes,
+			boolean follow, 
+			Map<String, AccessDescriptor> specificTypes,
 			Map<String,Integer> inferredTypes,
 			List<ProxyDescriptor> proxyDescriptors,
 			List<ResourcesDescriptor> resourcesDescriptors,
@@ -88,7 +89,7 @@ public class Hint {
 		return follow;
 	}
 	
-	public Map<String,Integer> getSpecificTypes() {
+	public Map<String,AccessDescriptor> getSpecificTypes() {
 		return specificTypes;
 	}
 	
@@ -102,11 +103,26 @@ public class Hint {
 		s.append(shortChain());
 		s.append(",skipIfTypesMissing=").append(skipIfTypesMissing);
 		s.append(",follow=").append(follow);
-		s.append(",specificTypes=").append(shorten(specificTypes));
+		s.append(",specificTypes=").append(shortenWithAD(specificTypes));
 		s.append(",inferredTypes=").append(shorten(inferredTypes));
 		s.append(",resourcesDescriptors=").append(resourcesDescriptors);
 		s.append(",initializationDescriptors=").append(initializationDescriptors);
 		s.append("}");
+		return s.toString();
+	}
+	
+	private String shortenWithAD(Map<String, AccessDescriptor> types) {
+		StringBuilder s = new StringBuilder();
+		int i=0;
+		s.append("[");
+		for (Map.Entry<String, AccessDescriptor> entry: types.entrySet()) {
+			if (i>0) {
+				s.append(",");
+			}
+			s.append(shorten(entry.getKey())).append(":").append(entry.getValue().toString());
+			i++;
+		}
+		s.append("]");
 		return s.toString();
 	}
 	
