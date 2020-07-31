@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.web.reactive;
+package org.springframework.graalvm.extension;
 
-import org.springframework.graalvm.extension.ResourcesInfo;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-// Accessed from org.apache.catalina.startup.Tomcat
-@ResourcesInfo(patterns= {
-	"org/springframework/http/mime.types",
-	"org/apache/catalina/startup/MimeTypeMappings.properties",
-	"static/.*",
-	"templates/.*",
-	"META-INF/resources/webjars/.*"
-})
-@ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
-public class CommonWebInfos {
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MethodInfo {
+	String name();
+
+	Class<?>[] parameterTypes() default {};
 
 }
