@@ -1562,6 +1562,20 @@ public class Type {
 		}
 	}
 
+	private void processFieldInfoList(CompilationHint ch, Object value) {
+		List<AnnotationNode> fieldInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode fieldInfo : fieldInfos) {
+			unpackFieldInfo(fieldInfo, ch);
+		}
+	}
+
+	private void processMethodInfoList(CompilationHint ch, Object value) {
+		List<AnnotationNode> methodInfos = (List<AnnotationNode>) value;
+		for (AnnotationNode methodInfo : methodInfos) {
+			unpackMethodInfo(methodInfo, ch);
+		}
+	}
+
 	private void processProxyInfo(CompilationHint ch, Object value) {
 		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode proxyInfo : proxyInfos) {
@@ -1623,6 +1637,10 @@ public class Type {
 				accessRequired = (Integer) value;
 			} else if (key.equals("typeNames")) {
 				typeNames = (ArrayList<String>) value;
+			} else if (key.equals("methods")) {
+				processMethodInfoList(ch, value);
+			} else if (key.equals("fields")) {
+				processFieldInfoList(ch, value);
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
@@ -1634,6 +1652,14 @@ public class Type {
 				ch.addDependantType(typeName, accessRequired == -1 ? inferTypeKind(resolvedType) : accessRequired);
 			}
 		}
+	}
+
+	private void unpackFieldInfo(AnnotationNode fieldInfo, CompilationHint ch) {
+		
+	}
+
+	private void unpackMethodInfo(AnnotationNode fieldInfo, CompilationHint ch) {
+		
 	}
 	
 	@SuppressWarnings("unchecked")

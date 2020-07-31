@@ -1,15 +1,9 @@
 {
     "resources": [
-    {"pattern": "banner.txt"},
     {"pattern": "db/.*"},
     {"pattern": "messages/.*"},
-    {"pattern": "static/.*"},
-    {"pattern": "templates/.*"},
-    // vvv petclinic
-	{"pattern": "org/springframework/http/mime.types"},
     {"pattern": "org/springframework/boot/logging/java/logging.properties"},
     {"pattern": "logging.properties"},
-    {"pattern": "META-INF/resources/webjars/.*"},
     
     // Does this catch the logging/<eachDirectory>/*.properties?
     {"pattern": "org/springframework/boot/logging/.*.properties"},
