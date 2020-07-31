@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.util.concurrent.Callable;
 
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
+import org.springframework.boot.autoconfigure.web.reactive.CommonWebInfos;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryConfiguration.EmbeddedTomcat;
 import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver;
@@ -36,7 +37,9 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 
 
 
-@NativeImageHint(trigger=WebMvcAutoConfiguration.class, typeInfos = {
+@NativeImageHint(trigger=WebMvcAutoConfiguration.class, 
+	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+	typeInfos = {
 		@TypeInfo(types= {
 				AnnotationConfigServletWebServerApplicationContext.class,
 				ConfigurableWebApplicationContext.class,
@@ -59,10 +62,6 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 //TODO deletable once confirmed tomcat version will contain these from now on (also see WebFluxHints)
-@NativeImageHint(trigger=EmbeddedTomcat.class,resourcesInfos = {
-		// Accessed from org.apache.catalina.startup.Tomcat
-		@ResourcesInfo(patterns="org/apache/catalina/startup/MimeTypeMappings.properties"),
-		@ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
-})
+@NativeImageHint(trigger=EmbeddedTomcat.class,importInfos = CommonWebInfos.class)
 public class WebMvcHints implements NativeImageConfiguration {
 }
