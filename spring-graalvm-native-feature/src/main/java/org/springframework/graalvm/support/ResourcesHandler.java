@@ -223,6 +223,7 @@ public class ResourcesHandler {
 	public void handleSpringComponents() {
 		NativeImageContext context = new NativeImageContextImpl();
 		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
+		List<String> alreadyProcessed = new ArrayList<>();
 		if (springComponents.hasMoreElements()) {
 			log("Processing existing META-INF/spring.components files...");
 			while (springComponents.hasMoreElements()) {
@@ -232,7 +233,7 @@ public class ResourcesHandler {
 				if (ConfigOptions.isHybridMode()) {
 					processSpringComponentsHybrid(p, context);
 				} else {
-					processSpringComponents(p, context);
+					processSpringComponents(p, context, alreadyProcessed);
 				}
 			}
 		} else {
@@ -241,7 +242,7 @@ public class ResourcesHandler {
 			if (ConfigOptions.isHybridMode()) {
 				processSpringComponentsHybrid(p, context);
 			} else {
-				processSpringComponents(p, context);
+				processSpringComponents(p, context, alreadyProcessed);
 			}
 		}
 	}
@@ -323,7 +324,7 @@ public class ResourcesHandler {
 	 * </code></pre>
 	 * @param p the properties object containing spring components
 	 */
-	private void processSpringComponents(Properties p, NativeImageContext context) {
+	private void processSpringComponents(Properties p, NativeImageContext context,List<String> alreadyProcessed) {
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
@@ -335,9 +336,101 @@ public class ResourcesHandler {
 			if (vs.equals("package-info")) {
 				continue;
 			}
+			if (alreadyProcessed.contains(k+":"+vs)) {
+				continue;
+			}
+			alreadyProcessed.add(k+":"+vs);
 			Type kType = ts.resolveDotted(k);
 			SpringFeature.log("Registering Spring Component: " + k);
 			registeredComponents++;
+
+			// Waiting on confirmation about SynthesizedAnnotation behaviour before activating this:
+//			System.out.println("proxygen: Processing component "+kType);
+//			List<Method> mappings = kType.getMethods();
+//			// Example:
+//			// @GetMapping("/greeting")
+//			// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+//			List<Type> collector = new ArrayList<>();
+//			List<Type> annotations = kType.getAnnotations();
+//			for (Type a: annotations) {
+//				a.collectAnnotations(collector, anno->anno.getDottedName().startsWith("org.springframework"));
+//			}
+//			for (Type t: collector) {
+//				if (t.hasAliasForMarkedMembers()) {
+//					List<String> interfaces = new ArrayList<>();
+//					interfaces.add(t.getDottedName());
+//					interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+//					System.out.println("XX: Adding dynamic proxy for "+interfaces);
+//					dynamicProxiesHandler.addProxy(interfaces);
+//				}
+//			}
+//			for (Method mapping: mappings) {
+//				List<Type> mappingAnnotations = mapping.getAnnotationTypes();
+//				for (Type ma: mappingAnnotations) {
+//					collector = new ArrayList<>();
+//					ma.collectAnnotations(collector,anno -> anno.getDottedName().startsWith("org.springframework"));
+//					for (Type t: collector) {
+//						if (t.hasAliasForMarkedMembers()) {
+//							List<String> interfaces = new ArrayList<>();
+//							interfaces.add(t.getDottedName());
+//							interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+//							System.out.println("XX: Adding dynamic proxy for "+interfaces);
+//							dynamicProxiesHandler.addProxy(interfaces);
+//						}
+//					}
+//				}
+//				for (int pi=0;pi<mapping.getParameterCount();pi++) {
+//					List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
+//					for (Type parameterAnnotationType: parameterAnnotationTypes) {
+//						if (parameterAnnotationType.hasAliasForMarkedMembers()) {
+//							List<String> interfaces = new ArrayList<>();
+//							interfaces.add(parameterAnnotationType.getDottedName());
+//							interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+//							System.out.println("XX: Adding dynamic proxy for "+interfaces);
+//							dynamicProxiesHandler.addProxy(interfaces);
+//						}
+//					}
+//					
+//				}
+//			}
+//			if (kType.isAtController()) {
+//				System.out.println("hybrid: Processing controller "+kType);
+//				List<Method> mappings = kType.getMethods(m -> m.isAtMapping());
+//				System.out.println("hybrid: Mappings: "+mappings);
+//				// Example:
+//				// @GetMapping("/greeting")
+//				// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+//				for (Method mapping: mappings) {
+//					List<Type> mappingAnnotations = mapping.getAnnotationTypes();
+//					for (Type ma: mappingAnnotations) {
+//						List<Type> collector = new ArrayList<>();
+//						ma.collectAnnotations(collector,anno -> anno.getDottedName().startsWith("org.springframework"));
+//						System.out.println("Mapping: "+mapping+": "+collector);
+//						for (Type t: collector) {
+//							if (t.hasAliasForMarkedMembers()) {
+//								List<String> interfaces = new ArrayList<>();
+//								interfaces.add(t.getDottedName());
+//								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+//								System.out.println("XX: Adding dynamic proxy for "+interfaces);
+//								dynamicProxiesHandler.addProxy(interfaces);
+//							}
+//						}
+//					}
+//					for (int pi=0;pi<mapping.getParameterCount();pi++) {
+//						List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
+//						for (Type parameterAnnotationType: parameterAnnotationTypes) {
+//							if (parameterAnnotationType.hasAliasForMarkedMembers()) {
+//								List<String> interfaces = new ArrayList<>();
+//								interfaces.add(parameterAnnotationType.getDottedName());
+//								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+//								System.out.println("XX: Adding dynamic proxy for "+interfaces);
+//								dynamicProxiesHandler.addProxy(interfaces);
+//							}
+//						}
+//						
+//					}
+//				}
+//			}
 			
 			// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
 			// exposed

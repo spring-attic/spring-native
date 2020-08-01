@@ -90,17 +90,17 @@ public class InitializationHandler {
 		}
 		List<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
 		if (runtimeClasses.size()!=0) {
-			buildtimeClasses.stream()
+			runtimeClasses.stream()
 			.map(c -> cl.findClassByName(c, false)).filter(Objects::nonNull)
 			.forEach(RuntimeClassInitialization::initializeAtRunTime);
 		}
 		List<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
 		if (buildtimePackages.size()!=0) {
-			RuntimeClassInitialization.initializeAtBuildTime(buildtimeClasses.toArray(new String[0]));
+			RuntimeClassInitialization.initializeAtBuildTime(buildtimePackages.toArray(new String[0]));
 		}
 		List<String> runtimePackages = initializationDescriptor.getRuntimePackages();
 		if (runtimePackages.size()!=0) {
-			RuntimeClassInitialization.initializeAtRunTime(buildtimeClasses.toArray(new String[0]));
+			RuntimeClassInitialization.initializeAtRunTime(runtimePackages.toArray(new String[0]));
 		}
 	}
 	
