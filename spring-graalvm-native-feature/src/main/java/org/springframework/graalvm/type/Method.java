@@ -270,5 +270,9 @@ public class Method {
 		return false;
 	}
 
+	public boolean hasAnnotations() {
+		return mn.visibleAnnotations!=null;
+	}
+
 
 }

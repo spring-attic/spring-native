@@ -1766,10 +1766,6 @@ public class Type {
 
 	@SuppressWarnings("unchecked")
 	private void unpackInitializationInfo(AnnotationNode typeInfo, CompilationHint ch) {
-//		Class<?>[] types() default {};
-//		String[] typeNames() default {};
-//		String[] packageNames() default {};
-//		InitializationTime initTime();
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
@@ -1810,8 +1806,6 @@ public class Type {
 		}
 		ch.addInitializationDescriptor(id);
 	}
-
-
 
 	private int inferTypeKind(org.objectweb.asm.Type type) {
 		Type t = typeSystem.resolve(type, true);
@@ -2273,6 +2267,26 @@ public class Type {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public void collectAnnotations(List<Type> collector,Predicate<Type> filter) {
+		if (!this.isAnnotation()) {
+			throw new IllegalStateException(this.getDottedName()+" is not an annotation");
+		}
+		walkAnnotation(collector, filter, new HashSet<>());
+	}
+	
+	private void walkAnnotation(List<Type> collector,Predicate<Type> filter, Set<Type> seen) {
+		if (!seen.add(this)) {
+			return;
+		}
+		if (filter.test(this)) {
+			collector.add(this);
+		}
+		List<Type> annotations = getAnnotations();
+		for (Type annotation: annotations) {
+			annotation.walkAnnotation(collector, filter, seen);
 		}
 	}
 }

@@ -15,25 +15,6 @@
   // Spring Data
   {"class": "org.springframework.data.mapping.model.PreferredConstructorDiscoverer$Discoverers"}, // Since Boot 2.3.0.M4
 
-  // Netty
-  {"class": "io.netty.channel.DefaultChannelId"},
-  {"package": "io.netty.channel.epoll"},
-  {"class": "io.netty.channel.unix.Socket"},
-  {"class": "io.netty.channel.unix.Errors"},
-  {"class": "io.netty.channel.unix.Limits"},
-  {"class": "io.netty.channel.unix.IovArray"},
-  {"class": "io.netty.channel.socket.InternetProtocolFamily"},
-  {"class": "io.netty.handler.codec.http2.Http2ServerUpgradeCodec"},
-  {"class": "io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler"},
-  {"class": "io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"},
-  {"class": "io.netty.handler.codec.http2.Http2ConnectionHandler"},
-  {"class": "io.netty.resolver.HostsFileEntriesResolver"},
-  {"class": "io.netty.resolver.dns.DnsNameResolver"},
-  {"class": "io.netty.resolver.dns.DnsServerAddressStreamProviders"},
-  {"class": "io.netty.resolver.dns.PreferredAddressTypeComparator$1"},
-  {"class": "io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider"},
-  {"class": "io.netty.util.NetUtil"},
-
   // Reactor
   {"class": "reactor.netty.http.client.HttpClient"},
   {"class": "reactor.netty.tcp.TcpClient"},
