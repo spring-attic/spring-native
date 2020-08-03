@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -149,9 +150,9 @@ public class BootOptimizerForApacheTomcatEmbedCore extends AbstractMojo {
                             getLog().info("Updating classpath.idx");
                             String idx = new String(Files.readAllBytes(file));
                             idx = idx.replaceAll("embed-core-([0-9])", "embed-core-optimized-$1");
-                            Files.write(file, idx.getBytes());
+                            Files.write(file, idx.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
                             return FileVisitResult.CONTINUE;
-                            
+
                         } else {
                             return FileVisitResult.CONTINUE;
                         }
