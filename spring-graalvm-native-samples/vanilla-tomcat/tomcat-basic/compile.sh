@@ -16,12 +16,15 @@ mkdir -p target/native-image
 echo "Packaging $ARTIFACT with Maven"
 mvn -ntp package > target/native-image/output.txt
 
-cd target/native-image
-
-JAR="${ARTIFACT}-${VERSION}-jar-with-dependencies.jar"
+JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
+echo "Unpacking $JAR"
+cd target/native-image
+jar -xvf ../$JAR >/dev/null 2>&1
+cp -R META-INF BOOT-INF/classes
 
-CP=../$JAR
+LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
+CP=BOOT-INF/classes:$LIBPATH
 
 echo "Generating reflection files for $ARTIFACT"
 rm -rf graal/META-INF 2>/dev/null
