@@ -26,7 +26,7 @@
 				<artifactId>tomcat-embed-core</artifactId>
 				<version>${tomcat.embed.version}</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-el</artifactId>
 			<version>${tomcat.embed.version}</version>
@@ -36,7 +36,7 @@
 			<artifactId>tomcat-embed-websocket</artifactId>
 			<version>${tomcat.embed.version}</version>
 		</dependency>
-
+ -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
