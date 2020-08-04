@@ -1,8 +1,12 @@
 package com.example.tomcat;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.Host;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.modeler.Registry;
 
@@ -30,10 +34,17 @@ public class TomcatOnlyApplication {
 		connector.setPort(8080);
 		tomcat.setConnector(connector);
 
-		Context context = tomcat.addContext("", docBase.getAbsolutePath());
+		StandardContext context = new StandardContext();
+		context.setName("");
+		context.setPath("");
+		context.setDocBase(docBase.getAbsolutePath());
+		context.addLifecycleListener(new Tomcat.FixContextListener());
 		tomcat.addServlet(context, HelloFromTomcatServlet.class.getSimpleName(), new HelloFromTomcatServlet());
 		context.addServletMappingDecoded("/*", HelloFromTomcatServlet.class.getSimpleName());
-		tomcat.getHost().setAutoDeploy(false);
+		StandardHost host = (StandardHost) tomcat.getHost();
+		host.setAutoDeploy(false);
+		host.getPipeline().addValve(new ErrorReportValve());
+		host.addChild(context);
 		tomcat.start();
 	}
 
