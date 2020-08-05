@@ -25,6 +25,7 @@ import org.springframework.graalvm.extension.ResourcesInfo;
 	"templates/.*",
 	"META-INF/resources/webjars/.*"
 })
+//TODO deletable once confirmed tomcat version will contain these from now on (also see WebFluxHints)
 @ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
 public class CommonWebInfos {
 
