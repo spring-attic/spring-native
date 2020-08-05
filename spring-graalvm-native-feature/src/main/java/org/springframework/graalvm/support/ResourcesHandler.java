@@ -145,6 +145,7 @@ public class ResourcesHandler {
 			processSpringFactories();
 			handleSpringConstantHints();
 		}
+		handleSpringConstantInitialiationHints();
 		if (ConfigOptions.isDefaultMode() ||
 			ConfigOptions.isHybridMode()) {
 			handleSpringComponents();
@@ -194,8 +195,16 @@ public class ResourcesHandler {
 			for (org.springframework.graalvm.type.ResourcesDescriptor rd: resourcesDescriptors) {
 				registerResourcesDescriptor(rd);
 			}
+		}
+	}
+	
+	private void handleSpringConstantInitialiationHints() {
+		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		SpringFeature.log("Registering fixed initialization entries: ");
+		for (CompilationHint ch : constantHints) {
 			List<InitializationDescriptor> ids = ch.getInitializationDescriptors();
 			for (InitializationDescriptor id: ids) {
+				SpringFeature.log(" registering initialization descriptor: "+id);
 				initializationHandler.registerInitializationDescriptor(id);
 			}
 		}
