@@ -15,13 +15,8 @@
  */
 package org.springframework.boot.autoconfigure;
 
-import org.springframework.graalvm.extension.NativeImageHint;
-
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
