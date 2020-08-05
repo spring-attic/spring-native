@@ -100,7 +100,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor.netty</groupId>
-			<artifactId>reactor-netty</artifactId>
+			<artifactId>reactor-netty-http</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
