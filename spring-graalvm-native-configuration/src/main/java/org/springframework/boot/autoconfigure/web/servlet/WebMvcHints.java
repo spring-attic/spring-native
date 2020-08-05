@@ -61,7 +61,6 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
-//TODO deletable once confirmed tomcat version will contain these from now on (also see WebFluxHints)
 @NativeImageHint(trigger=EmbeddedTomcat.class,importInfos = CommonWebInfos.class)
 public class WebMvcHints implements NativeImageConfiguration {
 }

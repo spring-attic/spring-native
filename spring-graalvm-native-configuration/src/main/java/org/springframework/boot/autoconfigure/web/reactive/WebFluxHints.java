@@ -15,10 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import reactor.netty.DisposableServer;
-
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryConfiguration.EmbeddedTomcat;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryConfiguration.EmbeddedNetty;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
@@ -27,6 +25,8 @@ import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.reactive.HandlerResult;
+
+import reactor.netty.DisposableServer;
 
 @NativeImageHint(trigger=WebFluxAutoConfiguration.class,
 	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
@@ -43,7 +43,6 @@ import org.springframework.web.reactive.HandlerResult;
 				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
 				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-// TODO deletable once confirmed tomcat version will contain these from now on (also see WebMvcHints)
-@NativeImageHint(trigger=EmbeddedTomcat.class, importInfos = CommonWebInfos.class)
+@NativeImageHint(trigger=EmbeddedNetty.class, importInfos = CommonWebInfos.class)
 public class WebFluxHints implements NativeImageConfiguration {
 }
