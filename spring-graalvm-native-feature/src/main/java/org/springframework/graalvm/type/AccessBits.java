@@ -151,4 +151,8 @@ public class AccessBits {
 	public static boolean isResourceAccessRequired(Integer typeKind) {
 		return (typeKind & RESOURCE)!=0;
 	}
+
+	public int getValue() {
+		return value;
+	}
 }

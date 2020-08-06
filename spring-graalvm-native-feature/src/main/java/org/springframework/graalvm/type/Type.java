@@ -68,6 +68,7 @@ public class Type {
 	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
 	public final static String ImportSelector = "Lorg/springframework/context/annotation/ImportSelector;";
+	public final static String ApplicationListener = "Lorg/springframework/context/ApplicationListener;";
 	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
 
@@ -1337,6 +1338,14 @@ public class Type {
 			return false;
 		}
 	}
+	
+	public boolean isApplicationListener() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(ApplicationListener));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
 
 	public boolean isImportRegistrar() {
 		try {
@@ -1812,7 +1821,7 @@ public class Type {
 		return inferTypeKind(t);
 	}
 
-	private int inferTypeKind(Type t) {
+	public static int inferTypeKind(Type t) {
 		if (t == null) {
 			return AccessBits.ALL;
 		}
@@ -1822,6 +1831,8 @@ public class Type {
 			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
+		} else if (t.isComponent() || t.isApplicationListener()) {
+			return AccessBits.ALL;
 		} else {
 			return AccessBits.FULL_REFLECTION; // pessimistic
 		}
