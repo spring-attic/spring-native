@@ -1261,7 +1261,7 @@ public class Type {
 			if (usingForVisibilityCheck) {
 				ar = AccessBits.CLASS;
 			} else {
-				ar = inferTypeKind(type);
+				ar = inferAccessRequired(type);
 			}
 			map.put(fromLdescriptorToDotted(t), ar);
 		}
@@ -1656,12 +1656,12 @@ public class Type {
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
-			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferTypeKind(type) : accessRequired,mds,fds);
+			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferAccessRequired(type) : accessRequired,mds,fds);
 		}
 		for (String typeName : typeNames) {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
-				ch.addDependantType(typeName, accessRequired == -1 ? inferTypeKind(resolvedType) : accessRequired,mds,fds);
+				ch.addDependantType(typeName, accessRequired == -1 ? inferAccessRequired(resolvedType) : accessRequired,mds,fds);
 			}
 		}
 	}
@@ -1816,12 +1816,12 @@ public class Type {
 		ch.addInitializationDescriptor(id);
 	}
 
-	private int inferTypeKind(org.objectweb.asm.Type type) {
+	private int inferAccessRequired(org.objectweb.asm.Type type) {
 		Type t = typeSystem.resolve(type, true);
-		return inferTypeKind(t);
+		return inferAccessRequired(t);
 	}
 
-	public static int inferTypeKind(Type t) {
+	public static int inferAccessRequired(Type t) {
 		if (t == null) {
 			return AccessBits.ALL;
 		}
@@ -1834,7 +1834,7 @@ public class Type {
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
 		} else {
-			return AccessBits.FULL_REFLECTION; // pessimistic
+			return AccessBits.FULL_REFLECTION;
 		}
 	}
 

@@ -49,8 +49,6 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.transform.stream.StreamSource;
-
 import org.graalvm.nativeimage.ImageSingletons;
 import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
@@ -83,8 +81,6 @@ public class ResourcesHandler {
 
 	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
 
-	private final static String applicationListenerKey = "org.springframework.context.ApplicationListener";
-	
 	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
 
 	private TypeSystem ts;
@@ -337,7 +333,7 @@ public class ResourcesHandler {
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
-		TypeAccessRequestor requestor = new TypeAccessRequestor();
+		RequestedConfigurationManager requestor = new RequestedConfigurationManager();
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
 			boolean isComponent = false;
@@ -481,20 +477,13 @@ public class ResourcesHandler {
 					// Register nested types of the component
 					Type baseType = ts.resolveDotted(k);
 
-					if (baseType != null) {
-						// TODO should this check the values against this key or for the annotation presence?
-						if (baseType.isTransactional() || baseType.hasTransactionalMethods()) { 
-							processTransactionalTarget(baseType);
-						}
-					}
-
 					for (Type t : baseType.getNestedTypes()) {
 						String n = t.getName().replace("/", ".");
 						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
 								Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
-					registerHierarchy(baseType, new HashSet<>(), requestor);
+					registerHierarchy(baseType, requestor);
 				} catch (Throwable t) {
 					SpringFeature.log("WHAT?" + t.toString());
 					t.printStackTrace();
@@ -535,7 +524,7 @@ public class ResourcesHandler {
 //						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
-					registerHierarchy(baseType, new HashSet<>(), requestor);
+					registerHierarchy(baseType, requestor);
 				} catch (Throwable t) {
 					t.printStackTrace();
 					System.out.println("Problems with value " + tt);
@@ -622,6 +611,11 @@ public class ResourcesHandler {
 				}
 			}
 		}
+
+		@Override
+		public void log(String message) {
+			SpringFeature.log(message);
+		}
 		
 	}
 	
@@ -653,18 +647,6 @@ public class ResourcesHandler {
 		dynamicProxiesHandler.addProxy(repositoryInterfaces);
 	}
 
-	private void processTransactionalTarget(Type type) {
-		List<String> transactionalInterfaces = new ArrayList<>();
-		for (Type intface: type.getInterfaces()) {
-			transactionalInterfaces.add(intface.getDottedName());
-		}
-		transactionalInterfaces.add("org.springframework.aop.SpringProxy");
-		transactionalInterfaces.add("org.springframework.aop.framework.Advised");
-		transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
-		dynamicProxiesHandler.addProxy(transactionalInterfaces);	
-		SpringFeature.log("Created transaction related proxy for interfaces: "+transactionalInterfaces);
-	}
-
 	/**
 	 * Walk a type hierarchy and register them all for reflective access.
 	 * 
@@ -672,12 +654,12 @@ public class ResourcesHandler {
 	 * @param visited used to remember what has already been visited
 	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
 	 */
-	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {
-		AccessBits inferredAccessRequired = AccessBits.forValue(Type.inferTypeKind(type));
-		registerHierarchyHelper(type, visited, typesToMakeAccessible,inferredAccessRequired);
+	public void registerHierarchy(Type type, RequestedConfigurationManager typesToMakeAccessible) {
+		AccessBits accessRequired = AccessBits.forValue(Type.inferAccessRequired(type));
+		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired);
 	}
 	
-	private void registerHierarchyHelper(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible, AccessBits inferredRequiredAccess) {
+	private void registerHierarchyHelper(Type type, Set<Type> visited, RequestedConfigurationManager typesToMakeAccessible, AccessBits inferredRequiredAccess) {
 		if (typesToMakeAccessible == null) {
 			throw new IllegalStateException();
 		}
@@ -687,38 +669,16 @@ public class ResourcesHandler {
 		if (type.getDottedName().equals("java.lang.Object")) {
 			return;
 		}
-		// SpringFeature.log("> registerHierarchy "+type.getName());
-		String desc = type.getName();
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
-				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(),inferredRequiredAccess.getValue());
-//							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
-				} else {
-					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
-							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
-				}
+				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
 			} else {
-				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(),inferredRequiredAccess.getValue());
-//							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
-				} else {
-					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
-					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
-				}
+				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
 			}
 		} else {
-			if (typesToMakeAccessible != null) {
-				// TODO why no CLASS here?
-				typesToMakeAccessible.request(type.getDottedName(),
-						inferredRequiredAccess.getValue());
-//						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE);
-			} else {
-				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
-						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
-				resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
-			}
+			// TODO why no CLASS here?
+			typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
+					inferredRequiredAccess.getValue());
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
 		}
@@ -750,7 +710,7 @@ public class ResourcesHandler {
 			Type t = ts.resolveSlashed(relatedType,true);
 			if (t!=null) {
 //				lst.add(t.getDottedName());
-				registerHierarchyHelper(t, visited, typesToMakeAccessible,inferredRequiredAccess);
+				registerHierarchyHelper(t, visited, typesToMakeAccessible, inferredRequiredAccess);
 			}
 		}
 //		lst.removeAll(supers);
@@ -1131,7 +1091,7 @@ public class ResourcesHandler {
 	 * other types (import selectors/etc) may not need any method reflective access at all
 	 * (and no resource access in that case).
 	 */
-	private boolean registerSpecific(String typename, Integer typeKind, TypeAccessRequestor tar) {
+	private boolean registerSpecific(String typename, Integer typeKind, RequestedConfigurationManager rcm) {
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
 			SpringFeature.log("WARNING: Unable to resolve specific type: " + typename);
@@ -1145,15 +1105,15 @@ public class ResourcesHandler {
 				return false;
 			}
 			if (importRegistrarOrSelector) {
-				tar.request(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+				rcm.requestTypeAccess(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
 			} else {
 				if (AccessBits.isResourceAccessRequired(typeKind)) {
-					tar.request(typename, AccessBits.RESOURCE);
-					tar.request(typename, typeKind);
+					rcm.requestTypeAccess(typename, AccessBits.RESOURCE);
+					rcm.requestTypeAccess(typename, typeKind);
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-					tar.request(typename, typeKind);
+					rcm.requestTypeAccess(typename, typeKind);
 				}
 				if (t.isAtConfiguration()) {
 					// This is because of cases like Transaction auto configuration where the
@@ -1162,7 +1122,7 @@ public class ResourcesHandler {
 					// There is a conditional on bean later on the supertype
 					// (AbstractTransactionConfiguration)
 					// and so we must register proxyXXX and its supertypes as visible.
-					registerHierarchy(t, new HashSet<>(), tar);
+					registerHierarchy(t, rcm);
 				}
 			}
 			return true;
@@ -1210,7 +1170,7 @@ public class ResourcesHandler {
 
 		boolean passesTests = true;
 		
-		TypeAccessRequestor accessRequestor = new TypeAccessRequestor();
+		RequestedConfigurationManager accessRequestor = new RequestedConfigurationManager();
 		
 		List<Hint> hints = passesTests ? type.getHints() : Collections.emptyList();
 		if (hints.size() != 0) {
@@ -1276,7 +1236,7 @@ public class ResourcesHandler {
 							// Do we not follow if it is @Configuration and missing from the existing other file? 
 							
 							//if (!ConfigOptions.isHybridMode()) {
-								accessRequestor.request(s, inferredType.getValue());
+								accessRequestor.requestTypeAccess(s, inferredType.getValue());
 							//}
 							
 							if (hint.isFollow()) {
@@ -1323,18 +1283,18 @@ public class ResourcesHandler {
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isImportSelector()) {
 //				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-				accessRequestor.request(configNameDotted, Type.inferTypeKind(type)|AccessBits.RESOURCE);
+				accessRequestor.requestTypeAccess(configNameDotted, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
 			} else {
 //				System.out.println("Treating like configuration: "+type);
 			if (type.isCondition()) {
-				accessRequestor.request(configNameDotted, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+				accessRequestor.requestTypeAccess(configNameDotted, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
 //				if (type.hasOnlySimpleConstructor()) {
 //					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } },null, true);
 //				} else {
 //					reflectionHandler.addAccess(configNameDotted, null, null, true, Flag.allDeclaredConstructors);
 //				}
 			} else {
-				accessRequestor.request(configNameDotted, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+				accessRequestor.requestTypeAccess(configNameDotted, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
 //				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			}
 //			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
@@ -1343,7 +1303,7 @@ public class ResourcesHandler {
 			// TODO need this guard? if (isConfiguration(configType)) {
 			// }
 			// if (type.isAtConfiguration()) {
-			registerHierarchy(type, new HashSet<>(), accessRequestor);
+			registerHierarchy(type, accessRequestor);
 			// }
 
 			Type s = type.getSuperclass();
@@ -1376,7 +1336,7 @@ public class ResourcesHandler {
 							+ " @AutoConfigureBefore/After references");
 				}
 				for (Type t : boaTypes) {
-					accessRequestor.request(t.getDottedName(), AccessBits.CLASS);
+					accessRequestor.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
 				}
 
 				// This is computing how many methods we are exposing unnecessarily via
@@ -1405,7 +1365,7 @@ public class ResourcesHandler {
 							continue;
 						} else {
 							// We will need access to Supplier and Flux because of this return type
-							accessRequestor.request(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+							accessRequestor.requestTypeAccess(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
 							/*
 							Set<Type> ts = atBeanMethod.getSignatureTypes();
 							for (Type t: ts) {
@@ -1478,7 +1438,7 @@ public class ResourcesHandler {
 							}
 							if (exists) {
 								// TODO if already there, should we merge access required values?
-								accessRequestor.request(s, inferredType.getValue());
+								accessRequestor.requestTypeAccess(s, inferredType.getValue());
 								if (hint.isFollow()) {
 									toFollow.add(t);
 								}
@@ -1501,7 +1461,7 @@ public class ResourcesHandler {
 					// public static LocalValidatorFactoryBean defaultValidator() {
 					List<Type> annotationsOnMethod = atBeanMethod.getAnnotationTypes();
 					for (Type annotationOnMethod : annotationsOnMethod) {
-						accessRequestor.request(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
+						accessRequestor.requestTypeAccess(annotationOnMethod.getDottedName(), AccessBits.ANNOTATION);
 					}
 				}
 			}
@@ -1561,8 +1521,8 @@ public class ResourcesHandler {
 		return passesTests;
 	}
 
-	private void registerAllRequested(int depth, TypeAccessRequestor accessRequestor) {
-		for (Map.Entry<String, Integer> accessRequest : accessRequestor.entrySet()) {
+	private void registerAllRequested(int depth, RequestedConfigurationManager accessRequestor) {
+		for (Map.Entry<String, Integer> accessRequest : accessRequestor.getRequestedTypeAccesses()) {
 			String dname = accessRequest.getKey();
 
 			// Let's produce a message if this computed value is also in reflect.json
@@ -1628,7 +1588,7 @@ public class ResourcesHandler {
 		return b;
 	}
 
-	private void registerAnnotationChain(int depth, TypeAccessRequestor tar, List<Type> annotationChain) {
+	private void registerAnnotationChain(int depth, RequestedConfigurationManager tar, List<Type> annotationChain) {
 		SpringFeature.log(spaces(depth) + "attempting registration of " + annotationChain.size()
 				+ " elements of annotation chain");
 		for (int i = 0; i < annotationChain.size(); i++) {
@@ -1641,9 +1601,7 @@ public class ResourcesHandler {
 					break;
 				}
 			}
-			int inferredAccessRequired = Type.inferTypeKind(t);
-//			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
-			tar.request(t.getDottedName(), inferredAccessRequired);
+			tar.requestTypeAccess(t.getDottedName(), Type.inferAccessRequired(t));
 		}
 	}
 
