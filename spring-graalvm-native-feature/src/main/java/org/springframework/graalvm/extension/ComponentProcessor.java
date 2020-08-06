@@ -23,14 +23,14 @@ public interface ComponentProcessor {
 	 * Does this processor want to process the specified key/values.
 	 * Examples:
 	 * <pre><code>
-	 * key=app.main.SampleApplication values=[org.springframework.stereotype.Component]
-	 * key=app.main.model.Foo values=[javax.persistence.Entity]
-	 * key=app.main.model.FooRepository values=[org.springframework.data.repository.Repository]
+	 * componentType=app.main.SampleApplication classifiers=[org.springframework.stereotype.Component]
+	 * componentType=app.main.model.Foo classifiers=[javax.persistence.Entity]
+	 * componentType=app.main.model.FooRepository classifiers=[org.springframework.data.repository.Repository]
 	 * </code></pre> 
 	 */
-	boolean handle(NativeImageContext imageContext, String key, List<String> values);
+	boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers);
 
-	void process(NativeImageContext imageContext, String key, List<String> values);
+	void process(NativeImageContext imageContext, String componentType, List<String> classifiers);
 
 	default void printSummary() {}
 }

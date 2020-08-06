@@ -50,4 +50,6 @@ public interface NativeImageContext {
 	default boolean hasReflectionConfigFor(Type type) {
 		return hasReflectionConfigFor(type.getDottedName());
 	}
+
+	void log(String string);
 }

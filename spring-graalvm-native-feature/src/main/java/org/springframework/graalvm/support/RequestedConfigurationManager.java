@@ -27,11 +27,15 @@ import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.ResourcesDescriptor;
 
 /**
+ * Collects up potential configuration that should be passed to native-image. By collecting it rather than
+ * immediately processing it (i.e. passing it to native-image), the system can decide to discard it all
+ * if it encounters a late reason why it shouldn't be requested (e.g. a ConditionalOnClass check failing).
+ * 
  * @author Andy Clement
  */
-public class TypeAccessRequestor {
+public class RequestedConfigurationManager {
 
-	private Map<String, Integer> requestedAccesses = new HashMap<>();
+	private Map<String, Integer> requestedTypeAccesses = new HashMap<>();
 	
 	private List<ProxyDescriptor> requestedProxies = new ArrayList<>();
 	
@@ -39,22 +43,18 @@ public class TypeAccessRequestor {
 
 	private List<InitializationDescriptor> requestedInitializations = new ArrayList<>();
 	
-	public void request(String type, Integer accessRequired) {
+	public void requestTypeAccess(String type, Integer accessRequired) {
 		if (type.indexOf("/")!=-1) {
 			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
 		}
-		Integer existsAlready = requestedAccesses.get(type);
+		Integer existsAlready = requestedTypeAccesses.get(type);
 		if (existsAlready != null) {
-			requestedAccesses.put(type, existsAlready | accessRequired);//existsAlready.with(accessRequired));
+			requestedTypeAccesses.put(type, existsAlready | accessRequired);//existsAlready.with(accessRequired));
 		} else {
-			requestedAccesses.put(type, accessRequired);
+			requestedTypeAccesses.put(type, accessRequired);
 		}
 	}
 	
-	public Set<Entry<String,Integer>> entrySet() {
-		return requestedAccesses.entrySet();
-	}
-
 	public void requestProxyDescriptors(List<ProxyDescriptor> proxyDescriptors) {
 		requestedProxies.addAll(proxyDescriptors);
 	}
@@ -67,6 +67,10 @@ public class TypeAccessRequestor {
 		requestedInitializations.addAll(initializationDescriptors);
 	}
 	
+	public Set<Entry<String,Integer>> getRequestedTypeAccesses() {
+		return requestedTypeAccesses.entrySet();
+	}
+
 	public List<ProxyDescriptor> getRequestedProxies() {
 		return requestedProxies;
 	}
