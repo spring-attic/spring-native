@@ -2,9 +2,7 @@ package org.springframework.boot;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
-import org.springframework.boot.autoconfigure.AutoconfigureProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionProvider;
-import org.springframework.boot.autoconfigure.diagnostics.analyzer.AutoconfigureAnalyzerProvider;
 import org.springframework.boot.autoconfigure.flyway.FlywayProvider;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider;
@@ -17,7 +15,6 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider;
 import org.springframework.boot.builder.ParentContextCloserApplicationListener;
-import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
 import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer;
 import org.springframework.boot.context.ContextIdApplicationContextInitializer;
 import org.springframework.boot.context.FileEncodingApplicationListener;
@@ -38,7 +35,6 @@ import org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcesso
 import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
-import org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
