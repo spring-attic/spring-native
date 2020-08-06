@@ -337,6 +337,7 @@ public class ResourcesHandler {
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		Enumeration<Object> keys = p.keys();
 		int registeredComponents = 0;
+		TypeAccessRequestor requestor = new TypeAccessRequestor();
 		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		while (keys.hasMoreElements()) {
 			boolean isComponent = false;
@@ -493,7 +494,7 @@ public class ResourcesHandler {
 								Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
-					registerHierarchy(baseType, new HashSet<>(), null);
+					registerHierarchy(baseType, new HashSet<>(), requestor);
 				} catch (Throwable t) {
 					SpringFeature.log("WHAT?" + t.toString());
 					t.printStackTrace();
@@ -534,7 +535,7 @@ public class ResourcesHandler {
 //						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 						resourcesRegistry.addResources(t.getName() + ".class");
 					}
-					registerHierarchy(baseType, new HashSet<>(), null);
+					registerHierarchy(baseType, new HashSet<>(), requestor);
 				} catch (Throwable t) {
 					t.printStackTrace();
 					System.out.println("Problems with value " + tt);
@@ -545,12 +546,13 @@ public class ResourcesHandler {
 			}
 
 			for (ComponentProcessor componentProcessor: componentProcessors) {
-				if (componentProcessor.handle(k,values)) {
+				if (componentProcessor.handle(context, k, values)) {
 					componentProcessor.process(context, k, values);
 				}
 			}
 		}
 
+		registerAllRequested(0, requestor);
 		componentProcessors.forEach(ComponentProcessor::printSummary);
 		System.out.println("Registered " + registeredComponents + " entries");
 	}
@@ -671,7 +673,18 @@ public class ResourcesHandler {
 	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
 	 */
 	public void registerHierarchy(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible) {
+		AccessBits inferredAccessRequired = AccessBits.forValue(Type.inferTypeKind(type));
+		registerHierarchyHelper(type, visited, typesToMakeAccessible,inferredAccessRequired);
+	}
+	
+	private void registerHierarchyHelper(Type type, Set<Type> visited, TypeAccessRequestor typesToMakeAccessible, AccessBits inferredRequiredAccess) {
+		if (typesToMakeAccessible == null) {
+			throw new IllegalStateException();
+		}
 		if (type == null || !visited.add(type)) {
+			return;
+		}
+		if (type.getDottedName().equals("java.lang.Object")) {
 			return;
 		}
 		// SpringFeature.log("> registerHierarchy "+type.getName());
@@ -679,8 +692,8 @@ public class ResourcesHandler {
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(),
-							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
+					typesToMakeAccessible.request(type.getDottedName(),inferredRequiredAccess.getValue());
+//							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 							Flag.allDeclaredMethods, Flag.allDeclaredClasses);
@@ -688,8 +701,8 @@ public class ResourcesHandler {
 				}
 			} else {
 				if (typesToMakeAccessible != null) {
-					typesToMakeAccessible.request(type.getDottedName(),
-							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
+					typesToMakeAccessible.request(type.getDottedName(),inferredRequiredAccess.getValue());
+//							AccessBits.RESOURCE | AccessBits.DECLARED_CONSTRUCTORS);
 				} else {
 					reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors);
 					resourcesRegistry.addResources(desc.replace("$", ".") + ".class");
@@ -699,7 +712,8 @@ public class ResourcesHandler {
 			if (typesToMakeAccessible != null) {
 				// TODO why no CLASS here?
 				typesToMakeAccessible.request(type.getDottedName(),
-						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE);
+						inferredRequiredAccess.getValue());
+//						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE);
 			} else {
 				reflectionHandler.addAccess(desc.replace("/", "."), Flag.allDeclaredConstructors,
 						Flag.allDeclaredMethods);// , Flag.allDeclaredClasses);
@@ -710,13 +724,39 @@ public class ResourcesHandler {
 		}
 		// Rather than just looking at superclass and interfaces, this will dig into everything including
 		// parameterized type references so nothing is missed
+//		if (type.getSuperclass()!=null) {
+//			System.out.println("RH>SC "+type.getSuperclass());
+//		registerHierarchyHelper(type.getSuperclass(),visited, typesToMakeAccessible,inferredRequiredAccess);
+//		}
+//		Type[] intfaces = type.getInterfaces();
+//		for (Type intface: intfaces) {
+//			System.out.println("RH>IF "+intface);
+//			registerHierarchyHelper(intface,visited, typesToMakeAccessible,inferredRequiredAccess);
+//		}
+/*		
+		List<String> supers = new ArrayList<>();
+		if (type.getSuperclass()!=null) {
+			supers.add(type.getSuperclass().getDottedName());
+		}
+		Type[] intfaces = type.getInterfaces();
+		for (Type intface: intfaces) {
+			supers.add(intface.getDottedName());
+		}
+		List<String> lst = new ArrayList<>();
+*/	
+		
 		List<String> relatedTypes = type.getTypesInSignature();
 		for (String relatedType: relatedTypes) {
 			Type t = ts.resolveSlashed(relatedType,true);
 			if (t!=null) {
-			registerHierarchy(t, visited, typesToMakeAccessible);
+//				lst.add(t.getDottedName());
+				registerHierarchyHelper(t, visited, typesToMakeAccessible,inferredRequiredAccess);
 			}
 		}
+//		lst.removeAll(supers);
+//		if (lst.size()!=0) {
+//		System.out.println("MISSED THESE ("+type.getDottedName()+"): "+lst);
+//		}
 	}
 
 	/**
@@ -1281,16 +1321,24 @@ public class ResourcesHandler {
 		String configNameDotted = type.getDottedName();
 		visited.add(type.getName());
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-			if (type.isCondition()) {
-				if (type.hasOnlySimpleConstructor()) {
-					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } },null, true);
-				} else {
-					reflectionHandler.addAccess(configNameDotted, null, null, true, Flag.allDeclaredConstructors);
-				}
+			if (type.isImportSelector()) {
+//				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+				accessRequestor.request(configNameDotted, Type.inferTypeKind(type)|AccessBits.RESOURCE);
 			} else {
-				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+//				System.out.println("Treating like configuration: "+type);
+			if (type.isCondition()) {
+				accessRequestor.request(configNameDotted, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+//				if (type.hasOnlySimpleConstructor()) {
+//					reflectionHandler.addAccess(configNameDotted, new String[][] { { "<init>" } },null, true);
+//				} else {
+//					reflectionHandler.addAccess(configNameDotted, null, null, true, Flag.allDeclaredConstructors);
+//				}
+			} else {
+				accessRequestor.request(configNameDotted, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+//				reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 			}
-			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
+//			resourcesRegistry.addResources(type.getName().replace("$", ".") + ".class");
+			}
 			// In some cases the superclass of the config needs to be accessible
 			// TODO need this guard? if (isConfiguration(configType)) {
 			// }
@@ -1484,35 +1532,7 @@ public class ResourcesHandler {
 			for (org.springframework.graalvm.type.ResourcesDescriptor rd : accessRequestor.getRequestedResources()) {
 				registerResourcesDescriptor(rd);
 			}
-			for (Map.Entry<String, Integer> accessRequest : accessRequestor.entrySet()) {
-				String dname = accessRequest.getKey();
-
-				// Let's produce a message if this computed value is also in reflect.json
-				// This is a sign we can probably remove that entry from reflect.json (maybe
-				// depend if inferred access required matches declared)
-				if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
-					System.out.println("This is in the constant data, does it need to stay in there? " + dname
-							+ "  (dynamically requested access is " + accessRequest.getValue() + ")");
-				}
-
-				SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(accessRequest.getValue()));
-				Flag[] flags = AccessBits.getFlags(accessRequest.getValue());
-				if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
-					Type resolvedType = ts.resolveDotted(dname, true);
-					if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-						reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
-					} else {
-						reflectionHandler.addAccess(dname, null, null, true, flags);
-					}
-				} else {
-					reflectionHandler.addAccess(dname, null, null, true, flags);
-				}
-				if (AccessBits.isResourceAccessRequired(accessRequest.getValue())) {
-					resourcesRegistry.addResources(
-							dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
-									+ ".class");
-				}
-			}
+			registerAllRequested(depth, accessRequestor);
 		}
 
 		// If the outer type is failing a test, we don't need to go into nested types...
@@ -1539,6 +1559,38 @@ public class ResourcesHandler {
 			}
 		}
 		return passesTests;
+	}
+
+	private void registerAllRequested(int depth, TypeAccessRequestor accessRequestor) {
+		for (Map.Entry<String, Integer> accessRequest : accessRequestor.entrySet()) {
+			String dname = accessRequest.getKey();
+
+			// Let's produce a message if this computed value is also in reflect.json
+			// This is a sign we can probably remove that entry from reflect.json (maybe
+			// depend if inferred access required matches declared)
+			if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
+				System.out.println("This is in the constant data, does it need to stay in there? " + dname
+						+ "  (dynamically requested access is " + accessRequest.getValue() + ")");
+			}
+
+			SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(accessRequest.getValue()));
+			Flag[] flags = AccessBits.getFlags(accessRequest.getValue());
+			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
+				Type resolvedType = ts.resolveDotted(dname, true);
+				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
+					reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
+				} else {
+					reflectionHandler.addAccess(dname, null, null, true, flags);
+				}
+			} else {
+				reflectionHandler.addAccess(dname, null, null, true, flags);
+			}
+			if (AccessBits.isResourceAccessRequired(accessRequest.getValue())) {
+				resourcesRegistry.addResources(
+						dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
+								+ ".class");
+			}
+		}
 	}
 	
 	private boolean isHintValidForCurrentMode(Type currentType, Hint hint) {
@@ -1589,7 +1641,9 @@ public class ResourcesHandler {
 					break;
 				}
 			}
-			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
+			int inferredAccessRequired = Type.inferTypeKind(t);
+//			tar.request(t.getDottedName(), t.isAnnotation() ? AccessBits.ANNOTATION : AccessBits.EVERYTHING);
+			tar.request(t.getDottedName(), inferredAccessRequired);
 		}
 	}
 

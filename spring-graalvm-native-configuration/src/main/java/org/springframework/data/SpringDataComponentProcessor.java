@@ -156,12 +156,10 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 	@Override
-	public boolean handle(String key, List<String> values) {
-
+	public boolean handle(NativeImageContext imageContext, String key, List<String> values) {
 		if (repositoryName != null && values.contains(repositoryName)) {
 			return !keysSeen.contains(key);
 		}
-
 		return false;
 	}
 

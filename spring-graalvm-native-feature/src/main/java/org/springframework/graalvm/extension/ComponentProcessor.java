@@ -28,7 +28,7 @@ public interface ComponentProcessor {
 	 * key=app.main.model.FooRepository values=[org.springframework.data.repository.Repository]
 	 * </code></pre> 
 	 */
-	boolean handle(String key, List<String> values);
+	boolean handle(NativeImageContext imageContext, String key, List<String> values);
 
 	void process(NativeImageContext imageContext, String key, List<String> values);
 
