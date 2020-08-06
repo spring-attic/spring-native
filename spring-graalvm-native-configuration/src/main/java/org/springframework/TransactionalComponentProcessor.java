@@ -40,12 +40,12 @@ public class TransactionalComponentProcessor implements ComponentProcessor {
 	public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		List<String> transactionalInterfaces = new ArrayList<>();
+		for (Type intface: type.getInterfaces()) {
+			transactionalInterfaces.add(intface.getDottedName());
+		}
 		if (transactionalInterfaces.size()==0) {
 			imageContext.log("TransactionalComponentProcessor: unable to find interfaces to proxy on "+componentType);
 			return;
-		}
-		for (Type intface: type.getInterfaces()) {
-			transactionalInterfaces.add(intface.getDottedName());
 		}
 		transactionalInterfaces.add("org.springframework.aop.SpringProxy");
 		transactionalInterfaces.add("org.springframework.aop.framework.Advised");
