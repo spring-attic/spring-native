@@ -1,11 +1,11 @@
 [
   // Spring Framework
-  ["org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"],
-  ["org.springframework.web.bind.annotation.RequestMapping", "org.springframework.core.annotation.SynthesizedAnnotation"],
+//  ["org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"],
+//  ["org.springframework.web.bind.annotation.RequestMapping", "org.springframework.core.annotation.SynthesizedAnnotation"],
+//  ["org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"],
+//  ["org.springframework.web.bind.annotation.PathVariable", "org.springframework.core.annotation.SynthesizedAnnotation"],
+//  ["org.springframework.web.bind.annotation.ModelAttribute", "org.springframework.core.annotation.SynthesizedAnnotation"],
   ["org.springframework.context.annotation.Lazy","org.springframework.core.annotation.SynthesizedAnnotation"],
-  ["org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"],
-  ["org.springframework.web.bind.annotation.PathVariable", "org.springframework.core.annotation.SynthesizedAnnotation"],
-  ["org.springframework.web.bind.annotation.ModelAttribute", "org.springframework.core.annotation.SynthesizedAnnotation"],
 
   // Spring Boot
   ["org.springframework.boot.context.properties.ConfigurationProperties", "org.springframework.core.annotation.SynthesizedAnnotation"],

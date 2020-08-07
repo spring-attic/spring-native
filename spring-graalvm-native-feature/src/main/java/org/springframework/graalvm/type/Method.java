@@ -270,6 +270,49 @@ public class Method {
 		return false;
 	}
 
+	// AliasFor attributes: value(String)==attribute(String), annotation(Class)
+	/**
+	 * Check for an @AliasFor on this method. If one exists check if it specifies a
+	 * value for the 'value' or 'attribute' or 'annotation' fields. The result will be null
+	 * if there is no @AliasFor otherwise it will be a pair containing the name of the type
+	 * specified for 'annotation' (may be null if not set) and true/false depending on whether
+	 * a value was set for 'value' or 'attribute'.
+	 */
+	public Pair<String,Boolean> getAliasForSummary() {
+		AnnotationNode aliasForAnnotation = getAliasForAnnotation();
+		if (aliasForAnnotation != null) {
+			List<Object> values = aliasForAnnotation.values;
+			boolean namedAttribute = false;
+			String targetAnnotationType = null;
+			for (int i=0;i<values.size();i+=2) {
+				switch ((String)values.get(i)) {
+				case "value":
+				case "attribute":
+					namedAttribute = true;
+					break;
+				case "annotation":
+					targetAnnotationType = ((org.objectweb.asm.Type)values.get(i+1)).getClassName();
+					break;
+				}
+			}
+			return Pair.of(targetAnnotationType, namedAttribute);
+		}
+		return null;
+	}
+
+	
+	
+	private AnnotationNode getAliasForAnnotation() {
+		if (mn.visibleAnnotations!= null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				if (an.desc.equals(Type.AtAliasFor)) {
+					return an;
+				}
+			}
+		}
+		return null;
+	}
+
 	public boolean hasAnnotations() {
 		return mn.visibleAnnotations!=null;
 	}

@@ -2247,6 +2247,27 @@ public class Type {
 		}
 		return false;
 	}
+	
+	public void collectAliasReferencedMetas(Set<String> collector) {
+		// If this gets set the type is using @AliasFor amongst its own
+		// attributes, not specifying one of them is an alias for 
+		// an attribute in a seperate meta annotation.
+		boolean usesLocalAliases = false;
+		for (Method m: getMethods()) {
+			Pair<String, Boolean> aliasForInfo = m.getAliasForSummary();
+			if (aliasForInfo != null) {
+				String relatedMetaAnnotation = aliasForInfo.getA();
+				if (relatedMetaAnnotation == null) {
+					usesLocalAliases|=aliasForInfo.getB();
+				} else {
+					collector.add(relatedMetaAnnotation);
+				}
+			}
+		}
+		if (usesLocalAliases) {
+			collector.add(getDottedName());
+		}
+	}
 
 	/**
 	 * Example: see @EnableR2dbcRepositories in R2dbcRepositoresAutoConfigureRegistrar:

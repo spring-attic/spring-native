@@ -1,2 +1,3 @@
-org.springframework.TransactionalComponentProcessor
 org.springframework.data.SpringDataComponentProcessor
+org.springframework.SynthesizerComputationComponentProcessor
+org.springframework.TransactionalComponentProcessor
