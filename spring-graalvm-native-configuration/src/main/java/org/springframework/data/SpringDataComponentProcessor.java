@@ -321,7 +321,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		domainType.getAnnotations().forEach(it -> registerSpringDataAnnotation(it, imageContext));
 
 		domainType.getFields().forEach(field -> {
-			field.getAnnotations().forEach(it -> registerSpringDataAnnotation(it, imageContext));
+			field.getAnnotationTypes().forEach(it -> registerSpringDataAnnotation(it, imageContext));
 		});
 
 		List<Method> methods = domainType.getMethods(m -> m.getName().startsWith("get"));

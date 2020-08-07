@@ -39,7 +39,7 @@ public class Field {
 		this.annotations = Lazy.of(this::resolveAnnotations);
 	}
 
-	public List<Type> getAnnotations() {
+	public List<Type> getAnnotationTypes() {
 		return annotations.get();
 	}
 
