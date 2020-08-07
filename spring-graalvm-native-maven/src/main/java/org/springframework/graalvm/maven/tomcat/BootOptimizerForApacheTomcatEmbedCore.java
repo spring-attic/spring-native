@@ -26,6 +26,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,6 +93,7 @@ public class BootOptimizerForApacheTomcatEmbedCore extends AbstractMojo {
     public BootOptimizerForApacheTomcatEmbedCore() {
         fileSystemProps.put("update", "true");
         fileSystemProps.put("create", "false");
+        fileSystemProps.put("noCompression", "true");
     }
 
     public void execute() throws MojoExecutionException {
@@ -210,7 +212,7 @@ public class BootOptimizerForApacheTomcatEmbedCore extends AbstractMojo {
                         path, StandardCopyOption.REPLACE_EXISTING);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new MojoExecutionException("Unable to optimize file: " + tempFilePath.toString(), e);
         }
     }
