@@ -276,11 +276,34 @@ INFO: Started RestServiceApplication in 0.084 seconds (JVM running for 0.087)
 ----
 ====
 
-The startup time is <100ms, compared ~1500ms when starting the fat jar.
+The startup time is <100ms, compared to \~1500ms when starting the fat jar.
 
 Did your application run successfully?
 If so, good.
 If not, see the <<troubleshooting>> page.
+
+===== A further optimization
+
+If run as above the feature will operate in `default` mode - this means it will do its own analysis
+of active configuration and determine which hints/configuration to apply. There is a mode called
+`hybrid` that may produce a more optimal image. Hybrid mode expects the agent to have been used to
+produce a baseline of configuration. Due to the eager nature with which Spring builds the application
+context this means the agent produced json will indicate all the active Spring configuration in the system.
+When the feature does the analysis by itself, it cannot often tell exactly what will or will not occur
+at runtime because some of the conditions on whether configuration activates are too complex to
+statically analyze. In `hybrid` mode the feature will determine whether configuration is active by
+looking in existing .json files. The `hybrid` mode can be activated by adding a `buildArgs` tag into the
+configuration shown above, alongside `mainClass`, as shown here: 
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+  <configuration>
+      <mainClass>com.example.restservice.RestServiceApplication</mainClass>
+      <buildArgs>-Dspring.native.mode=hybrid</buildArgs>
+  </configuration>
+----
+====
 
 ===== Summary
 
