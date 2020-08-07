@@ -230,7 +230,11 @@ IMPORTANT-3: The agent has improved greatly recently but still may miss some thi
 flag that will extend the agent behaviour to potentially catch more things, this is specified as part of the
 agentlib parameter if you wish to try it: `-agentlib:native-image-agent=experimental-class-loader-support,config-output-dir=src/main/resources/META-INF/native-image`.
 
+IMPORTANT-4: For more info on trying to use tests with the agent to generate the necessary configuration,
+see <<testing_and_the_agent.adoc>>.
+
 Shutdown the app with CTRL + C for example.
+
 
 Notice the files that now exist in the folder:
 

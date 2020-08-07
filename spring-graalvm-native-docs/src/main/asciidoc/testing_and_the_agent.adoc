@@ -1,0 +1,155 @@
+[[testing-and-the-agent]]
+== Testing with the agent to compute configuration
+
+When using the agent to compute configuration for native-image, there are a couple of approaches:
+
+* launch the app directly and exercise it
+* run application tests to exercise the application
+
+The first option is certainly quick but rather manual/tedious. The second option sounds much more
+appealing for a robust/repeatable setup but by default the generated configuration will include
+anything required by the test infrastructure, which is unnecessary when the application runs for real.
+To address this problem the agent supports an access-filter file that will cause certain data to
+be excluded from the generated output.
+
+
+=== A basic access-filter file
+
+This is a simple `access-filter.json` file. 
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+{ "rules": [
+  {"excludeClasses": "org.apache.maven.surefire.**"},
+  {"excludeClasses": "net.bytebuddy.**"},
+  {"excludeClasses": "org.apiguardian.**"},
+  {"excludeClasses": "org.junit.**"},
+  {"excludeClasses": "org.mockito.**"},
+  {"excludeClasses": "org.springframework.test.**"},
+  {"excludeClasses": "org.springframework.boot.test.**"},
+  {"excludeClasses": "com.example.demo.test.**"}
+]
+----
+====
+
+Most of these lines would apply to any Spring application, except for the last one which is application
+specific and will need tweaking to match the package of a specific applications tests.
+
+
+=== Using the access-filter file
+
+The access-filter.json file is specified with the `access-filter-file` option as part of the agentlib string:
+
+`-agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image`
+
+
+=== Using it with maven
+
+Let's look at how to pull the ideas here together and apply them to a project.
+
+Since Spring takes an eager approach when building the application context, a very basic test that
+starts the application context will exercise a lot of the Spring infrastructure that needs to
+produce native-image configuration. This test would suffice for that and could be placed in `src/test/java`:
+
+====
+[source,java]
+----
+package com.example.demo.test;
+
+import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+public class AppContextStartupTest {
+
+	@Test
+	public void contextLoads() {
+	}
+
+}
+----
+====
+
+Now take the `access-filter.json` file from above and place it in `src/main/resources` folder.
+
+
+Finally, this following snippet would go into the maven pom:
+
+====
+[source,xml]
+----
+       <profile>
+            <id>hybrid-native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>make-native-image-config-folder</id>
+                                <phase>test-compile</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="target/classes/META-INF/native-image"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.backgroundpreinitializer.ignore=true -Dspring.xml.ignore=true -Dspring.spel.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+							<includes>
+							  <include>**/AppContextStartupTest.java</include>
+							</includes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                        <version>20.1.0</version>
+                        <configuration>
+                        	<mainClass>com.example.demo.DemoApplication</mainClass>
+                            <imageName>example-compiled-app</imageName>
+                            <buildArgs>-Dspring.backgroundpreinitializer.ignore=true -Dspring.native.mode=hybrid -Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+----
+====
+
+
+
+What does all of that do:
+
+* `make-native-image-config-folder` creates the target folder for the agent generated configuration
+* `maven-surefire-plugin` is used to run the single test above (in this case) to start/stop the application context. Notice
+the test is run with the `-agentlib` specified including the `access-filter.json` option and the target folder for the
+generated configuration.
+* `native-image-maven-plugin` will invoke native-image with the computed configuration. Update the `<imageName>example-compiled-app</imageName>`
+to give a name to the native-image built executable.
+
+Then, running `mvn -Phybrid-native clean package` will do everything from end-to-end. It will compile the app, 
+run the test with agent attached, finally building the native-image executable.
