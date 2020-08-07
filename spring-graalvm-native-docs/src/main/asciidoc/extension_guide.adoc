@@ -33,14 +33,15 @@ The first option also lets hints be provided for code you do not know or otherwi
 === Triggered
 
 A trigger in a `NativeImageHint` is optional.
-If there is a trigger, it is a Spring configuration class name.
+If there is a trigger, it is typically a Spring configuration class name.
 If that configuration is thought to be active in a particular application, the specified types in the hint are made accessible.
+
 If there is no trigger, there are two possibilities:
 
 * The trigger is inferred if the hint is on a Spring configuration type.
 (It is inferred to be the name of that configuration).
 
-* If purely being used on a type that implements `NativeImageConfiguration`, it is assumed that the specified types must always be accessible.
+* If purely being used on a type that implements `NativeImageConfiguration`, it is assumed that these hints always apply. 
 This is useful for some common types to which any application, regardless of active configurations, needs access.
 
 === What do hints look like?
@@ -63,13 +64,34 @@ Basically, it is that optional trigger and a series of `@TypeInfo` annotations.
 Here, the trigger is `JacksonAutoConfiguration`, and the hint as a whole reads: _if it looks like `JacksonAutoConfiguration` is active in this application, the `JsonGenerator` type should be made reflectively accessible and the methods and constructors within it should be visible_.
 One `@TypeInfo` can list multiple types if they share a similar access need, or there may be multiple `@TypeInfo` entries in one hint if different groups of types need different kinds of access.
 
+In addition to specifying `typeInfos` it is possible to specify:
+
+* `proxyInfos` which list proxies for which types are needed and should be built into the image.
+
+* `resourcesInfo` which lists pattenrs that match resources (including .class files) that should be included in the image.
+
+* `initializationInfos` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
+
+* `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeImageHint`.
+
+* `modes` if specified indicates which specific modes this hint applies in (the operating mode is set via the `spring.native.mode` property). Mode being one of default/agent/hybrid/functional. If no mode is specified the hint is considered relevant in every mode.
+
+
+=== Codifying hint computation/validation
+
+The `NativeImageConfiguration` interface contains a couple of default methods that can be implemented for more control.
+
+For example whether the hints on a `NativeImageConfiguration` should activate may be a more subtle condition that simply whether a configuration is active. It is possible to implement the `isValid` method in a `NativeImageConfiguration` implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
+
+Additionally sometimes the necessary configuration is hard to statically declare and needs a more dynamic approach. For example the interfaces involved in a proxy hint might need something to be checked beyond the simple presence of a class. In this case the method `computeHints` can be implemented which allows computation of hints in a more dynamic way, which are then combined with those statically declared via annotations.
+
 === Optimizing which hints are acted on
 
 With the feature operating during native image construction, it is in a closed world system.
 This means that the full classpath is known for this application and cannot be extended later.
 The feature can, therefore, perform configuration condition checks such as `@ConditionalOnClass` as the image is built and know whether configuration attached to that condition can be active.
 If configuration looks like it is active, the relevant hints are enacted.
-The feature also chases down references between configurations (`@Import`) and looks for hints on any that get pulled in.
+The feature also chases down references between configurations (Spring `@Import`) and looks for hints on any that get pulled in.
 
 This means that, for any application, there is some 'tree' of configurations active with hints scattered across them.
 
@@ -115,9 +137,18 @@ If there is not, create one, attach a `@NativeImageHint` to it to identify the t
 You also need to set the accessibility in the annotation (in the `@TypeInfo`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.
-If you are adding a new `NativeImageConfiguration`, ensure that the `META-INF/services/*` file is updated to reference your new implementation.
+If you are adding a new `NativeImageConfiguration`, ensure that the `META-INF/services/\*` file is updated to reference your new implementation.
 
-=== Is this the way?
+=== Taking more control via processors
+
+Within a Spring application there are going to be a number of active components (the main application, configurations, controllers, etc). There may be much more sophisticated analysis to be done for these components in order to compute the necessary configuration for the native-image invocation. It is possible to implement a couple of interfaces to participate in the process the feature is going through:
+
+* `ComponentProcessor` implementations are given the chance to process components and possibly register new configuration. For example this is used by spring-data (via `SpringDataComponentProcessor`) to do deeper analysis of repositories and the types used in generic signatures to compute reflection/proxy/resource hints.
+
+* `SpringFactoriesProcessor` implementations are given a chance to process the keys and values loaded from `spring.factories` files. Currently they are allowed to do filtering but this is likely to be expanded in the future. By filtering it means they may programmatically compute that for some spring.factories key one of the values makes no sense (by analysing classpath contents, for example). In this case they can filter out that value and the `spring.factories` subsequently added to the native-image will have it removed.
+
+
+=== Is this the way forward?
 
 As we play around with this extension mechanism to determine suitability, we are thinking through a number of pros and cons:
 
@@ -131,13 +162,9 @@ With the hint structure, you can know exactly which configuration causes it to b
 
 Cons:
 
-* Currently, it only works to the granularity of 'all methods' or 'all constructors'.
-Ideally, it should let individual methods and constructors be specified. How, the annotations may become unpleasant.
+* Not being able to use direct class references for everything is not ideal. (For example private classes).
 
-* We cannot specify proxies through this mechanism (or JNI config or the other flavors).
-
-* Not being able to use direct class references for everything is not ideal.
-It looks like split packages, which is not nice.
+* It looks like split packages in some cases, which is not nice. This is because the visibility of the type needing to be specified is default (package) visibility.
 
 So, it is an experiment.
 We are sure to refactor a few more times before we are done.
