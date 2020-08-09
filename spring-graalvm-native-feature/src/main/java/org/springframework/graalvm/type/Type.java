@@ -1827,7 +1827,9 @@ public class Type {
 		}
 		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {// || t.isConditional()) {
 			return AccessBits.CONFIGURATION;
-		} else if (t.isImportSelector() || t.isImportRegistrar()) {
+		} else if (t.isImportSelector()) {
+			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE;
+		} else if (t.isImportRegistrar()) {
 			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
