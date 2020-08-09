@@ -1409,17 +1409,47 @@ public class ResourcesHandler {
 	private void registerAllRequested(int depth, RequestedConfigurationManager accessRequestor) {
 		for (Map.Entry<String, Integer> accessRequest : accessRequestor.getRequestedTypeAccesses()) {
 			String dname = accessRequest.getKey();
+			int requestedAccess = accessRequest.getValue();
+			
+			// TODO promote this approach to a plugin if becomes a little more common...
+			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Jetty")) { // See EmbeddedJetty @COC check
+				if (!ts.canResolve("org/eclipse/jetty/webapp/WebAppContext")) {
+					System.out.println("Reducing access on "+dname+" because WebAppContext not around");
+					requestedAccess = AccessBits.CLASS;
+				}
+			}
+
+			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Undertow")) { // See EmbeddedUndertow @COC check
+				if (!ts.canResolve("io/undertow/Undertow")) {
+					System.out.println("Reducing access on "+dname+" because Undertow not around");
+					requestedAccess = AccessBits.CLASS;
+				}
+			}
+
+			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat")) { // See EmbeddedTomcat @COC check
+				if (!ts.canResolve("org/apache/catalina/startup/Tomcat")) {
+					System.out.println("Reducing access on "+dname+" because Tomcat not around");
+					requestedAccess = AccessBits.CLASS;
+				}
+			}
+
+			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Netty")) { // See EmbeddedNetty @COC check
+				if (!ts.canResolve("reactor/netty/http/server/HttpServer")) {
+					System.out.println("Reducing access on "+dname+" because HttpServer not around");
+					requestedAccess = AccessBits.CLASS;
+				}
+			}
 
 			// Let's produce a message if this computed value is also in reflect.json
 			// This is a sign we can probably remove that entry from reflect.json (maybe
 			// depend if inferred access required matches declared)
 			if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
 				System.out.println("This is in the constant data, does it need to stay in there? " + dname
-						+ "  (dynamically requested access is " + accessRequest.getValue() + ")");
+						+ "  (dynamically requested access is " + requestedAccess + ")");
 			}
 
-			SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(accessRequest.getValue()));
-			Flag[] flags = AccessBits.getFlags(accessRequest.getValue());
+			SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(requestedAccess));
+			Flag[] flags = AccessBits.getFlags(requestedAccess);
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);
 				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
@@ -1430,7 +1460,7 @@ public class ResourcesHandler {
 			} else {
 				reflectionHandler.addAccess(dname, null, null, true, flags);
 			}
-			if (AccessBits.isResourceAccessRequired(accessRequest.getValue())) {
+			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
 				resourcesRegistry.addResources(
 						dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
 								+ ".class");
