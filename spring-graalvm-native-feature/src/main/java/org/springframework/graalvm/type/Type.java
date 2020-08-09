@@ -60,6 +60,7 @@ public class Type {
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	public final static String AtConfigurationProperties = "Lorg/springframework/boot/context/properties/ConfigurationProperties;";
 	public final static String AtSpringBootApplication = "Lorg/springframework/boot/autoconfigure/SpringBootApplication;";
 	public final static String AtController = "Lorg/springframework/stereotype/Controller;";
 	public final static String AtRepository = "Lorg/springframework/stereotype/Repository;";
@@ -1819,6 +1820,10 @@ public class Type {
 	private int inferAccessRequired(org.objectweb.asm.Type type) {
 		Type t = typeSystem.resolve(type, true);
 		return inferAccessRequired(t);
+	}
+	
+	public boolean isConfigurationProperties() {
+		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties),new HashSet<>());
 	}
 
 	public static int inferAccessRequired(Type t) {
