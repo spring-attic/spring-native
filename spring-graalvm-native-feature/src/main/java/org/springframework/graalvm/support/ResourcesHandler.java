@@ -135,6 +135,8 @@ public class ResourcesHandler {
 		if (ConfigOptions.isDefaultMode() ||
 			ConfigOptions.isHybridMode()) {
 			processSpringFactories();
+		}
+		if (!ConfigOptions.isAgentMode()) {
 			handleSpringConstantHints();
 		}
 		handleSpringConstantInitialiationHints();
@@ -172,7 +174,7 @@ public class ResourcesHandler {
 	 * separately.
 	 */
 	private void handleSpringConstantHints() {
-		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		List<CompilationHint> constantHints = ts.findActiveDefaultHints();
 		SpringFeature.log("Registering fixed hints: " + constantHints);
 		for (CompilationHint ch : constantHints) {
 			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();

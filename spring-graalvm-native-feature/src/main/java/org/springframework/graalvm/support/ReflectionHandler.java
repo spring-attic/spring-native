@@ -150,6 +150,14 @@ public class ReflectionHandler {
 			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
 	}
+	
+	public void registerAgent(DuringSetupAccess a) {
+		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+		cl = access.getImageClassLoader();
+		rra = new ReflectionRegistryAdapter(rrs, cl);
+		getConstantData();
+	}
 
 	public void registerFunctional(DuringSetupAccess a) {
 		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;

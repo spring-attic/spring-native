@@ -104,6 +104,10 @@ public class SpringConfiguration {
 		return (results==null?Collections.emptyList():results);
 	}
 	
+	public static Map<String, List<CompilationHint>> getProposedhints() {
+		return proposedHints;
+	}
+	
 	public List<ComponentProcessor> getComponentProcessors() {
 		return processors;
 	}
