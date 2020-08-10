@@ -162,9 +162,6 @@ public class ReflectionHandler {
 			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
 		registerWebApplicationTypeClasses();
-
-		registerLogAdapterClassesIfNeeded();
-		registerLogbackIfNeeded();
 	}
 
 	private void registerWebApplicationTypeClasses() {
@@ -300,8 +297,6 @@ public class ReflectionHandler {
 			System.out.println(
 					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
 		}
-		registerLogAdapterClassesIfNeeded();
-		registerLogbackIfNeeded();
 
 		registerWebApplicationTypeClasses();
 
@@ -545,32 +540,6 @@ public class ReflectionHandler {
 		return true;
 	}
 
-	// Reproduce LogAdapter static initialization logic
-	private void registerLogAdapterClassesIfNeeded() {
-		final String LOG4J_SPI = "org.apache.logging.log4j.spi.ExtendedLogger";
-		final String LOG4J_SLF4J_PROVIDER = "org.apache.logging.slf4j.SLF4JProvider";
-		final String SLF4J_SPI = "org.slf4j.spi.LocationAwareLogger";
-		final String SLF4J_API = "org.slf4j.Logger";
-		final String JUL_API = "java.util.logging.Logger";
-
-		if (isPresent(LOG4J_SPI)) {
-			addAccess(LOG4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			if (isPresent(LOG4J_SLF4J_PROVIDER) && isPresent(SLF4J_SPI)) {
-				addAccess(LOG4J_SLF4J_PROVIDER, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-				addAccess(SLF4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-			}
-		}
-		else if (isPresent(SLF4J_SPI)) {
-			addAccess(SLF4J_SPI, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
-		else if (isPresent(SLF4J_API)) {
-			addAccess(SLF4J_API, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
-		else {
-			addAccess(JUL_API, Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
-	}
-
 	private static boolean isPresent(String className) {
 		try {
 			Class.forName(className);
@@ -578,42 +547,6 @@ public class ReflectionHandler {
 		}
 		catch (ClassNotFoundException ex) {
 			return false;
-		}
-	}
-
-	// TODO this is horrible, it should be packaged with logback
-	// from PatternLayout
-	private String logBackPatterns[] = new String[] { 
-			"DateConverter", 
-			"LevelConverter", "ThreadConverter", "LoggerConverter", "MessageConverter", 
-			"LineSeparatorConverter", "MDCConverter",
-			"org.springframework.boot.logging.logback.ColorConverter",
-			"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" };
-
-	// what would a reflection hint look like here? Would it specify maven coords for logback as a requirement on the classpath?
-	// does logback have a feature? or meta data files for graal?
-	private void registerLogbackIfNeeded() {
-		if (!isPresent("ch.qos.logback.core.Appender")) {
-			return;
-		}
-		try {
-			addAccess("ch.qos.logback.core.Appender", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		} catch (NoClassDefFoundError e) {
-			System.out.println("Logback not found, skipping registration logback types");
-			return;
-		}
-		addAccess("org.springframework.boot.logging.logback.LogbackLoggingSystem", Flag.allDeclaredConstructors);
-
-		for (String p : logBackPatterns) {
-			if (p.startsWith("org")) {
-				addAccess(p, new String[][] { { "<init>" } },null, false);
-			} else if (p.startsWith("ch.")) {
-				addAccess(p, new String[][] { { "<init>" } },null, false);
-			} else if (p.startsWith("color.")) {
-				addAccess("ch.qos.logback.core.pattern." + p, new String[][] { { "<init>" } }, null,false);
-			} else {
-				addAccess("ch.qos.logback.classic.pattern." + p, new String[][] { { "<init>" } }, null,false);
-			}
 		}
 	}
 

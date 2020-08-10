@@ -119,6 +119,7 @@
   {"class": "org.springframework.boot.BeanDefinitionLoader"},
   {"class": "org.springframework.boot.logging.logback.LogbackLoggingSystem"},
   {"class": "org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory"},
+  {"class": "org.springframework.boot.logging.LoggingSystem"},
 
   // Tomcat, to avoid XML parsers and crypto classes
   {"class": "org.apache.catalina.servlets.DefaultServlet" },
