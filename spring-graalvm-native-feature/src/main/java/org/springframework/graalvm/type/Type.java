@@ -1830,7 +1830,7 @@ public class Type {
 		if (t == null) {
 			return AccessBits.ALL;
 		}
-		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {// || t.isConditional()) {
+		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
 			return AccessBits.CONFIGURATION;
 		} else if (t.isImportSelector()) {
 			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE;
@@ -1838,6 +1838,10 @@ public class Type {
 			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
+		} else if (t.isConfigurationProperties()) {
+			return AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS;
+		} else if (t.isCondition()) {
+			return AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS;
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
 		} else {

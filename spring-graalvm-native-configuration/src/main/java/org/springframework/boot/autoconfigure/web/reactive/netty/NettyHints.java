@@ -52,7 +52,8 @@ import org.springframework.graalvm.type.AccessBits;
 				"io.netty.resolver.dns.DnsNameResolver",
 				"io.netty.resolver.dns.DnsServerAddressStreamProviders",
 				"io.netty.resolver.dns.PreferredAddressTypeComparator$1",
-				"io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider"
+				"io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider",
+				"io.netty.resolver.dns.DnsServerAddressStreamProviders$DefaultProviderHolder"
 		})
 })
 @NativeImageHint(typeInfos = {
