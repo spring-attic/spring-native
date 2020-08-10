@@ -50,6 +50,7 @@ org.springframework.boot.autoconfigure.web.servlet.TomcatHints
 org.springframework.boot.autoconfigure.web.servlet.WebMvcHints
 org.springframework.boot.context.properties.ConfigurationPropertiesHints
 org.springframework.boot.context.ContextHints
+org.springframework.boot.logging.LogbackHints
 org.springframework.cache.annotation.CachingHints
 org.springframework.cloud.function.context.config.ContextFunctionCatalogHints
 org.springframework.cloud.function.web.mvc.RequestProcessorHints
