@@ -719,6 +719,10 @@ public class Type {
 			return false;
 		}
 	}
+	
+	public boolean isAtImport() {
+		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
+	}
 
 	public boolean isAtConfiguration() {
 		if (dimensions > 0) {

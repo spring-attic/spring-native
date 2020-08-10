@@ -76,6 +76,9 @@ public class SpringFeature implements Feature {
 			reflectionHandler.registerHybrid(access);
 			dynamicProxiesHandler.registerHybrid(access);
 		}
+		if (ConfigOptions.isAgentMode()) {
+			reflectionHandler.registerAgent(access);
+		}
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {

@@ -52,6 +52,7 @@ import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
+import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -652,6 +653,35 @@ public class TypeSystem {
 
 	public List<String> findTypesAnnotationAtConfiguration(boolean metaAnnotated) {
 		return findTypesAnnotated(SPRING_AT_CONFIGURATION, metaAnnotated);
+	}
+	
+	public List<CompilationHint> findActiveDefaultHints() {
+		List<CompilationHint> activeDefaultHints = new ArrayList<>();
+		activeDefaultHints.addAll(findHints("java.lang.Object"));
+		Map<String, List<CompilationHint>> proposedhints = SpringConfiguration.getProposedhints();
+		for (Map.Entry<String,List<CompilationHint>> proposedhint: proposedhints.entrySet()) {
+			String keytype = proposedhint.getKey();
+			if (keytype.equals("java.lang.Object")) {
+				continue;
+			}
+			Type type = resolveDotted(keytype,true);
+			if (type != null) {
+				if (type.isAtConfiguration() || 
+					type.isImportRegistrar() || type.isImportSelector() || 
+					type.isCondition() || type.isConditional() || type.isAtImport()
+					) {
+					// These are triggered by 'exploration' under default/hybrid mode
+				} else {
+					for (CompilationHint hint: proposedhint.getValue()) {
+						if (hint.getModes().size()==0 || hint.getModes().contains(ConfigOptions.getMode())) {
+							System.out.println("Including hint not targeting config (trigger="+keytype+"): "+hint);
+							activeDefaultHints.add(hint);
+						}
+					}
+				}
+			}
+		}
+		return activeDefaultHints;
 	}
 
 	public List<CompilationHint> findHints(String typename) {
