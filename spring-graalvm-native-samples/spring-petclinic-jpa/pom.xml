@@ -29,7 +29,6 @@
         <nohttp-checkstyle.version>0.0.4.RELEASE</nohttp-checkstyle.version>
         <spring-format.version>0.0.21</spring-format.version>
 
-        <spring-framework.version>5.3.0-SNAPSHOT</spring-framework.version>
     </properties>
 
     <dependencies>
