@@ -3,10 +3,10 @@ package com.example.tomcat;
 import com.example.tomcat.embed.LoaderHidingResourceRoot;
 import com.example.tomcat.embed.TldSkipPatterns;
 import com.example.tomcat.embed.TomcatEmbeddedContext;
-import com.example.tomcat.embed.TomcatEmbeddedWebappClassLoader;
 import com.example.tomcat.embed.TomcatWebServer;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.Http11NioProtocol;
@@ -55,6 +55,7 @@ public class TomcatOnlyApplication {
 		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(), DEFAULT_CHARSET.displayName());
 		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(), DEFAULT_CHARSET.displayName());
 		context.setUseRelativeRedirects(false);
+		context.addLifecycleListener(new Tomcat.FixContextListener());
 		try {
 			context.setCreateUploadTargets(true);
 		}
@@ -65,14 +66,14 @@ public class TomcatOnlyApplication {
 		filter.setTldSkip(collectionToDelimitedString(TldSkipPatterns.DEFAULT, ",", "", ""));
 		context.getJarScanner().setJarScanFilter(filter);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderClass(ParallelWebappClassLoader.class.getName());
 		loader.setDelegate(true);
 		context.setLoader(loader);
 
 		Wrapper helloServlet = context.createWrapper();
 		String servletName = HelloFromTomcatServlet.class.getSimpleName();
 		helloServlet.setName(servletName);
-		helloServlet.setServletClass(HelloFromTomcatServlet.class.getName());
+		helloServlet.setServlet(new HelloFromTomcatServlet());
 		helloServlet.setLoadOnStartup(1);
 		helloServlet.setOverridable(true);
 		context.addChild(helloServlet);

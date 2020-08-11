@@ -1,7 +1,2 @@
 [
-{"name":"org.apache.catalina.core.StandardContext","methods":[{"name":"<init>","parameterTypes":[]}]}
-,{"name":"org.apache.catalina.loader.ParallelWebappClassLoader","allPublicMethods":true,"methods":[{"name":"<init>","parameterTypes":["java.lang.ClassLoader"]}]}
-,{"name":"org.apache.coyote.http11.Http11NioProtocol","allPublicMethods":true,"methods":[{"name":"<init>","parameterTypes":[]}]}
-,{"name":"org.apache.tomcat.util.net.NioEndpoint","allPublicMethods":true}
-,{"name":"org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl","allDeclaredConstructors":true}
 ]

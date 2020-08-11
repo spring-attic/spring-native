@@ -1,7 +1,6 @@
 package com.example.tomcat;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
@@ -38,7 +37,17 @@ public class TomcatOnlyApplication {
 		context.setName("");
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
-		tomcat.addServlet(context, HelloFromTomcatServlet.class.getSimpleName(), new HelloFromTomcatServlet());
+		context.addLifecycleListener(new Tomcat.FixContextListener());
+
+		Wrapper helloServlet = context.createWrapper();
+		String servletName = HelloFromTomcatServlet.class.getSimpleName();
+		helloServlet.setName(servletName);
+		helloServlet.setServlet(new HelloFromTomcatServlet());
+		helloServlet.setLoadOnStartup(1);
+		helloServlet.setOverridable(true);
+		context.addChild(helloServlet);
+
+		context.addServletMappingDecoded("/", servletName);
 		context.addServletMappingDecoded("/*", HelloFromTomcatServlet.class.getSimpleName());
 		StandardHost host = (StandardHost) tomcat.getHost();
 		host.setAutoDeploy(false);
