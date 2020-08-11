@@ -38,7 +38,6 @@ public class TomcatOnlyApplication {
 		context.setName("");
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
-		context.addLifecycleListener(new Tomcat.FixContextListener());
 		tomcat.addServlet(context, HelloFromTomcatServlet.class.getSimpleName(), new HelloFromTomcatServlet());
 		context.addServletMappingDecoded("/*", HelloFromTomcatServlet.class.getSimpleName());
 		StandardHost host = (StandardHost) tomcat.getHost();

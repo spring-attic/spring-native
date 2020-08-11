@@ -51,7 +51,6 @@ public class TomcatOnlyApplication {
 		context.setDisplayName("sample-tomcat-context");
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
-		context.addLifecycleListener(new Tomcat.FixContextListener());
 		context.setParentClassLoader(Thread.currentThread().getContextClassLoader());
 		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(), DEFAULT_CHARSET.displayName());
 		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(), DEFAULT_CHARSET.displayName());
