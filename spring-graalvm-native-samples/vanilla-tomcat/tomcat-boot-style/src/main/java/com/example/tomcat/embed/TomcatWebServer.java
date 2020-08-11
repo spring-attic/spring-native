@@ -229,9 +229,6 @@ public class TomcatWebServer  {
 	}
 
 	private void stopTomcat() throws LifecycleException {
-		if (Thread.currentThread().getContextClassLoader() instanceof TomcatEmbeddedWebappClassLoader) {
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-		}
 		this.tomcat.stop();
 	}
 
