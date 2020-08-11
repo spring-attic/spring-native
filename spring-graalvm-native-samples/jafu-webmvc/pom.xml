@@ -31,9 +31,18 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
 					<artifactId>tomcat-embed-websocket</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.experimental</groupId>
+			<artifactId>tomcat-embed-programmatic</artifactId>
+			<version>9.0.38-dev</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.fu</groupId>
@@ -57,31 +66,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-graalvm-library-optimizer</artifactId>
-				<executions>
-					<execution>
-						<id>remove-apache-tomcat-reflection</id>
-						<goals>
-							<goal>spring-graalvm-remove-apache-tomcat-reflection</goal>
-						</goals>
-						<configuration>
-							<enabled>true</enabled>
-							<generatedSourcesLocation>generated/src/main/java/</generatedSourcesLocation>
-						</configuration>
-					</execution>
-					<execution>
-						<id>optimize-apache-tomcat-embed-core</id>
-						<goals>
-							<goal>spring-graalvm-optimize-apache-tomcat</goal>
-						</goals>
-						<configuration>
-							<enabled>true</enabled>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
