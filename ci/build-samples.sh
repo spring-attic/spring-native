@@ -11,4 +11,3 @@ native-image --version
 cd spring-graalvm-native
 ./build.sh
 ./build-samples.sh
-mysqladmin shutdown
