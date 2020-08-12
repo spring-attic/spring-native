@@ -12,11 +12,10 @@
 	<groupId>com.example</groupId>
 	<artifactId>webflux-netty</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring.native.mode>default</spring.native.mode>
 	</properties>
 
 	<dependencies>
@@ -51,63 +50,42 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<env>
+							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								-Dspring.native.mode=${spring.native.mode}
+								-Dspring.native.remove-yaml-support=true
+								-Dspring.spel.ignore=true
+								-Dspring.xml.ignore=true
+								-Dspring.native.remove-jmx-support=true
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	
    <profiles>
         <profile>
-            <id>hybrid-native</id>
+			<id>hybrid</id>
+			<properties>
+				<spring.native.mode>hybrid</spring.native.mode>
+			</properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>make-native-image-config-folder</id>
-                                <phase>test-compile</phase>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target/classes/META-INF/native-image"/>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.xml.ignore=true -Dspring.spel.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
 							<includes>
-							  <include>**/AppContextStartupTest.java</include>
+							  <include>**/WebfluxApplicationTests.java</include>
 							</includes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.graalvm.nativeimage</groupId>
-                        <artifactId>native-image-maven-plugin</artifactId>
-                        <version>20.1.0</version>
-                        <configuration>
-                        	<mainClass>com.example.demo.DemoApplication</mainClass>
-                            <imageName>webflux-netty-hybrid</imageName>
-                            <buildArgs>-Dspring.native.mode=hybrid -Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>native-image</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

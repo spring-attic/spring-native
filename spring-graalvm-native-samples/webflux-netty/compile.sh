@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=webflux-netty
-MAINCLASS=com.example.demo.DemoApplication
+MAINCLASS=com.example.webflux.WebfluxApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
@@ -27,7 +27,6 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
   -H:Name=$ARTIFACT \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.xml.ignore=true \

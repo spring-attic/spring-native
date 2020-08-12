@@ -1,0 +1,2 @@
+META-INF/native-image needs to exists to make the tracing agent happy when hybrid mode is used.
+TODO Raise a bug about that in https://github.com/oracle/graal/issues
