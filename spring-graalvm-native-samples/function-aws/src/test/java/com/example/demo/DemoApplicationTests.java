@@ -35,7 +35,7 @@ public class DemoApplicationTests {
         client.post().uri("/add").bodyValue("Fred").exchange().block();
         Thread.sleep(100L);
         String response = client.get().uri("/take").exchange().block().bodyToMono(String.class).block();
-        assertThat(response).isEqualTo("hi Fred!");
+        assertThat(response).isEqualTo("\"hi Fred!\"");
     }
 
     @AfterAll
