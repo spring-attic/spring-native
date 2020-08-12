@@ -30,6 +30,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
@@ -87,7 +88,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Clement
  * @author Christoph Strobl
- */
+ */ 
 public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private static final String LOG_PREFIX = "SDCP: ";
@@ -246,8 +247,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		for (Type customImpl : customImplementations) {
 
-			imageContext.addReflectiveAccessHierarchy(customImpl, Flag.allDeclaredConstructors,
-					Flag.allDeclaredMethods);
+			imageContext.addReflectiveAccessHierarchy(customImpl, AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS);
 
 			for (Method method : customImpl.getMethods()) {
 				for (Type signatureType : method.getSignatureTypes(true)) {

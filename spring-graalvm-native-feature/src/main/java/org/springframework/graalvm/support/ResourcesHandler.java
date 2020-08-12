@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -489,19 +490,22 @@ public class ResourcesHandler {
 		}
 
 		@Override
-		public void addReflectiveAccessHierarchy(Type type, Flag... flags) {
-			registerHierarchy(type, new HashSet<>(), flags);
+		public Set<String> addReflectiveAccessHierarchy(String typename, int accessBits) {
+			Type type = ts.resolveDotted(typename, true);
+			Set<String> added = new TreeSet<>();
+			registerHierarchy(type, added, accessBits);
+			return added;
 		}
 		
-		private void registerHierarchy(Type type, Set<String> visited, Flag... flags) {
+		private void registerHierarchy(Type type, Set<String> visited, int accessBits) {
 			String typename = type.getDottedName();
 			if (visited.add(typename)) {
-				addReflectiveAccess(typename, flags);
+				addReflectiveAccess(typename, AccessBits.getFlags(accessBits));
 				List<String> relatedTypes = type.getTypesInSignature();
 				for (String relatedType: relatedTypes) {
-					Type t = ts.resolveSlashed(relatedType,true);
+					Type t = ts.resolveSlashed(relatedType, true);
 					if (t!=null) {
-						registerHierarchy(t, visited, flags);
+						registerHierarchy(t, visited, accessBits);
 					}
 				}
 			}
