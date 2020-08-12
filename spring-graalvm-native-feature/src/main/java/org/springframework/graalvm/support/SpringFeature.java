@@ -34,15 +34,28 @@ public class SpringFeature implements Feature {
 	private ResourcesHandler resourcesHandler;
 
 	private InitializationHandler initializationHandler;
+	
+	private final static String banner = 
+		".d88888b                    oo                       .88888.                             dP dP     dP 8888ba.88ba  \n" + 
+		"88.    \"'                                           d8'   `88                            88 88     88 88  `8b  `8b \n" + 
+		"`Y88888b. 88d888b. 88d888b. dP 88d888b. .d8888b.    88        88d888b. .d8888b. .d8888b. 88 88    .8P 88   88   88 \n" + 
+		"      `8b 88'  `88 88'  `88 88 88'  `88 88'  `88    88   YP88 88'  `88 88'  `88 88'  `88 88 88    d8' 88   88   88 \n" + 
+		"d8'   .8P 88.  .88 88       88 88    88 88.  .88    Y8.   .88 88       88.  .88 88.  .88 88 88  .d8P  88   88   88 \n" + 
+		" Y88888P  88Y888P' dP       dP dP    dP `8888P88     `88888'  dP       `88888P8 `88888P8 dP 888888'   dP   dP   dP \n" + 
+		"          88                                 .88                                                                   \n" + 
+		"          dP                             d8888P                                                                    \n" + 
+		"                                 888888ba             dP   oo                                                      \n" + 
+		"                                 88    `8b            88                                                           \n" + 
+		"                                 88     88 .d8888b. d8888P dP dP   .dP .d8888b.                                    \n" + 
+		"                                 88     88 88'  `88   88   88 88   d8' 88ooood8                                    \n" + 
+		"                                 88     88 88.  .88   88   88 88 .88'  88.  ...                                    \n" + 
+		"                                 dP     dP `88888P8   dP   dP 8888P'   `88888P'                                    \n" + 
+		"                                                                                                                   \n" + 
+		"                                                                                                                   ";
 
 	public SpringFeature() {
-		System.out.println(
-				" ____             _               _____          _                  \n"+
-				"/ ___| _ __  _ __(_)_ __   __ _  |  ___|__  __ _| |_ _   _ _ __ ___ \n"+
-				"\\___ \\| '_ \\| '__| | '_ \\ / _` | | |_ / _ \\/ _` | __| | | | '__/ _ \\\n"+
-				" ___) | |_) | |  | | | | | (_| | |  _|  __/ (_| | |_| |_| | | |  __/\n"+
-				"|____/| .__/|_|  |_|_| |_|\\__, | |_|  \\___|\\__,_|\\__|\\__,_|_|  \\___|\n"+
-				"      |_|                 |___/                                     \n");
+		System.out.println(banner);
+				                                                                                                                   
 		if (!ConfigOptions.isVerbose()) {
 			System.out.println("Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
 		}
