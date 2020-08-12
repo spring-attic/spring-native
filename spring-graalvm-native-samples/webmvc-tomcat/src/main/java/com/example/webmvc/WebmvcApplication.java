@@ -1,13 +1,13 @@
-package com.example.tomcat;
+package com.example.webmvc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(proxyBeanMethods = false)
-public class TomcatApplication {
+public class WebmvcApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TomcatApplication.class, args);
+		SpringApplication.run(WebmvcApplication.class, args);
 	}
 
 }

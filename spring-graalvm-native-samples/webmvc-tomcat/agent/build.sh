@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-APP=springmvc-tomcat
-MAINCLASS=com.example.tomcat.TomcatApplication
+APP=webmvc-tomcat
+MAINCLASS=com.example.webmvc.WebmvcApplication
 VERSION=0.0.1-SNAPSHOT
 
 echo "================ BUILDING THE PROJECT AND UNPACKING THE FAT JAR =========="
@@ -45,8 +45,6 @@ native-image \
   -Dspring.xml.ignore=true \
   -Dspring.spel.ignore=true \
   -Dspring.native.remove-jmx-support=true \
-  -H:IncludeResourceBundles=javax.servlet.LocalStrings \
-  -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
   -cp .:$CP:graal:../../../graal \
   $MAINCLASS 2>&1 | tee output.txt
 

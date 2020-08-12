@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>springmvc-tomcat</artifactId>
+	<artifactId>webmvc-tomcat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tomcat</name>
+	<name>webmvc-tomcat</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -25,9 +25,10 @@
 			<version>0.8.0-SNAPSHOT</version>
 		</dependency>
 
+		<!-- Required for the agent mode -->
 		<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context-indexer</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
 
 		<dependency>
@@ -174,7 +175,7 @@
 						<configuration>
 							<mainClass>com.example.tomcat.TomcatApplication</mainClass>
 							<imageName>${project.artifactId}</imageName>
-							<buildArgs>-H:+PrintAOTCompilation -H:+PrintHeapHistogram -H:EnableURLProtocols=http -Dspring.native.mode=hybrid -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
+							<buildArgs>-H:EnableURLProtocols=http -Dspring.native.mode=hybrid -Dspring.backgroundpreinitializer.ignore=true -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true -Dspring.xml.ignore=true -Dspring.native.remove-jmx-support=true</buildArgs>
 						</configuration>
 						<executions>
 							<execution>

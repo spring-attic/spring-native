@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ARTIFACT=springmvc-tomcat
-MAINCLASS=com.example.tomcat.TomcatApplication
+ARTIFACT=webmvc-tomcat
+MAINCLASS=com.example.webmvc.WebmvcApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
