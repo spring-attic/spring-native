@@ -1,4 +1,4 @@
-package com.example.traditional;
+package com.example.webflux;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @SpringBootApplication(proxyBeanMethods = false)
-public class TraditionalApplication {
+public class WebfluxApplication {
 
 	@Bean
 	RouterFunction<ServerResponse> routes(ReservationRepository reservationRepository) {
@@ -32,6 +32,6 @@ public class TraditionalApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(TraditionalApplication.class, args);
+		SpringApplication.run(WebfluxApplication.class, args);
 	}
 }
