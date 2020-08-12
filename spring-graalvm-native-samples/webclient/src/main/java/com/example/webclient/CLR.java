@@ -15,7 +15,7 @@ public class CLR implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println(this.client.get().uri("/").exchange().block().bodyToMono(String.class).block());
+		this.client.get().uri("/").retrieve().bodyToMono(String.class).subscribe(System.out::println);
 	}
 	
 }

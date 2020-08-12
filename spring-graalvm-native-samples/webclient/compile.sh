@@ -27,7 +27,6 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
   -H:Name=$ARTIFACT \
   --enable-all-security-services \
   -Dspring.spel.ignore=true \

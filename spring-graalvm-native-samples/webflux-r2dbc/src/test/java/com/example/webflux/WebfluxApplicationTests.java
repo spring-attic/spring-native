@@ -1,10 +1,10 @@
-package com.example.traditional;
+package com.example.webflux;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TraditionalApplicationTests {
+class WebfluxApplicationTests {
 
 	@Test
 	void contextLoads() {
