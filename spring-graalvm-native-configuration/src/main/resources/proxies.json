@@ -22,6 +22,7 @@
   ["org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication", "org.springframework.core.annotation.SynthesizedAnnotation"],
 
   // Persistence
+  ["org.hibernate.Session", "org.springframework.orm.jpa.EntityManagerProxy"],
   ["org.hibernate.SessionFactory", "org.springframework.orm.jpa.EntityManagerFactoryInfo"],
   ["org.hibernate.jpa.HibernateEntityManagerFactory","org.springframework.orm.jpa.EntityManagerFactoryInfo"],
   ["org.hibernate.jpa.HibernateEntityManager","org.springframework.orm.jpa.EntityManagerProxy"],
