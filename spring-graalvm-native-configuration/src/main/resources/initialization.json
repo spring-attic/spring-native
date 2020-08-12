@@ -45,6 +45,8 @@
   {"class": "org.springframework.boot.context.FileEncodingApplicationListener"},
   {"class": "org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer"},
   {"class": "org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter"},
+  {"class": "org.springframework.init.func.InfrastructureListener"},
+  {"class": "org.springframework.init.func.InfrastructureInitializer"},
   {"class": "org.springframework.init.func.FunctionalInstallerListener"},
 
   // Spring Framework
