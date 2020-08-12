@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=jafu
+ARTIFACT=commandlinerunner-jafu
 MAINCLASS=com.example.jafu.DemoApplication
 VERSION=0.0.1-SNAPSHOT
 
