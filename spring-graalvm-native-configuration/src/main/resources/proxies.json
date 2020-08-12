@@ -1,7 +1,10 @@
 [
   // Spring Framework
+  // TODO For a regular web app this one is auto added now. But the function-netty app doesn't include endpoints and yet
+  // needs this proxy - is there infrastructure that includes a mapping that we need to analyse (for auto synthannotation proxy
+  // generation?). Currently the analysis is only done for app components, not library infrastructure.
+  ["org.springframework.web.bind.annotation.RequestMapping", "org.springframework.core.annotation.SynthesizedAnnotation"],
 //  ["org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"],
-//  ["org.springframework.web.bind.annotation.RequestMapping", "org.springframework.core.annotation.SynthesizedAnnotation"],
 //  ["org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"],
 //  ["org.springframework.web.bind.annotation.PathVariable", "org.springframework.core.annotation.SynthesizedAnnotation"],
 //  ["org.springframework.web.bind.annotation.ModelAttribute", "org.springframework.core.annotation.SynthesizedAnnotation"],
