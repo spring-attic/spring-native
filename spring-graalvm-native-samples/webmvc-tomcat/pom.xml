@@ -159,20 +159,20 @@
 			   <properties>
 				   <spring.native.mode>hybrid</spring.native.mode>
 			   </properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.spel.ignore=true -Dspring.xml.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
-							<includes>
-							  <include>**/WebmvcApplicationTests.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.spel.ignore=true -Dspring.xml.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+								<includes>
+								  <include>**/WebmvcApplicationTests.java</include>
+								</includes>
+							</configuration>
+						</plugin>
+					</plugins>
+				</build>
 		</profile>
 	</profiles>
 
