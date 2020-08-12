@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=webflux-netty
-MAINCLASS=com.example.demo.DemoApplication
+MAINCLASS=com.example.webflux.WebfluxApplication
 VERSION=0.0.1-SNAPSHOT
 
 echo "================ BUILDING THE PROJECT AND UNPACKING THE FAT JAR =========="
@@ -26,7 +26,7 @@ java -cp .:$CP \
   $MAINCLASS > agent-output.txt 2>&1 &
 PID=$!
 sleep 10
-../../../verify.sh
+../../../../verify.sh
 echo "Killing..."
 kill ${PID}
 KILLED=$?
@@ -50,7 +50,7 @@ native-image \
 
 # Test the application
 # The test script will look for it in the current folder
-cp ../../../verify.sh .
+cp ../../../../verify.sh .
 ${PWD%/*samples/*}/scripts/test.sh $ARTIFACT-agent .
 mkdir -p ../../../target/native-image/
 mv summary.csv ../../../target/native-image/
