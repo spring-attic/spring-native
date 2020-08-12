@@ -57,21 +57,20 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<outputProperty>maven.compile.classpath</outputProperty>
-							<pathSeparator>:</pathSeparator>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<image>
+						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<env>
+							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								-Dspring.native.remove-jmx-support=true
+								-Dspring.native.remove-yaml-support=true
+								-Dspring.xml.ignore=true
+								-Dspring.spel.ignore=true
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
