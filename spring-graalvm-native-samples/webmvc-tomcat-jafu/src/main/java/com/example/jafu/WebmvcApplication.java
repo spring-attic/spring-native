@@ -7,7 +7,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 import static org.springframework.fu.jafu.Jafu.webApplication;
 import static org.springframework.fu.jafu.webmvc.WebMvcServerDsl.webMvc;
 
-public class DemoApplication {
+public class WebmvcApplication {
 
 	public static JafuApplication app = webApplication(a -> {
 		a.beans(b -> b.bean(CommandLineRunner.class, () -> arguments -> System.out.println("jafu running!")));

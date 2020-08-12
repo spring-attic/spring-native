@@ -11,9 +11,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>jafu-webmvc</artifactId>
+	<artifactId>webmvc-tomcat-jafu</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jafu</name>
+	<name>webmvc-tomcat-jafu</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
