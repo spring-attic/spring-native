@@ -575,9 +575,11 @@ public class ResourcesHandler {
 				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
 			}
 		} else {
-			// TODO why no CLASS here?
+			// TODO we can do better here, why can we not use the inferredRequiredAccess -
+			// it looks like we aren't adding RESOURCE to something when inferring.
 			typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
-					inferredRequiredAccess.getValue());
+					AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);
+//					inferredRequiredAccess.getValue());
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
 		}
