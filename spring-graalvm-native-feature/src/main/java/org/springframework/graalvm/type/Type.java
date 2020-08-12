@@ -2349,4 +2349,13 @@ public class Type {
 			annotation.walkAnnotation(collector, filter, seen);
 		}
 	}
+
+	public Field getField(String name) {
+		for (Field field: fields.get()) {
+			if (field.getName().equals(name)) {
+				return field;
+			}
+		}
+		return null;
+	}
 }
