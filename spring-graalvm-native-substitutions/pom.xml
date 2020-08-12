@@ -109,8 +109,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-init-processor</artifactId>
-			<version>0.0.1.BUILD-SNAPSHOT</version>
+			<artifactId>spring-init-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
