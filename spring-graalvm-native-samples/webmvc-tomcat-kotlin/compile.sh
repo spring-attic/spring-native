@@ -27,9 +27,8 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
-  -H:EnableURLProtocols=http \
   -H:Name=$ARTIFACT \
+  -H:EnableURLProtocols=http \
   -Dspring.spel.ignore=true \
   -Dspring.xml.ignore=true \
   -Dspring.native.remove-yaml-support=true \
