@@ -6,7 +6,7 @@
   {"excludeClasses": "org.mockito.**"},
   {"excludeClasses": "org.springframework.test.**"},
   {"excludeClasses": "org.springframework.boot.test.**"},
-  {"excludeClasses": "com.example.tomcat.test.**"}
+  {"excludeClasses": "com.example.webmvc.test.**"}
 ]
 }
 
