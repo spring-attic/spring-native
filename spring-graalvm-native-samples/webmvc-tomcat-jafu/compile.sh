@@ -27,14 +27,12 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
-  -H:EnableURLProtocols=http \
   -H:Name=$ARTIFACT \
   -Dspring.native.mode=functional \
+  -H:EnableURLProtocols=http \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.xml.ignore=true \
   -Dspring.spel.ignore=true \
-  -H:-UseServiceLoaderFeature \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
