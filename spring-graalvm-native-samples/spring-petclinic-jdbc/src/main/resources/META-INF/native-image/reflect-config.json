@@ -1,4 +1,0 @@
-[
-  { "name":"org.springframework.samples.petclinic.vet.Vet", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
-  { "name":"org.springframework.samples.petclinic.vet.Specialty", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true }
-]

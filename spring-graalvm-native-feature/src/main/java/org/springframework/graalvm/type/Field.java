@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.springframework.graalvm.type.Type.TypeCollector;
 
 /**
  * @author Christoph Strobl
@@ -33,7 +35,6 @@ public class Field {
 	private Lazy<List<Type>> annotations;
 
 	public Field(FieldNode node, TypeSystem typeSystem) {
-
 		this.node = node;
 		this.typeSystem = typeSystem;
 		this.annotations = Lazy.of(this::resolveAnnotations);
@@ -60,4 +61,27 @@ public class Field {
 		}
 		return results == null ? Collections.emptyList() : results;
 	}
+	
+	public List<String> getTypesInSignature() {
+		if (node.signature == null) {
+			String s = node.desc;
+			if (s.endsWith(";")) {
+				return Collections.singletonList(Type.fromLdescriptorToSlashed(s));
+			} else {
+				return Collections.singletonList(null);
+			}
+		} else {
+			// Pull out all the types from the generic signature
+			SignatureReader reader = new SignatureReader(node.signature);
+			TypeCollector tc = new TypeCollector();
+			reader.accept(tc);
+			return tc.getTypes();
+		}
+	}
+
+	public String getName() {
+		return node.name;
+	}
+
+	
 }

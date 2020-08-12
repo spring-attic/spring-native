@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.graalvm.compiler.core.common.Fields;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.graalvm.extension.NativeImageHint;
@@ -36,6 +37,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.Field;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
 import org.springframework.transaction.annotation.Transactional;
@@ -236,6 +238,25 @@ public class TypeTests {
 		assertEquals(2, typesInSignature.size());
 		assertEquals("org/springframework/support/graal/TypeTests$TXClass4",typesInSignature.get(0));
 		assertEquals("java/io/Serializable",typesInSignature.get(1));
+	}
+	
+	@Test
+	public void testFields() {
+		Type t = typeSystem.resolveName(TestFields.class.getName());
+		Field one = t.getField("one");
+		List<String> tis = one.getTypesInSignature();
+		assertEquals(1,tis.size());
+		assertEquals("java/lang/String",tis.get(0));
+		Field two = t.getField("two");
+		tis = two.getTypesInSignature();
+		assertEquals(2,tis.size());
+		assertEquals("java/util/List",tis.get(0));
+		assertEquals("java/lang/Integer",tis.get(1));
+	}
+	
+	static class TestFields {
+		String one;
+		List<Integer> two;
 	}
 	
 	@SuppressWarnings("serial")

@@ -16,13 +16,16 @@
 package org.springframework.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.Field;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
 
@@ -65,10 +68,36 @@ public class WebComponentProcessor implements ComponentProcessor {
 					Set<String> added = 
 							imageContext.addReflectiveAccessHierarchy(typename, 
 									AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS);
+					analyze(imageContext, type, added);
 					imageContext.log("WebComponentProcessor: adding reflective access to "+added+" (whilst introspecting controller "+componentType+")");
 				}
 			}
 		}
 	}
 
+	private void analyze(NativeImageContext imageContext, Type type, Set<String> added) {
+		List<Field> fields = type.getFields();
+		for (Field field: fields) {
+			List<String> fieldTypenames = field.getTypesInSignature();
+			for (String fieldTypename: fieldTypenames) {
+				if (fieldTypename == null) {
+					continue;
+				}
+				String dottedFieldTypename = fieldTypename.replace("/", ".");
+				if (!ignore(dottedFieldTypename) && added.add(dottedFieldTypename)) {
+					added.addAll(imageContext.addReflectiveAccessHierarchy(dottedFieldTypename, 
+							AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS));
+					// Recursive analysis - helps with something like a Vets type that includes a List<Vet>. Vet gets
+					// recognized too.
+					analyze(imageContext, imageContext.getTypeSystem().resolveDotted(dottedFieldTypename,true), added);
+				}
+			}
+		}
+	}
+
+	private boolean ignore(String name) {
+		return (name.startsWith("java.") ||
+				name.startsWith("org.springframework.ui.") ||
+				name.startsWith("org.springframework.validation."));
+	}
 }
