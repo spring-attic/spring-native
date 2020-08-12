@@ -16,8 +16,10 @@
 package org.springframework.graalvm.extension;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.graalvm.domain.reflect.Flag;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
 
@@ -41,7 +43,11 @@ public interface NativeImageContext {
 
 	void addReflectiveAccess(String key, Flag... flags);
 
-	void addReflectiveAccessHierarchy(Type type, Flag... flags);
+	default Set<String> addReflectiveAccessHierarchy(Type type, int accessBits) {
+		return addReflectiveAccessHierarchy(type.getDottedName(), accessBits);
+	}
+
+	Set<String> addReflectiveAccessHierarchy(String type, int accessBits);
 
 	boolean hasReflectionConfigFor(String key);
 
@@ -52,4 +58,9 @@ public interface NativeImageContext {
 	}
 
 	void log(String string);
+
+	default void addReflectiveAccess(String parameterTypename, int accessBits) {
+		addReflectiveAccess(parameterTypename, AccessBits.getFlags(accessBits));
+	}
+
 }

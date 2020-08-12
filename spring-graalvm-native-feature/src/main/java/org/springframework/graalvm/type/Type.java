@@ -67,6 +67,7 @@ public class Type {
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
 	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
+	public final static String BeanFactoryPostProcessor = "Lorg/springframework/beans/factory/config/BeanFactoryPostProcessor;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
 	public final static String ImportSelector = "Lorg/springframework/context/annotation/ImportSelector;";
 	public final static String ApplicationListener = "Lorg/springframework/context/ApplicationListener;";
@@ -1352,6 +1353,14 @@ public class Type {
 		}
 	}
 
+	public boolean isBeanFactoryPostProcessor() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(BeanFactoryPostProcessor));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
+
 	public boolean isImportRegistrar() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(ImportBeanDefinitionRegistrar));
@@ -1840,6 +1849,10 @@ public class Type {
 			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE;
 		} else if (t.isImportRegistrar()) {
 			return AccessBits.LOAD_AND_CONSTRUCT;
+		} else if (t.isBeanFactoryPostProcessor()) {
+			// vanilla-jpa demos these needing accessing a a resource *sigh* 
+			// TODO investigate if deeper pattern can tell us why certain things need RESOURCE
+			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {

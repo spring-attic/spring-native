@@ -251,6 +251,10 @@ public class TypeSystem {
 	public Type resolve(org.objectweb.asm.Type type, boolean silent) {
 		try {
 			String desc = type.getDescriptor(); //[[Lorg/springframework/amqp/rabbit/annotation/RabbitBootstrapConfiguration;
+			if (!desc.endsWith(";")) {
+				// primitive/void
+				return null;
+			}
 			int dims = 0;
 			while (desc.charAt(dims)=='[') { dims++; }
 			if (dims>0) {
