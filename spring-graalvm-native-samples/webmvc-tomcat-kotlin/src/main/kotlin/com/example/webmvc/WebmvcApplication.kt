@@ -1,4 +1,4 @@
-package com.example.demo
+package com.example.webmvc
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -6,16 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @SpringBootApplication(proxyBeanMethods = false)
-class KotlinCoroutinesApplication
+class WebmvcApplication
 
 fun main(args: Array<String>) {
-	runApplication<KotlinCoroutinesApplication>(*args)
+	runApplication<WebmvcApplication>(*args)
 }
 
 data class Bar(val message: String)
 
 @RestController
-class Foo {
+class WebmvcController {
 
 	@GetMapping("/")
 	fun greet(): Bar {
