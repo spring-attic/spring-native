@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>kotlin-webmvc</artifactId>
+	<artifactId>webmvc-tomcat-kotlin</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kotlin-webmvc</name>
+	<name>webmvc-tomcat-kotlin</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
