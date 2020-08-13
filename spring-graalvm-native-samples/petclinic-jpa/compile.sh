@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=spring-petclinic-jpa
+ARTIFACT=petclinic-jpa
 MAINCLASS=org.springframework.samples.petclinic.PetClinicApplication
 VERSION=0.0.1-SNAPSHOT
 
