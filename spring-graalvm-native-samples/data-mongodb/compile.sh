@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=spring-data-mongodb
+ARTIFACT=data-mongodb
 MAINCLASS=com.example.data.mongo.MongoApplication
 VERSION=0.0.1-SNAPSHOT
 
