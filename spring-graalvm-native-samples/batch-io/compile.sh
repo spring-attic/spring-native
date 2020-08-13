@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=spring-batch-io
+ARTIFACT=batch-io
 MAINCLASS=com.example.batch.BatchConfiguration
 VERSION=0.0.1-SNAPSHOT
 

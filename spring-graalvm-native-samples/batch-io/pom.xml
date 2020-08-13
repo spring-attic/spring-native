@@ -11,7 +11,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>spring-batch-io</artifactId>
+	<artifactId>batch-io</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-batch</name>
 	<description>Port of some of the Spring Batch's IO samples</description>
