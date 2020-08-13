@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=spring-features
+ARTIFACT=features
 MAINCLASS=com.example.commandlinerunner.Application
 VERSION=0.0.1-SNAPSHOT
 
