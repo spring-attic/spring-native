@@ -6,7 +6,7 @@
 	<artifactId>vanilla-tomcat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>vanilla-tomcat</name>
+	<name>tomcat</name>
 	<description>Demo projects for Apache Tomcat</description>
 
 	<properties>
