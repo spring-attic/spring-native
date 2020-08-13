@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=webmvc-tomcat-kotlin
+ARTIFACT=webmvc-kotlin
 MAINCLASS=com.example.webmvc.WebmvcApplicationKt
 VERSION=0.0.1-SNAPSHOT
 

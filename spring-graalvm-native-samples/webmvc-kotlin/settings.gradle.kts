@@ -12,4 +12,4 @@ pluginManagement {
         }
     }
 }
-rootProject.name = "webmvc-tomcat-kotlin"
+rootProject.name = "webmvc-kotlin"
