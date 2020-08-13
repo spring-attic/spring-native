@@ -11,14 +11,14 @@ NC='\033[0m'
 rm -rf target
 mkdir -p target/native-image
 
-echo "Packaging $ARTIFACT with Maven"
-mvn -ntp package > target/native-image/output.txt
+echo "Packaging $ARTIFACT with Gradle"
+./gradlew build > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
 echo "Unpacking $JAR"
 cd target/native-image
-jar -xvf ../$JAR >/dev/null 2>&1
+jar -xvf ../../build/libs/$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 
 LIBPATH=`find BOOT-INF/lib | tr '\n' ':'`
