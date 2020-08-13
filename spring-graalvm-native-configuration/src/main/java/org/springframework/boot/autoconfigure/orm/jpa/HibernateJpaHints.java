@@ -38,6 +38,7 @@ import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEventListener;
@@ -150,6 +151,7 @@ import org.springframework.stereotype.Repository;
 				OneToManyPersister.class,JoinedSubclassEntityPersister.class,SingleTableEntityPersister.class,UnionSubclassEntityPersister.class,
 				BasicCollectionPersister.class,
 				H2Dialect.class,
+				MySQLDialect.class,
 				SessionImpl.class,
 				EventType.class,
 				// Related to EventListenerRegistry...

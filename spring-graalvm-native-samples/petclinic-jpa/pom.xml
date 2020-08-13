@@ -25,7 +25,6 @@
         <wro4j.version>1.8.0</wro4j.version>
 
         <jacoco.version>0.8.5</jacoco.version>
-        <nohttp-checkstyle.version>0.0.4.RELEASE</nohttp-checkstyle.version>
         <spring-format.version>0.0.21</spring-format.version>
 
     </properties>
@@ -102,11 +101,16 @@
             </exclusions>
         </dependency>
 
-        <!-- Databases - Uses H2 by default -->
+        <!-- Databases -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
 
         <!-- caching -->
@@ -160,43 +164,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <!-- Spring Boot Actuator displays build-related information
-              if a META-INF/build-info.properties file is present -->
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                        <configuration>
-                            <additionalProperties>
-                                <encoding.source>${project.build.sourceEncoding}</encoding.source>
-                                <encoding.reporting>${project.reporting.outputEncoding}</encoding.reporting>
-                                <java.source>${maven.compiler.source}</java.source>
-                                <java.target>${maven.compiler.target}</java.target>
-                            </additionalProperties>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Spring Boot Actuator displays build-related information if a git.properties
-                    file is present at the classpath -->
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <verbose>true</verbose>
-                    <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
-          </generateGitPropertiesFilename>
-                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <image>
+                        <builder>nebhale/native-image-builder:defer-to-application</builder>
+                        <env>
+                            <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+                            <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                -Dspring.native.remove-yaml-support=true
+                                --enable-all-security-services
+                            </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                        </env>
+                    </image>
                 </configuration>
             </plugin>
 

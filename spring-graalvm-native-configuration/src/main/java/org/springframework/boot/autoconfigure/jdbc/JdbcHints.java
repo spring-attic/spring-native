@@ -149,9 +149,8 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 				StandardSocketFactory.class },
 				access=AccessBits.LOAD_AND_CONSTRUCT),
 }, resourcesInfos = {
-		@ResourcesInfo(isBundle = true, patterns = {
-			"com.mysql.cj.LocalizedErrorMessages"
-		})
+		@ResourcesInfo(patterns = "com/mysql/cj/TlsSettings.properties"),
+		@ResourcesInfo(isBundle = true, patterns = "com.mysql.cj.LocalizedErrorMessages")
 })
 public class JdbcHints implements NativeImageConfiguration {
 }
