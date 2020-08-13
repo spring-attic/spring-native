@@ -26,6 +26,8 @@ These options are enabled by default when using `spring-graalvm-native`, since t
 
 * `-Dspring.native.remove-jmx-support=true` removes JMX support from Spring Boot, enabling faster compilation and smaller executables.
 
+* `-H:+RemoveSaturatedTypeFlows` reduces build time and decrease build memory consumption, especially for big projects.
+
 ==== Options recommended by default
 
 * `--verbose` makes image building output more verbose.
@@ -45,8 +47,6 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 * `-H:ReportAnalysisForbiddenType=com.example.Foo` helps to find why the specified class is included in the native image.
 
 * `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
-
-* `-H:+RemoveSaturatedTypeFlows` reduces build time and decrease build memory consumption, especially for big projects.
 
 === Spring Framework/Boot options
 

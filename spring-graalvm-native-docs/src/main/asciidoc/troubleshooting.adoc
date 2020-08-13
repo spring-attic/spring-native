@@ -21,7 +21,6 @@ The image can fail for a number of reasons. We have described the most common ca
 
 `native-image` consumes a lot of RAM. We have most success on 32G RAM desktop machines.
 16G is possible for smaller samples but 8G machines are likely to hit problems more often.
-You can use `-H:+RemoveSaturatedTypeFlows` `native-image` option to reduce the amount of memory required.
 
 === The built image does not run
 

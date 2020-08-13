@@ -241,7 +241,7 @@
                         <configuration>
                             <mainClass>org.springframework.samples.petclinic.PetClinicApplication</mainClass>
                             <imageName>${project.artifactId}</imageName>
-                            <buildArgs>-H:+RemoveSaturatedTypeFlows -Dspring.native.remove-yaml-support=true --enable-all-security-services</buildArgs>
+                            <buildArgs>-Dspring.native.remove-yaml-support=true --enable-all-security-services</buildArgs>
                         </configuration>
                         <executions>
                             <execution>
