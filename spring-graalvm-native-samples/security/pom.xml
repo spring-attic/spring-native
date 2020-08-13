@@ -21,6 +21,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<env>
+							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								--enable-all-security-services
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

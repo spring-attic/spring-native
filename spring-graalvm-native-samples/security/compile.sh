@@ -29,8 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -H:IncludeResourceBundles=javax.servlet.http.LocalStrings \
-  -H:IncludeResourceBundles=javax.servlet.LocalStrings \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
