@@ -36,7 +36,8 @@ public class SpringFeature implements Feature {
 	private InitializationHandler initializationHandler;
 	
 	private final static String banner = 
-		".d88888b                    oo                       .88888.                             dP dP     dP 8888ba.88ba  \n" + 
+		"\n" +
+		".d88888b                    oo                       .88888.                             dP dP     dP 8888ba.88ba  \n" +
 		"88.    \"'                                           d8'   `88                            88 88     88 88  `8b  `8b \n" + 
 		"`Y88888b. 88d888b. 88d888b. dP 88d888b. .d8888b.    88        88d888b. .d8888b. .d8888b. 88 88    .8P 88   88   88 \n" + 
 		"      `8b 88'  `88 88'  `88 88 88'  `88 88'  `88    88   YP88 88'  `88 88'  `88 88'  `88 88 88    d8' 88   88   88 \n" + 
