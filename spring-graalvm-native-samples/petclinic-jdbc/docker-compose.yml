@@ -10,7 +10,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./src/main/resources/db/mysql:/docker-entrypoint-initdb.d
+      - ./src/main/resources/db/mysql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./src/main/resources/db/mysql/data.sql:/docker-entrypoint-initdb.d/2-data.sql
   petclinic-jdbc:
     image: petclinic-jdbc:0.0.1-SNAPSHOT
     ports:
