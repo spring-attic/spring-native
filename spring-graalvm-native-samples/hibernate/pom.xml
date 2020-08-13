@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.springframework.experimental</groupId>
-	<artifactId>vanilla-orm</artifactId>
+	<artifactId>hibernate</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 
 	<parent>
@@ -100,6 +100,20 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<env>
+							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								-Dspring.native.remove-yaml-support=true
+								-Dspring.spel.ignore=true
+								-Dspring.xml.ignore=true
+								-Dspring.native.remove-jmx-support=true
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.hibernate.orm.tooling</groupId>

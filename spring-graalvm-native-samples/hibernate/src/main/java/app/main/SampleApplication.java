@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import app.main.model.Foo;
+import app.main.Foo;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
