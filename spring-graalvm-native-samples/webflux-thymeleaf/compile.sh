@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=vanilla-thymeleaf
+ARTIFACT=webflux-thymeleaf
 MAINCLASS=hello.Application
 VERSION=0.1.0
 
