@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springframework.samples</groupId>
-    <artifactId>spring-petclinic-jdbc</artifactId>
+    <artifactId>petclinic-jdbc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <parent>
@@ -11,7 +11,6 @@
         <version>2.4.0-SNAPSHOT</version>
         <relativePath />
     </parent>
-    <name>spring-petclinic-jdbc</name>
 
     <properties>
 
