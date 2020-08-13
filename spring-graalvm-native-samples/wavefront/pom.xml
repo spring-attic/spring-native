@@ -11,8 +11,6 @@
 	<groupId>com.example</groupId>
 	<artifactId>wavefront</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>wavefront</name>
-	<description>Demo project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -87,6 +85,22 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<env>
+							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								-Dspring.native.remove-yaml-support=true
+								-Dspring.native.remove-jmx-support=true
+								-Dspring.xml.ignore=true
+								-H:+RemoveSaturatedTypeFlows
+								-H:EnableURLProtocols=http,https
+								--enable-all-security-services
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+						</env>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
