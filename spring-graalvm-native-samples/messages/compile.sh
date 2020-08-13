@@ -28,10 +28,7 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --allow-incomplete-classpath \
-  --report-unsupported-elements-at-runtime \
   -H:Name=$ARTIFACT \
-  -H:+ReportExceptionStackTraces \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

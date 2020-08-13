@@ -30,8 +30,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   --enable-all-security-services \
   -Dspring.spel.ignore=true \
-  -Dspring.xml.ignore=true \
-  -Dspring.native.remove-jmx-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

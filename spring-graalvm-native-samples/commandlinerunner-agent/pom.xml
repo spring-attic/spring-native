@@ -57,9 +57,7 @@
 							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.mode=agent
-								-Dspring.native.remove-jmx-support=true
 								-Dspring.native.remove-yaml-support=true
-								-Dspring.xml.ignore=true
 								-Dspring.spel.ignore=true
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
