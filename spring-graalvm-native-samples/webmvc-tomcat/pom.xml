@@ -72,7 +72,6 @@
 							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.mode=${spring.native.mode}
-								-H:EnableURLProtocols=http
 								-Dspring.native.remove-yaml-support=true
 								-Dspring.spel.ignore=true
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
