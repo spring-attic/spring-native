@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=vanilla-tx
+ARTIFACT=jdbc-tx
 MAINCLASS=app.main.SampleApplication
 VERSION=0.0.1.BUILD-SNAPSHOT
 
