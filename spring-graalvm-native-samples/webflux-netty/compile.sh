@@ -29,9 +29,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.xml.ignore=true \
   -Dspring.spel.ignore=true \
-  -Dspring.native.remove-jmx-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

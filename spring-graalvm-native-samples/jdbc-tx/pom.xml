@@ -83,8 +83,6 @@
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.remove-yaml-support=true
 								-Dspring.spel.ignore=true
-								-Dspring.xml.ignore=true
-								-Dspring.native.remove-jmx-support=true
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>

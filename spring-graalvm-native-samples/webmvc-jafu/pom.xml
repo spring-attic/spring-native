@@ -72,7 +72,6 @@
 								-Dspring.native.mode=functional
 								-H:EnableURLProtocols=http
 								-Dspring.native.remove-yaml-support=true
-								-Dspring.xml.ignore=true
 								-Dspring.spel.ignore=true
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
