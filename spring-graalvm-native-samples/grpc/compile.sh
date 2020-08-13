@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=vanilla-grpc
+ARTIFACT=grpc
 MAINCLASS=com.example.ProtoApplication
 VERSION=0.0.1-SNAPSHOT
 
