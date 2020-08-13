@@ -1,0 +1,6 @@
+version: '3.1'
+services:
+  webflux-r2dbc:
+    image: webflux-r2dbc:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

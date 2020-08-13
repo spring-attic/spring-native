@@ -1,0 +1,6 @@
+version: '3.1'
+services:
+  jdbc-tx:
+    image: jdbc-tx:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
