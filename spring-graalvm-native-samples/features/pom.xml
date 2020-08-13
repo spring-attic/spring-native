@@ -11,10 +11,8 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>spring-features</artifactId>
+	<artifactId>features</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-features</name>
-	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
