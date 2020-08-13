@@ -1,12 +1,20 @@
-mysql:
-  image: mysql:5.7
-  ports:
-    - "3306:3306"
-  environment:
-    - MYSQL_ROOT_PASSWORD=
-    - MYSQL_ALLOW_EMPTY_PASSWORD=true
-    - MYSQL_USER=petclinic
-    - MYSQL_PASSWORD=petclinic
-    - MYSQL_DATABASE=petclinic
-  volumes:
-    - "./conf.d:/etc/mysql/conf.d:ro"
+version: '3.1'
+services:
+  mysql-server:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=petclinic
+      - MYSQL_USER=petclinic
+      - MYSQL_PASSWORD=petclinic
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./src/main/resources/db/mysql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./src/main/resources/db/mysql/data.sql:/docker-entrypoint-initdb.d/2-data.sql
+  petclinic-jpa:
+    image: petclinic-jpa:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-server
