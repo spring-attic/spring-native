@@ -145,7 +145,6 @@ public class CompilationSummaryDiff {
 		URI template = CompilationSummary.class.getResource("/template-compilation-diff.html").toURI();
 		Map<String, String> env = new HashMap<>(); 
 		env.put("create", "true");
-		FileSystem zipfs = FileSystems.newFileSystem(template, env);
 		List<String> readAllLines= Files.readAllLines(Paths.get(template));
 		List<String> lines = new ArrayList<>();
 		for (String l: readAllLines)  {
@@ -168,7 +167,7 @@ public class CompilationSummaryDiff {
 		List<ReportNode> children = node.getChildren();
 		if (children.size() == 1 && children.get(0).getChildren().size()!=0) {
 			ReportNode singleChild = children.get(0);
-			node.setData(node.getData()+"."+singleChild.getData());
+			node.setData((parent==null?"":node.getData()+".")+singleChild.getData());
 			node.setChildren(singleChild.getChildren());
 			collapseCount++;
 			collapse(parent,node);
