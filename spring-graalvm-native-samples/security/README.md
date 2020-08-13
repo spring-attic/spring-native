@@ -1,8 +1,13 @@
-# gs-securing-web
+Spring Boot project with Spring MVC, Tomcat and Jackson.
 
-This is the Spring getting started guide for securing web.
+To build and run the native application packaged in a lightweight container:
+```
+mvn spring-boot:build-image
+docker run -p 8080:8080 docker.io/library/security:0.0.1-SNAPSHOT
+```
 
-Currently the configuration (for native-image compilation) is generated into the project via the run_agent.sh command
-(run the command, visit the endpoints and login/out to ensure everything is generated).
+And then go to [http://localhost:8080/](http://localhost:8080/).
 
-TODO The verify script is only checking app starts due to it being more complex to test this kind of security.
+As an alternative, you can use `build.sh` (with a local GraalVM installation or combined with
+`run-dev-container.sh` at the root of `spring-graalvm-native` project). See also the related issue
+[https://github.com/spring-projects-experimental/spring-graalvm-native/issues/227](Take advantage of Paketo dev-oriented images).
