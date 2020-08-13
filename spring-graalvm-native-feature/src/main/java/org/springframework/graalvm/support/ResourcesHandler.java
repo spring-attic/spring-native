@@ -565,9 +565,6 @@ public class ResourcesHandler {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
-		if (type.getDottedName().equals("java.lang.Object")) {
-			return;
-		}
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
