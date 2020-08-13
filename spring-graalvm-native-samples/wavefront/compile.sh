@@ -27,15 +27,13 @@ CP=BOOT-INF/classes:$LIBPATH
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
-  --verbose \
-  -H:EnableURLProtocols=http,https \
   -H:Name=$ARTIFACT \
-  -Dspring.native.ignore-hints-on-excluded-config=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.native.remove-jmx-support=true \
   -Dspring.xml.ignore=true \
-  --enable-all-security-services \
   -H:+RemoveSaturatedTypeFlows \
+  -H:EnableURLProtocols=http,https \
+  --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
