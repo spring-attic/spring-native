@@ -11,10 +11,8 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>spring-batch</artifactId>
+	<artifactId>batch</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-batch</name>
-	<description>Demo project for Spring Batch</description>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
