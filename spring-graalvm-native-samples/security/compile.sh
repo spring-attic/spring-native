@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=gs-securing-web
+ARTIFACT=security
 MAINCLASS=com.example.securingweb.SecuringWebApplication
 VERSION=0.0.1-SNAPSHOT
 
