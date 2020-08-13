@@ -6,10 +6,9 @@ import java.util.List;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
-import org.apache.commons.logging.Log;
 
+import org.apache.commons.logging.Log;
 import org.springframework.boot.SpringBootFactories;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.graalvm.substitutions.FunctionalMode;
 import org.springframework.graalvm.substitutions.OnlyIfPresent;
 import org.springframework.lang.Nullable;

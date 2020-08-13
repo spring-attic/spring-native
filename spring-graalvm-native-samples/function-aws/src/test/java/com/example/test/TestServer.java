@@ -11,12 +11,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
+import reactor.core.publisher.Sinks;
+import reactor.core.publisher.Sinks.One;
 
 @SpringBootApplication(proxyBeanMethods = false)
 public class TestServer {
 
-    private MonoProcessor<String> output = MonoProcessor.<String>create();
+    private One<String> output = Sinks.one();
 
     private String response = "";
 
@@ -28,7 +29,7 @@ public class TestServer {
 
     @Bean
     public Supplier<Mono<String>> home() {
-        return () -> output;
+        return () -> output.asMono();
     }
 
     @Bean
@@ -43,8 +44,8 @@ public class TestServer {
     public Function<String, String> add() {
         return input -> {
             System.err.println("Add: " + input);
-            output.onNext(input);
-            output = MonoProcessor.<String>create();
+            output.emitValue(input);
+            output = Sinks.one();
             return "Added: " + input;
         };
     }
