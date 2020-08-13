@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=spring-data-redis
+ARTIFACT=data-redis
 MAINCLASS=com.example.data.redis.RedisApplication
 VERSION=0.0.1-SNAPSHOT
 
