@@ -14,6 +14,7 @@ verbose.log
 bin/
 .sts4-cache/
 .attach_pid*
+hs_err_pid*
 .idea
 *.iml
 test-output.txt
