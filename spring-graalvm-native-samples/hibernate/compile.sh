@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=vanilla-orm
+ARTIFACT=hibernate
 MAINCLASS=app.main.SampleApplication
 VERSION=0.0.1.BUILD-SNAPSHOT
 
@@ -31,6 +31,9 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -H:+RemoveSaturatedTypeFlows \
   -Dspring.native.remove-yaml-support=true \
+	-Dspring.spel.ignore=true \
+	-Dspring.xml.ignore=true \
+	-Dspring.native.remove-jmx-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
