@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=vanilla-jpa
+ARTIFACT=jpa
 MAINCLASS=app.main.SampleApplication
 VERSION=0.0.1.BUILD-SNAPSHOT
 
