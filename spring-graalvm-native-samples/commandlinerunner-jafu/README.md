@@ -3,5 +3,5 @@ This sample leverages [Jafu DSL](https://github.com/spring-projects-experimental
 To build and run the native application packaged in a lightweight container:
 ```
 mvn spring-boot:build-image
-docker run docker.io/library/commandlinerunner-jafu:0.0.1-SNAPSHOT
+docker-compose up
 ```
