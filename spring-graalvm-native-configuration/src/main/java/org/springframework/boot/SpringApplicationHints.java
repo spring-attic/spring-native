@@ -27,6 +27,8 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(
 	resourcesInfos = {
 		@ResourcesInfo(patterns= {
+			"db/.*", // TODO should be conditional on database active?
+			"messages/.*",
 			"banner.txt",
 			"META-INF/spring.components",
 			"application.yml",

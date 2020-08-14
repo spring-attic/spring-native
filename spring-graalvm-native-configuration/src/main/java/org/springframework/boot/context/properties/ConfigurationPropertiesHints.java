@@ -15,8 +15,6 @@
  */
 package org.springframework.boot.context.properties;
 
-import java.util.ArrayList;
-
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -29,8 +27,7 @@ import org.springframework.graalvm.type.AccessBits;
 			ConfigurationPropertiesBinder.Factory.class,
 			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
-			NestedConfigurationProperty.class,
-			ArrayList.class
+			NestedConfigurationProperty.class
 			}, typeNames = {
 			"java.io.Serializable[]",
 			"java.lang.Comparable[]",

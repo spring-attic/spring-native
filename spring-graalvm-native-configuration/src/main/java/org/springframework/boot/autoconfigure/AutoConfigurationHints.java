@@ -37,9 +37,12 @@ import org.springframework.graalvm.type.AccessBits;
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
-	}, typeNames = {
-		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
 	})
+})
+@NativeImageHint(typeInfos = { 
+	@TypeInfo(typeNames = {
+		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
+	},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 public class AutoConfigurationHints implements NativeImageConfiguration {
 }
