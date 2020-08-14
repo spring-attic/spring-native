@@ -1,2 +1,7 @@
-# actuator-webflux
+Spring Boot project with Spring WebFlux and Spring Boot actuators.
 
+To build and run the native application packaged in a lightweight container:
+```
+./gradlew bootBuildImage
+docker-compose up
+```
