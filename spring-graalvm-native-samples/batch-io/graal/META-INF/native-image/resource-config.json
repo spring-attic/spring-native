@@ -1,7 +1,0 @@
-{
-  "resources":[
-    {"pattern":"\\Q/org/hsqldb/resources/information-schema.sql\\E"},
-    {"pattern":"\\Qorg/hsqldb/resources/information-schema.sql\\E"},
-    {"pattern":"\\Qorg/hsqldb/resources/.*\\E"}
-  ]
-}

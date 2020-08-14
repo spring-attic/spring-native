@@ -1,5 +1,8 @@
 {
   "resources":[
+    {"pattern":"\\Q/org/hsqldb/resources/information-schema.sql\\E"},
+    {"pattern":"\\Qorg/hsqldb/resources/information-schema.sql\\E"},
+    {"pattern":"\\Qorg/hsqldb/resources/.*\\E"},
     {"pattern":"\\QMETA-INF/services/java.sql.Driver\\E"}, 
     {"pattern":"\\QMETA-INF/services/jdk.vm.ci.hotspot.HotSpotJVMCIBackendFactory\\E"}, 
     {"pattern":"\\QMETA-INF/services/jdk.vm.ci.services.JVMCIServiceLocator\\E"}, 
