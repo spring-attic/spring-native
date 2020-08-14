@@ -1,0 +1,4 @@
+version: '3.1'
+services:
+  boot-features:
+    image: boot-features:0.0.1-SNAPSHOT
