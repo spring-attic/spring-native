@@ -23,8 +23,11 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint( typeInfos = {@TypeInfo(types= {
-	Order.class,AnnotationAttributes.class,AnnotationAttributes[].class,
-	DecoratingProxy.class,PriorityOrdered.class,AliasFor.class,
-	TypeMappedAnnotation[].class
+	Order.class, AliasFor.class,
 },access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
+@NativeImageHint( typeInfos = {@TypeInfo(types= {
+	AnnotationAttributes.class,AnnotationAttributes[].class,
+	DecoratingProxy.class,PriorityOrdered.class,
+	TypeMappedAnnotation[].class
+},access = AccessBits.CLASS)})
 public class CoreAnnotationHints implements NativeImageConfiguration { }

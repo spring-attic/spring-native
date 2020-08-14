@@ -1,8 +1,5 @@
 {
     "resources": [
-    {"pattern": "db/.*"},
-    {"pattern": "messages/.*"},
-
     // Kotlin
     {"pattern":"META-INF/.*.kotlin_module$"},
     {"pattern":".*.kotlin_builtins"}
