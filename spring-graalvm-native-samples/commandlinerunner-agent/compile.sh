@@ -10,9 +10,9 @@ NC='\033[0m'
 
 rm -rf target
 mkdir -p target/native-image
-
+mkdir -p target/classes/META-INF/native-image 2>/dev/null
 echo "Packaging $ARTIFACT with Maven"
-mvn -ntp package > target/native-image/output.txt
+mvn -ntp -Pnative package > target/native-image/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
