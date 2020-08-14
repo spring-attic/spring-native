@@ -27,7 +27,6 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  --initialize-at-build-time=javax.el.ListELResolver,javax.el.BeanELResolver,javax.el.MapELResolver,javax.el.CompositeELResolver \
   -H:Name=$ARTIFACT \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

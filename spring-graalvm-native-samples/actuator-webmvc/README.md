@@ -1,13 +1,7 @@
-# actuator-webmvc
+Spring Boot project with Spring MVC and Spring Boot actuators.
 
-The following actuator endpoints are reachable in this app:
-
-/health
-/beans
-/conditions
-/configprops
-/info
-/env
-/mappings
-/metrics
-
+To build and run the native application packaged in a lightweight container:
+```
+./gradlew bootBuildImage
+docker-compose up
+```
