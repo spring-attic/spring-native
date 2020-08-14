@@ -1,4 +1,0 @@
-version: '3.1'
-services:
-  batch-io:
-    image: batch-io:0.0.1-SNAPSHOT
