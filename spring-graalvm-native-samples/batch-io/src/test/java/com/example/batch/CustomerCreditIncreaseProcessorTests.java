@@ -19,9 +19,9 @@ package com.example.batch;
 import java.math.BigDecimal;
 
 import com.example.domain.CustomerCredit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for {@link CustomerCreditIncreaseProcessor}.
