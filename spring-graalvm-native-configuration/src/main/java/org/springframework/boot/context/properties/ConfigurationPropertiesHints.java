@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.context.properties;
 
+import java.util.ArrayList;
+
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -33,7 +35,8 @@ import org.springframework.graalvm.type.AccessBits;
 			"java.lang.Comparable[]",
 			"java.lang.CharSequence[]",
 			"java.lang.String[]"
-	})
+	}),
+	@TypeInfo(types= {ArrayList.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 @NativeImageHint(trigger = EnableConfigurationProperties.class,
 	typeInfos={@TypeInfo(types= {ConstructorBinding.class})}
