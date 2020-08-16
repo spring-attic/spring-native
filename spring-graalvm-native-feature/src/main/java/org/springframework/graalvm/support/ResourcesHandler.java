@@ -142,7 +142,8 @@ public class ResourcesHandler {
 		}
 		handleSpringConstantInitialiationHints();
 		if (ConfigOptions.isDefaultMode() ||
-			ConfigOptions.isHybridMode()) {
+			ConfigOptions.isHybridMode() ||
+			ConfigOptions.isFunctionalMode()) {
 			handleSpringComponents();
 		}
 	}
@@ -178,8 +179,12 @@ public class ResourcesHandler {
 		List<CompilationHint> constantHints = ts.findActiveDefaultHints();
 		SpringFeature.log("Registering fixed hints: " + constantHints);
 		for (CompilationHint ch : constantHints) {
+			if (!isHintValidForCurrentMode(ch)) {
+				continue;
+			}
 			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
 			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
+				SpringFeature.log("  fixed type registered "+dependantType.getKey());
 				reflectionHandler.addAccess(dependantType.getKey(), null, null, true,
 						AccessBits.getFlags(dependantType.getValue().getAccessBits()));
 			}
@@ -237,6 +242,8 @@ public class ResourcesHandler {
 				loadSpringFactoryFile(springFactory, p);
 				if (ConfigOptions.isHybridMode()) {
 					processSpringComponentsHybrid(p, context);
+				} else if (ConfigOptions.isFunctionalMode()) {
+					processSpringComponentsFunc(p, context, alreadyProcessed);
 				} else {
 					processSpringComponents(p, context, alreadyProcessed);
 				}
@@ -246,6 +253,8 @@ public class ResourcesHandler {
 			Properties p = synthesizeSpringComponents();
 			if (ConfigOptions.isHybridMode()) {
 				processSpringComponentsHybrid(p, context);
+			} else if (ConfigOptions.isFunctionalMode()) {
+				processSpringComponentsFunc(p, context, alreadyProcessed);
 			} else {
 				processSpringComponents(p, context, alreadyProcessed);
 			}
@@ -278,6 +287,56 @@ public class ResourcesHandler {
 			throw new IllegalStateException(e);
 		}
 		return p;
+	}
+	
+	private void processSpringComponentsFunc(Properties p, NativeImageContext context,List<String> alreadyProcessed) {
+		Enumeration<Object> keys = p.keys();
+		while (keys.hasMoreElements()) {
+			String key = (String)keys.nextElement();
+			String valueString = (String)p.get(key);
+			if (valueString.equals("package-info")) {
+				continue;
+			}
+			Type keyType = ts.resolveDotted(key);
+			if (keyType.isAtConfiguration()) {
+				checkAndRegisterConfigurationType(key);
+				//	[Lorg/springframework/boot/autoconfigure/context/PropertyPlaceholderAutoConfiguration;, Lorg/springframework/boot/autoconfigure/context/ConfigurationPropertiesAutoConfiguration;, Lorg/springframework/boot/autoconfigure/web/servlet/ServletWebServerFactoryAutoConfiguration;
+				
+
+			}
+			/*
+			Type keyType = ts.resolveDotted(key);
+			// The context start/stop test may not exercise the @SpringBootApplication class
+			if (keyType.isAtSpringBootApplication()) {
+				System.out.println("hybrid: adding access to "+keyType+" since @SpringBootApplication");
+				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
+				resourcesRegistry.addResources(key.replace(".", "/")+".class");
+			}
+			if (keyType.isAtController()) {
+				System.out.println("hybrid: Processing controller "+key);
+				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
+				// Example:
+				// @GetMapping("/greeting")
+				// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+				for (Method mapping: mappings) {
+					for (int pi=0;pi<mapping.getParameterCount();pi++) {
+						List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
+						for (Type parameterAnnotationType: parameterAnnotationTypes) {
+							if (parameterAnnotationType.hasAliasForMarkedMembers()) {
+								List<String> interfaces = new ArrayList<>();
+								interfaces.add(parameterAnnotationType.getDottedName());
+								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
+								System.out.println("Adding dynamic proxy for "+interfaces);
+								dynamicProxiesHandler.addProxy(interfaces);
+							}
+						}
+						
+					}
+				}
+			}
+			*/
+		}
+		
 	}
 	
 	private void processSpringComponentsHybrid(Properties p, NativeImageContext context) {
@@ -1081,7 +1140,7 @@ public class ResourcesHandler {
 		if (!hints.isEmpty()) {
 			hints: for (Hint hint : hints) {
 				SpringFeature.log(spaces(depth) + "processing hint " + hint);
-				boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(type, hint);
+				boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(hint);
 
 				// This is used for hints that didn't gather data from the bytecode but had them
 				// directly encoded. For example when a CompilationHint on an ImportSelector
@@ -1131,7 +1190,7 @@ public class ResourcesHandler {
 							// things here..
 							// Do we not follow if it is @Configuration and missing from the existing other file? 
 							
-							//if (!ConfigOptions.isHybridMode()) {
+							//if (!ConfigOptions.isFunctionalMode()) {
 								accessRequestor.requestTypeAccess(s, inferredType.getValue());
 							//}
 							
@@ -1216,6 +1275,11 @@ public class ResourcesHandler {
 				}
 				s = s.getSuperclass();
 			}
+		}
+		
+		List<String> importedConfigurations = type.getImportedConfigurations();
+		for (String importedConfiguration: importedConfigurations) {
+			toFollow.add(ts.resolveSlashed(Type.fromLdescriptorToSlashed(importedConfiguration)));
 		}
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1338,8 +1402,10 @@ public class ResourcesHandler {
 									// Once failing, no need to process other hints
 								}
 							}
-							List<Type> annotationChain = hint.getAnnotationChain();
-							registerAnnotationChain(depth, accessRequestor, annotationChain);
+							if (!ConfigOptions.isFunctionalMode()) {
+								List<Type> annotationChain = hint.getAnnotationChain();
+								registerAnnotationChain(depth, accessRequestor, annotationChain);
+							}
 						}
 					}
 
@@ -1455,6 +1521,12 @@ public class ResourcesHandler {
 
 			SpringFeature.log(spaces(depth) + "making this accessible: " + dname + "   " + AccessBits.toString(requestedAccess));
 			Flag[] flags = AccessBits.getFlags(requestedAccess);
+			Type rt = ts.resolveDotted(dname, true);
+			if (ConfigOptions.isFunctionalMode()) {
+				if (rt.isAtConfiguration() || rt.isConditional() || rt.isCondition()) {
+				continue;
+				}
+			}
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);
 				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
@@ -1473,7 +1545,19 @@ public class ResourcesHandler {
 		}
 	}
 	
-	private boolean isHintValidForCurrentMode(Type currentType, Hint hint) {
+	private boolean isHintValidForCurrentMode(Hint hint) {
+		Mode currentMode = ConfigOptions.getMode();
+		if (hint.getModes().size() == 0) {
+			return true; // No mode restrictions specified in hint 
+		}
+		if (!hint.getModes().contains(currentMode)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean isHintValidForCurrentMode(CompilationHint hint) {
 		Mode currentMode = ConfigOptions.getMode();
 		if (hint.getModes().size() == 0) {
 			return true; // No mode restrictions specified in hint 

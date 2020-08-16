@@ -20,6 +20,7 @@ import org.springframework.core.DecoratingProxy;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint( typeInfos = {@TypeInfo(types= {
@@ -29,5 +30,5 @@ import org.springframework.graalvm.type.AccessBits;
 	AnnotationAttributes.class,AnnotationAttributes[].class,
 	DecoratingProxy.class,PriorityOrdered.class,
 	TypeMappedAnnotation[].class
-},access = AccessBits.CLASS)})
+},access = AccessBits.CLASS)},modes= {Mode.DEFAULT,Mode.HYBRID})
 public class CoreAnnotationHints implements NativeImageConfiguration { }

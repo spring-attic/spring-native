@@ -19,6 +19,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
@@ -36,7 +37,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 				GenericWebApplicationContext.class,
 				ConditionalOnWebApplication.Type.class},
 				access = AccessBits.LOAD_AND_CONSTRUCT)},
-		abortIfTypesMissing = true)
+		abortIfTypesMissing = true,modes= {Mode.DEFAULT,Mode.HYBRID})
 @NativeImageHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
 @NativeImageHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
 // Here exposing SearchStrategy as it is the type of a field within the annotation. 
