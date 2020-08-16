@@ -4,7 +4,7 @@ RC=0
 
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for i in commandlinerunner webflux-netty webmvc-tomcat commandlinerunner-jafu webmvc-jafu webflux-thymeleaf grpc jdbc-tx
+for i in commandlinerunner webflux-netty webmvc-tomcat webmvc-functional commandlinerunner-jafu webmvc-jafu webflux-thymeleaf grpc jdbc-tx
 do
 
   if ! (cd spring-graalvm-native-samples/$i && ./build.sh); then
