@@ -60,6 +60,7 @@ public class Type {
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
+	public final static String AtImportAutoConfiguration = "Lorg/springframework/boot/autoconfigure/ImportAutoConfiguration;";
 	public final static String AtConfigurationProperties = "Lorg/springframework/boot/context/properties/ConfigurationProperties;";
 	public final static String AtSpringBootApplication = "Lorg/springframework/boot/autoconfigure/SpringBootApplication;";
 	public final static String AtController = "Lorg/springframework/stereotype/Controller;";
@@ -2357,5 +2358,10 @@ public class Type {
 			}
 		}
 		return null;
+	}
+
+	public List<String> getImportedConfigurations() {
+	 List<String> importedConfigurations =  findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false, new HashSet<>()).get(this.getDottedName());
+	 return (importedConfigurations==null?Collections.emptyList():importedConfigurations);
 	}
 }
