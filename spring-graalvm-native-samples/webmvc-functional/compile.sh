@@ -26,7 +26,7 @@ CP=BOOT-INF/classes:$LIBPATH
 
 GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
-{ time native-image --verbose -H:+ReportExceptionStackTraces -H:ReportAnalysisForbiddenType=org.xml.sax.helpers.XMLReaderFactory -H:Name=$ARTIFACT -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
+{ time native-image --verbose -H:Name=$ARTIFACT -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
 then
