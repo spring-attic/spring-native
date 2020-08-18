@@ -583,6 +583,9 @@ public class ResourcesHandler {
 	  Collection<Type> returnTypes = t.collectAtMappingMarkedReturnTypes();
 	  SpringFeature.log("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
 	  for (Type returnType: returnTypes ) {
+		  if (returnType==null) {
+			  continue;
+		  }
 		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
 	  }
 	}
@@ -1523,7 +1526,8 @@ public class ResourcesHandler {
 			Flag[] flags = AccessBits.getFlags(requestedAccess);
 			Type rt = ts.resolveDotted(dname, true);
 			if (ConfigOptions.isFunctionalMode()) {
-				if (rt.isAtConfiguration() || rt.isConditional() || rt.isCondition()) {
+				if (rt.isAtConfiguration() || rt.isConditional() || rt.isCondition() ||
+						rt.isImportSelector() || rt.isImportRegistrar()) {
 				continue;
 				}
 			}
