@@ -25,6 +25,12 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(
+	trigger=kotlin.Unit.class,
+	resourcesInfos= { 
+		@ResourcesInfo(patterns= { "META-INF/.*.kotlin_module$", ".*.kotlin_builtins" })
+	}
+)
+@NativeImageHint(
 	resourcesInfos = {
 		@ResourcesInfo(patterns= {
 			"db/.*", // TODO should be conditional on database active?
