@@ -16,6 +16,6 @@ import org.springframework.graalvm.support.Mode;
 		@TypeInfo(types = TomcatEmbeddedWebappClassLoader.class),
 		@TypeInfo(types = AbstractProtocol.class, methods = @MethodInfo(name = "getLocalPort")),
 		@TypeInfo(types = Http11NioProtocol.class)
-}, importInfos = CommonWebInfos.class, modes = {Mode.FUNCTIONAL, Mode.DEFAULT})
+}, importInfos = CommonWebInfos.class, modes = {Mode.FUNCTIONAL, Mode.REFLECTION})
 public class TomcatHints implements NativeImageConfiguration  {
 }

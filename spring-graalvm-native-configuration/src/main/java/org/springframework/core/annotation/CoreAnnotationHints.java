@@ -30,5 +30,5 @@ import org.springframework.graalvm.type.AccessBits;
 	AnnotationAttributes.class,AnnotationAttributes[].class,
 	DecoratingProxy.class,PriorityOrdered.class,
 	TypeMappedAnnotation[].class
-},access = AccessBits.CLASS)},modes= {Mode.DEFAULT,Mode.HYBRID})
+},access = AccessBits.CLASS)},modes= {Mode.REFLECTION,Mode.AGENT})
 public class CoreAnnotationHints implements NativeImageConfiguration { }

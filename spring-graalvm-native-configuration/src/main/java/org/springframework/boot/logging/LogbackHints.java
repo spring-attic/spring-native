@@ -29,6 +29,6 @@ import org.springframework.graalvm.support.Mode;
 				ColorConverter.class,
 				WhitespaceThrowableProxyConverter.class,
 				ExtendedWhitespaceThrowableProxyConverter.class
-}), modes = {Mode.FUNCTIONAL, Mode.DEFAULT})
+}), modes = {Mode.FUNCTIONAL, Mode.REFLECTION})
 public class LogbackHints implements NativeImageConfiguration {
 }

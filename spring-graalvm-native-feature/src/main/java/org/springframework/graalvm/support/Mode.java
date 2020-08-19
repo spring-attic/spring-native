@@ -21,8 +21,8 @@ package org.springframework.graalvm.support;
  * @author Andy Clement
  */
 public enum Mode {
-	DEFAULT, // Default mode, provide everything
-	AGENT, // initialization-only configuration provided from the feature
-	HYBRID, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
+	REFLECTION, // Default mode, provide everything
+	INIT, // initialization-only configuration provided from the feature
+	AGENT, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
 	FUNCTIONAL; // For functional style, feature provides initialization and resource configuration
 }

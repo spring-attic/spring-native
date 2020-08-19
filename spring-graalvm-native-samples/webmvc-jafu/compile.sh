@@ -28,7 +28,6 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
-  -Dspring.native.mode=functional \
   -H:EnableURLProtocols=http \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.spel.ignore=true \

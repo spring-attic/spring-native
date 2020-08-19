@@ -15,6 +15,15 @@
  */
 package org.springframework.graalvm.support;
 
+import java.util.Map;
+
+import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
+import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
+import org.springframework.graalvm.type.TypeSystem;
+
+import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
+import com.oracle.svm.hosted.ImageClassLoader;
+
 /**
  * Encapsulate configurable feature behaviour.
  * 
@@ -43,7 +52,7 @@ public abstract class ConfigOptions {
 	
 	private final static boolean VERIFIER_ON;
 	
-	private final static Mode MODE; // Default is 'feature'
+	private static Mode MODE; // Default is 'feature'
 	
 	// Temporary, for exploration
 	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
@@ -62,14 +71,15 @@ public abstract class ConfigOptions {
 		if (SKIP_AT_BEAN_SIGNATURE_TYPES) {
 			System.out.println("Skipping @Bean signature type processing");
 		}
-		String modeValue = System.getProperty("spring.native.mode","DEFAULT");
-		Mode inferredMode = Mode.valueOf(modeValue.toUpperCase());
-		if (inferredMode == null) {
-			MODE = Mode.DEFAULT;
-		} else {
-			MODE = inferredMode;
+		String modeValue = System.getProperty("spring.native.mode");
+		if (modeValue != null) {
+			MODE = Mode.valueOf(modeValue.toUpperCase());
+			if (MODE == null) {
+				// Default
+				MODE = Mode.REFLECTION;
+			}
+			System.out.println("Feature operating in "+MODE+" mode");
 		}
-		System.out.println("Feature operating in "+MODE+" mode");
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
@@ -146,24 +156,24 @@ public abstract class ConfigOptions {
 		return REMOVE_JMX_SUPPORT;
 	}
 
-	public static boolean isAgentMode() {
-		return MODE==Mode.AGENT;
+	public static boolean isInitMode() {
+		return getMode()==Mode.INIT;
 	}
 	
-	public static boolean isHybridMode() {
-		return MODE==Mode.HYBRID;
+	public static boolean isAgentMode() {
+		return getMode()==Mode.AGENT;
 	}
 
-	public static boolean isDefaultMode() {
-		return MODE==Mode.DEFAULT;
-	}
-	
-	public static boolean isIgnoreHintsOnExcludedConfig() {
-		return IGNORE_HINTS_ON_EXCLUDED_CONFIG;
+	public static boolean isAnnotationMode() {
+		return getMode()==Mode.REFLECTION;
 	}
 
 	public static boolean isFunctionalMode() {
-		return MODE==Mode.FUNCTIONAL;
+		return getMode()==Mode.FUNCTIONAL;
+	}
+
+	public static boolean isIgnoreHintsOnExcludedConfig() {
+		return IGNORE_HINTS_ON_EXCLUDED_CONFIG;
 	}
 
 	public static String getDumpConfigLocation() {
@@ -180,6 +190,36 @@ public abstract class ConfigOptions {
 
 	public static Mode getMode() {
 		return MODE;
+	}
+	
+	/*
+	 * Note - some similar inferencing for the substitutions is in FunctionalMode class.
+	 */
+	public static void ensureModeInitialized(DuringSetupAccess access) {
+		if (MODE == null) {
+			DuringSetupAccessImpl dsai = (DuringSetupAccessImpl) access;
+			ImageClassLoader icl = dsai.getImageClassLoader();
+			TypeSystem ts = TypeSystem.get(icl.getClasspath());
+			if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer", true) != null
+					|| ts.resolveDotted("org.springframework.fu.kofu.KofuApplication", true) != null
+					|| ts.resolveDotted("org.springframework.fu.jafu.JafuApplication", true) != null) {
+				MODE = Mode.FUNCTIONAL;
+			} else {
+				Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts
+						.getReflectionConfigurationsOnClasspath();
+				for (ReflectionDescriptor reflectionDescriptor : reflectionConfigurationsOnClasspath.values()) {
+					if (reflectionDescriptor
+							.hasClassDescriptor("org.springframework.boot.autoconfigure.SpringBootApplication")) {
+						MODE = Mode.AGENT;
+						break;
+					}
+				}
+			}
+			if (MODE == null) {
+				MODE = Mode.REFLECTION;
+			}
+			SpringFeature.log("Inferred feature operating mode: " + MODE);
+		}
 	}
 
 }

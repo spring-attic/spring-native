@@ -578,8 +578,7 @@ public class TypeSystem {
 			return false;
 		}
 
-		// TODO filter out java/lang/annotation annotations? Surely we don't need all of
-		// them
+		// TODO filter out java/lang/annotation annotations? Surely we don't need all of them
 
 		List<AnnotationNode> getMetaAnnotations() {
 			if (metaAnnotationsList == null) {

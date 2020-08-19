@@ -26,12 +26,12 @@ import org.springframework.graalvm.type.AccessBits;
 		@TypeInfo(types= { 
 				ImportAutoConfiguration.class }, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
-			})},modes= {Mode.DEFAULT,Mode.HYBRID}
+			})},modes= {Mode.REFLECTION,Mode.AGENT}
 )
-@NativeImageHint(trigger=AutoConfigurationImportSelector.class, modes= {Mode.DEFAULT,Mode.HYBRID})
+@NativeImageHint(trigger=AutoConfigurationImportSelector.class, modes= {Mode.REFLECTION,Mode.AGENT})
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
-			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) },modes= {Mode.DEFAULT, Mode.HYBRID})
+			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) },modes= {Mode.REFLECTION, Mode.AGENT})
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(types = { 
@@ -40,11 +40,11 @@ import org.springframework.graalvm.type.AccessBits;
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
 	})
-},modes= {Mode.DEFAULT,Mode.HYBRID})
+},modes= {Mode.REFLECTION,Mode.AGENT})
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
 	},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
-},modes= {Mode.DEFAULT,Mode.HYBRID})
+},modes= {Mode.REFLECTION,Mode.AGENT})
 public class AutoConfigurationHints implements NativeImageConfiguration {
 }

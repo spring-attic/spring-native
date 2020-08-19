@@ -121,12 +121,12 @@ public class HintTests {
 		Hint hint = hints.get(0);
 		List<Mode> modes = hint.getModes();
 		assertEquals(3,modes.size());
-		assertEquals("AGENT",modes.get(0).toString());
+		assertEquals("INIT",modes.get(0).toString());
 		assertEquals("FUNCTIONAL",modes.get(1).toString());
-		assertEquals("DEFAULT",modes.get(2).toString());
+		assertEquals("ANNOTATION",modes.get(2).toString());
 	}
 
-	@NativeImageHint(modes= {Mode.AGENT, Mode.FUNCTIONAL, Mode.DEFAULT}, resourcesInfos = { 
+	@NativeImageHint(modes= {Mode.INIT, Mode.FUNCTIONAL, Mode.REFLECTION}, resourcesInfos = { 
 			@ResourcesInfo(patterns = { "aaa","bbb" })
 	})
 	static class TestClass4 {

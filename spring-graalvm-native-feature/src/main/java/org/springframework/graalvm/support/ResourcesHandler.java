@@ -127,22 +127,22 @@ public class ResourcesHandler {
 		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		if (ConfigOptions.isFunctionalMode() ||
-			ConfigOptions.isDefaultMode() ||
-			ConfigOptions.isHybridMode()) {
+			ConfigOptions.isAnnotationMode() ||
+			ConfigOptions.isAgentMode()) {
 			System.out.println("Registering statically declared resources - #" + rd.getPatterns().size() + " patterns");
 			registerPatterns(rd);
 			registerResourceBundles(rd);
 		}
-		if (ConfigOptions.isDefaultMode() ||
-			ConfigOptions.isHybridMode()) {
+		if (ConfigOptions.isAnnotationMode() ||
+			ConfigOptions.isAgentMode()) {
 			processSpringFactories();
 		}
-		if (!ConfigOptions.isAgentMode()) {
+		if (!ConfigOptions.isInitMode()) {
 			handleSpringConstantHints();
 		}
 		handleSpringConstantInitialiationHints();
-		if (ConfigOptions.isDefaultMode() ||
-			ConfigOptions.isHybridMode() ||
+		if (ConfigOptions.isAnnotationMode() ||
+			ConfigOptions.isAgentMode() ||
 			ConfigOptions.isFunctionalMode()) {
 			handleSpringComponents();
 		}
@@ -240,7 +240,7 @@ public class ResourcesHandler {
 				URL springFactory = springComponents.nextElement();
 				Properties p = new Properties();
 				loadSpringFactoryFile(springFactory, p);
-				if (ConfigOptions.isHybridMode()) {
+				if (ConfigOptions.isAgentMode()) {
 					processSpringComponentsHybrid(p, context);
 				} else if (ConfigOptions.isFunctionalMode()) {
 					processSpringComponentsFunc(p, context, alreadyProcessed);
@@ -251,7 +251,7 @@ public class ResourcesHandler {
 		} else {
 			log("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
-			if (ConfigOptions.isHybridMode()) {
+			if (ConfigOptions.isAgentMode()) {
 				processSpringComponentsHybrid(p, context);
 			} else if (ConfigOptions.isFunctionalMode()) {
 				processSpringComponentsFunc(p, context, alreadyProcessed);
@@ -842,7 +842,7 @@ public class ResourcesHandler {
 		boolean modified = false;
 		
 
-		if (!ConfigOptions.isHybridMode()) {
+		if (!ConfigOptions.isAgentMode()) {
 			Properties filteredProperties = new Properties();
 			for (Map.Entry<Object, Object> factoriesEntry : p.entrySet()) {
 				String key = (String) factoriesEntry.getKey();
@@ -867,7 +867,7 @@ public class ResourcesHandler {
 
 		factoryKeys = p.keys();
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
-		if (!ConfigOptions.isHybridMode()) {
+		if (!ConfigOptions.isAgentMode()) {
 			while (factoryKeys.hasMoreElements()) {
 				String k = (String) factoryKeys.nextElement();
 				SpringFeature.log("Adding all the classes for this key: " + k);
@@ -887,7 +887,7 @@ public class ResourcesHandler {
 			}
 		}
 
-		if (!ConfigOptions.isHybridMode()) {
+		if (!ConfigOptions.isAgentMode()) {
 			// Handle PropertySourceLoader
 			String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
 			if (propertySourceLoaderValues != null) {
@@ -1427,7 +1427,7 @@ public class ResourcesHandler {
 			// Follow transitively included inferred types only if necessary:
 			for (Type t : toFollow) {
 				boolean shouldFollow = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
-				if (ConfigOptions.isHybridMode() && t.isAtConfiguration() && !shouldFollow) {
+				if (ConfigOptions.isAgentMode() && t.isAtConfiguration() && !shouldFollow) {
 					System.out.println("hybrid: Not following "+t.getDottedName()+" from "+type.getName()+" - not mentioned in existing reflect configuration");
 					continue;
 				}
@@ -1602,7 +1602,7 @@ public class ResourcesHandler {
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
-			if (i==0 && ConfigOptions.isHybridMode()) {
+			if (i==0 && ConfigOptions.isAgentMode()) {
 				boolean beingReflectedUponInIncomingConfiguration = existingReflectionConfigContains(t.getDottedName());
 				if (!beingReflectedUponInIncomingConfiguration) {
 					System.out.println("HYBRID: IGNORE: We could skip this "+t.getDottedName());

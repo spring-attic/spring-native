@@ -24,6 +24,6 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class }, 
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
-},modes= {Mode.DEFAULT,Mode.HYBRID})
+},modes= {Mode.REFLECTION,Mode.AGENT})
 public class BeanFactoryAnnotationHints implements NativeImageConfiguration {
 }

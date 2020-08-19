@@ -36,8 +36,8 @@ proposedHints.put(AdviceModeImportSelector,
 @NativeImageHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 // TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 // @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-@NativeImageHint(trigger = Import.class, abortIfTypesMissing = false, follow = true, modes = {Mode.DEFAULT,Mode.HYBRID,Mode.AGENT}) // TODO verify these flags...
-@NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }, modes = {Mode.DEFAULT,Mode.HYBRID,Mode.AGENT}) // TODO need extract?
+@NativeImageHint(trigger = Import.class, abortIfTypesMissing = false, follow = true, modes = {Mode.REFLECTION,Mode.AGENT,Mode.INIT}) // TODO verify these flags...
+@NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }, modes = {Mode.REFLECTION,Mode.AGENT,Mode.INIT}) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
 @NativeImageHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
