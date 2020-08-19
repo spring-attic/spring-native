@@ -44,4 +44,17 @@ public class AccessDescriptor {
 	public boolean noMembersSpecified() {
 		return methodDescriptors.isEmpty() && fieldDescriptors.isEmpty();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		s.append("AccessDescriptor:bits="+AccessBits.toString(accessBits));
+		if (methodDescriptors!=null && !methodDescriptors.isEmpty()) {
+			s.append(",md="+methodDescriptors);
+		}
+		if (fieldDescriptors!=null && !fieldDescriptors.isEmpty()) {
+			s.append(",fd="+fieldDescriptors);
+		}
+		return s.toString();
+	}
 }

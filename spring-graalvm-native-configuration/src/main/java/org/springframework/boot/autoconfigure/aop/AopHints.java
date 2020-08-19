@@ -38,5 +38,5 @@ import org.springframework.graalvm.type.AccessBits;
 			AbstractAdvisingBeanPostProcessor.class,
 			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class,
 			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-},modes= {Mode.DEFAULT,Mode.HYBRID})
+},modes= {Mode.REFLECTION,Mode.AGENT})
 public class AopHints implements NativeImageConfiguration { }

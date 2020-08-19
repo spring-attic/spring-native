@@ -67,18 +67,19 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
-		if (ConfigOptions.isDefaultMode() || ConfigOptions.isHybridMode()) {
+		ConfigOptions.ensureModeInitialized(access);
+		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
 			reflectionHandler.register(access);
 			dynamicProxiesHandler.register(access);
 		}
 		if (ConfigOptions.isFunctionalMode()) {
 			reflectionHandler.registerFunctional(access);
 		}
-		if (ConfigOptions.isHybridMode()) {
+		if (ConfigOptions.isAgentMode()) {
 			reflectionHandler.registerHybrid(access);
 			dynamicProxiesHandler.registerHybrid(access);
 		}
-		if (ConfigOptions.isAgentMode()) {
+		if (ConfigOptions.isInitMode()) {
 			reflectionHandler.registerAgent(access);
 		}
 	}
@@ -86,7 +87,7 @@ public class SpringFeature implements Feature {
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		initializationHandler.register(access);
 		resourcesHandler.register(access);
-		if (ConfigOptions.isDefaultMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isHybridMode()) {
+		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
 			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}

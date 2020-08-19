@@ -37,7 +37,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 				GenericWebApplicationContext.class,
 				ConditionalOnWebApplication.Type.class},
 				access = AccessBits.LOAD_AND_CONSTRUCT)},
-		abortIfTypesMissing = true,modes= {Mode.DEFAULT,Mode.HYBRID})
+		abortIfTypesMissing = true,modes= {Mode.REFLECTION,Mode.AGENT})
 @NativeImageHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
 @NativeImageHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
 // Here exposing SearchStrategy as it is the type of a field within the annotation. 
