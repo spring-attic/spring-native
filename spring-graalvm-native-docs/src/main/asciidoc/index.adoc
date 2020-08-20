@@ -4,10 +4,10 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graalvm-native
-:version: 0.7.1
+:version: 0.8.0
 :repository: milestone
-:boot-version: 2.3.1.RELEASE
-:graal-version: 20.1.0
+:boot-version: 2.4.0-M2
+:graal-version: 20.2.0
 = Spring GraalVM Native {version} reference guide
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
