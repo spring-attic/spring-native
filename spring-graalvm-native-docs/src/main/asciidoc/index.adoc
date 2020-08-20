@@ -72,6 +72,8 @@ See <<hybrid,the hybrid guide>>.
 
 include::samples.adoc[]
 
+include::support-scope.adoc[]
+
 == Guides
 
 include::feature.adoc[]

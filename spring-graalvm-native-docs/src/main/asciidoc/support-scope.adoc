@@ -1,0 +1,42 @@
+[[support-scope]]
+== Support scope
+
+=== Language
+
+Java 8, Java 11 and Kotlin 1.3+ are supported.
+
+=== Spring Boot
+
+Spring Boot {boot-version} is supported. Group ID is `org.springframework.boot` unless specified otherwise.
+
+- `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
+- `spring-boot-starter-cache`
+- `spring-boot-starter-data-jpa`
+- `spring-boot-starter-data-mongodb`
+- `spring-boot-starter-data-r2dbc`
+- `spring-boot-starter-data-redis`
+- `spring-boot-starter-jdbc`
+- `spring-boot-starter-logging`
+- `spring-boot-starter-thymeleaf`
+- `spring-boot-starter-validation`
+- `spring-boot-starter-webflux`: only Netty is supported for now.
+- `spring-boot-starter-web`: only Tomcat is supported for now. A lightweight version of Tomcat is available via the `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency.
+- `com.wavefront:wavefront-spring-boot-starter`
+
+=== Spring Cloud
+
+Group ID is `org.springframework.cloud`.
+
+- `spring-cloud-function-web`
+- `spring-cloud-function-adapter-aws`
+- `spring-cloud-starter-function-webflux`
+
+=== Others
+
+- `org.springframework.fu:spring-fu-jafu`: https://github.com/spring-projects-experimental/spring-fu/tree/master/jafu[JaFu DSL] from https://github.com/spring-projects-experimental/spring-fu[Spring Fu]
+- `org.springframework.fu:spring-fu-kofu`: https://github.com/spring-projects-experimental/spring-fu/tree/master/kofu[KoFu DSL] from https://github.com/spring-projects-experimental/spring-fu[Spring Fu]
+- https://grpc.io/[GRPC]
+
+=== Limitations
+
+- Only proxies on interfaces are supported for now
