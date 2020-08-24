@@ -37,6 +37,7 @@ import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -71,6 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @DataJdbcTest
+@ActiveProfiles("test")
 public class ClinicServiceTests {
 
     @Autowired
