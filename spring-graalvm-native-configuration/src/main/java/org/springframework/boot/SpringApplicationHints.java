@@ -37,8 +37,8 @@ import org.springframework.graalvm.type.AccessBits;
 			"messages/.*",
 			"banner.txt",
 			"META-INF/spring.components",
-			"application.yml",
-			"application.properties",
+			"application.*.yml",
+			"application.*.properties",
 			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
 			"META-INF/services/.*",
 		    // Do these two catch the logging/<eachDirectory>/*.properties?
@@ -54,7 +54,7 @@ import org.springframework.graalvm.type.AccessBits;
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT)
+		})
 	}
 )
 public class SpringApplicationHints implements NativeImageConfiguration {
