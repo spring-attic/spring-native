@@ -41,15 +41,9 @@ import io.r2dbc.pool.ConnectionPool;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
-		@TypeInfo(types = {MVTableEngine.class, Statement.class,Statement[].class}),
+		@TypeInfo(types = {Statement.class,Statement[].class}),
 		@TypeInfo(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS,
-				typeNames= {
-						"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
-				types= {
-						FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class}),
 		@TypeInfo(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION)
 		})
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, 
