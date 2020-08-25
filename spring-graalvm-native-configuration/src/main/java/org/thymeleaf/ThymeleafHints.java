@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.thymeleaf;
 
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
 import org.thymeleaf.spring5.expression.Fields;
@@ -29,7 +30,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeImageHint(trigger=ThymeleafAutoConfiguration.class,typeInfos= {
+@NativeImageHint(trigger= ThymeleafView.class,modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
 		@TypeInfo(
 				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
@@ -39,8 +40,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 				}, typeNames= {
 						"org.thymeleaf.spring5.expression.Mvc$Spring41MvcUriComponentsBuilderDelegate",
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
-				},
-				access=AccessBits.LOAD_AND_CONSTRUCT),
+				}
+		),
 		@TypeInfo(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
 public class ThymeleafHints implements NativeImageConfiguration {
