@@ -22,6 +22,7 @@ import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
 @SpringBootConfiguration
+// Required for now to only enable functional infrastructure
 @ImportAutoConfiguration({ PropertyPlaceholderAutoConfiguration.class, ConfigurationPropertiesAutoConfiguration.class,
 		ServletWebServerFactoryAutoConfiguration.class, RouterFunctionAutoConfiguration.class,
 		DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
