@@ -49,6 +49,7 @@
             </exclusions>
         </dependency>
     </dependencies>
+    <!-- this is the snippet that will use the buildpacks to produce a container image of the native executable -->
     <build>
         <plugins>
             <plugin>
@@ -69,6 +70,39 @@
             </plugin>
         </plugins>
     </build>
+    <!-- this is the snippet that will invoke native-image during a regular maven build -->
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                        <version>20.2.0</version>
+                        <configuration>
+			                <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
+                            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
+			                <imageName>commandlinerunner</imageName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
