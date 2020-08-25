@@ -138,7 +138,7 @@ And for Spring Boot plugin:
 ===== Add and update the appropriate dependencies
 
 If not specified, the builder will automatically use the latest `spring-graalvm-native` release available, but here to be
-sure of the version used we specify it explicitly:
+sure of the version we specify it explicitly:
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
@@ -156,7 +156,7 @@ sure of the version used we specify it explicitly:
 ===== Update configuration to avoid using proxies
 
 The only kind of proxy allowed with native images is a JDK proxy. It is not possible to use CGLIB or some other kind of generated proxy.
-So basically, to compile to native applicatios, your application need to switch to using `proxyBeanMethods=false` on `@SpringBootApplication` and `@Configuration`.
+So basically, to compile to native applications, your applications need to switch to using `proxyBeanMethods=false` on `@SpringBootApplication` and `@Configuration`.
 Spring Boot and Spring Framework configurations have already switched to that model.
 
 Adapt `RestServiceApplication.java` accordingly:
