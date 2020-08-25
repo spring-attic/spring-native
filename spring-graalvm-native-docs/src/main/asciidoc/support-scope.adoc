@@ -3,7 +3,7 @@
 
 === Language
 
-Java 8, Java 11 and Kotlin 1.3+ are supported.
+Java 8, Java 11 and Kotlin 1.3+ are supported. GraalVM version 20.2.0 should be used.
 
 === Spring Boot
 
