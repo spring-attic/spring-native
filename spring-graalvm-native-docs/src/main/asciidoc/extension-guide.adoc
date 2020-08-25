@@ -1,4 +1,4 @@
-[[extension_guide]]
+[[extension-guide]]
 == Extension guide
 
 This section describes how to extend Spring GraalVM Native.

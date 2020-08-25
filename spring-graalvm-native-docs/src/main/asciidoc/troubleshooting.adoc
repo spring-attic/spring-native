@@ -41,7 +41,7 @@ Caused by: java.util.MissingResourceException:
 ----
 ====
 
-Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings` to the `<buildArgs>` section in the `pom.xml` file.
+Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings`.
 
 ==== Getting `ClassNotFoundException`
 
@@ -93,7 +93,7 @@ Recompiling should pick up this extra configuration, and the resultant image inc
 
 === Verifying your application is suitable for native-image construction
 
-Rather than simplying failing with a difficult to debug error, there is the beginnings of a verification
+Rather than simplying failing with a difficult to debug error, there is the beginning of a verification
 system in the feature that will try to give an early warning of what might be the problem. This mode is
 turned on via the option `-Dspring.native.verify=true`. It isn't the default because it is a work in progress.
 Currently it will warn about failing to specify `proxyBeanMethods=false` on components but the framework is

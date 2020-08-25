@@ -1,0 +1,174 @@
+[[getting-started-buildpacks]]
+=== Getting started with Buildpacks
+
+This section walks through how to build a Spring Boot native application with https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+
+==== Prerequisites
+
+You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
+Before proceeding further, verify you can run docker commands from the shell.
+
+==== Set up the sample project
+
+Like the instructions for using the feature, here we use the getting started REST service guide.
+This is the sample project we trace with the agent and then build into a native image.
+The following commands install the REST service guide:
+
+====
+[source,bash]
+----
+git clone https://github.com/spring-guides/gs-rest-service
+cd gs-rest-service/complete
+----
+====
+
+You may already be ready to go with your own project.
+
+===== Update the `pom.xml` file
+
+IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
+
+Upgrade the project to Spring Boot {boot-version} if necessary:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{boot-version}</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+----
+====
+
+===== Configure the Maven plugin
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
+To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1` and provide optionally additional build arguments.
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <image>
+            <env>
+                <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>-Dspring.native.remove-yaml-support=true  -Dspring.spel.ignore=true</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+            </env>
+        </image>
+    </configuration>
+</plugin>
+----
+====
+
+`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optionak optimization flag to reduce the footprint.
+
+===== Add the repositories
+
+If necessary, add the repository for the `spring-graalvm-native` dependency, as follows:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<repositories>
+    <!-- ... -->
+    <repository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </repository>
+</repositories>
+----
+====
+
+And for Spring Boot plugin:
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </pluginRepository>
+</pluginRepositories>
+----
+====
+
+===== Add and update the appropriate dependencies
+
+If not specified, the builder will automatically use the latest `spring-graalvm-native` release available, but here to be
+sure of the version used we specify it explicitly:
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<dependencies>
+    <!-- ... -->
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-graalvm-native</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+----
+====
+
+===== Update configuration to avoid using proxies
+
+The only kind of proxy allowed with native images is a JDK proxy. It is not possible to use CGLIB or some other kind of generated proxy.
+So basically, to compile to native applicatios, your application need to switch to using `proxyBeanMethods=false` on `@SpringBootApplication` and `@Configuration`.
+Spring Boot and Spring Framework configurations have already switched to that model.
+
+Adapt `RestServiceApplication.java` accordingly:
+
+====
+[source,java]
+----
+@SpringBootApplication(proxyBeanMethods = false)
+public class RestServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(RestServiceApplication.class, args);
+    }
+
+}
+----
+====
+
+==== Build the native application
+
+Building the native application is as simple as running:
+====
+[source,bash]
+----
+mvn spring-boot:build-image
+----
+====
+This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally
+the related container image.
+
+==== Run the application
+
+To run your application, you need to run the previously created container image:
+
+====
+[source,bash]
+----
+docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
+----
+====
+
+The startup time is <100ms, compared ~1500ms when starting the fat jar.
+
+Now that the service is up, visit http://localhost:8080/greeting, where you should see:
+
+====
+[source,json]
+----
+{"id":1,"content":"Hello, World!"}
+----
+====
