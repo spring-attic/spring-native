@@ -9,8 +9,6 @@ As the application runs, it observes the types being reflectively accessed, the 
 This section walks through using the agent to compute the configuration data and then build a `native-image` using it.
 A real application is used to show the process, but the same techniques should apply to any application.
 
-NOTE: Currently, there are agent bugs, and we cover those, including how they manifest and how to do deal with them, as we go.
-
 ==== Download and install GraalVM
 
 From GraalVM builds:
@@ -57,6 +55,28 @@ Upgrade the project to Spring Boot {boot-version}:
 ----
 ====
 
+For a milestone of Spring Boot it is likely necessary to add these repositories to the pom:
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>spring-milestones</id>
+        <name>Spring Milestones</name>
+        <url>https://repo.spring.io/milestone</url>
+    </pluginRepository>
+</pluginRepositories>
+
+<repositories>
+    <repository>
+        <id>spring-milestones</id>
+        <name>Spring Milestones</name>
+        <url>https://repo.spring.io/milestone</url>
+    </repository>
+</repositories>
+----
+====
+
 ===== Add the Maven plugin
 
 GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin] that we are going to bring in here. Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
@@ -75,7 +95,7 @@ GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#i
           <version>{graal-version}</version>
           <configuration>
             <mainClass>com.example.restservice.RestServiceApplication</mainClass>
-            <buildArgs>-Dspring.native.mode=agent</buildArgs>
+            <buildArgs>-Dspring.native.mode=init</buildArgs>
           </configuration>
           <executions>
             <execution>
