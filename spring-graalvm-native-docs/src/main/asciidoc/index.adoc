@@ -12,7 +12,7 @@
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 [[introduction]]
-This guide walks you through the various options for building GraalVM native images for your Spring Boot applications.
+This guide walks you through the various options for building Spring Boot native applications using GraalVM native.
 
 This involves compiling your application as normal and then running an extra native-image step that builds a self-contained platform-specific executable for that application.
 The executable should have a more predictable memory profile as well as fast startup.
@@ -34,56 +34,56 @@ The image build process needs to be told which classes to initialize at build ti
 
 There are two primary ways to communicate this information to the build process:
 
-* Through JSON files on the classpath.
-
-* Through a GraalVM feature that participates in the image-build process and, after analyzing the application being compiled, calls APIs to register information about reflection, resources, proxies, and so on.
-
-Some projects are starting to include the necessary JSON files in their default distributions (for example, Netty).
-
-Crafting these JSON files can be tricky, but they can actually be computed by using an agent that comes with GraalVM.
-Run the application and exercise all relevant code paths (possibly through tests) with the agent attached, and it produces most of the configuration.
-The only part it does not compute is the initialization hints.
+- Through JSON files on the classpath.
+- Through a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature] that participates in the image-build process and, after analyzing the application being compiled, calls APIs to register information about reflection, resources, proxies, and so on.
 
 It is worth mentioning that there are limitations on what GraalVM supports with respect to native images.
 If your application is doing any of these, it may not be possible to build a native image.
 The limitations are discussed https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md[here].
 
-== What about Spring?
+== Spring GraalVM Native
 
-The `spring-graalvm-native` project represents a work-in-progress attempt to implement a GraalVM feature.
-This feature examines the Spring Boot application being built and tells the image-build process about it.
-The feature understands how Spring is implemented and, so, from examining what auto-configuration is defined on the classpath (which components are defined and so on), it knows what to grant reflective access to and what to generate proxies for.
+The `spring-graalvm-native` project is an incubating support for building Spring Boot native applications using GraalVM native.
+It is mainly composed of:
 
-The feature is a work in progress: There are numerous sample projects for which it works, as can be seen in the samples folder within the project (<<samples,you can read more about the samples here>>), but does that mean it will work on the first thing you try it on?
-That is not guaranteed.
-When things do not work, do not panic, there are multiple ways to proceed, and this reference guide covers those.
+- `spring-graalvm-native-feature`: this module is a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature]. It is a kind of plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+- `spring-graalvm-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
+- `spring-graalvm-native-substitutions`: this module allows to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
+- `spring-graalvm-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
+- `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+- `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
+- `spring-graalvm-native-tools`: tools used for reviewing image building configuration and output.
 
-See the <<feature,feature guide>> for more information on getting started with the Spring feature, including a full walkthrough with an example.
+It supports the following modes using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 
-It is also possible to use the GraalVM supplied agent to determine the configuration data for your Spring application.
-See <<agent,the agent guide>> for that approach.
+- `reflection` (activated by default) provides resource, initialization, proxy and reflection (using auto-configuration hints) configuration for native images as well as substitutions.
+- `init` (manually activated) should be used if only wishing to provide initialization configuration and substitutions.
+- `agent` (activated when agent-generated config is present) is using the configuration generated by the tracing agent as a basis and also provides additional hints for components like controllers, etc.
+- `functional` (activated when (https://github.com/spring-projects-experimental/spring-fu[spring-fu] or https://github.com/spring-projects-experimental/spring-init/[spring-init] are in the classpath) is designed to work with functional bean registration. In this mode the feature will provide initialization, resource configuration, substitutions and `spring.factories` functional alternative (only Spring Boot `spring.factories` are supported for now).
 
-There is even an agent mode in the feature where the feature and the agent are used together.
-Neither the feature nor the agent are perfect, but sometimes they can nicely complement each other's deficiencies.
-See <<hybrid,the hybrid guide>>.
+
+== Getting Started
+
+There are 2 main ways to build Spring Boot native application:
+
+- Using <<getting-started-buildpacks, Spring Boot Maven or Gradle Buildpacks support>> to generate a lightweight container containing a native executable
+- Using <<getting-started-native-image, GraalVM native image Maven plugin support>> to generate a native executable
+
+include::getting-started-buildpacks.adoc[]
+
+include::getting-started-native-image.adoc[]
 
 include::samples.adoc[]
 
 include::support-scope.adoc[]
 
-== Guides
-
-include::feature.adoc[]
+include::options.adoc[]
 
 include::agent.adoc[]
 
-include::hybrid_feature_agent.adoc[]
-
-include::options.adoc[]
-
 include::troubleshooting.adoc[]
 
-include::extension_guide.adoc[]
+include::extension-guide.adoc[]
 
 == Contact us
 
