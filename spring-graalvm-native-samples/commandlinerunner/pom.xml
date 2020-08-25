@@ -60,10 +60,7 @@
                         <builder>nebhale/native-image-builder:defer-to-application</builder>
                         <env>
                             <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-                            <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.native.remove-jmx-support=true
-								-Dspring.spel.ignore=true
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                            <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>-Dspring.native.remove-jmx-support=true -Dspring.spel.ignore=true</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
                 </configuration>
@@ -81,9 +78,9 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>20.2.0</version>
                         <configuration>
-			                <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
+                            <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
                             <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
-			                <imageName>commandlinerunner</imageName>
+                            <imageName>commandlinerunner</imageName>
                         </configuration>
                         <executions>
                             <execution>
