@@ -62,11 +62,8 @@ See the <<feature,feature guide>> for more information on getting started with t
 
 It is also possible to use the GraalVM supplied agent to determine the configuration data for your Spring application.
 See <<agent,the agent guide>> for that approach.
-Be aware that there are still bugs in the agent, though, and it can "`miss things`".
-Resolving these misses can be tricky.
-We are working with the GraalVM team to ensure issues are fixed.
 
-There is even a hybrid model where the feature and the agent are used together.
+There is even an agent mode in the feature where the feature and the agent are used together.
 Neither the feature nor the agent are perfect, but sometimes they can nicely complement each other's deficiencies.
 See <<hybrid,the hybrid guide>>.
 
