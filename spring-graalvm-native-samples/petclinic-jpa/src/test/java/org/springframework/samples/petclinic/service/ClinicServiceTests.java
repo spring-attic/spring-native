@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Dave Syer
  */
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@ActiveProfiles("tests")
+@ActiveProfiles("test")
 class ClinicServiceTests {
 
 	@Autowired

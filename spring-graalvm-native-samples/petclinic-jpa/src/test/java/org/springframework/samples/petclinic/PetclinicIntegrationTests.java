@@ -23,7 +23,7 @@ import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("tests")
+@ActiveProfiles("test")
 class PetclinicIntegrationTests {
 
 	@Autowired
