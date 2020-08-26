@@ -29,7 +29,8 @@ This is a simple `access-filter.json` file.
   {"excludeClasses": "org.springframework.test.**"},
   {"excludeClasses": "org.springframework.boot.test.**"},
   {"excludeClasses": "com.example.demo.test.**"}
-]
+  ]
+}
 ----
 ====
 
@@ -81,6 +82,8 @@ Finally, this following snippet would go into the maven pom:
 ====
 [source,xml]
 ----
+    <profiles>
+    ...
        <profile>
             <id>native</id>
             <build>
@@ -115,7 +118,7 @@ Finally, this following snippet would go into the maven pom:
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
-                        <version>{graal-version}/version>
+                        <version>{graal-version}</version>
                         <configuration>
                         	<mainClass>com.example.demo.DemoApplication</mainClass>
                             <imageName>example-compiled-app</imageName>
@@ -137,17 +140,18 @@ Finally, this following snippet would go into the maven pom:
                 </plugins>
             </build>
         </profile>
+    </profiles>
 ----
 ====
 
 What does all of that do:
 
-* `make-native-image-config-folder` creates the target folder for the agent generated configuration
+* `make-native-image-config-folder` creates the target folder for the agent generated configuration 
 * `maven-surefire-plugin` is used to run the single test above (in this case) to start/stop the application context. Notice
 the test is run with the `-agentlib` specified including the `access-filter.json` option and the target folder for the
 generated configuration.
 * `native-image-maven-plugin` will invoke native-image with the computed configuration. Update the `<imageName>example-compiled-app</imageName>`
-to give a name to the native-image built executable.
+to give a name to the native-image built executable. Also tweak the `<mainClass>...</mainClass>` to point to the main application class.
 
 Then, running `mvn -Pnative clean package` will do everything from end-to-end. It will compile the app,
 run the test with agent attached, finally building the native-image executable.
