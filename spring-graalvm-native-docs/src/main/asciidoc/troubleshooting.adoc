@@ -43,6 +43,24 @@ Caused by: java.util.MissingResourceException:
 
 Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings`.
 
+==== Missing configuration
+
+The feature will do the best it can to catch everything but it doesn't understand every bit of code out there. In these situations you can write manual configuration yourself, or use the agent to collect what is likely missing. In this setup you run the application as normal (on a JVM) with an agent attached. As the application runs the agent collects information (what the application is reflecting on, etc) and outputs it to a folder in a format suitable for inclusion in the next native-image run.  The agent configuration can be used *with* the feature. This may not produce the most optimal image, but it may produce a working image - and that is a great start.
+
+===== Create a location to contain the collected config
+
+This can be anywhere but the location must be on the classpath for the native-image build. It can be useful to put it into the application resources area as this will be on the classpath by default when the native executable build step occurs.
+
+`mkdir -p src/main/resources/META-INF/native-image`
+
+===== Run with the agent
+
+Now simply run the application, with the following addition to the Java command to collect configuration in that folder:
+
+`-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image`
+
+When the next native-image run happens it should automatically additionally include this collected configuration.
+
 ==== Getting `ClassNotFoundException`
 
 The following listing shows a typical `ClassNotFoundException`:
