@@ -34,24 +34,29 @@ public class SpringFeature implements Feature {
 	private ResourcesHandler resourcesHandler;
 
 	private InitializationHandler initializationHandler;
-	
-	private final static String banner = 
-	"  ___          _              ___               ___   ____  __   _  _      _   _         \n"+
-	" / __|_ __ _ _(_)_ _  __ _   / __|_ _ __ _ __ _| \\ \\ / /  \\/  | | \\| |__ _| |_(_)_ _____ \n"+
-	" \\__ \\ '_ \\ '_| | ' \\/ _` | | (_ | '_/ _` / _` | |\\ V /| |\\/| | | .` / _` |  _| \\ V / -_)\n"+
-	" |___/ .__/_| |_|_||_\\__, |  \\___|_| \\__,_\\__,_|_| \\_/ |_|  |_| |_|\\_\\__,_|\\__|_|\\_/\\___|\n"+
-	"     |_|             |___/                                                          ";
+
+	private final static String banner = //
+	"   ____         _             _____              ___   ____  ___\n"+
+	"  / __/__  ____(_)__  ___ _  / ___/______ ____ _/ / | / /  |/  /\n"+
+	" _\\ \\/ _ \\/ __/ / _ \\/ _ `/ / (_ / __/ _ `/ _ `/ /| |/ / /|_/ / \n"+
+	"/___/ .__/_/ /_/_//_/\\_, /  \\___/_/  \\_,_/\\_,_/_/ |___/_/  /_/  \n"+
+	"   /_/__     __  _  /___/                                       \n"+
+	"  / |/ /__ _/ /_(_)  _____ \n"+
+	" /    / _ `/ __/ / |/ / -_)\n"+
+	"/_/|_/\\_,_/\\__/_/|___/\\__/ \n"+
+	"                           ";
 
 	public SpringFeature() {
 		System.out.println(banner);
-				                                                                                                                   
+
 		if (!ConfigOptions.isVerbose()) {
-			System.out.println("Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
+			System.out.println(
+					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
 		}
 		reflectionHandler = new ReflectionHandler();
 		dynamicProxiesHandler = new DynamicProxiesHandler();
 		initializationHandler = new InitializationHandler();
-		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler,initializationHandler);
+		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler, initializationHandler);
 	}
 
 	public boolean isInConfiguration(IsInConfigurationAccess access) {
@@ -88,7 +93,8 @@ public class SpringFeature implements Feature {
 		initializationHandler.register(access);
 		resourcesHandler.register(access);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
-			System.out.println("Number of types dynamically registered for reflective access: #"+reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
+			System.out.println("Number of types dynamically registered for reflective access: #"
+					+ reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}
 	}
