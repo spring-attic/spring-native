@@ -21,6 +21,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.expression.Fields;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafView;
@@ -30,7 +31,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeImageHint(trigger= ThymeleafView.class,modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
+@NativeImageHint(trigger= ISpringTemplateEngine.class,modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
 		@TypeInfo(
 				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
