@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.init.func.InfrastructureInitializer;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -36,7 +37,7 @@ public class SampleApplication {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplicationBuilder(SampleApplication.class)
-				.initializers(new InfrastructureInitializer().binding(ServerProperties.class, SampleApplication::bind))
+				.initializers(new InfrastructureInitializer(Ordered.HIGHEST_PRECEDENCE).binding(ServerProperties.class, SampleApplication::bind))
 				.build();
 		app.run(args);
 	}
