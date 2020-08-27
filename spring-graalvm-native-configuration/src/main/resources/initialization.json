@@ -48,6 +48,7 @@
   {"class": "org.springframework.init.func.InfrastructureListener"},
   {"class": "org.springframework.init.func.InfrastructureInitializer"},
   {"class": "org.springframework.init.func.FunctionalInstallerListener"},
+  {"class": "org.springframework.init.func.FunctionalInstallerPostProcessor"},
 
   // Spring Framework
   {"class": "org.springframework.aop.TargetSource"},
