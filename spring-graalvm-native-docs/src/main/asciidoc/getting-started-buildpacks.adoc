@@ -162,6 +162,27 @@ docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
 ----
 ====
 
+As an alternative, you can also write a `docker-compose.yml` at the root of the project with the following content:
+====
+[source,yaml]
+----
+version: '3.1'
+services:
+  rest-service:
+    image: rest-service:0.0.1-SNAPSHOT
+----
+====
+
+And then run
+====
+[source,bash]
+----
+docker-compose up
+----
+====
+
+
+
 The startup time is <100ms, compared ~1500ms when starting the fat jar.
 
 Now that the service is up, visit http://localhost:8080/greeting, where you should see:
