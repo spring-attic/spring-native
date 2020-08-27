@@ -52,7 +52,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<builder>nebhale/native-image-builder:defer-to-application</builder>
+						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
 							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
