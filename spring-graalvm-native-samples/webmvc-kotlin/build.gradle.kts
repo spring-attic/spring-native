@@ -38,7 +38,7 @@ tasks.withType<Test> {
 }
 
 tasks.getByName<BootBuildImage>("bootBuildImage") {
-    builder = "nebhale/native-image-builder:defer-to-application"
+    builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
             "BP_BOOT_NATIVE_IMAGE" to "1",
             "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to """

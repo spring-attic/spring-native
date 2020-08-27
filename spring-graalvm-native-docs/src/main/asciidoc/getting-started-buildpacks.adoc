@@ -55,6 +55,7 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1`
     <artifactId>spring-boot-maven-plugin</artifactId>
     <configuration>
         <image>
+            <builder>paketobuildpacks/builder:tiny</builder>
             <env>
                 <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
                 <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>-Dspring.native.remove-yaml-support=true  -Dspring.spel.ignore=true</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
@@ -66,6 +67,10 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1`
 ====
 
 `-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flags to reduce the footprint.
+
+Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks,
+`paketobuildpacks/builder:base` being the default (also works but less optimized).
+The `paketobuildpacks/builder:full` variant can be used in order to have more tools during the development.
 
 ===== Add the repositories
 
