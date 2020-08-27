@@ -24,17 +24,17 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-boot-autoconfigure-func</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-init-core</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-init-library</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -78,7 +78,7 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-init-maven-plugin</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<executions>
 					<execution>
 						<id>sources</id>
