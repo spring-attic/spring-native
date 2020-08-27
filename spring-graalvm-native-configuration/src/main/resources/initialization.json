@@ -81,6 +81,7 @@
   {"class": "org.springframework.core.annotation.TypeMappedAnnotations"},
   {"class": "org.springframework.core.io.support.SpringFactoriesLoader"},
   {"class": "org.springframework.http.codec.CodecConfigurerFactory"},
+  {"class": "org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"},
 
   // Caches
   {"class": "org.springframework.util.ReflectionUtils"},
