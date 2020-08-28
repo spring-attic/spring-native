@@ -108,11 +108,11 @@ public abstract class ConfigOptions {
 		if (REMOVE_YAML_SUPPORT) {
 			System.out.println("Removing Yaml support");
 		}
-		REMOVE_XML_SUPPORT = Boolean.valueOf(System.getProperty("spring.native.remove-xml-support", "false"));
+		REMOVE_XML_SUPPORT = Boolean.valueOf(System.getProperty("spring.xml.ignore", "false"));
 		if (REMOVE_XML_SUPPORT) {
 			System.out.println("Removing XML support");
 		}
-		REMOVE_SPEL_SUPPORT = Boolean.valueOf(System.getProperty("spring.native.remove-spel-support", "false"));
+		REMOVE_SPEL_SUPPORT = Boolean.valueOf(System.getProperty("spring.spel.ignore", "false"));
 		if (REMOVE_SPEL_SUPPORT) {
 			System.out.println("Removing SpEL support");
 		}
