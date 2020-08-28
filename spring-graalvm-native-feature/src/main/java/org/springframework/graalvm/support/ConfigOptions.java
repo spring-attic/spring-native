@@ -228,7 +228,7 @@ public abstract class ConfigOptions {
 			if (MODE == null) {
 				MODE = Mode.REFLECTION;
 			}
-			SpringFeature.log("Inferred feature operating mode: " + MODE);
+			System.out.println("Inferred feature operating mode: " + MODE);
 		}
 	}
 
