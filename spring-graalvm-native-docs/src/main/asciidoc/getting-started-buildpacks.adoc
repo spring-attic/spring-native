@@ -56,7 +56,10 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1`
             <builder>paketobuildpacks/builder:tiny</builder>
             <env>
                 <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>-Dspring.native.remove-yaml-support=true  -Dspring.spel.ignore=true</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                    -Dspring.native.remove-yaml-support=true
+                    -Dspring.spel.ignore=true
+                </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
             </env>
         </image>
     </configuration>
