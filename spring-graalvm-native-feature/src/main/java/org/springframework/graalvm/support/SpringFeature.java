@@ -74,7 +74,8 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
-		if (Float.parseFloat(SpringBootVersion.getVersion().substring(0, 3)) < 2.4) {
+		String springBootVersion = SpringBootVersion.getVersion();
+		if (springBootVersion != null && Float.parseFloat(springBootVersion.substring(0, 3)) < 2.4) {
 			String message = "Spring GraalVM Native requires Spring Boot 2.4.0-M2 or above";
 			if (ConfigOptions.shouldFailOnVersionCheck()) {
 				throw new VersionCheckException(message);
