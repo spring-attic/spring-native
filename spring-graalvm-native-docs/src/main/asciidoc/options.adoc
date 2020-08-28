@@ -79,6 +79,8 @@ See the <<troubleshooting>> section for more details on this.
 
 * `-Dspring.native.remove-unused-autoconfig=false` disables removal of unused configurations.
 
+* `-Dspring.native.fail-on-version-check=false` disables failure on Spring Boot version check.
+
 === Optional options
 
 * `--enable-all-security-services` required for HTTPS and crypto.

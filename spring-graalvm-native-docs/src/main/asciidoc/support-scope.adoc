@@ -7,7 +7,9 @@ Java 8, Java 11 and Kotlin 1.3+ are supported. GraalVM version 20.2.0 should be 
 
 === Spring Boot
 
-Spring Boot {boot-version} is supported. Group ID is `org.springframework.boot` unless specified otherwise.
+IMPORTANT: Only Spring Boot {boot-version} and above are supported.
+
+The following starters are supported, the group ID is `org.springframework.boot` unless specified otherwise.
 
 - `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
 - `spring-boot-starter-cache`

@@ -7,12 +7,12 @@
 :version: 0.8.0-SNAPSHOT
 :repository: milestone
 :boot-version: 2.4.0-M2
-:graal-version: 20.2.0
+:graalvm-version: 20.2.0
 = Spring GraalVM Native {version} reference guide
 Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 [[introduction]]
-This guide walks you through the various options for building Spring Boot native applications using GraalVM native.
+This guide walks you through the various options for building Spring Boot native applications using https://www.graalvm.org/reference-manual/native-image/[GraalVM native].
 
 This involves compiling your application as normal and then running an extra native-image step that builds a self-contained platform-specific executable for that application.
 The executable should have a more predictable memory profile as well as fast startup.
@@ -83,7 +83,7 @@ include::agent.adoc[]
 
 include::troubleshooting.adoc[]
 
-include::extension-guide.adoc[]
+include::how-to-contribute.adoc[]
 
 == Contact us
 

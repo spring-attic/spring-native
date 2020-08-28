@@ -3,15 +3,15 @@
 
 While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
 Usually, the problem is a lack of configuration.
-GraalVM `native-image` probably was not told about the application intending to reflectively call something or load a resource.
+GraalVM `native-image` compiler probably was not told about the application intending to reflectively call something or load a resource.
 However, there can also be more serious problems, the `native-image` crashing or the application using a third party library that includes code not compatible with `native-image`.
 
 This section explores some of the errors that can encountered and possible any fixes or workarounds.
 The two main sections of this page are problems at image-build time and problems at image runtime.
+https://www.graalvm.org/reference-manual/native-image/[Native image reference documentation] is also worth to read in details.
 
 The Spring team is actively working with the GraalVM team on issues.
 You can see the currently open issues https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
-This section tracks Spring-labelled issues on the Graal issue tracker.
 
 === `native-image` is failing
 
@@ -19,8 +19,7 @@ The image can fail for a number of reasons. We have described the most common ca
 
 ==== Out of memory error when building the native image
 
-`native-image` consumes a lot of RAM. We have most success on 32G RAM desktop machines.
-16G is possible for smaller samples but 8G machines are likely to hit problems more often.
+`native-image` consumes a lot of RAM, we recommand machinew ith at least 16G of RAM.
 
 === The built image does not run
 
@@ -41,7 +40,7 @@ Caused by: java.util.MissingResourceException:
 ----
 ====
 
-Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings`.
+Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings`. See https://www.graalvm.org/reference-manual/native-image/Resources/[related documentation] for more details.
 
 ==== Missing configuration
 
