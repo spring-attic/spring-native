@@ -52,7 +52,7 @@ public abstract class ConfigOptions {
 	
 	private final static boolean VERIFIER_ON;
 	
-	private static Mode MODE; // Default is 'feature'
+	private static Mode MODE; // Default is 'reflection'
 	
 	// Temporary, for exploration
 	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
