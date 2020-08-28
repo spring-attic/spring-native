@@ -24,6 +24,8 @@ import com.oracle.svm.reflect.hosted.ReflectionFeature;
 import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 import org.graalvm.nativeimage.hosted.Feature;
 
+import org.springframework.boot.SpringBootVersion;
+
 @AutomaticFeature
 public class SpringFeature implements Feature {
 
@@ -72,6 +74,16 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
+		if (Float.parseFloat(SpringBootVersion.getVersion().substring(0, 3)) < 2.4) {
+			String message = "Spring GraalVM Native requires Spring Boot 2.4.0-M2 or above";
+			if (ConfigOptions.shouldFailOnVersionCheck()) {
+				throw new VersionCheckException(message);
+			}
+			else {
+				System.out.println("Warning: " + message);
+			}
+		}
+
 		ConfigOptions.ensureModeInitialized(access);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
 			reflectionHandler.register(access);
@@ -102,6 +114,18 @@ public class SpringFeature implements Feature {
 	public static void log(String msg) {
 		if (ConfigOptions.isVerbose()) {
 			System.out.println(msg);
+		}
+	}
+
+	static class VersionCheckException extends IllegalStateException {
+
+		public VersionCheckException(String message) {
+			super(message);
+		}
+
+		@Override
+		public synchronized Throwable fillInStackTrace() {
+			return this;
 		}
 	}
 }

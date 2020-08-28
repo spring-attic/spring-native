@@ -47,6 +47,8 @@ public abstract class ConfigOptions {
 	private final static String DUMP_CONFIG;
 
 	private final static boolean VERBOSE;
+
+	private final static boolean FAIL_ON_VERSION_CHECK;
 	
 	private final static String MISSING_SELECTOR_HINTS;
 	
@@ -92,6 +94,10 @@ public abstract class ConfigOptions {
 		if (VERBOSE) {
 			System.out.println("Turning on verbose mode for the feature");
 		}
+		FAIL_ON_VERSION_CHECK = Boolean.valueOf(System.getProperty("spring.native.fail-on-version-check","true"));
+		if (!FAIL_ON_VERSION_CHECK) {
+			System.out.println("Turning off Spring Boot version check");
+		}
 		MISSING_SELECTOR_HINTS = System.getProperty("spring.native.missing-selector-hints","error");
 		if (MISSING_SELECTOR_HINTS.equals("warning")) {
 			System.out.println("Selectors missing hints will be reported as a warning, not an error");
@@ -130,6 +136,10 @@ public abstract class ConfigOptions {
 
 	public static boolean isVerbose() {
 		return VERBOSE;
+	}
+
+	public static boolean shouldFailOnVersionCheck() {
+		return FAIL_ON_VERSION_CHECK;
 	}
 
 	public static boolean isVerifierOn() {
