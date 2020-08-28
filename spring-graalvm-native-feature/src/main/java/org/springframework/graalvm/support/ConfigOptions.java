@@ -228,7 +228,7 @@ public abstract class ConfigOptions {
 			if (MODE == null) {
 				MODE = Mode.REFLECTION;
 			}
-			System.out.println("Inferred feature operating mode: " + MODE);
+			System.out.println("Inferred feature operating mode: " + MODE.name().toLowerCase());
 		}
 	}
 
