@@ -80,7 +80,7 @@ Now take the `access-filter.json` file from above and place it in `src/main/reso
 Finally, this following snippet would go into the maven pom:
 
 ====
-[source,xml]
+[source,xml,subs="attributes,verbatim"]
 ----
     <profiles>
     ...
@@ -118,7 +118,7 @@ Finally, this following snippet would go into the maven pom:
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
-                        <version>{graal-version}</version>
+                        <version>{graalvm-version}</version>
                         <configuration>
                         	<mainClass>com.example.demo.DemoApplication</mainClass>
                             <imageName>example-compiled-app</imageName>

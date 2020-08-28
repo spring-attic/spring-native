@@ -39,9 +39,7 @@ You may already be ready to go with your own project.
 
 ===== Update the `pom.xml` file
 
-IMPORTANT: Ensure that the project uses a supported version of Spring Boot.
-
-Upgrade the project to Spring Boot {boot-version} if necessary:
+IMPORTANT: Only Spring Boot {boot-version} and above are supported, upgrade your project if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -71,7 +69,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
         <plugin>
           <groupId>org.graalvm.nativeimage</groupId>
           <artifactId>native-image-maven-plugin</artifactId>
-          <version>{graal-version}</version>
+          <version>{graalvm-version}</version>
           <configuration>
             <mainClass>com.example.restservice.RestServiceApplication</mainClass>
             <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
