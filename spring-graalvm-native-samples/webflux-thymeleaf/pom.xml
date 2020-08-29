@@ -127,7 +127,7 @@
 	</pluginRepositories>
 	<profiles>
 		<profile>
-			<id>hybrid-native</id>
+			<id>agent</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -164,7 +164,7 @@
 						<configuration>
 							<mainClass>hello.Application</mainClass>
 							<imageName>${project.artifactId}</imageName>
-							<buildArgs>-Dspring.native.mode=hybrid -Dspring.native.remove-yaml-support=true</buildArgs>
+							<buildArgs>-Dspring.native.mode=agent -Dspring.native.remove-yaml-support=true</buildArgs>
 						</configuration>
 						<executions>
 							<execution>
