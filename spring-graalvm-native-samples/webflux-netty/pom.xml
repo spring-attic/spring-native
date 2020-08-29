@@ -72,9 +72,9 @@
 	
    <profiles>
         <profile>
-			<id>hybrid</id>
+			<id>agent</id>
 			<properties>
-				<spring.native.mode>hybrid</spring.native.mode>
+				<spring.native.mode>agent</spring.native.mode>
 			</properties>
             <build>
                 <plugins>
