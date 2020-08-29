@@ -29,6 +29,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
+  -Dspring.xml.ignore=true \
+  -Dspring.native.remove-jmx-support=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

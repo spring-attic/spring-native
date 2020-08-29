@@ -22,10 +22,6 @@ These options are enabled by default when using `spring-graalvm-native`, since t
 
 * `--install-exit-handlers` allows to react to a shutdown request from Docker.
 
-* `-Dspring.xml.ignore=true` removes XML support from Spring Boot, enabling faster compilation and smaller executables.
-
-* `-Dspring.native.remove-jmx-support=true` removes JMX support from Spring Boot, enabling faster compilation and smaller executables.
-
 * `-H:+RemoveSaturatedTypeFlows` reduces build time and decrease build memory consumption, especially for big projects.
 
 ==== Options recommended by default
@@ -52,6 +48,8 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 
 * `-Dspring.spel.ignore=true` removes SpEL support from Spring Boot, enabling faster compilation and smaller executables.
 
+* `-Dspring.xml.ignore=true` removes XML support from Spring Boot, enabling faster compilation and smaller executables.
+
 === Spring GraalVM Native options
 
 The current feature options are as follows:
@@ -66,6 +64,8 @@ to native-image.
 
 
 * `-Dspring.native.verbose=true` outputs lots of information about the feature behavior as it processes auto-configuration and chooses which to include.
+
+* `-Dspring.native.remove-jmx-support=true` removes JMX support from Spring Boot, enabling faster compilation and smaller executables.
 
 * `-Dspring.native.remove-yaml-support=true` removes Yaml support from Spring Boot, enabling faster compilation and smaller executables.
 
