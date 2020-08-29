@@ -42,8 +42,9 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
     environment = mapOf(
             "BP_BOOT_NATIVE_IMAGE" to "1",
             "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to """
-                -H:EnableURLProtocols=http
-                -Dspring.spel.ignore=true
+                -Dspring.spel.ignore=true                
+                -Dspring.xml.ignore=true
+                -Dspring.native.remove-jmx-support=true
                 -Dspring.native.remove-yaml-support=true
             """.trimIndent()
     )

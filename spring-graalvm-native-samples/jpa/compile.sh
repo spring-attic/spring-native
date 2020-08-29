@@ -28,8 +28,10 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
-  -Dspring.native.remove-yaml-support=true \
   -Dspring.spel.ignore=true \
+  -Dspring.xml.ignore=true \
+  -Dspring.native.remove-jmx-support=true \
+  -Dspring.native.remove-yaml-support=true \
   -H:Name=$ARTIFACT \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
