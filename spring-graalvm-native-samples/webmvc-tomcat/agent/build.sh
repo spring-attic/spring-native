@@ -42,9 +42,7 @@ native-image \
   -Dspring.native.mode=agent \
   -H:Name=$APP-agent \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.xml.ignore=true \
   -Dspring.spel.ignore=true \
-  -Dspring.native.remove-jmx-support=true \
   -cp .:$CP:graal:../../../graal \
   $MAINCLASS 2>&1 | tee output.txt
 

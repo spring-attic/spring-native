@@ -17,6 +17,8 @@ package org.springframework.graalvm.support;
 
 import java.util.Map;
 
+import javax.swing.text.StyledEditorKit;
+
 import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.type.TypeSystem;
@@ -36,13 +38,13 @@ public abstract class ConfigOptions {
 
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
-	private final static boolean REMOVE_YAML_SUPPORT;
+	private final static boolean REMOVE_SPEL_SUPPORT;
 
 	private final static boolean REMOVE_XML_SUPPORT;
 
-	private final static boolean REMOVE_SPEL_SUPPORT;
-
 	private final static boolean REMOVE_JMX_SUPPORT;
+
+	private final static boolean REMOVE_YAML_SUPPORT;
 	
 	private final static String DUMP_CONFIG;
 
@@ -53,12 +55,12 @@ public abstract class ConfigOptions {
 	private final static String MISSING_SELECTOR_HINTS;
 	
 	private final static boolean VERIFIER_ON;
-	
-	private static Mode MODE; // Default is 'reflection'
-	
+
 	// Temporary, for exploration
 	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
 	private final static boolean SKIP_AT_BEAN_SIGNATURE_TYPES;
+	
+	private static Mode MODE; // Default is 'reflection'
 
 	static {
 		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","true"));
@@ -108,7 +110,12 @@ public abstract class ConfigOptions {
 		if (REMOVE_YAML_SUPPORT) {
 			System.out.println("Removing Yaml support");
 		}
-		REMOVE_XML_SUPPORT = Boolean.valueOf(System.getProperty("spring.xml.ignore", "false"));
+		String springXmlIgnore = System.getProperty("spring.xml.ignore");
+		if (springXmlIgnore == null) {
+			springXmlIgnore = "true";
+			System.setProperty("spring.xml.ignore", springXmlIgnore);
+		}
+		REMOVE_XML_SUPPORT = Boolean.valueOf(springXmlIgnore);
 		if (REMOVE_XML_SUPPORT) {
 			System.out.println("Removing XML support");
 		}
@@ -116,7 +123,12 @@ public abstract class ConfigOptions {
 		if (REMOVE_SPEL_SUPPORT) {
 			System.out.println("Removing SpEL support");
 		}
-		REMOVE_JMX_SUPPORT = Boolean.valueOf(System.getProperty("spring.native.remove-jmx-support", "false"));
+		String removeJmxSupport = System.getProperty("spring.native.remove-jmx-support");
+		if (removeJmxSupport == null) {
+			removeJmxSupport = "true";
+			System.setProperty("spring.native.remove-jmx-support", removeJmxSupport);
+		}
+		REMOVE_JMX_SUPPORT = Boolean.valueOf(removeJmxSupport);
 		if (REMOVE_JMX_SUPPORT) {
 			System.out.println("Removing JMX support");
 		}
