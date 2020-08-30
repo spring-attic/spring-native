@@ -17,6 +17,22 @@ You can see the currently open issues https://github.com/oracle/graal/projects/2
 
 The image can fail for a number of reasons. We have described the most common causes and their solutions here.
 
+==== Fatal error
+
+If you see an error like:
+
+====
+[source,bash]
+----
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f992032fafb, pid=1073, tid=0x00007f98521fc700
+----
+====
+
+It could be due to https://github.com/oracle/graal/issues/2748[oracle/graal#2748] bug which impact GraalVM 20.2.0. This is a transient error so re-run
+the build. If a newer GraalVM 20.2.x is available, please update to use it.
+
 ==== Out of memory error when building the native image
 
 `native-image` consumes a lot of RAM, we recommand machinew ith at least 16G of RAM.
