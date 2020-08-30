@@ -24,7 +24,7 @@ dependencies {
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")
     }
-    implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:9.0.38-dev")
+    implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:9.0.38.1-dev")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
