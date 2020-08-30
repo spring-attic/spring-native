@@ -48,9 +48,8 @@ import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 
-@NativeImageHint(trigger= Driver.class, modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
+@NativeImageHint(trigger= Driver.class, typeInfos= {
 		@TypeInfo(types= {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,

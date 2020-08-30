@@ -1,7 +1,5 @@
 package org.h2;
 
-import java.sql.Statement;
-
 import org.h2.mvstore.db.MVTableEngine;
 import org.h2.store.fs.FilePathAsync;
 import org.h2.store.fs.FilePathDisk;
@@ -16,9 +14,8 @@ import org.h2.store.fs.FilePathZip;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 
-@NativeImageHint(trigger= Driver.class, modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
+@NativeImageHint(trigger= Driver.class, typeInfos= {
 		@TypeInfo(
 				typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
 				types= {MVTableEngine.class, FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class}

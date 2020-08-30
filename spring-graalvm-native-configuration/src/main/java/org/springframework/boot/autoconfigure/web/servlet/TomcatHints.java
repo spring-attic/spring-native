@@ -10,12 +10,11 @@ import org.springframework.graalvm.extension.MethodInfo;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 
 @NativeImageHint(trigger= Tomcat.class, typeInfos = {
 		@TypeInfo(types = TomcatEmbeddedWebappClassLoader.class),
 		@TypeInfo(types = AbstractProtocol.class, methods = @MethodInfo(name = "getLocalPort")),
 		@TypeInfo(types = Http11NioProtocol.class)
-}, importInfos = CommonWebInfos.class, modes = {Mode.FUNCTIONAL, Mode.REFLECTION})
+}, importInfos = CommonWebInfos.class)
 public class TomcatHints implements NativeImageConfiguration  {
 }

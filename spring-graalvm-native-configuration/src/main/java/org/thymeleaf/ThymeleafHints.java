@@ -18,7 +18,6 @@ package org.thymeleaf;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
@@ -31,7 +30,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeImageHint(trigger= ISpringTemplateEngine.class,modes = {Mode.FUNCTIONAL, Mode.REFLECTION}, typeInfos= {
+@NativeImageHint(trigger= ISpringTemplateEngine.class, typeInfos= {
 		@TypeInfo(
 				types= {
 				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
