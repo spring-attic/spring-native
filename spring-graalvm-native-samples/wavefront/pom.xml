@@ -92,8 +92,6 @@
 							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
 							<!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.xml.ignore=true
-								-Dspring.native.remove-jmx-support=true
 								-Dspring.native.remove-yaml-support=true
 								-H:EnableURLProtocols=http,https
 								--enable-all-security-services
