@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>org.springframework.fu</groupId>
 			<artifactId>spring-fu-jafu</artifactId>
-			<version>0.4.0-SNAPSHOT</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
