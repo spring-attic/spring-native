@@ -15,12 +15,12 @@
  */
 package org.springframework.support.graal;
 
+import java.io.InputStream;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
-
-import java.io.InputStream;
 
 public class ResourcesTests {
 

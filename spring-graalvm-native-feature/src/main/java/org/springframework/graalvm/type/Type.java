@@ -1170,7 +1170,7 @@ public class Type {
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
 						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getInitializationDescriptors(),
-						hintxx.getModes()));
+						hintxx.applyToFunctional()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1225,7 +1225,7 @@ public class Type {
 							hints2a.getProxyDescriptors(),
 							hints2a.getResourcesDescriptors(),
 							hints2a.getInitializationDescriptors(),
-							hints2a.getModes()));
+							hints2a.applyToFunctional()));
 				}
 			}
 			// check for meta annotation
@@ -1526,12 +1526,8 @@ public class Type {
 					 * (ArrayList<org.objectweb.asm.Type>)value; for (org.objectweb.asm.Type type:
 					 * types) { ch.addDependantType(type.getClassName(), inferTypeKind(type)); }
 					 */
-				} else if (key.equals("modes")) {
-					List<String[]> modes = (List<String[]>) value;
-					for (String[] mode: modes) {
-						// [Lorg/springframework/graalvm/support/Mode;, AGENT]
-						ch.addMode(Mode.valueOf(mode[1]));
-					}
+				} else if (key.equals("applyToFunctional")) {
+					ch.setApplyToFunctional((Boolean)value);
 				} else if (key.equals("typeInfos")) {
 					processTypeInfoList(ch, value);
 				} else if (key.equals("importInfos")) {

@@ -3,7 +3,6 @@ package org.springframework.support.graal;
 import java.io.InputStream;
 
 import org.junit.Test;
-
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.domain.init.InitializationJsonMarshaller;
 

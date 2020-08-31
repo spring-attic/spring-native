@@ -27,7 +27,6 @@ import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProx
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger=AopAutoConfiguration.class,
@@ -38,5 +37,5 @@ import org.springframework.graalvm.type.AccessBits;
 			AbstractAdvisingBeanPostProcessor.class,
 			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class,
 			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-},modes= {Mode.REFLECTION,Mode.AGENT})
+},applyToFunctional=false)
 public class AopHints implements NativeImageConfiguration { }

@@ -47,11 +47,13 @@ public @interface NativeImageHint {
 	 */
 	Class<?> trigger() default Object.class;
 	
+	
 	/**
-	 * If specified, the hints will only apply if the trigger is valid *and* the feature is operating
-	 * in one of the specified modes.
+	 * Enables some hints to be limited such that they are not used in functional mode. For example there
+	 * are some hints for types that only need reflective access if regular reflection is being used to 
+	 * populate the application context. When doing functional bean registration, these don't apply.
 	 */
-	Mode[] modes() default {};
+	boolean applyToFunctional() default true;
 
 	/**
 	 * A set of type infos indicated which types should be made accessible (as resources and/or via reflection)

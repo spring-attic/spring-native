@@ -31,7 +31,7 @@ public class CompilationHint {
 	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
 	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
 	private List<InitializationDescriptor> initializationDescriptors = new ArrayList<>();
-	private List<Mode> modes = new ArrayList<>();
+	private boolean applyToFunctional = true; // True as per default for this attribute in NativeImageHint
 	
 	public CompilationHint() {
 	}
@@ -99,12 +99,12 @@ public class CompilationHint {
 		return resourceDescriptors;
 	}
 	
-	public void addMode(Mode mode) {
-		modes.add(mode);
+	public void setApplyToFunctional(boolean b) {
+		applyToFunctional = b;
 	}
 
-	public List<Mode> getModes() { 
-		return modes;
+	public boolean applyToFunctional() {
+		return applyToFunctional;
 	}
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {
