@@ -1,4 +1,4 @@
-!/usr/bin/env bash
+#!/usr/bin/env bash
 
 ARTIFACT=webmvc-functional
 MAINCLASS=app.main.SampleApplication
