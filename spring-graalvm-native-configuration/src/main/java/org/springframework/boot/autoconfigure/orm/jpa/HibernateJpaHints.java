@@ -30,8 +30,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
-import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
-import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.Session;
@@ -126,10 +124,6 @@ import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcesso
 import org.springframework.stereotype.Repository;
 
 @SuppressWarnings("deprecation")
-@NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
-	@TypeInfo(typeNames= {"com.sun.xml.internal.stream.events.XMLEventFactoryImpl"},
-			types= {DefaultFlowMessageFactory.class,IConcurrentBagEntry[].class,IConcurrentBagEntry.class})	
-})
 @NativeImageHint(trigger=HibernateJpaConfiguration.class,
 	resourcesInfos = {
 			@ResourcesInfo(patterns={"hibernate.properties","org/hibernate/.*.xsd","org/hibernate/.*.dtd"})
