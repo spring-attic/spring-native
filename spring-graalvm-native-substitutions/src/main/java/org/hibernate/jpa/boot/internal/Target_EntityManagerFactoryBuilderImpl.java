@@ -16,7 +16,7 @@ final class Target_EntityManagerFactoryBuilderImpl {
 			String cfgXmlResourceName) {
 	}
 
-	@TargetClass(className = "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl$MergedSettings")
+	@TargetClass(className = "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl$MergedSettings", onlyWith = { OnlyIfPresent.class, RemoveXmlSupport.class })
 	private static final class Target_MergedSettings {
 	}
 }
