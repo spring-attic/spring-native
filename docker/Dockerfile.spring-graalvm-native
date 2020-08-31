@@ -35,4 +35,4 @@ RUN apt-get -y update \
  && rm -rf /var/lib/apt/lists/*
 
 
-CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/mysql.sh && native-image --version && ulimit -c unlimited && /bin/bash
+CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/mysql.sh && native-image --version && /bin/bash
