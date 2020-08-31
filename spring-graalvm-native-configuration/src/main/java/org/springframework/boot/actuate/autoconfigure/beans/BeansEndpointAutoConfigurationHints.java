@@ -15,7 +15,6 @@
  */
 package org.springframework.boot.actuate.autoconfigure.beans;
 
-import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
 import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;

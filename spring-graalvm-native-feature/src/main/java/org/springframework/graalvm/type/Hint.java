@@ -55,7 +55,7 @@ public class Hint {
 	
 	private List<InitializationDescriptor> initializationDescriptors;
 
-	private List<Mode> modes;
+	private boolean applyToFunctional;
 
 
 	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
@@ -65,7 +65,7 @@ public class Hint {
 			List<ProxyDescriptor> proxyDescriptors,
 			List<ResourcesDescriptor> resourcesDescriptors,
 			List<InitializationDescriptor> initializationDescriptors,
-			List<Mode> modes) {
+			boolean applyToFunctional) {
 		this.annotationChain = annotationChain;
 		this.skipIfTypesMissing = skipIfTypesMissing;
 		this.follow = follow;
@@ -74,7 +74,7 @@ public class Hint {
 		this.proxyDescriptors = proxyDescriptors;
 		this.resourcesDescriptors = resourcesDescriptors;
 		this.initializationDescriptors = initializationDescriptors;
-		this.modes = modes;
+		this.applyToFunctional = applyToFunctional;
 	}
 
 	public List<Type> getAnnotationChain() {
@@ -179,9 +179,9 @@ public class Hint {
 	public List<ProxyDescriptor> getProxyDescriptors() {
 		return proxyDescriptors;
 	}
-
-	public List<Mode> getModes() {
-		return modes;
+	
+	public boolean applyToFunctional() {
+		return this.applyToFunctional;
 	}
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {

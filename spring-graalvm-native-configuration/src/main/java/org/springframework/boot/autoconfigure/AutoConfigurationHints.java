@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.type.AccessBits;
 
 
@@ -26,12 +25,12 @@ import org.springframework.graalvm.type.AccessBits;
 		@TypeInfo(types= { 
 				ImportAutoConfiguration.class }, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
-			})},modes= {Mode.REFLECTION,Mode.AGENT}
+			})},applyToFunctional=false
 )
-@NativeImageHint(trigger=AutoConfigurationImportSelector.class, modes= {Mode.REFLECTION,Mode.AGENT})
+@NativeImageHint(trigger=AutoConfigurationImportSelector.class, applyToFunctional=false)
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
-			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) },modes= {Mode.REFLECTION, Mode.AGENT})
+			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) },applyToFunctional=false)
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(types = { 
@@ -40,11 +39,11 @@ import org.springframework.graalvm.type.AccessBits;
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
 	})
-},modes= {Mode.REFLECTION,Mode.AGENT})
+},applyToFunctional=false)
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
 	},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
-},modes= {Mode.REFLECTION,Mode.AGENT})
+},applyToFunctional=false)
 public class AutoConfigurationHints implements NativeImageConfiguration {
 }

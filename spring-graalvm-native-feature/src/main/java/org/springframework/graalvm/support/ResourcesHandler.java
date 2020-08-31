@@ -1551,26 +1551,18 @@ public class ResourcesHandler {
 	
 	private boolean isHintValidForCurrentMode(Hint hint) {
 		Mode currentMode = ConfigOptions.getMode();
-		if (hint.getModes().size() == 0) {
-			return true; // No mode restrictions specified in hint 
-		}
-		if (!hint.getModes().contains(currentMode)) {
+		if (!hint.applyToFunctional() && currentMode == Mode.FUNCTIONAL) {
 			return false;
-		} else {
-			return true;
 		}
+		return true;
 	}
 	
 	private boolean isHintValidForCurrentMode(CompilationHint hint) {
 		Mode currentMode = ConfigOptions.getMode();
-		if (hint.getModes().size() == 0) {
-			return true; // No mode restrictions specified in hint 
-		}
-		if (!hint.getModes().contains(currentMode)) {
+		if (!hint.applyToFunctional() && currentMode==Mode.FUNCTIONAL) {
 			return false;
-		} else {
-			return true;
 		}
+		return true;
 	}
 
 	private boolean isIgnored(Type configurationType) {

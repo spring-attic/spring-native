@@ -53,6 +53,7 @@ import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.ConfigOptions;
+import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -676,7 +677,7 @@ public class TypeSystem {
 					// These are triggered by 'exploration' under default/hybrid mode
 				} else {
 					for (CompilationHint hint: proposedhint.getValue()) {
-						if (hint.getModes().size()==0 || hint.getModes().contains(ConfigOptions.getMode())) {
+						if (hint.applyToFunctional() || ConfigOptions.getMode()!=Mode.FUNCTIONAL) {
 							System.out.println("Including hint not targeting config (trigger="+keytype+"): "+hint);
 							activeDefaultHints.add(hint);
 						}

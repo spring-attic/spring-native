@@ -16,10 +16,9 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
-import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger=CacheConfigurationImportSelector.class, follow=true,
 	typeInfos = {@TypeInfo(types= {
