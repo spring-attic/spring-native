@@ -33,6 +33,22 @@ If you see an error like:
 It could be due to https://github.com/oracle/graal/issues/2748[oracle/graal#2748] bug which impact GraalVM 20.2.0. This is a transient error so re-run
 the build. If a newer GraalVM 20.2.x is available, please update to use it.
 
+==== DataSize was unintentionally initialized at build time
+
+If you see an error like:
+
+====
+[source,bash]
+----
+Error: Classes that should be initialized at run time got initialized during image building:
+ org.springframework.util.unit.DataSize was unintentionally initialized at build time. To see why org.springframework.util.unit.DataSize got initialized use -H:+TraceClassInitialization
+----
+====
+
+You have probably tried to compile a Spring Boot native application without the `spring-graalvm-native` dependency.
+Add such dependency to the classpath and this issue should be gone.
+
+
 ==== Out of memory error when building the native image
 
 `native-image` consumes a lot of RAM, we recommand machinew ith at least 16G of RAM.
