@@ -105,7 +105,7 @@ And for Spring Boot plugin:
 ----
 ====
 
-===== Add and update the appropriate dependencies
+===== spring-graalvm-native dependency
 
 If not specified, the builder will automatically use the latest `spring-graalvm-native` release available, but here to be
 sure of the version used we specify it explicitly:

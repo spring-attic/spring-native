@@ -133,10 +133,9 @@ And for Spring Boot plugin:
 ----
 ====
 
-===== Add and update the appropriate dependencies
+===== spring-graalvm-native dependency
 
-If not specified, the builder will automatically use the latest `spring-graalvm-native` release available, but here to be
-sure of the version we specify it explicitly:
+With `native-image-maven-plugin`, the `spring-graalvm-native` dependency should be specified explicitly:
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
