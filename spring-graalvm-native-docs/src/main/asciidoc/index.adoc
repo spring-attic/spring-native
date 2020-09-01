@@ -4,7 +4,7 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graalvm-native
-:version: 0.8.0-SNAPSHOT
+:version: 0.8.0
 :repository: milestone
 :boot-version: 2.4.0-M2
 :graalvm-version: 20.2.0
@@ -39,7 +39,7 @@ There are two primary ways to communicate this information to the build process:
 
 It is worth mentioning that there are limitations on what GraalVM supports with respect to native images.
 If your application is doing any of these, it may not be possible to build a native image.
-The limitations are discussed https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md[here].
+The limitations are discussed https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[here].
 
 == Spring GraalVM Native
 
@@ -75,7 +75,7 @@ include::getting-started-native-image.adoc[]
 
 include::samples.adoc[]
 
-include::support-scope.adoc[]
+include::support.adoc[]
 
 include::options.adoc[]
 
@@ -90,6 +90,5 @@ include::how-to-contribute.adoc[]
 Finally, before you post about it not working, please check the <<troubleshooting,troubleshooting guide>>, which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
 
 We would love to hear about your successes and failures through the project issue tracker.
-Work has been started on an extension model that makes it easy to support areas of Spring the feature does not yet reach.
-If you want to make a contribution here, see the <<extension_guide,extension guide>>.
-Please be aware this is pre-1.0 and, as such, some of these options and extension APIs are still evolving and may change before it is finally considered done.
+If you want to make a contribution here, see the <<how-to-contribute,how to contribute guide>>.
+Please be aware this project is still incubating and, as such, some of these options and extension APIs are still evolving and may change before it is finally considered done.

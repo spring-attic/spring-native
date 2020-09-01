@@ -30,7 +30,7 @@ If you see an error like:
 ----
 ====
 
-It could be due to https://github.com/oracle/graal/issues/2748[oracle/graal#2748] bug which impact GraalVM 20.2.0. This is a transient error so re-run
+It could be due to https://github.com/oracle/graal/issues/2748[oracle/graal#2748] bug which impact GraalVM 20.2.0. This is a transient error so run again
 the build. If a newer GraalVM 20.2.x is available, please update to use it.
 
 ==== DataSize was unintentionally initialized at build time
@@ -72,7 +72,7 @@ Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:
 ----
 ====
 
-This is due to https://github.com/spring-projects/spring-boot/issues/23130[this bug] that will be fixed asap.
+This is due to https://github.com/spring-projects/spring-boot/issues/23130[this bug] that will be fixed in Spring Boot 2.4.0-M3.
 The workaround is to try to modify the content (change space to tabs, add or remove line breaks, etc.) to not hit that bug or
 to replace `<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>` element by a `META-INF/native-image/<GROUP_ID>/<ARTIFACT_ID>/native-image.properties`
 file with `Args = ...` content.
@@ -133,7 +133,7 @@ You have a number of options to address it:
 * Download a new version of GraalVM that includes a fixed agent.
 
 * Raise a bug against the `spring-graalvm-native` project, as a key aim of the feature is to make sure these things get registered.
-If it is not "`obvious`" that it should be registered, it may be necessary for a new or expanded hint to the added to the `spring-graalvm-native-configuration` project (see the <<extension_guide,extension guide>> if you want to explore that).
+If it is not "`obvious`" that it should be registered, it may be necessary for a new or expanded hint to the added to the `spring-graalvm-native-configuration` project (see the <<how-to-contribute,how to contribute guide>> if you want to explore that).
 
 * Manually add it.
 The `native-image` run picks up any configuration it finds.
@@ -211,7 +211,7 @@ Snapshots are regularly published and obviously ahead of releases and milestones
 Sometimes, you want to use the feature but cannot.
 Maybe you like that the feature offers that more optimal mode of discarding unnecessary configuration at image-build time, which the agent mode does not.
 When you use the feature, you either get an error about some missing piece of configuration or, worse, you get no error and it does not work (implying there is probably missing configuration that is not critical for the app to start but is just critical for it to actually work).
-If the error is clear, you can follow the guidelines in the <<extension_guide,extension guide>> and perhaps contribute it back.
+If the error is clear, you can follow the guidelines in the <<how-to-contribute,how to contribute guide>> and perhaps contribute it back.
 But in the case where you have no idea, what do you do?
 
 The first step to take here is try and run it with the agent, as follows:
@@ -323,4 +323,4 @@ Now create `src/main/resources/META-INF/native-image/reflect-config.json` with c
 ====
 
 As we add the details found in the diff, we can rebuild the `native-image` each time and see which bits help.
-Once computed, we can create a hint in the feature configuration project that captures this knowledge (see the <<extension_guide,extension guide>> for more info on that) or, if it is more related to this specific application than the infrastructure, we might leave that `reflect-config.json` in the project and commit it to our repository alongside the source for future use.
+Once computed, we can create a hint in the feature configuration project that captures this knowledge (see the <<how-to-contribute,how to contribute guide>> for more info on that) or, if it is more related to this specific application than the infrastructure, we might leave that `reflect-config.json` in the project and commit it to our repository alongside the source for future use.
