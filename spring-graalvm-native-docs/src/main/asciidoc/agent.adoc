@@ -42,8 +42,9 @@ specific and will need tweaking to match the package of a specific applications 
 
 The access-filter.json file is specified with the `access-filter-file` option as part of the agentlib string:
 
-`-agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image`
+`-Dorg.graalvm.nativeimage.imagecode=true -agentlib:native-image-agent=access-filter-file=access-filter.json,config-output-dir=target/classes/META-INF/native-image`
 
+Note the inclusion of the `-D` to set the `org.graalvm.nativeimage.imagecode` property. In normal operation a built native executable will have this property set (automatically by the image building process). If there is any code that will behave differently due to it being set (which may occur if trying to work around something not supported by GraalVM) then we should set it when running with the agent too, so that code executed whilst the agent is attached matches the code that will run in the final executable.
 
 === Using it with maven
 
