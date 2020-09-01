@@ -1,5 +1,5 @@
-[[support-scope]]
-== Support scope
+[[support]]
+== Support
 
 === Language
 
@@ -41,4 +41,5 @@ Group ID is `org.springframework.cloud`.
 
 === Limitations
 
+- `@Configuration` and related annotations like `@SpringBootApplication` should specify `proxyBeanMethods = false` in order to not require CGLIB proxies. In practice, the main limitation with attribute set is that bean dependencies should be specified as explicit method parameter rather that by `@Bean` method invocation. Notice this attribute https://github.com/spring-projects-experimental/spring-graalvm-native/issues/248[could be inferred in the future].
 - Only proxies on interfaces are supported for now
