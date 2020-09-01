@@ -1,8 +1,8 @@
-:version: 0.7.1
+:version: 0.8.0
 :repository: milestone
-:boot-version: 2.3.1.RELEASE
-:graalvm-version: 20.1.0
-:graalvm-dev-version: 20.2.0
+:boot-version: 2.4.0-M2
+:graalvm-version: 20.2.0
+:graalvm-dev-version: 20.3.0-dev
 :boot-dev-version: 2.4.0-M2
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
