@@ -4,8 +4,8 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graalvm-native
-:version: 0.8.0
-:repository: milestone
+:version: 0.8.1-SNAPSHOT
+:repository: snapshot
 :boot-version: 2.4.0-M2
 :graalvm-version: 20.2.0
 = Spring GraalVM Native {version} reference guide
