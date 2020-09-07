@@ -13,6 +13,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 
 - `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
 - `spring-boot-starter-cache`
+- `spring-boot-starter-data-jdbc`
 - `spring-boot-starter-data-jpa`
 - `spring-boot-starter-data-mongodb`
 - `spring-boot-starter-data-r2dbc`
