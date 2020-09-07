@@ -35,6 +35,8 @@ Supporting a wider range of Spring Boot applications, as well as optimizing effi
 
 Spring team collaborates with GraalVM native team by raising issues in their bug tracker, with the goal to improve the production-readiness of native-images. These bugs on GraalVM issue tracker https://github.com/oracle/graal/labels/spring[are identified by the `spring` label].
 
+Some changes incubated here are moved directly to https://github.com/spring-projects/spring-framework/labels/type%3A%20native[Spring Framework] and https://github.com/spring-projects/spring-boot/labels/theme%3A%20native[Spring Boot] projects.
+
 == Quick start
 
 For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}/reference/index.html[documentation].
