@@ -43,6 +43,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 
 			org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties.Git.class,
 			org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties.Servlet.class,
+			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties.class,
