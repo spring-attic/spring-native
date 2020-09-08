@@ -21,7 +21,7 @@ It is mainly composed of:
 - `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
 - `spring-graalvm-native-tools`: tools used for reviewing image building configuration and output.
 
-It supports the {documentation-url}/reference/index.html#_feature_options[following modes] using `-Dspring.native.mode=<mode>` on the `native-image` command line:
+It supports the {documentation-url}/reference/index.html#_spring_graalvm_native_options[following modes] using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 
 - `reflection` (activated by default) provides resource, initialization, proxy and reflection (using auto-configuration hints) configuration for native images as well as substitutions.
 - `init` (manually activated) should be used if only wishing to provide initialization configuration and substitutions.
