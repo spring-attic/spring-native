@@ -1838,7 +1838,7 @@ public class Type {
 
 	public static int inferAccessRequired(Type t) {
 		if (t == null) {
-			return AccessBits.ALL;
+			return AccessBits.FULL_REFLECTION;
 		}
 		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
 			return AccessBits.CONFIGURATION;
