@@ -27,21 +27,29 @@ import org.springframework.data.repository.core.support.TransactionalRepositoryF
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ProxyInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
-@NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
-		@TypeInfo(types = {
-				RepositoryFactoryBeanSupport.class,
-				RepositoryFragmentsFactoryBean.class,
-				TransactionalRepositoryFactoryBeanSupport.class,
-				QueryByExampleExecutor.class,
-				MappingContext.class,
-				PropertiesBasedNamedQueries.class,
-		}),
-		@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
-		@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS)
-})
+@NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
+		typeInfos = {
+				@TypeInfo(types = {
+						RepositoryFactoryBeanSupport.class,
+						RepositoryFragmentsFactoryBean.class,
+						TransactionalRepositoryFactoryBeanSupport.class,
+						QueryByExampleExecutor.class,
+						MappingContext.class,
+						PropertiesBasedNamedQueries.class,
+				}),
+				@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
+				@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
+		},
+		proxyInfos = {
+				@ProxyInfo(
+						typeNames = {"org.springframework.data.annotation.QueryAnnotation", "org.springframework.core.annotation.SynthesizedAnnotation" }
+				)
+		}
+)
 public class SpringDataCommonsHints implements NativeImageConfiguration {
 
 }
