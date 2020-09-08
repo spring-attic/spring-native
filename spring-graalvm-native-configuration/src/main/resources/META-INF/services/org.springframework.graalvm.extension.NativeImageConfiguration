@@ -50,6 +50,7 @@ org.springframework.boot.autoconfigure.web.reactive.netty.NettyHints
 org.springframework.boot.autoconfigure.web.servlet.TomcatHints
 org.springframework.boot.autoconfigure.web.servlet.WebMvcHints
 org.springframework.boot.context.properties.ConfigurationPropertiesHints
+org.springframework.boot.context.config.ConfigDataPropertiesHints
 org.springframework.boot.context.ContextHints
 org.springframework.boot.logging.LogbackHints
 org.springframework.cache.annotation.CachingHints
