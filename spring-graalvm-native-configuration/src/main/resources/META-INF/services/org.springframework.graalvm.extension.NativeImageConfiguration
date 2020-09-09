@@ -55,6 +55,7 @@ org.springframework.boot.context.config.ConfigDataPropertiesHints
 org.springframework.boot.context.ContextHints
 org.springframework.boot.logging.LogbackHints
 org.springframework.cache.annotation.CachingHints
+org.springframework.cloud.client.FeaturesEndpointHints
 org.springframework.cloud.function.context.config.ContextFunctionCatalogHints
 org.springframework.cloud.function.web.mvc.RequestProcessorHints
 org.springframework.cloud.gateway.config.GatewayHints
