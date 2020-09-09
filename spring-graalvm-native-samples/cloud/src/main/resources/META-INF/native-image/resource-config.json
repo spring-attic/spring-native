@@ -1,0 +1,7 @@
+{
+    "resources": [
+        {
+            "pattern": "org/springframework/cloud/client/actuator/FeaturesEndpoint.class"
+        }
+    ]
+}

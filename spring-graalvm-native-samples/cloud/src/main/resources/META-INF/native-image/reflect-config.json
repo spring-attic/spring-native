@@ -1,0 +1,20 @@
+[
+    {
+        "name": "org.springframework.cloud.client.actuator.FeaturesEndpoint",
+        "allDeclaredFields": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "org.springframework.cloud.client.actuator.FeaturesEndpoint$Features",
+        "allDeclaredFields": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "org.springframework.cloud.client.actuator.FeaturesEndpoint$Feature",
+        "allDeclaredFields": true,
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true
+    }
+]
