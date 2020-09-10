@@ -30,6 +30,7 @@ org.springframework.boot.autoconfigure.context.MessageSourceHints
 org.springframework.boot.autoconfigure.data.RepositoriesHints
 org.springframework.boot.autoconfigure.data.SpringDataCommonsHints
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints
+org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesHints
 org.springframework.boot.autoconfigure.data.mongodb.MongoRepositoriesHints
 org.springframework.boot.autoconfigure.data.redis.RedisDataSupportHints
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesHints

@@ -20,6 +20,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.PropertiesBasedNamedQueries;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
@@ -39,7 +40,8 @@ import org.springframework.graalvm.type.AccessBits;
 						TransactionalRepositoryFactoryBeanSupport.class,
 						QueryByExampleExecutor.class,
 						MappingContext.class,
-						PropertiesBasedNamedQueries.class,
+						RepositoryMetadata.class,
+						PropertiesBasedNamedQueries.class
 				}),
 				@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
 				@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)

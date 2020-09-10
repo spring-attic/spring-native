@@ -129,6 +129,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native-configuration</artifactId>
 			<version>0.8.1-SNAPSHOT</version>
