@@ -29,6 +29,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
   -H:EnableURLProtocols=http \
+  -Dspring.native.dump-config=reflect-config.computed.json \
   -Dspring.spel.ignore=true \
   -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
