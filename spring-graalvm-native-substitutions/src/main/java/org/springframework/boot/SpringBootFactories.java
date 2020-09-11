@@ -41,7 +41,6 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.init.func.FunctionalInstallerListener;
 import org.springframework.init.func.InfrastructureInitializer;
-import org.springframework.init.func.InfrastructureListener;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -99,7 +98,6 @@ public abstract class SpringBootFactories {
 		// No BackgroundPreinitializer, makes no sense with native images
 		if (isSpringInitPresent) {
 			factories.add(ApplicationContextInitializer.class, new InfrastructureInitializer());
-			factories.add(ApplicationListener.class, new InfrastructureListener());
 			factories.add(ApplicationListener.class, new FunctionalInstallerListener());
 		}
 		factories.add(ApplicationListener.class, new NativePropertiesListener());
