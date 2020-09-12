@@ -383,119 +383,129 @@ public class ResourcesHandler {
 	 * Process a spring components properties object. The data within will look like:
 	 * <pre><code>
 	 * app.main.SampleApplication=org.springframework.stereotype.Component
-	 * app.main.model.Foo=javax.persistence.Entity
+	 * app.main.model.Foo=javax.persistence.Entity,something.Else
 	 * app.main.model.FooRepository=org.springframework.data.repository.Repository
 	 * </code></pre>
 	 * @param p the properties object containing spring components
 	 */
-	private void processSpringComponents(Properties p, NativeImageContext context,List<String> alreadyProcessed) {
-		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
-		Enumeration<Object> keys = p.keys();
+	private void processSpringComponents(Properties p, NativeImageContext context, List<String> alreadyProcessed) {
 		int registeredComponents = 0;
 		RequestedConfigurationManager requestor = new RequestedConfigurationManager();
-		ResourcesRegistry resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
-		while (keys.hasMoreElements()) {
-			boolean isComponent = false;
-			String k = (String) keys.nextElement();
-			String vs = (String) p.get(k);
-			if (vs.equals("package-info")) {
-				continue;
-			}
-			if (alreadyProcessed.contains(k+":"+vs)) {
-				continue;
-			}
-			alreadyProcessed.add(k+":"+vs);
-			Type kType = ts.resolveDotted(k);
-			SpringFeature.log("Registering Spring Component: " + k);
-			registeredComponents++;
-
-			// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
-			// exposed
-			Entry<Type, List<Type>> metaAnnotated = kType.getMetaComponentTaggedAnnotations();
-			if (metaAnnotated != null) {
-				for (Type t: metaAnnotated.getValue()) {
-					String name = t.getDottedName();
-					reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
-					resourcesRegistry.addResources(name.replace(".", "/")+".class");
-				}
-			}
-
-			if (kType.isAtConfiguration()) {
-				// Treat user configuration (from spring.components) the same as configuration
-				// discovered via spring.factories
-				checkAndRegisterConfigurationType(k);
-			} else {
-				try {
-					// TODO assess which kinds of thing requiring what kind of access - here we see
-					// an Entity might require field reflective access where others don't
-					// I think as a component may have autowired fields (and an entity may have
-					// interesting fields) - you kind of always need to expose fields
-					// There is a type in vanilla-orm called Bootstrap that shows this need
-					reflectionHandler.addAccess(k, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-						Flag.allDeclaredClasses, Flag.allDeclaredFields);
-					resourcesRegistry.addResources(k.replace(".", "/") + ".class");
-					// Register nested types of the component
-//					Type baseType = ts.resolveDotted(k);
-					for (Type t : kType.getNestedTypes()) {
-						String n = t.getName().replace("/", ".");
-						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-								Flag.allDeclaredClasses);
-						resourcesRegistry.addResources(t.getName() + ".class");
-					}
-					registerHierarchy(kType, requestor);
-				} catch (Throwable t) {
-					t.printStackTrace();
-				}
-			}
-			if (kType != null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
-				processRepository2(kType);
-			}
-			if (kType != null && kType.isAtResponseBody()) {
-				processResponseBodyComponent(kType);
-			}
-			List<String> values = new ArrayList<>();
-			StringTokenizer st = new StringTokenizer(vs, ",");
-			// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
-			while (st.hasMoreElements()) {
-				String tt = st.nextToken();
-				values.add(tt);
-				if (tt.equals("org.springframework.stereotype.Component")) {
-					isComponent = true;
-				}
-				try {
-					Type baseType = ts.resolveDotted(tt);
-
-					// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
-					// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
-					// Flag.allPublicMethods, Flag.allDeclaredClasses);
-					reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
-					resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
-					// Register nested types of the component
-					for (Type t : baseType.getNestedTypes()) {
-						String n = t.getName().replace("/", ".");
-						reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
-//						reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-						resourcesRegistry.addResources(t.getName() + ".class");
-					}
-					registerHierarchy(baseType, requestor);
-				} catch (Throwable t) {
-					t.printStackTrace();
-					System.out.println("Problems with value " + tt);
-				}
-			}
-			if (isComponent && ConfigOptions.isVerifierOn()) {
-				kType.verifyComponent();
-			}
-			for (ComponentProcessor componentProcessor: componentProcessors) {
-				if (componentProcessor.handle(context, k, values)) {
-					componentProcessor.process(context, k, values);
-				}
+		for (Entry<Object, Object> entry : p.entrySet()) {
+			boolean processedOK = processSpringComponent((String)entry.getKey(), (String)entry.getValue(), context, requestor, alreadyProcessed);
+			if (processedOK) {
+				registeredComponents++;
 			}
 		}
-		registerAllRequested(0, requestor);
-		componentProcessors.forEach(ComponentProcessor::printSummary);
+		registerAllRequested(requestor);
+		ts.getComponentProcessors().forEach(ComponentProcessor::printSummary);
 		System.out.println("Registered " + registeredComponents + " entries");
+	}
+	
+	private boolean processSpringComponent(String componentTypename, String classifiers, NativeImageContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
+		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+		boolean isComponent = false;
+		if (classifiers.equals("package-info")) {
+			return false;
+		}
+		if (alreadyProcessed.contains(componentTypename+":"+classifiers)) {
+			return false;
+		}
+		alreadyProcessed.add(componentTypename+":"+classifiers);
+		Type kType = ts.resolveDotted(componentTypename);
+		SpringFeature.log("Registering Spring Component: " + componentTypename);
+
+		// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
+		// exposed
+		Entry<Type, List<Type>> metaAnnotated = kType.getMetaComponentTaggedAnnotations();
+		if (metaAnnotated != null) {
+			for (Type t: metaAnnotated.getValue()) {
+				String name = t.getDottedName();
+				reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
+				resourcesRegistry.addResources(name.replace(".", "/")+".class");
+			}
+		}
+
+		if (kType.isAtConfiguration()) {
+			// Treat user configuration (from spring.components) the same as configuration
+			// discovered via spring.factories
+			checkAndRegisterConfigurationType(componentTypename);
+		} else {
+			try {
+				// TODO assess which kinds of thing requiring what kind of access - here we see
+				// an Entity might require field reflective access where others don't
+				// I think as a component may have autowired fields (and an entity may have
+				// interesting fields) - you kind of always need to expose fields
+				// There is a type in vanilla-orm called Bootstrap that shows this need
+				reflectionHandler.addAccess(componentTypename, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+					Flag.allDeclaredClasses, Flag.allDeclaredFields);
+				resourcesRegistry.addResources(componentTypename.replace(".", "/") + ".class");
+				// Register nested types of the component
+//				Type baseType = ts.resolveDotted(k);
+				for (Type t : kType.getNestedTypes()) {
+					String n = t.getName().replace("/", ".");
+					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+							Flag.allDeclaredClasses);
+					resourcesRegistry.addResources(t.getName() + ".class");
+				}
+				registerHierarchy(kType, requestor);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+		if (kType != null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
+			processRepository2(kType);
+		}
+		if (kType != null && kType.isAtResponseBody()) {
+			processResponseBodyComponent(kType);
+		}
+		List<String> values = new ArrayList<>();
+		StringTokenizer st = new StringTokenizer(classifiers, ",");
+		// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
+		while (st.hasMoreElements()) {
+			String tt = st.nextToken();
+			values.add(tt);
+			if (tt.equals("org.springframework.stereotype.Component")) {
+				isComponent = true;
+			}
+			try {
+				Type baseType = ts.resolveDotted(tt);
+
+				// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
+				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+				// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
+				// Flag.allPublicMethods, Flag.allDeclaredClasses);
+				reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
+				resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
+				// Register nested types of the component
+				for (Type t : baseType.getNestedTypes()) {
+					String n = t.getName().replace("/", ".");
+					reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
+//					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
+					resourcesRegistry.addResources(t.getName() + ".class");
+				}
+				registerHierarchy(baseType, requestor);
+			} catch (Throwable t) {
+				t.printStackTrace();
+				System.out.println("Problems with value " + tt);
+			}
+		}
+		if (isComponent && ConfigOptions.isVerifierOn()) {
+			kType.verifyComponent();
+		}
+		for (Type type : kType.getNestedTypes()) {
+			if (type.isComponent()) {
+				// TODO do we need to fill in the classifiers list here (second param) correctly?
+				// (We could do it, inferring like we infer spring.components in general)
+				processSpringComponent(type.getDottedName(),"",context,requestor,alreadyProcessed);
+			}
+		}
+		for (ComponentProcessor componentProcessor: componentProcessors) {
+			if (componentProcessor.handle(context, componentTypename, values)) {
+				componentProcessor.process(context, componentTypename, values);
+			}
+		}	
+		return true;
 	}
 	
 	/**
@@ -1478,6 +1488,10 @@ public class ResourcesHandler {
 			}
 		}
 		return passesTests;
+	}
+
+	private void registerAllRequested(RequestedConfigurationManager accessRequestor) {
+		registerAllRequested(0, accessRequestor);
 	}
 
 	private void registerAllRequested(int depth, RequestedConfigurationManager accessRequestor) {
