@@ -46,5 +46,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 		extractTypesFromAttributes = { "value", "name" },
 		typeInfos = @TypeInfo(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
 		abortIfTypesMissing = true)
+// TODO [0.9.0] get rid of all the extractTypesFromAttributes/abortIfMissing
+@NativeImageHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)
 public class ConditionalHints implements NativeImageConfiguration {
 }
