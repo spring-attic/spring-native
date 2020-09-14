@@ -709,7 +709,6 @@ public class TypeSystem {
 		}
 		if (hintLocator == null) {
 			ensureSpringConfigurationDiscovered();
-			
 		}
 		// The result should include hints directly on the type as well
 		// as discovered hints from separate configuration

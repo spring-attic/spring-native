@@ -1210,7 +1210,7 @@ public class Type {
 		try {
 			annotationChain.push(this);
 			// Am I a compilation hint?
-			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);// ;SpringConfiguration.findProposedHints(an.desc);
+			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);
 			if (hints2.size() != 0) {
 				List<String> typesCollectedFromAnnotation = collectTypes(an);
 				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
