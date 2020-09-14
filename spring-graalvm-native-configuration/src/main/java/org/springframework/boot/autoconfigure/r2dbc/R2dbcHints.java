@@ -15,21 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.sql.Statement;
 
-import org.h2.mvstore.db.MVTableEngine;
-import org.h2.store.fs.FilePathAsync;
-import org.h2.store.fs.FilePathDisk;
-import org.h2.store.fs.FilePathMem;
-import org.h2.store.fs.FilePathNio;
-import org.h2.store.fs.FilePathNioMapped;
-import org.h2.store.fs.FilePathNioMem;
-import org.h2.store.fs.FilePathRetryOnInterrupt;
-import org.h2.store.fs.FilePathSplit;
-import org.h2.store.fs.FilePathZip;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
@@ -38,6 +25,8 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
 import io.r2dbc.pool.ConnectionPool;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {

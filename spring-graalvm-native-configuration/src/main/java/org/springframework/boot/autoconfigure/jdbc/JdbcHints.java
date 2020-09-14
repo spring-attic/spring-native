@@ -16,6 +16,8 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -26,7 +28,11 @@ import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.ResourcesDescriptor;
+import org.springframework.graalvm.type.TypeSystem;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
 @NativeImageHint(trigger=DataSourceInitializationConfiguration.Registrar.class, typeInfos= {
@@ -41,8 +47,18 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 		),
 	@TypeInfo(types = HikariConfig.class, access = AccessBits.FULL_REFLECTION)})
 @NativeImageHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
-		// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
-		@ResourcesInfo(patterns = {"org/springframework/jdbc/support/sql-error-codes.xml","schema.sql"})
+		@ResourcesInfo(patterns = {"schema.sql"})
 })
 public class JdbcHints implements NativeImageConfiguration {
+	@Override
+	public List<CompilationHint> computeHints(TypeSystem typeSystem) {
+		if (!ConfigOptions.shouldRemoveXmlSupport()) {
+			CompilationHint ch = new CompilationHint();
+			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
+			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
+			ch.addResourcesDescriptor(sqlErrorCodes);
+			return Collections.singletonList(ch);
+		}
+		return Collections.emptyList();
+	}
 }
