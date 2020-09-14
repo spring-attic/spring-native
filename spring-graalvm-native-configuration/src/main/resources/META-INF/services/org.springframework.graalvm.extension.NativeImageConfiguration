@@ -2,6 +2,7 @@ org.h2.H2Hints
 com.mysql.cj.MySqlHints
 com.wavefront.spring.actuate.WavefrontEndpointHints
 com.wavefront.spring.actuate.WavefrontHints
+org.postgresql.PostgresqlHints
 org.springframework.amqp.rabbit.annotation.RabbitHints
 org.springframework.batch.core.configuration.annotation.BatchHints
 org.springframework.beans.factory.annotation.BeanFactoryAnnotationHints

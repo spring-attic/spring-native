@@ -21,10 +21,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,11 +40,14 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -54,7 +62,10 @@ import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.Mode;
+import org.springframework.graalvm.support.ResourcesHandler;
 import org.springframework.graalvm.support.SpringFeature;
+import org.springframework.graalvm.support.Utils;
+import org.springframework.graalvm.type.TypeSystem.ClassCollectorFileVisitor;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -725,6 +736,40 @@ public class TypeSystem {
 		public String toString() { return key+": hasData?"+(value!=null); }
 	}
 
+	static class ClassCollectorFileVisitor implements FileVisitor<Path> {
+		
+		private final List<Path> collector = new ArrayList<>();
+	
+		public List<Path> getClassFiles() {
+			return collector;
+		}
+	
+		@Override
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+	
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			if (file.getFileName().toString().endsWith(".class")) {
+				collector.add(file);
+			}
+			return FileVisitResult.CONTINUE;
+		}
+	
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+	
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+			return FileVisitResult.CONTINUE;
+		}
+	
+		
+	}
+
 	/**
 	 * Retrieve the map from files (possibly inside jar files) to {@link ResourcesDescriptor} objects parsed
 	 * from the contents of those files. This method is looking for files that start <tt>META-INF/native-image</tt>
@@ -983,6 +1028,73 @@ public class TypeSystem {
 			}
 		}
 		return typesMakingIsPresentChecksInStaticInitializers;
+	}
+
+	public Stream<Path> findDirectoriesOrTargetDirJar(List<String> classpath) {
+		List<Path> result = new ArrayList<>();
+		for (String classpathEntry : classpath) {
+			File f = new File(classpathEntry);
+			if (f.isDirectory()) {
+				result.add(Paths.get(f.toURI()));
+			} else if (f.isFile() && f.getName().endsWith(".jar") && f.getParent().endsWith(File.separator+"target")) {
+				result.add(Paths.get(f.toURI()));
+			}
+		}
+		return result.stream();
+	}
+
+	public Stream<Path> findClasses(Path path) {
+		ArrayList<Path> classfiles = new ArrayList<>();
+		if (Files.isDirectory(path)) {
+			walk(path, classfiles);
+		} else {
+			walkJar(path, classfiles);
+		}
+		return classfiles.stream();
+	}
+
+	public void walk(Path dir, ArrayList<Path> classfiles) {
+		try {
+			TypeSystem.ClassCollectorFileVisitor x = new TypeSystem.ClassCollectorFileVisitor();
+			Files.walkFileTree(dir, x);
+			classfiles.addAll(x.getClassFiles());
+		} catch (IOException e) {
+			throw new IllegalStateException("Problem walking directory "+dir, e);
+			
+		}
+	}
+
+	public void walkJar(Path jarfile, ArrayList<Path> classfiles) {
+		try {
+			FileSystem jarfs = FileSystems.newFileSystem(jarfile,null);
+			Iterable<Path> rootDirectories = jarfs.getRootDirectories();
+			TypeSystem.ClassCollectorFileVisitor x = new TypeSystem.ClassCollectorFileVisitor();
+			for (Path path: rootDirectories) {
+				Files.walkFileTree(path, x);
+			}
+			classfiles.addAll(x.getClassFiles());
+		} catch (IOException e) {
+			throw new IllegalStateException("Problem opening "+jarfile,e);
+		}
+	}
+
+	/**
+	 * Search for any relevant stereotypes on the specified type. Return entries of
+	 * the form:
+	 * "com.foo.MyType=org.springframework.stereotype.Component,javax.transaction.Transactional"
+	 * @param slashedClassname TODO
+	 */
+	public Entry<Type, List<Type>> getStereoTypesOnType(String slashedClassname) {
+		return resolveSlashed(slashedClassname).getRelevantStereotypes();
+	}
+
+	public String typenameOfClass(Path p) {
+		return Utils.scanClass(p).getClassname();
+	}
+
+	public List<Entry<Type, List<Type>>> scanForSpringComponents() {
+		return findDirectoriesOrTargetDirJar(getClasspath()).flatMap(this::findClasses).map(this::typenameOfClass)
+				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 }

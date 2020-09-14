@@ -18,7 +18,6 @@ package org.springframework.graalvm.extension;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import org.springframework.graalvm.support.Mode;
 
 /**
  * NativeImageHint annotations should be placed either on Spring configuration/registrar/import-selectors or on some

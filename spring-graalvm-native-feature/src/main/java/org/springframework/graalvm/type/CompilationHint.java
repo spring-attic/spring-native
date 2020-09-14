@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
-import org.springframework.graalvm.support.Mode;
 
 public class CompilationHint {
 	private String targetType;

@@ -43,7 +43,6 @@ import org.springframework.graalvm.extension.ResourcesInfos;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
-import org.springframework.graalvm.support.Mode;
 import org.springframework.graalvm.support.SpringFeature;
 
 /**
@@ -1569,6 +1568,7 @@ public class Type {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processInitializationInfos(CompilationHint ch, Object value) {
 		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode initializationInfo : initializationInfos) {
@@ -1576,6 +1576,7 @@ public class Type {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processTypeInfoList(CompilationHint ch, Object value) {
 		List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode typeInfo : typeInfos) {
@@ -1583,6 +1584,7 @@ public class Type {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processFieldInfoList(List<FieldDescriptor> fds, Object value) {
 		List<AnnotationNode> fieldInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode fieldInfo : fieldInfos) {
@@ -1591,12 +1593,17 @@ public class Type {
 	}
 
 	private void processMethodInfoList(List<MethodDescriptor> mds, Object value) {
-		List<AnnotationNode> methodInfos = (List<AnnotationNode>) value;
+		List<AnnotationNode> methodInfos = asList(value,AnnotationNode.class);//(List<AnnotationNode>) value;
 		for (AnnotationNode methodInfo : methodInfos) {
 			unpackMethodInfo(methodInfo, mds);
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	private <T> List<T> asList(Object value, Class<T> type) {
+		return (List<T>)value;
+	}
+	
 	private void processProxyInfo(CompilationHint ch, Object value) {
 		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode proxyInfo : proxyInfos) {
