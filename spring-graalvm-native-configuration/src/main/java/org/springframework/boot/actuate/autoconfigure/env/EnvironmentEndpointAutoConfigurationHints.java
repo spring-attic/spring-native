@@ -19,6 +19,7 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 // Hitting /env endpoint
 @NativeImageHint(trigger = EnvironmentEndpointAutoConfiguration.class, typeInfos = { 
@@ -27,7 +28,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor.class
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
 public class EnvironmentEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

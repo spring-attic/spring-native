@@ -7,7 +7,7 @@ ENV JAVA_HOME=/opt/openjdk-jvmci
 ENV PATH="/opt/mx-master:$JAVA_HOME/bin:$PATH"
 
 RUN apt-get -y update \
- && apt-get -y install git curl build-essential python unzip zlib1g-dev \
+ && apt-get -y install git jq curl build-essential python unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
 RUN cd /opt \

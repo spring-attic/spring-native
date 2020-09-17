@@ -17,13 +17,9 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
-import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
-import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
@@ -48,7 +44,6 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 	@TypeInfo(types = {
 		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
 		DeleteOperation.class, Selector.class, Match.class, EndpointFilter.class,
-		EndpointsSupplier.class, EndpointConverter.class, EndpointDiscoverer.class, FilteredEndpoint.class,
 		Link.class, BeanSerializer.class, ApiVersion.class,
 		ExposeExcludePropertyEndpointFilter.class,
 		org.reactivestreams.Publisher.class,

@@ -100,12 +100,20 @@ public class Hint {
 		StringBuilder s = new StringBuilder();
 		s.append("Hint{");
 		s.append(shortChain());
-		s.append(",skipIfTypesMissing=").append(skipIfTypesMissing);
-		s.append(",follow=").append(follow);
-		s.append(",specificTypes=").append(shortenWithAD(specificTypes));
-		s.append(",inferredTypes=").append(shorten(inferredTypes));
-		s.append(",resourcesDescriptors=").append(resourcesDescriptors);
-		s.append(",initializationDescriptors=").append(initializationDescriptors);
+		if (!specificTypes.isEmpty()) {
+			s.append(",specific=").append(shortenWithAD(specificTypes));
+		}
+		if (!inferredTypes.isEmpty()) {
+			s.append(",inferred=").append(shorten(inferredTypes));
+		}
+		if (!resourcesDescriptors.isEmpty()) {
+			s.append(",resources=").append(resourcesDescriptors);
+		}
+		if (!initializationDescriptors.isEmpty()) {
+			s.append(",initialization=").append(initializationDescriptors);
+		}
+//		s.append(",skipIfTypesMissing=").append(skipIfTypesMissing);
+//		s.append(",follow=").append(follow);
 		s.append("}");
 		return s.toString();
 	}
