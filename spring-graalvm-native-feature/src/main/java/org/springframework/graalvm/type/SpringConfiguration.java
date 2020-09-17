@@ -64,12 +64,16 @@ public class SpringConfiguration {
 				}
 				SpringFeature.log("Found "+hints.size()+" hints: "+hints);
 				for (CompilationHint hint: hints) {
-				  List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());
-				  if (existingHints == null) {
-					  existingHints = new ArrayList<>();
-					  proposedHints.put(hint.getTargetType(), existingHints);
-				  }
-				  existingHints.add(hint);
+					if (hint.getTargetType() == null) {
+						// Default to Object which means this hint always applies
+						hint.setTargetType("java.lang.Object");
+					}
+					List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());
+					if (existingHints == null) {
+						existingHints = new ArrayList<>();
+						proposedHints.put(hint.getTargetType(), existingHints);
+					}
+					existingHints.add(hint);
 				}
 			}
 		}
