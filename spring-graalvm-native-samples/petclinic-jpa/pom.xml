@@ -166,13 +166,13 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
+                        <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
                             <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
                             <!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
                             <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 -Dspring.native.remove-yaml-support=true
                                 --enable-all-security-services
-                                -H:+PrintClassInitialization
                             </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>

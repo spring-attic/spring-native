@@ -29,7 +29,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -H:+PrintClassInitialization \
   -Dspring.native.remove-yaml-support=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
