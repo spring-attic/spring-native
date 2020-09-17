@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.TypeSystem;
 
 // The configurations related to actuator are in this key in spring.factories:
@@ -49,39 +50,13 @@ import org.springframework.graalvm.type.TypeSystem;
 @NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
 	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
+ 		@TypeInfo(types= AbstractWebMvcEndpointHandlerMapping.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
  		@TypeInfo(types = {
 		WebMvcEndpointHandlerMapping.class,
-		AbstractWebMvcEndpointHandlerMapping.class,	
 		WebMvcServletEndpointManagementContextConfiguration.class,
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
-		org.springframework.boot.autoconfigure.web.ErrorProperties.class,
-		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute.class,
-		org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace.class,
-		org.springframework.boot.autoconfigure.web.ErrorProperties.Whitelabel.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Cache.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Cache.Cachecontrol.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Chain.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Content.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Fixed.class,
-		org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.FORMAT.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Threads.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Netty.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Mbeanregistry.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Remoteip.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Resource.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Threads.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Options.class,
-		org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Threads.class,
 		WebFluxEndpointManagementContextConfiguration.class,
 		ManagementContextType.class,
 		HeapDumpWebEndpoint.class,

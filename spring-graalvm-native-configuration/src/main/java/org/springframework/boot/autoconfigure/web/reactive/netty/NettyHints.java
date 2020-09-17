@@ -81,7 +81,7 @@ import org.springframework.graalvm.type.AccessBits;
 						"io.netty.util.concurrent.GenericFutureListener",
 						"io.netty.bootstrap.ServerBootstrap$1",
 						"io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor"},
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
 })
 public class NettyHints implements NativeImageConfiguration {
 }

@@ -27,11 +27,12 @@ import org.springframework.graalvm.domain.reflect.Flag;
  * @author Andy Clement
  */
 public class AccessBits {
-	public static final int RESOURCE = 0x0001;
-	public static final int CLASS = 0x0002;
+	public static final int RESOURCE              = 0x0001;
+	public static final int CLASS                 = 0x0002;
 	public static final int DECLARED_CONSTRUCTORS = 0x0004;
-	public static final int DECLARED_METHODS = 0x0008;
-	public static final int DECLARED_FIELDS = 0x0010;
+	public static final int DECLARED_METHODS      = 0x0008;
+	public static final int DECLARED_FIELDS       = 0x0010;
+	public static final int PUBLIC_METHODS        = 0x0020;
 
 	public static final int NONE = 0;
 	public static final int FULL_REFLECTION = (CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
@@ -55,7 +56,7 @@ public class AccessBits {
 
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("AccessBits(");
+		s.append("Acs(");
 		if ((value & RESOURCE) != 0) {
 			s.append("RES ");
 		}
@@ -66,7 +67,10 @@ public class AccessBits {
 			s.append("CONS ");
 		}
 		if ((value & DECLARED_METHODS) != 0) {
-			s.append("METHS ");
+			s.append("DMETHS ");
+		}
+		if ((value & PUBLIC_METHODS) != 0) {
+			s.append("PMETHS ");
 		}
 		if ((value & DECLARED_FIELDS) != 0) {
 			s.append("FLDS ");
@@ -87,6 +91,9 @@ public class AccessBits {
 		}
 		if ((value & DECLARED_METHODS) != 0) {
 			flags.add(Flag.allDeclaredMethods);
+		}
+		if ((value & PUBLIC_METHODS) != 0) {
+			flags.add(Flag.allPublicMethods);
 		}
 		return flags.toArray(new Flag[0]);
 	}
@@ -125,7 +132,7 @@ public class AccessBits {
 
 	public static String toString(Integer value) {
 		StringBuilder s = new StringBuilder();
-		s.append("AccessBits(");
+		s.append("ACS(");
 		if ((value & RESOURCE) != 0) {
 			s.append("RES ");
 		}
@@ -136,7 +143,10 @@ public class AccessBits {
 			s.append("CONS ");
 		}
 		if ((value & DECLARED_METHODS) != 0) {
-			s.append("METHS ");
+			s.append("DMETHS ");
+		}
+		if ((value & PUBLIC_METHODS) != 0) {
+			s.append("PMETHS ");
 		}
 		if ((value & DECLARED_FIELDS) != 0) {
 			s.append("FLDS ");
@@ -153,5 +163,32 @@ public class AccessBits {
 
 	public int getValue() {
 		return value;
+	}
+
+	/**
+	 * Compare a current access level with a proposed access level and return what
+	 * the new proposed access is adding.
+	 */
+	public static int compareAccess(int currentAccess, int newAccess) {
+		int result = 0;
+		if ((currentAccess&RESOURCE)==0 && (newAccess&RESOURCE)!=0) {
+			result = result|RESOURCE;
+		}
+		if ((currentAccess&CLASS)==0 && (newAccess&CLASS)!=0) {
+			result = result|CLASS;
+		}
+		if ((currentAccess&DECLARED_CONSTRUCTORS)==0 && (newAccess&DECLARED_CONSTRUCTORS)!=0) {
+			result = result|DECLARED_CONSTRUCTORS;
+		}
+		if ((currentAccess&DECLARED_METHODS)==0 && (newAccess&DECLARED_METHODS)!=0) {
+			result = result|DECLARED_METHODS;
+		}
+		if ((currentAccess&DECLARED_FIELDS)==0 && (newAccess&DECLARED_FIELDS)!=0) {
+			result = result|DECLARED_FIELDS;
+		}
+		if ((currentAccess&PUBLIC_METHODS)==0 && (newAccess&PUBLIC_METHODS)!=0) {
+			result = result|PUBLIC_METHODS;
+		}
+		return result;
 	}
 }

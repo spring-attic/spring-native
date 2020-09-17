@@ -7,7 +7,7 @@ ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 ENV SPRING_PROFILES_ACTIVE=ci
 
 RUN apt-get -y update \
- && apt-get -y install git curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb \
+ && apt-get -y install git jq curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb \
  && mkdir -p /var/run/mysqld \
  && mkdir -p /var/log/mysql \
  && echo "mysqld_safe --skip-grant-tables &" > /tmp/mysql.sh \

@@ -22,6 +22,7 @@ import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(
 	trigger=kotlin.Unit.class,
@@ -53,7 +54,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
-		})
+		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 	}
 )
 public class SpringApplicationHints implements NativeImageConfiguration {
