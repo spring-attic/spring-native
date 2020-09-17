@@ -134,6 +134,7 @@
                 <configuration>
                     <image>
                         <builder>paketobuildpacks/builder:tiny</builder>
+                        <cleanCache>true</cleanCache>
                         <env>
                             <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
                             <!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
