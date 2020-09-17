@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.example</groupId>
-	<artifactId>vanilla-tomcat</artifactId>
+	<artifactId>tomcat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>tomcat</name>
@@ -11,8 +11,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<tomcat.embed.version>9.0.36</tomcat.embed.version>
-		<tomcat.main.class>com.example.tomcat.TomcatOnlyApplication</tomcat.main.class>
 	</properties>
 
 	<modules>
@@ -24,7 +22,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.experimental</groupId>
 			<artifactId>tomcat-embed-programmatic</artifactId>
-			<version>9.0.38.1-dev</version>
+			<version>9.0.38</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
