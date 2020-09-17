@@ -49,7 +49,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 	public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
 		Type controllerType = imageContext.getTypeSystem().resolveDotted(componentType,true);
 		List<Method> mappings = controllerType.getMethods(m -> m.isAtMapping());
-		System.out.println("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
+		imageContext.log("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
 		for (Method mapping: mappings) {
 			List<Type> toProcess = new ArrayList<>();
 			toProcess.addAll(mapping.getParameterTypes());

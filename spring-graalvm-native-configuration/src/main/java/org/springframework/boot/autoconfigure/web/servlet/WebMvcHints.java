@@ -31,6 +31,7 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.springframework.web.servlet.view.InternalResourceView;
 
 
 @NativeImageHint(trigger=WebMvcAutoConfiguration.class, 
@@ -50,7 +51,10 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
 		@TypeInfo(
 				types = Callable.class,
-				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
+		@TypeInfo(
+				types = InternalResourceView.class,
+				access = AccessBits.LOAD_AND_CONSTRUCT)
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
