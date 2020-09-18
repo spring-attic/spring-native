@@ -1212,7 +1212,7 @@ public class Type {
 			// Am I a compilation hint?
 			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);
 			if (hints2.size() != 0) {
-				List<String> typesCollectedFromAnnotation = collectTypes(an);
+				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an);
 				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
 					// TODO special handling here for @EnableConfigurationProperties - should we promote this to a hint annotation value or truly a special case?
 					addInners(typesCollectedFromAnnotation);
@@ -1314,27 +1314,40 @@ public class Type {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> collectTypes(AnnotationNode an) {
+	private List<String> collectTypeReferencesInAnnotation(AnnotationNode an) {
 		List<Object> values = an.values;
+		List<String> importedReferences = new ArrayList<>();
 		if (values != null) {
 			for (int i = 0; i < values.size(); i += 2) {
 				if (values.get(i).equals("value")) {
 					// For some annotations it is a list, for some a single class (e.g.
 					// @ConditionalOnSingleCandidate)
 					Object object = values.get(i + 1);
-					List<String> importedReferences = null;
 					if (object instanceof List) {
-						importedReferences = ((List<org.objectweb.asm.Type>) object).stream()
+						List<String> toAdd = ((List<org.objectweb.asm.Type>) object).stream()
 								.map(t -> t.getDescriptor()).collect(Collectors.toList());
+						importedReferences.addAll(toAdd);
 					} else {
-						importedReferences = new ArrayList<>();
 						importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
 					}
-					return importedReferences;
+//				} else if (
+//						// TODO 'other things to dig type names out of' should be driven by the hint annotation members
+//						// For now we hard code this to pull conditional types out of ConditionalOnClass.name
+//						an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;") &&
+//					   values.get(i).equals("name")) {
+//					Object object = values.get(i+1);
+//					if (object instanceof List) {
+//						for (String s: (List<String>)object) {
+//							importedReferences.add("L"+s.replace(".", "/")+";");
+//						}
+//					} else {
+//						importedReferences.add("L"+((String)object).replace(".", "/")+";");
+//					}
+//					System.out.println("PULLED OUT "+importedReferences);
 				}
 			}
 		}
-		return Collections.emptyList();
+		return importedReferences.size()==0?Collections.emptyList():importedReferences;
 	}
 
 	public boolean isImportSelector() {

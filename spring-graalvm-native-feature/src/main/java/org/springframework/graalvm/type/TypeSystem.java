@@ -1096,4 +1096,8 @@ public class TypeSystem {
 				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
+	public Type getType_Import() {
+		return resolve(Type.fromLdescriptorToSlashed(Type.AtImports));
+	}
+
 }
