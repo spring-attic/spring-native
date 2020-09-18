@@ -52,7 +52,7 @@ proposedHints.put(AdviceModeImportSelector,
 				AutowiredAnnotationBeanPostProcessor.class
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS),
 		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = { ConfigurationClassPostProcessor.class }) // This needs more access than those
+		@TypeInfo(types = { ConfigurationClassPostProcessor.class },access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
 public class ContextAnnotationHints implements NativeImageConfiguration {
 }

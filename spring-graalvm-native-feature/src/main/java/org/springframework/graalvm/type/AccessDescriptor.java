@@ -48,7 +48,7 @@ public class AccessDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("AccessDescriptor:bits="+AccessBits.toString(accessBits));
+		s.append("AccessDesc:"+AccessBits.toString(accessBits));
 		if (methodDescriptors!=null && !methodDescriptors.isEmpty()) {
 			s.append(",md="+methodDescriptors);
 		}

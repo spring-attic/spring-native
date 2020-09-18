@@ -38,7 +38,7 @@ import org.springframework.graalvm.type.AccessBits;
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 },applyToFunctional=false)
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(typeNames = {

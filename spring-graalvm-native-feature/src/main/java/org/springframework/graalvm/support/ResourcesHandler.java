@@ -1006,7 +1006,7 @@ public class ResourcesHandler {
 
 		if (ConfigOptions.shouldRemoveJmxSupport()) {
 			if (type.getDottedName().toLowerCase().contains("jmx")) {
-				SpringFeature.log(spaces(depth)+type.getDottedName()+" failed validation - it has 'jmx' in it");
+				SpringFeature.log(depth,type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
 				return false;
 			}
 		}
@@ -1016,7 +1016,7 @@ public class ResourcesHandler {
 		// run the types are not on the classpath and so this type isn't being used.
 		Set<String> missingTypes = ts.findMissingTypesInHierarchyOfThisType(type);
 		if (!missingTypes.isEmpty()) {
-			SpringFeature.log(spaces(depth) + "for " + type.getName() + " missing types are " + missingTypes);
+			SpringFeature.log(depth,"for " + type.getName() + " missing types in hierarchy are " + missingTypes );
 			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 				return false;
 			}
@@ -1026,13 +1026,13 @@ public class ResourcesHandler {
 		if (!missingAnnotationTypes.isEmpty()) {
 			// If only the annotations are missing, it is ok to reflect on the existence of
 			// the type, it is just not safe to reflect on the annotations on that type.
-			SpringFeature.log(spaces(depth) + "for " + type.getName() + " missing annotation types are "
+			SpringFeature.log(depth,"for " + type.getName() + " missing annotation types are "
 					+ missingAnnotationTypes);
 		}
 		
 		if (ConfigOptions.isIgnoreHintsOnExcludedConfig() && type.isAtConfiguration()) {
 			if (isIgnored(type)) {
-				SpringFeature.log("INFO: skipping hints on "+type.getName()+" because it is excluded in this application");
+				SpringFeature.log(depth, "skipping hints on "+type.getName()+" because it is excluded in this application");
 				// You may wonder why this is not false? That is because if we return false it will be deleted from
 				// spring.factories. Then later when Spring processes the spring exclude autoconfig key that contains this
 				// name - it will fail with an error that it doesn't refer to a valid configuration. So here we return true,
@@ -1050,7 +1050,7 @@ public class ResourcesHandler {
 		Map<Type,ReachedBy> toFollow = new HashMap<>();
 		if (!hints.isEmpty()) {
 			hints: for (Hint hint : hints) {
-				SpringFeature.log(spaces(depth) + "processing hint " + hint);
+				SpringFeature.log(depth, "processing hint " + hint);
 				boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(hint);
 
 				// This is used for hints that didn't gather data from the bytecode but had them
@@ -1254,7 +1254,7 @@ public class ResourcesHandler {
 
 	private void printHintSummary(Type type, int depth, List<Hint> hints) {
 		if (hints.size() != 0) {
-			SpringFeature.log(spaces(depth) + hints.size() + " hints on " + type.getDottedName() + " are: ");
+			SpringFeature.log(depth, "found "+ hints.size() + " hints on " + type.getDottedName()+":");
 			for (int h = 0; h < hints.size(); h++) {
 				SpringFeature.log(spaces(depth) + (h + 1) + ") " + hints.get(h));
 			}
@@ -1274,12 +1274,12 @@ public class ResourcesHandler {
 		// This is computing how many methods we are exposing unnecessarily via reflection by 
 		// specifying allDeclaredMethods for this type rather than individually specifying them.
 		// A high number indicates we should perhaps do more to be selective.
-		int totalMethodCount = type.getMethodCount();
+		int totalMethodCount = type.getMethodCount(false);
 		List<Method> atBeanMethods = type.getMethodsWithAtBean();
 		int rogue = (totalMethodCount - atBeanMethods.size());
 		if (rogue != 0) {
-			SpringFeature.log(spaces(depth)
-					+ "WARNING: Methods unnecessarily being exposed by reflection on this config type "
+			SpringFeature.log(depth,
+					"WARNING: Methods unnecessarily being exposed by reflection on this config type "
 					+ type.getName() + " = " + rogue + " (total methods including @Bean ones:" + totalMethodCount + ")");
 		}
 
@@ -1330,13 +1330,12 @@ public class ResourcesHandler {
 						SpringFeature.log(spaces(depth+1) + "handling " + inferredTypes.size() + " inferred types");
 						for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 							String s = inferredType.getKey();
-							System.out.println(s);
 							Type t = ts.resolveDotted(s, true);
 							boolean exists = (t != null);
 							if (!exists) {
 								SpringFeature.log(spaces(depth+1) + "inferred type " + s + " not found");
 							} else {
-								SpringFeature.log(spaces(depth+1) + "inferred type " + s + " found, will get accessibility " + inferredType.getValue());
+								SpringFeature.log(spaces(depth+1) + "inferred type " + s + " found, will get accessibility " + AccessBits.toString(inferredType.getValue()));
 							}
 							if (exists) {
 								// TODO if already there, should we merge access required values?
@@ -1526,8 +1525,8 @@ public class ResourcesHandler {
 	}
 
 	private void registerAnnotationChain(int depth, RequestedConfigurationManager tar, List<Type> annotationChain) {
-		SpringFeature.log(spaces(depth) + "attempting registration of " + annotationChain.size()
-				+ " elements of annotation chain");
+		SpringFeature.log(depth, "attempting registration of " + annotationChain.size()
+				+ " elements of annotation hint chain");
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
