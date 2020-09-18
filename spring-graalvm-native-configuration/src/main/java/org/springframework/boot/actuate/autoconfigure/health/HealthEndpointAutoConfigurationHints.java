@@ -44,6 +44,7 @@ import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 // Hitting /health endpoint
 @NativeImageHint(trigger = HealthEndpointAutoConfiguration.class, typeInfos = { 
@@ -81,7 +82,6 @@ import org.springframework.graalvm.extension.TypeInfo;
 		org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status.class,
 		HealthEndpointGroups.class
 	},typeNames = {
-		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		"org.springframework.boot.actuate.health.HealthEndpointGroups$1",
 		"org.springframework.boot.actuate.health.HealthEndpointSupport",
 		"org.springframework.boot.actuate.health.DefaultContributorRegistry",
@@ -90,7 +90,10 @@ import org.springframework.graalvm.extension.TypeInfo;
 		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredReactiveHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
-	})
+	}),
+	@TypeInfo(typeNames = 
+		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
+		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class HealthEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

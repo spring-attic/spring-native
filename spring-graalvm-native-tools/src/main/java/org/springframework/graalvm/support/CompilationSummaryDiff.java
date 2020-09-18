@@ -19,7 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,7 +147,15 @@ public class CompilationSummaryDiff {
 		URI template = CompilationSummary.class.getResource("/template-compilation-diff.html").toURI();
 		Map<String, String> env = new HashMap<>(); 
 		env.put("create", "true");
-		List<String> readAllLines= Files.readAllLines(Paths.get(template));
+		List<String> readAllLines = null;
+		try {
+			readAllLines= Files.readAllLines(Paths.get(template));
+		} catch (FileSystemNotFoundException fsnfe) {
+			String[] array = template.toString().split("!");
+			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), env);
+			Path path = fs.getPath(array[1]);	
+			readAllLines = Files.readAllLines(path);
+		}
 		List<String> lines = new ArrayList<>();
 		for (String l: readAllLines)  {
 			if (l.contains("TREE-GOES-HERE")) {

@@ -44,9 +44,7 @@ import org.springframework.graalvm.type.TypeSystem;
 		MetricsWebFilter.class,
 		DefaultWebFluxTagsProvider.class,
 		WebFluxTagsProvider.class,
-		MetricsWebClientCustomizer.class,
-		WebFluxEndpointManagementContextConfiguration.class,
-		ReactiveManagementChildContextConfiguration.class
+		MetricsWebClientCustomizer.class
 	}, typeNames = {
 		"org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping",

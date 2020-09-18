@@ -40,6 +40,7 @@ public class AccessBits {
 	public static final int CONFIGURATION = (RESOURCE | CLASS | DECLARED_METHODS | DECLARED_CONSTRUCTORS | DECLARED_FIELDS);
 	public static final int ANNOTATION = (RESOURCE | CLASS | DECLARED_METHODS);
 	public static final int LOAD_AND_CONSTRUCT = (CLASS | DECLARED_CONSTRUCTORS);
+	public static final int LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS = LOAD_AND_CONSTRUCT | PUBLIC_METHODS;
 
 	private int value;
 

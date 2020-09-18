@@ -189,7 +189,7 @@ public class TypeTests {
 			assertNotNull(t);
 			System.out.println(t.getName());
 			System.out.println(t.isArray());
-			System.out.println(t.getMethodCount());
+			System.out.println(t.getMethodCount(true));
 		}
 	}
 	

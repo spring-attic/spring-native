@@ -57,7 +57,6 @@ import org.springframework.graalvm.type.TypeSystem;
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
-		WebFluxEndpointManagementContextConfiguration.class,
 		ManagementContextType.class,
 		HeapDumpWebEndpoint.class,
 		EndpointMediaTypes.class,
@@ -74,10 +73,8 @@ import org.springframework.graalvm.type.TypeSystem;
 		PathMapper.class,
 		ManagementPortType.class,
 		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
-		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
+//		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration.class,
-		// This reactive one is required even though not a webflux app, awesome...
-		ReactiveManagementChildContextConfiguration.class,
 	}, typeNames = {
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",

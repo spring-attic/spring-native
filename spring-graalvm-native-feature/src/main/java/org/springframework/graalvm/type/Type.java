@@ -1431,8 +1431,18 @@ public class Type {
 		}
 	}
 
-	public int getMethodCount() {
-		return node.methods.size();
+	public int getMethodCount(boolean includeConstructors) {
+		if (includeConstructors) {
+			return node.methods.size();
+		} else {
+			int m = 0;
+			for (MethodNode methodNode : node.methods) {
+				if (!methodNode.name.equals("<init>")) {
+					m++;
+				}
+			}
+			return m;
+		}
 	}
 
 	public boolean isAnnotation() {

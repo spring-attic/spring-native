@@ -112,10 +112,18 @@ public class SpringFeature implements Feature {
 		}
 	}
 
+	public static void log(int depth, String msg) {
+		log(spaces(depth)+msg);
+	}
+
 	public static void log(String msg) {
 		if (ConfigOptions.isVerbose()) {
 			System.out.println(msg);
 		}
+	}
+
+	private static String spaces(int depth) {
+		return "                                                  ".substring(0, depth * 2);
 	}
 
 	static class VersionCheckException extends IllegalStateException {

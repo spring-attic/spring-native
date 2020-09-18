@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationI
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 // Hitting /caches endpoint
 @NativeImageHint(trigger = CachesEndpointAutoConfiguration.class, typeInfos = { 
@@ -27,7 +28,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,
 		// TODO likely incomplete, not tested
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class CachesEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }
