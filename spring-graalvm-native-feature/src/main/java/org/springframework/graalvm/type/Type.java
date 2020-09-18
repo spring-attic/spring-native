@@ -1330,20 +1330,19 @@ public class Type {
 					} else {
 						importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
 					}
-//				} else if (
-//						// TODO 'other things to dig type names out of' should be driven by the hint annotation members
-//						// For now we hard code this to pull conditional types out of ConditionalOnClass.name
-//						an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;") &&
-//					   values.get(i).equals("name")) {
-//					Object object = values.get(i+1);
-//					if (object instanceof List) {
-//						for (String s: (List<String>)object) {
-//							importedReferences.add("L"+s.replace(".", "/")+";");
-//						}
-//					} else {
-//						importedReferences.add("L"+((String)object).replace(".", "/")+";");
-//					}
-//					System.out.println("PULLED OUT "+importedReferences);
+				} else if (
+						// TODO 'other things to dig type names out of' should be driven by the hint annotation members
+						// For now we hard code this to pull conditional types out of ConditionalOnClass.name
+						an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;") &&
+					   values.get(i).equals("name")) {
+					Object object = values.get(i+1);
+					if (object instanceof List) {
+						for (String s: (List<String>)object) {
+							importedReferences.add("L"+s.replace(".", "/")+";");
+						}
+					} else {
+						importedReferences.add("L"+((String)object).replace(".", "/")+";");
+					}
 				}
 			}
 		}
