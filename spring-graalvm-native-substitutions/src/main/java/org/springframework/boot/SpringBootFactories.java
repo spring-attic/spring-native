@@ -1,5 +1,8 @@
 package org.springframework.boot;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
 import org.springframework.boot.autoconfigure.condition.ConditionProvider;
@@ -29,12 +32,15 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.boot.diagnostics.analyzer.AnalyzerProvider;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
+import org.springframework.boot.env.EnvironmentPostProcessorsFactory;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor;
 import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
@@ -47,22 +53,27 @@ import org.springframework.util.MultiValueMap;
 
 public abstract class SpringBootFactories {
 
-	public static MultiValueMap<Class<?>, Object> factories = new LinkedMultiValueMap<Class<?>, Object>() {};
+	public static MultiValueMap<Class<?>, Object> factories = new LinkedMultiValueMap<Class<?>, Object>() {
+	};
 
 	static {
 		boolean removeYamlSupport = Boolean.valueOf(System.getProperty("spring.native.remove-yaml-support", "false"));
-		boolean isAutoconfigurePresent = ClassUtils.isPresent("org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener", null);
+		boolean isAutoconfigurePresent = ClassUtils.isPresent(
+				"org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener", null);
 		boolean isRsocketPresent = ClassUtils.isPresent("io.rsocket.RSocket", null);
-		boolean isLiquibasePresent = ClassUtils.isPresent("liquibase.servicelocator.CustomResolverServiceLocator", null);
+		boolean isLiquibasePresent = ClassUtils.isPresent("liquibase.servicelocator.CustomResolverServiceLocator",
+				null);
 		boolean isFlywayPresent = ClassUtils.isPresent("org.flywaydb.core.Flyway", null);
 		boolean isFreemarkerPresent = ClassUtils.isPresent("freemarker.template.Configuration", null);
 		boolean isMustachePresent = ClassUtils.isPresent("com.samskivert.mustache.Mustache", null);
 		boolean isGroovyTemplatePresent = ClassUtils.isPresent("groovy.text.TemplateEngine", null);
 		boolean isThymeleafPresent = ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine", null);
 		boolean isJspPresent = ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", null);
-		boolean isSpringJdbcPresent = ClassUtils.isPresent("org.springframework.jdbc.CannotGetJdbcConnectionException", null);
+		boolean isSpringJdbcPresent = ClassUtils.isPresent("org.springframework.jdbc.CannotGetJdbcConnectionException",
+				null);
 		boolean isR2dbcPresent = ClassUtils.isPresent("io.r2dbc.spi.ConnectionFactory", null);
-		boolean isSpringInitPresent = ClassUtils.isPresent("org.springframework.init.func.FunctionalInstallerListener", null);
+		boolean isSpringInitPresent = ClassUtils.isPresent("org.springframework.init.func.FunctionalInstallerListener",
+				null);
 
 		// PropertySourceLoader
 		factories.add(PropertySourceLoader.class, new PropertiesPropertySourceLoader());
@@ -72,21 +83,41 @@ public abstract class SpringBootFactories {
 
 		// ApplicationContextInitializer
 		factories.add(ApplicationContextInitializer.class, new ConfigurationWarningsApplicationContextInitializer());
-		factories.add(ApplicationContextInitializer.class,new ContextIdApplicationContextInitializer());
+		factories.add(ApplicationContextInitializer.class, new ContextIdApplicationContextInitializer());
 		factories.add(ApplicationContextInitializer.class, new DelegatingApplicationContextInitializer());
 		if (isRsocketPresent) {
 			factories.add(ApplicationContextInitializer.class, new RSocketPortInfoApplicationContextInitializer());
 		}
 		factories.add(ApplicationContextInitializer.class, new ServerPortInfoApplicationContextInitializer());
 		if (isAutoconfigurePresent) {
-			//factories.add(ApplicationContextInitializer.class, AutocoNo nnfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
+			// factories.add(ApplicationContextInitializer.class, AutocoNo
+			// nnfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
 			factories.add(ApplicationContextInitializer.class, new ConditionEvaluationReportLoggingListener());
 		}
 
+		EnvironmentPostProcessorsFactory environmentPostProcessorsFactory = new EnvironmentPostProcessorsFactory() {
+			@Override
+			public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
+					ConfigurableBootstrapContext bootstrapContext) {
+				// EnvironmentPostProcessor
+				return Arrays.asList(
+						// new CloudFoundryVcapEnvironmentPostProcessor()
+						new SpringApplicationJsonEnvironmentPostProcessor(), //
+						new SystemEnvironmentPropertySourceEnvironmentPostProcessor(), //
+						new ConfigFileApplicationListener() //
+				// new DebugAgentEnvironmentPostProcessor()
+				);
+			}
+		};
+
 		// ApplicationListener
-		//factories.add(ApplicationListener.class, new ClearCachesApplicationListener());
+		// factories.add(ApplicationListener.class, new
+		// ClearCachesApplicationListener());
+		factories.add(ApplicationListener.class,
+				new EnvironmentPostProcessorApplicationListener(environmentPostProcessorsFactory));
 		factories.add(ApplicationListener.class, new ParentContextCloserApplicationListener());
-		//factories.add(ApplicationListener.class, new CloudFoundryVcapEnvironmentPostProcessor());
+		// factories.add(ApplicationListener.class, new
+		// CloudFoundryVcapEnvironmentPostProcessor());
 		factories.add(ApplicationListener.class, new FileEncodingApplicationListener());
 		factories.add(ApplicationListener.class, new AnsiOutputApplicationListener());
 		factories.add(ApplicationListener.class, new DelegatingApplicationListener());
@@ -102,13 +133,6 @@ public abstract class SpringBootFactories {
 		}
 		factories.add(ApplicationListener.class, new NativePropertiesListener());
 
-		// EnvironmentPostProcessor
-		//factories.add(EnvironmentPostProcessor.class, new CloudFoundryVcapEnvironmentPostProcessor());
-		factories.add(EnvironmentPostProcessor.class, new SpringApplicationJsonEnvironmentPostProcessor());
-		factories.add(EnvironmentPostProcessor.class, new SystemEnvironmentPropertySourceEnvironmentPostProcessor());
-		factories.add(EnvironmentPostProcessor.class, new ConfigFileApplicationListener());
-		//factories.add(EnvironmentPostProcessor.class, new DebugAgentEnvironmentPostProcessor());
-
 		// FailureAnalyzer
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getBeanCurrentlyInCreationFailureAnalyzer());
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getBeanDefinitionOverrideFailureAnalyzer());
@@ -120,14 +144,18 @@ public abstract class SpringBootFactories {
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getNoSuchMethodFailureAnalyzer());
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getNoUniqueBeanDefinitionFailureAnalyzer());
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getPortInUseFailureAnalyzer());
-		// TODO Class not found exception when uncommented, maybe a native-image static analysis bug
-		//factories.add(FailureAnalyzer.class, AnalyzerProvider.getValidationExceptionFailureAnalyzer());
+		// TODO Class not found exception when uncommented, maybe a native-image static
+		// analysis bug
+		// factories.add(FailureAnalyzer.class,
+		// AnalyzerProvider.getValidationExceptionFailureAnalyzer());
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getInvalidConfigurationPropertyNameFailureAnalyzer());
 		factories.add(FailureAnalyzer.class, AnalyzerProvider.getInvalidConfigurationPropertyValueFailureAnalyzer());
 
 		if (isAutoconfigurePresent) {
-			// No NoSuchBeanDefinitionFailureAnalyzer since it triggers usage of org.springframework.core.type.classreading stuff
-			//factories.add(FailureAnalyzer.class, AutoconfigureAnalyzerProvider.getNoSuchBeanDefinitionFailureAnalyzer());
+			// No NoSuchBeanDefinitionFailureAnalyzer since it triggers usage of
+			// org.springframework.core.type.classreading stuff
+			// factories.add(FailureAnalyzer.class,
+			// AutoconfigureAnalyzerProvider.getNoSuchBeanDefinitionFailureAnalyzer());
 			if (isFlywayPresent) {
 				factories.add(FailureAnalyzer.class, FlywayProvider.getFlywayMigrationScriptMissingFailureAnalyzer());
 			}
@@ -146,7 +174,8 @@ public abstract class SpringBootFactories {
 
 		if (isAutoconfigurePresent) {
 			// AutoConfigurationImportListener
-			factories.add(AutoConfigurationImportListener.class, ConditionProvider.getConditionEvaluationReportAutoConfigurationImportListener());
+			factories.add(AutoConfigurationImportListener.class,
+					ConditionProvider.getConditionEvaluationReportAutoConfigurationImportListener());
 
 			// AutoConfigurationImportFilter
 			factories.add(AutoConfigurationImportFilter.class, ConditionProvider.getOnBeanCondition());
