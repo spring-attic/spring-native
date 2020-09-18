@@ -20,5 +20,7 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 
 @NativeImageHint(trigger=BatchConfigurationSelector.class, typeInfos = {
-		@TypeInfo(types= {ModularBatchConfiguration.class,SimpleBatchConfiguration.class})})
+		@TypeInfo(types= {ModularBatchConfiguration.class,
+				SimpleBatchConfiguration.class,
+				ScopeConfiguration.class})})
 public class BatchHints implements NativeImageConfiguration { }
