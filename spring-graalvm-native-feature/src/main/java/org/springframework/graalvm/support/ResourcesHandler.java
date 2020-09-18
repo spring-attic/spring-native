@@ -1470,7 +1470,6 @@ public class ResourcesHandler {
 			}
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);
-				System.out.println("dname="+dname);
 //				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
 //					reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
 //				} else {
