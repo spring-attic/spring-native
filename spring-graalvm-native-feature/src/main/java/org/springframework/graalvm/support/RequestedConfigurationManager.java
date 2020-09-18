@@ -55,16 +55,38 @@ public class RequestedConfigurationManager {
 		}
 	}
 	
+
+	public void reduceTypeAccess(String type, int newAccess) {
+		if (type.indexOf("/")!=-1) {
+			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
+		}
+		Integer existsAlready = requestedTypeAccesses.get(type);
+		if (existsAlready==null) {
+			throw new IllegalStateException("Cannot reduce access for "+type+" - it hasn't been previously registered");
+		}
+		requestedTypeAccesses.put(type, newAccess);
+	}
+	
 	public void requestProxyDescriptors(List<ProxyDescriptor> proxyDescriptors) {
-		requestedProxies.addAll(proxyDescriptors);
+		for (ProxyDescriptor pd: proxyDescriptors) {
+			requestedProxies.add(pd);
+		}
 	}
 	
 	public void requestResourcesDescriptors(List<ResourcesDescriptor> resourcesDescriptors) {
-		requestedResources.addAll(resourcesDescriptors);
+		for (ResourcesDescriptor rd: resourcesDescriptors) {
+			requestedResources.add(rd);
+		}
 	}
 
 	public void requestInitializationDescriptors(List<InitializationDescriptor> initializationDescriptors) {
-		requestedInitializations.addAll(initializationDescriptors);
+		for (InitializationDescriptor id: initializationDescriptors) {
+			requestedInitializations.add(id);
+		}
+	}
+
+	public void requestInitializationDescriptors(InitializationDescriptor initializationDescriptor) {
+		requestedInitializations.add(initializationDescriptor);
 	}
 	
 	public Set<Entry<String,Integer>> getRequestedTypeAccesses() {
@@ -81,6 +103,15 @@ public class RequestedConfigurationManager {
 
 	public List<InitializationDescriptor> getRequestedInitializations() {
 		return requestedInitializations;
+	}
+
+	public void mergeIn(RequestedConfigurationManager incomingRCM) {
+		for (Entry<String, Integer> entry : incomingRCM.getRequestedTypeAccesses()) {
+			requestTypeAccess(entry.getKey(), entry.getValue());
+		}
+		requestInitializationDescriptors(incomingRCM.getRequestedInitializations());
+		requestProxyDescriptors(incomingRCM.getRequestedProxies());
+		requestResourcesDescriptors(incomingRCM.getRequestedResources());
 	}
 
 }
