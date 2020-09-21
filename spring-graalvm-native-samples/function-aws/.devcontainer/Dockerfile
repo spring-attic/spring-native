@@ -3,11 +3,13 @@ FROM springci/spring-graalvm-native:master-java8
 ARG USER
 ARG USER_ID
 ARG USER_GID
+ARG DOCKER_GID=130
 
 RUN (groupadd --gid "${USER_GID}" "${USER}" || echo "No groupadd needed") && \
     useradd \
       --uid ${USER_ID} \
       --gid ${USER_GID} \
       --create-home \
-      --shell /bin/bash \
-      ${USER}
+      --shell /bin/bash ${USER} && \
+      groupadd --gid $DOCKER_GID docker && \
+      usermod -aG docker $USER

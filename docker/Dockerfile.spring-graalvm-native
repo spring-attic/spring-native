@@ -30,9 +30,13 @@ RUN apt-get -y update \
  && npm i -g \
  && cd .. \
  && rm -rf tty-table-master \
+ && curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.1-amd64.deb \
+ && dpkg -i elasticsearch-7.9.1-amd64.deb \
+ && rm elasticsearch-7.9.1-amd64.deb \
+ && chmod 770 /var/lib/elasticsearch \
  && npm cache clean --force \
  && rm -rf /var/cache/apt/archives \
  && rm -rf /var/lib/apt/lists/*
 
 
-CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/mysql.sh && native-image --version && /bin/bash
+CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/mysql.sh && /usr/share/elasticsearch/bin/elasticsearch -d && native-image --version && /bin/bash
