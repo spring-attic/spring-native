@@ -45,7 +45,7 @@ import org.springframework.graalvm.substitutions.OnlyIfPresent;
  * Substitute the {@link org.apache.http.impl.client.BasicAuthCache} (causing trouble by using an {@link ObjectOutputStream}
  * for serialization), with a {@link Map} based implementation.
  */
-@TargetClass(className = "org.elasticsearch.client.RestClient", onlyWith = {OnlyIfPresent.class})
+@TargetClass(className = "org.elasticsearch.client.RestClient", onlyWith = OnlyIfPresent.class)
 final class Target_RestClient {
 
 	@Alias
@@ -76,12 +76,12 @@ final class Target_RestClient {
 		this.blacklist.clear();
 	}
 
-	@TargetClass(className = "org.elasticsearch.client.DeadHostState")
+	@TargetClass(className = "org.elasticsearch.client.DeadHostState", onlyWith = OnlyIfPresent.class)
 	final static class DeadHostState {
 
 	}
 
-	@TargetClass(className = "org.elasticsearch.client.RestClient", innerClass = "NodeTuple")
+	@TargetClass(className = "org.elasticsearch.client.RestClient", innerClass = "NodeTuple", onlyWith = OnlyIfPresent.class)
 	final static class NodeTuple<T> {
 
 		@Alias
