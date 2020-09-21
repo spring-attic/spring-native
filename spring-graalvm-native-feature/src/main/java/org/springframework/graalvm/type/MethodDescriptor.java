@@ -15,6 +15,7 @@
  */
 package org.springframework.graalvm.type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MethodDescriptor {
@@ -25,6 +26,23 @@ public class MethodDescriptor {
 	public MethodDescriptor(String name, List<String> parameterTypes) {
 		this.name = name;
 		this.parameterTypes = parameterTypes;
+	}
+	
+	public static List<MethodDescriptor> of(String[][] methodDescriptors) {
+		List<MethodDescriptor> mds = new ArrayList<>();
+		for (int i=0;i<methodDescriptors.length;i++) {
+			String[] methodDescriptor = methodDescriptors[i];
+			mds.add(of(methodDescriptor));
+		}
+		return mds;
+	}
+	
+	public static MethodDescriptor of(String[] methodDescriptor) {
+		List<String> params = new ArrayList<>();
+		for (int p=1;p<methodDescriptor.length;p++) {
+			params.add(methodDescriptor[p]);
+		}
+		return new MethodDescriptor(methodDescriptor[0], params);
 	}
 
 	public String getName() {

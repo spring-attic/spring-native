@@ -74,6 +74,8 @@ public class TypeSystem {
 
 	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
 
+	public Map<TypeId, Type> primitives = new HashMap<>();
+
 	// Map of all types on the classpath that have some kind of annotations on them
 	Map<String, AnnotationInfo> annotatedTypes;
 
@@ -1099,5 +1101,18 @@ public class TypeSystem {
 	public Type getType_Import() {
 		return resolve(Type.fromLdescriptorToSlashed(Type.AtImports));
 	}
-
+	
+	enum TypeId {
+		INT("I"), DOUBLE("D"), LONG("J"), SHORT("S"), BYTE("B"), CHAR("C"), FLOAT("F"), BOOLEAN("Z"), REFERENCE(null);
+		final String signature;
+		final boolean isPrimitive;
+		TypeId(String signature) {
+			this.signature = signature;
+			this.isPrimitive = (signature!=null);
+		}
+		public String getSignature() {
+			return signature;
+		}
+	}
+	
 }

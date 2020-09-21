@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 		ShutdownEndpoint.class,
 		CloudPlatform.class,
 		OperationInvokerAdvisor.class,
-		ParameterValueMapper.class,
+//		ParameterValueMapper.class,
 		ConversionServiceParameterValueMapper.class,
 		LoggersEndpoint.class,
 		ThreadDumpEndpoint.class,

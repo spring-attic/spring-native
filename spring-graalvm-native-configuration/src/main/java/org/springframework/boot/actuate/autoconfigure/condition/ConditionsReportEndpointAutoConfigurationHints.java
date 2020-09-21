@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -35,7 +36,7 @@ import org.springframework.util.MultiValueMap;
 		MessageAndConditions.class,
 		MultiValueMap.class,
 		LinkedMultiValueMap.class,
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class ConditionsReportEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

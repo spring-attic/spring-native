@@ -38,6 +38,7 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.CompilationHint;
 import org.springframework.graalvm.type.Field;
+import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
 import org.springframework.graalvm.type.TypeSystem;
 import org.springframework.transaction.annotation.Transactional;
@@ -257,6 +258,28 @@ public class TypeTests {
 	static class TestFields {
 		String one;
 		List<Integer> two;
+	}
+	
+	
+	@Test
+	public void testMethodsToArray() {
+		Type t = typeSystem.resolveName(TestMethods.class.getName());
+		Method one = t.getMethod("one").get(0);
+		String[] array = one.asConfigurationArray();
+		assertEquals(2,array.length);
+		assertEquals("one",array[0]);
+		assertEquals("java.lang.String",array[1]);
+		Method two = t.getMethod("two").get(0);
+		array = two.asConfigurationArray();
+		assertEquals(3,array.length);
+		assertEquals("two",array[0]);
+		assertEquals("java.io.Serializable",array[1]);
+		assertEquals("java.lang.String",array[2]);
+	}
+	
+	static class TestMethods {
+		public void one(String a) {}
+		public void two(java.io.Serializable a,String b) {}
 	}
 	
 	@SuppressWarnings("serial")

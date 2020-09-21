@@ -94,9 +94,10 @@ public class Type {
 	private final Lazy<List<Field>> fields;
 	private final Lazy<List<Method>> methods;
 	private final Lazy<List<Type>> annotations;
+	
+	private boolean isPrimitive;
 
 	private Type(TypeSystem typeSystem, ClassNode node, int dimensions) {
-
 		this.typeSystem = typeSystem;
 		this.node = node;
 		this.dimensions = dimensions;
@@ -2220,6 +2221,17 @@ public class Type {
 				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m))
 				.collect(Collectors.toList());
 	}
+	
+	public List<Method> getMethod(String name) {
+		List<Method> results = new ArrayList<>();
+		for (int i = 0; i < node.methods.size(); i++) {
+			MethodNode methodNode = node.methods.get(i);
+			if (methodNode.name.equals(name)) {
+				results.add(wrap(methodNode));
+			}
+		}
+		return results;
+	}
 
 	public boolean equals(Object that) {
 		return (that instanceof Type) &&
@@ -2389,4 +2401,5 @@ public class Type {
 	 List<String> importedConfigurations =  findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false, new HashSet<>()).get(this.getDottedName());
 	 return (importedConfigurations==null?Collections.emptyList():importedConfigurations);
 	}
+
 }

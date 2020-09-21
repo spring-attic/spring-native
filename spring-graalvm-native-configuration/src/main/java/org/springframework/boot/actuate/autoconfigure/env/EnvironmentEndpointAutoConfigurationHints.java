@@ -28,7 +28,7 @@ import org.springframework.graalvm.type.AccessBits;
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor.class
-	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
+	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class EnvironmentEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

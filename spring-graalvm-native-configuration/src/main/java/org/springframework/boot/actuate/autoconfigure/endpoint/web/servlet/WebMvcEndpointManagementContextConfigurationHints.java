@@ -32,13 +32,12 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
+//import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
+//import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.TypeSystem;
 
 // The configurations related to actuator are in this key in spring.factories:
@@ -50,10 +49,12 @@ import org.springframework.graalvm.type.TypeSystem;
 @NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
 	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
- 		@TypeInfo(types= AbstractWebMvcEndpointHandlerMapping.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
+// 		@TypeInfo(types= AbstractWebMvcEndpointHandlerMapping.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
  		@TypeInfo(types = {
-		WebMvcEndpointHandlerMapping.class,
-		WebMvcServletEndpointManagementContextConfiguration.class,
+//		WebMvcEndpointHandlerMapping.class,
+//		WebMvcServletEndpointManagementContextConfiguration.class,
+//		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
+//		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
@@ -72,8 +73,6 @@ import org.springframework.graalvm.type.TypeSystem;
 		ManagementContextType.class,
 		PathMapper.class,
 		ManagementPortType.class,
-		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
-//		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
 		org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration.class,
 	}, typeNames = {
 		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
