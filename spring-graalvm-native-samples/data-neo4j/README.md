@@ -1,4 +1,4 @@
-Spring Boot project with Spring Data MongoDB.
+Spring Boot project with Spring Data Neo4j.
 
 To build and run the native application packaged in a lightweight container:
 ```
