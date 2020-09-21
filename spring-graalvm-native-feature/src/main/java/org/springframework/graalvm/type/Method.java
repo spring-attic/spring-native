@@ -34,8 +34,12 @@ import org.springframework.graalvm.support.SpringFeature;
 public class Method {
 	
 	private MethodNode mn;
+
 	private TypeSystem typeSystem;
+
 	private boolean unresolvableParams = false;
+
+	private List<Type> resolvedParameters;
 
 	public Method(MethodNode mn, TypeSystem ts) {
 		this.mn = mn;
@@ -226,24 +230,26 @@ public class Method {
 		return returnType;
 	}
 	
-
 	public List<Type> getParameterTypes() {
-		List<Type> results = null;
-		org.objectweb.asm.Type[] parameterTypes = org.objectweb.asm.Type.getArgumentTypes(mn.desc);
-		if (parameterTypes!=null) {
-			for (org.objectweb.asm.Type t: parameterTypes) {
-				if (results == null) {
-					results = new ArrayList<>();
+		if (resolvedParameters == null) {
+			List<Type> results = null;
+			org.objectweb.asm.Type[] parameterTypes = org.objectweb.asm.Type.getArgumentTypes(mn.desc);
+			if (parameterTypes != null) {
+				for (org.objectweb.asm.Type t : parameterTypes) {
+					if (results == null) {
+						results = new ArrayList<>();
+					}
+					Type ptype = typeSystem.resolve(t, true);
+					if (ptype == null) {
+						SpringFeature.log("WARNING: method has unresolvable parameters: " + mn.name + mn.desc);
+						unresolvableParams = true;
+					}
+					results.add(ptype);
 				}
-				Type ptype = typeSystem.resolve(t,true);
-				if (ptype == null) {
-					SpringFeature.log("WARNING: method has unresolvable parameters: "+mn.name+mn.desc);
-					unresolvableParams = true;
-				}
-				results.add(ptype);
 			}
+			resolvedParameters = (results == null ? Collections.emptyList() : results);
 		}
-		return results==null?Collections.emptyList():results;
+		return resolvedParameters;
 	}
 
 	public boolean isAtMapping() {
@@ -368,6 +374,10 @@ public class Method {
 
 	public boolean markedAtBean() {
 		return hasAnnotation(Type.AtBean, false);
+	}
+
+	public boolean isPrivate() {
+		return Modifier.isPrivate(mn.access);
 	}
 
 }

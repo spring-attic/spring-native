@@ -27,7 +27,8 @@ import org.springframework.graalvm.type.AccessBits;
 	@TypeInfo(types = {
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,
-	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+		// TODO likely incomplete, not tested
+	},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class CachesEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

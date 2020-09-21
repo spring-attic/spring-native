@@ -38,7 +38,6 @@ import org.springframework.graalvm.type.TypeSystem;
 	@TypeInfo(types = {
 		AbstractWebFluxEndpointHandlerMapping.class,
 		ControllerEndpointHandlerMapping.class,
-//		WebFluxEndpointHandlerMapping.class,
 		DefaultWebClientExchangeTagsProvider.class,
 		WebClientExchangeTagsProvider.class,
 		MetricsWebFilter.class,

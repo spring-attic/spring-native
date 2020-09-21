@@ -632,7 +632,9 @@ public class ResourcesHandler {
 			// TODO we can do better here, why can we not use the inferredRequiredAccess -
 			// it looks like we aren't adding RESOURCE to something when inferring.
 			typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
-					AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);
+					AccessBits.DECLARED_CONSTRUCTORS|
+					AccessBits.PUBLIC_METHODS|//AccessBits.DECLARED_METHODS|
+					AccessBits.RESOURCE);
 //					inferredRequiredAccess.getValue());
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
@@ -1181,6 +1183,9 @@ public class ResourcesHandler {
 		}
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (type.isImportSelector()) {
+				
+			}
 			if (type.isAtConfiguration()) {
 				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
 				// other configurations.
@@ -1198,8 +1203,8 @@ public class ResourcesHandler {
 				if (validMethodsSubset != null) {
 					printMemberSummary(validMethodsSubset);
 					// System.out.println("What is the current request level for this config? "+accessRequestor.getTypeAccessRequestedFor(type.getDottedName()));
-					configureMethodAccess(type, accessRequestor, validMethodsSubset);
 				}
+				configureMethodAccess(type, accessRequestor, validMethodsSubset);
 			}
 			// Follow transitively included inferred types only if necessary:
 			for (Map.Entry<Type,ReachedBy> entry : toFollow.entrySet()) {
@@ -1264,56 +1269,64 @@ public class ResourcesHandler {
 	/**
 	 * This handles when some @Bean methods on type do not need runtime access (because they have conditions
 	 * on them that failed when checked). In this case the full list of methods should be spelled out
-	 * excluding the unnecessary ones.
+	 * excluding the unnecessary ones. If validMethodsSubset is null then all @Bean methods are valid.
 	 */
 	private void configureMethodAccess(Type type, RequestedConfigurationManager accessRequestor,
 			String[][] validMethodsSubset) {
 		SpringFeature.log("computing full method list for "+type.getDottedName());
-		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
+//		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
+		boolean onlyNonPrivateMethods = true;
 		List<String> toMatchAgainst = new ArrayList<>();
-		for (String[] validMethod: validMethodsSubset) {
-			toMatchAgainst.add(String.join("::",validMethod));
+		if (validMethodsSubset!=null) {
+			for (String[] validMethod: validMethodsSubset) {
+				toMatchAgainst.add(String.join("::",validMethod));
+			}
 		}
 		List<String[]> allRelevantMethods = new ArrayList<>();
 		for (Method method : type.getMethods()) {
-			if (!method.getName().equals("<init>")) { // ignore constructors
-				if (onlyPublicMethods && !method.isPublic()) {
+			System.out.println("Checking "+method);
+			if (!method.getName().equals("<init>") && !method.getName().equals("<clinit>")) { // ignore constructors
+				if (onlyNonPrivateMethods && method.isPrivate()) {
+					System.out.println("private - skipping");
 					continue;
 				}
+//				if (onlyPublicMethods && !method.isPublic()) {
+//					continue;
+//				}
 				if (method.hasUnresolvableParams()) {
 					SpringFeature.log("ignoring method "+method.getName()+method.getDesc()+" - unresolvable parameters");
 					continue;
 				}
 				String[] candidate = method.asConfigurationArray();
 				if (method.markedAtBean()) {
-					if (!toMatchAgainst.contains(String.join("::", candidate))) {
+					if (validMethodsSubset != null && !toMatchAgainst.contains(String.join("::", candidate))) {
 						continue;
 					}
 				} 
 				allRelevantMethods.add(candidate);
 			}
 		}
-		System.out.println("><>");
 		String[][] methods = allRelevantMethods.toArray(new String[0][]);
 		printMemberSummary(methods);
-		System.out.println("><>");
 		accessRequestor.addMethodDescriptors(type.getDottedName(), methods);
 	}
 
 	private void printMemberSummary(String[][] processTypeAtBeanMethods) {
-		SpringFeature.log("member summary: "+processTypeAtBeanMethods.length);
-		for (int i=0;i<processTypeAtBeanMethods.length;i++) {
-			String[] member = processTypeAtBeanMethods[i];
-			StringBuilder s = new StringBuilder();
-			s.append(member[0]).append("(");
-			for (int p=1;p<member.length;p++) {
-				if (p>1) {
-					s.append(",");
+		if (processTypeAtBeanMethods != null) {
+			SpringFeature.log("member summary: " + processTypeAtBeanMethods.length);
+			for (int i = 0; i < processTypeAtBeanMethods.length; i++) {
+				String[] member = processTypeAtBeanMethods[i];
+				StringBuilder s = new StringBuilder();
+				s.append(member[0]).append("(");
+				for (int p = 1; p < member.length; p++) {
+					if (p > 1) {
+						s.append(",");
+					}
+					s.append(member[p]);
 				}
-				s.append(member[p]);
+				s.append(")");
+				SpringFeature.log(s.toString());
 			}
-			s.append(")");
-			SpringFeature.log(s.toString());
 		}
 	}
 
@@ -1558,8 +1571,11 @@ public class ResourcesHandler {
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
+				SpringFeature.log("Stripping out method flags for "+dname);
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
+			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
+			SpringFeature.log(depth, "ms: "+methods);
 			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), null, true, flags);
 			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
