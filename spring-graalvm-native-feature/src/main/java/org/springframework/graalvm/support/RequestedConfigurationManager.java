@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
+import org.springframework.graalvm.type.FieldDescriptor;
+import org.springframework.graalvm.type.MethodDescriptor;
 import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.ResourcesDescriptor;
 
@@ -36,6 +38,8 @@ import org.springframework.graalvm.type.ResourcesDescriptor;
 public class RequestedConfigurationManager {
 
 	private Map<String, Integer> requestedTypeAccesses = new HashMap<>();
+	private Map<String, List<MethodDescriptor>> requestedMethodAccesses = new HashMap<>();
+	private Map<String, List<FieldDescriptor>> requestedFieldAccesses = new HashMap<>();
 	
 	private List<ProxyDescriptor> requestedProxies = new ArrayList<>();
 	
@@ -44,6 +48,10 @@ public class RequestedConfigurationManager {
 	private List<InitializationDescriptor> requestedInitializations = new ArrayList<>();
 	
 	public void requestTypeAccess(String type, Integer accessRequired) {
+		requestTypeAccess(type, accessRequired, null, null);
+	}
+	
+	public void requestTypeAccess(String type, Integer accessRequired, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
 		if (type.indexOf("/")!=-1) {
 			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
 		}
@@ -53,8 +61,35 @@ public class RequestedConfigurationManager {
 		} else {
 			requestedTypeAccesses.put(type, accessRequired);
 		}
+		if (mds != null) {
+			List<MethodDescriptor> existingMds = requestedMethodAccesses.get(type);
+			if (existingMds == null) {
+				requestedMethodAccesses.put(type, new ArrayList<>(mds));
+			} else {
+				existingMds.addAll(mds);
+			}
+		}
+		if (fds != null) {
+			List<FieldDescriptor> existingFds = requestedFieldAccesses.get(type);
+			if (existingFds == null) {
+				requestedFieldAccesses.put(type, new ArrayList<>(fds));
+			} else {
+				existingFds.addAll(fds);
+			}
+		}
 	}
 	
+	public Integer getTypeAccessRequestedFor(String type) {
+		return requestedTypeAccesses.get(type);
+	}
+
+	public List<MethodDescriptor> getMethodAccessRequestedFor(String type) {
+		return requestedMethodAccesses.get(type);
+	}
+
+	public List<FieldDescriptor> getFieldAccessRequestedFor(String type) {
+		return requestedFieldAccesses.get(type);
+	}
 
 	public void reduceTypeAccess(String type, int newAccess) {
 		if (type.indexOf("/")!=-1) {
@@ -112,6 +147,10 @@ public class RequestedConfigurationManager {
 		requestInitializationDescriptors(incomingRCM.getRequestedInitializations());
 		requestProxyDescriptors(incomingRCM.getRequestedProxies());
 		requestResourcesDescriptors(incomingRCM.getRequestedResources());
+	}
+
+	public void addMethodDescriptors(String type, String[][] methods) {
+		requestedMethodAccesses.put(type, MethodDescriptor.of(methods));
 	}
 
 }

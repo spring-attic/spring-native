@@ -19,7 +19,6 @@ import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 
 @NativeImageHint(trigger = ManagementContextConfigurationImportSelector.class, typeInfos= {
-		// TODO - hard to work it out...
 })
 public class ManagementContextConfigurationImportSelectorHints implements NativeImageConfiguration {
 }

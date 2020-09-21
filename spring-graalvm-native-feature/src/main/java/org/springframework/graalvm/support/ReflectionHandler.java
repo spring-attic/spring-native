@@ -417,7 +417,11 @@ public class ReflectionHandler {
 						rra.registerConstructor(type, params);
 					} else {
 						specificMethodsSpecified=true;
-						rra.registerMethod(type, name, params);
+						try {
+							rra.registerMethod(type, name, params);
+						} catch (NoClassDefFoundError ncdfe) {
+							SpringFeature.log("skipping problematic registrationg of method: "+name+" missing class: "+ncdfe.getMessage());
+						}
 					}
 				} catch (NoSuchMethodException nsme) {
 					throw new IllegalStateException(

@@ -22,14 +22,17 @@ import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
 // Hitting /beans endpoint
 @NativeImageHint(trigger = BeansEndpointAutoConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
-		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class, BeansEndpoint.class
+		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class
 	})
+	// TODO infer this
+	,@TypeInfo(types = BeansEndpoint.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class BeansEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

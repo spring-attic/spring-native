@@ -21,14 +21,16 @@ import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
+// TODO tests or not point keeping it...
 // Hitting /info endpoint
-@NativeImageHint(trigger = InfoEndpointAutoConfiguration.class, typeInfos = { 
-	@TypeInfo(types = {
-		EnvironmentInfoContributor.class,
-		InfoContributor.class,
-		InfoEndpoint.class
-	})
-})
+//@NativeImageHint(trigger = InfoEndpointAutoConfiguration.class, typeInfos = { 
+////	@TypeInfo(types = {
+//////		EnvironmentInfoContributor.class,
+//////		InfoContributor.class,
+//////		InfoEndpoint.class
+////	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+//})
 public class InfoEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }

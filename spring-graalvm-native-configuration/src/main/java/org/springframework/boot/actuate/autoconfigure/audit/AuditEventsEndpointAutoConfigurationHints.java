@@ -25,7 +25,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 @NativeImageHint(trigger = AuditEventsEndpointAutoConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
 		AuditEventRepository.class, AuditEventsEndpoint.class,
-		// TODO likely incomplete, not tested
+		// TODO likely incomplete, not fully tested
 	})
 })
 public class AuditEventsEndpointAutoConfigurationHints implements NativeImageConfiguration {

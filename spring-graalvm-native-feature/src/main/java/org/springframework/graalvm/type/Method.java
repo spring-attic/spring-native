@@ -16,6 +16,7 @@
 
 package org.springframework.graalvm.type;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public class Method {
 	
 	private MethodNode mn;
 	private TypeSystem typeSystem;
+	private boolean unresolvableParams = false;
 
 	public Method(MethodNode mn, TypeSystem ts) {
 		this.mn = mn;
@@ -233,7 +235,12 @@ public class Method {
 				if (results == null) {
 					results = new ArrayList<>();
 				}
-				results.add(typeSystem.resolve(t,true));
+				Type ptype = typeSystem.resolve(t,true);
+				if (ptype == null) {
+					SpringFeature.log("WARNING: method has unresolvable parameters: "+mn.name+mn.desc);
+					unresolvableParams = true;
+				}
+				results.add(ptype);
 			}
 		}
 		return results==null?Collections.emptyList():results;
@@ -249,6 +256,24 @@ public class Method {
 				boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping));
 				if (metaUsage) {
 					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasAnnotation(String annotationDescriptor, boolean checkMetaUsage) {
+		if (mn.visibleAnnotations != null) {
+			for (AnnotationNode an: mn.visibleAnnotations) {
+				if (an.desc.equals(annotationDescriptor)) {
+					return true;
+				}
+				if (checkMetaUsage) {
+					Type annotationType = typeSystem.Lresolve(an.desc, true);
+					boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping));
+					if (metaUsage) {
+						return true;
+					}
 				}
 			}
 		}
@@ -316,6 +341,33 @@ public class Method {
 	public boolean hasAnnotations() {
 		return mn.visibleAnnotations!=null;
 	}
+	
+	public boolean hasUnresolvableParams() {
+		getParameterTypes();
+		return unresolvableParams;
+	}
 
+	public String[] asConfigurationArray() {
+		int p = -1;
+		try {
+			List<Type> params = getParameterTypes();
+			String[] output = new String[params.size() + 1];
+			output[0] = getName();
+			for (p = 0; p < params.size(); p++) {
+				output[p + 1] = params.get(p).getDottedName();
+			}
+			return output;
+		} catch (NullPointerException npe) {
+			throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")");
+		}
+	}
+	
+	public boolean isPublic() {
+		return Modifier.isPublic(mn.access);
+	}
+
+	public boolean markedAtBean() {
+		return hasAnnotation(Type.AtBean, false);
+	}
 
 }

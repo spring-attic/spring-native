@@ -46,6 +46,7 @@ import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.domain.reflect.Flag;
+import org.springframework.graalvm.domain.reflect.MethodDescriptor;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
@@ -943,7 +944,8 @@ public class ResourcesHandler {
 	 * other types (import selectors/etc) may not need any method reflective access at all
 	 * (and no resource access in that case).
 	 */
-	private boolean registerSpecific(String typename, Integer typeKind, RequestedConfigurationManager rcm) {
+	private boolean registerSpecific(String typename, AccessDescriptor ad, RequestedConfigurationManager rcm) {
+		int accessBits = ad.getAccessBits();
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
 			SpringFeature.log("WARNING: Unable to resolve specific type: " + typename);
@@ -957,15 +959,15 @@ public class ResourcesHandler {
 				return false;
 			}
 			if (importRegistrarOrSelector) {
-				rcm.requestTypeAccess(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+				rcm.requestTypeAccess(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS,ad.getMethodDescriptors(),ad.getFieldDescriptors());
 			} else {
-				if (AccessBits.isResourceAccessRequired(typeKind)) {
+				if (AccessBits.isResourceAccessRequired(accessBits)) {
 					rcm.requestTypeAccess(typename, AccessBits.RESOURCE);
-					rcm.requestTypeAccess(typename, typeKind);
+					rcm.requestTypeAccess(typename, accessBits);
 				} else {
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-					rcm.requestTypeAccess(typename, typeKind);
+					rcm.requestTypeAccess(typename, accessBits);
 				}
 				if (t.isAtConfiguration()) {
 					// This is because of cases like Transaction auto configuration where the
@@ -1063,7 +1065,7 @@ public class ResourcesHandler {
 								+ " specific types");
 						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 							String specificTypeName = specificNameEntry.getKey();
-							if (!registerSpecific(specificTypeName, specificNameEntry.getValue().getAccessBits(), accessRequestor)) {
+							if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
 								if (hint.isSkipIfTypesMissing()) {
 									passesTests = false;
 									if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1110,7 +1112,15 @@ public class ResourcesHandler {
 								ReachedBy reason = isImportHint(hint)?ReachedBy.Import:ReachedBy.Inferred;
 								toFollow.put(t,reason);
 							}
-						} else if (hint.isSkipIfTypesMissing() && (depth == 0 || isNestedConfiguration(type) || reachedBy==ReachedBy.Import)) {
+							// 'reachedBy==ReachedBySpecific' - trying to do the right thing for (in this example) EhCacheCacheConfiguration.
+							// It is a specific reference in the hint on the cache selector - but what does this rule break?
+							// The problem is 'conditions' - spring will break with this kind of thing:
+							// org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition
+//							org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration]; nested exception is java.lang.IllegalArgumentException: Could not find class [org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition]
+//									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:610) ~[na:na]
+//									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:583) ~[na:na]
+//									at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:311) ~[na:na]
+						} else if (hint.isSkipIfTypesMissing() && (depth == 0 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || reachedBy==ReachedBy.Import)) {
 							if (depth>0) {
 								System.out.println("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+reachedBy+") - discarding "+type.getDottedName());
 							}
@@ -1184,8 +1194,12 @@ public class ResourcesHandler {
 				for (Type t : boaTypes) {
 					accessRequestor.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
 				}
-//				passesTests = 
-				processTypeAtBeanMethods(type, depth, accessRequestor, toFollow);
+				String[][] validMethodsSubset = processTypeAtBeanMethods(type, depth, accessRequestor, toFollow);
+				if (validMethodsSubset != null) {
+					printMemberSummary(validMethodsSubset);
+					// System.out.println("What is the current request level for this config? "+accessRequestor.getTypeAccessRequestedFor(type.getDottedName()));
+					configureMethodAccess(type, accessRequestor, validMethodsSubset);
+				}
 			}
 			// Follow transitively included inferred types only if necessary:
 			for (Map.Entry<Type,ReachedBy> entry : toFollow.entrySet()) {
@@ -1247,6 +1261,62 @@ public class ResourcesHandler {
 		return passesTests;
 	}
 
+	/**
+	 * This handles when some @Bean methods on type do not need runtime access (because they have conditions
+	 * on them that failed when checked). In this case the full list of methods should be spelled out
+	 * excluding the unnecessary ones.
+	 */
+	private void configureMethodAccess(Type type, RequestedConfigurationManager accessRequestor,
+			String[][] validMethodsSubset) {
+		SpringFeature.log("computing full method list for "+type.getDottedName());
+		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
+		List<String> toMatchAgainst = new ArrayList<>();
+		for (String[] validMethod: validMethodsSubset) {
+			toMatchAgainst.add(String.join("::",validMethod));
+		}
+		List<String[]> allRelevantMethods = new ArrayList<>();
+		for (Method method : type.getMethods()) {
+			if (!method.getName().equals("<init>")) { // ignore constructors
+				if (onlyPublicMethods && !method.isPublic()) {
+					continue;
+				}
+				if (method.hasUnresolvableParams()) {
+					SpringFeature.log("ignoring method "+method.getName()+method.getDesc()+" - unresolvable parameters");
+					continue;
+				}
+				String[] candidate = method.asConfigurationArray();
+				if (method.markedAtBean()) {
+					if (!toMatchAgainst.contains(String.join("::", candidate))) {
+						continue;
+					}
+				} 
+				allRelevantMethods.add(candidate);
+			}
+		}
+		System.out.println("><>");
+		String[][] methods = allRelevantMethods.toArray(new String[0][]);
+		printMemberSummary(methods);
+		System.out.println("><>");
+		accessRequestor.addMethodDescriptors(type.getDottedName(), methods);
+	}
+
+	private void printMemberSummary(String[][] processTypeAtBeanMethods) {
+		SpringFeature.log("member summary: "+processTypeAtBeanMethods.length);
+		for (int i=0;i<processTypeAtBeanMethods.length;i++) {
+			String[] member = processTypeAtBeanMethods[i];
+			StringBuilder s = new StringBuilder();
+			s.append(member[0]).append("(");
+			for (int p=1;p<member.length;p++) {
+				if (p>1) {
+					s.append(",");
+				}
+				s.append(member[p]);
+			}
+			s.append(")");
+			SpringFeature.log(s.toString());
+		}
+	}
+
 	private boolean isImportHint(Hint hint) {
 		List<Type> annotationChain = hint.getAnnotationChain();
 		return annotationChain.get(annotationChain.size()-1).equals(ts.getType_Import());
@@ -1269,8 +1339,10 @@ public class ResourcesHandler {
 	 * method. It is also important to check any Conditional annotations on the method as
 	 * a ConditionalOnClass may fail at build time and the whole @Bean method can be ignored.
 	 */
-	private void processTypeAtBeanMethods(Type type, int depth, 
+	private String[][] processTypeAtBeanMethods(Type type, int depth, 
 			RequestedConfigurationManager rcm, Map<Type,ReachedBy> toFollow) {
+		List<String[]> passingMethodsSubset = new ArrayList<>();
+		boolean anyMethodFailedValidation = false;
 		// This is computing how many methods we are exposing unnecessarily via reflection by 
 		// specifying allDeclaredMethods for this type rather than individually specifying them.
 		// A high number indicates we should perhaps do more to be selective.
@@ -1321,7 +1393,7 @@ public class ResourcesHandler {
 						SpringFeature.log(spaces(depth+1) + "handling " + specificNames.size() + " specific types");
 						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 							registerSpecific(specificNameEntry.getKey(),
-									specificNameEntry.getValue().getAccessBits(), methodRCM);
+									specificNameEntry.getValue(), methodRCM);
 						}
 					}
 
@@ -1369,12 +1441,27 @@ public class ResourcesHandler {
 				}
 			} 
 			if (passesTests) {
-				toFollow.putAll(additionalFollows);
-				rcm.mergeIn(methodRCM);
-				SpringFeature.log(spaces(depth)+"method passed checks - adding configuration for it");
+				try {
+					passingMethodsSubset.add(atBeanMethod.asConfigurationArray());
+					toFollow.putAll(additionalFollows);
+					rcm.mergeIn(methodRCM);
+					SpringFeature.log(spaces(depth)+"method passed checks - adding configuration for it");
+				} catch (IllegalStateException ise) {
+					// usually if asConfigurationArray() fails - due to an unresolvable type - it indicates
+					// this method is no use
+					SpringFeature.log(depth,"method failed checks - ise on "+atBeanMethod.getName()+" so ignoring");
+					anyMethodFailedValidation = true;
+				}
 			} else {
+				anyMethodFailedValidation = true;
 				SpringFeature.log(spaces(depth)+"method failed checks - not adding configuration for it");
 			}
+		}
+		if (anyMethodFailedValidation) {
+			// Return the subset that passed
+			return passingMethodsSubset.toArray(new String[0][]);
+		} else {
+			return null;
 		}
 	}
 
@@ -1408,6 +1495,7 @@ public class ResourcesHandler {
 		for (Map.Entry<String, Integer> accessRequest : accessRequestor.getRequestedTypeAccesses()) {
 			String dname = accessRequest.getKey();
 			int requestedAccess = accessRequest.getValue();
+			List<org.springframework.graalvm.type.MethodDescriptor> methods = accessRequestor.getMethodAccessRequestedFor(dname);
 			
 			// TODO promote this approach to a plugin if becomes a little more common...
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Jetty")) { // See EmbeddedJetty @COC check
@@ -1467,16 +1555,23 @@ public class ResourcesHandler {
 				continue;
 				}
 			}
+
+			if (methods != null) {
+				// methods are explicitly specified, remove them from flags
+				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+			}
+			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), null, true, flags);
+			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);
 //				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
 //					reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
 //				} else {
-					reflectionHandler.addAccess(dname, null, null, true, flags);
 //				}
 			} else {
 				reflectionHandler.addAccess(dname, null, null, true, flags);
 			}
+			*/
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
 				resourcesRegistry.addResources(
 						dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
@@ -1485,6 +1580,22 @@ public class ResourcesHandler {
 		}
 	}
 	
+	private Flag[] filterFlags(Flag[] flags, Flag... toFilter) {
+		List<Flag> ok = new ArrayList<>();
+		for (Flag flag: flags) {
+			boolean skip  =false;
+			for (Flag f: toFilter) {
+				if (f==flag) {
+					skip = true;
+				}
+			}
+			if (!skip) {
+				ok.add(flag);
+			}
+		}
+		return ok.toArray(new Flag[0]);
+	}
+
 	private boolean isHintValidForCurrentMode(Hint hint) {
 		Mode currentMode = ConfigOptions.getMode();
 		if (!hint.applyToFunctional() && currentMode == Mode.FUNCTIONAL) {

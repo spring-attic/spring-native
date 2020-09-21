@@ -51,10 +51,10 @@ import org.springframework.graalvm.type.AccessBits;
 	@TypeInfo(types = {
 		SimpleHttpCodeStatusMapper.class,
 		SimpleStatusAggregator.class,
-		AbstractHealthAggregator.class,
-		AbstractHealthIndicator.class,
-		HealthIndicatorRegistry.class,
-		OrderedHealthAggregator.class,
+//		AbstractHealthAggregator.class,
+//		AbstractHealthIndicator.class,
+//		HealthIndicatorRegistry.class,
+//		OrderedHealthAggregator.class,
 		PingHealthIndicator.class,
 		ReactiveHealthContributorRegistry.class,
 		ReactiveHealthEndpointWebExtension.class,
@@ -68,7 +68,6 @@ import org.springframework.graalvm.type.AccessBits;
 		HttpCodeStatusMapper.class,
 		NamedContributors.class,
 		HealthComponent.class,	
-		HealthEndpoint.class,
 		HealthContributorAutoConfiguration.class,
 		HealthEndpointProperties.class,
 		HealthProperties.class,
@@ -91,8 +90,9 @@ import org.springframework.graalvm.type.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredReactiveHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
 	}),
-	@TypeInfo(typeNames = 
-		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
+	@TypeInfo(
+		types = HealthEndpoint.class,
+		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class HealthEndpointAutoConfigurationHints implements NativeImageConfiguration {
