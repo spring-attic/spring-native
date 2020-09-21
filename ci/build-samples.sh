@@ -5,6 +5,7 @@ mkdir /tmp/data
 /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log
 redis-server --daemonize yes
 sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -d
+neo4j start
 chown -R mysql:mysql /var/lib/mysql
 chown -R mysql:mysql /var/log/mysql
 chown -R mysql:mysql /var/run/mysqld
