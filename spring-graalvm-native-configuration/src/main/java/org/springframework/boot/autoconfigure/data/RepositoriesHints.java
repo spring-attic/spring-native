@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRe
 import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
@@ -44,6 +46,12 @@ import org.springframework.graalvm.extension.TypeInfo;
 })
 @NativeImageHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos= {
 		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class, typeInfos= {
+	@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+})
+@NativeImageHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos= {
+	@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, typeInfos = {
 	// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
