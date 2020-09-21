@@ -14,4 +14,8 @@ RUN (groupadd --gid "${USER_GID}" "${USER}" || echo "No groupadd needed") && \
       ${USER} && \
       chown -R ${USER_ID}:${USER_GID} /var/lib/mysql && \
       chown -R ${USER_ID}:${USER_GID} /var/log/mysql && \
-      chown -R ${USER_ID}:${USER_GID} /var/run/mysqld
+      chown -R ${USER_ID}:${USER_GID} /var/run/mysqld && \
+      chown -R ${USER_ID}:${USER_GID} /var/log/elasticsearch && \
+      chown -R ${USER_ID}:${USER_GID} /var/lib/neo4j && \
+      chown -R ${USER_ID}:${USER_GID} /var/log/neo4j && \
+      chown -R ${USER_ID}:${USER_GID} /var/run/neo4j
