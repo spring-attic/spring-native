@@ -2401,5 +2401,4 @@ public class Type {
 	 List<String> importedConfigurations =  findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false, new HashSet<>()).get(this.getDottedName());
 	 return (importedConfigurations==null?Collections.emptyList():importedConfigurations);
 	}
-
 }

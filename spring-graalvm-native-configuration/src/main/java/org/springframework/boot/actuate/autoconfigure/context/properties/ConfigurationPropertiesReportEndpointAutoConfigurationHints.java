@@ -25,14 +25,9 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
 			io.micrometer.core.instrument.simple.CountingMode.class,
-//			org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties.Git.class,
-//			org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties.Servlet.class,
-//			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor.class,
-//			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties.class,
 			org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode.class,
 			org.springframework.boot.actuate.metrics.AutoTimer.class,
-//			org.springframework.boot.web.server.Shutdown.class,
 	}),
 	@TypeInfo(types= ConfigurationPropertiesReportEndpoint.class,access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })

@@ -49,12 +49,7 @@ import org.springframework.graalvm.type.TypeSystem;
 @NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
 	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
-// 		@TypeInfo(types= AbstractWebMvcEndpointHandlerMapping.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
  		@TypeInfo(types = {
-//		WebMvcEndpointHandlerMapping.class,
-//		WebMvcServletEndpointManagementContextConfiguration.class,
-//		org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration.class,
-//		org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping.class,
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,

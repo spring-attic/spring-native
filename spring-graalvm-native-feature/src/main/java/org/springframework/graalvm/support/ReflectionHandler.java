@@ -420,7 +420,7 @@ public class ReflectionHandler {
 						try {
 							rra.registerMethod(type, name, params);
 						} catch (NoClassDefFoundError ncdfe) {
-							SpringFeature.log("skipping problematic registrationg of method: "+name+" missing class: "+ncdfe.getMessage());
+							SpringFeature.log("skipping problematic registration of method: "+name+" missing class: "+ncdfe.getMessage());
 						}
 					}
 				} catch (NoSuchMethodException nsme) {
