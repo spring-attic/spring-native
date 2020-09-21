@@ -84,6 +84,11 @@
                         <env>
                             <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
                             <!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
+                            <!-- To use any secure bolt connection (everything bolt+s(sc) or neo4j+s(sc), we have to
+                                 add
+                                 -H:EnableURLProtocols=http,https &#45;&#45;enable-all-security-services
+                                 (&#45; is a -)
+                                 -->
                             <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 -Dspring.spel.ignore=true
                                 -Dspring.native.remove-yaml-support=true
