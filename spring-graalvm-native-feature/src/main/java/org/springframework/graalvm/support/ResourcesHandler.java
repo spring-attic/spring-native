@@ -1571,11 +1571,11 @@ public class ResourcesHandler {
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
-				SpringFeature.log("Stripping out method flags for "+dname);
+//				SpringFeature.log("Stripping out method flags for "+dname);
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
-			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
-			SpringFeature.log(depth, "ms: "+methods);
+//			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
+//			SpringFeature.log(depth, "ms: "+methods);
 			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), null, true, flags);
 			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
