@@ -47,12 +47,14 @@ public class ContainerTests {
 			System.err.println(host + ":" + port);
 			DemoApplication.main(new String[] { "--AWS_LAMBDA_RUNTIME_API=" + host + ":" + port, "--_HANDLER=foobar",
 					"--logging.level.org.springframework=DEBUG" });
-			Awaitility.waitAtMost(30, TimeUnit.SECONDS).until(() -> {
+			ResponseEntity<String> response = Awaitility.waitAtMost(30, TimeUnit.SECONDS).until(() -> {
 				ResponseEntity<String> result = new RestTemplate().postForEntity(
 						"http://" + host + ":" + port + "/2015-03-31/functions/foobar/invocations", "foo",
 						String.class);
-				return result.getBody().contains("hi foo!") && result.getHeaders().containsKey("X-Amzn-Requestid");
-			});
+				return result;
+			}, result -> result != null);
+			assertThat(response.getBody()).contains("hi foo!");
+			assertThat(response.getHeaders()).containsKey("X-Amzn-Requestid");
 		}
 		String output = consumer.toUtf8String();
 		assertThat(output).contains("Lambda API listening on port 9001");
