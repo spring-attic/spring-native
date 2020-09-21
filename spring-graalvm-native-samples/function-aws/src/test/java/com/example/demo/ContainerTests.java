@@ -21,6 +21,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.ToStringConsumer;
+import org.testcontainers.utility.MountableFile;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -39,8 +40,8 @@ public class ContainerTests {
 		ToStringConsumer consumer = new ToStringConsumer();
 		try (@SuppressWarnings("resource")
 		GenericContainer<?> container = new GenericContainer<>("lambci/lambda:provided").withLogConsumer(consumer)
-				.withFileSystemBind("src/test/resources", "/var/task").withEnv("DOCKER_LAMBDA_STAY_OPEN", "1")
-				.withExposedPorts(9001)) {
+				.withCopyFileToContainer(MountableFile.forClasspathResource("bootstrap"), "/var/task/")
+				.withEnv("DOCKER_LAMBDA_STAY_OPEN", "1").withExposedPorts(9001)) {
 			container.start();
 			int port = container.getFirstMappedPort();
 			String host = container.getHost();
