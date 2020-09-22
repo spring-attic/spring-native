@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=webflux-netty
+ARTIFACT=cloud
 MAINCLASS=com.example.webflux.WebfluxApplication
 VERSION=0.0.1-SNAPSHOT
 
