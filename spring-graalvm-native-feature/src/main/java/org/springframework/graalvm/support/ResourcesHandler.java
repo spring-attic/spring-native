@@ -1009,7 +1009,8 @@ public class ResourcesHandler {
 		SpringFeature.log(spaces(depth) + "Analyzing " + type.getDottedName()+" reached by "+reachedBy);
 
 		if (ConfigOptions.shouldRemoveJmxSupport()) {
-			if (type.getDottedName().toLowerCase().contains("jmx")) {
+			if (type.getDottedName().toLowerCase().contains("jmx") && 
+					!(reachedBy==ReachedBy.Import || reachedBy==ReachedBy.NestedReference)) {
 				SpringFeature.log(depth,type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
 				return false;
 			}
