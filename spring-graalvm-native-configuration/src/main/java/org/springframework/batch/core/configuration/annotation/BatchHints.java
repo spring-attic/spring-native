@@ -17,8 +17,38 @@ package org.springframework.batch.core.configuration.annotation;
 
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.ProxyInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 
 @NativeImageHint(trigger=BatchConfigurationSelector.class, typeInfos = {
-		@TypeInfo(types= {ModularBatchConfiguration.class,SimpleBatchConfiguration.class})})
+		@TypeInfo(types= {ModularBatchConfiguration.class,
+				SimpleBatchConfiguration.class,
+				ScopeConfiguration.class})},
+		proxyInfos = {
+		@ProxyInfo(typeNames = {
+				"org.springframework.batch.core.repository.JobRepository",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"}),
+		@ProxyInfo(typeNames = {
+				"org.springframework.batch.core.launch.JobLauncher",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"}),
+		@ProxyInfo(typeNames = {
+				"org.springframework.batch.core.configuration.JobRegistry",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"}),
+		@ProxyInfo(typeNames = {
+				"org.springframework.batch.core.explore.JobExplorer",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"}),
+		@ProxyInfo(typeNames = {
+				"org.springframework.transaction.PlatformTransactionManager",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"})
+		})
 public class BatchHints implements NativeImageConfiguration { }
