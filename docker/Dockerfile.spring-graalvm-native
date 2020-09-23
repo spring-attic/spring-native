@@ -34,6 +34,7 @@ RUN apt-get -y update \
  && dpkg -i elasticsearch-7.9.1-amd64.deb \
  && rm elasticsearch-7.9.1-amd64.deb \
  && chmod 770 /var/lib/elasticsearch \
+ && chmod 770 /var/log/elasticsearch \
  && npm cache clean --force \
  && rm -rf /var/cache/apt/archives \
  && rm -rf /var/lib/apt/lists/*
