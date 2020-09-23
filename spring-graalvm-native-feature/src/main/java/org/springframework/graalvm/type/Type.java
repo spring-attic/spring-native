@@ -45,6 +45,8 @@ import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.SpringFeature;
 
+import com.oracle.truffle.api.debug.Breakpoint.ResolveListener;
+
 /**
  * @author Andy Clement
  * @author Christoph Strobl
@@ -54,9 +56,12 @@ public class Type {
 	public final static String AtResponseBody = "Lorg/springframework/web/bind/annotation/ResponseBody;";
 	public final static String AtMapping = "Lorg/springframework/web/bind/annotation/Mapping;";
 	public final static String AtTransactional = "Lorg/springframework/transaction/annotation/Transactional;";
+	public final static String AtEndpoint = "Lorg/springframework/boot/actuate/endpoint/annotation/Endpoint;";
 	public final static String AtJavaxTransactional = "Ljavax/transaction/Transactional;";
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
+	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
+	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
 	public final static String AtImportAutoConfiguration = "Lorg/springframework/boot/autoconfigure/ImportAutoConfiguration;";
@@ -2400,5 +2405,207 @@ public class Type {
 	public List<String> getImportedConfigurations() {
 	 List<String> importedConfigurations =  findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false, new HashSet<>()).get(this.getDottedName());
 	 return (importedConfigurations==null?Collections.emptyList():importedConfigurations);
+	}
+
+	private AnnotationNode getAnnotation(String Ldescriptor) {
+		if (node.visibleAnnotations !=null) {
+			for (AnnotationNode annotationNode : node.visibleAnnotations) {
+				if (annotationNode.desc.equals(Ldescriptor)) {
+					return annotationNode;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+
+	public boolean testAnyConditionalOnProperty() {
+		// Examples:
+		//	found COP on org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+		//	copDescriptor: @COP(names=[spring.flyway.enabled],matchIfMissing=true
+		//  found COP on org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
+		//	copDescriptor @COP(names=[spring.h2.console.enabled],havingValue=true,matchIfMissing=false
+		AnnotationNode annotation = getAnnotation(AtConditionalOnProperty);
+		if (annotation != null) {
+			ConditionalOnPropertyDescriptor copDescriptor = unpackConditionalOnPropertyAnnotation(annotation);
+			Map<String,String> activeProperties = typeSystem.getActiveProperties();
+			// System.out.println("=COP: "+activeProperties);
+			boolean isOK = copDescriptor.test(activeProperties);
+			SpringFeature.log("ConditionalOnProperty check on "+getDottedName()+" for "+copDescriptor+" returning isok?"+isOK);
+			return isOK;
+		}
+		return true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation) {
+		List<Object> values = annotation.values;
+		List<String> names = new ArrayList<>();
+		String prefix = null;
+		String havingValue = null;
+		boolean matchIfMissing = false;;
+		for (int i=0;i<values.size();i++) {
+			String attributeName = (String)values.get(i);
+			if (attributeName.equals("name") || attributeName.equals("value")) {
+				names.addAll((List<String>)values.get(++i));
+			} else if (attributeName.equals("prefix")) {
+				prefix = (String)values.get(++i);
+			} else if (attributeName.equals("matchIfMissing")) {
+				matchIfMissing = (Boolean)values.get(++i);
+			} else if (attributeName.equals("havingValue")) {
+				havingValue = (String)values.get(++i);
+			} else {
+				throw new IllegalStateException("Not expecting attribute named '"+attributeName+"' in ConditionalOnProperty annotation");
+			}
+		}
+		if (prefix != null) {
+			if (!prefix.endsWith(".")) {
+				prefix = prefix + ".";
+			}
+			for (int i=0;i<names.size();i++) {
+				names.set(i, prefix+names.get(i));
+			}
+		}
+		return new ConditionalOnPropertyDescriptor(names, havingValue, matchIfMissing);
+	}
+	
+	
+	private String fetchAnnotationAttributeValueAsString(AnnotationNode annotation, String attributeName) {
+		List<Object> values = annotation.values;
+		for (int i=0;i<values.size();i+=2) {
+			String n = (String)values.get(i);
+			if (n.equals(attributeName)) {
+				return (String)values.get(i+1);
+			}
+		}
+		return null;
+	}
+
+	private Type fetchAnnotationAttributeValueAsClass(AnnotationNode annotation, String attributeName) {
+		List<Object> values = annotation.values;
+		for (int i=0;i<values.size();i+=2) {
+			String n = (String)values.get(i);
+			if (n.equals(attributeName)) {
+				String cn = ((org.objectweb.asm.Type)values.get(i+1)).getClassName();
+				return typeSystem.resolveDotted(cn,true);
+			}
+		}
+		return null;
+	}
+
+	private ConditionalOnAvailableEndpointDescriptor unpackConditionalOnAvailableEndpointAnnotation(AnnotationNode annotation) {
+		Type endpointClass = fetchAnnotationAttributeValueAsClass(annotation, "endpoint");
+		AnnotationNode endpointAnnotation = endpointClass.getAnnotation(AtEndpoint);
+		if (endpointAnnotation == null) {
+			System.out.println("Couldn't find @Endpoint on "+endpointClass.getName());
+			// We are seeing meta usage of the endpoint annotation
+			endpointAnnotation = endpointClass.getAnnotationMetaAnnotatedWith(AtEndpoint);
+			if (endpointAnnotation == null) {
+				System.out.println("Couldn't find meta usage of @Endpoint on "+endpointClass.getName());
+			}
+		}
+		String endpointId = fetchAnnotationAttributeValueAsString(endpointAnnotation,"id");
+		// TODO pull in enableByDefault option from endpointAnnotation
+		return new ConditionalOnAvailableEndpointDescriptor(endpointId);
+	}
+
+	private AnnotationNode getAnnotationMetaAnnotatedWith(String Ldescriptor) {
+		if (node.visibleAnnotations !=null) {
+			for (AnnotationNode annotationNode : node.visibleAnnotations) {
+				if (annotationNode.desc.equals(Ldescriptor)) {
+					return annotationNode;
+				}
+				Type resolvedAnnotationType = typeSystem.Lresolve(annotationNode.desc,true);
+				if (resolvedAnnotationType != null) {
+					String slashedDesc = Ldescriptor.substring(1,Ldescriptor.length()-1);
+					if (resolvedAnnotationType.isMetaAnnotated(slashedDesc)) {
+						return annotationNode;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	static class ConditionalOnAvailableEndpointDescriptor {
+
+		private String endpointId;
+
+		public ConditionalOnAvailableEndpointDescriptor(String endpointId) {
+			this.endpointId = endpointId;
+		}
+
+		// https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html
+		// Crude first pass - ignore JMX exposure and only consider web exposure include (not exclude)
+		public boolean test(Map<String, String> properties) {
+			String key = "management.endpoints.web.exposure.include";
+			String webExposedEndpoints = properties.get(key);
+			if (webExposedEndpoints==null) {
+				webExposedEndpoints="";
+			}
+			webExposedEndpoints+=(webExposedEndpoints.length()==0?"info,health":",info,health");
+			String[] exposedEndpointIds = webExposedEndpoints.split(",");
+			for (String exposedEndpointId: exposedEndpointIds) {
+				if (exposedEndpointId.equals(endpointId)) {
+					SpringFeature.log("COAE check: endpoint "+endpointId+" *is* exposed via management.endpoints.web.exposed.include");
+					return true;
+				}
+			}
+			SpringFeature.log("COAE check: endpoint "+endpointId+" *is not* exposed via management.endpoints.web.exposed.include");
+			return false;
+		}
+
+		public String toString() {
+			return "@COAE(id="+endpointId+")";
+		}
+
+	}
+
+	static class ConditionalOnPropertyDescriptor {
+
+		private List<String> names;
+		private String havingValue;
+		private boolean matchIfMissing;
+
+		public ConditionalOnPropertyDescriptor(List<String> names, String havingValue, boolean matchIfMissing) {
+			this.names = names;
+			this.havingValue = havingValue;
+			this.matchIfMissing = matchIfMissing;
+		}
+		
+		public boolean test(Map<String, String> properties) {
+			for (String name: names) {
+				String definedValue = properties.get(name);
+				if ((havingValue == null && !(definedValue==null || definedValue.toLowerCase().equals("false"))) ||
+					(havingValue != null && definedValue!=null && definedValue.toLowerCase().equals(havingValue.toLowerCase())) || 
+					(matchIfMissing && definedValue == null)) {
+					// all is well!
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public String toString() {
+			return "@COP(names="+names+","+(havingValue==null?"":"havingValue="+havingValue+",")+"matchIfMissing="+matchIfMissing;
+		}
+		
+	}
+
+	// Example:
+	// @ConditionalOnAvailableEndpoint(endpoint = FlywayEndpoint.class) public class FlywayEndpointAutoConfiguration {
+	// @Endpoint(id = "flyway") public class FlywayEndpoint {
+	public boolean testAnyConditionalOnAvailableEndpoint() {
+		AnnotationNode annotation = getAnnotation(AtConditionalOnAvailableEndpoint);
+		if (annotation != null) {
+			ConditionalOnAvailableEndpointDescriptor coaeDescriptor = unpackConditionalOnAvailableEndpointAnnotation(annotation);
+			Map<String,String> activeProperties = typeSystem.getActiveProperties();
+			boolean isOK = coaeDescriptor.test(activeProperties);
+			SpringFeature.log("ConditionalOnAvailableEndpoint check on "+getDottedName()+" for "+coaeDescriptor+" returning isok?"+isOK);
+			return isOK;
+		}
+		return true; // if no COAE then everything is fine, it didn't fail a test
 	}
 }

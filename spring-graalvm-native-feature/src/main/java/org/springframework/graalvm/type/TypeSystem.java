@@ -40,8 +40,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
@@ -62,10 +62,8 @@ import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.Mode;
-import org.springframework.graalvm.support.ResourcesHandler;
 import org.springframework.graalvm.support.SpringFeature;
 import org.springframework.graalvm.support.Utils;
-import org.springframework.graalvm.type.TypeSystem.ClassCollectorFileVisitor;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -807,6 +805,27 @@ public class TypeSystem {
 		return this.resourceConfigurations;
 	}
 	
+	public Map<String, Map<String, String>> scanForApplicationProperties() {
+		Map<String, Map<String,String>> collectedProperties = new HashMap<>();
+		for (String s: classpath) {
+			File f = new File(s);
+			if (f.isDirectory()) {
+				searchDir(f, filepath -> { 
+					return  filepath.contains("application") && filepath.endsWith(".properties");
+				},
+				TypeSystem::loadApplicationProperties,
+				collectedProperties);
+			} else if (f.isFile() && f.toString().endsWith(".jar")) {
+				searchJar(f, filepath -> { 
+					return filepath.contains("application") && filepath.endsWith(".properties");
+				}, 
+				TypeSystem::loadApplicationProperties,
+				collectedProperties);
+			}
+		}	
+		return collectedProperties;
+	}
+	
 	public List<String> getExcludedAutoConfigurations() {
 		if (this.excludedAutoConfigurations == null) {
 			excludedAutoConfigurations = new ArrayList<>();
@@ -845,6 +864,20 @@ public class TypeSystem {
 			} else {
 				return Arrays.asList(value.split(","));
 			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to read properties file",e);
+		}
+	}
+
+	public static Map<String,String> loadApplicationProperties(InputStream is) {
+		try {
+			Properties p = new Properties();
+			p.load(is);
+			Map<String,String> ret = new HashMap<>();
+			for (final String name: p.stringPropertyNames()) {
+				ret.put(name, p.getProperty(name));
+			}
+			return ret;
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to read properties file",e);
 		}
@@ -1113,6 +1146,23 @@ public class TypeSystem {
 		public String getSignature() {
 			return signature;
 		}
+	}
+
+	private static Map<String, Map<String, String>> applicationPropertiesFiles = null;
+	private static Map<String, String> mergedApplicationProperties = null;
+
+	public Map<String,String> getActiveProperties() {
+		if (mergedApplicationProperties == null) {
+			applicationPropertiesFiles = scanForApplicationProperties();
+			mergedApplicationProperties = new HashMap<>();
+			Collection<Map<String, String>> propertiesFiles = applicationPropertiesFiles.values();
+			for (Map<String,String> propertiesFile: propertiesFiles) {
+				for (Map.Entry<String,String> property: propertiesFile.entrySet()) {
+					mergedApplicationProperties.put(property.getKey(), property.getValue());
+				}
+			}
+		}
+		return mergedApplicationProperties;
 	}
 	
 }

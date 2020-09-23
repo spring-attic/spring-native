@@ -17,8 +17,6 @@ package org.springframework.graalvm.support;
 
 import java.util.Map;
 
-import javax.swing.text.StyledEditorKit;
-
 import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.type.TypeSystem;
@@ -45,6 +43,8 @@ public abstract class ConfigOptions {
 	private final static boolean REMOVE_JMX_SUPPORT;
 
 	private final static boolean REMOVE_YAML_SUPPORT;
+	
+	private final static boolean EVALUATE_COP;
 	
 	private final static String DUMP_CONFIG;
 
@@ -83,6 +83,10 @@ public abstract class ConfigOptions {
 				MODE = Mode.REFLECTION;
 			}
 			System.out.println("Feature operating in "+MODE+" mode");
+		}
+		EVALUATE_COP = Boolean.valueOf(System.getProperty("spring.native.evaluate-cop", "false"));
+		if(EVALUATE_COP) {
+			System.out.println("Considering ConditionalOnProperty during configuration analysis");
 		}
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
@@ -208,6 +212,10 @@ public abstract class ConfigOptions {
 
 	public static boolean isSkipAtBeanSignatureTypes() {
 		return SKIP_AT_BEAN_SIGNATURE_TYPES;
+	}
+
+	public static boolean isEvaluateCOP() {
+		return EVALUATE_COP;
 	}
 
 	public static Mode getMode() {

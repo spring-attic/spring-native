@@ -153,5 +153,11 @@ public class RequestedConfigurationManager {
 		requestedMethodAccesses.put(type, MethodDescriptor.of(methods));
 	}
 
+	public void removeTypeAccess(String typename) {
+		requestedTypeAccesses.remove(typename);
+		requestedMethodAccesses.remove(typename);
+		requestedFieldAccesses.remove(typename);
+	}
+
 }
 	

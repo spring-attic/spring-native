@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -1015,6 +1014,20 @@ public class ResourcesHandler {
 				return false;
 			}
 		}
+		
+		if (ConfigOptions.isEvaluateCOP()) {
+			boolean isOK = type.testAnyConditionalOnProperty();
+			if (!isOK) {
+				SpringFeature.log(depth, type.getDottedName()+" FAILED ConditionalOnProperty check - returning FALSE");
+				return false;
+			}
+			// These are like a ConditionalOnProperty check but using a special condition to check the property
+			isOK = type.testAnyConditionalOnAvailableEndpoint();
+			if (!isOK) {
+					SpringFeature.log(depth, type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint check - returning FALSE");
+					return false;
+			}
+		}
 
 		// Check the hierarchy of the type, if bits are missing resolution of this
 		// type at runtime will not work - that suggests that in this particular
@@ -1184,9 +1197,6 @@ public class ResourcesHandler {
 		}
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-			if (type.isImportSelector()) {
-				
-			}
 			if (type.isAtConfiguration()) {
 				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
 				// other configurations.
@@ -1221,7 +1231,11 @@ public class ResourcesHandler {
 					boolean b = processType(t, visited, depth + 1, entry.getValue());
 					if (!b) {
 						SpringFeature.log(spaces(depth) + "followed " + t.getName() + " and it failed validation (whilst processing "+type.getDottedName()+" reached by "+reachedBy+")");
-						accessRequestor.reduceTypeAccess(t.getDottedName(),AccessBits.DECLARED_CONSTRUCTORS|AccessBits.CLASS|AccessBits.RESOURCE);
+//						if (t.isAtConfiguration()) {
+//							accessRequestor.removeTypeAccess(t.getDottedName());
+//						} else {
+							accessRequestor.reduceTypeAccess(t.getDottedName(),AccessBits.DECLARED_CONSTRUCTORS|AccessBits.CLASS|AccessBits.RESOURCE);
+//						}
 					}
 				} catch (MissingTypeException mte) {
 					// Failed to follow that type because some element involved is not on the classpath 
