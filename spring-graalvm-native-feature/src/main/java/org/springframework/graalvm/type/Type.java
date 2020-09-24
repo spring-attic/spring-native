@@ -1223,7 +1223,7 @@ public class Type {
 			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);
 			if (hints2.size() != 0) {
 				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an);
-				if (an.desc.equals(Type.AtEnableConfigurationProperties) && !isFunctionalMode()) {
+				if (an.desc.equals(Type.AtEnableConfigurationProperties) && !ConfigOptions.isFunctionalMode()) {
 					// TODO special handling here for @EnableConfigurationProperties - should we
 					// promote this to a hint annotation value or truly a special case?
 					addInners(typesCollectedFromAnnotation);
@@ -1902,7 +1902,7 @@ public class Type {
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
-			if (!isFunctionalMode()) {
+			if (!ConfigOptions.isFunctionalMode()) {
 				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
 			} else {
 				SpringFeature.log("Skipping registration of reflective access to configuration properties: "+t.getDottedName());
@@ -1915,10 +1915,6 @@ public class Type {
 		} else {
 			return AccessBits.FULL_REFLECTION;
 		}
-	}
-
-	private static boolean isFunctionalMode() {
-		return System.getProperty("spring.native.mode", "reflection").equals("functional");
 	}
 
 	@SuppressWarnings("unchecked")
