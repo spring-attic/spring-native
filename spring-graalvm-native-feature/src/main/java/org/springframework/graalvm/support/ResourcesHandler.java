@@ -1302,14 +1302,14 @@ public class ResourcesHandler {
 			System.out.println("Checking "+method);
 			if (!method.getName().equals("<init>") && !method.getName().equals("<clinit>")) { // ignore constructors
 				if (onlyNonPrivateMethods && method.isPrivate()) {
-					System.out.println("private - skipping");
+					SpringFeature.log("checking '"+method.getName()+method.getDesc()+"' -> private - skipping");
 					continue;
 				}
 //				if (onlyPublicMethods && !method.isPublic()) {
 //					continue;
 //				}
 				if (method.hasUnresolvableParams()) {
-					SpringFeature.log("ignoring method "+method.getName()+method.getDesc()+" - unresolvable parameters");
+					SpringFeature.log("checking '"+method.getName()+method.getDesc()+"' -> unresolvable parameters, ignoring");
 					continue;
 				}
 				String[] candidate = method.asConfigurationArray();
