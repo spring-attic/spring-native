@@ -17,6 +17,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring-cloud-function.version>3.1.0-M3</spring-cloud-function.version>
 	</properties>
 
 	<dependencies>
@@ -31,7 +32,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-function-webflux</artifactId>
+			<artifactId>spring-cloud-function-web</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -39,8 +40,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Hoxton.SR3</version>
+				<artifactId>spring-cloud-function-dependencies</artifactId>
+				<version>${spring-cloud-function.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
