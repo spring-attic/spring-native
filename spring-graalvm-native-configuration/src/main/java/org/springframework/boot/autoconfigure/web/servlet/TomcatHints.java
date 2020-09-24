@@ -4,7 +4,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.http11.Http11NioProtocol;
 
-import org.springframework.boot.autoconfigure.web.reactive.CommonWebInfos;
+import org.springframework.boot.autoconfigure.web.CommonWebInfos;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 import org.springframework.graalvm.extension.MethodInfo;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
