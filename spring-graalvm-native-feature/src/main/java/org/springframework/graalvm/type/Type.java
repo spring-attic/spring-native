@@ -156,8 +156,8 @@ public class Type {
 	public Type[] getInterfaces() {
 		if (interfaces == null) {
 			if (dimensions != 0) {
-				interfaces = new Type[]{typeSystem.resolveSlashed("java/lang/Cloneable"),
-						typeSystem.resolveSlashed("java/io/Serializable")};
+				interfaces = new Type[] { typeSystem.resolveSlashed("java/lang/Cloneable"),
+						typeSystem.resolveSlashed("java/io/Serializable") };
 			} else {
 				List<String> itfs = node.interfaces;
 				if (itfs.size() == 0) {
@@ -297,7 +297,7 @@ public class Type {
 		// System.out.println("looking through methods "+node.methods+" for "+string);
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
-				.collect(Collectors.toList());
+						.collect(Collectors.toList());
 	}
 
 	public List<Method> getMethodsWithAnnotationName(String string, boolean checkMetaUsage) {
@@ -330,7 +330,6 @@ public class Type {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().map(m -> wrap(m)).collect(Collectors.toList());
 	}
-
 
 	public List<Field> getFields() {
 		return fields.get();
@@ -464,155 +463,155 @@ public class Type {
 			return true;
 		}
 
-//		if (!isTypeVariableReference()
-//				&& other.getSignature().equals("Ljava/lang/Object;")) {
-//			return false;
-//		}
+		// if (!isTypeVariableReference()
+		// && other.getSignature().equals("Ljava/lang/Object;")) {
+		// return false;
+		// }
 
-//		boolean thisRaw = this.isRawType();
-//		if (thisRaw && other.isParameterizedOrGenericType()) {
-//			return isAssignableFrom(other.getRawType());
-//		}
-//
-//		boolean thisGeneric = this.isGenericType();
-//		if (thisGeneric && other.isParameterizedOrRawType()) {
-//			return isAssignableFrom(other.getGenericType());
-//		}
-//
-//		if (this.isParameterizedType()) {
-//			// look at wildcards...
-//			if (((ReferenceType) this.getRawType()).isAssignableFrom(other)) {
-//				boolean wildcardsAllTheWay = true;
-//				ResolvedType[] myParameters = this.getResolvedTypeParameters();
-//				for (int i = 0; i < myParameters.length; i++) {
-//					if (!myParameters[i].isGenericWildcard()) {
-//						wildcardsAllTheWay = false;
-//					} else {
-//						BoundedReferenceType boundedRT = (BoundedReferenceType) myParameters[i];
-//						if (boundedRT.isExtends() || boundedRT.isSuper()) {
-//							wildcardsAllTheWay = false;
-//						}
-//					}
-//				}
-//				if (wildcardsAllTheWay && !other.isParameterizedType()) {
-//					return true;
-//				}
-//				// we have to match by parameters one at a time
-//				ResolvedType[] theirParameters = other
-//						.getResolvedTypeParameters();
-//				boolean parametersAssignable = true;
-//				if (myParameters.length == theirParameters.length) {
-//					for (int i = 0; i < myParameters.length
-//							&& parametersAssignable; i++) {
-//						if (myParameters[i] == theirParameters[i]) {
-//							continue;
-//						}
-//						// dont do this: pr253109
-//						// if
-//						// (myParameters[i].isAssignableFrom(theirParameters[i],
-//						// allowMissing)) {
-//						// continue;
-//						// }
-//						ResolvedType mp = myParameters[i];
-//						ResolvedType tp = theirParameters[i];
-//						if (mp.isParameterizedType()
-//								&& tp.isParameterizedType()) {
-//							if (mp.getGenericType().equals(tp.getGenericType())) {
-//								UnresolvedType[] mtps = mp.getTypeParameters();
-//								UnresolvedType[] ttps = tp.getTypeParameters();
-//								for (int ii = 0; ii < mtps.length; ii++) {
-//									if (mtps[ii].isTypeVariableReference()
-//											&& ttps[ii]
-//													.isTypeVariableReference()) {
-//										TypeVariable mtv = ((TypeVariableReferenceType) mtps[ii])
-//												.getTypeVariable();
-//										boolean b = mtv
-//												.canBeBoundTo((ResolvedType) ttps[ii]);
-//										if (!b) {// TODO incomplete testing here
-//													// I think
-//											parametersAssignable = false;
-//											break;
-//										}
-//									} else {
-//										parametersAssignable = false;
-//										break;
-//									}
-//								}
-//								continue;
-//							} else {
-//								parametersAssignable = false;
-//								break;
-//							}
-//						}
-//						if (myParameters[i].isTypeVariableReference()
-//								&& theirParameters[i].isTypeVariableReference()) {
-//							TypeVariable myTV = ((TypeVariableReferenceType) myParameters[i])
-//									.getTypeVariable();
-//							// TypeVariable theirTV =
-//							// ((TypeVariableReferenceType)
-//							// theirParameters[i]).getTypeVariable();
-//							boolean b = myTV.canBeBoundTo(theirParameters[i]);
-//							if (!b) {// TODO incomplete testing here I think
-//								parametersAssignable = false;
-//								break;
-//							} else {
-//								continue;
-//							}
-//						}
-//						if (!myParameters[i].isGenericWildcard()) {
-//							parametersAssignable = false;
-//							break;
-//						} else {
-//							BoundedReferenceType wildcardType = (BoundedReferenceType) myParameters[i];
-//							if (!wildcardType.alwaysMatches(theirParameters[i])) {
-//								parametersAssignable = false;
-//								break;
-//							}
-//						}
-//					}
-//				} else {
-//					parametersAssignable = false;
-//				}
-//				if (parametersAssignable) {
-//					return true;
-//				}
-//			}
-//		}
-//
-//		// eg this=T other=Ljava/lang/Object;
-//		if (isTypeVariableReference() && !other.isTypeVariableReference()) {
-//			TypeVariable aVar = ((TypeVariableReference) this)
-//					.getTypeVariable();
-//			return aVar.resolve(world).canBeBoundTo(other);
-//		}
-//
-//		if (other.isTypeVariableReference()) {
-//			TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
-//			if (this instanceof TypeVariableReference) {
-//				return ((TypeVariableReference) this)
-//						.getTypeVariable()
-//						.resolve(world)
-//						.canBeBoundTo(
-//								otherType.getTypeVariable().getFirstBound()
-//										.resolve(world));// pr171952
-//				// return
-//				// ((TypeVariableReference)this).getTypeVariable()==otherType
-//				// .getTypeVariable();
-//			} else {
-//				// FIXME asc should this say canBeBoundTo??
-//				return this.isAssignableFrom(otherType.getTypeVariable()
-//						.getFirstBound().resolve(world));
-//			}
-//		}
+		// boolean thisRaw = this.isRawType();
+		// if (thisRaw && other.isParameterizedOrGenericType()) {
+		// return isAssignableFrom(other.getRawType());
+		// }
+		//
+		// boolean thisGeneric = this.isGenericType();
+		// if (thisGeneric && other.isParameterizedOrRawType()) {
+		// return isAssignableFrom(other.getGenericType());
+		// }
+		//
+		// if (this.isParameterizedType()) {
+		// // look at wildcards...
+		// if (((ReferenceType) this.getRawType()).isAssignableFrom(other)) {
+		// boolean wildcardsAllTheWay = true;
+		// ResolvedType[] myParameters = this.getResolvedTypeParameters();
+		// for (int i = 0; i < myParameters.length; i++) {
+		// if (!myParameters[i].isGenericWildcard()) {
+		// wildcardsAllTheWay = false;
+		// } else {
+		// BoundedReferenceType boundedRT = (BoundedReferenceType) myParameters[i];
+		// if (boundedRT.isExtends() || boundedRT.isSuper()) {
+		// wildcardsAllTheWay = false;
+		// }
+		// }
+		// }
+		// if (wildcardsAllTheWay && !other.isParameterizedType()) {
+		// return true;
+		// }
+		// // we have to match by parameters one at a time
+		// ResolvedType[] theirParameters = other
+		// .getResolvedTypeParameters();
+		// boolean parametersAssignable = true;
+		// if (myParameters.length == theirParameters.length) {
+		// for (int i = 0; i < myParameters.length
+		// && parametersAssignable; i++) {
+		// if (myParameters[i] == theirParameters[i]) {
+		// continue;
+		// }
+		// // dont do this: pr253109
+		// // if
+		// // (myParameters[i].isAssignableFrom(theirParameters[i],
+		// // allowMissing)) {
+		// // continue;
+		// // }
+		// ResolvedType mp = myParameters[i];
+		// ResolvedType tp = theirParameters[i];
+		// if (mp.isParameterizedType()
+		// && tp.isParameterizedType()) {
+		// if (mp.getGenericType().equals(tp.getGenericType())) {
+		// UnresolvedType[] mtps = mp.getTypeParameters();
+		// UnresolvedType[] ttps = tp.getTypeParameters();
+		// for (int ii = 0; ii < mtps.length; ii++) {
+		// if (mtps[ii].isTypeVariableReference()
+		// && ttps[ii]
+		// .isTypeVariableReference()) {
+		// TypeVariable mtv = ((TypeVariableReferenceType) mtps[ii])
+		// .getTypeVariable();
+		// boolean b = mtv
+		// .canBeBoundTo((ResolvedType) ttps[ii]);
+		// if (!b) {// TODO incomplete testing here
+		// // I think
+		// parametersAssignable = false;
+		// break;
+		// }
+		// } else {
+		// parametersAssignable = false;
+		// break;
+		// }
+		// }
+		// continue;
+		// } else {
+		// parametersAssignable = false;
+		// break;
+		// }
+		// }
+		// if (myParameters[i].isTypeVariableReference()
+		// && theirParameters[i].isTypeVariableReference()) {
+		// TypeVariable myTV = ((TypeVariableReferenceType) myParameters[i])
+		// .getTypeVariable();
+		// // TypeVariable theirTV =
+		// // ((TypeVariableReferenceType)
+		// // theirParameters[i]).getTypeVariable();
+		// boolean b = myTV.canBeBoundTo(theirParameters[i]);
+		// if (!b) {// TODO incomplete testing here I think
+		// parametersAssignable = false;
+		// break;
+		// } else {
+		// continue;
+		// }
+		// }
+		// if (!myParameters[i].isGenericWildcard()) {
+		// parametersAssignable = false;
+		// break;
+		// } else {
+		// BoundedReferenceType wildcardType = (BoundedReferenceType) myParameters[i];
+		// if (!wildcardType.alwaysMatches(theirParameters[i])) {
+		// parametersAssignable = false;
+		// break;
+		// }
+		// }
+		// }
+		// } else {
+		// parametersAssignable = false;
+		// }
+		// if (parametersAssignable) {
+		// return true;
+		// }
+		// }
+		// }
+		//
+		// // eg this=T other=Ljava/lang/Object;
+		// if (isTypeVariableReference() && !other.isTypeVariableReference()) {
+		// TypeVariable aVar = ((TypeVariableReference) this)
+		// .getTypeVariable();
+		// return aVar.resolve(world).canBeBoundTo(other);
+		// }
+		//
+		// if (other.isTypeVariableReference()) {
+		// TypeVariableReferenceType otherType = (TypeVariableReferenceType) other;
+		// if (this instanceof TypeVariableReference) {
+		// return ((TypeVariableReference) this)
+		// .getTypeVariable()
+		// .resolve(world)
+		// .canBeBoundTo(
+		// otherType.getTypeVariable().getFirstBound()
+		// .resolve(world));// pr171952
+		// // return
+		// // ((TypeVariableReference)this).getTypeVariable()==otherType
+		// // .getTypeVariable();
+		// } else {
+		// // FIXME asc should this say canBeBoundTo??
+		// return this.isAssignableFrom(otherType.getTypeVariable()
+		// .getFirstBound().resolve(world));
+		// }
+		// }
 
 		Type[] interfaces = other.getInterfaces();
 		for (Type intface : interfaces) {
 			boolean b;
-//			if (thisRaw && intface.isParameterizedOrGenericType()) {
-//				b = this.isAssignableFrom(intface.getRawType(), allowMissing);
-//			} else {
+			// if (thisRaw && intface.isParameterizedOrGenericType()) {
+			// b = this.isAssignableFrom(intface.getRawType(), allowMissing);
+			// } else {
 			b = this.isAssignableFrom(intface);
-//			}
+			// }
 			if (b) {
 				return true;
 			}
@@ -620,11 +619,11 @@ public class Type {
 		Type superclass = other.getSuperclass();
 		if (superclass != null) {
 			boolean b;
-//			if (thisRaw && superclass.isParameterizedOrGenericType()) {
-//				b = this.isAssignableFrom(superclass.getRawType(), allowMissing);
-//			} else {
+			// if (thisRaw && superclass.isParameterizedOrGenericType()) {
+			// b = this.isAssignableFrom(superclass.getRawType(), allowMissing);
+			// } else {
 			b = this.isAssignableFrom(superclass);
-//			}
+			// }
 			if (b) {
 				return true;
 			}
@@ -726,9 +725,9 @@ public class Type {
 			return false;
 		}
 	}
-	
+
 	public boolean isAtImport() {
-		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
 	}
 
 	public boolean isAtConfiguration() {
@@ -739,11 +738,12 @@ public class Type {
 	}
 
 	public boolean isAtSpringBootApplication() {
-		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtSpringBootApplication),new HashSet<>());
+		return (dimensions > 0) ? false
+				: isMetaAnnotated(fromLdescriptorToSlashed(AtSpringBootApplication), new HashSet<>());
 	}
 
 	public boolean isAtController() {
-		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtController),new HashSet<>());
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtController), new HashSet<>());
 	}
 
 	public boolean isAbstractNestedCondition() {
@@ -765,7 +765,7 @@ public class Type {
 			return false;
 		}
 		for (Type t : this.getAnnotations()) {
-			if (t== null) {
+			if (t == null) {
 				continue;
 			}
 			String tname = t.getName();
@@ -781,7 +781,6 @@ public class Type {
 		}
 		return false;
 	}
-
 
 	public static final List<Type> NO_ANNOTATIONS = Collections.emptyList();
 
@@ -938,15 +937,15 @@ public class Type {
 				}
 			}
 		}
-//			if (node.invisibleAnnotations != null) {
-//			for (AnnotationNode an: node.invisibleAnnotations) {
-//				try {
-//					annotations.add(this.typeSystem.Lresolve(an.desc));
-//				} catch (MissingTypeException mte) {
-//					// that's ok you weren't relying on it anyway!
-//				}
-//			}
-//			}
+		// if (node.invisibleAnnotations != null) {
+		// for (AnnotationNode an: node.invisibleAnnotations) {
+		// try {
+		// annotations.add(this.typeSystem.Lresolve(an.desc));
+		// } catch (MissingTypeException mte) {
+		// // that's ok you weren't relying on it anyway!
+		// }
+		// }
+		// }
 		if (annotations.size() == 0) {
 			annotations = NO_ANNOTATIONS;
 		}
@@ -969,6 +968,7 @@ public class Type {
 	/**
 	 * Discover any uses of @Indexed or javax annotations, via direct/meta or
 	 * interface usage. Example output:
+	 * 
 	 * <pre>
 	 * <code>
 	 * org.springframework.samples.petclinic.PetClinicApplication=org.springframework.stereotype.Component
@@ -1000,8 +1000,8 @@ public class Type {
 		if (type == null || type.dimensions > 0 || !seen.add(type)) {
 			return;
 		}
-		List<Type> ts = type.getAnnotatedElementsInHierarchy(
-				a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
+		List<Type> ts = type
+				.getAnnotatedElementsInHierarchy(a -> a.desc.equals("Lorg/springframework/stereotype/Indexed;"));
 		for (Type t : ts) {
 			if (!collector.contains(t)) {
 				collector.add(t);
@@ -1032,7 +1032,8 @@ public class Type {
 	}
 
 	/**
-	 * @return list of javax.* annotations on this type, directly specified or meta-specified.
+	 * @return list of javax.* annotations on this type, directly specified or
+	 *         meta-specified.
 	 */
 	List<Type> getJavaxAnnotations() {
 		return getJavaxAnnotations(new HashSet<>());
@@ -1052,23 +1053,23 @@ public class Type {
 		return false;
 	}
 
-//	// TODO this is broken, don't use!
-//	public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
-//		if (dimensions > 0) {
-//			return false;
-//		}
-//		if (checkMetaUsage) {
-//			return isMetaAnnotated(Ldescriptor);
-//		}
-//		if (node.visibleAnnotations != null) {
-//			for (AnnotationNode an : node.visibleAnnotations) {
-//				if (an.desc.equals(Ldescriptor)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	// // TODO this is broken, don't use!
+	// public boolean isAnnotated(String Ldescriptor, boolean checkMetaUsage) {
+	// if (dimensions > 0) {
+	// return false;
+	// }
+	// if (checkMetaUsage) {
+	// return isMetaAnnotated(Ldescriptor);
+	// }
+	// if (node.visibleAnnotations != null) {
+	// for (AnnotationNode an : node.visibleAnnotations) {
+	// if (an.desc.equals(Ldescriptor)) {
+	// return true;
+	// }
+	// }
+	// }
+	// return false;
+	// }
 
 	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p) {
 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), false);
@@ -1078,7 +1079,8 @@ public class Type {
 		return getAnnotatedElementsInHierarchy(p, new HashSet<>(), includeInterim);
 	}
 
-	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen, boolean includeInterim) {
+	private List<Type> getAnnotatedElementsInHierarchy(Predicate<AnnotationNode> p, Set<String> seen,
+			boolean includeInterim) {
 		if (dimensions > 0)
 			return Collections.emptyList();
 		List<Type> results = new ArrayList<>();
@@ -1135,7 +1137,8 @@ public class Type {
 		List<InnerClassNode> innerClasses = node.innerClasses;
 		for (InnerClassNode inner : innerClasses) {
 			if (inner.outerName == null || !inner.outerName.equals(getName())) {
-//				System.out.println("SKIPPING "+inner.name+" because outer is "+inner.outerName+" and we are looking at "+getName());
+				// System.out.println("SKIPPING "+inner.name+" because outer is
+				// "+inner.outerName+" and we are looking at "+getName());
 				continue;
 			}
 			if (inner.name.equals(getName())) {
@@ -1174,8 +1177,8 @@ public class Type {
 			s.add(this);
 			for (CompilationHint hintxx : hintx) {
 				hints.add(new Hint(s, hintxx.skipIfTypesMissing, hintxx.follow, hintxx.getDependantTypes(),
-						Collections.emptyMap(),hintxx.getProxyDescriptors(),hintxx.getResourcesDescriptors(),hintxx.getInitializationDescriptors(),
-						hintxx.applyToFunctional()));
+						Collections.emptyMap(), hintxx.getProxyDescriptors(), hintxx.getResourcesDescriptors(),
+						hintxx.getInitializationDescriptors(), hintxx.applyToFunctional()));
 			}
 		}
 		if (node.visibleAnnotations != null) {
@@ -1202,7 +1205,8 @@ public class Type {
 				}
 			}
 		} catch (MissingTypeException mte) {
-			System.out.println("Unable to determine if type " + getName() + " is import selector - can't fully resolve hierarchy - ignoring");
+			System.out.println("Unable to determine if type " + getName()
+					+ " is import selector - can't fully resolve hierarchy - ignoring");
 		}
 		return hints.size() == 0 ? Collections.emptyList() : hints;
 	}
@@ -1219,18 +1223,17 @@ public class Type {
 			List<CompilationHint> hints2 = typeSystem.findHints(an.desc);
 			if (hints2.size() != 0) {
 				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an);
-				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
-					// TODO special handling here for @EnableConfigurationProperties - should we promote this to a hint annotation value or truly a special case?
+				if (an.desc.equals(Type.AtEnableConfigurationProperties) && !isFunctionalMode()) {
+					// TODO special handling here for @EnableConfigurationProperties - should we
+					// promote this to a hint annotation value or truly a special case?
 					addInners(typesCollectedFromAnnotation);
 				}
 				for (CompilationHint hints2a : hints2) {
 					hints.add(new Hint(new ArrayList<>(annotationChain), hints2a.skipIfTypesMissing, hints2a.follow,
 							hints2a.getDependantTypes(),
 							asMap(typesCollectedFromAnnotation, hints2a.skipIfTypesMissing),
-							hints2a.getProxyDescriptors(),
-							hints2a.getResourcesDescriptors(),
-							hints2a.getInitializationDescriptors(),
-							hints2a.applyToFunctional()));
+							hints2a.getProxyDescriptors(), hints2a.getResourcesDescriptors(),
+							hints2a.getInitializationDescriptors(), hints2a.applyToFunctional()));
 				}
 			}
 			// check for meta annotation
@@ -1275,7 +1278,9 @@ public class Type {
 			} else {
 				ar = inferAccessRequired(type);
 			}
-			map.put(fromLdescriptorToDotted(t), ar);
+			if (ar!=AccessBits.NONE) {
+				map.put(fromLdescriptorToDotted(t), ar);
+			}
 		}
 		return map;
 	}
@@ -1293,7 +1298,7 @@ public class Type {
 			}
 			System.out.println(this.getName()
 					+ " has inners " + nestMembers.stream().map(f -> "oo=" + this.getDescriptor() + "::o=" + f.outerName
-					+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
+							+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
 					+ "  >> " + result);
 		}
 		return result.toArray(new Type[0]);
@@ -1337,22 +1342,24 @@ public class Type {
 						importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
 					}
 				} else if (
-						// TODO 'other things to dig type names out of' should be driven by the hint annotation members
-						// For now we hard code this to pull conditional types out of ConditionalOnClass.name
-						an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;") &&
-					   values.get(i).equals("name")) {
-					Object object = values.get(i+1);
+				// TODO 'other things to dig type names out of' should be driven by the hint
+				// annotation members
+				// For now we hard code this to pull conditional types out of
+				// ConditionalOnClass.name
+				an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;")
+						&& values.get(i).equals("name")) {
+					Object object = values.get(i + 1);
 					if (object instanceof List) {
-						for (String s: (List<String>)object) {
-							importedReferences.add("L"+s.replace(".", "/")+";");
+						for (String s : (List<String>) object) {
+							importedReferences.add("L" + s.replace(".", "/") + ";");
 						}
 					} else {
-						importedReferences.add("L"+((String)object).replace(".", "/")+";");
+						importedReferences.add("L" + ((String) object).replace(".", "/") + ";");
 					}
 				}
 			}
 		}
-		return importedReferences.size()==0?Collections.emptyList():importedReferences;
+		return importedReferences.size() == 0 ? Collections.emptyList() : importedReferences;
 	}
 
 	public boolean isImportSelector() {
@@ -1362,7 +1369,7 @@ public class Type {
 			return false;
 		}
 	}
-	
+
 	public boolean isApplicationListener() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(ApplicationListener));
@@ -1463,8 +1470,8 @@ public class Type {
 			return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
 		for (AnnotationNode an : node.visibleAnnotations) {
-			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;") ||
-					an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
+			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")
+					|| an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
 				List<Object> values = an.values;
 				if (values != null) {
 					for (int i = 0; i < values.size(); i += 2) {
@@ -1500,7 +1507,6 @@ public class Type {
 		}
 		return hasCtor;
 	}
-
 
 	/**
 	 * Find the @ConfigurationHint annotations on this type (may be more than one)
@@ -1554,7 +1560,7 @@ public class Type {
 					 * types) { ch.addDependantType(type.getClassName(), inferTypeKind(type)); }
 					 */
 				} else if (key.equals("applyToFunctional")) {
-					ch.setApplyToFunctional((Boolean)value);
+					ch.setApplyToFunctional((Boolean) value);
 				} else if (key.equals("typeInfos")) {
 					processTypeInfoList(ch, value);
 				} else if (key.equals("importInfos")) {
@@ -1573,10 +1579,13 @@ public class Type {
 					ch.setFollow(b);
 				} else if (key.equals("extractTypesFromAttributes")) {
 					// TODO handle this key
-//					annotation extractTypesFromAttributes=[value, type](class java.util.ArrayList)
-//					annotation extractTypesFromAttributes=[value, name](class java.util.ArrayList)
-//					annotation extractTypesFromAttributes=[value, name](class java.util.ArrayList)
-//					annotation extractTypesFromAttributes=[value](class java.util.ArrayList)
+					// annotation extractTypesFromAttributes=[value, type](class
+					// java.util.ArrayList)
+					// annotation extractTypesFromAttributes=[value, name](class
+					// java.util.ArrayList)
+					// annotation extractTypesFromAttributes=[value, name](class
+					// java.util.ArrayList)
+					// annotation extractTypesFromAttributes=[value](class java.util.ArrayList)
 				} else {
 					System.out.println("annotation " + key + "=" + value + "(" + value.getClass() + ")");
 				}
@@ -1621,31 +1630,31 @@ public class Type {
 	}
 
 	private void processMethodInfoList(List<MethodDescriptor> mds, Object value) {
-		List<AnnotationNode> methodInfos = asList(value,AnnotationNode.class);//(List<AnnotationNode>) value;
+		List<AnnotationNode> methodInfos = asList(value, AnnotationNode.class);// (List<AnnotationNode>) value;
 		for (AnnotationNode methodInfo : methodInfos) {
 			unpackMethodInfo(methodInfo, mds);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <T> List<T> asList(Object value, Class<T> type) {
-		return (List<T>)value;
+		return (List<T>) value;
 	}
-	
+
 	private void processProxyInfo(CompilationHint ch, Object value) {
 		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode proxyInfo : proxyInfos) {
 			unpackProxyInfo(proxyInfo, ch);
 		}
 	}
-	
+
 	private void processImportInfos(CompilationHint ch, Object value) {
 		List<org.objectweb.asm.Type> importInfos = (ArrayList<org.objectweb.asm.Type>) value;
-		for (org.objectweb.asm.Type importInfo: importInfos) {
+		for (org.objectweb.asm.Type importInfo : importInfos) {
 			String className = importInfo.getClassName();
-			Type resolvedImportInfo = typeSystem.resolveDotted(className,true);
+			Type resolvedImportInfo = typeSystem.resolveDotted(className, true);
 			if (resolvedImportInfo == null) {
-				throw new IllegalStateException("Cannot find importInfos referenced type: "+className);
+				throw new IllegalStateException("Cannot find importInfos referenced type: " + className);
 			}
 			ClassNode node = resolvedImportInfo.getClassNode();
 			if (node.visibleAnnotations != null) {
@@ -1658,19 +1667,19 @@ public class Type {
 					} else if (annotationClassname.equals(ResourcesInfo.class.getName())) {
 						unpackResourcesInfo(an, ch);
 					} else if (annotationClassname.equals(ResourcesInfos.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno,ch));
+						processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno, ch));
 					} else if (annotationClassname.equals(ProxyInfo.class.getName())) {
 						unpackProxyInfo(an, ch);
 					} else if (annotationClassname.equals(ProxyInfos.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackProxyInfo(anno,ch));
+						processRepeatableInfosList(an, anno -> unpackProxyInfo(anno, ch));
 					} else if (annotationClassname.equals(InitializationInfo.class.getName())) {
 						unpackInitializationInfo(an, ch);
 					} else if (annotationClassname.equals(InitializationInfos.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno,ch));
+						processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, ch));
 					}
 				}
 			}
-			
+
 		}
 	}
 
@@ -1702,12 +1711,14 @@ public class Type {
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
-			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferAccessRequired(type) : accessRequired,mds,fds);
+			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferAccessRequired(type) : accessRequired,
+					mds, fds);
 		}
 		for (String typeName : typeNames) {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
-				ch.addDependantType(typeName, accessRequired == -1 ? inferAccessRequired(resolvedType) : accessRequired,mds,fds);
+				ch.addDependantType(typeName, accessRequired == -1 ? inferAccessRequired(resolvedType) : accessRequired,
+						mds, fds);
 			}
 		}
 	}
@@ -1720,7 +1731,7 @@ public class Type {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
 			if (key.equals("allowUnsafeAccess")) {
-				allowUnsafeAccess = (Boolean)value;
+				allowUnsafeAccess = (Boolean) value;
 			} else if (key.equals("name")) {
 				name = (String) value;
 			}
@@ -1743,7 +1754,7 @@ public class Type {
 		}
 		boolean unresolvable = false;
 		List<String> resolvedParameterTypes = new ArrayList<>();
-		for (org.objectweb.asm.Type ptype: parameterTypes) {
+		for (org.objectweb.asm.Type ptype : parameterTypes) {
 			String typeName = ptype.getClassName();
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
@@ -1754,15 +1765,15 @@ public class Type {
 		}
 		if (unresolvable) {
 			StringBuilder message = new StringBuilder();
-			for (org.objectweb.asm.Type ptype: parameterTypes) {
+			for (org.objectweb.asm.Type ptype : parameterTypes) {
 				message.append(ptype.getClassName()).append(" ");
 			}
-			SpringFeature.log("Unable to fully resolve method "+name+"("+message.toString().trim()+")");
+			SpringFeature.log("Unable to fully resolve method " + name + "(" + message.toString().trim() + ")");
 		} else {
 			mds.add(new MethodDescriptor(name, resolvedParameterTypes));
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void unpackProxyInfo(AnnotationNode typeInfo, CompilationHint ch) {
 		List<Object> values = typeInfo.values;
@@ -1816,7 +1827,8 @@ public class Type {
 				isBundle = (Boolean) value;
 			}
 		}
-		ch.addResourcesDescriptor(new ResourcesDescriptor(patterns.toArray(new String[0]),isBundle==null?false:isBundle));
+		ch.addResourcesDescriptor(
+				new ResourcesDescriptor(patterns.toArray(new String[0]), isBundle == null ? false : isBundle));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1836,7 +1848,7 @@ public class Type {
 			} else if (key.equals("packageNames")) {
 				packageNames = (ArrayList<String>) value;
 			} else if (key.equals("initTime")) {
-				initTime = InitializationTime.valueOf(((String[])value)[1]);
+				initTime = InitializationTime.valueOf(((String[]) value)[1]);
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
@@ -1845,17 +1857,17 @@ public class Type {
 		}
 		InitializationDescriptor id = new InitializationDescriptor();
 		if (initTime == InitializationTime.BUILD) {
-			for (String typeName: typeNames) {
+			for (String typeName : typeNames) {
 				id.addBuildtimeClass(typeName);
 			}
-			for (String packageName: packageNames) {
+			for (String packageName : packageNames) {
 				id.addBuildtimePackage(packageName);
 			}
 		} else {
-			for (String typeName: typeNames) {
+			for (String typeName : typeNames) {
 				id.addRuntimeClass(typeName);
 			}
-			for (String packageName: packageNames) {
+			for (String packageName : packageNames) {
 				id.addRuntimePackage(packageName);
 			}
 		}
@@ -1866,9 +1878,10 @@ public class Type {
 		Type t = typeSystem.resolve(type, true);
 		return inferAccessRequired(t);
 	}
-	
+
 	public boolean isConfigurationProperties() {
-		return (dimensions>0)?false:isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties),new HashSet<>());
+		return (dimensions > 0) ? false
+				: isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties), new HashSet<>());
 	}
 
 	public static int inferAccessRequired(Type t) {
@@ -1878,24 +1891,33 @@ public class Type {
 		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
 			return AccessBits.CONFIGURATION;
 		} else if (t.isImportSelector()) {
-			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE;
+			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE;
 		} else if (t.isImportRegistrar()) {
 			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else if (t.isBeanFactoryPostProcessor()) {
-			// vanilla-jpa demos these needing accessing a a resource *sigh* 
-			// TODO investigate if deeper pattern can tell us why certain things need RESOURCE
-			return AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE;
+			// vanilla-jpa demos these needing accessing a a resource *sigh*
+			// TODO investigate if deeper pattern can tell us why certain things need
+			// RESOURCE
+			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
-			return AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS;
+			if (!isFunctionalMode()) {
+				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
+			} else {
+				return AccessBits.NONE;
+			}
 		} else if (t.isCondition()) {
-			return AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS;
+			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
 		} else {
 			return AccessBits.FULL_REFLECTION;
 		}
+	}
+
+	private static boolean isFunctionalMode() {
+		return System.getProperty("spring.native.mode", "reflection").equals("functional");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1916,7 +1938,7 @@ public class Type {
 		}
 		return chs;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void processTypeInfosList(CompilationHint ch, AnnotationNode an) {
 		List<Object> values = an.values;
@@ -1924,10 +1946,11 @@ public class Type {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
 			if (key.equals("value")) {
-				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee, org.objectweb.asm.tree.AnnotationNode@68fb2c38]
+				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee,
+				// org.objectweb.asm.tree.AnnotationNode@68fb2c38]
 				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
 				for (int j = 0; j < annotationNodes.size(); j++) {
-					unpackTypeInfo(annotationNodes.get(j),ch);
+					unpackTypeInfo(annotationNodes.get(j), ch);
 				}
 			}
 		}
@@ -1940,7 +1963,8 @@ public class Type {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
 			if (key.equals("value")) {
-				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee, org.objectweb.asm.tree.AnnotationNode@68fb2c38]
+				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee,
+				// org.objectweb.asm.tree.AnnotationNode@68fb2c38]
 				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
 				for (int j = 0; j < annotationNodes.size(); j++) {
 					c.accept(annotationNodes.get(j));
@@ -2020,7 +2044,8 @@ public class Type {
 
 	public boolean isAtResponseBody() {
 		boolean b = hasAnnotation(AtResponseBody, true);
-		// System.out.println("Checking if " + getName() + " is @ResponseBody meta annotated: " + b);
+		// System.out.println("Checking if " + getName() + " is @ResponseBody meta
+		// annotated: " + b);
 		return b;
 	}
 
@@ -2125,11 +2150,10 @@ public class Type {
 		List<Method> methodsWithAtBean = getMethodsWithAtBean();
 		if (methodsWithAtBean.size() != 0) {
 			List<AnnotationNode> annos = collectAnnotations();
-			annos = filterAnnotations(annos,
-					an -> {
-						Type annotationType = typeSystem.Lresolve(an.desc);
-						return annotationType.hasMethod("proxyBeanMethods");
-					});
+			annos = filterAnnotations(annos, an -> {
+				Type annotationType = typeSystem.Lresolve(an.desc);
+				return annotationType.hasMethod("proxyBeanMethods");
+			});
 			// Rule:
 			// At least one annotation in the list has to be setting proxyBeanMethods=false.
 			// Some may not supply it if they are being aliased by other values.
@@ -2145,17 +2169,18 @@ public class Type {
 				}
 			}
 			if (!atLeastSetFalseSomewhere) {
-				System.out.println("[verification] Warning: component " + this.getDottedName() + " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
+				System.out.println("[verification] Warning: component " + this.getDottedName()
+						+ " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
 			}
 		}
 	}
 
 	/**
-	 * For an {@link AnnotationNode} retrieve the value for a particular attribute, will throw
-	 * an exception if no value is set for that attribute.
+	 * For an {@link AnnotationNode} retrieve the value for a particular attribute,
+	 * will throw an exception if no value is set for that attribute.
 	 *
 	 * @param anode the annotation node whose values should be checked
-	 * @param name the annotation attribute name being searched for
+	 * @param name  the annotation attribute name being searched for
 	 * @return the value of that attribute if set on that annotation node
 	 * @throws IllegalStateException if that attribute name is not set
 	 */
@@ -2166,11 +2191,13 @@ public class Type {
 				return values.get(i + 1);
 			}
 		}
-		return new IllegalStateException("Attribute " + name + " not set on the specified annotation, precede this call to getValue() with a hasValue() check");
+		return new IllegalStateException("Attribute " + name
+				+ " not set on the specified annotation, precede this call to getValue() with a hasValue() check");
 	}
 
 	/**
-	 * For an {@link AnnotationNode} check if it specifies a value for a particular attribute.
+	 * For an {@link AnnotationNode} check if it specifies a value for a particular
+	 * attribute.
 	 *
 	 * @param node the annotation node whose values should be checked
 	 * @param name the annotation attribute name being searched for
@@ -2223,8 +2250,7 @@ public class Type {
 
 	public List<Method> getMethods(Predicate<Method> predicate) {
 		return dimensions > 0 ? Collections.emptyList()
-				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m))
-				.collect(Collectors.toList());
+				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m)).collect(Collectors.toList());
 	}
 	
 	public List<Method> getMethod(String name) {
@@ -2239,10 +2265,8 @@ public class Type {
 	}
 
 	public boolean equals(Object that) {
-		return (that instanceof Type) &&
-				(((Type) that).name.equals(this.name)) &&
-				(((Type) that).dimensions == this.dimensions) &&
-				(((Type) that).node.equals(this.node));
+		return (that instanceof Type) && (((Type) that).name.equals(this.name))
+				&& (((Type) that).dimensions == this.dimensions) && (((Type) that).node.equals(this.node));
 	}
 
 	public int hashCode() {
@@ -2250,7 +2274,9 @@ public class Type {
 	}
 
 	/**
-	 * TODO: This is a little crude, relying on patterns rather than classfile encoded data.
+	 * TODO: This is a little crude, relying on patterns rather than classfile
+	 * encoded data.
+	 * 
 	 * @return the guessed enclosing type, if resolvable
 	 */
 	public Type getEnclosingType() {
@@ -2259,7 +2285,7 @@ public class Type {
 		if (idx == -1) {
 			return null;
 		}
-		Type t = typeSystem.resolveDotted(n.substring(0,idx),true);
+		Type t = typeSystem.resolveDotted(n.substring(0, idx), true);
 		if (t == null) {
 			return null;
 		} else {
@@ -2268,10 +2294,12 @@ public class Type {
 	}
 
 	/**
-	 * Check if there is a @ConditionalOnWebApplication annotation on this type. If there is, check that web application condition
-	 * immediately (which is related to whether a certain type is on the classpath).
+	 * Check if there is a @ConditionalOnWebApplication annotation on this type. If
+	 * there is, check that web application condition immediately (which is related
+	 * to whether a certain type is on the classpath).
 	 * 
-	 * @return false if there is an @COWA and the specified web application type requirement cannot be met, otherwise true
+	 * @return false if there is an @COWA and the specified web application type
+	 *         requirement cannot be met, otherwise true
 	 */
 	public boolean checkConditionalOnWebApplication() {
 		if (node.visibleAnnotations != null) {
@@ -2281,16 +2309,20 @@ public class Type {
 					if (values != null) {
 						for (int i = 0; i < values.size(); i += 2) {
 							if (values.get(i).equals("type")) {
-								// [Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication$Type;, SERVLET]
+								// [Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication$Type;,
+								// SERVLET]
 								String webApplicationType = ((String[]) values.get(i + 1))[1];
 								// SERVLET, REACTIVE, ANY
 								if (webApplicationType.equals("SERVLET")) {
 									// If GenericWebApplicationContext not around this check on SERVLET cannot pass
-									return typeSystem.resolveDotted("org.springframework.web.context.support.GenericWebApplicationContext",true)!=null;
+									return typeSystem.resolveDotted(
+											"org.springframework.web.context.support.GenericWebApplicationContext",
+											true) != null;
 								}
 								if (webApplicationType.equals("REACTIVE")) {
 									// If HandlerResult not around this check on REACTIVE cannot pass
-									return typeSystem.resolveDotted("org.springframework.web.reactive.HandlerResult",true)!=null;
+									return typeSystem.resolveDotted("org.springframework.web.reactive.HandlerResult",
+											true) != null;
 								}
 							}
 						}
@@ -2302,34 +2334,37 @@ public class Type {
 	}
 
 	/**
-	 * For annotation types this will return true if any of the members of the annotation
-	 * are using @AliasFor (implying they need a proxy at runtime)
-	 * For example:
-	 * <pre><code>
-	 * @AliasFor(annotation = RequestMapping.class)
+	 * For annotation types this will return true if any of the members of the
+	 * annotation are using @AliasFor (implying they need a proxy at runtime) For
+	 * example:
+	 * 
+	 * <pre>
+	 * <code>
+	 * &#64;AliasFor(annotation = RequestMapping.class)
 	 * String name() default "";
-	 * </code></pre>
+	 * </code>
+	 * </pre>
 	 */
 	public boolean hasAliasForMarkedMembers() {
-		for (Method m: getMethods()) {
+		for (Method m : getMethods()) {
 			if (m.hasAliasForAnnotation()) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public void collectAliasReferencedMetas(Set<String> collector) {
 		// If this gets set the type is using @AliasFor amongst its own
-		// attributes, not specifying one of them is an alias for 
+		// attributes, not specifying one of them is an alias for
 		// an attribute in a seperate meta annotation.
 		boolean usesLocalAliases = false;
-		for (Method m: getMethods()) {
+		for (Method m : getMethods()) {
 			Pair<String, Boolean> aliasForInfo = m.getAliasForSummary();
 			if (aliasForInfo != null) {
 				String relatedMetaAnnotation = aliasForInfo.getA();
 				if (relatedMetaAnnotation == null) {
-					usesLocalAliases|=aliasForInfo.getB();
+					usesLocalAliases |= aliasForInfo.getB();
 				} else {
 					collector.add(relatedMetaAnnotation);
 				}
@@ -2341,46 +2376,54 @@ public class Type {
 	}
 
 	/**
-	 * Example: see @EnableR2dbcRepositories in R2dbcRepositoresAutoConfigureRegistrar:
-	 * <pre><code>
-	 * @EnableR2dbcRepositories 
+	 * Example: see @EnableR2dbcRepositories in
+	 * R2dbcRepositoresAutoConfigureRegistrar:
+	 * 
+	 * <pre>
+	 * <code>
+	 * &#64;EnableR2dbcRepositories 
 	 * private static class EnableR2dbcRepositoriesConfiguration { }
-	 * </code></pre>
+	 * </code>
+	 * </pre>
+	 * 
 	 * The @Enable... thing looks like this:
-	 * <pre><code>
-	 * @Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME) @Documented @Inherited
-	 * @Import(R2dbcRepositoriesRegistrar.class) 
+	 * 
+	 * <pre>
+	 * <code>
+	 * &#64;Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME) @Documented @Inherited
+	 * &#64;Import(R2dbcRepositoriesRegistrar.class) 
 	 * public @interface EnableR2dbcRepositories {
-	 * </code></pre>
+	 * </code>
+	 * </pre>
 	 * 
 	 * So this method is checking if a class is meta annotated with @Import
 	 */
 	public boolean isMetaImportAnnotated() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
 	}
-	
+
 	public boolean isComponent() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtComponent));
 	}
 
 	public boolean isConditional() {
 		// Extends Condition or has @Conditional related annotation on it
-		if (implementsInterface("org/springframework/context/annotation/Condition") ||
-				isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
+		if (implementsInterface("org/springframework/context/annotation/Condition")
+				|| isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void collectAnnotations(List<Type> collector,Predicate<Type> filter) {
+	public void collectAnnotations(List<Type> collector, Predicate<Type> filter) {
 		if (!this.isAnnotation()) {
-			throw new IllegalStateException(this.getDottedName()+" is not an annotation");
+			throw new IllegalStateException(this.getDottedName() + " is not an annotation");
 		}
 		walkAnnotation(collector, filter, new HashSet<>());
 	}
-	
-	private void walkAnnotation(List<Type> collector,Predicate<Type> filter, Set<Type> seen) {
+
+	private void walkAnnotation(List<Type> collector, Predicate<Type> filter, Set<Type> seen) {
 		if (!seen.add(this)) {
 			return;
 		}
@@ -2388,13 +2431,13 @@ public class Type {
 			collector.add(this);
 		}
 		List<Type> annotations = getAnnotations();
-		for (Type annotation: annotations) {
+		for (Type annotation : annotations) {
 			annotation.walkAnnotation(collector, filter, seen);
 		}
 	}
 
 	public Field getField(String name) {
-		for (Field field: fields.get()) {
+		for (Field field : fields.get()) {
 			if (field.getName().equals(name)) {
 				return field;
 			}
@@ -2403,8 +2446,9 @@ public class Type {
 	}
 
 	public List<String> getImportedConfigurations() {
-	 List<String> importedConfigurations =  findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false, new HashSet<>()).get(this.getDottedName());
-	 return (importedConfigurations==null?Collections.emptyList():importedConfigurations);
+		List<String> importedConfigurations = findAnnotationValueWithHostAnnotation(AtImportAutoConfiguration, false,
+				new HashSet<>()).get(this.getDottedName());
+		return (importedConfigurations == null ? Collections.emptyList() : importedConfigurations);
 	}
 
 	private AnnotationNode getAnnotation(String Ldescriptor) {
