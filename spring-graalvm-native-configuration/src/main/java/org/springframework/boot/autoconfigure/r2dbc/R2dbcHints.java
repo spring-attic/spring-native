@@ -17,6 +17,18 @@ package org.springframework.boot.autoconfigure.r2dbc;
 
 import java.sql.Statement;
 
+import org.springframework.data.r2dbc.convert.R2dbcConverter;
+import org.springframework.data.r2dbc.core.FluentR2dbcOperations;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.data.r2dbc.core.ReactiveDataAccessStrategy;
+import org.springframework.data.r2dbc.core.ReactiveDeleteOperation;
+import org.springframework.data.r2dbc.core.ReactiveInsertOperation;
+import org.springframework.data.r2dbc.core.ReactiveSelectOperation;
+import org.springframework.data.r2dbc.core.ReactiveUpdateOperation;
+import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
+import org.springframework.data.r2dbc.mapping.event.AfterSaveCallback;
+import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
+import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
@@ -33,7 +45,13 @@ import reactor.core.publisher.Mono;
 		@TypeInfo(types = {Statement.class,Statement[].class}),
 		@TypeInfo(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION)
+		@TypeInfo(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION),
+		@TypeInfo(types = {
+				R2dbcConverter.class, FluentR2dbcOperations.class, R2dbcEntityOperations.class,
+				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
+				ReactiveSelectOperation.class, ReactiveUpdateOperation.class, AfterConvertCallback.class,
+				AfterSaveCallback.class, BeforeConvertCallback.class, BeforeSaveCallback.class
+		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 		})
 @NativeImageHint(trigger=R2dbcAutoConfiguration.class, 
 		resourcesInfos = {
