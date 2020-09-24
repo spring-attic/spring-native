@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1905,6 +1905,7 @@ public class Type {
 			if (!isFunctionalMode()) {
 				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
 			} else {
+				SpringFeature.log("Skipping registration of reflective access to configuration properties: "+t.getDottedName());
 				return AccessBits.NONE;
 			}
 		} else if (t.isCondition()) {

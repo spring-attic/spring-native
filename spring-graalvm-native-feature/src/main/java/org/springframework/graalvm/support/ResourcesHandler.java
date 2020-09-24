@@ -1288,7 +1288,7 @@ public class ResourcesHandler {
 	 */
 	private void configureMethodAccess(Type type, RequestedConfigurationManager accessRequestor,
 			String[][] validMethodsSubset) {
-		SpringFeature.log("computing full method list for "+type.getDottedName());
+		SpringFeature.log("computing full reflective method access list for "+type.getDottedName());
 //		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
 		boolean onlyNonPrivateMethods = true;
 		List<String> toMatchAgainst = new ArrayList<>();
@@ -1299,7 +1299,6 @@ public class ResourcesHandler {
 		}
 		List<String[]> allRelevantMethods = new ArrayList<>();
 		for (Method method : type.getMethods()) {
-			System.out.println("Checking "+method);
 			if (!method.getName().equals("<init>") && !method.getName().equals("<clinit>")) { // ignore constructors
 				if (onlyNonPrivateMethods && method.isPrivate()) {
 					SpringFeature.log("checking '"+method.getName()+method.getDesc()+"' -> private - skipping");

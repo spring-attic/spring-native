@@ -3,6 +3,7 @@ package org.springframework.graalvm.substitutions;
 import java.util.function.Predicate;
 
 import org.springframework.graalvm.support.Mode;
+import org.springframework.graalvm.support.SpringFeature;
 
 public class FunctionalMode implements Predicate<String> {
 
@@ -18,7 +19,6 @@ public class FunctionalMode implements Predicate<String> {
 			if (modeSet != null) {
 				isFunctionalMode = modeSet.equalsIgnoreCase(Mode.FUNCTIONAL.name());
 			} else {
-				System.out.println("FM: mode not set, searching for resources...");
 				if (exists("org.springframework.init.func.InfrastructureInitializer")
 						|| exists("org.springframework.fu.kofu.KofuApplication")
 						|| exists("org.springframework.fu.jafu.JafuApplication")) {
