@@ -1,0 +1,14 @@
+[
+    {
+        "name": "org.springframework.boot.autoconfigure.web.ResourceProperties$Cache",
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
+    },
+    {
+        "name": "org.springframework.boot.autoconfigure.web.ResourceProperties$Cache$Cachecontrol",
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
+    }
+]
