@@ -7,7 +7,7 @@ ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 ENV SPRING_PROFILES_ACTIVE=ci
 
 RUN apt-get -y update \
- && apt-get -y install git jq curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb daemon \
+ && apt-get -y install git jq curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb daemon sudo \
  && mkdir -p /var/run/mysqld \
  && mkdir -p /var/log/mysql \
  && echo "mysqld_safe --skip-grant-tables &" > /tmp/mysql.sh \
@@ -38,7 +38,7 @@ RUN apt-get -y update \
  && curl -LO https://dist.neo4j.org/deb/neo4j_3.5.21_all.deb \
  && dpkg --force-all -i neo4j_3.5.21_all.deb \
  && rm neo4j_3.5.21_all.deb \
- && /usr/share/neo4j/bin/neo4j-admin set-initial-password secret \
+ && echo "dbms.security.auth_enabled=false" | tee -a  /etc/neo4j/neo4j.conf \
  && npm cache clean --force \
  && rm -rf /var/cache/apt/archives \
  && rm -rf /var/lib/apt/lists/*
