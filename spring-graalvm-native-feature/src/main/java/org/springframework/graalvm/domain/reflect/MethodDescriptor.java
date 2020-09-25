@@ -111,5 +111,27 @@ public final class MethodDescriptor extends MemberDescriptor implements Comparab
 		}
 		return array;
 	}
+
+	public static String toString(String[][] methods) {
+		StringBuilder s = new StringBuilder();
+		if (methods!=null) {
+			s.append("[");
+			for (String[] method: methods) {
+				s.append(method[0]);
+				s.append("(");
+				for (int i=1;i<method.length;i++) {
+					if (i>1) {
+						s.append(",");
+					}
+					s.append(method[i]);
+				}
+				s.append(")");
+			}
+			s.append("]");
+		} else {
+			s.append("NULL");
+		}
+		return s.toString();
+	}
 	
 }
