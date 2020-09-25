@@ -174,9 +174,16 @@ public class ResourcesHandler {
 			}
 			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
 			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
-				SpringFeature.log("  fixed type registered "+dependantType.getKey());
-				reflectionHandler.addAccess(dependantType.getKey(), null, null, true,
-						AccessBits.getFlags(dependantType.getValue().getAccessBits()));
+				String typename = dependantType.getKey();
+				AccessDescriptor ad = dependantType.getValue();
+				SpringFeature.log("  fixed type registered "+typename+" with "+ad);
+				List<org.springframework.graalvm.type.MethodDescriptor> mds = null;//ad.getMethodDescriptors();
+				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits()); 
+//				if (mds!=null && mds.size()!=0) {
+//					SpringFeature.log("  type has #"+mds.size()+" members specified, removing typewide method access flags");
+//					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+//				}
+				reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds), null, true, accessFlags);
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 			for (ProxyDescriptor pd: proxyDescriptors) {
@@ -1212,7 +1219,7 @@ public class ResourcesHandler {
 				}
 				String[][] validMethodsSubset = processTypeAtBeanMethods(type, depth, accessRequestor, toFollow);
 				if (validMethodsSubset != null) {
-					printMemberSummary(validMethodsSubset);
+					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
 					// System.out.println("What is the current request level for this config? "+accessRequestor.getTypeAccessRequestedFor(type.getDottedName()));
 				}
 				configureMethodAccess(type, accessRequestor, validMethodsSubset);
@@ -1288,7 +1295,7 @@ public class ResourcesHandler {
 	 */
 	private void configureMethodAccess(Type type, RequestedConfigurationManager accessRequestor,
 			String[][] validMethodsSubset) {
-		SpringFeature.log("computing full reflective method access list for "+type.getDottedName());
+		SpringFeature.log("computing full reflective method access list for "+type.getDottedName()+" validMethodSubset incoming = "+MethodDescriptor.toString(validMethodsSubset));
 //		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
 		boolean onlyNonPrivateMethods = true;
 		List<String> toMatchAgainst = new ArrayList<>();
@@ -1298,6 +1305,7 @@ public class ResourcesHandler {
 			}
 		}
 		List<String[]> allRelevantMethods = new ArrayList<>();
+		SpringFeature.log("There are "+allRelevantMethods.size()+" possible members");
 		for (Method method : type.getMethods()) {
 			if (!method.getName().equals("<init>") && !method.getName().equals("<clinit>")) { // ignore constructors
 				if (onlyNonPrivateMethods && method.isPrivate()) {
@@ -1316,18 +1324,18 @@ public class ResourcesHandler {
 					if (validMethodsSubset != null && !toMatchAgainst.contains(String.join("::", candidate))) {
 						continue;
 					}
-				} 
+				}
 				allRelevantMethods.add(candidate);
 			}
 		}
 		String[][] methods = allRelevantMethods.toArray(new String[0][]);
-		printMemberSummary(methods);
+		printMemberSummary("These will be granted reflective access:", methods);
 		accessRequestor.addMethodDescriptors(type.getDottedName(), methods);
 	}
 
-	private void printMemberSummary(String[][] processTypeAtBeanMethods) {
+	private void printMemberSummary(String prefix, String[][] processTypeAtBeanMethods) {
 		if (processTypeAtBeanMethods != null) {
-			SpringFeature.log("member summary: " + processTypeAtBeanMethods.length);
+			SpringFeature.log(prefix+" member summary: " + processTypeAtBeanMethods.length);
 			for (int i = 0; i < processTypeAtBeanMethods.length; i++) {
 				String[] member = processTypeAtBeanMethods[i];
 				StringBuilder s = new StringBuilder();
