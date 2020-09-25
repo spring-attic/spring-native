@@ -1,0 +1,23 @@
+[
+    {
+        "name": "com.example.validator.Foo",
+        "allDeclaredFields": true,
+        "allDeclaredMethods": true,
+        "allDeclaredConstructors": true
+    },
+    {
+        "name": "javax.validation.ValidatorFactory",
+        "allPublicMethods": true
+    },
+    {
+        "name": "javax.validation.bootstrap.GenericBootstrap"
+    },
+    {
+        "name": "javax.validation.constraints.Pattern",
+        "allDeclaredMethods": true
+    },
+    {
+        "name": "org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator",
+        "allDeclaredConstructors": true
+    }
+]
