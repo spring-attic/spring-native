@@ -272,6 +272,9 @@ public class Type {
 	}
 
 	public boolean implementsInterface(String interfaceName) {
+		if (this.getName().equals(interfaceName)) {
+			return true;
+		}
 		Type[] interfacesToCheck = getInterfaces();
 		for (Type interfaceToCheck : interfacesToCheck) {
 			if (interfaceToCheck != null) {
@@ -1469,18 +1472,20 @@ public class Type {
 		if (dimensions > 0)
 			return Collections.emptyList();
 		List<Type> result = new ArrayList<>();
-		for (AnnotationNode an : node.visibleAnnotations) {
-			if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")
-					|| an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
-				List<Object> values = an.values;
-				if (values != null) {
-					for (int i = 0; i < values.size(); i += 2) {
-						if (values.get(i).equals("value")) {
-							List<org.objectweb.asm.Type> types = (List<org.objectweb.asm.Type>) values.get(i + 1);
-							for (org.objectweb.asm.Type type : types) {
-								Type t = typeSystem.Lresolve(type.getDescriptor(), true);
-								if (t != null) {
-									result.add(t);
+		if (node.visibleAnnotations!=null) {
+			for (AnnotationNode an : node.visibleAnnotations) {
+				if (an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureAfter;")
+						|| an.desc.equals("Lorg/springframework/boot/autoconfigure/AutoConfigureBefore;")) {
+					List<Object> values = an.values;
+					if (values != null) {
+						for (int i = 0; i < values.size(); i += 2) {
+							if (values.get(i).equals("value")) {
+								List<org.objectweb.asm.Type> types = (List<org.objectweb.asm.Type>) values.get(i + 1);
+								for (org.objectweb.asm.Type type : types) {
+									Type t = typeSystem.Lresolve(type.getDescriptor(), true);
+									if (t != null) {
+										result.add(t);
+									}
 								}
 							}
 						}
@@ -2401,6 +2406,18 @@ public class Type {
 
 	public boolean isComponent() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtComponent));
+	}
+	
+	public boolean implementsInterface(String interfaceDescriptor, boolean silent) {
+		try {
+			return implementsInterface(interfaceDescriptor);
+		} catch (MissingTypeException mte) {
+			if (silent) {
+				return false;
+			} else {
+				throw mte;
+			}
+		}
 	}
 
 	public boolean isConditional() {
