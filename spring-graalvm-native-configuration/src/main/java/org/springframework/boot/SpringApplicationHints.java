@@ -50,11 +50,13 @@ import org.springframework.graalvm.type.AccessBits;
 	},
 	typeInfos = { 
 		@TypeInfo(types = {
-			SpringApplication.class,
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
+//		@TypeInfo(types = {
+//				SpringApplication.class
+//		},access=AccessBits.LOAD_AND_CONSTRUCT)
 	}
 )
 public class SpringApplicationHints implements NativeImageConfiguration {
