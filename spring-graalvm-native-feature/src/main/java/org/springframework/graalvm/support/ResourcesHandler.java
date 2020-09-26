@@ -177,12 +177,12 @@ public class ResourcesHandler {
 				String typename = dependantType.getKey();
 				AccessDescriptor ad = dependantType.getValue();
 				SpringFeature.log("  fixed type registered "+typename+" with "+ad);
-				List<org.springframework.graalvm.type.MethodDescriptor> mds = null;//ad.getMethodDescriptors();
+				List<org.springframework.graalvm.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits()); 
-//				if (mds!=null && mds.size()!=0) {
-//					SpringFeature.log("  type has #"+mds.size()+" members specified, removing typewide method access flags");
-//					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
-//				}
+				if (mds!=null && mds.size()!=0 && AccessBits.isSet(ad.getAccessBits(),AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
+					SpringFeature.log("  type has #"+mds.size()+" members specified, removing typewide method access flags");
+					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+				}
 				reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds), null, true, accessFlags);
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
@@ -1093,10 +1093,10 @@ public class ResourcesHandler {
 			}
 		}
 
-		
+		boolean passesTests = true;
+
 		RequestedConfigurationManager accessManager = new RequestedConfigurationManager();
 
-		boolean passesTests = true;
 		List<Hint> hints = type.getHints();
 		printHintSummary(type, depth, hints);
 		Map<Type,ReachedBy> toFollow = new HashMap<>();
@@ -1125,11 +1125,11 @@ public class ResourcesHandler {
 		if (!type.checkConditionalOnWebApplication() && (depth == 0 || isNestedConfiguration(type))) {
 			passesTests = false;
 		}
+		
 
-		String configNameDotted = type.getDottedName();
 		visited.add(type.getName());
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-			processHierarchy(type, visited, depth, accessManager, configNameDotted);
+			processHierarchy(type, visited, depth, accessManager, typename);
 		}
 		
 		List<String> importedConfigurations = type.getImportedConfigurations();
@@ -1139,21 +1139,10 @@ public class ResourcesHandler {
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
-				// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
-				// other configurations.
-				// Those may be getting discarded in this run but need to be class accessible
-				// because this configuration needs to refer to them.
-				List<Type> boaTypes = type.getAutoConfigureBeforeOrAfter();
-				if (boaTypes.size() != 0) {
-					SpringFeature.log("registering " + boaTypes.size() + " @AutoConfigureBefore/After references");
-				}
-				for (Type t : boaTypes) {
-					accessManager.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
-				}
+				checkForAutoConfigureBeforeOrAfter(type, accessManager);
 				String[][] validMethodsSubset = processTypeAtBeanMethods(type, depth, accessManager, toFollow);
 				if (validMethodsSubset != null) {
 					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
-					// System.out.println("What is the current request level for this config? "+accessRequestor.getTypeAccessRequestedFor(type.getDottedName()));
 				}
 				configureMethodAccess(type, accessManager, validMethodsSubset);
 			}
@@ -1166,6 +1155,21 @@ public class ResourcesHandler {
 			processNestedTypes(type, visited, depth);
 		}
 		return passesTests;
+	}
+
+
+	// This type might have @AutoConfigureAfter/@AutoConfigureBefore references to
+	// other configurations.
+	// Those may be getting discarded in this run but need to be class accessible
+	// because this configuration needs to refer to them.
+	private void checkForAutoConfigureBeforeOrAfter(Type type, RequestedConfigurationManager accessManager) {
+		List<Type> boaTypes = type.getAutoConfigureBeforeOrAfter();
+		if (boaTypes.size() != 0) {
+			SpringFeature.log("registering " + boaTypes.size() + " @AutoConfigureBefore/After references");
+			for (Type t : boaTypes) {
+				accessManager.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
+			}
+		}
 	}
 
 	private void processTypesToFollow(Type type, Set<String> visited, int depth, ReachedBy reachedBy,

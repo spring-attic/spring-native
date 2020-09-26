@@ -192,4 +192,8 @@ public class AccessBits {
 		}
 		return result;
 	}
+
+	public static boolean isSet(int value, int mask) {
+		return (value&mask)!=0;
+	}
 }
