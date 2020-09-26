@@ -133,6 +133,24 @@ public class Type {
 	public String getName() {
 		return name;
 	}
+	
+	/**
+	 * @return short version of the typename (with packages collapsed) to add with readability
+	 */
+	public String getShortName() {
+		String dname = getDottedName();
+		StringBuilder s = new StringBuilder();
+		boolean hasDot = dname.contains(".");
+		while (dname.contains(".")) {
+			s.append(dname.charAt(0));
+			dname = dname.substring(dname.indexOf(".")+1);
+		}
+		if (hasDot) {
+			s.append(".");
+		}
+		s.append(dname);
+		return s.toString();
+	}
 
 	public String getDottedName() {
 		return dottedName;

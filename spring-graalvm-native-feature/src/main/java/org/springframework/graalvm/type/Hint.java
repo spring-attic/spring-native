@@ -154,9 +154,11 @@ public class Hint {
 	public String shortChain() {
 		StringBuilder s = new StringBuilder();
 		s.append("[");
-		for (int i=0;i<annotationChain.size();i++) {
+		// Not including the first entry in the chain because it is always the target on which
+		// the hint was identified
+		for (int i=1;i<annotationChain.size();i++) {
 			Type t = annotationChain.get(i);
-			if (i>0) {
+			if (i>1) {
 				s.append(",");
 			}
 			s.append(shorten(t.getDottedName())); 

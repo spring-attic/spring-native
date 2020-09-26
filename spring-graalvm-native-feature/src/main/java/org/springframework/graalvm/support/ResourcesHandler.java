@@ -1012,10 +1012,10 @@ public class ResourcesHandler {
 		Specific // This type was explicitly listed in a hint that was processed
 	}
 	
-	private boolean checkJmxConstraint(Type type, ProcessingContext howWeGotHere) {
+	private boolean checkJmxConstraint(Type type, ProcessingContext pc) {
 		if (ConfigOptions.shouldRemoveJmxSupport()) {
 			if (type.getDottedName().toLowerCase().contains("jmx") && 
-					!(howWeGotHere.peek()==ReachedBy.Import || howWeGotHere.peek()==ReachedBy.NestedReference)) {
+					!(pc.peekReachedBy()==ReachedBy.Import || pc.peekReachedBy()==ReachedBy.NestedReference)) {
 				SpringFeature.log(type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
 				return false;
 			}
@@ -1081,6 +1081,9 @@ public class ResourcesHandler {
 			this.typename = typename;
 			this.reachedBy = reachedBy;
 		}
+		public String toString() {
+			return "[Ctx:"+typename+"-"+reachedBy+"]";
+		}
 	}
 
 	/**
@@ -1101,12 +1104,20 @@ public class ResourcesHandler {
 			return pc;
 		}
 
+		public ReachedBy peekReachedBy() {
+			return peek().reachedBy;
+		}
+
 		public ContextEntry push(Type type, ReachedBy reachedBy) {
 			return push(new ContextEntry(type.getDottedName(), reachedBy));
 		}
 
 		public boolean recordVisit(String name) {
 			return visited.add(name);
+		}
+
+		public int depth() {
+			return size();
 		}
 		
 	}
@@ -1167,19 +1178,16 @@ public class ResourcesHandler {
 
 		// TODO think about pulling out into extension mechanism for condition evaluators
 		// Special handling for @ConditionalOnWebApplication
-		if (!type.checkConditionalOnWebApplication() && (depth == 0 || isNestedConfiguration(type))) {
+		if (!type.checkConditionalOnWebApplication() && (pc.depth()==1 || isNestedConfiguration(type))) {
 			passesTests = false;
 		}
 
 		pc.recordVisit(type.getName());
-//		visited.add(type.getName());
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			processHierarchy(pc, accessManager, type);
 		}
 		
-		for (String importedConfiguration: type.getImportedConfigurations()) {
-			toFollow.put(ts.resolveSlashed(Type.fromLdescriptorToSlashed(importedConfiguration)),ReachedBy.Import);
-		}
+		checkForImportedConfigurations(type, toFollow);
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 			if (type.isAtConfiguration()) {
@@ -1200,6 +1208,16 @@ public class ResourcesHandler {
 		}
 		pc.pop();
 		return passesTests;
+	}
+
+	private void checkForImportedConfigurations(Type type, Map<Type, ReachedBy> toFollow) {
+		List<String> importedConfigurations = type.getImportedConfigurations();
+		if (importedConfigurations.size()>0) {
+			SpringFeature.log("found these imported configurations by "+type.getDottedName()+": "+importedConfigurations);
+		}
+		for (String importedConfiguration: importedConfigurations) {
+			toFollow.put(ts.resolveSlashed(Type.fromLdescriptorToSlashed(importedConfiguration)),ReachedBy.Import);
+		}
 	}
 
 
@@ -1323,9 +1341,9 @@ public class ResourcesHandler {
 //									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:610) ~[na:na]
 //									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:583) ~[na:na]
 //									at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:311) ~[na:na]
-				} else if (hint.isSkipIfTypesMissing() && (depth == 0 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || reachedBy==ReachedBy.Import)) {
-					if (depth>0) {
-						System.out.println("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+reachedBy+") - discarding "+type.getDottedName());
+				} else if (hint.isSkipIfTypesMissing() && (pc.depth() == 1 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || pc.peekReachedBy()==ReachedBy.Import)) {
+					if (pc.depth()>1) {
+						SpringFeature.log("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+pc.peekReachedBy()+") - discarding "+type.getDottedName());
 					}
 					// Notes: if an inferred type is missing, we have to be careful. Although it should suggest we discard
 					// the type being processed, that is not always possible depending on how the type being processed
