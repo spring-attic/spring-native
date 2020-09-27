@@ -35,10 +35,13 @@ public class SampleApplication {
 	}
 
 	public static void main(String[] args) {
+		SpringApplication.run(SampleApplication.class,args);
+		/*
 		SpringApplication app = new SpringApplicationBuilder(SampleApplication.class)
 				.initializers(new InfrastructureInitializer(Ordered.HIGHEST_PRECEDENCE).binding(ServerProperties.class, SampleApplication::bind))
 				.build();
 		app.run(args);
+		*/
 	}
 
 	static ServerProperties bind(ServerProperties bean, Environment environment) {
