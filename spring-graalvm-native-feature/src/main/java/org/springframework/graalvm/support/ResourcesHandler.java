@@ -619,10 +619,11 @@ public class ResourcesHandler {
 	 */
 	public void registerHierarchy(Type type, RequestedConfigurationManager typesToMakeAccessible) {
 		AccessBits accessRequired = AccessBits.forValue(Type.inferAccessRequired(type));
-		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired);
+		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired, type.isAtConfiguration());
 	}
 	
-	private void registerHierarchyHelper(Type type, Set<Type> visited, RequestedConfigurationManager typesToMakeAccessible, AccessBits inferredRequiredAccess) {
+	private void registerHierarchyHelper(Type type, Set<Type> visited, RequestedConfigurationManager typesToMakeAccessible,
+			AccessBits inferredRequiredAccess, boolean rootTypeWasConfiguration) {
 		if (typesToMakeAccessible == null) {
 			throw new IllegalStateException();
 		}
@@ -645,6 +646,10 @@ public class ResourcesHandler {
 //					inferredRequiredAccess.getValue());
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
+		}
+		
+		if (rootTypeWasConfiguration && !type.isAtConfiguration()) {
+			// Processing a superclass of a configuration (so may contain @Bean methods)
 		}
 		// Rather than just looking at superclass and interfaces, this will dig into everything including
 		// parameterized type references so nothing is missed
@@ -669,12 +674,15 @@ public class ResourcesHandler {
 		List<String> lst = new ArrayList<>();
 */	
 		
+		Type superclass = type.getSuperclass();
+		registerHierarchyHelper(superclass, visited, typesToMakeAccessible, inferredRequiredAccess, true);
+		
 		List<String> relatedTypes = type.getTypesInSignature();
 		for (String relatedType: relatedTypes) {
 			Type t = ts.resolveSlashed(relatedType,true);
 			if (t!=null) {
 //				lst.add(t.getDottedName());
-				registerHierarchyHelper(t, visited, typesToMakeAccessible, inferredRequiredAccess);
+				registerHierarchyHelper(t, visited, typesToMakeAccessible, inferredRequiredAccess, false);
 			}
 		}
 //		lst.removeAll(supers);
@@ -1195,7 +1203,7 @@ public class ResourcesHandler {
 				if (validMethodsSubset != null) {
 					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
 				}
-				configureMethodAccess(accessManager, type, validMethodsSubset);
+				configureMethodAccess(accessManager, type, validMethodsSubset,false);
 			}
 			processTypesToFollow(pc, accessManager, type, reachedBy, toFollow);
 			registerAllRequested(accessManager);
@@ -1265,6 +1273,7 @@ public class ResourcesHandler {
 	}
 
 	private void processHierarchy(ProcessingContext pc, RequestedConfigurationManager accessManager, Type type) {
+		SpringFeature.log(">processHierarchy "+type.getShortName());
 		String typename = type.getDottedName();
 		if (type.isImportSelector()) {
 			accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
@@ -1400,7 +1409,7 @@ public class ResourcesHandler {
 	 * excluding the unnecessary ones. If validMethodsSubset is null then all @Bean methods are valid.
 	 */
 	private void configureMethodAccess(RequestedConfigurationManager accessRequestor, Type type,
-			String[][] validMethodsSubset) {
+			String[][] validMethodsSubset, boolean atBeanMethodsOnly) {
 		SpringFeature.log("computing full reflective method access list for "+type.getDottedName()+" validMethodSubset incoming = "+MethodDescriptor.toString(validMethodsSubset));
 //		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
 		boolean onlyNonPrivateMethods = true;
@@ -1428,6 +1437,10 @@ public class ResourcesHandler {
 				String[] candidate = method.asConfigurationArray();
 				if (method.markedAtBean()) {
 					if (validMethodsSubset != null && !toMatchAgainst.contains(String.join("::", candidate))) {
+						continue;
+					}
+				} else {
+					if (atBeanMethodsOnly) {
 						continue;
 					}
 				}
@@ -1708,7 +1721,6 @@ public class ResourcesHandler {
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
-//				SpringFeature.log("Stripping out method flags for "+dname);
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
 //			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
