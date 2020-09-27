@@ -65,4 +65,22 @@ public class MethodDescriptor {
 		return s.toString();
 	}
 
+	public static boolean includesConstructors(List<MethodDescriptor> mds) {
+		for (MethodDescriptor md: mds) {
+			if (md.getName().equals("<init>")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean includesStaticInitializers(List<MethodDescriptor> mds) {
+		for (MethodDescriptor md: mds) {
+			if (md.getName().equals("<clinit>")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

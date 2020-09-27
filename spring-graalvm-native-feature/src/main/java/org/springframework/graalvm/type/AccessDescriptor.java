@@ -22,11 +22,13 @@ public class AccessDescriptor {
 	private Integer accessBits;
 	private List<MethodDescriptor> methodDescriptors;
 	private List<FieldDescriptor> fieldDescriptors;
+	private boolean inferredAccessBits;
 
-	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
+	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds, boolean inferredAccessBits) {
 		this.accessBits = accessBits;
 		this.methodDescriptors = mds;
 		this.fieldDescriptors = fds;
+		this.inferredAccessBits = inferredAccessBits;
 	}
 
 	public Integer getAccessBits() {

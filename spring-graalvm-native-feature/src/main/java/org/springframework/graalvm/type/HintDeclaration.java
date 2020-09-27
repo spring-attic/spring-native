@@ -72,12 +72,8 @@ public class HintDeclaration {
 		return specificTypes;
 	}
 
-	public void addDependantType(String className, Integer accessBits,List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
-		specificTypes.put(className, new AccessDescriptor(accessBits,mds,fds));
-	}
-
-	public void addDependantType(Class<?> clazz, Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
-		specificTypes.put(clazz.getName(), new AccessDescriptor(accessBits,mds,fds));
+	public void addDependantType(String className, AccessDescriptor accessDescriptor) {
+		specificTypes.put(className, accessDescriptor);
 	}
 
 	public void setAbortIfTypesMissing(Boolean b) {

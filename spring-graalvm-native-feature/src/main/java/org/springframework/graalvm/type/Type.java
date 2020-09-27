@@ -1719,14 +1719,32 @@ public class Type {
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
-			ch.addDependantType(type.getClassName(), accessRequired == -1 ? inferAccessRequired(type) : accessRequired,
-					mds, fds);
+			AccessDescriptor ad = null;
+			if (accessRequired == -1) {
+				ad = new AccessDescriptor(inferAccessRequired(type), mds, fds, true);
+			} else {
+				if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
+						AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
+					throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
+				}
+				ad = new AccessDescriptor(accessRequired, mds, fds, false);
+			}
+			ch.addDependantType(type.getClassName(), ad);
 		}
 		for (String typeName : typeNames) {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
-				ch.addDependantType(typeName, accessRequired == -1 ? inferAccessRequired(resolvedType) : accessRequired,
-						mds, fds);
+				AccessDescriptor ad = null;
+				if (accessRequired == -1) {
+					ad = new AccessDescriptor(inferAccessRequired(resolvedType), mds, fds, true);
+				} else {
+					if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
+							AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
+						throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
+					}
+					ad = new AccessDescriptor(accessRequired, mds, fds, false);
+				}
+				ch.addDependantType(typeName, ad);
 			}
 		}
 	}

@@ -1281,8 +1281,7 @@ public class ResourcesHandler {
 	}
 
 	private void processNestedTypes(ProcessingContext pc, Type type) {
-		// if (type.isAtConfiguration() || type.isAbstractNestedCondition()) {
-//			SpringFeature.log(spaces(depth)+" processing nested types of "+type.getName());
+		SpringFeature.log(" processing nested types of "+type.getName());
 		List<Type> nestedTypes = type.getNestedTypes();
 		for (Type t : nestedTypes) {
 			if (pc.recordVisit(t.getName())) {
