@@ -22,36 +22,48 @@ import java.util.Map;
 
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 
-public class CompilationHint {
-	private String targetType;
+/**
+ * 
+ * @author Andy Clement
+ */
+public class HintDeclaration {
+
+	private String triggerTypename;
+
 	private Map<String, AccessDescriptor> specificTypes = new LinkedHashMap<>();
-	public boolean follow = false;
-	public boolean skipIfTypesMissing = false;
+
 	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
+
 	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
+
 	private List<InitializationDescriptor> initializationDescriptors = new ArrayList<>();
+
 	private boolean applyToFunctional = true; // True as per default for this attribute in NativeImageHint
+
+	public boolean follow = false;
+
+	public boolean skipIfTypesMissing = false;
 	
-	public CompilationHint() {
+	public HintDeclaration() {
 	}
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CompilationHint");
-		if (targetType != null) {
-			sb.append(" for ").append(targetType);
+		sb.append("HintDeclaration");
+		if (triggerTypename != null) {
+			sb.append(" for ").append(triggerTypename);
 		}
 		sb.append(":");
 		sb.append(specificTypes);
 		return sb.toString();
 	}
 
-	public void setTargetType(String targetTypename) {
-		this.targetType = targetTypename;
+	public void setTriggerTypename(String triggerTypename) {
+		this.triggerTypename = triggerTypename;
 	}
 
-	public String getTargetType() {
-		return targetType;
+	public String getTriggerTypename() {
+		return triggerTypename;
 	}
 	
 	public Map<String, AccessDescriptor> getDependantTypes() {

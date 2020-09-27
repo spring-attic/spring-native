@@ -18,14 +18,14 @@ package org.springframework.graalvm.extension;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.HintDeclaration;
 import org.springframework.graalvm.type.TypeSystem;
 
 public interface NativeImageConfiguration {
 	
 	// TODO using typeSystem here is a little basic but a good starting
 	// point (doesn't enable us to ask 'springy' questions)
-	default List<CompilationHint> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
+	default List<HintDeclaration> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
 	
 	/**
 	 * Implementing this method enables hints on the NativeImageConfiguration implementation to be

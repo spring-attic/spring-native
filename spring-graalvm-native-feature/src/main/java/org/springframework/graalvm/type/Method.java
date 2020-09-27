@@ -58,8 +58,8 @@ public class Method {
 		return mn.desc;
 	}
 
-	public List<Hint> getHints() {
-		List<Hint> hints = new ArrayList<>();
+	public List<HintApplication> getHints() {
+		List<HintApplication> hints = new ArrayList<>();
 		if (mn.visibleAnnotations != null) {
 			for (AnnotationNode an: mn.visibleAnnotations) {
 				Type annotationType = typeSystem.Lresolve(an.desc, true);

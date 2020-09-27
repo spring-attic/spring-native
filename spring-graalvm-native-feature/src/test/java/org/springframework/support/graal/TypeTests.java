@@ -36,7 +36,7 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.HintDeclaration;
 import org.springframework.graalvm.type.Field;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
@@ -69,47 +69,47 @@ public class TypeTests {
 	@Test
 	public void flags() {
 		Type testClass = typeSystem.resolveName(TestClass4.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
+		HintDeclaration ch = compilationHints.get(0);
 		assertTrue(ch.isAbortIfTypesMissing());
 	}
 
 	@Test
 	public void configurationHintConversion() {
 		Type testClass = typeSystem.resolveName(TestClass1.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Integer.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Integer.class.getName(), ch.getTriggerTypename());
 	}
 
 	@Test
 	public void defaultValue() {
 		Type testClass = typeSystem.resolveName(TestClass1a.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Object.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTriggerTypename());
 	}
 
 	@Test
 	public void arrayValue() {
 		Type testClass = typeSystem.resolveName(TestClass1b.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Object.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTriggerTypename());
 		assertEquals("java.lang.String[]", ch.getDependantTypes().keySet().iterator().next().toString());
 	}
 
 	@Test
 	public void configurationHintConversion2() {
 		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Integer.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Integer.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
 		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
@@ -119,15 +119,15 @@ public class TypeTests {
 	@Test
 	public void twoHintsOnOneType() {
 		Type testClass = typeSystem.resolveName(TestClass3.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(2, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Integer.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Integer.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
 		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
 		ch = compilationHints.get(1);
-		assertEquals(String.class.getName(), ch.getTargetType());
+		assertEquals(String.class.getName(), ch.getTriggerTypename());
 		dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
 		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.Float").getAccessBits());
@@ -136,10 +136,10 @@ public class TypeTests {
 	@Test
 	public void accessSetOnTypeInfo() {
 		Type testClass = typeSystem.resolveName(TestClass5.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(String.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(String.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
 		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
@@ -148,10 +148,10 @@ public class TypeTests {
 	@Test
 	public void doubleTypeInfo() {
 		Type testClass = typeSystem.resolveName(TestClass6.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(String.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(String.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
 		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
@@ -161,10 +161,10 @@ public class TypeTests {
 	@Test
 	public void typeNamesAndTypesInInfo() {
 		Type testClass = typeSystem.resolveName(TestClass7.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(String.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(String.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
 		assertEquals((Integer) AccessBits.CLASS, dts.get("java.lang.Float").getAccessBits());
@@ -174,10 +174,10 @@ public class TypeTests {
 	@Test
 	public void nestedTypeNameArrays() {
 		Type testClass = typeSystem.resolveName(TestClass8.class.getName());
-		List<CompilationHint> compilationHints = testClass.getCompilationHints();
+		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
-		CompilationHint ch = compilationHints.get(0);
-		assertEquals(Object.class.getName(), ch.getTargetType());
+		HintDeclaration ch = compilationHints.get(0);
+		assertEquals(Object.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(3, dts.size());
 		System.out.println(dts);

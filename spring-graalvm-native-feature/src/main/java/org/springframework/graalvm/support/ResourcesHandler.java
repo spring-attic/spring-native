@@ -55,8 +55,8 @@ import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.CompilationHint;
-import org.springframework.graalvm.type.Hint;
+import org.springframework.graalvm.type.HintDeclaration;
+import org.springframework.graalvm.type.HintApplication;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.MissingTypeException;
 import org.springframework.graalvm.type.ProxyDescriptor;
@@ -167,9 +167,9 @@ public class ResourcesHandler {
 	 * separately.
 	 */
 	private void handleConstantHints() {
-		List<CompilationHint> constantHints = ts.findActiveDefaultHints();
+		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
 		SpringFeature.log("Registering fixed hints: " + constantHints);
-		for (CompilationHint ch : constantHints) {
+		for (HintDeclaration ch : constantHints) {
 			if (!isHintValidForCurrentMode(ch)) {
 				continue;
 			}
@@ -198,9 +198,9 @@ public class ResourcesHandler {
 	}
 	
 	private void handleConstantInitializationHints() {
-		List<CompilationHint> constantHints = ts.findHints("java.lang.Object");
+		List<HintDeclaration> constantHints = ts.findHints("java.lang.Object");
 		SpringFeature.log("Registering fixed initialization entries: ");
-		for (CompilationHint ch : constantHints) {
+		for (HintDeclaration ch : constantHints) {
 			List<InitializationDescriptor> ids = ch.getInitializationDescriptors();
 			for (InitializationDescriptor id: ids) {
 				SpringFeature.log(" registering initialization descriptor: "+id);
@@ -933,16 +933,15 @@ public class ResourcesHandler {
 	}
 
 	private boolean processType(ProcessingContext pc, String typename, ReachedBy reachedBy) {
-		SpringFeature.log("\n\nProcessing configuration type " + typename);
+		SpringFeature.log("\n\nProcessing type " + typename);
 		Type resolvedConfigType = ts.resolveDotted(typename,true);
 		if (resolvedConfigType==null) {
 			SpringFeature.log("Configuration type " + typename + " is missing - presuming stripped out - considered failed validation");
 			return false;
-		} else {
-			boolean b = processType(pc, resolvedConfigType, reachedBy);
-			SpringFeature.log("Configuration type " + typename + " has " + (b ? "passed" : "failed") + " validation");
-			return b;
-		}
+		} 
+		boolean b = processType(pc, resolvedConfigType, reachedBy);
+		SpringFeature.log("Configuration type " + typename + " has " + (b ? "passed" : "failed") + " validation");
+		return b;
 	}
 
 	/**
@@ -1155,10 +1154,10 @@ public class ResourcesHandler {
 
 		boolean passesTests = true;
 		RequestedConfigurationManager accessManager = new RequestedConfigurationManager();
-		List<Hint> hints = type.getHints();
+		List<HintApplication> hints = type.getHints();
 		printHintSummary(type, hints);
 		Map<Type,ReachedBy> toFollow = new HashMap<>();
-		for (Hint hint : hints) {
+		for (HintApplication hint : hints) {
 			SpringFeature.log("processing hint " + hint);
 			passesTests = processExplicitTypeReferencesFromHint(pc, accessManager, hint, toFollow);
 			if (!passesTests && ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1305,7 +1304,7 @@ public class ResourcesHandler {
 	}
 
 	private boolean processImplicitTypeReferencesFromHint(ProcessingContext pc,
-			RequestedConfigurationManager accessRequestor, Type type, Hint hint, Map<Type, ReachedBy> toFollow) {
+			RequestedConfigurationManager accessRequestor, Type type, HintApplication hint, Map<Type, ReachedBy> toFollow) {
 		boolean passesTests = true;
 		Map<String, Integer> inferredTypes = hint.getInferredTypes();
 		if (inferredTypes.size() > 0) {
@@ -1366,7 +1365,7 @@ public class ResourcesHandler {
 	}
 
 	private boolean processExplicitTypeReferencesFromHint(ProcessingContext pc, 
-			RequestedConfigurationManager accessRequestor, Hint hint, Map<Type, ReachedBy> toFollow) {
+			RequestedConfigurationManager accessRequestor, HintApplication hint, Map<Type, ReachedBy> toFollow) {
 		boolean passesTests = true;
 		boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(hint);
 		if (hintExplicitReferencesValidInCurrentMode) {
@@ -1460,12 +1459,12 @@ public class ResourcesHandler {
 		}
 	}
 
-	private boolean isImportHint(Hint hint) {
+	private boolean isImportHint(HintApplication hint) {
 		List<Type> annotationChain = hint.getAnnotationChain();
 		return annotationChain.get(annotationChain.size()-1).equals(ts.getType_Import());
 	}
 
-	private void printHintSummary(Type type, List<Hint> hints) {
+	private void printHintSummary(Type type, List<HintApplication> hints) {
 		if (hints.size() != 0) {
 			SpringFeature.log("found "+ hints.size() + " hints on " + type.getDottedName()+":");
 			for (int h = 0; h < hints.size(); h++) {
@@ -1522,13 +1521,13 @@ public class ResourcesHandler {
 			//		return new AuthenticationAuditListener();
 			//	}
 			if (!ConfigOptions.isSkipAtBeanHintProcessing()) {
-				List<Hint> methodHints = atBeanMethod.getHints();
+				List<HintApplication> methodHints = atBeanMethod.getHints();
 				SpringFeature.log("@Bean method "+atBeanMethod + " hints: #"+methodHints.size());
 				for (int i=0;i<methodHints.size();i++) {
 					SpringFeature.log((i+1)+") "+methodHints.get(i));
 				}
 				for (int h=0;h<methodHints.size() && passesTests;h++) {
-					Hint hint = methodHints.get(h);
+					HintApplication hint = methodHints.get(h);
 					SpringFeature.log("processing hint " + hint);
 
 					Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
@@ -1751,7 +1750,7 @@ public class ResourcesHandler {
 		return ok.toArray(new Flag[0]);
 	}
 
-	private boolean isHintValidForCurrentMode(Hint hint) {
+	private boolean isHintValidForCurrentMode(HintApplication hint) {
 		Mode currentMode = ConfigOptions.getMode();
 		if (!hint.applyToFunctional() && currentMode == Mode.FUNCTIONAL) {
 			return false;
@@ -1759,7 +1758,7 @@ public class ResourcesHandler {
 		return true;
 	}
 	
-	private boolean isHintValidForCurrentMode(CompilationHint hint) {
+	private boolean isHintValidForCurrentMode(HintDeclaration hint) {
 		Mode currentMode = ConfigOptions.getMode();
 		if (!hint.applyToFunctional() && currentMode==Mode.FUNCTIONAL) {
 			return false;

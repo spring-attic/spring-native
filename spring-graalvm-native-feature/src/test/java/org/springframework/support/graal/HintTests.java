@@ -38,7 +38,7 @@ import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.Hint;
+import org.springframework.graalvm.type.HintApplication;
 import org.springframework.graalvm.type.ProxyDescriptor;
 import org.springframework.graalvm.type.ResourcesDescriptor;
 import org.springframework.graalvm.type.Type;
@@ -58,7 +58,7 @@ public class HintTests {
 	@Test
 	public void hints() {
 		Type testClass = typeSystem.resolveName(TestClass1.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
 		Map<String, AccessDescriptor> specificTypes = hints.get(0).getSpecificTypes();
 		System.out.println(specificTypes);
@@ -73,9 +73,9 @@ public class HintTests {
 	@Test
 	public void proxies() {
 		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		List<ProxyDescriptor> proxies= hint.getProxyDescriptors();
 		assertEquals(1,proxies.size());
 		String[] types = proxies.get(0).getTypes();
@@ -90,9 +90,9 @@ public class HintTests {
 	@Test
 	public void resources() {
 		Type testClass = typeSystem.resolveName(TestClass3.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		List<ResourcesDescriptor> resourcesDescriptors = hint.getResourceDescriptors();
 		assertEquals(2,resourcesDescriptors.size());
 		String[] patterns = resourcesDescriptors.get(0).getPatterns();
@@ -114,9 +114,9 @@ public class HintTests {
 	@Test
 	public void modeRestrictions() {
 		Type testClass = typeSystem.resolveName(TestClass4.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		assertFalse(hint.applyToFunctional());
 	}
 
@@ -129,9 +129,9 @@ public class HintTests {
 	@Test
 	public void initializations() {
 		Type testClass = typeSystem.resolveName(TestClass5.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		List<InitializationDescriptor> initializationDescriptors = hint.getInitializationDescriptors();
 		assertEquals(2,initializationDescriptors.size());
 		List<String> btc = initializationDescriptors.get(0).getBuildtimeClasses();
@@ -171,9 +171,9 @@ public class HintTests {
 	@Test
 	public void methods() {
 		Type testClass = typeSystem.resolveName(TestClass6.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);
@@ -193,9 +193,9 @@ public class HintTests {
 	@Test
 	public void fields() {
 		Type testClass = typeSystem.resolveName(TestClass7.class.getName());
-		List<Hint> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getHints();
 		assertEquals(1,hints.size());
-		Hint hint = hints.get(0);
+		HintApplication hint = hints.get(0);
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);

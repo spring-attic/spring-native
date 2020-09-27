@@ -21,11 +21,14 @@ import java.util.Map;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 
 /**
- * Represents an inferred application of @CompilationHint.
+ * Represents a real application of a @type {@link HintDeclaration}. This is different
+ * because it includes inferred information from the matched location (for example
+ * if the HintDeclaration was about uses of ConditionalOnClass, the HintApplication will
+ * include the types scraped from a particular ConditionalOnClass usage).
  * 
  * @author Andy Clement
  */
-public class Hint {
+public class HintApplication {
 	
 	// This is the annotation 'chain' from the type that got asked about to the thing with @CompilationHint
 	// This chain may be short (e.g. if an autoconfig has @ConditionalOnClass on it which itself
@@ -34,46 +37,18 @@ public class Hint {
 	// with @ConditionalOnClass which in turn has CompilationHint) chain will be [EnableFoo, ConditionalOnClass]
 	private List<Type> annotationChain;
 	
-	// If any types hinted at are missing, is this type effectively redundant?
-	private boolean skipIfTypesMissing;
-
-	// Should any types references be followed because they may also have further
-	// hints on them (e.g. @Import(Foo) where Foo has @Import(Bar) on it)
-	private boolean follow;
-
-	// These are the types pulled directly from the compilation hint (e.g. for ImportSelectors/registrars)
-	private Map<String, AccessDescriptor> specificTypes;
-
 	// These are pulled from the particular application of the hint (e.g. @ConditionalOnClass has a hint and when
 	// @COC seen, these are the types pulled from the @COC)
 	private Map<String, Integer> inferredTypes;
 	
-	private List<ProxyDescriptor> proxyDescriptors;
-	
-	private List<ResourcesDescriptor> resourcesDescriptors;
-	
-	private List<InitializationDescriptor> initializationDescriptors;
+	private HintDeclaration hintDeclaration;
 
-	private boolean applyToFunctional;
-
-
-	public Hint(List<Type> annotationChain, boolean skipIfTypesMissing, 
-			boolean follow, 
-			Map<String, AccessDescriptor> specificTypes,
+	public HintApplication(List<Type> annotationChain,
 			Map<String,Integer> inferredTypes,
-			List<ProxyDescriptor> proxyDescriptors,
-			List<ResourcesDescriptor> resourcesDescriptors,
-			List<InitializationDescriptor> initializationDescriptors,
-			boolean applyToFunctional) {
+			HintDeclaration hintDeclaration) {
 		this.annotationChain = annotationChain;
-		this.skipIfTypesMissing = skipIfTypesMissing;
-		this.follow = follow;
-		this.specificTypes = specificTypes;
 		this.inferredTypes = inferredTypes;
-		this.proxyDescriptors = proxyDescriptors;
-		this.resourcesDescriptors = resourcesDescriptors;
-		this.initializationDescriptors = initializationDescriptors;
-		this.applyToFunctional = applyToFunctional;
+		this.hintDeclaration = hintDeclaration;
 	}
 
 	public List<Type> getAnnotationChain() {
@@ -81,15 +56,15 @@ public class Hint {
 	}
 
 	public boolean isSkipIfTypesMissing() {
-		return skipIfTypesMissing;
+		return hintDeclaration.skipIfTypesMissing;
 	}
 
 	public boolean isFollow() {
-		return follow;
+		return hintDeclaration.follow;
 	}
 	
 	public Map<String,AccessDescriptor> getSpecificTypes() {
-		return specificTypes;
+		return hintDeclaration.getDependantTypes();
 	}
 	
 	public Map<String, Integer> getInferredTypes() {
@@ -100,17 +75,17 @@ public class Hint {
 		StringBuilder s = new StringBuilder();
 		s.append("Hint{");
 		s.append(shortChain());
-		if (!specificTypes.isEmpty()) {
-			s.append(",specific=").append(shortenWithAD(specificTypes));
+		if (!getSpecificTypes().isEmpty()) {
+			s.append(",specific=").append(shortenWithAD(getSpecificTypes()));
 		}
-		if (!inferredTypes.isEmpty()) {
+		if (!getInferredTypes().isEmpty()) {
 			s.append(",inferred=").append(shorten(inferredTypes));
 		}
-		if (!resourcesDescriptors.isEmpty()) {
-			s.append(",resources=").append(resourcesDescriptors);
+		if (!getResourceDescriptors().isEmpty()) {
+			s.append(",resources=").append(getResourceDescriptors());
 		}
-		if (!initializationDescriptors.isEmpty()) {
-			s.append(",initialization=").append(initializationDescriptors);
+		if (!getInitializationDescriptors().isEmpty()) {
+			s.append(",initialization=").append(getInitializationDescriptors());
 		}
 //		s.append(",skipIfTypesMissing=").append(skipIfTypesMissing);
 //		s.append(",follow=").append(follow);
@@ -182,19 +157,19 @@ public class Hint {
 	}
 	
 	public List<ResourcesDescriptor> getResourceDescriptors() {
-		return resourcesDescriptors;
+		return hintDeclaration.getResourcesDescriptors();
 	}
 
 	public List<ProxyDescriptor> getProxyDescriptors() {
-		return proxyDescriptors;
+		return hintDeclaration.getProxyDescriptors();
 	}
 	
 	public boolean applyToFunctional() {
-		return this.applyToFunctional;
+		return hintDeclaration.applyToFunctional();
 	}
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {
-		return initializationDescriptors;
+		return hintDeclaration.getInitializationDescriptors();
 	}
 
 }

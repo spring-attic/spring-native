@@ -32,7 +32,7 @@ import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.CompilationHint;
+import org.springframework.graalvm.type.HintDeclaration;
 import org.springframework.graalvm.type.ResourcesDescriptor;
 import org.springframework.graalvm.type.TypeSystem;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -55,9 +55,9 @@ import org.springframework.jdbc.support.JdbcAccessor;
 })
 public class JdbcHints implements NativeImageConfiguration {
 	@Override
-	public List<CompilationHint> computeHints(TypeSystem typeSystem) {
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 		if (!ConfigOptions.shouldRemoveXmlSupport()) {
-			CompilationHint ch = new CompilationHint();
+			HintDeclaration ch = new HintDeclaration();
 			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
 			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
 			ch.addResourcesDescriptor(sqlErrorCodes);

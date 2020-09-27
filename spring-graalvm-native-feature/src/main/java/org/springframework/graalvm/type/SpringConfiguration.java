@@ -34,7 +34,7 @@ public class SpringConfiguration {
 
 	private TypeSystem typeSystem;
 
-	private final static Map<String, List<CompilationHint>> proposedHints = new HashMap<>();
+	private final static Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
 	
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
 	
@@ -54,7 +54,7 @@ public class SpringConfiguration {
 				if (!valid) {
 					continue;
 				}
-				List<CompilationHint> hints = t.getCompilationHints();
+				List<HintDeclaration> hints = t.getCompilationHints();
 				try {
 					hints.addAll(hintProvider.computeHints(typeSystem));
 				} catch (NoClassDefFoundError ncdfe) {
@@ -62,16 +62,16 @@ public class SpringConfiguration {
 						hintProvider.getClass().getName()+" threw a NoClassDefFoundError for "+ncdfe.getMessage()+
 						": it is better if they handle that internally in case they are computing a variety of hints");
 				}
-				SpringFeature.log("Found "+hints.size()+" hints: "+hints);
-				for (CompilationHint hint: hints) {
-					if (hint.getTargetType() == null) {
+				SpringFeature.log("Found "+hints.size()+" hints from provider "+hintProvider.getClass().getName());
+				for (HintDeclaration hint: hints) {
+					if (hint.getTriggerTypename() == null) {
 						// Default to Object which means this hint always applies
-						hint.setTargetType("java.lang.Object");
+						hint.setTriggerTypename("java.lang.Object");
 					}
-					List<CompilationHint> existingHints = proposedHints.get(hint.getTargetType());
+					List<HintDeclaration> existingHints = proposedHints.get(hint.getTriggerTypename());
 					if (existingHints == null) {
 						existingHints = new ArrayList<>();
-						proposedHints.put(hint.getTargetType(), existingHints);
+						proposedHints.put(hint.getTriggerTypename(), existingHints);
 					}
 					existingHints.add(hint);
 				}
@@ -103,12 +103,12 @@ public class SpringConfiguration {
 	}
 	
 	// TODO sort out callers so they use a proper dotted name
-	public List<CompilationHint> findProposedHints(String typename) {
-		List<CompilationHint> results = proposedHints.get(typename);
+	public List<HintDeclaration> findProposedHints(String typename) {
+		List<HintDeclaration> results = proposedHints.get(typename);
 		return (results==null?Collections.emptyList():results);
 	}
 	
-	public static Map<String, List<CompilationHint>> getProposedhints() {
+	public static Map<String, List<HintDeclaration>> getProposedhints() {
 		return proposedHints;
 	}
 	

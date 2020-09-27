@@ -670,11 +670,11 @@ public class TypeSystem {
 		return findTypesAnnotated(SPRING_AT_CONFIGURATION, metaAnnotated);
 	}
 	
-	public List<CompilationHint> findActiveDefaultHints() {
-		List<CompilationHint> activeDefaultHints = new ArrayList<>();
+	public List<HintDeclaration> findActiveDefaultHints() {
+		List<HintDeclaration> activeDefaultHints = new ArrayList<>();
 		activeDefaultHints.addAll(findHints("java.lang.Object"));
-		Map<String, List<CompilationHint>> proposedhints = SpringConfiguration.getProposedhints();
-		for (Map.Entry<String,List<CompilationHint>> proposedhint: proposedhints.entrySet()) {
+		Map<String, List<HintDeclaration>> proposedhints = SpringConfiguration.getProposedhints();
+		for (Map.Entry<String,List<HintDeclaration>> proposedhint: proposedhints.entrySet()) {
 			String keytype = proposedhint.getKey();
 			if (keytype.equals("java.lang.Object")) {
 				continue;
@@ -687,7 +687,7 @@ public class TypeSystem {
 					) {
 					// These are triggered by 'exploration' under default/hybrid mode
 				} else {
-					for (CompilationHint hint: proposedhint.getValue()) {
+					for (HintDeclaration hint: proposedhint.getValue()) {
 						if (hint.applyToFunctional() || ConfigOptions.getMode()!=Mode.FUNCTIONAL) {
 							System.out.println("Including hint not targeting config (trigger="+keytype+"): "+hint);
 							activeDefaultHints.add(hint);
@@ -699,7 +699,7 @@ public class TypeSystem {
 		return activeDefaultHints;
 	}
 
-	public List<CompilationHint> findHints(String typename) {
+	public List<HintDeclaration> findHints(String typename) {
 		if (typename.contains("/")) {
 			if (typename.endsWith(";")) {
 				typename= typename.substring(1,typename.length()-1).replace("/", ".");
@@ -712,9 +712,9 @@ public class TypeSystem {
 		}
 		// The result should include hints directly on the type as well
 		// as discovered hints from separate configuration
-		List<CompilationHint> results = new ArrayList<>();
+		List<HintDeclaration> results = new ArrayList<>();
 		results.addAll(hintLocator.findProposedHints(typename));
-		List<CompilationHint> declaredHints = resolveName(typename).getCompilationHints();
+		List<HintDeclaration> declaredHints = resolveName(typename).getCompilationHints();
 		results.addAll(declaredHints);
 		return results;
 	}
