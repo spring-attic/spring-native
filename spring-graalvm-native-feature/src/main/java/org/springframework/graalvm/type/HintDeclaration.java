@@ -44,6 +44,8 @@ public class HintDeclaration {
 
 	public boolean skipIfTypesMissing = false;
 	
+	public List<String> extractAttributeNames;
+	
 	public HintDeclaration() {
 	}
 	
@@ -120,6 +122,14 @@ public class HintDeclaration {
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {
 		return initializationDescriptors;
+	}
+
+	public void setAttributesToExtract(List<String> extractAttributeNames) {
+		this.extractAttributeNames = extractAttributeNames;
+	}
+	
+	public List<String> getExtractAttributeNames() {
+		return extractAttributeNames;
 	}
 
 }

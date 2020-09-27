@@ -16,8 +16,21 @@
 package org.springframework.graalvm.type;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,7 +46,6 @@ import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.extension.InitializationInfo;
 import org.springframework.graalvm.extension.InitializationInfos;
 import org.springframework.graalvm.extension.InitializationTime;
-import org.springframework.graalvm.extension.NativeImageContext;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageHints;
 import org.springframework.graalvm.extension.ProxyInfo;
@@ -45,12 +57,11 @@ import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.SpringFeature;
 
-import com.oracle.truffle.api.debug.Breakpoint.ResolveListener;
-
 /**
  * @author Andy Clement
  * @author Christoph Strobl
  */
+@SuppressWarnings("unchecked")
 public class Type {
 
 	public final static String AtResponseBody = "Lorg/springframework/web/bind/annotation/ResponseBody;";
@@ -861,7 +872,6 @@ public class Type {
 		return findAnnotationValue(annotationType, searchMeta, new HashSet<>());
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, List<String>> findAnnotationValueWithHostAnnotation(String annotationType, boolean searchMeta,
 			Set<String> visited) {
 		if (dimensions > 0) {
@@ -904,7 +914,6 @@ public class Type {
 		return collectedResults;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<String> findAnnotationValue(String annotationType, boolean searchMeta, Set<String> visited) {
 		if (dimensions > 0) {
 			return Collections.emptyList();
@@ -1240,7 +1249,8 @@ public class Type {
 			annotationChain.push(this);
 			List<HintDeclaration> hintsOnAnnotation = typeSystem.findHints(an.desc);
 			if (hintsOnAnnotation.size() != 0) {
-				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an);
+				List<String> extractAttributeNames = hintsOnAnnotation.stream().map(hd -> hd.getExtractAttributeNames()).filter(x->x!=null).flatMap(List::stream).collect(Collectors.toList());
+				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an, extractAttributeNames);
 				if (an.desc.equals(Type.AtEnableConfigurationProperties) && !ConfigOptions.isFunctionalMode()) {
 					// TODO special handling here for @EnableConfigurationProperties - should we
 					// promote this to a hint annotation value or truly a special case?
@@ -1342,8 +1352,7 @@ public class Type {
 	}
 	*/
 
-	@SuppressWarnings("unchecked")
-	private List<String> collectTypeReferencesInAnnotation(AnnotationNode an) {
+	private List<String> collectTypeReferencesInAnnotation(AnnotationNode an, List<String> extractAttributeNames) {
 		List<Object> values = an.values;
 		List<String> importedReferences = new ArrayList<>();
 		if (values != null) {
@@ -1484,7 +1493,6 @@ public class Type {
 		return (node.access & Opcodes.ACC_ANNOTATION) != 0;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Type> getAutoConfigureBeforeOrAfter() {
 		if (dimensions > 0)
 			return Collections.emptyList();
@@ -1545,7 +1553,7 @@ public class Type {
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
 				if (fromLdescriptorToDotted(an.desc).equals(NativeImageHint.class.getName())) {
-					HintDeclaration hint = fromConfigurationHintToCompilationHint(an);
+					HintDeclaration hint = fromConfigurationHintToHintDeclaration(an);
 					if (hints == null) {
 						hints = new ArrayList<>();
 					}
@@ -1563,8 +1571,7 @@ public class Type {
 		return hints == null ? Collections.emptyList() : hints;
 	}
 
-	@SuppressWarnings("unchecked")
-	private HintDeclaration fromConfigurationHintToCompilationHint(AnnotationNode an) {
+	private HintDeclaration fromConfigurationHintToHintDeclaration(AnnotationNode an) {
 		HintDeclaration ch = new HintDeclaration();
 		List<Object> values = an.values;
 		if (values != null) {
@@ -1572,15 +1579,7 @@ public class Type {
 				String key = (String) values.get(i);
 				Object value = values.get(i + 1);
 				if (key.equals("trigger")) {
-					// value(String)=Ljava/lang/String;(org.objectweb.asm.Type)
 					ch.setTriggerTypename(((org.objectweb.asm.Type) value).getClassName());
-					/*
-					 * } else if (key.equals("types")) { // types=[Ljava/lang/String;,
-					 * Ljava/lang/Float;](class java.util.ArrayList)
-					 * ArrayList<org.objectweb.asm.Type> types =
-					 * (ArrayList<org.objectweb.asm.Type>)value; for (org.objectweb.asm.Type type:
-					 * types) { ch.addDependantType(type.getClassName(), inferTypeKind(type)); }
-					 */
 				} else if (key.equals("applyToFunctional")) {
 					ch.setApplyToFunctional((Boolean) value);
 				} else if (key.equals("typeInfos")) {
@@ -1600,22 +1599,14 @@ public class Type {
 					Boolean b = (Boolean) value;
 					ch.setFollow(b);
 				} else if (key.equals("extractTypesFromAttributes")) {
-					// TODO handle this key
-					// annotation extractTypesFromAttributes=[value, type](class
-					// java.util.ArrayList)
-					// annotation extractTypesFromAttributes=[value, name](class
-					// java.util.ArrayList)
-					// annotation extractTypesFromAttributes=[value, name](class
-					// java.util.ArrayList)
-					// annotation extractTypesFromAttributes=[value](class java.util.ArrayList)
+					ch.setAttributesToExtract((List<String>)value);
 				} else {
 					System.out.println("annotation " + key + "=" + value + "(" + value.getClass() + ")");
 				}
 			}
 		}
 		if (ch.getTriggerTypename() == null) {
-			ch.setTriggerTypename("java.lang.Object");// TODO should be set from annotation default value, not duplicated
-			// here
+			ch.setTriggerTypename("java.lang.Object");
 		}
 		return ch;
 	}
@@ -1627,7 +1618,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processInitializationInfos(HintDeclaration ch, Object value) {
 		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode initializationInfo : initializationInfos) {
@@ -1635,7 +1625,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processTypeInfoList(HintDeclaration ch, Object value) {
 		List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode typeInfo : typeInfos) {
@@ -1643,7 +1632,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processFieldInfoList(List<FieldDescriptor> fds, Object value) {
 		List<AnnotationNode> fieldInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode fieldInfo : fieldInfos) {
@@ -1658,7 +1646,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T> List<T> asList(Object value, Class<T> type) {
 		return (List<T>) value;
 	}
@@ -1709,7 +1696,6 @@ public class Type {
 		return node;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void unpackTypeInfo(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
@@ -1796,7 +1782,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void unpackProxyInfo(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
@@ -1835,7 +1820,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void unpackResourcesInfo(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<String> patterns = null;
@@ -1853,7 +1837,6 @@ public class Type {
 				new ResourcesDescriptor(patterns.toArray(new String[0]), isBundle == null ? false : isBundle));
 	}
 
-	@SuppressWarnings("unchecked")
 	private void unpackInitializationInfo(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
@@ -1939,7 +1922,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<HintDeclaration> fromConfigurationHintsToCompilationHints(AnnotationNode an) {
 		List<HintDeclaration> chs = new ArrayList<>();
 		List<Object> values = an.values;
@@ -1951,14 +1933,13 @@ public class Type {
 				// org.objectweb.asm.tree.AnnotationNode@68fb2c38]
 				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
 				for (int j = 0; j < annotationNodes.size(); j++) {
-					chs.add(fromConfigurationHintToCompilationHint(annotationNodes.get(j)));
+					chs.add(fromConfigurationHintToHintDeclaration(annotationNodes.get(j)));
 				}
 			}
 		}
 		return chs;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processTypeInfosList(HintDeclaration ch, AnnotationNode an) {
 		List<Object> values = an.values;
 		for (int i = 0; i < values.size(); i += 2) {
@@ -1975,7 +1956,6 @@ public class Type {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void processRepeatableInfosList(AnnotationNode an, Consumer<AnnotationNode> c) {
 		List<Object> values = an.values;
 		for (int i = 0; i < values.size(); i += 2) {
@@ -2513,7 +2493,6 @@ public class Type {
 		return true;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation) {
 		List<Object> values = annotation.values;
 		List<String> names = new ArrayList<>();

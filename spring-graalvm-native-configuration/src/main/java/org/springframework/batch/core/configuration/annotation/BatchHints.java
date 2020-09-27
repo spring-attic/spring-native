@@ -15,10 +15,6 @@
  */
 package org.springframework.batch.core.configuration.annotation;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
-
 import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
 import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
