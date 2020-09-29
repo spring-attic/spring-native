@@ -21,6 +21,8 @@ import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.graalvm.extension.MethodInfo;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -45,14 +47,20 @@ proposedHints.put(AdviceModeImportSelector,
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
-				AnnotationConfigApplicationContext.class,CommonAnnotationBeanPostProcessor.class,
-				AnnotationScopeMetadataResolver.class,AutoConfigurationExcludeFilter.class,
+				AnnotationConfigApplicationContext.class,
+				CommonAnnotationBeanPostProcessor.class,
+				AnnotationScopeMetadataResolver.class,
+				AutoConfigurationExcludeFilter.class,
 				EventListenerMethodProcessor.class,
 				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS),
 		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = { ConfigurationClassPostProcessor.class },access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
+		@TypeInfo(types = { ConfigurationClassPostProcessor.class },
+		methods = {
+				@MethodInfo(name="setMetadataReaderFactory",parameterTypes=MetadataReaderFactory.class)
+		},
+		access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class ContextAnnotationHints implements NativeImageConfiguration {
 }

@@ -26,8 +26,8 @@ import org.springframework.graalvm.type.AccessBits;
 	@TypeInfo(types= {
 			BoundConfigurationProperties.class,
 			ConfigurationPropertiesBindingPostProcessor.class,
-			ConfigurationPropertiesBinder.Factory.class,
-			ConfigurationPropertiesBinder.class,
+//			ConfigurationPropertiesBinder.Factory.class,
+//			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
 			NestedConfigurationProperty.class
 			}, typeNames = {

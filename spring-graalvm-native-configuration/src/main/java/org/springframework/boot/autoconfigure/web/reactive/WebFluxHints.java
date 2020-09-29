@@ -27,12 +27,14 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.web.reactive.HandlerResult;
 
+import reactor.core.publisher.Flux;
 import reactor.netty.DisposableServer;
 
 @NativeImageHint(trigger=WebFluxAutoConfiguration.class,
 	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
 	typeInfos = {
 	@TypeInfo(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
+	@TypeInfo(types = {Flux.class},access=AccessBits.CLASS),
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
