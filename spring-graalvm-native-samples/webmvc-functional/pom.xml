@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
@@ -18,23 +16,33 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<start-class>app.main.SampleApplication</start-class>
+		<spring-init.version>0.2.1-SNAPSHOT</spring-init.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-init-dependencies</artifactId>
+				<version>${spring-init.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-boot-autoconfigure-func</artifactId>
-			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-init-core</artifactId>
-			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-init-library</artifactId>
-			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -78,7 +86,7 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-init-maven-plugin</artifactId>
-				<version>0.2.0</version>
+				<version>${spring-init.version}</version>
 				<executions>
 					<execution>
 						<id>sources</id>
@@ -103,11 +111,6 @@
 						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
 							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-							<!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.spel.ignore=true
-								-Dspring.native.remove-yaml-support=true
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>
 				</configuration>

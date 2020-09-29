@@ -1,0 +1,15 @@
+[
+	{
+		"name": "org.springframework.http.converter.FormHttpMessageConverter",
+		"fields": [
+			{
+				"name": "partConverters"
+			}
+		]
+	},
+	{
+		"name": "org.springframework.boot.web.servlet.server.Encoding",
+		"allDeclaredConstructors": true,
+		"allDeclaredMethods": true
+	}
+]
