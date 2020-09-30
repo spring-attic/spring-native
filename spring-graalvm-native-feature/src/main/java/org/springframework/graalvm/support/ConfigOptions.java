@@ -62,6 +62,8 @@ public abstract class ConfigOptions {
 	
 	private static Mode MODE; // Default is 'reflection'
 
+	private static Boolean SPRING_INIT_ACTIVE = null;
+
 	static {
 		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","true"));
 		if (!IGNORE_HINTS_ON_EXCLUDED_CONFIG) {
@@ -222,33 +224,43 @@ public abstract class ConfigOptions {
 		return MODE;
 	}
 	
+	public static boolean isSpringInitActive() {
+		return SPRING_INIT_ACTIVE;
+	}
+	
 	/*
 	 * Note - some similar inferencing for the substitutions is in FunctionalMode class.
 	 */
 	public static void ensureModeInitialized(DuringSetupAccess access) {
-		if (MODE == null) {
+		if (MODE == null || SPRING_INIT_ACTIVE== null) {
 			DuringSetupAccessImpl dsai = (DuringSetupAccessImpl) access;
 			ImageClassLoader icl = dsai.getImageClassLoader();
 			TypeSystem ts = TypeSystem.get(icl.getClasspath());
 			if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer", true) != null
 					|| ts.resolveDotted("org.springframework.fu.kofu.KofuApplication", true) != null
 					|| ts.resolveDotted("org.springframework.fu.jafu.JafuApplication", true) != null) {
-				MODE = Mode.FUNCTIONAL;
+				MODE = MODE==null?Mode.FUNCTIONAL:MODE;
+				if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer",true)!=null) {
+					SPRING_INIT_ACTIVE = true;
+				}
 			} else {
 				Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts
 						.getReflectionConfigurationsOnClasspath();
 				for (ReflectionDescriptor reflectionDescriptor : reflectionConfigurationsOnClasspath.values()) {
 					if (reflectionDescriptor
 							.hasClassDescriptor("org.springframework.boot.autoconfigure.SpringBootApplication")) {
-						MODE = Mode.AGENT;
+						MODE = MODE==null?Mode.AGENT:MODE;
 						break;
 					}
 				}
 			}
 			if (MODE == null) {
-				MODE = Mode.REFLECTION;
+				MODE = MODE==null?Mode.REFLECTION:MODE;
 			}
-			System.out.println("Inferred feature operating mode: " + MODE.name().toLowerCase());
+			if (SPRING_INIT_ACTIVE==null) {
+				SPRING_INIT_ACTIVE=false;
+			}
+			System.out.println("Inferred feature operating mode: " + MODE.name().toLowerCase()+" (spring init active? "+SPRING_INIT_ACTIVE+")");
 		}
 	}
 

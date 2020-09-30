@@ -125,7 +125,8 @@ public class ResourcesHandler {
 			registerResourceBundles(rd);
 		}
 		if (ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode()) {
+			ConfigOptions.isAgentMode() ||
+			ConfigOptions.isSpringInitActive()) {
 			processSpringFactories();
 		}
 		if (!ConfigOptions.isInitMode()) {
