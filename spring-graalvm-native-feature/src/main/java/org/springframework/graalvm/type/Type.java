@@ -42,6 +42,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.extension.InitializationInfo;
 import org.springframework.graalvm.extension.InitializationInfos;
@@ -73,6 +74,7 @@ public class Type {
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
 	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
+	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
 	public final static String AtImportAutoConfiguration = "Lorg/springframework/boot/autoconfigure/ImportAutoConfiguration;";
@@ -2437,7 +2439,7 @@ public class Type {
 
 	public boolean isConditional() {
 		// Extends Condition or has @Conditional related annotation on it
-		if (implementsInterface("org/springframework/context/annotation/Condition")
+		if (implementsInterface("org/springframework/context/annotation/Condition",true)
 				|| isMetaAnnotated("org/springframework/context/annotation/Conditional")) {
 			return true;
 		} else {
@@ -2679,5 +2681,19 @@ public class Type {
 			return isOK;
 		}
 		return true; // if no COAE then everything is fine, it didn't fail a test
+	}
+	
+	// Example:
+	// @ConditionalOnEnabledHealthIndicator("diskspace")
+	// @AutoConfigureBefore(HealthContributorAutoConfiguration.class)
+	// @EnableConfigurationProperties(DiskSpaceHealthIndicatorProperties.class)
+	// public class DiskSpaceHealthContributorAutoConfiguration {
+	public boolean testAnyConditionalOnEnabledHealthIndicator() {
+		AnnotationNode annotation = getAnnotation(AtConditionalOnEnabledHealthIndicator);
+		if (annotation != null) {
+			// TODO should be checking a property...
+			return false;
+		}
+		return true; // if no COEHI then everything is fine, it didn't fail a test
 	}
 }

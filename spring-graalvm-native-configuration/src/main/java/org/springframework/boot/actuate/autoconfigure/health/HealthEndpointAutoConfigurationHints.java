@@ -21,6 +21,7 @@ import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.NamedContributors;
@@ -43,6 +44,7 @@ import org.springframework.graalvm.type.AccessBits;
 		SimpleStatusAggregator.class,
 		PingHealthIndicator.class,
 		ReactiveHealthEndpointWebExtension.class,
+		HealthEndpointWebExtension.class,
 		Status.class,
 		StatusAggregator.class,
 		SystemHealth.class,

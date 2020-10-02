@@ -260,7 +260,7 @@ public abstract class ConfigOptions {
 			if (SPRING_INIT_ACTIVE==null) {
 				SPRING_INIT_ACTIVE=false;
 			}
-			System.out.println("Inferred feature operating mode: " + MODE.name().toLowerCase()+" (spring init active? "+SPRING_INIT_ACTIVE+")");
+			System.out.println("feature operating mode: " + MODE.name().toLowerCase()+" (spring init active? "+SPRING_INIT_ACTIVE+")");
 		}
 	}
 

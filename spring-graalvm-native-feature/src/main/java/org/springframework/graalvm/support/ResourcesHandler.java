@@ -1044,6 +1044,11 @@ public class ResourcesHandler {
 					SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint check - returning FALSE");
 					return false;
 			}
+//			isOK = type.testAnyConditionalOnEnabledHealthIndicator();
+//			if (!isOK) {
+//					SpringFeature.log(type.getDottedName()+" FAILED due to ConditionalOnEnabledHealthIndicator check - returning FALSE");
+//					return false;
+//			}
 		}
 		return true;
 	}
