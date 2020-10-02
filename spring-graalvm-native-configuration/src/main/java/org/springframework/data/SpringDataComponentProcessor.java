@@ -193,7 +193,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private void registerRepositoryInterface(Type repositoryType, NativeImageContext imageContext) {
 
-		imageContext.addReflectiveAccess(repositoryType, Flag.allDeclaredMethods, Flag.allDeclaredConstructors, Flag.allPublicMethods);
+		imageContext.addReflectiveAccess(repositoryType, Flag.allPublicMethods, Flag.allDeclaredConstructors);
 
 		{ // proxy configuration
 
@@ -336,11 +336,12 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 				// cycle guard, no need to do things over and over again
 				if (!imageContext.hasReflectionConfigFor(signatureType.getDottedName())) {
 
-					if (!signatureType.isPartOfDomain("java.")) {
-						registerDomainType(signatureType, imageContext);
+					if (domainType.isPartOfDomain("java.") || domainType.isPartOfDomain("reactor.")) {
+						imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allPublicConstructors,
+								Flag.allPublicMethods);
+						return;
 					} else {
-						imageContext.addReflectiveAccess(signatureType.getDottedName(), Flag.allDeclaredConstructors,
-								Flag.allDeclaredMethods, Flag.allDeclaredFields);
+						registerDomainType(signatureType, imageContext);
 					}
 				}
 			}
@@ -382,8 +383,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		if (!context.hasReflectionConfigFor(annotation) && isPartOfSpringData(annotation)) {
 
-			context.addReflectiveAccess(annotation.getDottedName(), Flag.allDeclaredConstructors,
-					Flag.allDeclaredMethods, Flag.allDeclaredFields);
+			context.addReflectiveAccess(annotation.getDottedName(), Flag.allPublicMethods);
 			context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
 
 			log.annotationFound(annotation);
@@ -442,7 +442,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		void printSummary() {
 
-			if(repositoryInterfaces.isEmpty()) {
+			if (repositoryInterfaces.isEmpty()) {
 				message("No Spring Data repositories found.");
 				return;
 			}
