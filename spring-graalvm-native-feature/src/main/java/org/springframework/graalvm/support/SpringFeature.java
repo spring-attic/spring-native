@@ -92,6 +92,9 @@ public class SpringFeature implements Feature {
 		}
 		if (ConfigOptions.isFunctionalMode()) {
 			reflectionHandler.registerFunctional(access);
+			if (ConfigOptions.isSpringInitActive()) {
+				dynamicProxiesHandler.registerHybrid(access);
+			}
 		}
 		if (ConfigOptions.isAgentMode()) {
 			reflectionHandler.registerHybrid(access);

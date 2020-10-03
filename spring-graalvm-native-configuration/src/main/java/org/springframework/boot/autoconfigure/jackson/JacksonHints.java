@@ -15,14 +15,17 @@
  */
 package org.springframework.boot.autoconfigure.jackson;
 
-import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeImageHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
+		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class}),
 		@TypeInfo(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT) })
 public class JacksonHints implements NativeImageConfiguration {
 }

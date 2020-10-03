@@ -1,3 +1,4 @@
+org.springframework.SpringAtRepositoryComponentProcessor
 org.springframework.data.SpringDataComponentProcessor
 org.springframework.web.WebComponentProcessor
 org.springframework.SynthesizerComputationComponentProcessor

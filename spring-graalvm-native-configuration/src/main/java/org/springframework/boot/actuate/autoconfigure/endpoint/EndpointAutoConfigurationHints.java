@@ -47,7 +47,6 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 		Link.class, BeanSerializer.class, ApiVersion.class,
 		ExposeExcludePropertyEndpointFilter.class,
 		org.reactivestreams.Publisher.class,
-
 		ShutdownEndpoint.class,
 		CloudPlatform.class,
 		OperationInvokerAdvisor.class,

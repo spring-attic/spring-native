@@ -300,41 +300,17 @@ public class ResourcesHandler {
 			Type keyType = ts.resolveDotted(key);
 			if (keyType.isAtConfiguration()) {
 				checkAndRegisterConfigurationType(key,ReachedBy.FromSpringComponent);
-				//	[Lorg/springframework/boot/autoconfigure/context/PropertyPlaceholderAutoConfiguration;, Lorg/springframework/boot/autoconfigure/context/ConfigurationPropertiesAutoConfiguration;, Lorg/springframework/boot/autoconfigure/web/servlet/ServletWebServerFactoryAutoConfiguration;
 			}
-			/*
-			Type keyType = ts.resolveDotted(key);
-			// The context start/stop test may not exercise the @SpringBootApplication class
-			if (keyType.isAtSpringBootApplication()) {
-				System.out.println("hybrid: adding access to "+keyType+" since @SpringBootApplication");
-				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
-				resourcesRegistry.addResources(key.replace(".", "/")+".class");
-			}
-			if (keyType.isAtController()) {
-				System.out.println("hybrid: Processing controller "+key);
-				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
-				// Example:
-				// @GetMapping("/greeting")
-				// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-				for (Method mapping: mappings) {
-					for (int pi=0;pi<mapping.getParameterCount();pi++) {
-						List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
-						for (Type parameterAnnotationType: parameterAnnotationTypes) {
-							if (parameterAnnotationType.hasAliasForMarkedMembers()) {
-								List<String> interfaces = new ArrayList<>();
-								interfaces.add(parameterAnnotationType.getDottedName());
-								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
-								System.out.println("Adding dynamic proxy for "+interfaces);
-								dynamicProxiesHandler.addProxy(interfaces);
-							}
-						}
-						
+			// TODO [0.9.0] do we need to differentiate between 'functional' and 'functional with spring-init'
+			if (ConfigOptions.isSpringInitActive()) {
+				List<String> values = Arrays.asList(valueString.split(","));
+				for (ComponentProcessor componentProcessor: ts.getComponentProcessors()) {
+					if (componentProcessor.handle(context, key, values)) {
+						componentProcessor.process(context, key, values);
 					}
-				}
+				}	
 			}
-			*/
 		}
-		
 	}
 	
 	private void processSpringComponentsAgent(Properties p, NativeImageContext context) {
@@ -448,10 +424,12 @@ public class ResourcesHandler {
 				t.printStackTrace();
 			}
 		}
+		/*
 		if (kType != null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
 		    // TODO [0.9.0] is this all handled by SpringDataComponentProcessor now?
 			processRepository2(kType);
 		}
+		*/
 		if (kType != null && kType.isAtResponseBody()) {
 			// TODO [0.9.0] move into WebComponentProcessor?
 			processResponseBodyComponent(kType);
@@ -514,6 +492,7 @@ public class ResourcesHandler {
 
 		@Override
 		public boolean addProxy(List<String> interfaces) {
+			System.out.println("> addProxy "+interfaces);
 			dynamicProxiesHandler.addProxy(interfaces);
 			return true;
 		}

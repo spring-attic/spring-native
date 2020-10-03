@@ -43,6 +43,7 @@ import org.springframework.graalvm.type.AccessBits;
 		SimpleHttpCodeStatusMapper.class,
 		SimpleStatusAggregator.class,
 		PingHealthIndicator.class,
+		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,
 		HealthEndpointWebExtension.class,
 		Status.class,

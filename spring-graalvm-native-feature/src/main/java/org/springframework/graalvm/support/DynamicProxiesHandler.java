@@ -94,6 +94,7 @@ public class DynamicProxiesHandler {
 		dynamicProxySupport.addProxyClass(interfaces);
 	}
 
+	// TODO [0.9.0] rationalize initialization based on mode/spring-init being around
 	public void registerHybrid(DuringSetupAccess a) {
 		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
 		imageClassLoader = access.getImageClassLoader();
