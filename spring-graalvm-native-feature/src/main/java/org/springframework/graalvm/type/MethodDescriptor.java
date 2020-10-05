@@ -29,6 +29,9 @@ public class MethodDescriptor {
 	}
 	
 	public static List<MethodDescriptor> of(String[][] methodDescriptors) {
+		if (methodDescriptors == null) {
+			return null;
+		}
 		List<MethodDescriptor> mds = new ArrayList<>();
 		for (int i=0;i<methodDescriptors.length;i++) {
 			String[] methodDescriptor = methodDescriptors[i];
@@ -72,6 +75,16 @@ public class MethodDescriptor {
 			}
 		}
 		return false;
+	}
+
+	public static boolean includesMethods(List<MethodDescriptor> mds) {
+		int methodCount = 0;
+		for (MethodDescriptor md: mds) {
+			if (!md.getName().equals("<init>") && !md.getName().equals("<clinit>")) {
+				methodCount++;
+			}
+		}
+		return methodCount != 0;
 	}
 
 	public static boolean includesStaticInitializers(List<MethodDescriptor> mds) {

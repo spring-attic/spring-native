@@ -1723,7 +1723,7 @@ public class Type {
 		for (org.objectweb.asm.Type type : types) {
 			AccessDescriptor ad = null;
 			if (accessRequired == -1) {
-				ad = new AccessDescriptor(inferAccessRequired(type), mds, fds, true);
+				ad = new AccessDescriptor(inferAccessRequired(type, mds, fds), mds, fds, true);
 			} else {
 				if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
 						AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
@@ -1749,6 +1749,38 @@ public class Type {
 				ch.addDependantType(typeName, ad);
 			}
 		}
+	}
+
+	private Integer inferAccessRequired(org.objectweb.asm.Type type, List<MethodDescriptor> mds,
+			List<FieldDescriptor> fds) {
+		int inferredAccess = inferAccessRequired(type);
+		int originalAccess = inferredAccess;
+		// Adjust inferred access if explicit method/constructor/field references specified
+		boolean includesConstructors = MethodDescriptor.includesConstructors(mds);
+		boolean includesMethods = MethodDescriptor.includesMethods(mds);
+		if (includesMethods) {
+			if ((inferredAccess & AccessBits.DECLARED_METHODS)!= 0) {
+				inferredAccess-=AccessBits.DECLARED_METHODS;
+			}
+			if ((inferredAccess & AccessBits.PUBLIC_METHODS)!= 0) {
+				inferredAccess-=AccessBits.PUBLIC_METHODS;
+			}
+		}
+		if (includesConstructors) {
+			if ((inferredAccess & AccessBits.DECLARED_CONSTRUCTORS) ==0) {
+				inferredAccess-=AccessBits.DECLARED_CONSTRUCTORS;
+			}
+		}
+		if (fds!=null && !fds.isEmpty()) {
+			if ((inferredAccess & AccessBits.DECLARED_FIELDS)!= 0) {
+				inferredAccess-=AccessBits.DECLARED_FIELDS;
+			}
+		}
+		if (inferredAccess != originalAccess) {
+			SpringFeature.log("Modifying default inferred access to "+type.getClassName()+" from "+
+					AccessBits.toString(originalAccess)+" to "+AccessBits.toString(inferredAccess));
+		}
+		return inferredAccess;
 	}
 
 	private void unpackFieldInfo(AnnotationNode fieldInfo, List<FieldDescriptor> fds) {
@@ -1903,7 +1935,7 @@ public class Type {
 		Type t = typeSystem.resolve(type, true);
 		return inferAccessRequired(t);
 	}
-
+	
 	public boolean isConfigurationProperties() {
 		return (dimensions > 0) ? false
 				: isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties), new HashSet<>());
@@ -1938,7 +1970,7 @@ public class Type {
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
 		} else {
-			return AccessBits.FULL_REFLECTION;
+			return AccessBits.FULL_REFLECTION;//-AccessBits.DECLARED_FIELDS;
 		}
 	}
 
@@ -2695,5 +2727,9 @@ public class Type {
 			return false;
 		}
 		return true; // if no COEHI then everything is fine, it didn't fail a test
+	}
+
+	public TypeSystem getTypeSystem() {
+		return this.typeSystem;
 	}
 }

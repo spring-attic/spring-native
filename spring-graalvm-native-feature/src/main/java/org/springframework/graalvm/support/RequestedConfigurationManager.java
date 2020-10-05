@@ -61,7 +61,7 @@ public class RequestedConfigurationManager {
 		} else {
 			requestedTypeAccesses.put(type, accessRequired);
 		}
-		if (mds != null) {
+		if (mds != null && mds.size()>0) {
 			List<MethodDescriptor> existingMds = requestedMethodAccesses.get(type);
 			if (existingMds == null) {
 				requestedMethodAccesses.put(type, new ArrayList<>(mds));
@@ -69,7 +69,7 @@ public class RequestedConfigurationManager {
 				existingMds.addAll(mds);
 			}
 		}
-		if (fds != null) {
+		if (fds != null && fds.size()>0) {
 			List<FieldDescriptor> existingFds = requestedFieldAccesses.get(type);
 			if (existingFds == null) {
 				requestedFieldAccesses.put(type, new ArrayList<>(fds));

@@ -376,6 +376,7 @@ public class ResourcesHandler {
 	}
 	
 	private boolean processSpringComponent(String componentTypename, String classifiers, NativeImageContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
+		ProcessingContext pc = ProcessingContext.of(componentTypename, ReachedBy.FromSpringComponent);
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		boolean isComponent = false;
 		if (classifiers.equals("package-info")) {
@@ -419,7 +420,7 @@ public class ResourcesHandler {
 							Flag.allDeclaredClasses);
 					resourcesRegistry.addResources(t.getName() + ".class");
 				}
-				registerHierarchy(kType, requestor);
+				registerHierarchy(pc, kType, requestor);
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
@@ -459,7 +460,7 @@ public class ResourcesHandler {
 //					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
 					resourcesRegistry.addResources(t.getName() + ".class");
 				}
-				registerHierarchy(baseType, requestor);
+				registerHierarchy(pc, baseType, requestor);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				System.out.println("Problems with value " + tt);
@@ -593,13 +594,34 @@ public class ResourcesHandler {
 
 	/**
 	 * Walk a type hierarchy and register them all for reflective access.
+	 * @param pc 
 	 * 
 	 * @param type the type whose hierarchy to register
 	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
 	 */
-	public void registerHierarchy(Type type, RequestedConfigurationManager typesToMakeAccessible) {
+	public void registerHierarchy(ProcessingContext pc, Type type, RequestedConfigurationManager typesToMakeAccessible) {
 		AccessBits accessRequired = AccessBits.forValue(Type.inferAccessRequired(type));
-		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired, type.isAtConfiguration());
+		boolean isConfiguration = type.isAtConfiguration();
+		if (!isConfiguration) {
+			// Double check are we here because we are a parent of some configuration being processed
+			// For example: 
+			// Analyzing org.springframework.web.reactive.config.WebFluxConfigurationSupport 
+			//   reached by 
+			// [[Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration-FromSpringFactoriesKey], 
+			// [Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration-NestedReference], 
+			// [Ctx:org.springframework.web.reactive.config.DelegatingWebFluxConfiguration-HierarchyProcessing], 
+			// [Ctx:org.springframework.web.reactive.config.WebFluxConfigurationSupport-HierarchyProcessing]]
+			// TODO [0.9.0] tidyup
+			String s2 = pc.getHierarchyProcessingTopMostTypename();
+			TypeSystem typeSystem = type.getTypeSystem();
+			Type resolve = typeSystem.resolveDotted(s2,true);
+			isConfiguration = resolve.isAtConfiguration();
+		}
+		if (isConfiguration && ConfigOptions.isFunctionalMode()) {
+			SpringFeature.log("Not registering hierarchy of "+type.getDottedName()+" because functional mode and the type is configuration");
+			return;
+		}
+		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired, isConfiguration);
 	}
 	
 	private void registerHierarchyHelper(Type type, Set<Type> visited, RequestedConfigurationManager typesToMakeAccessible,
@@ -939,8 +961,9 @@ public class ResourcesHandler {
 	 * For @Configuration types here, need only bean method access (not all methods), for 
 	 * other types (import selectors/etc) may not need any method reflective access at all
 	 * (and no resource access in that case).
+	 * @param pc 
 	 */
-	private boolean registerSpecific(String typename, AccessDescriptor ad, RequestedConfigurationManager rcm) {
+	private boolean registerSpecific(ProcessingContext pc, String typename, AccessDescriptor ad, RequestedConfigurationManager rcm) {
 		int accessBits = ad.getAccessBits();
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
@@ -959,11 +982,11 @@ public class ResourcesHandler {
 			} else {
 				if (AccessBits.isResourceAccessRequired(accessBits)) {
 					rcm.requestTypeAccess(typename, AccessBits.RESOURCE);
-					rcm.requestTypeAccess(typename, accessBits);
+					rcm.requestTypeAccess(typename, accessBits, ad.getMethodDescriptors(), ad.getFieldDescriptors());
 				} else {
+					rcm.requestTypeAccess(typename, accessBits, ad.getMethodDescriptors(), ad.getFieldDescriptors());
 					// TODO worth limiting it solely to @Bean methods? Need to check how many
 					// configuration classes typically have methods that are not @Bean
-					rcm.requestTypeAccess(typename, accessBits);
 				}
 				if (t.isAtConfiguration()) {
 					// This is because of cases like Transaction auto configuration where the
@@ -972,7 +995,7 @@ public class ResourcesHandler {
 					// There is a conditional on bean later on the supertype
 					// (AbstractTransactionConfiguration)
 					// and so we must register proxyXXX and its supertypes as visible.
-					registerHierarchy(t, rcm);
+					registerHierarchy(pc, t, rcm);
 				}
 			}
 			return true;
@@ -1110,6 +1133,27 @@ public class ResourcesHandler {
 
 		public int depth() {
 			return size();
+		}
+		
+		public String getHierarchyProcessingTopMostTypename() {
+			// Double check are we here because we are a parent of some configuration being processed
+						// For example: 
+						// Analyzing org.springframework.web.reactive.config.WebFluxConfigurationSupport 
+						//   reached by 
+						// [[Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration-FromSpringFactoriesKey], 
+						// [Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration-NestedReference], 
+						// [Ctx:org.springframework.web.reactive.config.DelegatingWebFluxConfiguration-HierarchyProcessing], 
+						// [Ctx:org.springframework.web.reactive.config.WebFluxConfigurationSupport-HierarchyProcessing]]
+			int i = size()-1;
+			ContextEntry entry = get(i);
+			while (entry.reachedBy==ReachedBy.HierarchyProcessing) {
+				if (i==0) {
+					break;
+				}
+				entry = get(--i);
+			}
+			// Now entry points to the first non HierarchyProcessing case
+			return entry.typename;
 		}
 		
 	}
@@ -1260,17 +1304,39 @@ public class ResourcesHandler {
 	private void processHierarchy(ProcessingContext pc, RequestedConfigurationManager accessManager, Type type) {
 		SpringFeature.log(">processHierarchy "+type.getShortName());
 		String typename = type.getDottedName();
-		if (type.isImportSelector()) {
-			accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
-		} else {
-			if (type.isCondition()) {
-				accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
-			} else {
-				accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
-			}
+		boolean isConfiguration = type.isAtConfiguration();
+		if (!isConfiguration) {
+			// Double check are we here because we are a parent of some configuration being processed
+			// For example: 
+			// Analyzing org.springframework.web.reactive.config.WebFluxConfigurationSupport 
+			//   reached by 
+			// [[Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration-FromSpringFactoriesKey], 
+			// [Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration-NestedReference], 
+			// [Ctx:org.springframework.web.reactive.config.DelegatingWebFluxConfiguration-HierarchyProcessing], 
+			// [Ctx:org.springframework.web.reactive.config.WebFluxConfigurationSupport-HierarchyProcessing]]
+			// TODO [0.9.0] tidyup
+			String s2 = pc.getHierarchyProcessingTopMostTypename();
+			TypeSystem typeSystem = type.getTypeSystem();
+			Type resolve = typeSystem.resolveDotted(s2,true);
+			isConfiguration = resolve.isAtConfiguration();
 		}
-		// TODO need this guard? if (isConfiguration(configType)) {
-		registerHierarchy(type, accessManager);
+		boolean skip = (ConfigOptions.isFunctionalMode() && (isConfiguration || type.isImportSelector() || type.isCondition()));
+		if (!skip) {
+			if (ConfigOptions.isFunctionalMode()) {
+				System.out.println("WARNING: Functional mode but not skipping: "+type.getDottedName());
+			}
+			if (type.isImportSelector()) {
+				accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
+			} else {
+				if (type.isCondition()) {
+					accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
+				} else {
+					accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+				}
+			}
+			// TODO need this guard? if (isConfiguration(configType)) {
+			registerHierarchy(pc, type, accessManager);
+		}
 		recursivelyCallProcessTypeForHierarchyOfType(pc, type);
 	}
 
@@ -1367,7 +1433,7 @@ public class ResourcesHandler {
 				SpringFeature.log("attempting registration of " + specificNames.size() + " specific types");
 				for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 					String specificTypeName = specificNameEntry.getKey();
-					if (!registerSpecific(specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
+					if (!registerSpecific(pc, specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
 						if (hint.isSkipIfTypesMissing()) {
 							passesTests = false;
 							if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
@@ -1531,7 +1597,7 @@ public class ResourcesHandler {
 					if (specificNames.size() != 0) {
 						SpringFeature.log("handling " + specificNames.size() + " specific types");
 						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
-							registerSpecific(specificNameEntry.getKey(),
+							registerSpecific(pc, specificNameEntry.getKey(),
 									specificNameEntry.getValue(), methodRCM);
 						}
 					}
@@ -1685,7 +1751,8 @@ public class ResourcesHandler {
 			// Only log new info that is being added at this stage to keep logging down
 			Integer access = reflectionConfigurationAlreadyAdded.get(dname);
 			if (access == null) {
-				SpringFeature.log(spaces(depth) + "configuring reflective access to " + dname + "   " + AccessBits.toString(requestedAccess));
+				SpringFeature.log(spaces(depth) + "configuring reflective access to " + dname + "   " + AccessBits.toString(requestedAccess)+
+						(methods==null?"":" mds="+methods));
 				reflectionConfigurationAlreadyAdded.put(dname, requestedAccess);
 			} else {
 				int extraAccess = AccessBits.compareAccess(access,requestedAccess);
@@ -1700,12 +1767,14 @@ public class ResourcesHandler {
 			if (ConfigOptions.isFunctionalMode()) {
 				if (rt.isAtConfiguration() || rt.isConditional() || rt.isCondition() ||
 						rt.isImportSelector() || rt.isImportRegistrar()) {
-				continue;
+					SpringFeature.log("In functional mode, not actually adding reflective access for "+dname);
+					continue;
 				}
 			}
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
+				SpringFeature.log(dname+" has #"+methods.size()+" methods directly specified so removing any general method access needs");
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
 //			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
