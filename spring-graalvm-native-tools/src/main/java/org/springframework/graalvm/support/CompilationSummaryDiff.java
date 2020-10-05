@@ -48,8 +48,8 @@ import org.springframework.graalvm.support.CompilationSummary.Compiled;
 public class CompilationSummaryDiff {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		if (args == null || args.length < 3) {
-			System.out.println("Usage: CompilationSummaryDiff <id>:<fileLocation> <id>:<fileLocation> [htmlDiffFile]");
+		if (args == null || args.length < 2) {
+			System.out.println("Usage: CompilationSummaryDiff <fileLocation>[:<id>] <fileLocation>[:<id>] [htmlDiffFile]");
 			System.out.println("e.g. CompilationSummaryDiff agent:/path/to/output.txt hybrid:/path/to/output.txt diff.html");
 			System.exit(0);
 		}
@@ -60,10 +60,21 @@ public class CompilationSummaryDiff {
 			System.out.println("e.g. CompilationSummaryDiff agent:/path/to/output.txt hybrid:/path/to/output.txt diff.html");
 			System.exit(0);
 		}
-		String idA = args[0].substring(0,idxA);
-		String fileA = args[0].substring(idxA+1);
-		String idB = args[1].substring(0,idxB);
-		String fileB = args[1].substring(idxB+1);
+		String fileA,idA,fileB,idB;
+		if (idxA == -1) {
+			fileA = args[0];
+			idA = fileA;
+		} else {
+			fileA = args[0].substring(0,idxA);
+			idA = args[0].substring(idxA+1);
+		}
+		if (idxB == -1) {
+			fileB = args[1];
+			idB = fileB;
+		} else {
+			fileB = args[1].substring(0,idxB);
+			idB = args[1].substring(idxB+1);
+		}
 
 		CompilationSummary a = CompilationSummary.load(idA,fileA);
 		CompilationSummary b = CompilationSummary.load(idB,fileB);
@@ -167,7 +178,21 @@ public class CompilationSummaryDiff {
 				lines.add(l);
 			}
 		}
-		File outputHTML = new File(args[2]);
+		String fname = null;
+		if (args.length<3) {
+			StringBuilder s = new StringBuilder();
+			int i = idA.lastIndexOf("/");
+			s.append(i==-1?idA:idA.substring(i+1));
+			s.append("-");
+			i = idB.lastIndexOf("/");
+			s.append(i==-1?idB:idB.substring(i+1));
+			s.append(".html");
+			fname = s.toString();
+			System.out.println("Dumping html report to "+fname);
+		} else {
+			fname = args[2];
+		}
+		File outputHTML = new File(fname);
 		Files.write(outputHTML.toPath(),lines);
 	}
 	
