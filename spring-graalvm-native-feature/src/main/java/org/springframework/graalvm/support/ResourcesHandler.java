@@ -169,7 +169,7 @@ public class ResourcesHandler {
 	 */
 	private void handleConstantHints() {
 		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
-		SpringFeature.log("Registering fixed hints: " + constantHints);
+		SpringFeature.log("> Registering fixed hints: " + constantHints);
 		for (HintDeclaration ch : constantHints) {
 			if (!isHintValidForCurrentMode(ch)) {
 				continue;
@@ -189,13 +189,16 @@ public class ResourcesHandler {
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 			for (ProxyDescriptor pd: proxyDescriptors) {
+				SpringFeature.log("Registering proxy descriptor: "+pd);
 				dynamicProxiesHandler.addProxy(pd);
 			}
 			List<org.springframework.graalvm.type.ResourcesDescriptor> resourcesDescriptors = ch.getResourcesDescriptors();
 			for (org.springframework.graalvm.type.ResourcesDescriptor rd: resourcesDescriptors) {
+				SpringFeature.log("Registering resource descriptor: "+rd);
 				registerResourcesDescriptor(rd);
 			}
 		}
+		SpringFeature.log("< Registering fixed hints");
 	}
 	
 	private void handleConstantInitializationHints() {

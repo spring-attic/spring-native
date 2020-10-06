@@ -21,9 +21,9 @@ import org.springframework.graalvm.extension.ResourcesInfo;
 @ResourcesInfo(patterns= {
 	"org/springframework/http/mime.types",
 	"org/apache/catalina/startup/MimeTypeMappings.properties",
-	"static/.*",
-	"templates/.*",
-	"META-INF/resources/webjars/.*"
+	"^static/.*",
+	"^templates/.*",
+	"^META-INF/resources/webjars/.*"
 })
 //TODO deletable once confirmed tomcat version will contain these from now on (also see WebFluxHints)
 @ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)

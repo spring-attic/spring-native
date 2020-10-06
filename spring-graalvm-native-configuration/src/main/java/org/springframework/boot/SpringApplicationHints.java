@@ -38,6 +38,8 @@ import org.springframework.graalvm.type.AccessBits;
 			"banner.txt",
 			"META-INF/spring.components",
 			"application.*.yml",
+			"^git.properties",
+			"^META-INF/build-info.properties",
 			"application.*.properties",
 			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
 			"META-INF/services/.*",
@@ -46,7 +48,10 @@ import org.springframework.graalvm.type.AccessBits;
 		    "org/springframework/boot/logging/.*.xml",
 		    "logging.properties",
 		    "org/springframework/boot/logging/java/logging.properties"
-			})
+			}),
+		@ResourcesInfo(patterns = {
+			"messages/messages"	
+			},isBundle = true)
 	},
 	typeInfos = { 
 		@TypeInfo(types = {

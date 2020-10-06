@@ -57,6 +57,15 @@ public class HintDeclaration {
 		}
 		sb.append(":");
 		sb.append(specificTypes);
+		if (resourceDescriptors!=null && !resourceDescriptors.isEmpty()) {
+			sb.append(":resDes=").append(resourceDescriptors);
+		}
+		if (initializationDescriptors!=null && !initializationDescriptors.isEmpty()) {
+			sb.append(":initDes=").append(initializationDescriptors);
+		}
+		if (proxyDescriptor!=null && !proxyDescriptor.isEmpty()) {
+			sb.append(":proxyDes=").append(proxyDescriptor);
+		}
 		return sb.toString();
 	}
 

@@ -689,7 +689,7 @@ public class TypeSystem {
 				} else {
 					for (HintDeclaration hint: proposedhint.getValue()) {
 						if (hint.applyToFunctional() || ConfigOptions.getMode()!=Mode.FUNCTIONAL) {
-							System.out.println("Including hint not targeting config (trigger="+keytype+"): "+hint);
+							SpringFeature.log("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
 							activeDefaultHints.add(hint);
 						}
 					}

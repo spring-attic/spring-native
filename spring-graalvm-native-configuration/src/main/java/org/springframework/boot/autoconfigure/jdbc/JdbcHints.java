@@ -51,7 +51,7 @@ import org.springframework.jdbc.support.JdbcAccessor;
 		),
 	@TypeInfo(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
 @NativeImageHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
-		@ResourcesInfo(patterns = {"schema.sql"})
+		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
 })
 public class JdbcHints implements NativeImageConfiguration {
 	@Override
