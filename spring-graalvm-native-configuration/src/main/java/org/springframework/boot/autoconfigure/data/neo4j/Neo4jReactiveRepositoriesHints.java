@@ -30,8 +30,8 @@ import org.springframework.graalvm.extension.TypeInfo;
 		UUIDStringGenerator.class
 	},
 		typeNames = {
-			"org.springframework.data.neo4j.repository.support.SimpleQueryByExampleExecutor",
-			"org.springframework.data.neo4j.repository.support.SimpleReactiveQueryByExampleExecutor",
+			"org.springframework.data.neo4j.repository.query.SimpleQueryByExampleExecutor",
+			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
 
 			"org.springframework.data.neo4j.core.schema.GeneratedValue$InternalIdGenerator",
 			"org.springframework.data.neo4j.core.schema.GeneratedValue$UUIDGenerator"
