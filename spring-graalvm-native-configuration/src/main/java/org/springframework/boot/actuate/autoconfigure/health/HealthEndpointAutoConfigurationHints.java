@@ -16,6 +16,7 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.springframework.boot.actuate.health.CompositeHealth;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -85,6 +86,6 @@ import org.springframework.graalvm.type.AccessBits;
 		types = HealthEndpoint.class,
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
-})
+,@TypeInfo(types=Health.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
 public class HealthEndpointAutoConfigurationHints implements NativeImageConfiguration {
 }
