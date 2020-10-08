@@ -17,6 +17,7 @@
 package org.springframework.graalvm.domain.reflect;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -158,6 +159,12 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		flags.add(f);
 	}
 	
+	public void setFlags(Set<Flag> flags) {
+		for (Flag flag: flags) {
+			this.setFlag(flag);
+		}
+	}
+	
 	public void unsetFlag(Flag f) {
 		if (flags == null) {
 			return;
@@ -172,11 +179,23 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		methods.add(methodDescriptor);
 	}
 
+	private void addMethodDescriptors(List<MethodDescriptor> methodDescriptors) {
+		for (MethodDescriptor md: methodDescriptors) {
+			addMethodDescriptor(md);
+		}
+	}
+
 	public void addFieldDescriptor(FieldDescriptor fieldDescriptor) {
 		if (fields == null) {
 			fields = new ArrayList<>();
 		}
 		fields.add(fieldDescriptor);
+	}
+	
+	private void addFieldDescriptors(List<FieldDescriptor> fieldDescriptors) {
+		for (FieldDescriptor fieldDescriptor: fieldDescriptors) {
+			addFieldDescriptor(fieldDescriptor);
+		}
 	}
 
 	/**
@@ -280,5 +299,25 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		sb.append("}");
 		return sb.toString();
 	}
+
+	public ClassDescriptor subtract(ClassDescriptor toSubtract) {
+		Set<Flag> resultFlags = new HashSet<>();
+		resultFlags.addAll(this.getFlags());
+		resultFlags.removeAll(toSubtract.getFlags());
+
+		List<MethodDescriptor> resultMethods = new ArrayList<>();
+		resultMethods.addAll(this.getMethods());
+		resultMethods.removeAll(toSubtract.getMethods());
+		
+		List<FieldDescriptor> resultFields = new ArrayList<>();
+		resultFields.addAll(this.getFields());
+		resultFields.removeAll(toSubtract.getFields());
+		ClassDescriptor result = ClassDescriptor.of(this.getName());
+		result.setFlags(resultFlags);
+		result.addMethodDescriptors(resultMethods);
+		result.addFieldDescriptors(resultFields);
+		return result;
+	}
+
 
 }
