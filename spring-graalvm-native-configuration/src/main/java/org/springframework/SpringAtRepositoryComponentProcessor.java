@@ -16,12 +16,16 @@
 package org.springframework;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageContext;
+import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.graalvm.type.Field;
 import org.springframework.graalvm.type.Method;
 import org.springframework.graalvm.type.Type;
 
@@ -63,6 +67,31 @@ import org.springframework.graalvm.type.Type;
 //            "allDeclaredClasses": true
 //    },
 
+//{"name":"org.springframework.samples.petclinic.owner.Pet","allDeclaredConstructors":true,"allPublicMethods":true},
+// from: PetRepository:  Pet findById(int id) throws DataAccessException;
+
+//{"name":"org.springframework.samples.petclinic.owner.PetType","allDeclaredConstructors":true,"allDeclaredMethods":true},
+// from: JdbcPetRepositoryImpl: public List<PetType> findPetTypes() throws DataAccessException {
+// from: PetRepository:  List<PetType> findPetTypes() throws DataAccessException;
+
+//{"name":"org.springframework.samples.petclinic.vet.Vet","allDeclaredConstructors":true,"allPublicMethods":true},
+// from: VetRepository:  Collection<Vet> findAll() throws DataAccessException;
+
+//{"name":"org.springframework.samples.petclinic.vet.Vets","allDeclaredMethods":true},
+// from: plural of Vets Repository...
+
+//{"name":"org.springframework.samples.petclinic.vet.Specialty","allDeclaredConstructors":true,"allDeclaredMethods":true},
+// public class Specialty extends NamedEntity implements Serializable {
+// from: public class Vet extends Person { private Set<Specialty> specialties;
+
+//{"name":"org.springframework.samples.petclinic.visit.Visit","allDeclaredConstructors":true,"allPublicMethods":true},
+// from: VisitRepository: void save(Visit visit) throws DataAccessException;, List<Visit> findByPetId(Integer petId);
+
+
+//{"name":"org.springframework.samples.petclinic.owner.PetTypeFormatter","allDeclaredConstructors":true},
+// from: @Component public class PetTypeFormatter implements Formatter<PetType> {
+
+
 /**
  * Basic spring.components entry processor for classes marked @Repository.
  * 
@@ -70,16 +99,19 @@ import org.springframework.graalvm.type.Type;
  * @author Christoph Strobl
  */ 
 public class SpringAtRepositoryComponentProcessor implements ComponentProcessor {
+
 	private static final String LOG_PREFIX = "SARCP: ";
-
-	private static String repositoryName;
-	private static String queryAnnotationName;
-
+	
+	private static boolean ACTIVE = System.getProperty(ConfigOptions.ENABLE_AT_REPOSITORY_PROCESSING,"true").equalsIgnoreCase("true");
+	
 	@Override
 	public boolean handle(NativeImageContext imageContext, String key, List<String> values) {
+		if (!ACTIVE) {
+			return false;
+		}
 		Type resolvedKey = imageContext.getTypeSystem().resolveDotted(key);
 		if (resolvedKey.hasAnnotationInHierarchy("Lorg/springframework/stereotype/Repository;")) {
-			imageContext.log(LOG_PREFIX+" handling @Repository "+key);
+			imageContext.log(LOG_PREFIX+"handling @Repository "+key);
 			return true;
 		}
 		return false;
@@ -89,27 +121,97 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	public void process(NativeImageContext imageContext, String key, List<String> values) {
 		try {
 			Type repositoryType = imageContext.getTypeSystem().resolveDotted(key);
-			List<Method> publicRepositoryMethods = repositoryType.getMethods(m->m.isPublic());
-			// Assumption... the return values of these need reflective access... this is likely too broad
-			for (Method publicRepositoryMethod: publicRepositoryMethods) {
-				Type returnType = publicRepositoryMethod.getReturnType();
-				if (returnType != null) {
-					registerDomainType(returnType, imageContext);
-				}
-			}
-			imageContext.log(LOG_PREFIX+" registering repository type (and its hierarchy): "+repositoryType);
-			imageContext.addReflectiveAccessHierarchy(repositoryType, AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS|AccessBits.DECLARED_FIELDS);
-			registerRepositoryProxy(imageContext, repositoryType);
+			Set<String> processed = new HashSet<>(); 
+			processRepositoryType(repositoryType, imageContext, processed);
+			registerRepositoryProxy(imageContext, repositoryType, processed);
 		} catch (Throwable t) {
 			imageContext.log(LOG_PREFIX+"WARNING: Problem with SpringAtRepositoryComponentProcessor: " + t.getMessage());
+			t.printStackTrace();
 		}
 	}
 	
-	public void registerRepositoryProxy(NativeImageContext imageContext, Type repositoryType) {
+	public void processRepositoryType(Type repositoryType, NativeImageContext imageContext, Set<String> processed) {
+		Type[] repositoryInterfaces = repositoryType.getInterfaces(); // For example: JdbcOwnerRepositoryImpl implements OwnerRepository
+		for (Type repositoryInterface: repositoryInterfaces) {
+			addAllTypesFromSignaturesInRepositoryInterface(repositoryInterface, imageContext, processed);
+		}
+		imageContext.log(String.format(LOG_PREFIX+"%s reflective access added - adding this repository type and its hierarchy",repositoryType.getDottedName()));
+		imageContext.addReflectiveAccessHierarchy(repositoryType, AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS|AccessBits.DECLARED_FIELDS);
+	}
+
+	public void addAllTypesFromSignaturesInRepositoryInterface(Type repositoryInterface,
+			NativeImageContext imageContext, Set<String> processed) {
+		List<Method> publicRepositoryMethods = repositoryInterface.getMethods(m -> m.isPublic());
+		for (Method publicRepositoryMethod : publicRepositoryMethods) {
+			Set<Type> types = publicRepositoryMethod.getSignatureTypes(true);
+			for (Type type : types) {
+				if (type!=null && processed.add(type.getDottedName())) {
+					if (inSimilarPackage(type, repositoryInterface)) {
+						imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - due to method %s.%s",
+								type.getDottedName(), repositoryInterface.getDottedName(), publicRepositoryMethod.toString()));
+						// Note access here is PUBLIC methods. For a type like Owner that extends Person this ensures the public
+						// methods on Person (that access the name components) are visible. I believe if using DECLARED methods
+						// we would have to add reflective access for Owner and Person - with PUBLIC we can just do Owner
+						imageContext.addReflectiveAccess(type.getDottedName(), Flag.allPublicMethods, Flag.allDeclaredConstructors);
+						processPossibleDomainType(type, imageContext, processed);
+					}
+				}
+			}
+		}
+		if (repositoryInterface.getName().endsWith("Repository")) {
+			// Look for a plural form of the repository domain type
+			String pluralName = repositoryInterface.getDottedName();
+			pluralName = pluralName.substring(0, pluralName.length() - "Repository".length());
+			pluralName = pluralName + "s"; // Vet > Vets
+			if (processed.add(pluralName)) {
+				Type resolvedPluralType = imageContext.getTypeSystem().resolveDotted(pluralName, true);
+				if (resolvedPluralType != null) {
+					imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - found as a plural form of %s",
+							pluralName, repositoryInterface.getDottedName()));
+					imageContext.addReflectiveAccess(pluralName, Flag.allPublicMethods, Flag.allDeclaredConstructors);
+				} else {
+					imageContext.log(String.format(LOG_PREFIX + "%s PLURAL TYPE NOT FOUND", pluralName));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Within a domain type there may be other types that need access. For example in class <tt>Pet</tt> there may be a <tt>Set&lt;Visit&gt; visits</tt>
+	 */
+	private void processPossibleDomainType(Type type, NativeImageContext imageContext, Set<String> processed) {
+		List<Field> fields = type.getFields();
+		for (Field field: fields) {
+			List<String> fieldTypes = field.getTypesInSignature();
+			for (String fieldType: fieldTypes) {
+				if (processed.add(fieldType)) {
+					Type resolvedFieldType = imageContext.getTypeSystem().resolveDotted(fieldType,true);
+					if (resolvedFieldType != null && inSimilarPackage(resolvedFieldType, type)) {
+						imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - due to field %s.%s",
+								resolvedFieldType.getDottedName(),type.getDottedName(),field.getName()));
+						imageContext.addReflectiveAccess(resolvedFieldType.getDottedName(), Flag.allPublicMethods,
+								Flag.allDeclaredConstructors);
+						// TODO should recurse through domain object graph? processPossibleDomainType(resolvedFieldType, imageContext);
+					}
+				}	
+			}
+		}
+	}
+
+	private boolean inSimilarPackage(Type type, Type repositoryInterface) {
+		String repoPackage = repositoryInterface.getPackageName();
+		String typePackage = type.getPackageName();
+		if (repoPackage.startsWith(typePackage) || typePackage.startsWith(repoPackage)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void registerRepositoryProxy(NativeImageContext imageContext, Type repositoryType, Set<String> processed) {
 		List<String> repositoryInterfacesStrings = repositoryType.getInterfacesStrings();
 		if (repositoryInterfacesStrings.size()!=0) {
 			List<String> repositoryInterfaces = new ArrayList<>();
-			imageContext.log(LOG_PREFIX+" creating proxy for repository "+repositoryType.getDottedName());
+			imageContext.log(LOG_PREFIX+repositoryType.getDottedName()+" is getting a proxy created");
 			for (String s: repositoryInterfacesStrings) {
 				repositoryInterfaces.add(s.replace("/", "."));
 			}
@@ -120,12 +222,6 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 		} else {
 			imageContext.log(LOG_PREFIX+"WARNING: unable to create proxy for repository "+repositoryType.getDottedName()+" because it has no interfaces");
 		}
-	}
-
-	private void registerDomainType(Type domainType, NativeImageContext imageContext) {
-		imageContext.log(String.format(LOG_PREFIX+"registering reflective access for domain type %s", domainType.getDottedName()));
-		imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allDeclaredMethods,
-				Flag.allDeclaredConstructors, Flag.allDeclaredFields);
 	}
 
 	@Override

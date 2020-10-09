@@ -1571,6 +1571,9 @@ public class ResourcesHandler {
 			RequestedConfigurationManager methodRCM = new RequestedConfigurationManager();
 			Map<Type, ReachedBy> additionalFollows = new HashMap<>();
 			boolean passesTests = true;
+			
+			// boolean methodAnnotatedAtConfigurationProperties = atBeanMethod.hasAnnotation(Type.AtConfigurationProperties, false);
+			
 			Type returnType = atBeanMethod.getReturnType();
 			if (returnType == null) {
 				// null means that type is not on the classpath so skip further analysis of this method...

@@ -59,6 +59,8 @@ public abstract class ConfigOptions {
 	// Temporary, for exploration
 	private final static boolean SKIP_AT_BEAN_HINT_PROCESSING;
 	private final static boolean SKIP_AT_BEAN_SIGNATURE_TYPES;
+
+	public static final String ENABLE_AT_REPOSITORY_PROCESSING = "spring.native.enable-at-repository-processing";
 	
 	private static Mode MODE; // Default is 'reflection'
 

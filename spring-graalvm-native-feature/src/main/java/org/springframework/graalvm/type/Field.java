@@ -68,7 +68,7 @@ public class Field {
 			if (s.endsWith(";")) {
 				return Collections.singletonList(Type.fromLdescriptorToSlashed(s));
 			} else {
-				return Collections.singletonList(null);
+				return Collections.emptyList();
 			}
 		} else {
 			// Pull out all the types from the generic signature
