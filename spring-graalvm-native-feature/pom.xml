@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-tree</artifactId>
-			<version>9.0</version>
+			<version>7.1</version>
 			<optional>true</optional>
 		</dependency>
 
