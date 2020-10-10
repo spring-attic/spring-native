@@ -262,6 +262,22 @@ public class TypeTests {
 	
 	
 	@Test
+	public void parameterCount() {
+		Type t = typeSystem.resolveName(TestMethods.class.getName());
+
+		// public void one(String a) {}
+		Method one = t.getMethod("one").get(0);
+		assertEquals(1,one.getParameterCount());
+		assertEquals("java.lang.String", one.getParameterTypes().get(0).getDottedName());
+
+		// public void two(java.io.Serializable a,String b) {}
+		Method two = t.getMethod("two").get(0);
+		assertEquals(2,two.getParameterCount());
+		assertEquals("java.io.Serializable", two.getParameterTypes().get(0).getDottedName());
+		assertEquals("java.lang.String", two.getParameterTypes().get(1).getDottedName());
+	}
+	
+	@Test
 	public void testMethodsToArray() {
 		Type t = typeSystem.resolveName(TestMethods.class.getName());
 		Method one = t.getMethod("one").get(0);

@@ -271,7 +271,7 @@ public class Type {
 		List<String> types = null;
 
 		public TypeCollector() {
-			super(Opcodes.ASM7);
+			super(Opcodes.ASM9);
 		}
 
 		@Override
@@ -2134,7 +2134,7 @@ public class Type {
 		private List<String> typeParams = new ArrayList<>();
 
 		public TypeParamFinder(String supertype) {
-			super(Opcodes.ASM7);
+			super(Opcodes.ASM9);
 			this.supertype = supertype.replace(".", "/");
 		}
 

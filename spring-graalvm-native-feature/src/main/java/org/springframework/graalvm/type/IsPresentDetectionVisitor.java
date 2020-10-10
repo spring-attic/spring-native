@@ -52,7 +52,7 @@ class IsPresentDetectionVisitor extends ClassVisitor {
 	 */
 	public static List<String> run(InputStream inputStream) {
 		try {
-			IsPresentDetectionVisitor node = new IsPresentDetectionVisitor(Opcodes.ASM7);
+			IsPresentDetectionVisitor node = new IsPresentDetectionVisitor(Opcodes.ASM9);
 			ClassReader reader = new ClassReader(inputStream);
 			reader.accept(node, ClassReader.SKIP_DEBUG);
 			return (node.containsIsPresentChecksInStaticInitializer ? node.typesCheckedInIsPresentCalls : null);

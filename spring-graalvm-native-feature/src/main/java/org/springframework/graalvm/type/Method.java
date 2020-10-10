@@ -33,6 +33,8 @@ import org.springframework.graalvm.support.SpringFeature;
 
 public class Method {
 	
+	private static org.objectweb.asm.Type[] NONE = new org.objectweb.asm.Type[0];
+
 	private MethodNode mn;
 
 	private TypeSystem typeSystem;
@@ -40,6 +42,8 @@ public class Method {
 	private boolean unresolvableParams = false;
 
 	private List<Type> resolvedParameters;
+
+	private org.objectweb.asm.Type[] internalParameterTypes = null;
 
 	public Method(MethodNode mn, TypeSystem ts) {
 		this.mn = mn;
@@ -122,7 +126,7 @@ public class Method {
 		private boolean captureTypes = false;
 		
 		public TypesFromSignatureCollector(boolean returnTypeOnly) {
-			super(Opcodes.ASM7);
+			super(Opcodes.ASM9);
 			this.returnTypeOnly = returnTypeOnly;
 			if (!returnTypeOnly) {
 				this.captureTypes=true;
@@ -230,10 +234,21 @@ public class Method {
 		return returnType;
 	}
 	
+	
+	private org.objectweb.asm.Type[] resolveInternalParameterTypes() {
+		if (internalParameterTypes == null) {
+			internalParameterTypes = org.objectweb.asm.Type.getArgumentTypes(mn.desc);
+			if (internalParameterTypes == null) {
+				internalParameterTypes = NONE;
+			}
+		}
+		return internalParameterTypes;
+	}
+	
 	public List<Type> getParameterTypes() {
 		if (resolvedParameters == null) {
 			List<Type> results = null;
-			org.objectweb.asm.Type[] parameterTypes = org.objectweb.asm.Type.getArgumentTypes(mn.desc);
+			org.objectweb.asm.Type[] parameterTypes = resolveInternalParameterTypes();
 			if (parameterTypes != null) {
 				for (org.objectweb.asm.Type t : parameterTypes) {
 					if (results == null) {
@@ -287,7 +302,7 @@ public class Method {
 	}
 
 	public int getParameterCount() {
-		return mn.parameters==null?0:mn.parameters.size();
+		return resolveInternalParameterTypes().length;
 	}
 
 	public boolean hasAliasForAnnotation() {
