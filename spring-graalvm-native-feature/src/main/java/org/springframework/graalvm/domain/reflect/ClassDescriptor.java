@@ -302,20 +302,38 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 
 	public ClassDescriptor subtract(ClassDescriptor toSubtract) {
 		Set<Flag> resultFlags = new HashSet<>();
-		resultFlags.addAll(this.getFlags());
-		resultFlags.removeAll(toSubtract.getFlags());
+		if (this.getFlags()!=null) {
+			resultFlags.addAll(this.getFlags());
+		}
+		if (toSubtract.getFlags()!=null) {
+			resultFlags.removeAll(toSubtract.getFlags());
+		}
 
 		List<MethodDescriptor> resultMethods = new ArrayList<>();
-		resultMethods.addAll(this.getMethods());
-		resultMethods.removeAll(toSubtract.getMethods());
+		if (this.getMethods()!=null) {
+			resultMethods.addAll(this.getMethods());
+		}
+		if (toSubtract.getMethods()!=null) {
+			resultMethods.removeAll(toSubtract.getMethods());
+		}
 		
 		List<FieldDescriptor> resultFields = new ArrayList<>();
-		resultFields.addAll(this.getFields());
-		resultFields.removeAll(toSubtract.getFields());
+		if (this.getFields()!=null) {
+			resultFields.addAll(this.getFields());
+		}
+		if (toSubtract.getFields()!=null) {
+			resultFields.removeAll(toSubtract.getFields());
+		}
 		ClassDescriptor result = ClassDescriptor.of(this.getName());
-		result.setFlags(resultFlags);
-		result.addMethodDescriptors(resultMethods);
-		result.addFieldDescriptors(resultFields);
+		if (!resultFlags.isEmpty()) {
+			result.setFlags(resultFlags);
+		}
+		if (!resultMethods.isEmpty()) {
+			result.addMethodDescriptors(resultMethods);
+		}
+		if (!resultFields.isEmpty()) {
+			result.addFieldDescriptors(resultFields);
+		}
 		return result;
 	}
 
