@@ -47,8 +47,8 @@ import org.springframework.jdbc.support.JdbcAccessor;
 
 @NativeImageHint(trigger=Hikari.class, typeInfos= {
 		@TypeInfo(types=DatabaseMetaData.class,methods= {@MethodInfo(name="getDatabaseProductName")}),
-		@TypeInfo(types= {HikariDataSource.class, IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}
-		),
+		@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
+		@TypeInfo(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
 	@TypeInfo(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
 @NativeImageHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
 		@ResourcesInfo(patterns = {"schema.sql","data.sql"})

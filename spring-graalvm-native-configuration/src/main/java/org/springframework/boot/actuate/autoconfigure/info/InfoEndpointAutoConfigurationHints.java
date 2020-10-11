@@ -15,13 +15,7 @@
  */
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
-import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
 
 // TODO tests or not point keeping it...
 // Hitting /info endpoint

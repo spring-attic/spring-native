@@ -60,6 +60,12 @@ import org.springframework.graalvm.type.AccessBits;
 		@TypeInfo(types= {ChannelInboundHandlerAdapter.class,ChannelHandlerAdapter.class,
 				ChannelHandler.class,ChannelInboundHandler.class},
 				typeNames = {
+						"io.netty.channel.ChannelInboundInvoker",
+						"io.netty.channel.ChannelOutboundInvoker"
+				},
+				access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(
+				typeNames = {
 						"io.netty.channel.ChannelInitializer",
 						"io.netty.channel.DefaultChannelPipeline$HeadContext",
 						"io.netty.channel.DefaultChannelPipeline$TailContext",
@@ -75,9 +81,6 @@ import org.springframework.graalvm.type.AccessBits;
 						"io.netty.channel.ChannelFutureListener",
 						"io.netty.channel.DefaultChannelPipeline",
 						"io.netty.channel.ChannelPipeline",
-						"io.netty.channel.ChannelInboundInvoker",
-						"io.netty.channel.ChannelOutboundInvoker",
-						"io.netty.channel.ChannelHandler",
 						"io.netty.util.concurrent.GenericFutureListener",
 						"io.netty.bootstrap.ServerBootstrap$1",
 						"io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor"},

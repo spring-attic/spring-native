@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeImageHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class}),
+		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT) })
 public class JacksonHints implements NativeImageConfiguration {
 }

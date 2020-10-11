@@ -37,10 +37,12 @@ import org.springframework.web.servlet.view.InternalResourceView;
 @NativeImageHint(trigger=WebMvcAutoConfiguration.class, 
 	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
 	typeInfos = {
-		@TypeInfo(types= {
+			@TypeInfo(types = {
 				AnnotationConfigServletWebServerApplicationContext.class,
 				ConfigurableWebApplicationContext.class,
 				WebApplicationContext.class,
+			},access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types= {
 				ErrorPage.class,
 				DefaultErrorViewResolver.class,
 				BeanNameViewResolver.class,

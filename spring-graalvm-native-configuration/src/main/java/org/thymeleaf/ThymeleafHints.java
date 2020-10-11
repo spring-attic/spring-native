@@ -31,10 +31,11 @@ import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @NativeImageHint(trigger= ISpringTemplateEngine.class, typeInfos= {
+		@TypeInfo( types = { 
+						AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class, SpringResourceTemplateResolver.class, 
+		}, access=AccessBits.LOAD_AND_CONSTRUCT),
 		@TypeInfo(
 				types= {
-				AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class,
-				SpringResourceTemplateResolver.class,
 				ThymeleafView.class,
 				ThymeleafReactiveView.class
 				}, typeNames= {

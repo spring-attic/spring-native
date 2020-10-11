@@ -48,9 +48,10 @@ import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger= Driver.class, typeInfos= {
-		@TypeInfo(types= {
+		@TypeInfo(types = {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,
 				LoadBalanceConnectionUrl.class,
@@ -72,28 +73,31 @@ import org.springframework.graalvm.extension.TypeInfo;
 				DataConversionException.class,
 				DataReadException.class,
 				DataTruncationException.class,
-				DeadlockTimeoutRollbackMarker.class,
 				FeatureNotAvailableException.class,
 				InvalidConnectionAttributeException.class,
-				NumberOutOfRange.class,
 				OperationCancelledException.class,
 				PasswordExpiredException.class,
 				PropertyNotModifiableException.class,
 				RSAException.class,
 				SSLParamsException.class,
 				StatementIsClosedException.class,
-				StreamingNotifiable.class,
 				UnableToConnectException.class,
 				UnsupportedConnectionStringException.class,
 				WrongArgumentException.class,
+				AsyncSocketFactory.class,
+				NamedPipeSocketFactory.class,
+				SocksProxySocketFactory.class,
+				StandardSocketFactory.class 
+		},access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types= {
+				DeadlockTimeoutRollbackMarker.class,
+				NumberOutOfRange.class,
+				StreamingNotifiable.class,
 				Driver.class,
 				NdbLoadBalanceExceptionChecker.class,
 				StandardLoadBalanceExceptionChecker.class,
 				StandardLogger.class,
-				AsyncSocketFactory.class,
-				NamedPipeSocketFactory.class,
-				SocksProxySocketFactory.class,
-				StandardSocketFactory.class }
+				}
 		),
 }, resourcesInfos = {
 		@ResourcesInfo(patterns = "com/mysql/cj/TlsSettings.properties"),
