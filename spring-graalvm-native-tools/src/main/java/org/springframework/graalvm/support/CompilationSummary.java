@@ -41,6 +41,8 @@ public class CompilationSummary {
 	private List<Compiled> data;
 
 	private CompilationSummary() {
+		this.id = "";
+		this.data = new ArrayList<>();
 	}
 
 	private CompilationSummary(String id, List<Compiled> data) {
@@ -64,6 +66,9 @@ public class CompilationSummary {
 	 * @return a CompilationSummary containing parses of all the 'Compiled...' lines
 	 */
 	public static CompilationSummary load(String id, String file) {
+		if (file.equals("-")) {
+			return new CompilationSummary();
+		}
 		try {
 			List<Compiled> data = new ArrayList<>();
 			List<String> lines = Files.readAllLines(Paths.get(new File(file).toURI()));

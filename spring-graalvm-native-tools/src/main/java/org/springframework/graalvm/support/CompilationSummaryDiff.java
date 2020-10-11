@@ -55,11 +55,6 @@ public class CompilationSummaryDiff {
 		}
 		int idxA = args[0].indexOf(":");
 		int idxB = args[1].indexOf(":");
-		if (idxA == -1 || idxB == -1) {
-			System.out.println("Usage: CompilationSummaryDiff <id>:<fileLocation> <id>:<fileLocation> [htmlDiffFile]");
-			System.out.println("e.g. CompilationSummaryDiff agent:/path/to/output.txt hybrid:/path/to/output.txt diff.html");
-			System.exit(0);
-		}
 		String fileA,idA,fileB,idB;
 		if (idxA == -1) {
 			fileA = args[0];
@@ -181,9 +176,12 @@ public class CompilationSummaryDiff {
 		String fname = null;
 		if (args.length<3) {
 			StringBuilder s = new StringBuilder();
-			int i = idA.lastIndexOf("/");
-			s.append(i==-1?idA:idA.substring(i+1));
-			s.append("-");
+			int i;
+			if (!idA.equals("-")) {
+				i = idA.lastIndexOf("/");
+				s.append(i==-1?idA:idA.substring(i+1));
+				s.append("-");
+			}
 			i = idB.lastIndexOf("/");
 			s.append(i==-1?idB:idB.substring(i+1));
 			s.append(".html");
