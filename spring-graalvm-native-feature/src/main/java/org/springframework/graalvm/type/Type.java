@@ -91,6 +91,7 @@ public class Type {
 	public final static String ApplicationListener = "Lorg/springframework/context/ApplicationListener;";
 	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
+	public final static String EnvironmentPostProcessor = "Lorg/springframework/boot/env/EnvironmentPostProcessor";
 
 	public final static Type MISSING = new Type(null, null, 0);
 
@@ -1407,6 +1408,10 @@ public class Type {
 		}
 	}
 
+	private boolean isEnvironmentPostProcessor() {
+		return implementsInterface(fromLdescriptorToSlashed(EnvironmentPostProcessor),true);
+	}
+
 	public boolean isBeanFactoryPostProcessor() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(BeanFactoryPostProcessor));
@@ -1969,6 +1974,8 @@ public class Type {
 			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
+		} else if (t.isEnvironmentPostProcessor()) {
+			return AccessBits.LOAD_AND_CONSTRUCT;
 		} else {
 			return AccessBits.FULL_REFLECTION;//-AccessBits.DECLARED_FIELDS;
 		}

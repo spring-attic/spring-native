@@ -33,9 +33,9 @@ import org.springframework.graalvm.type.AccessBits;
 	typeInfos = {
 		@TypeInfo(types= {
 			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
-			AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class,
 			AbstractAdvisingBeanPostProcessor.class,
+			AbstractAutoProxyCreator.class, AbstractAdvisorAutoProxyCreator.class,
 			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class,
-			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
+			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
 },applyToFunctional=false)
 public class AopHints implements NativeImageConfiguration { }

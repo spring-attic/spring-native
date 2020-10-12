@@ -41,11 +41,14 @@ import org.springframework.graalvm.domain.reflect.Flag;
 import org.springframework.graalvm.domain.reflect.JsonMarshaller;
 import org.springframework.graalvm.domain.reflect.MethodDescriptor;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
+import org.springframework.graalvm.extension.AccessChecker;
 import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.AccessDescriptor;
 import org.springframework.graalvm.type.Type;
+import org.springframework.graalvm.type.TypeSystem;
 
 import com.oracle.svm.core.hub.ClassForNameSupport;
+import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
 import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
 import com.oracle.svm.hosted.ImageClassLoader;
 import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
@@ -84,6 +87,8 @@ public class ReflectionHandler {
 	}
 	
 	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
+
+	private TypeSystem ts;
 
 	public void includeInDump(String typename, String[][] methodsAndConstructors, Flag[] flags) {
 		if (!ConfigOptions.shouldDumpConfig()) {
@@ -144,6 +149,7 @@ public class ReflectionHandler {
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
 		cl = access.getImageClassLoader();
 		rra = new ReflectionRegistryAdapter(rrs, cl);
+		ts = TypeSystem.get(cl.getClasspath());
 		getConstantData();
 
 		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
@@ -156,6 +162,7 @@ public class ReflectionHandler {
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
 		cl = access.getImageClassLoader();
 		rra = new ReflectionRegistryAdapter(rrs, cl);
+		ts = TypeSystem.get(cl.getClasspath());
 		getConstantData();
 	}
 
@@ -163,6 +170,7 @@ public class ReflectionHandler {
 		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
 		cl = access.getImageClassLoader();
+		ts = TypeSystem.get(cl.getClasspath());
 		rra = new ReflectionRegistryAdapter(rrs, cl);
 		getConstantData();
 
@@ -186,6 +194,7 @@ public class ReflectionHandler {
 		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
 		cl = access.getImageClassLoader();
+		ts = TypeSystem.get(cl.getClasspath());
 		rra = new ReflectionRegistryAdapter(rrs, cl);
 		ReflectionDescriptor reflectionDescriptor = getConstantData();
 
@@ -380,6 +389,14 @@ public class ReflectionHandler {
 	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
+		}
+		List<AccessChecker> accessCheckers = ts.getAccessCheckers();
+		for (AccessChecker accessChecker: accessCheckers) {
+			boolean isOK = accessChecker.check(ts, typename);
+			if (!isOK) {
+				SpringFeature.log(typename+" discarded due to access check by "+accessChecker.getClass().getName());
+				return null;
+			}
 		}
 		includeInDump(typename, methodsAndConstructors, flags);
 		// This can return null if, for example, the supertype of the specified type is

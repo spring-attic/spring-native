@@ -58,6 +58,7 @@ import org.springframework.graalvm.domain.reflect.JsonMarshaller;
 import org.springframework.graalvm.domain.reflect.ReflectionDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
 import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.graalvm.extension.AccessChecker;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
 import org.springframework.graalvm.support.ConfigOptions;
@@ -1022,6 +1023,11 @@ public class TypeSystem {
 	public List<ComponentProcessor> getComponentProcessors() {
 		ensureSpringConfigurationDiscovered();
 		return hintLocator.getComponentProcessors();
+	}
+
+	public List<AccessChecker> getAccessCheckers() {
+		ensureSpringConfigurationDiscovered();
+		return hintLocator.getAccessVerifiers();
 	}
 	
 	public List<SpringFactoriesProcessor> getSpringFactoryProcessors() {

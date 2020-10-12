@@ -23,9 +23,11 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(trigger = EnableConfigurationPropertiesRegistrar.class, typeInfos = {
+		@TypeInfo(types = {
+				BoundConfigurationProperties.class,
+				ConfigurationPropertiesBindingPostProcessor.class			
+		},access=AccessBits.LOAD_AND_CONSTRUCT),
 	@TypeInfo(types= {
-			BoundConfigurationProperties.class,
-			ConfigurationPropertiesBindingPostProcessor.class,
 //			ConfigurationPropertiesBinder.Factory.class,
 //			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,

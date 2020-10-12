@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.springframework.graalvm.extension.AccessChecker;
 import org.springframework.graalvm.extension.ComponentProcessor;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.SpringFactoriesProcessor;
@@ -37,6 +38,8 @@ public class SpringConfiguration {
 	private final static Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
 	
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
+	
+	private final static List<AccessChecker> accessVerifiers = new ArrayList<>();
 	
 	private final static List<ComponentProcessor> processors = new ArrayList<>();
 
@@ -89,6 +92,12 @@ public class SpringConfiguration {
 			SpringFeature.log("SpringConfiguration: found spring.factories processor: "+springFactoryProcessor.getClass().getName());
 			springFactoriesProcessors.add(springFactoryProcessor);
 		}
+		SpringFeature.log("Discovering access verifiers...");
+		ServiceLoader<AccessChecker> avs = ServiceLoader.load(AccessChecker.class);
+		for (AccessChecker av: avs) {
+			SpringFeature.log("SpringConfiguration: found access verifier: "+av.getClass().getName());
+			accessVerifiers.add(av);
+		}
 	}
 
 	static {
@@ -114,6 +123,10 @@ public class SpringConfiguration {
 	
 	public List<ComponentProcessor> getComponentProcessors() {
 		return processors;
+	}
+	
+	public List<AccessChecker> getAccessVerifiers() {
+		return accessVerifiers;
 	}
 	
 	public List<SpringFactoriesProcessor> getSpringFactoriesProcessors() {

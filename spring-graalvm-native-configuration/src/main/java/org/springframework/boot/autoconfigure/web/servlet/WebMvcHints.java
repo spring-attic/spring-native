@@ -60,7 +60,7 @@ import org.springframework.web.servlet.view.InternalResourceView;
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
 @NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
-		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class})
+		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class WebMvcHints implements NativeImageConfiguration {
 }

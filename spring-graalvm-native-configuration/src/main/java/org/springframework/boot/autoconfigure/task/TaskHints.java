@@ -22,7 +22,8 @@ import org.springframework.graalvm.type.AccessBits;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @NativeImageHint(trigger = TaskExecutionAutoConfiguration.class, typeInfos = {
-		@TypeInfo(types = { ThreadPoolTaskExecutor.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS
-				| AccessBits.DECLARED_CONSTRUCTORS) }, abortIfTypesMissing = true)
+		@TypeInfo(types = { ThreadPoolTaskExecutor.class },
+			access = AccessBits.CLASS //| AccessBits.DECLARED_METHODS
+			| AccessBits.DECLARED_CONSTRUCTORS) }, abortIfTypesMissing = true)
 public class TaskHints implements NativeImageConfiguration {
 }
