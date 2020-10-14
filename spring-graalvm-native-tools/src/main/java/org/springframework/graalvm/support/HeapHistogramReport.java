@@ -26,39 +26,36 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.springframework.graalvm.support.MethodHistogram.Datum;
-
+import org.springframework.graalvm.support.Histogram.Datum;
 
 /**
- * Read a method histogram report and produce navigable tree for total code sizes.
- * 
  * @author Andy Clement
  */
-public class MethodHistogramReport {
+public class HeapHistogramReport {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
 		if (args == null || args.length < 1) {
-			System.out.println("Usage: MethodHistogramReport <inputDataLocation>");
-			System.out.println("(It will process data captured via -H:+PrintMethodHistogram");
+			System.out.println("Usage: HeapHistogramReport <inputDataLocation>");
+			System.out.println("e.g. HistogramDiff agent:/path/to/output.txt hybrid:/path/to/output.txt diff.html");
 			System.exit(0);
 		}
-		MethodHistogram histogram = MethodHistogram.load(args[0]);
-		System.out.println("Loaded "+histogram.getData().size()+" entries");
-		for (int i=0;i<10;i++) {
-			System.out.println(histogram.getData().get(i));
-		}
-		
+		Histogram a = Histogram.load("", args[0]);
+		System.out.println(a.getData().size() + " entries loaded");
+
 		// Build a simple tree of the package name sections
 		ReportNode root = new ReportNode();
-		for (Datum d: histogram.getData()) {
-			String method = d.getMethod();
-			StringTokenizer st = new StringTokenizer(method, ".");
-			String lastElement = "";
+		for (Datum d : a.getData()) {
+			String typename = d.getClassname();
+			StringTokenizer st = new StringTokenizer(typename, ".");
 			ReportNode currentDepth = root;
 			while (st.hasMoreElements()) {
 				String nameElement = st.nextToken();
@@ -69,108 +66,102 @@ public class MethodHistogramReport {
 					currentDepth = exists;
 				} else {
 					// The leaf nodes have the size set to 'difference' computation
-					ReportNode n = null;
-					if (st.hasMoreTokens()) {
-						n = new ReportNode(nameElement,-1);
-					} else {
-						n = new ReportNode(lastElement+"."+nameElement.replace("<", "&lt;").replace(">", "&gt;")
-								,d.getCodeSize());
-					}
+					ReportNode n = new ReportNode(nameElement, st.hasMoreTokens() ? -1 : d.size);
 					currentDepth.addChild(n);
 					currentDepth = n;
 				}
-				lastElement = nameElement;
 			}
 		}
 
-		
 		// Collapse empty sections
 		collapseCount = 0;
-		collapse(null,root);
-		System.out.println("Collapsed: "+collapseCount);
-		
+		collapse(null, root);
+		System.out.println("Collapsed: " + collapseCount);
+
 		walkGraphComputeSize(root);
-		
+
 		root.sortChildrenBySize();
-		
+
 		StringBuilder html = new StringBuilder();
 		walkGraph(root, html);
-		
-		URI template = MethodHistogramReport.class.getResource("/template-histogram-diff.html").toURI();
-		Map<String, String> env = new HashMap<>(); 
+
+		URI template = HeapHistogramReport.class.getResource("/template-histogram-diff.html").toURI();
+		Map<String, String> env = new HashMap<>();
 		env.put("create", "true");
 		List<String> readAllLines = null;
 		try {
-			readAllLines= Files.readAllLines(Paths.get(template));
+			readAllLines = Files.readAllLines(Paths.get(template));
 		} catch (FileSystemNotFoundException fsnfe) {
 			String[] array = template.toString().split("!");
 			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), env);
-			Path path = fs.getPath(array[1]);	
+			Path path = fs.getPath(array[1]);
 			readAllLines = Files.readAllLines(path);
 		}
-		
 		List<String> lines = new ArrayList<>();
-		for (String l: readAllLines)  {
+		for (String l : readAllLines) {
 			if (l.contains("Histogram Summary difference (output from -H:+PrintHeapHistogram)")) {
-				lines.add(l.replace("Histogram Summary difference (output from -H:+PrintHeapHistogram)", "Method Histogram (-H:+PrintMethodHistogram)"));
+				lines.add(l.replace("Histogram Summary difference (output from -H:+PrintHeapHistogram)",
+						"Heap Histogram (-H:+PrintHeapHistogram)"));
 			} else if (l.contains("TREE-GOES-HERE")) {
-				lines.add(l.replace("TREE-GOES-HERE", ""+html.toString())+"");
+				lines.add(l.replace("TREE-GOES-HERE", "" + html.toString()) + "");
 			} else if (l.contains("HEADER")) {
-				lines.add(l.replace("HEADER",
-						"Method histogram for "+args[0]));
+				lines.add(l.replace("HEADER", "Heap histogram for " + args[0]));
 			} else {
 				lines.add(l);
 			}
 		}
 		String outputLocation = args[0];
 		if (outputLocation.contains("/")) {
-			outputLocation = outputLocation.substring(outputLocation.lastIndexOf("/")+1);
+			outputLocation = outputLocation.substring(outputLocation.lastIndexOf("/") + 1);
 		}
-		outputLocation+=".html";
-		System.out.println("Output html method histogram: "+outputLocation);
+		outputLocation += ".heap.html";
+		System.out.println("Output html heap histogram: " + outputLocation);
 		File outputHTML = new File(outputLocation);
-		Files.write(outputHTML.toPath(),lines);
+		Files.write(outputHTML.toPath(), lines);
 	}
-	
+
 	private static int collapseCount;
 
 	private static void collapse(ReportNode parent, ReportNode node) {
 		List<ReportNode> children = node.getChildren();
-		if (children.size() == 1 && children.get(0).getChildren().size()!=0) {
+		if (children.size() == 1 && children.get(0).getChildren().size() != 0) {
 			ReportNode singleChild = children.get(0);
-			node.setData(node.getData()+"."+singleChild.getData());
+			node.setData(node.getData() + "." + singleChild.getData());
 			node.setChildren(singleChild.getChildren());
 			collapseCount++;
-			collapse(parent,node);
+			collapse(parent, node);
 		} else {
-			for (ReportNode child: children) {
+			for (ReportNode child : children) {
 				collapse(node, child);
 			}
 		}
 	}
+
 	private static void walkGraph(ReportNode node, StringBuilder json) {
 		List<ReportNode> children = node.getChildren();
-		if (node.getData()==null) { // root
+		if (node.getData() == null) { // root
 			json.append("<ul id=\"root\">\n");
-			for (int n=0;n<children.size();n++) {
-				if (n>0) { json.append("\n"); }
-				walkGraph(children.get(n),json);
+			for (int n = 0; n < children.size(); n++) {
+				if (n > 0) {
+					json.append("\n");
+				}
+				walkGraph(children.get(n), json);
 			}
 			json.append("</ul>\n");
 		} else {
-			if (children.size()==0) {
-				json.append("<li>"+node.getData()+" ("+String.format("%,d", node.getSize())+"bytes)</li>");
+			if (children.size() == 0) {
+				json.append("<li>" + node.getData() + " (" + String.format("%,d",node.getSize()) + "bytes)</li>");
 			} else {
-			String label = node.getData()+" ("+String.format("%,d",node.getSize())+" bytes)";//(children.size()!=0?":"+node.totalChildren():"");
-			json.append("<li><span class=\"caret\">"+label+"</span>\n");
-			if (children.size()!=0) {
-				json.append("<ul class=\"nested\"\n");
-				for (int n=0;n<children.size();n++) {
-					walkGraph(children.get(n),json);
+				String label = node.getData() + " (" + String.format("%,d",node.getSize()) + "bytes)";// (children.size()!=0?":"+node.totalChildren():"");
+				json.append("<li><span class=\"caret\">" + label + "</span>\n");
+				if (children.size() != 0) {
+					json.append("<ul class=\"nested\"\n");
+					for (int n = 0; n < children.size(); n++) {
+						walkGraph(children.get(n), json);
+					}
+					json.append("</ul>\n");
 				}
-				json.append("</ul>\n");
-			}
-			json.append("</li>");
+				json.append("</li>");
 			}
 		}
 	}
@@ -178,11 +169,11 @@ public class MethodHistogramReport {
 	private static void walkGraphComputeSize(ReportNode node) {
 		List<ReportNode> children = node.getChildren();
 		int totalSize = 0;
-		for (ReportNode child: children) {
+		for (ReportNode child : children) {
 			walkGraphComputeSize(child);
-			totalSize+= child.getSize();
+			totalSize += child.getSize();
 		}
-		if (node.getSize()==-1) {
+		if (node.getSize() == -1) {
 			node.setSize(totalSize);
 		}
 	}

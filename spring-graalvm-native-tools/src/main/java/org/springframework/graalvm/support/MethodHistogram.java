@@ -69,8 +69,11 @@ public class MethodHistogram {
 			int dCalls = Integer.parseInt(st.nextToken().trim());// Direct Calls
 			int vCalls = Integer.parseInt(st.nextToken().trim());// Virtual Calls
 			fieldsCaredAbout.put("method",st.nextToken());// Method
-
+			if (entryPoints+dCalls+vCalls==0) {
+				System.out.println("Whats this one? "+fieldsCaredAbout.get("method"));
+			}
 			return new Datum(fieldsCaredAbout);
+
 		}
 
 		public String getPackageName() {
