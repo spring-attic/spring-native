@@ -45,6 +45,9 @@ proposedHints.put(AdviceModeImportSelector,
 // TODO Check required access for enums like this FilterType
 @NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
 @NativeImageHint(typeInfos = {
+	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
+			  access=AccessBits.LOAD_AND_CONSTRUCT)})
+@NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,

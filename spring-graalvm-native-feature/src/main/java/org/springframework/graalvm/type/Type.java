@@ -1955,7 +1955,7 @@ public class Type {
 		} else if (t.isImportSelector()) {
 			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE;
 		} else if (t.isImportRegistrar()) {
-			return AccessBits.LOAD_AND_CONSTRUCT;
+			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE; // Including resource because of KafkaBootstrapConfiguration
 		} else if (t.isBeanFactoryPostProcessor()) {
 			// vanilla-jpa demos these needing accessing a a resource *sigh*
 			// TODO investigate if deeper pattern can tell us why certain things need

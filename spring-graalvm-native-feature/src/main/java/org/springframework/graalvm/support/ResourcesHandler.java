@@ -981,7 +981,11 @@ public class ResourcesHandler {
 				return false;
 			}
 			if (importRegistrarOrSelector) {
-				rcm.requestTypeAccess(typename, AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS,ad.getMethodDescriptors(),ad.getFieldDescriptors());
+				int bits = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
+				if (t.isImportRegistrar()) { // A kafka registrar seems to need this
+					bits|=AccessBits.RESOURCE;
+				}
+				rcm.requestTypeAccess(typename, bits, ad.getMethodDescriptors(),ad.getFieldDescriptors());
 			} else {
 				if (AccessBits.isResourceAccessRequired(accessBits)) {
 					rcm.requestTypeAccess(typename, AccessBits.RESOURCE);
