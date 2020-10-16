@@ -84,6 +84,7 @@ public class Type {
 	public final static String AtRepository = "Lorg/springframework/stereotype/Repository;";
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
+	public final static String AtValidated = "Lorg/springframework/validation/annotation/Validated;";
 	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
 	public final static String BeanFactoryPostProcessor = "Lorg/springframework/beans/factory/config/BeanFactoryPostProcessor;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
@@ -1399,6 +1400,10 @@ public class Type {
 			return false;
 		}
 	}
+	
+	public boolean isAtValidated() {
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtValidated));	
+	}
 
 	public boolean isApplicationListener() {
 		try {
@@ -1965,7 +1970,11 @@ public class Type {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
 			if (!ConfigOptions.isFunctionalMode()) {
-				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
+				if (t.isAtValidated()) {
+					return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS;
+				} else {
+					return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
+				}
 			} else {
 				SpringFeature.log("Skipping registration of reflective access to configuration properties: "+t.getDottedName());
 				return AccessBits.NONE;

@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.ValidatorFactory;
+import javax.validation.bootstrap.GenericBootstrap;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.DecimalMax;
@@ -42,6 +44,7 @@ import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
+import org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator;
 import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.engine.resolver.JPATraversableResolver;
@@ -76,13 +79,17 @@ import org.springframework.graalvm.type.AccessBits;
 			ConfigurationImpl.class,
 			ConstraintDescriptorImpl.class,
 			NotEmptyValidatorForCharSequence.class,
-			DigitsValidatorForCharSequence.class
+			DigitsValidatorForCharSequence.class,
+			GenericBootstrap.class,
+			PatternValidator.class
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 				"org.hibernate.validator.internal.util.logging.Log_$logger",
 				"org.hibernate.validator.internal.util.logging.Log"}
 		, access = AccessBits.LOAD_AND_CONSTRUCT),
 		@TypeInfo(types = {
+				ValidatorFactory.class,
+				Pattern.class,
 				AssertFalse.class,
 				AssertTrue.class,
 				DecimalMax.class,
