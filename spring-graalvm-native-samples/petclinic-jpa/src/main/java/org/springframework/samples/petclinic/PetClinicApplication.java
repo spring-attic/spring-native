@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfigur
  * @author Dave Syer
  *
  */
-@SpringBootApplication(proxyBeanMethods = false, exclude = SpringDataWebAutoConfiguration.class)
+@SpringBootApplication(proxyBeanMethods = false)
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
