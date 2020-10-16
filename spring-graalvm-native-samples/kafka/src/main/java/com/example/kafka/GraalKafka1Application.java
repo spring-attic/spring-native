@@ -1,7 +1,8 @@
 package com.example.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
-
+import org.apache.kafka.common.message.CreateTopicsRequestData;
+import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class GraalKafka1Application {
 
 	public static void main(String[] args) {
+		// CreatableTopic creatableTopic = new CreateTopicsRequestData.CreatableTopic();
+		// System.out.println(creatableTopic);
 		SpringApplication.run(GraalKafka1Application.class, args).close();
 	}
 

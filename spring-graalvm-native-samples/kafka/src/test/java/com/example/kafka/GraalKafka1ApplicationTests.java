@@ -1,13 +1,13 @@
-package com.example.kafka;
+// package com.example.kafka;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class GraalKafka1ApplicationTests {
+// @SpringBootTest
+// class GraalKafka1ApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }

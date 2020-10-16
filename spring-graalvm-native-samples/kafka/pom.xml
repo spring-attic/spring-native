@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>kafka1</artifactId>
+	<artifactId>kafka</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kafka1</name>
+	<name>kafka</name>
 	<description>GraalVM Kafka Demo</description>
 
 	<properties>
@@ -20,6 +20,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.11.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -31,9 +36,9 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native</artifactId>
-			<version>0.8.1-SNAPSHOT</version>
+			<version>0.8.2-SNAPSHOT</version>
 		</dependency>
-
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -48,6 +53,7 @@
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
 		</dependency>
+		-->
 	</dependencies>
 
 	<build>
@@ -64,6 +70,7 @@
 			<id>native</id>
 			<build>
 				<plugins>
+					<!--
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
@@ -93,13 +100,14 @@
 							</includes>
 						</configuration>
 					</plugin>
+					-->
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
 						<version>20.2.0</version>
 						<configuration>
 							<mainClass>com.example.kafka.GraalKafka1Application</mainClass>
-							<buildArgs>-Dspring.native.remove-yaml-support=true</buildArgs>
+							<buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.native.verbose=true</buildArgs>
 							<imageName>kafka1</imageName>
 						</configuration>
 						<executions>
