@@ -56,6 +56,11 @@
 					<artifactId>maven-source-plugin</artifactId>
 					<version>3.2.0</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -138,6 +143,10 @@
 	</repositories>
 
 	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-release</id>
+			<url>https://repo.spring.io/release</url>
+		</pluginRepository>
 		<pluginRepository>
 			<id>spring-plugins-release</id>
 			<url>https://repo.spring.io/plugins-release</url>

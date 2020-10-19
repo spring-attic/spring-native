@@ -30,12 +30,13 @@ cd gs-rest-service/complete
 
 You may already be ready to go with your own project.
 
-===== Update the `pom.xml` file
+===== Update the build file
 
 IMPORTANT: Only Spring Boot {boot-version} and above are supported, upgrade your project if necessary.
 
 ====
-[source,xml,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
 <parent>
     <groupId>org.springframework.boot</groupId>
@@ -44,14 +45,29 @@ IMPORTANT: Only Spring Boot {boot-version} and above are supported, upgrade your
     <relativePath/> <!-- lookup parent from repository -->
 </parent>
 ----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+plugins {
+    id 'org.springframework.boot' version '{boot-version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+plugins {
+    id("org.springframework.boot") version "{boot-version}"
+}
+----
 ====
 
-===== Configure the Maven plugin
+===== Configure the plugin
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
 To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1` and provide optionally additional build arguments.
 ====
-[source,xml,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
 <plugin>
     <groupId>org.springframework.boot</groupId>
@@ -70,6 +86,28 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1`
     </configuration>
 </plugin>
 ----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+bootBuildImage {
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_BOOT_NATIVE_IMAGE" : "1",
+        "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS": "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+    ]
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+    builder = "paketobuildpacks/builder:tiny"
+    environment = mapOf(
+            "BP_BOOT_NATIVE_IMAGE" to "1",
+            "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+    )
+}
+----
 ====
 
 `-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flags to reduce the footprint.
@@ -83,10 +121,10 @@ The `paketobuildpacks/builder:full` variant can be used in order to have more to
 If necessary, add the repository for the `spring-graalvm-native` dependency, as follows:
 
 ====
-[source,xml,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
 <repositories>
-    <!-- ... -->
     <repository>
         <id>spring-{repository}</id>
         <name>Spring {repository}</name>
@@ -94,11 +132,26 @@ If necessary, add the repository for the `spring-graalvm-native` dependency, as 
     </repository>
 </repositories>
 ----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+repositories {
+    maven { url 'https://repo.spring.io/{repository}' }
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+repositories {
+    maven { url = uri("https://repo.spring.io/{repository}") }
+}
+----
 ====
 
 And for Spring Boot plugin:
 ====
-[source,xml,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
 <pluginRepositories>
     <pluginRepository>
@@ -108,6 +161,24 @@ And for Spring Boot plugin:
     </pluginRepository>
 </pluginRepositories>
 ----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+pluginManagement {
+    repositories {
+        maven { url 'https://repo.spring.io/{repository}' }
+    }
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.spring.io/{repository}") }
+    }
+}
+----
 ====
 
 ===== spring-graalvm-native dependency
@@ -115,16 +186,30 @@ And for Spring Boot plugin:
 If not specified, the builder will automatically use the latest `spring-graalvm-native` release available, but here to be
 sure of the version used we specify it explicitly:
 ====
-[source,xml,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
 <dependencies>
-    <!-- ... -->
     <dependency>
         <groupId>org.springframework.experimental</groupId>
         <artifactId>spring-graalvm-native</artifactId>
         <version>{version}</version>
     </dependency>
 </dependencies>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+dependencies {
+    implementation 'org.springframework.experimental:spring-graalvm-native:{version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+dependencies {
+    implementation("org.springframework.experimental:spring-graalvm-native:{version}")
+}
 ----
 ====
 
@@ -154,9 +239,20 @@ public class RestServiceApplication {
 
 Building the native application is as simple as running:
 ====
-[source,bash]
+[source,bash,role="primary"]
+.Maven
 ----
 mvn spring-boot:build-image
+----
+[source,bash,role="secondary"]
+.Gradle Groovy
+----
+gradle bootBuildImage
+----
+[source,bash,role="secondary"]
+.Gradle Kotlin
+----
+gradle bootBuildImage
 ----
 ====
 This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally

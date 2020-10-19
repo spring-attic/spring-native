@@ -89,6 +89,11 @@
 								<artifactId>asciidoctorj-pdf</artifactId>
 								<version>1.5.0-alpha.15</version>
 							</dependency>
+							<dependency>
+								<groupId>io.spring.asciidoctor</groupId>
+								<artifactId>spring-asciidoctor-extensions-block-switch</artifactId>
+								<version>0.5.0</version>
+							</dependency>
 						</dependencies>
 						<executions>
 							<execution>
@@ -143,7 +148,6 @@
 								<baseDir>${project.basedir}</baseDir>
 							</attributes>
 						</configuration>
-
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
