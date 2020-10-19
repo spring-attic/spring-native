@@ -496,7 +496,6 @@ public class ResourcesHandler {
 
 		@Override
 		public boolean addProxy(List<String> interfaces) {
-			System.out.println("> addProxy "+interfaces);
 			dynamicProxiesHandler.addProxy(interfaces);
 			return true;
 		}

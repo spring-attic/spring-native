@@ -15,6 +15,8 @@
  */
 package org.springframework.graalvm.support;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
@@ -266,4 +268,35 @@ public abstract class ConfigOptions {
 		}
 	}
 
+	public static boolean checkForFunctionalModeFromHint() {
+		boolean isFunctionalMode = false;
+		String modeSet = System.getProperty("spring.native.mode");
+		if (modeSet != null) {
+			isFunctionalMode = modeSet.equalsIgnoreCase(Mode.FUNCTIONAL.name());
+		} else {
+			if (exists("org.springframework.init.func.InfrastructureInitializer")
+				|| exists("org.springframework.fu.kofu.KofuApplication")
+				|| exists("org.springframework.fu.jafu.JafuApplication")) {
+				isFunctionalMode = true;
+			} else {
+				isFunctionalMode = false;
+			}
+		}
+		if (isFunctionalMode) {
+			if (exists("org.springframework.init.func.InfrastructureInitializer")) {
+				SPRING_INIT_ACTIVE = true;
+			}
+		}
+		return isFunctionalMode;
+	}
+
+	private static boolean exists(String typename) {
+		boolean exists = false;
+		try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(typename.replace(".", "/")+".class")) {
+			exists = (is != null);
+		} catch (IOException e) {
+			// Assume doesn't exist
+		}
+		return exists;
+	}
 }

@@ -15,6 +15,7 @@
  */
 package org.springframework.graalvm.type;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AccessDescriptor {
@@ -23,6 +24,10 @@ public class AccessDescriptor {
 	private List<MethodDescriptor> methodDescriptors;
 	private List<FieldDescriptor> fieldDescriptors;
 	private boolean inferredAccessBits;
+	
+	public AccessDescriptor(Integer accessBits) {
+		this(accessBits, Collections.emptyList(), Collections.emptyList(), false);
+	}
 
 	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds, boolean inferredAccessBits) {
 		this.accessBits = accessBits;

@@ -57,7 +57,8 @@ public class SpringConfiguration {
 				if (!valid) {
 					continue;
 				}
-				List<HintDeclaration> hints = t.getCompilationHints();
+				List<HintDeclaration> hints = new ArrayList<>();
+				hints.addAll(t.getCompilationHints());
 				try {
 					hints.addAll(hintProvider.computeHints(typeSystem));
 				} catch (NoClassDefFoundError ncdfe) {
