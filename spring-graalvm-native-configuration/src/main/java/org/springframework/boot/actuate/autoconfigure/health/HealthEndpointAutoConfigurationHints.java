@@ -17,7 +17,6 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import org.springframework.boot.actuate.health.CompositeHealth;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -59,7 +58,6 @@ import org.springframework.graalvm.type.AccessBits;
 		HealthEndpointProperties.class,
 		HealthProperties.class,
 		HealthContributor.class,
-		HealthAggregator.class,
 		HealthComponent.class,
 		org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show.class,
 		org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status.class,

@@ -43,14 +43,13 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types= {
 				ConfigurationPropertiesScan.class,
-				ConfigurationPropertiesScanRegistrar.class,
-				ConfigurationBeanFactoryMetadata.class
+				ConfigurationPropertiesScanRegistrar.class
 		},
 		typeNames= {
 			"java.io.Serializable[]",
 			"java.lang.Comparable[]"
 		}),
-		@TypeInfo(types= {ArrayList.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
+		@TypeInfo(types= ArrayList.class)
 })
 public class ConfigurationPropertiesHints implements NativeImageConfiguration {
 }

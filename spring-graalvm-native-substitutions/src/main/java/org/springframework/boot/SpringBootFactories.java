@@ -41,6 +41,10 @@ import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPo
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.boot.logging.LoggingSystemFactory;
+import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.boot.logging.log4j2.Log4J2LoggingSystem;
+import org.springframework.boot.logging.logback.LogbackLoggingSystem;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
@@ -74,6 +78,20 @@ public abstract class SpringBootFactories {
 		boolean isR2dbcPresent = ClassUtils.isPresent("io.r2dbc.spi.ConnectionFactory", null);
 		boolean isSpringInitPresent = ClassUtils.isPresent("org.springframework.init.func.FunctionalInstallerListener",
 				null);
+		boolean isLogbackPresent = ClassUtils.isPresent("ch.qos.logback.core.Appender", null);
+		boolean isLog4j2Present = ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", null);
+		boolean isJavaLoggingPresent = ClassUtils.isPresent("java.util.logging.LogManager", null);
+
+		// LoggingSystemFactory
+		if (isLogbackPresent) {
+			factories.add(LoggingSystemFactory.class, new LogbackLoggingSystem.Factory());
+		}
+		if (isLog4j2Present) {
+			factories.add(LoggingSystemFactory.class, new Log4J2LoggingSystem.Factory());
+		}
+		if (isJavaLoggingPresent) {
+			factories.add(LoggingSystemFactory.class, new JavaLoggingSystem.Factory());
+		}
 
 		// PropertySourceLoader
 		factories.add(PropertySourceLoader.class, new PropertiesPropertySourceLoader());
@@ -90,8 +108,7 @@ public abstract class SpringBootFactories {
 		}
 		factories.add(ApplicationContextInitializer.class, new ServerPortInfoApplicationContextInitializer());
 		if (isAutoconfigurePresent) {
-			// factories.add(ApplicationContextInitializer.class, AutocoNo
-			// nnfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
+			// factories.add(ApplicationContextInitializer.class, AutoconfigureProvider.getSharedMetadataReaderFactoryContextInitializer());
 			factories.add(ApplicationContextInitializer.class, new ConditionEvaluationReportLoggingListener());
 		}
 
