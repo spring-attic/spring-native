@@ -986,6 +986,10 @@ public class TypeSystem {
 		String existingConfigThatIncludesSpringFactories = null; 
 		Map<String,ResourcesDescriptor> resourceConfigurations = getResourceConfigurationsOnClasspath();
 		outer: for (Map.Entry<String,ResourcesDescriptor> resourceConfiguration: resourceConfigurations.entrySet()) {
+			if (resourceConfiguration.getValue() == null) {
+				SpringFeature.log("WARNING: unexpected null resourceconfiguration loaded from spring.factories at "+resourceConfiguration.getKey());
+				continue;
+			}
 			List<String> patterns = resourceConfiguration.getValue().getPatterns();
 			for (String pattern: patterns) {
 				String slash = File.separator;
