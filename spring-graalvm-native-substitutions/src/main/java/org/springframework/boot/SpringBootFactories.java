@@ -1,7 +1,6 @@
 package org.springframework.boot;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
@@ -22,11 +21,18 @@ import org.springframework.boot.context.ConfigurationWarningsApplicationContextI
 import org.springframework.boot.context.ContextIdApplicationContextInitializer;
 import org.springframework.boot.context.FileEncodingApplicationListener;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
+import org.springframework.boot.context.config.ConfigDataLoader;
+import org.springframework.boot.context.config.ConfigDataLocationResolver;
+import org.springframework.boot.context.config.ConfigTreeConfigDataLoader;
+import org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver;
 import org.springframework.boot.context.config.DelegatingApplicationContextInitializer;
 import org.springframework.boot.context.config.DelegatingApplicationListener;
+import org.springframework.boot.context.config.StandardConfigDataLoader;
+import org.springframework.boot.context.config.StandardConfigDataLocationResolver;
 import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.diagnostics.FailureAnalysisReporter;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
@@ -36,11 +42,11 @@ import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
 import org.springframework.boot.env.EnvironmentPostProcessorsFactory;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
+import org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor;
 import org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor;
 import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
-import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.logging.log4j2.Log4J2LoggingSystem;
@@ -49,6 +55,7 @@ import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContex
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.init.func.FunctionalInstallerListener;
 import org.springframework.init.func.InfrastructureInitializer;
 import org.springframework.util.ClassUtils;
@@ -57,8 +64,7 @@ import org.springframework.util.MultiValueMap;
 
 public abstract class SpringBootFactories {
 
-	public static MultiValueMap<Class<?>, Object> factories = new LinkedMultiValueMap<Class<?>, Object>() {
-	};
+	public static MultiValueMap<Class<?>, Object> factories = new LinkedMultiValueMap<>();
 
 	static {
 		boolean removeYamlSupport = Boolean.valueOf(System.getProperty("spring.native.remove-yaml-support", "false"));
@@ -99,6 +105,13 @@ public abstract class SpringBootFactories {
 			factories.add(PropertySourceLoader.class, new YamlPropertySourceLoader());
 		}
 
+		// ConfigData Location Resolvers
+		factories.add(ConfigDataLocationResolver.class, new ConfigTreeConfigDataLocationResolver());
+
+		// ConfigData Loaders
+		factories.add(ConfigDataLoader.class, new ConfigTreeConfigDataLoader());
+		factories.add(ConfigDataLoader.class, new StandardConfigDataLoader());
+
 		// ApplicationContextInitializer
 		factories.add(ApplicationContextInitializer.class, new ConfigurationWarningsApplicationContextInitializer());
 		factories.add(ApplicationContextInitializer.class, new ContextIdApplicationContextInitializer());
@@ -112,19 +125,22 @@ public abstract class SpringBootFactories {
 			factories.add(ApplicationContextInitializer.class, new ConditionEvaluationReportLoggingListener());
 		}
 
-		EnvironmentPostProcessorsFactory environmentPostProcessorsFactory = new EnvironmentPostProcessorsFactory() {
-			@Override
-			public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
-					ConfigurableBootstrapContext bootstrapContext) {
-				// EnvironmentPostProcessor
-				return Arrays.asList(
-						// new CloudFoundryVcapEnvironmentPostProcessor()
-						new SpringApplicationJsonEnvironmentPostProcessor(), //
-						new SystemEnvironmentPropertySourceEnvironmentPostProcessor(), //
-						new ConfigFileApplicationListener() //
-				// new DebugAgentEnvironmentPostProcessor()
-				);
-			}
+		EnvironmentPostProcessorsFactory environmentPostProcessorsFactory = (logFactory, bootstrapContext) -> {
+			// EnvironmentPostProcessor
+			return Arrays.asList(
+					// new CloudFoundryVcapEnvironmentPostProcessor()
+					new ConfigDataEnvironmentPostProcessor(logFactory, new DefaultBootstrapContext()) {
+						@Override
+						public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+							super.postProcessEnvironment(environment, application);
+							factories.add(ConfigDataLocationResolver.class, new StandardConfigDataLocationResolver(logFactory.getLog(ConfigDataLocationResolver.class), Binder.get(environment), application.getResourceLoader()));
+						}
+					},
+					new RandomValuePropertySourceEnvironmentPostProcessor(logFactory.getLog(EnvironmentPostProcessor.class)),
+					new SpringApplicationJsonEnvironmentPostProcessor(),
+					new SystemEnvironmentPropertySourceEnvironmentPostProcessor()
+					// new DebugAgentEnvironmentPostProcessor()
+			);
 		};
 
 		// ApplicationListener
