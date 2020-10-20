@@ -19,8 +19,11 @@ import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(typeInfos = {
+	@TypeInfo(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),
+	@TypeInfo(types = ConfigDataLocation[].class,access=AccessBits.CLASS),
 	@TypeInfo(types= {
 		ConfigDataProperties.class,
 		ConfigDataProperties.Activate.class,
