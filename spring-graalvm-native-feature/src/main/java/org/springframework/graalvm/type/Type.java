@@ -40,6 +40,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -1282,20 +1283,27 @@ public class Type {
 			annotationChain.pop();
 		}
 	}
+	
 
 	private void addInners(List<String> propertiesTypes) {
-		List<String> extras = new ArrayList<>();
+		Set<String> collector = new HashSet<>();
 		for (String propertiesType : propertiesTypes) {
 			Type type = typeSystem.Lresolve(propertiesType, true);
 			if (type != null) {
-				// TODO recurse all the way down
-				List<Type> nestedTypes = type.getNestedTypes();
-				for (Type nestedType : nestedTypes) {
-					extras.add(nestedType.getDescriptor());
-				}
+				collectInners(type, collector);
 			}
 		}
-		propertiesTypes.addAll(extras);
+		propertiesTypes.addAll(collector);
+	}
+	
+	private void collectInners(Type type, Set<String> collector) {
+		List<Type> nestedTypes = type.getNestedTypes();
+		for (Type nestedType: nestedTypes) {
+			String name = nestedType.getDescriptor();
+			if (collector.add(name)) {
+				collectInners(nestedType, collector);
+			}
+		}
 	}
 
 	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
