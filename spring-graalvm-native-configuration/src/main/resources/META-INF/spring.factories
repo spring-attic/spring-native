@@ -1,1 +1,4 @@
-org.springframework.context.ApplicationListener=org.springframework.boot.NativePropertiesListener
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.graalvm.utils.LiteConfigurationInitializer
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.NativePropertiesListener
