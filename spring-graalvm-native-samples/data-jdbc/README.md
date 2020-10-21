@@ -7,4 +7,4 @@ mvn spring-boot:build-image
 
 As an alternative, you can use `build.sh` (with a local GraalVM installation or combined with
 `run-dev-container.sh` at the root of `spring-graalvm-native` project). See also the related issue
-[https://github.com/spring-projects-experimental/spring-graalvm-native/issues/227](Take advantage of Paketo dev-oriented images).
+[Take advantage of Paketo dev-oriented images](https://github.com/spring-projects-experimental/spring-graalvm-native/issues/227).
