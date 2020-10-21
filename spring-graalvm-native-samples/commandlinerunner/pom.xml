@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -52,6 +49,21 @@
     <!-- this is the snippet that will use the buildpacks to produce a container image of the native executable -->
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.experimental</groupId>
+                <artifactId>spring-graalvm-native-maven-plugin</artifactId>
+                <version>0.8.2-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -103,7 +115,7 @@
             </build>
         </profile>
     </profiles>
-    
+
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>

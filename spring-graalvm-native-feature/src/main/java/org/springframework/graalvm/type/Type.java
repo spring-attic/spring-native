@@ -58,6 +58,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.extension.TypeInfos;
 import org.springframework.graalvm.support.ConfigOptions;
 import org.springframework.graalvm.support.SpringFeature;
+import org.springframework.util.ClassUtils;
 
 /**
  * @author Andy Clement
@@ -2256,6 +2257,9 @@ public class Type {
 			// TODO this does not check the default value for proxyBeanMethods
 			// TODO this does not verify/follow AliasFor usage
 			boolean atLeastSetFalseSomewhere = false;
+			if (ClassUtils.isPresent(getDottedName().replace("$", "_") + "Cached", null)) {
+				return;
+			}
 			for (AnnotationNode anode : annos) {
 				if (hasValue(anode, "proxyBeanMethods")) {
 					Boolean value = (Boolean) getValue(anode, "proxyBeanMethods");
