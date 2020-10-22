@@ -31,9 +31,18 @@ final class Target_SpringFactoriesLoader {
 		return result;
 	}
 
-	@Alias
+	@Substitute
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
-		return null;
+		System.out.println("WARNING: loadFactoryNames("+factoryType.getName()+",...) invoked - can that code use loadFactories() instead?");
+		List<Object> stored = (List<Object>) SpringBootFactories.factories.get(factoryType);
+		if (stored == null) {
+			return new ArrayList<>();
+		}
+		List<String> result = new ArrayList<>();
+		for (Object o: stored) {
+			result.add(o.getClass().getName());
+		}
+		return result;
 	}
 
 	@Alias

@@ -132,8 +132,8 @@ public abstract class SpringBootFactories {
 					new ConfigDataEnvironmentPostProcessor(logFactory, new DefaultBootstrapContext()) {
 						@Override
 						public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-							super.postProcessEnvironment(environment, application);
 							factories.add(ConfigDataLocationResolver.class, new StandardConfigDataLocationResolver(logFactory.getLog(ConfigDataLocationResolver.class), Binder.get(environment), application.getResourceLoader()));
+							super.postProcessEnvironment(environment, application);
 						}
 					},
 					new RandomValuePropertySourceEnvironmentPostProcessor(logFactory.getLog(EnvironmentPostProcessor.class)),

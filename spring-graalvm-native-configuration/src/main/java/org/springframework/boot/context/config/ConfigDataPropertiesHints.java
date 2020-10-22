@@ -24,6 +24,12 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),
 	@TypeInfo(types = ConfigDataLocation[].class,access=AccessBits.CLASS),
+	@TypeInfo(types = {
+		ConfigDataEnvironmentPostProcessor.class,ConfigTreeConfigDataLoader.class,
+		ConfigTreeConfigDataLocationResolver.class, DelegatingApplicationContextInitializer.class,
+		DelegatingApplicationListener.class, StandardConfigDataLoader.class,
+		StandardConfigDataLocationResolver.class
+	},access=AccessBits.DECLARED_CONSTRUCTORS),
 	@TypeInfo(types= {
 		ConfigDataProperties.class,
 		ConfigDataProperties.Activate.class,
