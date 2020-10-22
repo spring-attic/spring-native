@@ -2756,4 +2756,24 @@ public class Type {
 	public TypeSystem getTypeSystem() {
 		return this.typeSystem;
 	}
+
+	public boolean hasAnnotatedField(Predicate<String> annotationCheck) {
+		if (node.fields != null) {
+			for (FieldNode fieldNode : node.fields) {
+				List<AnnotationNode> vAnnotations = fieldNode.visibleAnnotations;
+				if (vAnnotations!=null) {
+					if (annotationCheck == null) {
+						return true;
+					}
+					for (AnnotationNode vAnnotation : vAnnotations) {
+						String d = vAnnotation.desc;
+						if (annotationCheck.test(d.substring(1,d.length()-1).replace("/", "."))) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

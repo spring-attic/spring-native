@@ -141,6 +141,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 
 	public void addAllTypesFromSignaturesInRepositoryInterface(Type repositoryInterface,
 			NativeImageContext imageContext, Set<String> processed) {
+		boolean addValidationMessagesBundle = false;
 		List<Method> publicRepositoryMethods = repositoryInterface.getMethods(m -> m.isPublic());
 		for (Method publicRepositoryMethod : publicRepositoryMethods) {
 			Set<Type> types = publicRepositoryMethod.getSignatureTypes(true);
@@ -152,7 +153,18 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 						// Note access here is PUBLIC methods. For a type like Owner that extends Person this ensures the public
 						// methods on Person (that access the name components) are visible. I believe if using DECLARED methods
 						// we would have to add reflective access for Owner and Person - with PUBLIC we can just do Owner
-						imageContext.addReflectiveAccess(type.getDottedName(), Flag.allPublicMethods, Flag.allDeclaredConstructors);
+						List<Flag> flags = new ArrayList<>();
+						flags.add(Flag.allPublicMethods);
+						flags.add(Flag.allDeclaredConstructors);
+						if (type.hasAnnotatedField(null)) {
+							// These fields may need to be reflectable for other facilities to work (e.g. validation if the annotations
+							// express constraints on those fields).
+							// TODO because the fields tend to be private, we should probably check fields on super types
+							// of this domain class and see if they require exposing for the same reason
+							addValidationMessagesBundle = true;
+							flags.add(Flag.allDeclaredFields);
+						}
+						imageContext.addReflectiveAccess(type.getDottedName(), flags.toArray(new Flag[0]));
 						processPossibleDomainType(type, imageContext, processed);
 					}
 				}
@@ -173,6 +185,9 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 					imageContext.log(String.format(LOG_PREFIX + "%s PLURAL TYPE NOT FOUND", pluralName));
 				}
 			}
+		}
+		if (addValidationMessagesBundle) {
+			imageContext.addResourceBundle("org.hibernate.validator.ValidationMessages");
 		}
 	}
 	

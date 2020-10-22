@@ -560,6 +560,11 @@ public class ResourcesHandler {
 		public void log(String message) {
 			SpringFeature.log(message);
 		}
+
+		@Override
+		public void addResourceBundle(String bundleName) {
+			registerResourceBundles(ResourcesDescriptor.ofBundle(bundleName));
+		}
 		
 	}
 	

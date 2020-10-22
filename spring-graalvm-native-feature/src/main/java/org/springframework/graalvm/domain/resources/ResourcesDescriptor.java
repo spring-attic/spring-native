@@ -76,4 +76,10 @@ public class ResourcesDescriptor {
 		}
 	}
 
+	public static ResourcesDescriptor ofBundle(String bundleName) {
+		ResourcesDescriptor rd = new ResourcesDescriptor();
+		rd.addBundle(bundleName);
+		return rd;
+	}
+
 }

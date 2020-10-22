@@ -63,4 +63,6 @@ public interface NativeImageContext {
 		addReflectiveAccess(parameterTypename, AccessBits.getFlags(accessBits));
 	}
 
+	void addResourceBundle(String string);
+
 }
