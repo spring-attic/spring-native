@@ -15,8 +15,17 @@
  */
 package org.springframework.boot.autoconfigure.web.reactive.netty;
 
+import org.springframework.graalvm.extension.InitializationInfo;
+import org.springframework.graalvm.extension.InitializationTime;
+import org.springframework.graalvm.extension.MethodInfo;
+import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
+
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.DefaultChannelId;
@@ -30,13 +39,6 @@ import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
 import io.netty.util.NetUtil;
-
-import org.springframework.graalvm.extension.InitializationInfo;
-import org.springframework.graalvm.extension.InitializationTime;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
 
 // It probably doesn't make sense to have initializations triggered, it does no harm to specify these if they aren't around
 @NativeImageHint(initializationInfos = {
@@ -57,7 +59,13 @@ import org.springframework.graalvm.type.AccessBits;
 		})
 })
 @NativeImageHint(typeInfos = {
-		@TypeInfo(types= {ChannelInboundHandlerAdapter.class,ChannelHandlerAdapter.class,
+		@TypeInfo(
+			typeNames = {"reactor.netty.transport.ServerTransport$AcceptorInitializer",
+					"reactor.netty.transport.ServerTransport$Acceptor"
+			},
+			access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS
+		),
+		@TypeInfo(types= {ChannelHandlerAdapter.class,
 				ChannelHandler.class,ChannelInboundHandler.class},
 				typeNames = {
 						"io.netty.channel.ChannelInboundInvoker",
