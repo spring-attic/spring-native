@@ -17,6 +17,7 @@ package org.springframework.context.annotation;
 
 import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.EnvironmentAware;
@@ -51,6 +52,7 @@ proposedHints.put(AdviceModeImportSelector,
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
 				org.springframework.context.ApplicationContext.class, // petclinic-jpa shows errors in startup log without this
+				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,
 				CommonAnnotationBeanPostProcessor.class,

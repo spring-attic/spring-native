@@ -19,12 +19,16 @@ import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
+import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
 
 @NativeImageHint(trigger=GlobalMethodSecuritySelector.class, typeInfos = {
 		@TypeInfo(types= {EnableGlobalMethodSecurity.class,GlobalMethodSecurityConfiguration.class,
 				AutoProxyRegistrar.class,GlobalMethodSecurityAspectJAutoProxyRegistrar.class,
-				MethodSecurityMetadataSourceAdvisorRegistrar.class,Jsr250MetadataSourceConfiguration.class
-				})})
+				MethodSecurityMetadataSourceAdvisorRegistrar.class,Jsr250MetadataSourceConfiguration.class,
+				})
+		,@TypeInfo(types= MethodSecurityMetadataSourceAdvisor.class, access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.DECLARED_CONSTRUCTORS)
+		})
 @NativeImageHint(trigger=ReactiveMethodSecuritySelector.class, typeInfos = {
 		@TypeInfo(types= {AutoProxyRegistrar.class,ReactiveMethodSecurityConfiguration.class})})
 public class GlobalMethodSecurityHints implements NativeImageConfiguration { }
