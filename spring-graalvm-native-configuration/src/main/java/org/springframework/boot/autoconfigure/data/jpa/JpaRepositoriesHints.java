@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.data.jpa;
 
+import org.springframework.data.jpa.repository.query.JpaQueryMethodFactory;
 import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
@@ -34,6 +35,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 						SharedEntityManagerCreator.class, // TODO is this one in the right place?
 						JpaRepositoryFactoryBean.class,
 						JpaEvaluationContextExtension.class,
+						JpaQueryMethodFactory.class
 				}, typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"

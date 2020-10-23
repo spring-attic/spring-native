@@ -71,6 +71,8 @@ import org.hibernate.event.spi.RefreshEventListener;
 import org.hibernate.event.spi.ReplicateEventListener;
 import org.hibernate.event.spi.ResolveNaturalIdEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEventListener;
+import org.hibernate.hql.internal.antlr.HqlTokenTypes;
+import org.hibernate.hql.internal.antlr.SqlTokenTypes;
 import org.hibernate.hql.internal.ast.HqlToken;
 import org.hibernate.hql.internal.ast.tree.BinaryLogicOperatorNode;
 import org.hibernate.hql.internal.ast.tree.DotNode;
@@ -110,6 +112,7 @@ import org.hibernate.persister.entity.UnionSubclassEntityPersister;
 import org.hibernate.persister.spi.PersisterCreationContext;
 import org.hibernate.query.QueryProducer;
 import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl;
+import org.hibernate.sql.ordering.antlr.GeneratedOrderByFragmentRendererTokenTypes;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
@@ -136,6 +139,8 @@ import org.springframework.stereotype.Repository;
 	typeInfos= {
 		@TypeInfo(types= {
 				// petclinic
+				// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
+				HqlTokenTypes.class,SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				// TODO what about having a way to specify everything in a package? More resilient and less verbose? do those things matter?
 				OrderByClause.class,SelectExpressionImpl.class,SqlFragment.class,SelectClause.class,BinaryLogicOperatorNode.class,
 				ParameterNode.class,DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,

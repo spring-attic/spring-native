@@ -15,6 +15,7 @@
  */
 package org.springframework.context.annotation;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.context.EmbeddedValueResolverAware;
@@ -49,6 +50,7 @@ proposedHints.put(AdviceModeImportSelector,
 			  access=AccessBits.LOAD_AND_CONSTRUCT)})
 @NativeImageHint(typeInfos = {
 		@TypeInfo(types = { 
+				org.springframework.context.ApplicationContext.class, // petclinic-jpa shows errors in startup log without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,
 				CommonAnnotationBeanPostProcessor.class,

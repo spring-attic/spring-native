@@ -15,13 +15,15 @@
  */
 package org.springframework.beans.factory.annotation;
 
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
 @NativeImageHint(typeInfos = { 
-	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class }, 
+	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class }, 
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
 },applyToFunctional = false)
 public class BeanFactoryAnnotationHints implements NativeImageConfiguration {
