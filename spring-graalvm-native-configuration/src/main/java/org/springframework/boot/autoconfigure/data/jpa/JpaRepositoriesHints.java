@@ -28,7 +28,8 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeImageHint(trigger = JpaRepositoriesAutoConfiguration.class,
 		resourcesInfos = {
-				@ResourcesInfo(patterns = "META-INF/jpa-named-queries.properties")
+				@ResourcesInfo(patterns = "META-INF/jpa-named-queries.properties"),
+				@ResourcesInfo(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
 		},
 		typeInfos = {
 				@TypeInfo(types = {
