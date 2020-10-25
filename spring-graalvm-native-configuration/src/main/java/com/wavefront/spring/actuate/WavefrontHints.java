@@ -84,6 +84,10 @@ import org.springframework.web.client.RestTemplate;
 				TomcatMetrics.class,
 				CompositeMeterRegistry.class
 		}),
+		@TypeInfo(
+			typeNames = "com.wavefront.spring.autoconfigure.WavefrontMetricsConfiguration$MicrometerConfiguration",
+			access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS
+		),
 		@TypeInfo(types = {
 				Timed.class,
 				SimpleClientHttpRequestFactory.class
