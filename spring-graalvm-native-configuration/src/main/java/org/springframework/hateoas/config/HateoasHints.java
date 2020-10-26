@@ -15,11 +15,21 @@
  */
 package org.springframework.hateoas.config;
 
-import org.springframework.graalvm.extension.NativeImageHint;
+import org.springframework.graalvm.extension.InitializationInfo;
+import org.springframework.graalvm.extension.InitializationTime;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.util.MimeTypeUtils;
 
+
+@NativeImageHint(
+	initializationInfos = {
+		@InitializationInfo(initTime=InitializationTime.BUILD, types = {MimeTypeUtils.class,MediaTypes.class})
+	}
+)
 /*
 proposedHints.put(WebStackImportSelector,
 		new CompilationHint(false, true, new String[] {
