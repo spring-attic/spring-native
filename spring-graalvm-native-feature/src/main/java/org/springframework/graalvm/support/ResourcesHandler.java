@@ -650,8 +650,7 @@ public class ResourcesHandler {
 			// it looks like we aren't adding RESOURCE to something when inferring.
 			typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
 					AccessBits.DECLARED_CONSTRUCTORS|
-					AccessBits.PUBLIC_METHODS|//AccessBits.DECLARED_METHODS|
-					AccessBits.RESOURCE);
+					AccessBits.RESOURCE|(rootTypeWasConfiguration?AccessBits.DECLARED_METHODS:AccessBits.PUBLIC_METHODS));
 //					inferredRequiredAccess.getValue());
 			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
 			// Flag.allDeclaredMethods);
