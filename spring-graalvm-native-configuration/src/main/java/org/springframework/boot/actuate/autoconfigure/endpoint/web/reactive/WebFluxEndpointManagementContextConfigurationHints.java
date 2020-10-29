@@ -16,44 +16,37 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CommonWebActuatorTypes;
-import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration;
-import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
-import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.client.MetricsWebClientCustomizer;
-import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.TypeSystem;
 
 
 @NativeImageHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
 	importInfos = { CommonWebActuatorTypes.class},
 	typeInfos = {
-	@TypeInfo(types = {
-		AbstractWebFluxEndpointHandlerMapping.class,
-		ControllerEndpointHandlerMapping.class,
-		DefaultWebClientExchangeTagsProvider.class,
-		WebClientExchangeTagsProvider.class,
-		MetricsWebFilter.class,
-		DefaultWebFluxTagsProvider.class,
-		WebFluxTagsProvider.class,
-		MetricsWebClientCustomizer.class
-	}, typeNames = {
-		"org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping",
-		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping",
+	@TypeInfo(
+//			types = {
+//		AbstractWebFluxEndpointHandlerMapping.class,
+//		ControllerEndpointHandlerMapping.class,
+//		DefaultWebClientExchangeTagsProvider.class,
+//		WebClientExchangeTagsProvider.class,
+//		MetricsWebFilter.class,
+//		DefaultWebFluxTagsProvider.class,
+//		WebFluxTagsProvider.class,
+//		MetricsWebClientCustomizer.class
+//	}, 
+			typeNames = {
+//		"org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping",
+//		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping",
 		"org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping$WebFluxLinksHandler",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
-	})
+	}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
 public class WebFluxEndpointManagementContextConfigurationHints implements NativeImageConfiguration {
 

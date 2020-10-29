@@ -15,7 +15,6 @@
  */
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -28,13 +27,10 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-//import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
-//import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
-import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 import org.springframework.graalvm.type.TypeSystem;
 
 // The configurations related to actuator are in this key in spring.factories:
@@ -46,33 +42,28 @@ import org.springframework.graalvm.type.TypeSystem;
 @NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
 	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
+		@TypeInfo(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
  		@TypeInfo(types = {
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
-		org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration.class,
 		ManagementContextType.class,
-		HeapDumpWebEndpoint.class,
 		EndpointMediaTypes.class,
-		PathMappedEndpoints.class,
 		WebEndpointsSupplier.class,
-		CorsEndpointProperties.class,
 		EndpointWebExtension.class,
 		WebEndpoint.class,
-		WebEndpointDiscoverer.class,
 		// web package
 		ManagementContextConfiguration.class,
 		ManagementContextFactory.class,
 		ManagementContextType.class,
 		PathMapper.class,
 		ManagementPortType.class,
-		org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration.class,
 	}, typeNames = {
-		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",
+//		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
+//		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
 		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
 		"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
-	})
+	})//,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
 public class WebMvcEndpointManagementContextConfigurationHints implements NativeImageConfiguration {
 
