@@ -15,24 +15,20 @@
  */
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
-import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
-import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.graalvm.type.AccessBits;
 
 /**
  * Example... this could host @TypeInfo annotations that any other @NativeImageHint could pull in
@@ -41,18 +37,11 @@ import org.springframework.graalvm.extension.TypeInfo;
  * @author Andy Clement
  */
 @TypeInfo(types = {
-		HttpTraceEndpoint.class,
-		LogFileWebEndpoint.class,
 		ServletEndpointRegistrar.class,
-		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration.class,
-		org.springframework.boot.actuate.autoconfigure.web.jersey.JerseyChildManagementContextConfiguration.class,
 		HttpTraceRepository.class,
 		ManagementContextType.class,
-		HeapDumpWebEndpoint.class,
 		EndpointMediaTypes.class,
-		PathMappedEndpoints.class,
 		WebEndpointsSupplier.class,
-		CorsEndpointProperties.class,
 		EndpointWebExtension.class,
 		WebEndpoint.class,
 		WebEndpointDiscoverer.class,
@@ -64,10 +53,7 @@ import org.springframework.graalvm.extension.TypeInfo;
 		ManagementPortType.class,
 }, typeNames = {
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
-		"org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration$SameManagementContextConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey.JerseyWebEndpointManagementContextConfiguration",
-		"org.springframework.boot.actuate.autoconfigure.endpoint.web.MappingWebEndpointPathMapper",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 public class CommonWebActuatorTypes {
 }
