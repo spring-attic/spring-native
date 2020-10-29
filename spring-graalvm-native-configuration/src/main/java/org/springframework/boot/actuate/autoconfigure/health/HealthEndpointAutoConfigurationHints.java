@@ -40,22 +40,26 @@ import org.springframework.graalvm.type.AccessBits;
 // Hitting /health endpoint
 @NativeImageHint(trigger = HealthEndpointAutoConfiguration.class, typeInfos = { 
 	@TypeInfo(types = {
-		SimpleHttpCodeStatusMapper.class,
-		SimpleStatusAggregator.class,
-		PingHealthIndicator.class,
 		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,
 		HealthEndpointWebExtension.class,
-		Status.class,
+	},access=AccessBits.LOAD_AND_CONSTRUCT),
+	@TypeInfo(types = {
 		StatusAggregator.class,
+		SimpleStatusAggregator.class,
+		HttpCodeStatusMapper.class,
+		SimpleHttpCodeStatusMapper.class,
+	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
+	@TypeInfo(types = {
+//		PingHealthIndicator.class,
+		Status.class,
 		SystemHealth.class,
 		CompositeHealth.class,
 		HealthIndicator.class,
-		HttpCodeStatusMapper.class,
 		NamedContributors.class,
 		HealthComponent.class,	
-		HealthContributorAutoConfiguration.class,
-		HealthEndpointProperties.class,
+//		HealthContributorAutoConfiguration.class,
+//		HealthEndpointProperties.class,
 		HealthProperties.class,
 		HealthContributor.class,
 		HealthComponent.class,
@@ -71,7 +75,7 @@ import org.springframework.graalvm.type.AccessBits;
 //		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthContributorRegistry",
 //		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredReactiveHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
-	}),
+	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
 //	@TypeInfo(types = {
 //		HealthContributorRegistry.class, DefaultHealthContributorRegistry.class,
 //		AutoConfiguredHealthContributorRegistry.class,

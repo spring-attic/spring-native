@@ -74,9 +74,12 @@ public class Type {
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
 	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
+	public final static String AtConditionalOnEnabledMetricsExport = "Lorg/springframework/boot/actuate/autoconfigure/metrics/export/ConditionalOnEnabledMetricsExport;";
+	public final static String AtConditionalOnCloudPlatform = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnCloudPlatform;";
 	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
 	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
+	public final static String AtConditionalOnBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
 	public final static String AtImportAutoConfiguration = "Lorg/springframework/boot/autoconfigure/ImportAutoConfiguration;";
 	public final static String AtConfigurationProperties = "Lorg/springframework/boot/context/properties/ConfigurationProperties;";
