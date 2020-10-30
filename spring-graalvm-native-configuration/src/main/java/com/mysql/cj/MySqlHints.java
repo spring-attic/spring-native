@@ -39,7 +39,6 @@ import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.ha.NdbLoadBalanceExceptionChecker;
 import com.mysql.cj.jdbc.ha.StandardLoadBalanceExceptionChecker;
 import com.mysql.cj.log.StandardLogger;
-import com.mysql.cj.protocol.AsyncSocketFactory;
 import com.mysql.cj.protocol.NamedPipeSocketFactory;
 import com.mysql.cj.protocol.SocksProxySocketFactory;
 import com.mysql.cj.protocol.StandardSocketFactory;
@@ -84,11 +83,10 @@ import org.springframework.graalvm.type.AccessBits;
 				UnableToConnectException.class,
 				UnsupportedConnectionStringException.class,
 				WrongArgumentException.class,
-				AsyncSocketFactory.class,
 				NamedPipeSocketFactory.class,
 				SocksProxySocketFactory.class,
 				StandardSocketFactory.class 
-		},access=AccessBits.LOAD_AND_CONSTRUCT),
+		}),
 		@TypeInfo(types= {
 				DeadlockTimeoutRollbackMarker.class,
 				NumberOutOfRange.class,

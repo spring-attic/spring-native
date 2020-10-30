@@ -105,9 +105,6 @@ public abstract class SpringBootFactories {
 			factories.add(PropertySourceLoader.class, new YamlPropertySourceLoader());
 		}
 
-		// ConfigData Location Resolvers
-		factories.add(ConfigDataLocationResolver.class, new ConfigTreeConfigDataLocationResolver());
-
 		// ConfigData Loaders
 		factories.add(ConfigDataLoader.class, new ConfigTreeConfigDataLoader());
 		factories.add(ConfigDataLoader.class, new StandardConfigDataLoader());
@@ -132,6 +129,8 @@ public abstract class SpringBootFactories {
 					new ConfigDataEnvironmentPostProcessor(logFactory, new DefaultBootstrapContext()) {
 						@Override
 						public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+							// ConfigData Location Resolvers
+							factories.add(ConfigDataLocationResolver.class, new ConfigTreeConfigDataLocationResolver(application.getResourceLoader()));
 							factories.add(ConfigDataLocationResolver.class, new StandardConfigDataLocationResolver(logFactory.getLog(ConfigDataLocationResolver.class), Binder.get(environment), application.getResourceLoader()));
 							super.postProcessEnvironment(environment, application);
 						}
