@@ -7,6 +7,7 @@ import ch.qos.logback.classic.pattern.LoggerConverter;
 import ch.qos.logback.classic.pattern.MDCConverter;
 import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.pattern.ThreadConverter;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.pattern.Converter;
 
 import org.springframework.boot.logging.logback.ColorConverter;
@@ -20,6 +21,7 @@ import org.springframework.graalvm.type.AccessBits;
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types= {
+			Appender.class, // Workaround for https://github.com/spring-projects/spring-boot/issues/23985
 			DateConverter.class,
 			LevelConverter.class,
 			LoggerConverter.class,
@@ -30,7 +32,7 @@ import org.springframework.graalvm.type.AccessBits;
 			ColorConverter.class,
 			WhitespaceThrowableProxyConverter.class,
 			ExtendedWhitespaceThrowableProxyConverter.class
-	},access=AccessBits.LOAD_AND_CONSTRUCT)
+	})
 })
 public class LogbackHints implements NativeImageConfiguration {
 }
