@@ -20,6 +20,7 @@ org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfig
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfigurationHints
+org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextConfigurationImportSelectorHints
 org.springframework.boot.autoconfigure.AutoConfigurationHints
