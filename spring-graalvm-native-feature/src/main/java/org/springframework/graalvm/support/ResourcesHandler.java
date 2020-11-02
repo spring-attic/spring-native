@@ -753,6 +753,7 @@ public class ResourcesHandler {
 	}
 
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
+		SpringFeature.log("processing spring factory file "+springFactory);
 		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
 		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
@@ -761,7 +762,6 @@ public class ResourcesHandler {
 		Enumeration<Object> factoryKeys = p.keys();
 		boolean modified = false;
 		
-
 		if (!ConfigOptions.isAgentMode()) {
 			Properties filteredProperties = new Properties();
 			for (Map.Entry<Object, Object> factoriesEntry : p.entrySet()) {
@@ -772,7 +772,9 @@ public class ResourcesHandler {
 					values.add(value);
 				}
 				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
+					int len = values.size();
 					if (springFactoriesProcessor.filter(springFactory, key, values)) {
+						SpringFeature.log("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
 						modified = true;
 					}
 				}
@@ -1045,7 +1047,7 @@ public class ResourcesHandler {
 
 
 	private boolean checkConditionalOnClass(Type type) {
-		boolean isOK = true;//type.testAnyConditionalOnClass();
+		boolean isOK = type.testAnyConditionalOnClass();
 		if (!isOK) {
 			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnClass check - returning FALSE");
 			return false;
@@ -1054,7 +1056,7 @@ public class ResourcesHandler {
 	}
 
 	private boolean checkConditionalOnBean(Type type) {
-		boolean isOK = true;//type.testAnyConditionalOnBean();
+		boolean isOK = type.testAnyConditionalOnBean();
 		if (!isOK) {
 			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnBean check - returning FALSE");
 			return false;
@@ -1062,33 +1064,64 @@ public class ResourcesHandler {
 		return true;
 	}
 
-	private boolean checkConditionalOnEnabledMetricsExport(Type type) {
-		boolean isOK = true;//type.testAnyConditionalOnEnabledMetricsExport();
+	private boolean checkConditionalOnMissingBean(Type type) {
+		boolean isOK = type.testAnyConditionalOnMissingBean();
 		if (!isOK) {
-			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport check - returning FALSE");
+			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnMissingBean check - returning FALSE");
 			return false;
 		}
 		return true;
 	}
+
+//	private boolean checkConditionalOnEnabledMetricsExport(Type type) {
+//		boolean isOK = type.testAnyConditionalOnEnabledMetricsExport();
+//		if (!isOK) {
+//			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport check - returning FALSE");
+//			return false;
+//		}
+//		return true;
+//	}
 	
-	private boolean checkConditionalOnPropertyAndConditionalOnAvailableEndpointConstraints(Type type) {
-		if (ConfigOptions.isEvaluateCOP()) {
-			boolean isOK = type.testAnyConditionalOnProperty();
-			if (!isOK) {
-				SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnProperty check - returning FALSE");
+	List<String> failedPropertyChecks = new ArrayList<>();
+	
+	/**
+	 * It is possible to ask for property checks to be done at build time - this enables chunks of code to be discarded early
+	 * and not included in the image. 
+	 * 
+	 * @param type the type that may have property related conditions on it
+	 * @return true if checks pass, false if one fails and the type should be considered inactive
+	 */
+	private boolean checkPropertyRelatedConditions(Type type) {
+		if (ConfigOptions.isBuildTimePropertyChecking()) {
+			String testResult = type.testAnyConditionalOnProperty();
+			if (testResult != null) {
+				String message = type.getDottedName()+" FAILED ConditionalOnProperty property check: "+testResult;
+				failedPropertyChecks.add(message);
+				SpringFeature.log(message);
 				return false;
 			}
 			// These are like a ConditionalOnProperty check but using a special condition to check the property
-			isOK = type.testAnyConditionalOnAvailableEndpoint();
-			if (!isOK) {
-					SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint check - returning FALSE");
-					return false;
+			testResult = type.testAnyConditionalOnAvailableEndpoint();
+			if (testResult != null) {
+				String message =  type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
+				failedPropertyChecks.add(message);
+				SpringFeature.log(message);
+				return false;
 			}
-//			isOK = type.testAnyConditionalOnEnabledHealthIndicator();
-//			if (!isOK) {
-//					SpringFeature.log(type.getDottedName()+" FAILED due to ConditionalOnEnabledHealthIndicator check - returning FALSE");
-//					return false;
-//			}
+			testResult = type.testAnyConditionalOnEnabledMetricsExport();
+			if (testResult != null) {
+				String message = type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
+				failedPropertyChecks.add(message);
+				SpringFeature.log(message);
+				return false;
+			}
+			testResult = type.testAnyConditionalOnEnabledHealthIndicator();
+			if (testResult != null) {
+				String message = type.getDottedName()+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
+				failedPropertyChecks.add(message);
+				SpringFeature.log(message);
+				return false;
+			}
 		}
 		return true;
 	}
@@ -1206,7 +1239,7 @@ public class ResourcesHandler {
 			return false;
 		}
 		
-		if (!checkConditionalOnPropertyAndConditionalOnAvailableEndpointConstraints(type)) {
+		if (!checkPropertyRelatedConditions(type)) {
 			pc.pop();
 			return false;
 		}
@@ -1215,6 +1248,11 @@ public class ResourcesHandler {
 			pc.pop();
 			return false;
 		}
+
+//		if (!checkConditionalOnBean(type) || !checkConditionalOnMissingBean(type) || !checkConditionalOnClass(type)) {
+//			pc.pop();
+//			return false;
+//		}
 		
 		checkMissingAnnotationsOnType(type);
 

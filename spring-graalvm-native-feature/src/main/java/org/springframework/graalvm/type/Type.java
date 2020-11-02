@@ -824,6 +824,24 @@ public class Type {
 
 	public static final List<Type> NO_ANNOTATIONS = Collections.emptyList();
 
+
+	public List<String> findConditionalOnBeanValue() {
+		if (dimensions > 0) {
+			return Collections.emptyList();
+		}
+		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnBean, false);
+		if (findAnnotationValue == null) {
+			if (node.visibleAnnotations != null) {
+				for (AnnotationNode an : node.visibleAnnotations) {
+					if (an.desc.equals(AtConditionalOnBean)) {
+						System.out.println("??? found nothing on this @COB annotated thing " + this.getName());
+					}
+				}
+			}
+		}
+		return findAnnotationValue;
+	}
+
 	public List<String> findConditionalOnMissingBeanValue() {
 		if (dimensions > 0) {
 			return Collections.emptyList();
@@ -833,7 +851,7 @@ public class Type {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					if (an.desc.equals(AtConditionalOnMissingBean)) {
-						System.out.println("??? found nothing on this @COC annotated thing " + this.getName());
+						System.out.println("??? found nothing on this @COMB annotated thing " + this.getName());
 					}
 				}
 			}
@@ -2552,9 +2570,64 @@ public class Type {
 		return null;
 	}
 	
+	public boolean testAnyConditionalOnBean() {
+		// Examples:
+		// @ConditionalOnBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
+		AnnotationNode annotation = getAnnotation(AtConditionalOnBean);
+		if (annotation != null) {
+			List<String> classDescriptors = findConditionalOnBeanValue(); // Lfoo/Bar;
+			for (String classDescriptor: classDescriptors) {
+				String typename = fromLdescriptorToDotted(classDescriptor);
+				Type resolved = typeSystem.resolveDotted(typename,true);
+				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
+	public boolean testAnyConditionalOnMissingBean() {
+		// Examples:
+		// @ConditionalOnMissingBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
+		AnnotationNode annotation = getAnnotation(AtConditionalOnMissingBean);
+		if (annotation != null) {
+			List<String> classDescriptors = findConditionalOnBeanValue(); // Lfoo/Bar;
+			for (String classDescriptor: classDescriptors) {
+				String typename = fromLdescriptorToDotted(classDescriptor);
+				Type resolved = typeSystem.resolveDotted(typename,true);
+				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-	public boolean testAnyConditionalOnProperty() {
+	public boolean testAnyConditionalOnClass() {
+		// Examples:
+		// @ConditionalOnClass(MeterRegistry.class)
+		AnnotationNode annotation = getAnnotation(AtConditionalOnClass);
+		if (annotation != null) {
+			List<String> classDescriptors = findConditionalOnClassValue(); // Lfoo/Bar;
+			for (String classDescriptor: classDescriptors) {
+				String typename = fromLdescriptorToDotted(classDescriptor);
+				Type resolved = typeSystem.resolveDotted(typename,true);
+				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Find any @ConditionalOnProperty and see if the specified property should be checked at build time. If it should be and
+	 * fails the check, return the property name in question.
+	 * 
+	 * @return the property name if it fails a check, otherwise null (meaning everything is OK)
+	 */
+	public String testAnyConditionalOnProperty() {
 		// Examples:
 		//	found COP on org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 		//	copDescriptor: @COP(names=[spring.flyway.enabled],matchIfMissing=true
@@ -2564,13 +2637,57 @@ public class Type {
 		if (annotation != null) {
 			ConditionalOnPropertyDescriptor copDescriptor = unpackConditionalOnPropertyAnnotation(annotation);
 			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			// System.out.println("=COP: "+activeProperties);
-			boolean isOK = copDescriptor.test(activeProperties);
-			SpringFeature.log("ConditionalOnProperty check on "+getDottedName()+" for "+copDescriptor+" returning isok?"+isOK);
-			return isOK;
+			return copDescriptor.test(activeProperties);
 		}
-		return true;
+		return null;
 	}
+	
+	private ConditionalOnEnabledMetricsExportDescriptor unpackConditionalOnEnabledMetricsExportDescriptor(AnnotationNode annotation) {
+		List<Object> values = annotation.values;
+		String name = null;
+		for (int i=0;i<values.size();i++) {
+			String attributeName = (String)values.get(i);
+			if (attributeName.equals("name") || attributeName.equals("value")) {
+				name = (String)values.get(++i);
+			}
+		}
+		return new ConditionalOnEnabledMetricsExportDescriptor(name);
+	}
+
+	static class ConditionalOnEnabledMetricsExportDescriptor implements TestableDescriptor {
+
+		private String metricsExporter;
+
+		public ConditionalOnEnabledMetricsExportDescriptor(String metricsExporter) {
+			this.metricsExporter = metricsExporter;
+		}
+
+		public String test(Map<String, String> properties) {
+			String key = "management.metrics.export."+metricsExporter+".enabled";
+			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+				return null;
+			}
+			String value = properties.get(key);
+			if (value!=null && !value.equalsIgnoreCase("true")) {
+				return null;
+			}
+			String defaultKey = "management.metrics.export.defaults.enabled";
+			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
+				return null;
+			}
+			String defaultValue = properties.get(defaultKey);
+			if (defaultValue!=null && !defaultValue.equalsIgnoreCase("true")) {
+				return null;
+			}
+			return "neither "+key+" nor "+defaultKey+" are true";
+		}
+
+		public String toString() {
+			return "@COEME("+metricsExporter+")";
+		}
+
+	}
+
 	
 	private ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation) {
 		List<Object> values = annotation.values;
@@ -2626,6 +2743,12 @@ public class Type {
 		}
 		return null;
 	}
+	
+	// @ConditionalOnEnabledHealthIndicator("cassandra")
+	private ConditionalOnEnabledHealthIndicatorDescriptor unpackConditionalOnEnabledHealthIndicatorAnnotation(AnnotationNode annotation) {
+		String value = fetchAnnotationAttributeValueAsString(annotation, "value");
+		return new ConditionalOnEnabledHealthIndicatorDescriptor(value);
+	}
 
 	private ConditionalOnAvailableEndpointDescriptor unpackConditionalOnAvailableEndpointAnnotation(AnnotationNode annotation) {
 		Type endpointClass = fetchAnnotationAttributeValueAsClass(annotation, "endpoint");
@@ -2661,7 +2784,46 @@ public class Type {
 		return null;
 	}
 
-	static class ConditionalOnAvailableEndpointDescriptor {
+
+	interface TestableDescriptor {
+		String test(Map<String, String> properties);
+	}
+
+	static class ConditionalOnEnabledHealthIndicatorDescriptor implements TestableDescriptor {
+
+		private String value;
+
+		public ConditionalOnEnabledHealthIndicatorDescriptor(String value) {
+			this.value = value;
+		}
+
+		public String test(Map<String, String> properties) {
+			String key = "management.health."+value+".enabled";
+			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+				return null;
+			}
+			String value = properties.get(key);
+			if (value!=null && !value.equalsIgnoreCase("true")) {
+				return null;
+			}
+			String defaultKey = "management.health.defaults.enabled";
+			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
+				return null;
+			}
+			String defaultValue = properties.get(defaultKey);
+			if (defaultValue!=null && !defaultValue.equalsIgnoreCase("true")) {
+				return null;
+			}
+			return "neither "+key+" nor "+defaultKey+" are true";
+		}
+
+		public String toString() {
+			return "@COEHI("+value+")";
+		}
+
+	}
+	
+	static class ConditionalOnAvailableEndpointDescriptor implements TestableDescriptor {
 
 		private String endpointId;
 
@@ -2671,8 +2833,11 @@ public class Type {
 
 		// https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html
 		// Crude first pass - ignore JMX exposure and only consider web exposure include (not exclude)
-		public boolean test(Map<String, String> properties) {
+		public String test(Map<String, String> properties) {
 			String key = "management.endpoints.web.exposure.include";
+			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+				return null;
+			}
 			String webExposedEndpoints = properties.get(key);
 			if (webExposedEndpoints==null) {
 				webExposedEndpoints="";
@@ -2682,11 +2847,11 @@ public class Type {
 			for (String exposedEndpointId: exposedEndpointIds) {
 				if (exposedEndpointId.equals(endpointId)) {
 					SpringFeature.log("COAE check: endpoint "+endpointId+" *is* exposed via management.endpoints.web.exposed.include");
-					return true;
+					return null;
 				}
 			}
 			SpringFeature.log("COAE check: endpoint "+endpointId+" *is not* exposed via management.endpoints.web.exposed.include");
-			return false;
+			return "management.endpoints.web.exposed.include="+webExposedEndpoints+" does not contain endpoint "+endpointId;
 		}
 
 		public String toString() {
@@ -2695,51 +2860,69 @@ public class Type {
 
 	}
 
-	static class ConditionalOnPropertyDescriptor {
+	static class ConditionalOnPropertyDescriptor implements TestableDescriptor {
 
-		private List<String> names;
+		private List<String> propertyNames;
 		private String havingValue;
 		private boolean matchIfMissing;
 
 		public ConditionalOnPropertyDescriptor(List<String> names, String havingValue, boolean matchIfMissing) {
-			this.names = names;
+			this.propertyNames = names;
 			this.havingValue = havingValue;
 			this.matchIfMissing = matchIfMissing;
 		}
 		
-		public boolean test(Map<String, String> properties) {
-			for (String name: names) {
+		public String test(Map<String, String> properties) {
+			for (String name: propertyNames) {
+				if (!ConfigOptions.buildTimeCheckableProperty(name)) {
+					return null;
+				}
 				String definedValue = properties.get(name);
 				if ((havingValue == null && !(definedValue==null || definedValue.toLowerCase().equals("false"))) ||
-					(havingValue != null && definedValue!=null && definedValue.toLowerCase().equals(havingValue.toLowerCase())) || 
-					(matchIfMissing && definedValue == null)) {
+					(havingValue != null && definedValue!=null && definedValue.toLowerCase().equals(havingValue.toLowerCase()))) {
 					// all is well!
+				} else if (matchIfMissing && definedValue == null) {
+					if (ConfigOptions.shouldRespectMatchIfMissing()) {
+						// all is well
+					} else {
+						return name+(havingValue==null?"":"="+havingValue)+" property check failed because configuration indicated matchIfMissing should be ignored";
+					}
 				} else {
-					return false;
+					return name+(havingValue==null?"":"="+havingValue)+" property check failed "+(definedValue==null?"":" against the discovered value "+definedValue);
 				}
 			}
-			return true;
+			return null;
 		}
 
 		public String toString() {
-			return "@COP(names="+names+","+(havingValue==null?"":"havingValue="+havingValue+",")+"matchIfMissing="+matchIfMissing;
+			return "@COP(names="+propertyNames+","+(havingValue==null?"":"havingValue="+havingValue+",")+"matchIfMissing="+matchIfMissing;
 		}
 		
+	}
+	
+	// Examples:
+	// @ConditionalOnEnabledMetricsExport("simple")
+	public String testAnyConditionalOnEnabledMetricsExport() {
+		AnnotationNode annotation = getAnnotation(AtConditionalOnEnabledMetricsExport);
+		if (annotation != null) {
+			ConditionalOnEnabledMetricsExportDescriptor coemedDescriptor = unpackConditionalOnEnabledMetricsExportDescriptor(annotation);
+			Map<String,String> activeProperties = typeSystem.getActiveProperties();
+			return coemedDescriptor.test(activeProperties);
+		}
+		return null;
 	}
 
 	// Example:
 	// @ConditionalOnAvailableEndpoint(endpoint = FlywayEndpoint.class) public class FlywayEndpointAutoConfiguration {
 	// @Endpoint(id = "flyway") public class FlywayEndpoint {
-	public boolean testAnyConditionalOnAvailableEndpoint() {
+	public String testAnyConditionalOnAvailableEndpoint() {
 		AnnotationNode annotation = getAnnotation(AtConditionalOnAvailableEndpoint);
 		if (annotation != null) {
 			ConditionalOnAvailableEndpointDescriptor coaeDescriptor = unpackConditionalOnAvailableEndpointAnnotation(annotation);
 			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			boolean isOK = coaeDescriptor.test(activeProperties);
-			SpringFeature.log("ConditionalOnAvailableEndpoint check on "+getDottedName()+" for "+coaeDescriptor+" returning isok?"+isOK);
-			return isOK;
+			return coaeDescriptor.test(activeProperties);
 		}
-		return true; // if no COAE then everything is fine, it didn't fail a test
+		return null;
 	}
 	
 	// Example:
@@ -2747,13 +2930,14 @@ public class Type {
 	// @AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 	// @EnableConfigurationProperties(DiskSpaceHealthIndicatorProperties.class)
 	// public class DiskSpaceHealthContributorAutoConfiguration {
-	public boolean testAnyConditionalOnEnabledHealthIndicator() {
+	public String testAnyConditionalOnEnabledHealthIndicator() {
 		AnnotationNode annotation = getAnnotation(AtConditionalOnEnabledHealthIndicator);
 		if (annotation != null) {
-			// TODO should be checking a property...
-			return false;
+			ConditionalOnEnabledHealthIndicatorDescriptor coehiDescriptor = unpackConditionalOnEnabledHealthIndicatorAnnotation(annotation);
+			Map<String,String> activeProperties = typeSystem.getActiveProperties();
+			return coehiDescriptor.test(activeProperties);
 		}
-		return true; // if no COEHI then everything is fine, it didn't fail a test
+		return null;
 	}
 
 	public TypeSystem getTypeSystem() {

@@ -113,6 +113,12 @@ public class SpringFeature implements Feature {
 					+ reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
 			reflectionHandler.dump();
 		}
+		if (ConfigOptions.isVerbose() && resourcesHandler.failedPropertyChecks.size()!=0) {
+			SpringFeature.log("Failed property check summary:");
+			for (String failedPropertyCheck: resourcesHandler.failedPropertyChecks) {
+				SpringFeature.log(failedPropertyCheck);
+			}
+		}
 	}
 
 	public static void log(int depth, String msg) {
@@ -122,6 +128,15 @@ public class SpringFeature implements Feature {
 	public static void log(String msg) {
 		if (ConfigOptions.isVerbose()) {
 			System.out.println(msg);
+		}
+	}
+
+	public static void log(String type, String msg) {
+		if (type.equals("INFO")) {
+			System.out.println(msg);
+		} else {
+			// assuming debug (only for verbose mode output)
+			log(msg);
 		}
 	}
 

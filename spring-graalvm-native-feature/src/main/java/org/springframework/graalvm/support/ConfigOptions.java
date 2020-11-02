@@ -17,6 +17,8 @@ package org.springframework.graalvm.support;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
@@ -35,6 +37,12 @@ import com.oracle.svm.hosted.ImageClassLoader;
 public abstract class ConfigOptions {
 	
 	private final static boolean IGNORE_HINTS_ON_EXCLUDED_CONFIG;
+	
+	private static List<String> BUILD_TIME_PROPERTIES_CHECKS;
+	
+	private static List<String> IGNORED_TYPES;
+	
+	private final static boolean BUILD_TIME_PROPERTIES_MATCH_IF_MISSING;
 
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
 
@@ -45,8 +53,6 @@ public abstract class ConfigOptions {
 	private final static boolean REMOVE_JMX_SUPPORT;
 
 	private final static boolean REMOVE_YAML_SUPPORT;
-	
-	private final static boolean EVALUATE_COP;
 	
 	private final static String DUMP_CONFIG;
 
@@ -69,6 +75,34 @@ public abstract class ConfigOptions {
 	private static Boolean SPRING_INIT_ACTIVE = null;
 
 	static {
+		String ignoredTypes = System.getProperty("spring.native.ignore-types");
+		if (ignoredTypes != null) {
+			String[] splits = ignoredTypes.split(",");
+			if (splits != null) {
+				IGNORED_TYPES = new ArrayList<>();
+				for (String split: splits) {
+					IGNORED_TYPES.add(split);
+				}
+			}	
+		}
+		String propChecks = System.getProperty("spring.native.build-time-properties-checks");
+		if (propChecks != null) {
+			// default-include-all/default-exclude-all and then a series of patterns
+			String[] splits = propChecks.split(",");
+			if (splits != null) {
+				BUILD_TIME_PROPERTIES_CHECKS = new ArrayList<>();
+				for (String split: splits) {
+					BUILD_TIME_PROPERTIES_CHECKS.add(split);
+				}
+			}
+		}
+		if (BUILD_TIME_PROPERTIES_CHECKS != null) {
+			System.out.println("System is matching some properties at build time: "+propChecks);
+		}
+		BUILD_TIME_PROPERTIES_MATCH_IF_MISSING = Boolean.valueOf(System.getProperty("spring.native.build-time-properties-match-if-missing","true"));
+		if (!BUILD_TIME_PROPERTIES_MATCH_IF_MISSING) {
+			System.out.println("For matchIfMissing property checks system will assume if the property is not specified the check will fail");
+		}
 		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","true"));
 		if (!IGNORE_HINTS_ON_EXCLUDED_CONFIG) {
 			System.out.println("Currently not processing any spring.autoconfigure.exclude property in application.properties)");
@@ -89,10 +123,6 @@ public abstract class ConfigOptions {
 				MODE = Mode.REFLECTION;
 			}
 			System.out.println("Feature operating in "+MODE+" mode");
-		}
-		EVALUATE_COP = Boolean.valueOf(System.getProperty("spring.native.evaluate-cop", "false"));
-		if(EVALUATE_COP) {
-			System.out.println("Considering ConditionalOnProperty during configuration analysis");
 		}
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
@@ -220,10 +250,6 @@ public abstract class ConfigOptions {
 		return SKIP_AT_BEAN_SIGNATURE_TYPES;
 	}
 
-	public static boolean isEvaluateCOP() {
-		return EVALUATE_COP;
-	}
-
 	public static Mode getMode() {
 		return MODE;
 	}
@@ -298,5 +324,87 @@ public abstract class ConfigOptions {
 			// Assume doesn't exist
 		}
 		return exists;
+	}
+
+	public static boolean isBuildTimePropertyChecking() {
+		if (BUILD_TIME_PROPERTIES_CHECKS == null) {
+			return false;
+		}
+		if (BUILD_TIME_PROPERTIES_CHECKS.size()>0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean shouldRespectMatchIfMissing() {
+		return BUILD_TIME_PROPERTIES_MATCH_IF_MISSING==true;
+	}
+
+	/**
+	 * Determine if the specified property should be checked at build time.
+	 * 
+	 * @param key the property key (e.g. spring.application.name)
+	 * @return true if the property should be checked at build time
+	 */
+	public static boolean buildTimeCheckableProperty(String key) {
+		if (!isBuildTimePropertyChecking()) {
+			return false;
+		}
+		boolean defaultResult = true;
+		int maxExplicitExclusionMatchLength = -1;
+		int maxExplicitInclusionMatchLength = -1;
+		for (String btpcPattern: BUILD_TIME_PROPERTIES_CHECKS) {
+			if (btpcPattern.equals("default-include-all")) {
+				defaultResult = true;
+			} else if (btpcPattern.equals("default-exclude-all")) {
+				defaultResult = false;
+			} else if (btpcPattern.startsWith("!")) {
+				// Exclusion: e.g. !management.foo.bar.
+				if (key.startsWith(btpcPattern.substring(1))) {
+					if ((btpcPattern.length()-1)>maxExplicitExclusionMatchLength) {
+						maxExplicitExclusionMatchLength = btpcPattern.length()-1;
+					}
+				}
+			} else {
+				// Inclusion: e.g. spring.foo.
+				if (key.startsWith(btpcPattern)) {
+					if ((btpcPattern.length())>maxExplicitInclusionMatchLength) {
+						maxExplicitInclusionMatchLength = btpcPattern.length();
+					}
+				}
+			}
+		}
+		if (maxExplicitExclusionMatchLength==-1 && maxExplicitInclusionMatchLength==-1) {
+			return defaultResult;
+		}
+		if (maxExplicitExclusionMatchLength>maxExplicitInclusionMatchLength) {
+			// Explicit exclusion match was more specific
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static List<String> getIgnoredTypes() {
+		return IGNORED_TYPES;
+	}
+	
+	public static boolean shouldIgnoreType(String typename) {
+		if (IGNORED_TYPES==null) {
+			return false;
+		}
+		for (String ignoredType: IGNORED_TYPES) {
+			if (ignoredType.endsWith(".")) {
+				// its a package
+				if (typename.startsWith(ignoredType)) {
+					return true;
+				}
+			} else {
+				if (ignoredType.equals(typename)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
