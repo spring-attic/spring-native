@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native</artifactId>
-			<version>0.8.2-RC1</version>
+			<version>0.8.2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Required for the agent mode -->
