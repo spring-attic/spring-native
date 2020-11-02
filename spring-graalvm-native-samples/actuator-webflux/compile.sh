@@ -30,6 +30,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -Dspring.spel.ignore=true \
   -Dspring.native.build-time-properties-checks=default-include-all \
+  -Dspring.native.build-time-properties-match-if-missing=false \
   -Dspring.native.factories.no-actuator-metrics=true \
   -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt

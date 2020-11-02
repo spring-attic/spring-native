@@ -81,6 +81,15 @@ See the <<troubleshooting>> section for more details on this.
 
 * `-Dspring.native.fail-on-version-check=false` disables failure on Spring Boot version check.
 
+* `-Dspring.native.factories.no-actuator-metrics=true` disables inclusion of metrics related actuator infrastructure when importing the actuator starter. Large reduction in memory usage with this turned on (obviously only usable if the application does not require that infrastructure).
+
+* `-Dspring.native.build-time-properties-checks=` switches on build time evaluation of some configuration conditions related to properties. It must include at least an initial setting of `default-include-all` or `default-exclude-all` and that may be followed
+by a comma separated list of prefixes to explicitly include or exclude (for example `=default-include-all,!spring.dont.include.these.,!or.these` or `=default-exclude-all,spring.include.this.one.though.,and.this.one`). When considering a property the
+longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
+
+* `-Dspring.native.build-time-properties-match-if-missing=false` means for any properties specifying `matchIfMissing=true` that will be overridden and not respected. This does flip the application into a mode where it needs to be much more explicit
+about specifying properties that activate configurations. (This is a work in dev option really for experimenting with image size vs explicit property trade offs).
+
 === Other options
 
 * `--enable-all-security-services` required for HTTPS and crypto.
