@@ -68,13 +68,19 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				},
 				typeNames= {
 						"org.springframework.security.authentication.cas.ProxyUntrustedException",
-				},
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
+				}
+		),
 		// TODO interesting that gs-securing-web causes these to be needed although it is in thymeleaf (due to SpEL expressions I think)
 		@TypeInfo(
 			typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
 			types= { HttpServletRequestWrapper.class,ServletRequestWrapper.class,ServletRequest.class},
-			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)
+			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS),
+
+		@TypeInfo(typeNames = {
+				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
+				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
+				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
+		}, access = AccessBits.ALL)
 })
 public class SecurityHints implements NativeImageConfiguration {
 }

@@ -15,10 +15,10 @@
  */
 package org.springframework.context.annotation;
 
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.DefaultEventListenerFactory;
@@ -30,12 +30,6 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
-/*
-// Not quite right... this is a superclass of a selector we've already added...
-proposedHints.put(AdviceModeImportSelector,
-		new CompilationHint(true, true, new String[0]
-		));
-		*/
 @NativeImageHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 // TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 // @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
@@ -47,11 +41,10 @@ proposedHints.put(AdviceModeImportSelector,
 // TODO Check required access for enums like this FilterType
 @NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
 @NativeImageHint(typeInfos = {
-	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
-			  access=AccessBits.LOAD_AND_CONSTRUCT)})
+	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
+	)})
 @NativeImageHint(typeInfos = {
-		@TypeInfo(types = { 
-				org.springframework.context.ApplicationContext.class, // petclinic-jpa shows errors in startup log without this
+		@TypeInfo(types = {
 				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,
@@ -61,13 +54,14 @@ proposedHints.put(AdviceModeImportSelector,
 				EventListenerMethodProcessor.class,
 				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
-				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS),
-		@TypeInfo( types= {ComponentScan.Filter.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+				}),
+		@TypeInfo(types= ComponentScan.Filter.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types = { ConfigurationClassPostProcessor.class },
 		methods = {
 				@MethodInfo(name="setMetadataReaderFactory",parameterTypes=MetadataReaderFactory.class)
-		},
-		access=AccessBits.LOAD_AND_CONSTRUCT)
+		}
+		),
+		@TypeInfo(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE)
 })
 public class ContextAnnotationHints implements NativeImageConfiguration {
 }

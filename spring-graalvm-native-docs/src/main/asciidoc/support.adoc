@@ -1,13 +1,17 @@
 [[support]]
 == Support
 
+=== GraalVM
+
+GraalVM version {graalvm-version} is supported.
+
 === Language
 
-Java 8, Java 11 and Kotlin 1.3+ are supported. GraalVM version 20.2.0 should be used.
+Java 8, Java 11 and Kotlin 1.3+ are supported.
 
 === Spring Boot
 
-IMPORTANT: Only Spring Boot {boot-version} and above are supported.
+IMPORTANT: `spring-graalvm-native` {version} is designed to be used with Spring Boot {boot-version}.
 
 The following starters are supported, the group ID is `org.springframework.boot` unless specified otherwise.
 

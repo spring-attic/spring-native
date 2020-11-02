@@ -15,11 +15,11 @@ docker build \
   -t springci/graalvm-ce:20.2-dev-java11 - < $DIR/Dockerfile.graalvm-ce
 
 docker build \
-  --build-arg JVMCI_URL=https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b03/openjdk-8u272+10-jvmci-20.3-b03-fastdebug-linux-amd64.tar.gz \
+  --build-arg JVMCI_URL=https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b04/openjdk-8u272+10-jvmci-20.3-b04-fastdebug-linux-amd64.tar.gz \
   --build-arg GRAALVM_BRANCH=master \
   -t springci/graalvm-ce:master-java8 - < $DIR/Dockerfile.graalvm-ce
 
 docker build \
-  --build-arg JVMCI_URL=https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b03/labsjdk-ce-11.0.9+10-jvmci-20.3-b03-debug-linux-amd64.tar.gz \
+  --build-arg JVMCI_URL=https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b04/labsjdk-ce-11.0.9+10-jvmci-20.3-b04-debug-linux-amd64.tar.gz \
   --build-arg GRAALVM_BRANCH=master \
   -t springci/graalvm-ce:master-java11 - < $DIR/Dockerfile.graalvm-ce
