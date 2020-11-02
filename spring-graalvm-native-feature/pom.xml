@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-graalvm-native-build</artifactId>
-		<version>0.8.2-SNAPSHOT</version>
+		<version>0.8.2-RC1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>spring-graalvm-native-feature</artifactId>
-	<version>0.8.2-SNAPSHOT</version>
+	<version>0.8.2-RC1</version>
 	<packaging>jar</packaging>
 
 	<name>Spring GraalVM Native feature</name>
