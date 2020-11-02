@@ -29,10 +29,11 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   --verbose \
   -H:Name=$ARTIFACT \
   -Dspring.spel.ignore=true \
+  -Dspring.native.build-time-properties-checks=default-include-all \
+  -Dspring.native.factories.no-actuator-metrics=true \
   -Dspring.native.remove-yaml-support=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
-#  -Dspring.native.verbose=true \
 if [[ -f $ARTIFACT ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"

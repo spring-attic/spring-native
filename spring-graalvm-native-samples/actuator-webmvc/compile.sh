@@ -28,7 +28,8 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   --verbose \
   -H:Name=$ARTIFACT \
-  -Dspring.native.evaluate-cop=true \
+  -Dspring.native.build-time-properties-checks=default-include-all \
+  -Dspring.native.factories.no-actuator-metrics=true \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
