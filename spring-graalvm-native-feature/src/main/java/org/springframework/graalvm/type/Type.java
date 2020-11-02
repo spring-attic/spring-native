@@ -2570,57 +2570,6 @@ public class Type {
 		return null;
 	}
 	
-	public boolean testAnyConditionalOnBean() {
-		// Examples:
-		// @ConditionalOnBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
-		AnnotationNode annotation = getAnnotation(AtConditionalOnBean);
-		if (annotation != null) {
-			List<String> classDescriptors = findConditionalOnBeanValue(); // Lfoo/Bar;
-			for (String classDescriptor: classDescriptors) {
-				String typename = fromLdescriptorToDotted(classDescriptor);
-				Type resolved = typeSystem.resolveDotted(typename,true);
-				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	public boolean testAnyConditionalOnMissingBean() {
-		// Examples:
-		// @ConditionalOnMissingBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
-		AnnotationNode annotation = getAnnotation(AtConditionalOnMissingBean);
-		if (annotation != null) {
-			List<String> classDescriptors = findConditionalOnBeanValue(); // Lfoo/Bar;
-			for (String classDescriptor: classDescriptors) {
-				String typename = fromLdescriptorToDotted(classDescriptor);
-				Type resolved = typeSystem.resolveDotted(typename,true);
-				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	public boolean testAnyConditionalOnClass() {
-		// Examples:
-		// @ConditionalOnClass(MeterRegistry.class)
-		AnnotationNode annotation = getAnnotation(AtConditionalOnClass);
-		if (annotation != null) {
-			List<String> classDescriptors = findConditionalOnClassValue(); // Lfoo/Bar;
-			for (String classDescriptor: classDescriptors) {
-				String typename = fromLdescriptorToDotted(classDescriptor);
-				Type resolved = typeSystem.resolveDotted(typename,true);
-				if (/*resolved==null ||*/ ConfigOptions.shouldIgnoreType(typename)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * Find any @ConditionalOnProperty and see if the specified property should be checked at build time. If it should be and
 	 * fails the check, return the property name in question.

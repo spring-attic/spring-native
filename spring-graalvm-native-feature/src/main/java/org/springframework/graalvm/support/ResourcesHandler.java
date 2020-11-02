@@ -1046,33 +1046,6 @@ public class ResourcesHandler {
 	}
 
 
-	private boolean checkConditionalOnClass(Type type) {
-		boolean isOK = type.testAnyConditionalOnClass();
-		if (!isOK) {
-			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnClass check - returning FALSE");
-			return false;
-		}
-		return true;
-	}
-
-	private boolean checkConditionalOnBean(Type type) {
-		boolean isOK = type.testAnyConditionalOnBean();
-		if (!isOK) {
-			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnBean check - returning FALSE");
-			return false;
-		}
-		return true;
-	}
-
-	private boolean checkConditionalOnMissingBean(Type type) {
-		boolean isOK = type.testAnyConditionalOnMissingBean();
-		if (!isOK) {
-			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnMissingBean check - returning FALSE");
-			return false;
-		}
-		return true;
-	}
-
 //	private boolean checkConditionalOnEnabledMetricsExport(Type type) {
 //		boolean isOK = type.testAnyConditionalOnEnabledMetricsExport();
 //		if (!isOK) {

@@ -40,8 +40,6 @@ public abstract class ConfigOptions {
 	
 	private static List<String> BUILD_TIME_PROPERTIES_CHECKS;
 	
-	private static List<String> IGNORED_TYPES;
-	
 	private final static boolean BUILD_TIME_PROPERTIES_MATCH_IF_MISSING;
 
 	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
@@ -75,16 +73,6 @@ public abstract class ConfigOptions {
 	private static Boolean SPRING_INIT_ACTIVE = null;
 
 	static {
-		String ignoredTypes = System.getProperty("spring.native.ignore-types");
-		if (ignoredTypes != null) {
-			String[] splits = ignoredTypes.split(",");
-			if (splits != null) {
-				IGNORED_TYPES = new ArrayList<>();
-				for (String split: splits) {
-					IGNORED_TYPES.add(split);
-				}
-			}	
-		}
 		String propChecks = System.getProperty("spring.native.build-time-properties-checks");
 		if (propChecks != null) {
 			// default-include-all/default-exclude-all and then a series of patterns
@@ -383,28 +371,5 @@ public abstract class ConfigOptions {
 		} else {
 			return true;
 		}
-	}
-	
-	public static List<String> getIgnoredTypes() {
-		return IGNORED_TYPES;
-	}
-	
-	public static boolean shouldIgnoreType(String typename) {
-		if (IGNORED_TYPES==null) {
-			return false;
-		}
-		for (String ignoredType: IGNORED_TYPES) {
-			if (ignoredType.endsWith(".")) {
-				// its a package
-				if (typename.startsWith(ignoredType)) {
-					return true;
-				}
-			} else {
-				if (ignoredType.equals(typename)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 }
