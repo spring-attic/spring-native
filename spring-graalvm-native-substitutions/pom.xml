@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-graalvm-native-build</artifactId>
-		<version>0.8.2-SNAPSHOT</version>
+		<version>0.8.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>spring-graalvm-native-substitutions</artifactId>
-	<version>0.8.2-SNAPSHOT</version>
+	<version>0.8.2</version>
 	<packaging>jar</packaging>
 
 	<name>Spring GraalVM Native substitutions</name>
@@ -136,7 +136,7 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native-configuration</artifactId>
-			<version>0.8.2-SNAPSHOT</version>
+			<version>0.8.2</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

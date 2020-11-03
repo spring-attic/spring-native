@@ -72,7 +72,7 @@
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-graalvm-native</artifactId>
 			<optional>true</optional>
-			<version>0.8.2-SNAPSHOT</version>
+			<version>0.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
