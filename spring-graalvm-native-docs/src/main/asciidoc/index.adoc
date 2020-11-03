@@ -4,7 +4,7 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-graalvm-native
-:version: 0.8.2
+:version: 0.8.3-SNAPSHOT
 :repository: milestone
 :boot-version: 2.4.0-RC1
 :graalvm-version: 20.2.0
