@@ -7,22 +7,22 @@ resources:
   - name: every-day
     type: time
     source: {interval: 24h}
-  - name: graalvm-ce-20.2-dev-java8-image
+  - name: graalvm-ce-20.3-dev-java8-image
     type: docker-image
     icon: docker
     source:
       repository: springci/graalvm-ce
       username: ((docker-hub-username))
       password: ((docker-hub-password))
-      tag: 20.2-dev-java8
-  - name: graalvm-ce-20.2-dev-java11-image
+      tag: 20.3-dev-java8
+  - name: graalvm-ce-20.3-dev-java11-image
     type: docker-image
     icon: docker
     source:
       repository: springci/graalvm-ce
       username: ((docker-hub-username))
       password: ((docker-hub-password))
-      tag: 20.2-dev-java11
+      tag: 20.3-dev-java11
   - name: graalvm-ce-master-java8-image
     type: docker-image
     icon: docker
@@ -39,22 +39,22 @@ resources:
       username: ((docker-hub-username))
       password: ((docker-hub-password))
       tag: master-java11
-  - name: spring-graalvm-native-20.2-dev-java8-image
+  - name: spring-graalvm-native-20.3-dev-java8-image
     type: docker-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
       username: ((docker-hub-username))
       password: ((docker-hub-password))
-      tag: 20.2-dev-java8
-  - name: spring-graalvm-native-20.2-dev-java11-image
+      tag: 20.3-dev-java8
+  - name: spring-graalvm-native-20.3-dev-java11-image
     type: docker-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
       username: ((docker-hub-username))
       password: ((docker-hub-password))
-      tag: 20.2-dev-java11
+      tag: 20.3-dev-java11
   - name: spring-graalvm-native-master-java8-image
     type: docker-image
     icon: docker
@@ -86,7 +86,7 @@ jobs:
         trigger: true
       - task: build
         file: spring-graalvm-native/ci/java11-key-samples-build.yml
-  - name: 20.2-dev-java8-samples-build
+  - name: 20.3-dev-java8-samples-build
     old_name: java8-samples-build
     public: true
     plan:
@@ -94,8 +94,8 @@ jobs:
         passed: [build-spring-graalvm-native-images]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/20.2-dev-java8-samples-build.yml
-  - name: 20.2-dev-java11-samples-build
+        file: spring-graalvm-native/ci/20.3-dev-java8-samples-build.yml
+  - name: 20.3-dev-java11-samples-build
     old_name: java11-samples-build
     public: true
     plan:
@@ -103,7 +103,7 @@ jobs:
         passed: [build-spring-graalvm-native-images]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/20.2-dev-java11-samples-build.yml
+        file: spring-graalvm-native/ci/20.3-dev-java11-samples-build.yml
   - name: master-java8-samples-build
     public: true
     plan:
@@ -141,20 +141,20 @@ jobs:
       - get: every-day
         trigger: true
       - in_parallel:
-          - put: graalvm-ce-20.2-dev-java8-image
+          - put: graalvm-ce-20.3-dev-java8-image
             params:
               build: spring-graalvm-native/docker
               dockerfile: spring-graalvm-native/docker/Dockerfile.graalvm-ce
               build_args:
-                JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.2-b03/openjdk-8u262+10-jvmci-20.2-b03-fastdebug-linux-amd64.tar.gz
-                GRAALVM_BRANCH: release/graal-vm/20.2
-          - put: graalvm-ce-20.2-dev-java11-image
+                JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b04/openjdk-8u272+10-jvmci-20.3-b04-fastdebug-linux-amd64.tar.gz
+                GRAALVM_BRANCH: release/graal-vm/20.3
+          - put: graalvm-ce-20.3-dev-java11-image
             params:
               build: spring-graalvm-native/docker
               dockerfile: spring-graalvm-native/docker/Dockerfile.graalvm-ce
               build_args:
-                JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.2-b03/labsjdk-ce-11.0.8+10-jvmci-20.2-b03-debug-linux-amd64.tar.gz
-                GRAALVM_BRANCH: release/graal-vm/20.2
+                JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b04/labsjdk-ce-11.0.9+10-jvmci-20.3-b04-debug-linux-amd64.tar.gz
+                GRAALVM_BRANCH: release/graal-vm/20.3
           - put: graalvm-ce-master-java8-image
             params:
               build: spring-graalvm-native/docker
@@ -177,18 +177,18 @@ jobs:
         passed: [build-graalvm-ce-images]
         trigger: true
       - in_parallel:
-          - put: spring-graalvm-native-20.2-dev-java8-image
+          - put: spring-graalvm-native-20.3-dev-java8-image
             params:
               build: spring-graalvm-native/docker
               dockerfile: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
               build_args:
-                BASE_IMAGE: springci/graalvm-ce:20.2-dev-java8
-          - put: spring-graalvm-native-20.2-dev-java11-image
+                BASE_IMAGE: springci/graalvm-ce:20.3-dev-java8
+          - put: spring-graalvm-native-20.3-dev-java11-image
             params:
               build: spring-graalvm-native/docker
               dockerfile: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
               build_args:
-                BASE_IMAGE: springci/graalvm-ce:20.2-dev-java11
+                BASE_IMAGE: springci/graalvm-ce:20.3-dev-java11
           - put: spring-graalvm-native-master-java8-image
             params:
               build: spring-graalvm-native/docker
@@ -206,4 +206,4 @@ groups:
   - name: "Each commit builds"
     jobs: ["java8-key-samples-build", "java11-key-samples-build", "deploy"]
   - name: "Daily builds"
-    jobs: ["build-graalvm-ce-images", "build-spring-graalvm-native-images", "20.2-dev-java8-samples-build", "20.2-dev-java11-samples-build", "master-java8-samples-build", "master-java11-samples-build"]
+    jobs: ["build-graalvm-ce-images", "build-spring-graalvm-native-images", "20.3-dev-java8-samples-build", "20.3-dev-java11-samples-build", "master-java8-samples-build", "master-java11-samples-build"]

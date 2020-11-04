@@ -5,12 +5,12 @@ echo $DIR
 
 
 docker build \
-  --build-arg BASE_IMAGE=springci/graalvm-ce:20.2-dev-java8 \
-  -t springci/spring-graalvm-native:20.2-dev-java8 - < $DIR/Dockerfile.spring-graalvm-native
+  --build-arg BASE_IMAGE=springci/graalvm-ce:20.3-dev-java8 \
+  -t springci/spring-graalvm-native:20.3-dev-java8 - < $DIR/Dockerfile.spring-graalvm-native
 
 docker build \
-  --build-arg BASE_IMAGE=springci/graalvm-ce:20.2-dev-java11 \
-  -t springci/spring-graalvm-native:20.2-dev-java11 - < $DIR/Dockerfile.spring-graalvm-native
+  --build-arg BASE_IMAGE=springci/graalvm-ce:20.3-dev-java11 \
+  -t springci/spring-graalvm-native:20.3-dev-java11 - < $DIR/Dockerfile.spring-graalvm-native
 
 docker build \
   --build-arg BASE_IMAGE=springci/graalvm-ce:master-java8 \
