@@ -30,9 +30,11 @@ RUN apt-get -y update \
  && npm i -g \
  && cd .. \
  && rm -rf tty-table-master \
- && curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.1-amd64.deb \
- && dpkg -i elasticsearch-7.9.1-amd64.deb \
- && rm elasticsearch-7.9.1-amd64.deb \
+	 && curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.3-amd64.deb \
+ && dpkg -i elasticsearch-7.9.3-amd64.deb \
+ && rm elasticsearch-7.9.3-amd64.deb \
+ && echo "JAVA=\"\$ES_HOME/jdk/bin/java\"" | tee -a /usr/share/elasticsearch/bin/elasticsearch-env \
+ && echo "JAVA_TYPE=\"bundled jdk\"" | tee -a /usr/share/elasticsearch/bin/elasticsearch-env \
  && chmod 770 /var/lib/elasticsearch \
  && chmod 770 /var/log/elasticsearch \
  && curl -LO https://dist.neo4j.org/deb/neo4j_3.5.21_all.deb \
