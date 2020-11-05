@@ -8,7 +8,7 @@ resources:
     type: time
     source: {interval: 24h}
   - name: graalvm-ce-20.3-dev-java8-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/graalvm-ce
@@ -16,7 +16,7 @@ resources:
       password: ((docker-hub-password))
       tag: 20.3-dev-java8
   - name: graalvm-ce-20.3-dev-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/graalvm-ce
@@ -24,7 +24,7 @@ resources:
       password: ((docker-hub-password))
       tag: 20.3-dev-java11
   - name: graalvm-ce-master-java8-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/graalvm-ce
@@ -32,7 +32,7 @@ resources:
       password: ((docker-hub-password))
       tag: master-java8
   - name: graalvm-ce-master-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/graalvm-ce
@@ -40,7 +40,7 @@ resources:
       password: ((docker-hub-password))
       tag: master-java11
   - name: spring-graalvm-native-20.3-dev-java8-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
@@ -48,7 +48,7 @@ resources:
       password: ((docker-hub-password))
       tag: 20.3-dev-java8
   - name: spring-graalvm-native-20.3-dev-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
@@ -56,7 +56,7 @@ resources:
       password: ((docker-hub-password))
       tag: 20.3-dev-java11
   - name: spring-graalvm-native-master-java8-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
@@ -64,7 +64,7 @@ resources:
       password: ((docker-hub-password))
       tag: master-java8
   - name: spring-graalvm-native-master-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       repository: springci/spring-graalvm-native
