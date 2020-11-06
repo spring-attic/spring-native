@@ -91,6 +91,7 @@ jobs:
     plan:
       - get: spring-graalvm-native
         passed: [build-spring-graalvm-native-20.3-dev-java8-image]
+        trigger: true
       - task: build
         file: spring-graalvm-native/ci/20.3-dev-java8-samples-build.yml
   - name: build-20.3-dev-java11-samples
@@ -98,6 +99,7 @@ jobs:
     plan:
       - get: spring-graalvm-native
         passed: [build-spring-graalvm-native-20.3-dev-java11-image]
+        trigger: true
       - task: build
         file: spring-graalvm-native/ci/20.3-dev-java11-samples-build.yml
   - name: build-master-java8-samples
@@ -105,6 +107,7 @@ jobs:
     plan:
       - get: spring-graalvm-native
         passed: [build-spring-graalvm-native-master-java8-image]
+        trigger: true
       - task: build
         file: spring-graalvm-native/ci/master-java8-samples-build.yml
   - name: build-master-java11-samples
@@ -112,6 +115,7 @@ jobs:
     plan:
       - get: spring-graalvm-native
         passed: [build-spring-graalvm-native-master-java11-image]
+        trigger: true
       - task: build
         file: spring-graalvm-native/ci/master-java11-samples-build.yml
   - name: deploy
@@ -121,6 +125,7 @@ jobs:
         passed:
           - build-java8-key-samples
           - build-java11-key-samples
+        trigger: true
       - task: deploy
         file: spring-graalvm-native/ci/deploy.yml
         params:
@@ -237,6 +242,7 @@ jobs:
     plan:
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-20.3-dev-java8-image]
+      trigger: true
     - task: build
       privileged: true
       config:
@@ -261,6 +267,7 @@ jobs:
     plan:
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-20.3-dev-java11-image]
+      trigger: true
     - task: build
       privileged: true
       config:
@@ -285,6 +292,7 @@ jobs:
     plan:
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-master-java8-image]
+      trigger: true
     - task: build
       privileged: true
       config:
@@ -309,6 +317,7 @@ jobs:
     plan:
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-master-java11-image]
+      trigger: true
     - task: build
       privileged: true
       config:
