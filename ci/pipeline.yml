@@ -157,8 +157,6 @@ jobs:
           BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
     - put: graalvm-ce-20.3-dev-java8-image
       params: {image: image/image.tar}
-    - task: build
-      file: spring-graalvm-native/ci/20.3-dev-java8-samples-build.yml
   - name: build-graalvm-ce-20.3-dev-java11-image
     public: true
     plan:
