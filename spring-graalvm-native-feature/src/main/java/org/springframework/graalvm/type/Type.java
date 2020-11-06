@@ -15,10 +15,11 @@
  */
 package org.springframework.graalvm.type;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.extension.InitializationInfo;
 import org.springframework.graalvm.extension.InitializationInfos;
@@ -1363,6 +1363,15 @@ public class Type {
 		}
 		return result.toArray(new Type[0]);
 	}
+	
+	public List<String> getMethodsInvokingGetBean() {
+		byte[] bytes = typeSystem.find(getName());
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
+			return GetBeanDetectionVisitor.run(bais);
+		} catch (IOException e) {
+			throw new IllegalStateException("Unexpected IOException processing bytes for "+this.getName());
+		}
+	}
 
 	/*
 	private List<CompilationHint> findCompilationHintHelper(HashSet<Type> visited) {
@@ -2238,6 +2247,10 @@ public class Type {
 	 */
 	public void verifyComponent() {
 		verifyProxyBeanMethodsSetting();
+		List<String> methodsInvokingGetBean = getMethodsInvokingGetBean();
+		if (methodsInvokingGetBean != null) {
+			throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are invoking getBean(): "+methodsInvokingGetBean);
+		}
 	}
 
 	/**
