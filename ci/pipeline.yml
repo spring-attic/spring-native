@@ -152,7 +152,7 @@ jobs:
           BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
     - put: graalvm-ce-20.3-dev-java8-image
       params:
-        image: image/graalvm-ce-20.3-dev-java8-image.tar
+        image: graalvm-ce-20.3-dev-java8-image/graalvm-ce-20.3-dev-java8-image.tar
     - task: build
       file: spring-graalvm-native/ci/20.3-dev-java8-samples-build.yml
   - name: build-graalvm-ce-20.3-dev-java11-image
@@ -181,7 +181,7 @@ jobs:
         BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
     - put: graalvm-ce-20.3-dev-java11-image
       params:
-        image: image/graalvm-ce-20.3-dev-java11-image.tar
+        image: graalvm-ce-20.3-dev-java11-image/graalvm-ce-20.3-dev-java11-image.tar
   - name: build-graalvm-ce-master-java8-image
     public: true
     plan:
@@ -208,7 +208,7 @@ jobs:
           BUILD_ARG_GRAALVM_BRANCH: master
     - put: graalvm-ce-master-java8-image
       params:
-        image: image/graalvm-ce-master-java8-image.tar
+        image: graalvm-ce-master-java8-image/graalvm-ce-master-java8-image.tar
   - name: build-graalvm-ce-master-java11-image
     public: true
     plan:
@@ -235,7 +235,7 @@ jobs:
           BUILD_ARG_GRAALVM_BRANCH: master
     - put: graalvm-ce-master-java11-image
       params:
-        image: image/graalvm-ce-master-java11-image.tar
+        image: graalvm-ce-master-java11-image/graalvm-ce-master-java11-image.tar
   - name: build-spring-graalvm-native-20.3-dev-java8-image
     public: true
     plan:
@@ -260,7 +260,7 @@ jobs:
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java8
     - put: spring-graalvm-native-20.3-dev-java8-image
       params:
-        image: image/spring-graalvm-native-20.3-dev-java8-image.tar
+        image: spring-graalvm-native-20.3-dev-java8-image/spring-graalvm-native-20.3-dev-java8-image.tar
   - name: build-spring-graalvm-native-20.3-dev-java11-image
     public: true
     plan:
@@ -285,7 +285,7 @@ jobs:
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java11
     - put: spring-graalvm-native-20.3-dev-java11-image
       params:
-        image: image/spring-graalvm-native-20.3-dev-java11-image.tar
+        image: spring-graalvm-native-20.3-dev-java11-image/spring-graalvm-native-20.3-dev-java11-image.tar
   - name: build-spring-graalvm-native-master-java8-image
     public: true
     plan:
@@ -310,7 +310,7 @@ jobs:
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java8
     - put: spring-graalvm-native-master-java8-image
       params:
-        image: image/spring-graalvm-native-master-java8-image.tar
+        image: spring-graalvm-native-master-java8-image/spring-graalvm-native-master-java8-image.tar
   - name: build-spring-graalvm-native-master-java11-image
     public: true
     plan:
@@ -335,7 +335,7 @@ jobs:
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java11
     - put: spring-graalvm-native-master-java11-image
       params:
-        image: image/spring-graalvm-native-master-java11-image.tar
+        image: spring-graalvm-native-master-java11-image/spring-graalvm-native-master-java11-image.tar
 groups:
   - name: "each-commit-builds"
     jobs: [
