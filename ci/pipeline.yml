@@ -78,14 +78,34 @@ jobs:
     - get: spring-graalvm-native
       trigger: true
     - task: build
-      file: spring-graalvm-native/ci/java8-key-samples-build.yml
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: springci/spring-graalvm-native
+            tag: 20.3-dev-java8
+        inputs:
+          - name: spring-graalvm-native
+        run:
+          path: spring-graalvm-native/ci/build-key-samples.sh
   - name: build-java11-key-samples
     public: true
     plan:
       - get: spring-graalvm-native
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/java11-key-samples-build.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: springci/spring-graalvm-native
+              tag: 20.3-dev-java11
+          inputs:
+            - name: spring-graalvm-native
+          run:
+            path: spring-graalvm-native/ci/build-key-samples.sh
   - name: build-20.3-dev-java8-samples
     public: true
     plan:
@@ -93,7 +113,17 @@ jobs:
         passed: [build-spring-graalvm-native-20.3-dev-java8-image]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/20.3-dev-java8-samples-build.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: springci/spring-graalvm-native
+              tag: 20.3-dev-java8
+          inputs:
+            - name: spring-graalvm-native
+          run:
+            path: spring-graalvm-native/ci/build-samples.sh
   - name: build-20.3-dev-java11-samples
     public: true
     plan:
@@ -101,7 +131,19 @@ jobs:
         passed: [build-spring-graalvm-native-20.3-dev-java11-image]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/20.3-dev-java11-samples-build.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: springci/spring-graalvm-native
+              tag: 20.3-dev-java11
+
+          inputs:
+            - name: spring-graalvm-native
+
+          run:
+            path: spring-graalvm-native/ci/build-samples.sh
   - name: build-master-java8-samples
     public: true
     plan:
@@ -109,7 +151,17 @@ jobs:
         passed: [build-spring-graalvm-native-master-java8-image]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/master-java8-samples-build.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: springci/spring-graalvm-native
+              tag: master-java8
+          inputs:
+            - name: spring-graalvm-native
+          run:
+            path: spring-graalvm-native/ci/build-samples.sh
   - name: build-master-java11-samples
     public: true
     plan:
@@ -117,7 +169,17 @@ jobs:
         passed: [build-spring-graalvm-native-master-java11-image]
         trigger: true
       - task: build
-        file: spring-graalvm-native/ci/master-java11-samples-build.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: springci/spring-graalvm-native
+              tag: master-java11
+          inputs:
+            - name: spring-graalvm-native
+          run:
+            path: spring-graalvm-native/ci/build-samples.sh
   - name: deploy
     public: true
     plan:
@@ -127,7 +189,20 @@ jobs:
           - build-java11-key-samples
         trigger: true
       - task: deploy
-        file: spring-graalvm-native/ci/deploy.yml
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: openjdk
+              tag: 11-jdk
+          params:
+            ARTIFACTORY_USERNAME:
+            ARTIFACTORY_PASSWORD:
+          inputs:
+            - name: spring-graalvm-native
+          run:
+            path: spring-graalvm-native/ci/deploy.sh
         params:
           ARTIFACTORY_USERNAME: ((artifactory_username))
           ARTIFACTORY_PASSWORD: ((artifactory_password))
