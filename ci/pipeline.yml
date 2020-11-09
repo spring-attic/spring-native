@@ -228,7 +228,7 @@ jobs:
           path: build
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
-          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b04/openjdk-8u272+10-jvmci-20.3-b04-fastdebug-linux-amd64.tar.gz
+          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b05/openjdk-8u272+10-jvmci-20.3-b05-fastdebug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
     - put: graalvm-ce-20.3-dev-java8-image
       params: {image: image/image.tar}
@@ -254,7 +254,7 @@ jobs:
           path: build
       params:
         DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
-        BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b04/labsjdk-ce-11.0.9+10-jvmci-20.3-b04-debug-linux-amd64.tar.gz
+        BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b05/labsjdk-ce-11.0.9+10-jvmci-20.3-b05-debug-linux-amd64.tar.gz
         BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
     - put: graalvm-ce-20.3-dev-java11-image
       params: {image: image/image.tar}
@@ -280,7 +280,7 @@ jobs:
           path: build
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
-          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b04/openjdk-8u272+10-jvmci-20.3-b04-fastdebug-linux-amd64.tar.gz
+          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b05/openjdk-8u272+10-jvmci-20.3-b05-fastdebug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
     - put: graalvm-ce-master-java8-image
       params: {image: image/image.tar}
@@ -306,7 +306,7 @@ jobs:
           path: build
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
-          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b04/labsjdk-ce-11.0.9+10-jvmci-20.3-b04-debug-linux-amd64.tar.gz
+          BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b05/labsjdk-ce-11.0.9+10-jvmci-20.3-b05-debug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
     - put: graalvm-ce-master-java11-image
       params: {image: image/image.tar}
