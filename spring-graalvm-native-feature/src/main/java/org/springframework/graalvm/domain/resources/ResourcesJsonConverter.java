@@ -32,7 +32,9 @@ class ResourcesJsonConverter {
 		for (String p : metadata.getPatterns()) {
 			jsonArray.put(toJsonObject(p));
 		}
-		object.put("resources", jsonArray);
+		JSONObject includes = new JSONObject();
+		includes.put("includes", jsonArray);
+		object.put("resources", includes);
 		return object;
 	}
 

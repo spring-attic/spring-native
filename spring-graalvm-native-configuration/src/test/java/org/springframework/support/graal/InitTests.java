@@ -3,6 +3,7 @@ package org.springframework.support.graal;
 import java.io.InputStream;
 
 import org.junit.Test;
+
 import org.springframework.graalvm.domain.init.InitializationDescriptor;
 import org.springframework.graalvm.domain.init.InitializationJsonMarshaller;
 
@@ -14,7 +15,10 @@ public class InitTests {
 		InitializationDescriptor read = InitializationJsonMarshaller.read(s);
 		read.getBuildtimeClasses().forEach(clazz -> {
 			try {
-				Class.forName(clazz);
+				if(!clazz.equals("org.springframework.boot.SpringBootFactories")  // Substitution
+				) {
+					Class.forName(clazz);
+				}
 			}
 			catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);

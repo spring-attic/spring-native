@@ -26,11 +26,16 @@ public class ResourcesTests {
 
 	@Test
 	public void testApacheTomcatResources() throws Exception {
-		InputStream s = this.getClass().getResourceAsStream("/resources.json");
+		InputStream s = this.getClass().getResourceAsStream("/META-INF/native-image/org.apache.tomcat.embed/tomcat-embed-core/tomcat-resource.json");
 		ResourcesDescriptor read = ResourcesJsonMarshaller.read(s);
 		Assert.assertTrue(read.getBundles().contains("javax.servlet.LocalStrings"));
-		Assert.assertTrue(read.getBundles().contains("javax.servlet.http.LocalStrings"));
-		Assert.assertTrue(read.getPatterns().contains("org/springframework/web/servlet/DispatcherServlet.properties"));
+		Assert.assertTrue(read.getPatterns().contains(".*/mbeans-descriptors.xml$"));
+	}
+
+	@Test
+	public void testCloudResources() throws Exception {
+		InputStream s = this.getClass().getResourceAsStream("/cloud-resource-config.json");
+		ResourcesJsonMarshaller.read(s);
 	}
 
 }

@@ -934,7 +934,7 @@ public class TypeSystem {
 					T t = converter.apply(Files.newInputStream(p));
 					return new Tuple<>(p.toString(), t);
 				} catch (Exception e) {
-					System.err.println("Unexpected problem reading " + p + ": " + e.getMessage());
+					System.err.println("Unexpected problem reading " + p + ": " + e);
 					return new Tuple<>(p.toString(), (T)null);
 				}
 			}).collect(Collectors.toList());

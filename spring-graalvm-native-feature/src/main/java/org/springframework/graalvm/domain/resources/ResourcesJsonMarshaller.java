@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.graalvm.json.JSONArray;
+import org.springframework.graalvm.json.JSONException;
 import org.springframework.graalvm.json.JSONObject;
 
 /**
@@ -84,9 +85,14 @@ public class ResourcesJsonMarshaller {
 			}
 		}
 		if (object.has("resources")) {
-			array = object.getJSONArray("resources");
+			try {
+				array = object.getJSONArray("resources");
+			} catch (Exception ex) {
+				// Support for GraalVM 20.3 format introduced by https://github.com/oracle/graal/commit/5b0a7453bcfb09918d8f615e64bf0430c8abbbfc#diff-14b5d0463c9666d011e03cc880ba3ca4a1da754f51e8fd8af5dabbfc6fd64476
+				array = object.getJSONObject("resources").getJSONArray("includes");
+			}
 			for (int i=0;i<array.length();i++) {
-			rd.add(array.getJSONObject(i).getString("pattern"));
+				rd.add(array.getJSONObject(i).getString("pattern"));
 			}
 		}
 		return rd;

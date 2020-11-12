@@ -39,6 +39,7 @@ sleep 3
 native-image \
   -Dspring.native.mode=agent \
   -H:Name=$ARTIFACT-agent \
+  -Dspring.native.verbose=true \
   -Dspring.native.remove-yaml-support=true \
   -Dspring.spel.ignore=true \
   -cp .:$CP \
