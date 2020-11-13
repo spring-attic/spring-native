@@ -42,3 +42,5 @@ with maven as simple native executable - `mvn -Pnative clean package`
 with build service as native executable wrapped in container - `mvn clean spring-boot:build-image` then `docker-compose up commandlinerunner-bti`
 (I have already seen issues with build-image not behaving and needing a mvn package
 before doing the build-image step)
+
+Some of the magic happens in the `LiteConfigurationProcessor` which looks for these generated entities.
