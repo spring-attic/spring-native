@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class SampleApplication {
 
 	@Bean

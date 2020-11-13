@@ -16,7 +16,7 @@ import org.springframework.web.servlet.function.RouterFunction;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class SampleApplication {
 
 	@PersistenceContext

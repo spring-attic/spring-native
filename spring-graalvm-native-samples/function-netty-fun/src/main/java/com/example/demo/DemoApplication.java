@@ -7,7 +7,7 @@ import org.springframework.cloud.function.context.FunctionalSpringApplication;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class DemoApplication implements ApplicationContextInitializer<GenericApplicationContext> {
 
 	public static void main(String[] args) {

@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
 import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class ConfigclientApplication {
 
 
@@ -21,7 +21,7 @@ public class ConfigclientApplication {
 	}
 }
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 class CLR implements CommandLineRunner {
 
 	@Value("${my.prop}")

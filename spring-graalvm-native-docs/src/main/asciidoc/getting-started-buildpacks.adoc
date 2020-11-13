@@ -213,28 +213,6 @@ dependencies {
 ----
 ====
 
-===== Update configuration to avoid using proxies
-
-The only kind of proxy allowed with native images is a JDK proxy. It is not possible to use CGLIB or some other kind of generated proxy.
-So basically, to compile to a native executable, your application needs to switch to using `proxyBeanMethods=false` on `@SpringBootApplication` and `@Configuration`.
-Spring Boot and Spring Framework configurations have already switched to that model.
-
-Adapt `RestServiceApplication.java` accordingly:
-
-====
-[source,java]
-----
-@SpringBootApplication(proxyBeanMethods = false)
-public class RestServiceApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(RestServiceApplication.class, args);
-    }
-
-}
-----
-====
-
 ==== Build the native application
 
 Building the native application is as simple as running:

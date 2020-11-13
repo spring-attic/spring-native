@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 @EnableConfigurationProperties(Foo.class)
 public class ValidatorApplication {
 	

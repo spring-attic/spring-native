@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class DataJdbcConfiguration {
 
 	final AtomicInteger id = new AtomicInteger(0);

@@ -16,7 +16,7 @@ import static org.springframework.web.servlet.function.RequestPredicates.GET;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class SampleApplication {
 
 	private FooRepository entities;

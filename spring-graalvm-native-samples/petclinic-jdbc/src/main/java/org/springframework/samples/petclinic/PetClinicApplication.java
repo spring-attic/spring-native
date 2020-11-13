@@ -26,7 +26,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Dave Syer
  *
  */
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class PetClinicApplication {
 
     public static void main(String[] args) {

@@ -11,7 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class GraalKafka1Application {
 
 	public static void main(String[] args) {

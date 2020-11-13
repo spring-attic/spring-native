@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 @EnableDiscoveryClient
 public class DiscoveryClientApplication {
 
@@ -25,7 +25,7 @@ class Foo {
 	
 }
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 class CLR implements CommandLineRunner {
 
 	@Override

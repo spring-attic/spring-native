@@ -116,7 +116,7 @@ public abstract class ConfigOptions {
 		if(REMOVE_UNUSED_AUTOCONFIG) {
 			System.out.println("Removing unused configurations");
 		}
-		VERIFIER_ON = Boolean.valueOf(System.getProperty("spring.native.verify","false"));
+		VERIFIER_ON = Boolean.valueOf(System.getProperty("spring.native.verify","true"));
 		if(VERIFIER_ON) {
 			System.out.println("Verification turned on");
 		}

@@ -48,5 +48,10 @@ Group ID is `org.springframework.cloud`.
 
 === Limitations
 
-- `@Configuration` and related annotations like `@SpringBootApplication` should specify `proxyBeanMethods = false` in order to not require CGLIB proxies. In practice, the main limitation with attribute set is that bean dependencies should be specified as explicit method parameter rather that by `@Bean` method invocation. Notice this attribute https://github.com/spring-projects-experimental/spring-graalvm-native/issues/248[could be inferred in the future].
-- Only proxies on interfaces are supported for now
+In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
+This is similar to the behavior you get with the so called https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-java-basic-concepts[lite mode] or with https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
+It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false` and use method parameters to inject bean dependencies.
+Libraries are encouraged to use `@Configuration(proxyBeanMethods=false)` (most of Spring portfolio currently uses this variant) since it is generally a good idea to avoid CGLIB proxies if not needed and to provide native compatibility.
+This behavior could potentially become the default in a future Spring Framework version.
+
+Only proxies on interfaces are supported for now.

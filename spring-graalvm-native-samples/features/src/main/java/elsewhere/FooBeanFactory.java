@@ -5,7 +5,7 @@ import com.example.commandlinerunner.FooBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class FooBeanFactory {
     @Bean
     public FooBean fooBeanFactory() {

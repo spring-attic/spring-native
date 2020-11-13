@@ -19,7 +19,7 @@ package com.example.data.neo4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(proxyBeanMethods = false)
+@SpringBootApplication
 public class Neo4jApplication {
 
 	public static void main(String[] args) throws Exception {
