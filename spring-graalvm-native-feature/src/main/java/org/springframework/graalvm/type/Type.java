@@ -2258,16 +2258,17 @@ public class Type {
 	 *
 	 */
 	public void verifyComponent() {
+		List<String> methodsInvokingAtBeanMethods = null;
 		try {
-			List<String> methodsInvokingAtBeanMethods = getMethodsInvokingAtBeanMethods();
-			if (methodsInvokingAtBeanMethods != null) {
-				throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are directly invoking methods marked @Bean: "+
-						methodsInvokingAtBeanMethods+" - due to the enforced proxyBeanMethods=false for components in a native-image, please consider "+
-						"refactoring to use instance injection.");
-			}
+			methodsInvokingAtBeanMethods = getMethodsInvokingAtBeanMethods();
 		} catch (Exception e) {
 			// Probably a MissingTypeException trying to resolve something not on the classpath -
 			// in this case we can't correctly verify something, but it *probably* isn't getting used anyway
+		}
+		if (methodsInvokingAtBeanMethods != null) {
+			throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are directly invoking methods marked @Bean: "+
+					methodsInvokingAtBeanMethods+" - due to the enforced proxyBeanMethods=false for components in a native-image, please consider "+
+					"refactoring to use instance injection.");
 		}
 	}
 
