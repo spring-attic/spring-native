@@ -148,7 +148,7 @@ repositories {
 ----
 ====
 
-And for Spring Boot plugin:
+And for plugins:
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven

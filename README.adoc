@@ -3,7 +3,7 @@
 :boot-version: 2.4.0-RC1
 :graalvm-version: 20.2.0
 :graalvm-dev-version: 20.3.0-dev
-:boot-dev-version: 2.4.0-RC1
+:boot-dev-version: 2.4.0
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
 image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}/reference/index.html"]

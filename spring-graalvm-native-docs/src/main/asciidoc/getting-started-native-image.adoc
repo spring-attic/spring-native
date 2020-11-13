@@ -119,7 +119,7 @@ If necessary, add the repository for the `spring-graalvm-native` dependency, as 
 ----
 ====
 
-And for Spring Boot plugin:
+And for plugins:
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
