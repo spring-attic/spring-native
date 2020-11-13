@@ -777,6 +777,10 @@ public class Type {
 		}
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
 	}
+	
+	public boolean isAtComponent() {
+		return dimensions>0?false:isMetaAnnotated(fromLdescriptorToSlashed(AtComponent), new HashSet<>());
+	}
 
 	public boolean isAtSpringBootApplication() {
 		return (dimensions > 0) ? false
@@ -980,7 +984,6 @@ public class Type {
 	}
 
 	private List<Type> resolveAnnotations() {
-
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
@@ -1372,6 +1375,16 @@ public class Type {
 			throw new IllegalStateException("Unexpected IOException processing bytes for "+this.getName());
 		}
 	}
+
+	public List<String> getMethodsInvokingAtBeanMethods() {
+		byte[] bytes = typeSystem.find(getName());
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
+			return AtBeanMethodInvocationDetectionVisitor.run(typeSystem, bais);
+		} catch (IOException e) {
+			throw new IllegalStateException("Unexpected IOException processing bytes for "+this.getName());
+		}
+	}
+
 
 	/*
 	private List<CompilationHint> findCompilationHintHelper(HashSet<Type> visited) {
@@ -2243,19 +2256,21 @@ public class Type {
 	 * Verify this type as a component, checking everything is set correctly for
 	 * native-image construction to succeed.
 	 *
-	 * @throws VerificationException if anything looks wrong with the component
 	 */
 	public void verifyComponent() {
-		verifyProxyBeanMethodsSetting();
-		List<String> methodsInvokingGetBean = getMethodsInvokingGetBean();
-		if (methodsInvokingGetBean != null) {
-			throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are invoking getBean(): "+methodsInvokingGetBean);
+		try {
+			List<String> methodsInvokingAtBeanMethods = getMethodsInvokingAtBeanMethods();
+			if (methodsInvokingAtBeanMethods != null) {
+				throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are directly invoking methods marked @Bean: "+
+						methodsInvokingAtBeanMethods+" - due to the enforced proxyBeanMethods=false for components in a native-image, please consider "+
+						"refactoring to use instance injection.");
+			}
+		} catch (Exception e) {
+			// Probably a MissingTypeException trying to resolve something not on the classpath -
+			// in this case we can't correctly verify something, but it *probably* isn't getting used anyway
 		}
 	}
 
-	/**
-	 *
-	 */
 	private void verifyProxyBeanMethodsSetting() {
 		List<Method> methodsWithAtBean = getMethodsWithAtBean();
 		if (methodsWithAtBean.size() != 0) {
@@ -2921,6 +2936,26 @@ public class Type {
 					for (AnnotationNode vAnnotation : vAnnotations) {
 						String d = vAnnotation.desc;
 						if (annotationCheck.test(d.substring(1,d.length()-1).replace("/", "."))) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Does the specified method on this type have the @Bean annotation on it.
+	 */
+	public boolean isAtBeanMethod(String methodName, String descriptor) {
+		List<MethodNode> ms = this.node.methods;
+		for (MethodNode m : ms) {
+			if (m.name.equals(methodName) && m.desc.equals(descriptor)) {
+				List<AnnotationNode> vas = m.visibleAnnotations;
+				if (vas != null) {
+					for (AnnotationNode va : vas) {
+						if (va.desc.equals(AtBean)) {
 							return true;
 						}
 					}

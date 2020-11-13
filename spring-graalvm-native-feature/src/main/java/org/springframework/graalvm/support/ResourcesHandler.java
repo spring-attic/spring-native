@@ -1275,6 +1275,9 @@ public class ResourcesHandler {
 		checkForImportedConfigurations(type, toFollow);
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (type.isAtComponent()) {
+				type.verifyComponent();
+			}
 			if (type.isAtConfiguration()) {
 				checkForAutoConfigureBeforeOrAfter(type, accessManager);
 				String[][] validMethodsSubset = processTypeAtBeanMethods(pc, accessManager, toFollow, type);
