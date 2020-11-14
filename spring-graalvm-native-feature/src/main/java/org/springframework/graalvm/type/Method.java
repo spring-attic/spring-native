@@ -228,6 +228,40 @@ public class Method {
 		return signatureTypes;
 	}
 
+	public boolean hasUnresolvableTypesInSignature() {
+		Set<Type> signatureTypes = new HashSet<>();
+		try {
+			if (mn.signature == null) {
+				org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
+				org.objectweb.asm.Type returnType = methodType.getReturnType();
+				Type t = null;
+				if (returnType.getDescriptor().length() != 1) {
+					t = typeSystem.resolve(methodType.getReturnType(),false);
+					signatureTypes.add(t);
+				}
+				for (org.objectweb.asm.Type at : methodType.getArgumentTypes()) {
+					if (at.getDescriptor().length() != 1) {
+						t = typeSystem.resolve(methodType.getReturnType(),false);
+						signatureTypes.add(t);
+					}
+				}
+			} else {
+				SignatureReader reader = new SignatureReader(mn.signature);
+				TypesFromSignatureCollector tc = new TypesFromSignatureCollector(false);
+				reader.accept(tc);
+				Set<String> collectedTypes = tc.getTypes();
+				for (String s : collectedTypes) {
+					Type t = typeSystem.resolveDotted(s, false);
+					signatureTypes.add(t);
+				}
+			}
+		} catch (MissingTypeException mte) {
+			// System.out.println("Unresolvable: " + mte.getMessage());
+			return true;
+		}
+		return false;
+	}
+
 	public Type getReturnType() {
 		org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
 		Type returnType = typeSystem.resolve(methodType.getReturnType(), true);	
