@@ -19,6 +19,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
@@ -80,7 +81,8 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-		}, access = AccessBits.ALL)
+		}, access = AccessBits.ALL),
+		@TypeInfo(types= BasicErrorController.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class SecurityHints implements NativeImageConfiguration {
 }

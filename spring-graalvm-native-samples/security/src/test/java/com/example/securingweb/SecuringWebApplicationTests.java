@@ -61,4 +61,18 @@ public class SecuringWebApplicationTests {
 		mockMvc.perform(get("/hello"))
 				.andExpect(status().isOk());
 	}
+
+	@Test
+	@WithMockUser
+	public void accessAdminPageAsUserThenForbidden() throws Exception {
+		mockMvc.perform(get("/admin"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void accessAdminPageAsAdminThenOk() throws Exception {
+		mockMvc.perform(get("/admin"))
+				.andExpect(status().isOk());
+	}
 }
