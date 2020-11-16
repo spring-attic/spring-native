@@ -18,8 +18,6 @@
 
 	<properties>
 		<maven.version>3.3.9</maven.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>

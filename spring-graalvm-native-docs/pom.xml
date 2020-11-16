@@ -16,10 +16,6 @@
 
 	<name>Spring Native for GraalVM documentation</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<profiles>
 		<profile>
 			<id>docs</id>

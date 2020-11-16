@@ -15,10 +15,6 @@
 
 	<url>https://github.com/spring-projects-experimental/spring-graalvm-native/</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
