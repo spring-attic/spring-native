@@ -11,11 +11,8 @@
 	</parent>
 
 	<artifactId>spring-graalvm-native</artifactId>
-	<version>0.8.3-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<name>Spring Native for GraalVM</name>
 
-	<name>Spring GraalVM Native</name>
-	<description>GraalVM Native experimental support for Spring Boot applications</description>
 	<url>https://github.com/spring-projects-experimental/spring-graalvm-native/</url>
 
 	<properties>

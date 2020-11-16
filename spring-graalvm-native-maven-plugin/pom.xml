@@ -14,6 +14,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
+	<name>Spring Native for GraalVM Maven plugin</name>
+
 	<properties>
 		<maven.version>3.3.9</maven.version>
 		<maven.compiler.source>1.8</maven.compiler.source>

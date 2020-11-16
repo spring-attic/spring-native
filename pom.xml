@@ -8,8 +8,8 @@
 	<version>0.8.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring GraalVM Native build</name>
-	<description>Parent POM for GraalVM native experimental support for Spring Boot applications</description>
+	<name>Spring Native for GraalVM build</name>
+
 	<url>https://github.com/spring-projects-experimental/spring-graalvm-native/</url>
 
 	<properties>

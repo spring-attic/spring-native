@@ -14,7 +14,7 @@
 	<version>0.8.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Spring GraalVM Native feature</name>
+	<name>Spring Native for GraalVM feature</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -11,10 +11,8 @@
 	</parent>
 
 	<artifactId>spring-graalvm-native-tools</artifactId>
-	<version>0.8.3-SNAPSHOT</version>
-	<packaging>jar</packaging>
 
-	<name>Spring GraalVM Native tools</name>
+	<name>Spring Native for GraalVM tools</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,38 +26,12 @@
 			<artifactId>spring-graalvm-native-feature</artifactId>
 			<version>0.8.3-SNAPSHOT</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>org.graalvm.nativeimage</groupId>
-			<artifactId>graal-hotspot-library</artifactId>
-			<version>${graalvm.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jcl</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-tree</artifactId>
-			<version>7.1</version>
-			<optional>true</optional>
-		</dependency>
--->
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<scope>test</scope>
-		</dependency>
--->
 	</dependencies>
 
 	<build>
@@ -80,6 +52,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
 
 </project>
