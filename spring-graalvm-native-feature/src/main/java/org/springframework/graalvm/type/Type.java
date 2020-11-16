@@ -98,6 +98,10 @@ public class Type {
 	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
 	public final static String EnvironmentPostProcessor = "Lorg/springframework/boot/env/EnvironmentPostProcessor";
+	public final static String AtPostAuthorize = "Lorg/springframework/security/access/prepost/PostAuthorize;";
+	public final static String AtPostFilter = "Lorg/springframework/security/access/prepost/PostFilter;";
+	public final static String AtPreAuthorize = "Lorg/springframework/security/access/prepost/PreAuthorize;";
+	public final static String AtPreFilter = "Lorg/springframework/security/access/prepost/PreFilter;";
 
 	public final static Type MISSING = new Type(null, null, 0);
 
@@ -2555,6 +2559,14 @@ public class Type {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * @return true if type or a method inside is marked @PostAuthorize, @PostFilter, @PreAuthorize or @PreFilter
+	 */
+	public boolean isAtPrePostSecured() {
+		return isAnnotatedInHierarchy(AtPostAuthorize) || isAnnotatedInHierarchy(AtPostFilter)
+				|| isAnnotatedInHierarchy(AtPreAuthorize) || isAnnotatedInHierarchy(AtPreFilter);
 	}
 
 	public void collectAnnotations(List<Type> collector, Predicate<Type> filter) {
