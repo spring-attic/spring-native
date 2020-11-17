@@ -43,7 +43,7 @@ import org.springframework.graalvm.type.AccessBits;
 		types = {
 				DefaultChannelId.class,
 				Socket.class,Errors.class,Limits.class,IovArray.class,
-				InternetProtocolFamily.class, Http2ServerUpgradeCodec.class, CleartextHttp2ServerUpgradeHandler.class,
+				Http2ServerUpgradeCodec.class, CleartextHttp2ServerUpgradeHandler.class,
 				Http2ConnectionHandler.class, HostsFileEntriesResolver.class
 		}, typeNames = {
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
