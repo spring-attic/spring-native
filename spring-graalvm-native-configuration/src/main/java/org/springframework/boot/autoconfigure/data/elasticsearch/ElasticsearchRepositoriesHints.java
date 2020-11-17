@@ -32,6 +32,7 @@ import org.springframework.data.elasticsearch.repository.support.SimpleReactiveE
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ProxyInfo;
+import org.springframework.graalvm.extension.ResourcesInfo;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
@@ -48,8 +49,8 @@ import org.springframework.graalvm.type.AccessBits;
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
 				})
-		})
-
+		},
+		resourcesInfos = @ResourcesInfo(patterns = "versions.properties"))
 @NativeImageHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
 		importInfos = {SpringDataReactiveHints.class},
 		typeInfos = {
