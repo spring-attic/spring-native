@@ -323,6 +323,7 @@ jobs:
   - name: build-spring-graalvm-native-20.3-dev-java8-image
     public: true
     plan:
+    - get: graalvm-ce-20.3-dev-java8-image
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-20.3-dev-java8-image]
       trigger: true
@@ -348,6 +349,7 @@ jobs:
   - name: build-spring-graalvm-native-20.3-dev-java11-image
     public: true
     plan:
+    - get: graalvm-ce-20.3-dev-java11-image
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-20.3-dev-java11-image]
       trigger: true
@@ -373,6 +375,7 @@ jobs:
   - name: build-spring-graalvm-native-master-java8-image
     public: true
     plan:
+    - get: graalvm-ce-master-java8-image
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-master-java8-image]
       trigger: true
@@ -398,6 +401,7 @@ jobs:
   - name: build-spring-graalvm-native-master-java11-image
     public: true
     plan:
+    - get: graalvm-ce-master-java11-image
     - get: spring-graalvm-native
       passed: [build-graalvm-ce-master-java11-image]
       trigger: true
