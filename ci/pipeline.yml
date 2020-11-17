@@ -7,6 +7,14 @@ resources:
   - name: every-day
     type: time
     source: {interval: 24h}
+  - name: ubuntu
+    type: registry-image
+    icon: docker
+    source:
+      repository: ubuntu
+      username: ((docker-hub-username))
+      password: ((docker-hub-password))
+      tag: focal
   - name: graalvm-ce-20.3-dev-java8-image
     type: registry-image
     icon: docker
@@ -138,10 +146,8 @@ jobs:
             source:
               repository: springci/spring-graalvm-native
               tag: 20.3-dev-java11
-
           inputs:
             - name: spring-graalvm-native
-
           run:
             path: spring-graalvm-native/ci/build-samples.sh
   - name: build-master-java8-samples
@@ -211,6 +217,7 @@ jobs:
     plan:
     - get: every-day
       trigger: true
+    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
       privileged: true
@@ -237,6 +244,7 @@ jobs:
     plan:
     - get: every-day
       trigger: true
+    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
       privileged: true
@@ -263,6 +271,7 @@ jobs:
     plan:
     - get: every-day
       trigger: true
+    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
       privileged: true
@@ -289,6 +298,7 @@ jobs:
     plan:
     - get: every-day
       trigger: true
+    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
       privileged: true
