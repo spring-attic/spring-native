@@ -154,16 +154,20 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>spring-release</id>
+			<id>release</id>
 			<url>https://repo.spring.io/release</url>
 		</pluginRepository>
 		<pluginRepository>
-			<id>spring-plugins-release</id>
-			<url>https://repo.spring.io/plugins-release</url>
+			<id>bintray</id>
+			<url>https://jcenter.bintray.com</url>
 		</pluginRepository>
 		<pluginRepository>
-			<id>spring-libs-milestone</id>
-			<url>https://repo.spring.io/libs-milestone</url>
+			<id>plugins-release-local</id>
+			<url>https://repo.spring.io/plugins-release-local</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>plugins-milestone-local</id>
+			<url>https://repo.spring.io/plugins-milestone-local</url>
 		</pluginRepository>
 	</pluginRepositories>
 
