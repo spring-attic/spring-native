@@ -51,7 +51,7 @@ Add such dependency to the classpath and this issue should be gone.
 
 ==== Out of memory error when building the native image
 
-`native-image` consumes a lot of RAM, we recommand machinew ith at least 16G of RAM.
+`native-image` consumes a lot of RAM, we recommend a machine with at least 16G of RAM.
 
 === The built image does not run
 
@@ -140,14 +140,12 @@ The following entry satisfies the preceding error:
 
 Recompiling should pick up this extra configuration, and the resultant image include metadata to satisfy reflection of `AuthConfigFactoryImpl`.
 
-=== Verifying your application is suitable for native-image construction
+=== These methods are directly invoking methods marked @Bean
 
-Rather than simplying failing with a difficult to debug error, there is the beginning of a verification
-system in the feature that will try to give an early warning of what might be the problem. This mode is
-turned on via the option `-Dspring.native.verify=true`. It isn't the default because it is a work in progress.
-Currently it will warn about failing to specify `proxyBeanMethods=false` on components but the framework is
-there now to take it further than that as we observe common problems that could be more aggressively checked
-earlier.
+Rather than simply failing with a difficult to debug error, there is a verification system in the feature that
+will try to give early warnings and errors of what might be the problem. This mode is turned on by default and can be
+disabled via the option `-Dspring.native.verify=false`. Currently, it raises an error about cross `@Bean` method invocations,
+see <<support#_limitations>> for more details.
 
 ==== No access hint found for import selector: XXX
 
