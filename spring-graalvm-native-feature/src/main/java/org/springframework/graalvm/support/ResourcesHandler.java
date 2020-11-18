@@ -1321,7 +1321,14 @@ public class ResourcesHandler {
 		if (boaTypes.size() != 0) {
 			SpringFeature.log("registering " + boaTypes.size() + " @AutoConfigureBefore/After references");
 			for (Type t : boaTypes) {
-				accessManager.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
+				List<Type> transitiveBOAs = t.getAutoConfigureBeforeOrAfter();
+				// If this linked configuration also has @AutoconfigureBeforeOrAfter, we need to include it as a
+				// resource so that Spring will find these transitive dependencies on further configurations.
+				if (transitiveBOAs.size()!=0) {
+					accessManager.requestTypeAccess(t.getDottedName(), AccessBits.CLASS|AccessBits.RESOURCE);
+				} else {
+					accessManager.requestTypeAccess(t.getDottedName(), AccessBits.CLASS);
+				}
 			}
 		}
 	}

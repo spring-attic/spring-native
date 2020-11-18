@@ -29,21 +29,7 @@ import org.springframework.graalvm.type.AccessBits;
 @NativeImageHint(trigger=BatchConfigurationSelector.class, 
 		resourcesInfos = { 
 			@ResourcesInfo(patterns = { 
-				"org/springframework/batch/core/schema-h2.sql",
-				// This exception happens on the batch samplewithout this next entry - why on earth is that?
-//com.oracle.svm.core.jdk.UnsupportedFeatureError: ObjectOutputStream.writeObject()
-//	at com.oracle.svm.core.util.VMError.unsupportedFeature(VMError.java:86) ~[na:na]
-//	at java.io.ObjectOutputStream.writeObject(ObjectOutputStream.java:68) ~[na:na]
-//	at org.springframework.util.SerializationUtils.serialize(SerializationUtils.java:47) ~[na:na]
-//	at org.springframework.batch.core.repository.dao.MapJobExecutionDao.copy(MapJobExecutionDao.java:55) ~[na:na]
-//	at org.springframework.batch.core.repository.dao.MapJobExecutionDao.saveJobExecution(MapJobExecutionDao.java:65) ~[na:na]
-//	at org.springframework.batch.core.repository.support.SimpleJobRepository.createJobExecution(SimpleJobRepository.java:151) ~[na:na]
-//	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:na]
-//	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344) ~[na:na]
-//	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198) ~[na:na]
-//	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[na:na]
-//	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:367) ~[na:na]
-				"META-INF/spring-autoconfigure-metadata.properties"
+				"org/springframework/batch/core/schema-h2.sql"
 			}),
 		},
 		typeInfos = {
