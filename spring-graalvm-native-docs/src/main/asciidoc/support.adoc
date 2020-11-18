@@ -3,11 +3,11 @@
 
 === GraalVM
 
-GraalVM version {graalvm-version} is supported.
+GraalVM version {graalvm-version} is supported, see related https://www.graalvm.org/release-notes/[release notes].
 
 === Language
 
-Java 8 and 11 (11 recommended) and Kotlin 1.3+ are supported.
+Java 8, Java 11 and Kotlin 1.3+ are supported.
 
 === Spring Boot
 
@@ -23,7 +23,6 @@ The following starters are supported, the group ID is `org.springframework.boot`
 - `spring-boot-starter-data-neo4j`
 - `spring-boot-starter-data-r2dbc`
 - `spring-boot-starter-data-redis`
-- `spring-boot-starter-data-elasticsearch` with `org.springframework.data:spring-data-elasticsearch:4.1.0-RC1` set explicitly
 - `spring-boot-starter-jdbc`
 - `spring-boot-starter-logging`
 - `spring-boot-starter-thymeleaf`

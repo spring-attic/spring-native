@@ -1,7 +1,7 @@
 [[how-to-contribute]]
 == How to Contribute
 
-This section describes how to extend Spring GraalVM Native. You can then https://github.com/spring-projects-experimental/spring-graalvm-native/pulls[submit pull requests] in order to add support for a specific part of Spring ecosystem.
+This section describes how to extend Spring Native for GraalVM. You can then https://github.com/spring-projects-experimental/spring-graalvm-native/pulls[submit pull requests] in order to add support for a specific part of Spring ecosystem.
 
 === Using container-based build environment
 
@@ -22,7 +22,7 @@ To use it:
 
 ==== `run-dev-container.sh`
 
-`run-dev-container.sh` runs Spring GraalVM native dev container with an interactive shell.
+`run-dev-container.sh` runs Spring Native for GraalVM dev container with an interactive shell.
 
 ```
 run-dev-container.sh [options]

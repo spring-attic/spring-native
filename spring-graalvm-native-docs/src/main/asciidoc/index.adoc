@@ -8,51 +8,55 @@
 :repository: milestone
 :boot-version: 2.4.0
 :graalvm-version: 20.3.0
-= Spring GraalVM Native {version} reference guide
-Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
+= Spring Native for GraalVM documentation
+Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
-[[introduction]]
-This guide walks you through the various options for building Spring Boot native applications using https://www.graalvm.org/reference-manual/native-image/[GraalVM native].
+== Overview
 
-This involves compiling your application as normal and then running an extra native-image step that builds a self-contained platform-specific executable for that application.
-The executable should have a more predictable memory profile as well as fast startup.
+Spring Native for https://www.graalvm.org[GraalVM] provides support for compiling Spring to native executables using
+https://www.graalvm.org/reference-manual/native-image/[native-image] compiler.
 
-The key complexity in building a native image is that the image building process needs to be informed about what your application is going to do at runtime.
-The build process attempts to construct the most optimal image possible and therefore tries to exclude anything not strictly required.
-However, it sometimes needs a few hints so that it can ensure it includes in the image all the necessary code and data to satisfy the application runtime needs.
+Compared to the Java Virtual Machine, GraalVM native offers advantages like the following, enabling cheaper and more
+sustainable hosting for certain kinds of workloads (microservices, functions) well suited for containers and https://kubernetes.io/[Kubernetes]:
 
-In particular, the following concerns apply:
+- Instant startup
+- Instant peek performance
+- Reduced memory consumption
 
-* If the application is going to reflect at runtime on some type, field, method or constructor, the native image must include the data to satisfy those reflection requests.
+But also a few drawbacks that could be reduced in the future as GraalVM native evolves:
 
-* If the application is going to load resources (such as `application.properties`), they must be included in the image.
+- Slower and heavy build
+- Less runtime optimizations after warmup
+- Less mature than the JVM with some different behaviors
 
-* If the application is going to try to use proxies at runtime, these must be generated up front during the image-build process and included in the image.
+The key differences between the regular JVM and this GraalVM native platform are:
 
-* There can be a benefit to initializing classes when the image is built, as opposed to when the resultant executable starts up.
-The image build process needs to be told which classes to initialize at build time versus at run time.
+- A static analysis of your application from the main entry point is performed at build time.
+- The unused parts are removed at build time.
+- Configuration is required for reflection, resources, and dynamic proxies.
+- Classpath fixed at build time.
+- No class lazy loading: everything shipped in the executables will be loaded in memory at startup.
+- Some code will run at build time!
+- There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations].
 
-There are two primary ways to communicate this information to the build process:
+The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, in order to provide
+a native deployment option designed to be packaged in lightweight containers. In practice, the target is
+to support your Spring application (typically Spring Boot ones), unmodified, on this new platform.
+Beware that we are not here yet, see the <<support>> documentation for more details.
 
-- Through JSON files on the classpath.
-- Through a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature] that participates in the image-build process and, after analyzing the application being compiled, calls APIs to register information about reflection, resources, proxies, and so on.
+=== Modules
 
-It is worth mentioning that there are limitations on what GraalVM supports with respect to native images.
-If your application is doing any of these, it may not be possible to build a native image.
-The limitations are discussed https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[here].
+The Spring Native for GraalVM project is composed of the following modules:
 
-== Spring GraalVM Native
-
-The `spring-graalvm-native` project is incubating support for building Spring Boot native applications using GraalVM native.
-It is mainly composed of:
-
+- `spring-graalvm-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
 - `spring-graalvm-native-feature`: this module is a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature]. It is a kind of plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
 - `spring-graalvm-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
 - `spring-graalvm-native-substitutions`: this module allows patching (temporarily) some parts of Spring Boot and Spring Framework to improve the compatibility and efficiency of Spring native images.
-- `spring-graalvm-native`: this module aggregates the feature, configuration and substitutions ones to generate the artifact to consume.
 - `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
 - `spring-graalvm-native-tools`: tools used for reviewing image building configuration and output.
+
+=== Modes
 
 It supports the following modes using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 
@@ -61,6 +65,7 @@ It supports the following modes using `-Dspring.native.mode=<mode>` on the `nati
 - `agent` (experimental, activated when agent-generated config is present) is using the configuration generated by the tracing agent as a basis and also provides additional hints for components like controllers, etc.
 - `functional` (experimental, activated automatically when https://github.com/spring-projects-experimental/spring-fu[spring-fu] or https://github.com/spring-projects-experimental/spring-init/[spring-init] are in the classpath) is designed to work with functional bean registration. In this mode the feature will provide initialization, resource configuration, substitutions and `spring.factories` functional alternative (only Spring Boot `spring.factories` are supported for now).
 
+include::support.adoc[]
 
 == Getting Started
 
@@ -75,8 +80,6 @@ include::getting-started-native-image.adoc[]
 
 include::samples.adoc[]
 
-include::support.adoc[]
-
 include::options.adoc[]
 
 include::agent.adoc[]
@@ -87,8 +90,8 @@ include::how-to-contribute.adoc[]
 
 == Contact us
 
-Finally, before you post about it not working, please check the <<troubleshooting,troubleshooting guide>>, which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
+We would love to hear about your successes and failures (with minimal repro projects) through the https://github.com/spring-projects-experimental/spring-graalvm-native/issues[project issue tracker].
+Before raising an issue, please check the <<troubleshooting,troubleshooting guide>>, which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
 
-We would love to hear about your successes and failures through the project issue tracker.
 If you want to make a contribution here, see the <<how-to-contribute,how to contribute guide>>.
 Please be aware this project is still incubating and, as such, some of these options and extension APIs are still evolving and may change before it is finally considered done.

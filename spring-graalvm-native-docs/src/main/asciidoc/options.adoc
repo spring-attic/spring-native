@@ -50,7 +50,7 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 
 * `-Dspring.xml.ignore=false` restores XML support (removed by default).
 
-=== Spring GraalVM Native options
+=== Spring Native for GraalVM options
 
 The current feature options are as follows:
 
@@ -98,5 +98,5 @@ about specifying properties that activate configurations. (This is a work in dev
 
 === Unsupported options
 
-* `--initialize-at-build-time` without class or package specified is not supported since Spring GraalVM native support is designed to work with runtime class initialization by default (a selected set of classes are enabled at buildtime).
+* `--initialize-at-build-time` without class or package specified is not supported since Spring Native for GraalVM is designed to work with runtime class initialization by default (a selected set of classes are enabled at buildtime).
 
