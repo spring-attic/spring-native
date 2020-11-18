@@ -7,14 +7,6 @@ resources:
   - name: every-day
     type: time
     source: {interval: 24h}
-  - name: ubuntu
-    type: registry-image
-    icon: docker
-    source:
-      repository: ubuntu
-      username: ((docker-hub-username))
-      password: ((docker-hub-password))
-      tag: focal
   - name: graalvm-ce-20.3-dev-java8-image
     type: registry-image
     icon: docker
@@ -217,16 +209,17 @@ jobs:
     plan:
     - get: every-day
       trigger: true
-    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
+      tags:
+      - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -237,6 +230,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b06/openjdk-8u272+10-jvmci-20.3-b06-fastdebug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: graalvm-ce-20.3-dev-java8-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-20.3-dev-java11-image
@@ -244,16 +238,17 @@ jobs:
     plan:
     - get: every-day
       trigger: true
-    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
+      tags:
+        - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -264,6 +259,7 @@ jobs:
         DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
         BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b06/labsjdk-ce-11.0.9+10-jvmci-20.3-b06-debug-linux-amd64.tar.gz
         BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
+        REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: graalvm-ce-20.3-dev-java11-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-master-java8-image
@@ -271,16 +267,17 @@ jobs:
     plan:
     - get: every-day
       trigger: true
-    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
+      tags:
+          - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -291,6 +288,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b06/openjdk-8u272+10-jvmci-20.3-b06-fastdebug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: graalvm-ce-master-java8-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-master-java11-image
@@ -298,16 +296,17 @@ jobs:
     plan:
     - get: every-day
       trigger: true
-    - get: ubuntu
     - get: spring-graalvm-native
     - task: build
+      tags:
+        - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -318,6 +317,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b06/labsjdk-ce-11.0.9+10-jvmci-20.3-b06-debug-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: graalvm-ce-master-java11-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-20.3-dev-java8-image
@@ -328,13 +328,15 @@ jobs:
       passed: [build-graalvm-ce-20.3-dev-java8-image]
       trigger: true
     - task: build
+      tags:
+          - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -344,6 +346,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java8
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: spring-graalvm-native-20.3-dev-java8-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-20.3-dev-java11-image
@@ -354,13 +357,15 @@ jobs:
       passed: [build-graalvm-ce-20.3-dev-java11-image]
       trigger: true
     - task: build
+      tags:
+          - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -370,6 +375,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java11
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: spring-graalvm-native-20.3-dev-java11-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-master-java8-image
@@ -380,13 +386,15 @@ jobs:
       passed: [build-graalvm-ce-master-java8-image]
       trigger: true
     - task: build
+      tags:
+        - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -396,6 +404,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java8
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: spring-graalvm-native-master-java8-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-master-java11-image
@@ -406,13 +415,15 @@ jobs:
       passed: [build-graalvm-ce-master-java11-image]
       trigger: true
     - task: build
+      tags:
+        - nimbus
       privileged: true
       config:
         platform: linux
         image_resource:
           type: registry-image
           source:
-            repository: vito/oci-build-task
+            repository: sdeleuze/oci-build-task
         inputs:
           - name: spring-graalvm-native
         outputs:
@@ -422,6 +433,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java11
+          REGISTRY_MIRRORS: https://harbor-repo.vmware.com
     - put: spring-graalvm-native-master-java11-image
       params: {image: image/image.tar}
 groups:
