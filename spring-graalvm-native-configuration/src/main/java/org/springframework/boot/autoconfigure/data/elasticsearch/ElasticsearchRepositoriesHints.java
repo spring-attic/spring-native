@@ -29,6 +29,8 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
 import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
 import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
+import org.springframework.graalvm.extension.InitializationInfo;
+import org.springframework.graalvm.extension.InitializationTime;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.ProxyInfo;
@@ -48,7 +50,10 @@ import org.springframework.graalvm.type.AccessBits;
 						BeforeConvertCallback.class,
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
-				})
+				}),
+				@TypeInfo(types = {
+						org.elasticsearch.Version.class
+				}, access = AccessBits.ALL)
 		},
 		resourcesInfos = @ResourcesInfo(patterns = "versions.properties"))
 @NativeImageHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
@@ -66,6 +71,14 @@ import org.springframework.graalvm.type.AccessBits;
 								XContentParser.class
 						},
 						typeNames = { // todo check access only on fromXContent method
+
+								"org.elasticsearch.client.core.MainResponse",
+								"org.elasticsearch.client.core.AcknowledgedResponse",
+								"org.elasticsearch.client.core.CountResponse",
+								"org.elasticsearch.client.core.MultiTermVectorsResponse",
+								"org.elasticsearch.index.reindex.BulkByScrollResponse",
+								"org.elasticsearch.action.admin.indices.refresh.RefreshResponse",
+
 								"org.elasticsearch.action.search.SearchResponse",
 								"org.elasticsearch.action.get.GetResponse",
 								"org.elasticsearch.action.get.MultiGetResponse",
@@ -74,7 +87,10 @@ import org.springframework.graalvm.type.AccessBits;
 								"org.elasticsearch.action.main.MainResponse",
 								"org.elasticsearch.action.search.MultiSearchResponse",
 								"org.elasticsearch.action.search.ClearScrollResponse",
-						})
+						}),
+				@TypeInfo(types = {
+						org.elasticsearch.Version.class
+				}, access = AccessBits.ALL),
 		},
 		proxyInfos = {
 				@ProxyInfo(types = {XContentParser.class})
@@ -88,8 +104,58 @@ import org.springframework.graalvm.type.AccessBits;
 						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
 						org.apache.logging.log4j.message.ParameterizedMessageFactory.class,
 						org.apache.logging.log4j.message.ReusableMessageFactory.class
-				}, access = AccessBits.DECLARED_CONSTRUCTORS)
-		})
+				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				@TypeInfo(typeNames = {
+						// those cause a lot of erros and warnings in logs if not present
+						"io.netty.buffer.AbstractByteBufAllocator",
+						"io.netty.buffer.PooledByteBufAllocator",
+						"io.netty.channel.ChannelDuplexHandler",
+						"io.netty.channel.ChannelHandlerAdapter",
+						"io.netty.channel.ChannelInboundHandlerAdapter",
+						"io.netty.channel.ChannelInitializer",
+						"io.netty.channel.ChannelOutboundHandlerAdapter",
+						"io.netty.channel.CombinedChannelDuplexHandler",
+						"io.netty.channel.DefaultChannelPipeline$HeadContext",
+						"io.netty.channel.DefaultChannelPipeline$TailContext",
+						"io.netty.channel.embedded.EmbeddedChannel",
+						"io.netty.channel.socket.nio.NioSocketChannel",
+						"io.netty.handler.codec.ByteToMessageDecoder",
+						"io.netty.handler.codec.compression.JdkZlibDecoder",
+						"io.netty.handler.codec.dns.DatagramDnsQueryEncoder",
+						"io.netty.handler.codec.dns.DnsResponseDecoder",
+						"io.netty.handler.codec.dns.TcpDnsResponseDecoder",
+						"io.netty.handler.codec.http.HttpClientCodec",
+						"io.netty.handler.codec.http.HttpContentDecoder",
+						"io.netty.handler.codec.http.HttpContentDecompressor",
+						"io.netty.handler.codec.LengthFieldBasedFrameDecoder",
+						"io.netty.handler.codec.MessageToByteEncoder",
+						"io.netty.handler.codec.MessageToMessageDecoder",
+						"io.netty.handler.timeout.IdleStateHandler",
+						"io.netty.handler.timeout.ReadTimeoutHandler",
+						"io.netty.handler.timeout.WriteTimeoutHandler",
+						"io.netty.resolver.dns.DnsNameResolver",
+						"io.netty.resolver.dns.DnsNameResolver$1",
+						"io.netty.resolver.dns.DnsNameResolver$AddressedEnvelopeAdapter",
+						"io.netty.resolver.dns.DnsNameResolver$DnsResponseHandler",
+						"io.netty.resolver.InetNameResolver",
+						"io.netty.resolver.SimpleNameResolver",
+						"io.netty.util.AbstractChannel",
+						"io.netty.util.DefaultAttributeMap",
+						"io.netty.util.ReferenceCountUtil",
+						"reactor.netty.resources.DefaultPooledConnectionProvider",
+						"reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnectionAllocator$",
+						"reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnectionAllocator$PooledConnectionInitializer",
+						"reactor.netty.resources.PooledConnectionProvider",
+						"reactor.netty.transport.TransportConfig$TransportChannelInitializer"
+				})
+		}, initializationInfos = {
+			@InitializationInfo(typeNames = {
+					"org.apache.lucene.util.Constants",
+					"org.elasticsearch.common.unit.TimeValue",
+					"org.apache.lucene.util.RamUsageEstimator"
+			}, initTime = InitializationTime.BUILD)
+		}
+)
 public class ElasticsearchRepositoriesHints implements NativeImageConfiguration {
 
 }

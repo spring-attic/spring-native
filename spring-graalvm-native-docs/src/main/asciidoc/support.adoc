@@ -18,6 +18,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 * `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-cache`
+* `spring-boot-starter-data-elasticsearch`
 * `spring-boot-starter-data-jdbc`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-jpa`
