@@ -14,7 +14,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring.native.mode>reflection</spring.native.mode>
-		<graalvm.version>20.2.0</graalvm.version>
+		<graalvm.version>20.3.0</graalvm.version>
 	</properties>
 
 	<dependencyManagement>

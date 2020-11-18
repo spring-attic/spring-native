@@ -158,7 +158,7 @@
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
-						<version>20.2.0</version>
+						<version>20.3.0</version>
 						<configuration>
 							<mainClass>hello.Application</mainClass>
 							<imageName>${project.artifactId}</imageName>
