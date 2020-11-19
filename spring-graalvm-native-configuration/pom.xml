@@ -334,7 +334,7 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-init-core</artifactId>
-			<version>0.2.1</version>
+			<version>0.2.2-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
