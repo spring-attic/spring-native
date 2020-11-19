@@ -19,6 +19,7 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.NativeImageConfiguration;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
+import org.springframework.http.HttpStatus;
 
 // TODO do these need to be more conditional? The triggers are either of the web stack configurations - do those
 // autoconfigs share a common ancestor that these could trigger off? Although, of course these will only be exposed
@@ -32,7 +33,9 @@ import org.springframework.graalvm.type.AccessBits;
 				RequestMethod.class,
 				ResponseBody.class,RequestBody.class,RestController.class, RequestParam.class,
 				PathVariable.class,
-				RequestMapping.class,GetMapping.class,PostMapping.class,PutMapping.class,DeleteMapping.class,PatchMapping.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+				RequestMapping.class,GetMapping.class,PostMapping.class,PutMapping.class,DeleteMapping.class,PatchMapping.class,
+				ResponseStatus.class, HttpStatus.class
+		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 	})
 public class WebAnnotationHints implements NativeImageConfiguration {
 }
