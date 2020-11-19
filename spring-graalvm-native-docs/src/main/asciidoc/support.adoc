@@ -15,35 +15,48 @@ IMPORTANT: `spring-graalvm-native` {version} is designed to be used with Spring 
 
 The following starters are supported, the group ID is `org.springframework.boot` unless specified otherwise.
 
-- `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
-- `spring-boot-starter-cache`
-- `spring-boot-starter-data-jdbc`
-- `spring-boot-starter-data-jpa`
-- `spring-boot-starter-data-mongodb`
-- `spring-boot-starter-data-neo4j`
-- `spring-boot-starter-data-r2dbc`
-- `spring-boot-starter-data-redis`
-- `spring-boot-starter-jdbc`
-- `spring-boot-starter-logging`
-- `spring-boot-starter-thymeleaf`
-- `spring-boot-starter-validation`
-- `spring-boot-starter-webflux`: only Netty is supported for now.
-- `spring-boot-starter-web`: only Tomcat is supported for now. A lightweight version of Tomcat is available via the `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency.
-- `com.wavefront:wavefront-spring-boot-starter`
+* `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure. Beware that actuators significantly increase the footprint, this will be optimized in a future release.
+** `--enable-https` flag is required for HTTPS support.
+* `spring-boot-starter-cache`
+* `spring-boot-starter-data-jdbc`
+** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
+* `spring-boot-starter-data-jpa`
+** You need to configure https://docs.jboss.org/hibernate/orm/5.4/topical/html_single/bytecode/BytecodeEnhancement.html#_build_time_enhancement[Hibernate build-time bytecode enhancement] (https://github.com/spring-projects-experimental/spring-graalvm-native/blob/f4a9128bd7fb64f6901f84325862f58ac7dcac50/spring-graalvm-native-samples/jpa/pom.xml#L106-L126[Maven example])
+** `src/main/resources/hibernate.properties` should define `hibernate.bytecode.provider=none` (https://github.com/spring-projects-experimental/spring-graalvm-native/blob/f4a9128bd7fb64f6901f84325862f58ac7dcac50/spring-graalvm-native-samples/jpa/src/main/resources/hibernate.properties[example])
+** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
+* `spring-boot-starter-data-mongodb`
+* `spring-boot-starter-data-neo4j`
+* `spring-boot-starter-data-r2dbc`
+* `spring-boot-starter-data-redis`
+* `spring-boot-starter-jdbc`
+** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
+* `spring-boot-starter-logging`
+* `spring-boot-starter-thymeleaf`
+* `spring-boot-starter-validation`
+* `spring-boot-starter-webflux`: only Netty is supported for now.
+** `--enable-https` flag is required for HTTPS support.
+* `spring-boot-starter-web`: only Tomcat is supported for now. A lightweight version of Tomcat is available via the `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency.
+** `--enable-https` flag is required for HTTPS support.
+* `com.wavefront:wavefront-spring-boot-starter`
+** `--enable-https` flag is required.
 
 === Spring Cloud
 
 Group ID is `org.springframework.cloud`.
 
-- `spring-cloud-function-web`
-- `spring-cloud-function-adapter-aws`
-- `spring-cloud-starter-function-webflux`
+* `spring-cloud-function-web`
+** `--enable-https` flag is required for HTTPS support.
+* `spring-cloud-function-adapter-aws`
+* `spring-cloud-starter-function-webflux`
+** `--enable-https` flag is required for HTTPS support.
 
 === Others
 
 - `org.springframework.fu:spring-fu-jafu`: https://github.com/spring-projects-experimental/spring-fu/tree/master/jafu[JaFu DSL] from https://github.com/spring-projects-experimental/spring-fu[Spring Fu]
 - `org.springframework.fu:spring-fu-kofu`: https://github.com/spring-projects-experimental/spring-fu/tree/master/kofu[KoFu DSL] from https://github.com/spring-projects-experimental/spring-fu[Spring Fu]
 - https://grpc.io/[GRPC]
+
+
 
 === Limitations
 

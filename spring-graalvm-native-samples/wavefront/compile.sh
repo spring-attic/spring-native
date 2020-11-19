@@ -29,8 +29,7 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
   -Dspring.native.remove-yaml-support=true \
-  -H:EnableURLProtocols=http,https \
-  --enable-all-security-services \
+  --enable-https \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]
