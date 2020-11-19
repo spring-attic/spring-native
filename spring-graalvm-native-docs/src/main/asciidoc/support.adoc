@@ -56,8 +56,6 @@ Group ID is `org.springframework.cloud`.
 - `org.springframework.fu:spring-fu-kofu`: https://github.com/spring-projects-experimental/spring-fu/tree/master/kofu[KoFu DSL] from https://github.com/spring-projects-experimental/spring-fu[Spring Fu]
 - https://grpc.io/[GRPC]
 
-
-
 === Limitations
 
 In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
