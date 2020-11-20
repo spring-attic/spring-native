@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<start-class>app.main.SampleApplication</start-class>
-		<spring-init.version>0.2.2-SNAPSHOT</spring-init.version>
+		<spring-init.version>0.2.2</spring-init.version>
 	</properties>
 
 	<dependencyManagement>
