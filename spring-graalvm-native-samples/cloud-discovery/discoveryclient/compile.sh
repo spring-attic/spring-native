@@ -30,7 +30,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   --initialize-at-build-time=javax.el \
   -H:EnableURLProtocols=http \
-  -Dspring.native.verbose=true \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
