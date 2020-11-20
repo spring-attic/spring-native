@@ -28,6 +28,8 @@ import io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler;
 import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
+import io.netty.util.CharsetUtil;
+import io.netty.util.NetUtil;
 
 import org.springframework.graalvm.extension.InitializationInfo;
 import org.springframework.graalvm.extension.InitializationTime;
@@ -36,8 +38,9 @@ import org.springframework.graalvm.extension.NativeImageHint;
 import org.springframework.graalvm.extension.TypeInfo;
 import org.springframework.graalvm.type.AccessBits;
 
-// It probably doesn't make sense to have initializations triggered, it does no harm to specify these if they aren't around
+// To be removed when https://github.com/netty/netty/issues/10797 will be fixed
 @NativeImageHint(initializationInfos = {
+		@InitializationInfo(initTime = InitializationTime.BUILD, packageNames = "io.netty"),
 		@InitializationInfo(initTime=InitializationTime.RUN,
 		packageNames = "io.netty.channel.epoll",
 		types = {
@@ -61,8 +64,8 @@ import org.springframework.graalvm.type.AccessBits;
 				typeNames = {
 						"io.netty.channel.ChannelInboundInvoker",
 						"io.netty.channel.ChannelOutboundInvoker"
-				},
-				access=AccessBits.LOAD_AND_CONSTRUCT),
+				}
+		),
 		@TypeInfo(
 				typeNames = {
 						"io.netty.channel.ChannelInitializer",
