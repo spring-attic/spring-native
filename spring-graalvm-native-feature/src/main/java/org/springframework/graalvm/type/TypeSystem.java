@@ -86,8 +86,8 @@ public class TypeSystem {
 	// Cache of resolved types TODO time out entries?
 	private Map<String, Type> typeCache = new HashMap<>();
 
-	// Map of which zip files contain which packages TODO split package support
-	private Map<String, File> packageCache = new HashMap<>();
+	// Map of which zip files contain which packages
+	private Map<String, List<File>> packageCache = new HashMap<>();
 
 	// Map of which application files contain particular packages
 	private Map<String, List<File>> appPackages = new HashMap<>();
@@ -395,7 +395,13 @@ public class TypeSystem {
 					if (name.endsWith(".class")) {
 						int lastSlash = name.lastIndexOf("/");
 						if (lastSlash != -1 && name.endsWith(".class")) {
-							packageCache.put(name.substring(0, lastSlash), jar);
+							String packageName = name.substring(0, lastSlash);
+							List<File> jars = packageCache.get(packageName);
+							if (jars == null) {
+								jars = new ArrayList<>();
+								packageCache.put(packageName, jars);
+							}
+							jars.add(jar);
 						}
 					}
 				}
@@ -422,15 +428,17 @@ public class TypeSystem {
 					}
 				}
 			} else {
-				File jarfile = packageCache.get(packageName);
-				if (jarfile != null) {
-					try (ZipFile zf = new ZipFile(jarfile)) {
-						Enumeration<? extends ZipEntry> entries = zf.entries();
-						while (entries.hasMoreElements()) {
-							ZipEntry entry = entries.nextElement();
-							String name = entry.getName();
-							if (name.equals(search)) {
-								return loadFromStream(zf.getInputStream(entry));
+				List<File> jarfiles = packageCache.get(packageName);
+				if (jarfiles!=null) {
+					for (File jarfile: jarfiles) {
+						try (ZipFile zf = new ZipFile(jarfile)) {
+							Enumeration<? extends ZipEntry> entries = zf.entries();
+							while (entries.hasMoreElements()) {
+								ZipEntry entry = entries.nextElement();
+								String name = entry.getName();
+								if (name.equals(search)) {
+									return loadFromStream(zf.getInputStream(entry));
+								}
 							}
 						}
 					}

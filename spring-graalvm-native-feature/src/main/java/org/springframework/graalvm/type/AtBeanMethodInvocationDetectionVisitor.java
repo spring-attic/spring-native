@@ -38,12 +38,6 @@ class AtBeanMethodInvocationDetectionVisitor extends ClassVisitor {
 	private TypeSystem ts;
 	private boolean scanning = true;
 	private Type type;
-	
-	public static void main(String[] args) throws Exception {
-		System.out.println(Arrays.asList(args[0].split(":")));
-		TypeSystem ts = TypeSystem.get(Arrays.asList(args[0].split(":")));
-		System.out.println(run(ts,new FileInputStream(args[1])));
-	}
 
 	/**
 	 * @param inputStream input stream for a class file
@@ -80,11 +74,17 @@ class AtBeanMethodInvocationDetectionVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 			String[] exceptions) {
-		if (scanning) {
+		if (scanning && worthVisiting(access)) {
 			return new AtBeanInvocationFindingMethodVisitor(name, this.api);
 		} else {
 			return super.visitMethod(access, name, descriptor, signature, exceptions);
 		}
+	}
+
+	private boolean worthVisiting(int access) {
+		return (access & Opcodes.ACC_BRIDGE)==0 &&
+				// TODO shouldn't really ignore synthetics (lambdas may be making invocations)
+			   (access & Opcodes.ACC_SYNTHETIC)==0;
 	}
 
 	class AtBeanInvocationFindingMethodVisitor extends MethodVisitor {

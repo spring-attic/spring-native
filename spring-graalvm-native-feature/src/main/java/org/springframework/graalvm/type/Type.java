@@ -2268,7 +2268,8 @@ public class Type {
 		if (methodsInvokingAtBeanMethods != null) {
 			throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are directly invoking methods marked @Bean: "+
 					methodsInvokingAtBeanMethods+" - due to the enforced proxyBeanMethods=false for components in a native-image, please consider "+
-					"refactoring to use instance injection.");
+					"refactoring to use instance injection. If you are confident this is not going to affect your application, you may turn this check "
+					+ "off using -Dspring.native.verify=false.");
 		}
 	}
 
