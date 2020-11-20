@@ -228,7 +228,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b06/openjdk-8u272+10-jvmci-20.3-b06-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: graalvm-ce-20.3-dev-java8-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-20.3-dev-java11-image
@@ -255,7 +255,7 @@ jobs:
         DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
         BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b06/labsjdk-ce-11.0.9+10-jvmci-20.3-b06-linux-amd64.tar.gz
         BUILD_ARG_GRAALVM_BRANCH: release/graal-vm/20.3
-        REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+        REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: graalvm-ce-20.3-dev-java11-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-master-java8-image
@@ -282,7 +282,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-20.3-b06/openjdk-8u272+10-jvmci-20.3-b06-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: graalvm-ce-master-java8-image
       params: {image: image/image.tar}
   - name: build-graalvm-ce-master-java11-image
@@ -309,7 +309,7 @@ jobs:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.graalvm-ce
           BUILD_ARG_JVMCI_URL: https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-20.3-b06/labsjdk-ce-11.0.9+10-jvmci-20.3-b06-linux-amd64.tar.gz
           BUILD_ARG_GRAALVM_BRANCH: master
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: graalvm-ce-master-java11-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-20.3-dev-java8-image
@@ -336,7 +336,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java8
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: spring-graalvm-native-20.3-dev-java8-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-20.3-dev-java11-image
@@ -363,7 +363,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:20.3-dev-java11
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: spring-graalvm-native-20.3-dev-java11-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-master-java8-image
@@ -390,7 +390,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java8
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: spring-graalvm-native-master-java8-image
       params: {image: image/image.tar}
   - name: build-spring-graalvm-native-master-java11-image
@@ -417,7 +417,7 @@ jobs:
         params:
           DOCKERFILE: spring-graalvm-native/docker/Dockerfile.spring-graalvm-native
           BUILD_ARG_BASE_IMAGE: springci/graalvm-ce:master-java11
-          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache
+          REGISTRY_MIRRORS: harbor-repo.vmware.com/dockerhub-proxy-cache/library
     - put: spring-graalvm-native-master-java11-image
       params: {image: image/image.tar}
 groups:

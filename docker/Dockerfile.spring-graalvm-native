@@ -1,5 +1,5 @@
 ARG BASE_IMAGE
-FROM harbor-repo.vmware.com/dockerhub-proxy-cache/library/$BASE_IMAGE
+FROM $BASE_IMAGE
 
 ARG MAVEN_VERSION=3.6.3
 
