@@ -74,7 +74,7 @@ class AtBeanMethodInvocationDetectionVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 			String[] exceptions) {
-		if (scanning && worthVisiting(access)) {
+		if (scanning && worthVisiting(access) && this.type.isAtBeanMethod(name, descriptor)) {
 			return new AtBeanInvocationFindingMethodVisitor(name, this.api);
 		} else {
 			return super.visitMethod(access, name, descriptor, signature, exceptions);
@@ -98,7 +98,7 @@ class AtBeanMethodInvocationDetectionVisitor extends ClassVisitor {
 
 		@Override
 		public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean itface) {
-			Type ownerType = ts.resolveSlashed(owner);
+Type ownerType = ts.resolveSlashed(owner);
 			if (ownerType.isAtConfiguration()) {
 				boolean isAtBeanMethod = ownerType.isAtBeanMethod(name,descriptor);
 				if (isAtBeanMethod) {
