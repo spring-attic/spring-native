@@ -14,7 +14,7 @@ The `pom.xml` contains this extra snippet:
         <plugin>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-graalvm-native-maven-plugin</artifactId>
-            <version>0.8.3-SNAPSHOT</version>
+            <version>...</version>
             <executions>
                 <execution>
                     <id>sources</id>
