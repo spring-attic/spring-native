@@ -217,8 +217,7 @@
   {"class": "com.rabbitmq.client.SocketChannelConfigurator"},
   {"package": "javax.transaction"},
   {"class": "org.aopalliance.aop.Advice"},
-  {"class": "io.lettuce.core.metrics.DefaultCommandLatencyCollector"},
-  {"class": "org.springframework.cloud.function.web.function.FunctionEndpointInitializer"}
+  {"class": "io.lettuce.core.metrics.DefaultCommandLatencyCollector"}
 ]
 }
 
