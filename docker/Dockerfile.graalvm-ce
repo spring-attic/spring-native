@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM harbor-repo.vmware.com/dockerhub-proxy-cache/library/ubuntu:focal
 
 ARG JVMCI_URL
 ARG GRAALVM_BRANCH
