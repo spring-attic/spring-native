@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=function-netty-fun
+ARTIFACT=cloud-function-netty
 MAINCLASS=com.example.demo.DemoApplication
 VERSION=0.0.1-SNAPSHOT
 
