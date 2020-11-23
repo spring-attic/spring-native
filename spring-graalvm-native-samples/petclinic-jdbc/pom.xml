@@ -25,14 +25,14 @@
         <webjars-jquery.version>2.2.4</webjars-jquery.version>
         <wro4j.version>1.8.0</wro4j.version>
 
-        <jacoco.version>0.8.3</jacoco.version>
+        <jacoco.version>0.9.0-SNAPSHOT</jacoco.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-graalvm-native</artifactId>
-            <version>0.8.3</version>
+            <version>0.9.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Spring and Spring Boot dependencies -->
