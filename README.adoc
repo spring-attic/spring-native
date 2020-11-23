@@ -11,9 +11,10 @@ image:https://ci.spring.io/api/v1/teams/spring-graalvm-native/pipelines/spring-g
 Spring Native for https://www.graalvm.org[GraalVM] provides support for compiling Spring to native executables using
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler.
 
-The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, in order to provide
-a native deployment option designed to be packaged in lightweight containers. In practice, the target is
-to support your Spring application (typically Spring Boot ones), unmodified, on this new platform.
+Spring Native for GraalVM provides an incubating support for compiling Spring applications to native executables using
+https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
+option designed to be packaged in lightweight containers. In practice, the target is to support your Spring application
+(typically a Spring Boot one), unmodified, on this new platform.
 
 Watch https://www.youtube.com/watch?v=Um9djPTtPe0[The Path Towards Spring Boot Native Applications] SpringOne 2020 talk recording for more details:
 image:https://img.youtube.com/vi/Um9djPTtPe0/maxresdefault.jpg["The Path Towards Spring Boot Native Applications",align="center", width=640px, link="https://www.youtube.com/watch?v=Um9djPTtPe0"]
