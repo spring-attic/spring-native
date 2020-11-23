@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.experimental</groupId>
 			<artifactId>tomcat-embed-programmatic</artifactId>
-			<version>9.0.38.1-dev</version>
+			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
