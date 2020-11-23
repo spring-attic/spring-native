@@ -9,8 +9,6 @@ else
     MAX_DEPTH=2
 fi
 
-echo $MAX_DEPTH
-
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
 for d in $(find spring-graalvm-native-samples -maxdepth $MAX_DEPTH -type d)
