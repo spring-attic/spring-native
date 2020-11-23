@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=security-method
-MAINCLASS=com.example.securingweb.SecuringWebApplication
+MAINCLASS=com.example.methodsecurity.MethodSecurityApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
