@@ -39,7 +39,7 @@ You may already be ready to go with your own project.
 
 ===== Update the `pom.xml` file
 
-IMPORTANT: Only Spring Boot {boot-version} and above are supported, upgrade your project if necessary.
+IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim"]
