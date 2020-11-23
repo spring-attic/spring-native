@@ -36,7 +36,31 @@ The following starters are supported, the group ID is `org.springframework.boot`
 * `spring-boot-starter-validation`
 * `spring-boot-starter-webflux`: only Netty is supported for now.
 ** `--enable-https` flag is required for HTTPS support.
-* `spring-boot-starter-web`: only Tomcat is supported for now. A lightweight version of Tomcat is available via the `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency.
+* `spring-boot-starter-web`:
+** Only Tomcat is supported for now.
+** `tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint. If you are using `spring-boot-starter-web` and Maven, you should use the following `pom.xml` configuration:
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.tomcat.experimental</groupId>
+    <artifactId>tomcat-embed-programmatic</artifactId>
+    <version>${tomcat.version}</version>
+</dependency>
+```
 ** `--enable-https` flag is required for HTTPS support.
 * `com.wavefront:wavefront-spring-boot-starter`
 ** `--enable-https` flag is required.
