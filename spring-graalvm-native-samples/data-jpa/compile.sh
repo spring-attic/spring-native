@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=jpa
+ARTIFACT=data-jpa
 MAINCLASS=app.main.SampleApplication
 VERSION=0.0.1-SNAPSHOT
 

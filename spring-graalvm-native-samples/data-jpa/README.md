@@ -1,4 +1,4 @@
-Spring Boot project with JPA.
+Spring Boot project with Spring Data JPA.
 
 To build and run the native application packaged in a lightweight container:
 ```
