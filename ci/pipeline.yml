@@ -1,9 +1,27 @@
+anchors:
+  slack-fail-params: &slack-fail-params
+    text: >
+      :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
+    silent: true
+    icon_emoji: ":concourse:"
+    username: concourse-ci
+resource_types:
+  - name: slack-notification
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+      tag: latest
 resources:
   - name: spring-graalvm-native
     type: git
     source:
       uri: https://github.com/spring-projects-experimental/spring-graalvm-native
       branch: master
+  - name: slack-alert
+    type: slack-notification
+    icon: slack
+    source:
+      url: ((slack-webhook-url))
   - name: every-day
     type: time
     source: {interval: 24h}
@@ -66,18 +84,24 @@ jobs:
       - get: spring-graalvm-native
       - get: every-day
         trigger: true
-      - task: build
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: springci/spring-graalvm-native
-              tag: 20.3-dev-java11
-          inputs:
-            - name: spring-graalvm-native
-          run:
-            path: spring-graalvm-native/ci/build-samples.sh
+      - do:
+        - task: build
+          config:
+            platform: linux
+            image_resource:
+              type: registry-image
+              source:
+                repository: springci/spring-graalvm-native
+                tag: 20.3-dev-java11
+            inputs:
+              - name: spring-graalvm-native
+            run:
+              path: spring-graalvm-native/ci/build-samples.sh
+        on_failure:
+          do:
+            - put: slack-alert
+              params:
+                <<: *slack-fail-params
   - name: build-master-java8-samples
     public: true
     plan:
