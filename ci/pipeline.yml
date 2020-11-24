@@ -162,8 +162,8 @@ jobs:
           run:
             path: spring-graalvm-native/ci/deploy.sh
         params:
-          ARTIFACTORY_USERNAME: ((artifactory_username))
-          ARTIFACTORY_PASSWORD: ((artifactory_password))
+          ARTIFACTORY_USERNAME: ((artifactory-username))
+          ARTIFACTORY_PASSWORD: ((artifactory-password))
 groups:
   - name: "each-commit-builds"
     jobs: [
