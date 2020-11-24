@@ -1,4 +1,4 @@
-package org.springframework.support.graal;
+package org.springframework.nativex;
 
 import java.io.InputStream;
 

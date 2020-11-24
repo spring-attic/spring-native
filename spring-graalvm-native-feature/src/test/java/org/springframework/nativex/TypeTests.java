@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.support.graal;
+package org.springframework.nativex;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -179,10 +179,6 @@ public class TypeTests {
 		assertEquals(Object.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(3, dts.size());
-		System.out.println(dts);
-		// java.lang.String=31
-		// org.springframework.support.graal.TypeTests$TestClass6=31, 
-		// org.springframework.support.graal.TypeTests$TestClass7[]=31
 		Set<String> keys = dts.keySet();
 		for (String key: keys) {
 			Type t= typeSystem.resolveName(key);
@@ -231,12 +227,12 @@ public class TypeTests {
 		List<String> typesInSignature = extenderClass.getTypesInSignature();
 		assertEquals(3, typesInSignature.size());
 		assertEquals("java/lang/Object",typesInSignature.get(0));
-		assertEquals("org/springframework/support/graal/TypeTests$Finder",typesInSignature.get(1));
-		assertEquals("org/springframework/support/graal/TypeTests$TXClass4",typesInSignature.get(2));
+		assertEquals("org/springframework/nativex/TypeTests$Finder",typesInSignature.get(1));
+		assertEquals("org/springframework/nativex/TypeTests$TXClass4",typesInSignature.get(2));
 		Type extender2 = typeSystem.resolveName(Extender2.class.getName());
 		typesInSignature = extender2.getTypesInSignature();
 		assertEquals(2, typesInSignature.size());
-		assertEquals("org/springframework/support/graal/TypeTests$TXClass4",typesInSignature.get(0));
+		assertEquals("org/springframework/nativex/TypeTests$TXClass4",typesInSignature.get(0));
 		assertEquals("java/io/Serializable",typesInSignature.get(1));
 	}
 	
@@ -380,8 +376,8 @@ public class TypeTests {
 	static class TestClass7 {
 	}
 
-	@NativeImageHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.support.graal.TypeTests$TestClass6",
-			"org.springframework.support.graal.TypeTests$TestClass7[]", }) })
+	@NativeImageHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
+			"org.springframework.nativex.TypeTests$TestClass7[]", }) })
 	static class TestClass8 {
 
 	}
