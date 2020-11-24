@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Neo4jApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(Neo4jApplication.class);
+		SpringApplication.run(Neo4jApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 }
