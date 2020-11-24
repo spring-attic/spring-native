@@ -11,9 +11,9 @@ import ch.qos.logback.classic.pattern.ThreadConverter;
 import org.springframework.boot.logging.logback.ColorConverter;
 import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter;
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 @NativeImageHint(typeInfos = {

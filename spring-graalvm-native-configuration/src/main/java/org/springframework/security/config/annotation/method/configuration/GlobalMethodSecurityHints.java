@@ -16,10 +16,10 @@
 package org.springframework.security.config.annotation.method.configuration;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
 
 @NativeImageHint(trigger=GlobalMethodSecuritySelector.class, typeInfos = {

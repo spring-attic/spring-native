@@ -15,12 +15,7 @@
  */
 package org.springframework.cloud.gateway.config;
 
-import org.apache.logging.log4j.message.ReusableMessageFactory;
-import org.springframework.cloud.gateway.filter.factory.SetPathGatewayFilterFactory;
-import org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
 
 //@NativeImageHint(trigger=GatewayAutoConfiguration.class, 
 //		typeInfos = {@TypeInfo(types= {

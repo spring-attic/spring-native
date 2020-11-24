@@ -19,12 +19,12 @@ import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
 import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ProxyInfo;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ProxyInfo;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger=BatchConfigurationSelector.class, 
 		resourcesInfos = { 

@@ -19,8 +19,8 @@ import java.io.InputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.graalvm.domain.resources.ResourcesDescriptor;
-import org.springframework.graalvm.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 
 public class ResourcesTests {
 

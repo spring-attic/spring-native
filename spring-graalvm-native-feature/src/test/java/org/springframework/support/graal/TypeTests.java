@@ -29,18 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.graalvm.compiler.core.common.Fields;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.HintDeclaration;
-import org.springframework.graalvm.type.Field;
-import org.springframework.graalvm.type.Method;
-import org.springframework.graalvm.type.Type;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.Field;
+import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TypeTests {

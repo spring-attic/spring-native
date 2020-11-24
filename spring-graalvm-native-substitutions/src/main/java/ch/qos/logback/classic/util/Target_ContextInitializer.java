@@ -4,7 +4,6 @@ import java.net.URL;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.gaffer.GafferUtil;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.LogbackException;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.ErrorStatus;
@@ -13,10 +12,9 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.graalvm.substitutions.LogbackIsAround;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.RemoveXmlSupport;
+import org.springframework.nativex.substitutions.LogbackIsAround;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "ch.qos.logback.classic.util.ContextInitializer", onlyWith = { OnlyIfPresent.class, LogbackIsAround.class, RemoveXmlSupport.class })
 final class Target_ContextInitializer {

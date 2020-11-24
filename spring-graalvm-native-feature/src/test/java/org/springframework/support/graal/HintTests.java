@@ -27,22 +27,22 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.graalvm.domain.init.InitializationDescriptor;
-import org.springframework.graalvm.extension.FieldInfo;
-import org.springframework.graalvm.extension.InitializationInfo;
-import org.springframework.graalvm.extension.InitializationTime;
-import org.springframework.graalvm.extension.MethodInfo;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ProxyInfo;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.HintApplication;
-import org.springframework.graalvm.type.ProxyDescriptor;
-import org.springframework.graalvm.type.ResourcesDescriptor;
-import org.springframework.graalvm.type.Type;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.extension.FieldInfo;
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
+import org.springframework.nativex.extension.MethodInfo;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ProxyInfo;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintApplication;
+import org.springframework.nativex.type.ProxyDescriptor;
+import org.springframework.nativex.type.ResourcesDescriptor;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 
 public class HintTests {
 
@@ -201,7 +201,7 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
 		assertEquals(0,accessDescriptor.getMethodDescriptors().size());
-		org.springframework.graalvm.type.FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
+		org.springframework.nativex.type.FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
 		assertEquals("foo",fd.getName());
 		assertTrue(fd.isAllowUnsafeAccess());
 	}

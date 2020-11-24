@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 
 import org.springframework.data.annotation.QueryAnnotation;
 import org.springframework.data.repository.Repository;
-import org.springframework.graalvm.domain.reflect.Flag;
-import org.springframework.graalvm.extension.ComponentProcessor;
-import org.springframework.graalvm.extension.NativeImageContext;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.Method;
-import org.springframework.graalvm.type.Type;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.domain.reflect.Flag;
+import org.springframework.nativex.extension.ComponentProcessor;
+import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
 // This is an example from the mongodb sample.
@@ -83,7 +83,7 @@ import org.springframework.util.StringUtils;
  * Basic spring.components entry processor for Spring Data. Crafted initially to
  * handle the mongodb case. This ComponentProcessor implementation is listed in
  * the META-INF/services file
- * org.springframework.graalvm.extension.ComponentProcessor and that is how it
+ * {@link org.springframework.nativex.extension.ComponentProcessor} and that is how it
  * is picked up by the feature runtime.
  *
  * @author Andy Clement

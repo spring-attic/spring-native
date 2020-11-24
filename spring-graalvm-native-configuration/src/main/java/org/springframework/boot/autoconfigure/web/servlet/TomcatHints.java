@@ -6,11 +6,11 @@ import org.apache.coyote.http11.Http11NioProtocol;
 
 import org.springframework.boot.autoconfigure.web.CommonWebInfos;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
-import org.springframework.graalvm.extension.MethodInfo;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.MethodInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger= Tomcat.class, typeInfos = {
 		@TypeInfo(types = TomcatEmbeddedWebappClassLoader.class),

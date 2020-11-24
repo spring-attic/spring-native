@@ -24,8 +24,8 @@ import java.util.Collections;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.graalvm.type.Type;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 
 public class TypeSystemTests {
 

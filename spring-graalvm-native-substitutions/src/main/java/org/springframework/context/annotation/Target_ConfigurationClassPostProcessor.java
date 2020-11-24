@@ -15,7 +15,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.core.type.MethodMetadata;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 @TargetClass(className = "org.springframework.context.annotation.ConfigurationClassPostProcessor", onlyWith = { OnlyIfPresent.class })
 public final class Target_ConfigurationClassPostProcessor {

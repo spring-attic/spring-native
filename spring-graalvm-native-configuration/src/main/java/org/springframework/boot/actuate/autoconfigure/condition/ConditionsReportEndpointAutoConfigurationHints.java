@@ -19,10 +19,10 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndCondition;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndConditions;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

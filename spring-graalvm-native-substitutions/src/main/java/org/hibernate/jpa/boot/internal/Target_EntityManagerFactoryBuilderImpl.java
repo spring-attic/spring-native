@@ -4,8 +4,8 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.RemoveXmlSupport;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl", onlyWith = { OnlyIfPresent.class, RemoveXmlSupport.class })
 final class Target_EntityManagerFactoryBuilderImpl {

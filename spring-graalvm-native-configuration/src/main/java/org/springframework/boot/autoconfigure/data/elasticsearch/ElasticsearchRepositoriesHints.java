@@ -29,14 +29,14 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
 import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
 import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
-import org.springframework.graalvm.extension.InitializationInfo;
-import org.springframework.graalvm.extension.InitializationTime;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ProxyInfo;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ProxyInfo;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 /**
  * @author Christoph Strobl

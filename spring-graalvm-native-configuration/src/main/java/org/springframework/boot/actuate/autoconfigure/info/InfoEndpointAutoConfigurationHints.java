@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageConfiguration;
 
 // TODO tests or not point keeping it...
 // Hitting /info endpoint

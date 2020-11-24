@@ -24,11 +24,11 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.graalvm.extension.MethodInfo;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.MethodInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 // TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}

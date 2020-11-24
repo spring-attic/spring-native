@@ -15,10 +15,10 @@
  */
 package org.springframework.web.bind.annotation;
 
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 import org.springframework.http.HttpStatus;
 
 // TODO do these need to be more conditional? The triggers are either of the web stack configurations - do those

@@ -19,7 +19,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.DefaultChannelId;
-import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.unix.Errors;
 import io.netty.channel.unix.IovArray;
 import io.netty.channel.unix.Limits;
@@ -28,15 +27,13 @@ import io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler;
 import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
-import io.netty.util.CharsetUtil;
-import io.netty.util.NetUtil;
 
-import org.springframework.graalvm.extension.InitializationInfo;
-import org.springframework.graalvm.extension.InitializationTime;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 // To be removed when https://github.com/netty/netty/issues/10797 will be fixed
 @NativeImageHint(initializationInfos = {

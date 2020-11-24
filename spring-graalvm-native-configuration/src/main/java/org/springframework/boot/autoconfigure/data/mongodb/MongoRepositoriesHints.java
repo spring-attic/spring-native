@@ -18,9 +18,9 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactoryBean;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 
 @NativeImageHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos = {

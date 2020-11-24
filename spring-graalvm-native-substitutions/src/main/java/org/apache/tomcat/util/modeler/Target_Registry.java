@@ -4,7 +4,7 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 // To avoid Registry instantiation and JmxMBeanServer usage
 @TargetClass(className = "org.apache.tomcat.util.modeler.Registry", onlyWith = { OnlyIfPresent.class })

@@ -17,10 +17,10 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 // Hitting /caches endpoint
 @NativeImageHint(trigger = CachesEndpointAutoConfiguration.class, typeInfos = { 

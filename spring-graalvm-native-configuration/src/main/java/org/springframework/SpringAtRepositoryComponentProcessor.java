@@ -20,14 +20,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.graalvm.domain.reflect.Flag;
-import org.springframework.graalvm.extension.ComponentProcessor;
-import org.springframework.graalvm.extension.NativeImageContext;
-import org.springframework.graalvm.support.ConfigOptions;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.Field;
-import org.springframework.graalvm.type.Method;
-import org.springframework.graalvm.type.Type;
+import org.springframework.nativex.domain.reflect.Flag;
+import org.springframework.nativex.extension.ComponentProcessor;
+import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.support.ConfigOptions;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.Field;
+import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.Type;
 
 // Example input code:
 //

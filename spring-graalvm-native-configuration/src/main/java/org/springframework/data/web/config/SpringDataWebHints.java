@@ -17,9 +17,9 @@ package org.springframework.data.web.config;
 
 import org.springframework.data.web.config.EnableSpringDataWebSupport.QuerydslActivator;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.SpringDataWebConfigurationImportSelector;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.TypeInfo;
 
 
 /*

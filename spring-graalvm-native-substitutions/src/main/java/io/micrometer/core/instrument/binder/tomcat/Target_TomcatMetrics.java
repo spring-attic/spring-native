@@ -15,8 +15,8 @@
  */
 package io.micrometer.core.instrument.binder.tomcat;
 
-import org.springframework.graalvm.substitutions.CatalinaManagerIsAround;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.CatalinaManagerIsAround;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;

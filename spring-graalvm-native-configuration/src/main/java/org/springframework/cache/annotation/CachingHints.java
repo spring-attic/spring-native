@@ -16,9 +16,9 @@
 package org.springframework.cache.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 @NativeImageHint(trigger=CachingConfigurationSelector.class, typeInfos = {
 		@TypeInfo(types= {AutoProxyRegistrar.class,ProxyCachingConfiguration.class},typeNames= {

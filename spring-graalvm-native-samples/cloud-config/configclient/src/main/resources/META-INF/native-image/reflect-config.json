@@ -1397,7 +1397,7 @@
   "allDeclaredMethods":true
 },
 {
-  "name":"org.springframework.graalvm.utils.LiteConfigurationInitializer",
+  "name":"org.springframework.nativex.utils.LiteConfigurationInitializer",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

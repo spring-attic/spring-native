@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.graalvm.extension.ResourcesInfo;
+import org.springframework.nativex.extension.ResourcesInfo;
 
 // Accessed from org.apache.catalina.startup.Tomcat
 @ResourcesInfo(patterns= {

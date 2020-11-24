@@ -17,7 +17,7 @@ package org.springframework.boot.autoconfigure.data;
 
 import org.springframework.data.repository.core.support.ReactiveRepositoryFactorySupport;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.TypeInfo;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

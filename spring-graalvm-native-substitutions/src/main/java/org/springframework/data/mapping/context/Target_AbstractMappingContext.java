@@ -21,7 +21,7 @@ import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.data.mapping.model.Target_BeanWrapperPropertyAccessorFactory;
 import org.springframework.data.spel.EvaluationContextProvider;
 import org.springframework.data.util.TypeInformation;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 @TargetClass(className = "org.springframework.data.mapping.context.AbstractMappingContext", onlyWith = { OnlyIfPresent.class })
 final class Target_AbstractMappingContext<E extends MutablePersistentEntity<?, P>, P extends PersistentProperty<P>> {

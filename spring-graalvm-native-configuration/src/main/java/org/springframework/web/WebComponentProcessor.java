@@ -16,18 +16,16 @@
 package org.springframework.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-import org.springframework.graalvm.extension.ComponentProcessor;
-import org.springframework.graalvm.extension.NativeImageContext;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.Field;
-import org.springframework.graalvm.type.Method;
-import org.springframework.graalvm.type.Type;
+import org.springframework.nativex.extension.ComponentProcessor;
+import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.Field;
+import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.Type;
 
 /**
  * Basic WebComponentProcessor - adds reflective access to types used in controller mappings if they are non

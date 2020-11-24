@@ -25,16 +25,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
-import org.springframework.graalvm.extension.MethodInfo;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.support.ConfigOptions;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.HintDeclaration;
-import org.springframework.graalvm.type.ResourcesDescriptor;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.extension.MethodInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.support.ConfigOptions;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.ResourcesDescriptor;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
 

@@ -22,8 +22,8 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.graalvm.substitutions.MessageInterpolatorIsAround;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.MessageInterpolatorIsAround;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.util.ClassUtils;
 
 /**

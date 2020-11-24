@@ -18,11 +18,11 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(
 	trigger=kotlin.Unit.class,
@@ -59,9 +59,6 @@ import org.springframework.graalvm.type.AccessBits;
 			LogManager.class,
 			JavaLoggingSystem.class
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
-//		@TypeInfo(types = {
-//				SpringApplication.class
-//		},access=AccessBits.LOAD_AND_CONSTRUCT)
 	}
 )
 public class SpringApplicationHints implements NativeImageConfiguration {

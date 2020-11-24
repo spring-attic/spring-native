@@ -64,8 +64,8 @@ Each of these hint specifies some native image configuration (perhaps a resource
 
 These `@NativeImageHint` can be hosted in one of two places.
 
-First, in the `spring-graalvm-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.graalvm.extension.NativeImageConfiguration` interface (defined by the feature).
-Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.graalvm.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
+First, in the `spring-graalvm-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.nativex.extension.NativeImageConfiguration` interface (defined by the feature).
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
 
 Secondly, they can be put directly onto Spring configuration classes, and they are picked up by the feature.
 
@@ -168,7 +168,7 @@ If you are using a piece of Spring we don't have a sample for, this is likely to
 Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
 
 . If there is already a `NativeImageConfiguration` implementation for that configuration, augment it with the extra type info.
-If there is not, create one, attach a `@NativeImageHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.graalvm.extension.NativeImageConfiguration` .
+If there is not, create one, attach a `@NativeImageHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` .
 You may also need to set the accessibility in the annotation (in the `@TypeInfo`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.

@@ -15,9 +15,9 @@
  */
 package org.springframework.boot.autoconfigure.integration;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ResourcesInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ResourcesInfo;
 
 @NativeImageHint(trigger = IntegrationAutoConfiguration.class,
 	resourcesInfos = {

@@ -4,9 +4,9 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.core.Ordered;
-import org.springframework.graalvm.substitutions.FunctionalMode;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.SpringFuIsAround;
+import org.springframework.nativex.substitutions.FunctionalMode;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.SpringFuIsAround;
 
 // Avoid using merged annotation infra
 @TargetClass(className = "org.springframework.core.annotation.AnnotationAwareOrderComparator", onlyWith = { SpringFuIsAround.class, FunctionalMode.class, OnlyIfPresent.class })

@@ -39,7 +39,7 @@ import org.apache.http.conn.UnsupportedSchemeException;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.util.Args;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 /**
  * Substitute the {@link org.apache.http.impl.client.BasicAuthCache} (causing trouble by using an {@link ObjectOutputStream}

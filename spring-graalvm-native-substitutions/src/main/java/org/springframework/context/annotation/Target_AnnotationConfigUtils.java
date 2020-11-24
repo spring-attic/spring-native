@@ -8,8 +8,8 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.graalvm.substitutions.FunctionalMode;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.FunctionalMode;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.lang.Nullable;
 
 @TargetClass(className = "org.springframework.context.annotation.AnnotationConfigUtils", onlyWith = { FunctionalMode.class, OnlyIfPresent.class })

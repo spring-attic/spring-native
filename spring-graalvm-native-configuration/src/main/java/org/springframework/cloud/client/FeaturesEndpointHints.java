@@ -16,10 +16,10 @@
 package org.springframework.cloud.client;
 
 import org.springframework.cloud.client.actuator.FeaturesEndpoint;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger = CommonsClientAutoConfiguration.ActuatorConfiguration.class, typeInfos = {
 		@TypeInfo(types = { FeaturesEndpoint.class }, access = AccessBits.ALL),

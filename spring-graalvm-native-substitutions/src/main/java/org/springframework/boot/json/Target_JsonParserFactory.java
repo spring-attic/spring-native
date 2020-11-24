@@ -3,8 +3,8 @@ package org.springframework.boot.json;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.RemoveYamlSupport;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveYamlSupport;
 import org.springframework.util.ClassUtils;
 
 @TargetClass(className = "org.springframework.boot.json.JsonParserFactory", onlyWith = { RemoveYamlSupport.class, OnlyIfPresent.class })

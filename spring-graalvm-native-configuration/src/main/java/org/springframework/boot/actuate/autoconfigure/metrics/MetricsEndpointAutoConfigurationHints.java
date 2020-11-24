@@ -17,10 +17,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
-import org.springframework.boot.actuate.metrics.MetricsEndpoint;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 // Hitting /metrics endpoint - needs tests
 @NativeImageHint(trigger = MetricsEndpointAutoConfiguration.class, typeInfos = { 

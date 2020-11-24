@@ -15,9 +15,9 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 // Hitting /mappings endpoint
 @NativeImageHint(trigger = MappingsEndpointAutoConfiguration.class, typeInfos = { 

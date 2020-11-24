@@ -6,7 +6,7 @@ import com.oracle.svm.core.annotate.Delete;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 

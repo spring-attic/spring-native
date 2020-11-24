@@ -10,10 +10,10 @@ import org.springframework.data.neo4j.repository.event.IdGeneratingBeforeBindCal
 import org.springframework.data.neo4j.repository.event.OptimisticLockingBeforeBindCallback;
 import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
 import org.springframework.data.neo4j.repository.support.SimpleNeo4jRepository;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ProxyInfo;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ProxyInfo;
+import org.springframework.nativex.extension.TypeInfo;
 
 @NativeImageHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {

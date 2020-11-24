@@ -15,9 +15,9 @@
  */
 package org.springframework.security.config.annotation.web.reactive;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.security.config.annotation.web.reactive.ReactiveOAuth2ClientImportSelector.OAuth2ClientWebFluxSecurityConfiguration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 

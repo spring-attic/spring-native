@@ -19,10 +19,10 @@ import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
 import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 

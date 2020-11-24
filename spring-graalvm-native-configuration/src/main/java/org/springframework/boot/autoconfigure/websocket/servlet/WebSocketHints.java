@@ -16,9 +16,9 @@
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import org.apache.tomcat.websocket.server.WsContextListener;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
 
 @NativeImageHint(trigger=WebSocketServletAutoConfiguration.class,typeInfos = { 
 	@TypeInfo(types = { 

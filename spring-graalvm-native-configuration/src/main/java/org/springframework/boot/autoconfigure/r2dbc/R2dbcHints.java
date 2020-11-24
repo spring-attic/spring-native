@@ -29,11 +29,11 @@ import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.AfterSaveCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
-import org.springframework.graalvm.type.AccessBits;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
 import io.r2dbc.pool.ConnectionPool;

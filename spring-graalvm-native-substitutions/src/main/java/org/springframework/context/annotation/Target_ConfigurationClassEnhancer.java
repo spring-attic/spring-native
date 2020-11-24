@@ -3,7 +3,7 @@ package org.springframework.context.annotation;
 import com.oracle.svm.core.annotate.Delete;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 @Delete
 @TargetClass(className = "org.springframework.context.annotation.ConfigurationClassEnhancer", onlyWith = { OnlyIfPresent.class })

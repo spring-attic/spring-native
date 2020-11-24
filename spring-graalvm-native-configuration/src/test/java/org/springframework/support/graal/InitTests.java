@@ -4,8 +4,8 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import org.springframework.graalvm.domain.init.InitializationDescriptor;
-import org.springframework.graalvm.domain.init.InitializationJsonMarshaller;
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.init.InitializationJsonMarshaller;
 
 public class InitTests {
 

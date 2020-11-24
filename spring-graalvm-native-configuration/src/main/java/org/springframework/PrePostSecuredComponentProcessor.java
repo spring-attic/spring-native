@@ -15,9 +15,9 @@
  */
 package org.springframework;
 
-import org.springframework.graalvm.extension.ComponentProcessor;
-import org.springframework.graalvm.extension.NativeImageContext;
-import org.springframework.graalvm.type.Type;
+import org.springframework.nativex.extension.ComponentProcessor;
+import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;

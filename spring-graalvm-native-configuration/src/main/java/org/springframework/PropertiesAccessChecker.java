@@ -18,9 +18,9 @@ package org.springframework;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.graalvm.extension.AccessChecker;
-import org.springframework.graalvm.type.Type;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.extension.AccessChecker;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 
 public class PropertiesAccessChecker implements AccessChecker {
 

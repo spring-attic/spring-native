@@ -12,8 +12,8 @@ import org.hibernate.validator.internal.util.logging.Log;
 import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.spi.nodenameprovider.PropertyNodeNameProvider;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.RemoveXmlSupport;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "org.hibernate.validator.internal.engine.AbstractConfigurationImpl", onlyWith = { OnlyIfPresent.class, RemoveXmlSupport.class })
 final class Target_AbstractConfigurationImpl {

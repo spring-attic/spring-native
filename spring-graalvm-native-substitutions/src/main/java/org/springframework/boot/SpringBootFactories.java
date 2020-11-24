@@ -56,7 +56,7 @@ import org.springframework.boot.web.context.ServerPortInfoApplicationContextInit
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.graalvm.utils.LiteConfigurationInitializer;
+import org.springframework.nativex.utils.LiteConfigurationInitializer;
 import org.springframework.init.func.FunctionalInstallerListener;
 import org.springframework.init.func.InfrastructureInitializer;
 import org.springframework.util.ClassUtils;

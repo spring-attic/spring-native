@@ -5,7 +5,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentPropertyAccessor;
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 @TargetClass(className = "org.springframework.data.mapping.model.BeanWrapperPropertyAccessorFactory", onlyWith = { OnlyIfPresent.class })
 public final class Target_BeanWrapperPropertyAccessorFactory implements PersistentPropertyAccessorFactory {

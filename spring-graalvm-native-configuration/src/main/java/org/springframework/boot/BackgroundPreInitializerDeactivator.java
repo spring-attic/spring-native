@@ -18,7 +18,7 @@ package org.springframework.boot;
 import java.net.URL;
 import java.util.List;
 
-import org.springframework.graalvm.extension.SpringFactoriesProcessor;
+import org.springframework.nativex.extension.SpringFactoriesProcessor;
 
 /**
  * BackgroundPreinitializer is REALLY not a good fit with native images

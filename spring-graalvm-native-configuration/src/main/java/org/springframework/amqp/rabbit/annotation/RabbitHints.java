@@ -15,10 +15,10 @@
  */
 package org.springframework.amqp.rabbit.annotation;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.ResourcesInfo;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.ResourcesInfo;
+import org.springframework.nativex.extension.TypeInfo;
 
 // There is no Rabbit sample currently in the repo to confirm this is correct
 @NativeImageHint(trigger=RabbitListenerConfigurationSelector.class, 

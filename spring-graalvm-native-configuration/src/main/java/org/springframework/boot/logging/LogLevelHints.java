@@ -18,12 +18,12 @@ package org.springframework.boot.logging;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.support.ConfigOptions;
-import org.springframework.graalvm.type.AccessBits;
-import org.springframework.graalvm.type.AccessDescriptor;
-import org.springframework.graalvm.type.HintDeclaration;
-import org.springframework.graalvm.type.TypeSystem;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.support.ConfigOptions;
+import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.TypeSystem;
 
 public class LogLevelHints implements NativeImageConfiguration {
 	@Override

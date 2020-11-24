@@ -11,8 +11,8 @@ import org.hibernate.boot.jaxb.internal.MappingBinder;
 import org.hibernate.boot.jaxb.spi.Binding;
 import org.hibernate.service.ServiceRegistry;
 
-import org.springframework.graalvm.substitutions.OnlyIfPresent;
-import org.springframework.graalvm.substitutions.RemoveXmlSupport;
+import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
 @SuppressWarnings("rawtypes")
 @TargetClass(className = "org.hibernate.boot.spi.XmlMappingBinderAccess", onlyWith = { OnlyIfPresent.class, RemoveXmlSupport.class })

@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ReactiveSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ServletSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.TypeInfo;
 
 @NativeImageHint(trigger=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class, NoOpReactiveSessionConfiguration.class})	

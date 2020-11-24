@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.graalvm.extension.NativeImageConfiguration;
-import org.springframework.graalvm.extension.NativeImageHint;
-import org.springframework.graalvm.extension.TypeInfo;
+import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.TypeInfo;
 
 @NativeImageHint(trigger = CassandraReactiveRepositoriesAutoConfiguration.class, typeInfos= {
 		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
