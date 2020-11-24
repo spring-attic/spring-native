@@ -99,7 +99,7 @@ The native image build needs to know the entry point to your application hence t
 Even if declared outside of native image profile, `spring-boot-maven-plugin` need to be redeclared in the `native` Maven
 profile in order to work correctly with `native-image-maven-plugin`.
 
-`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optionak optimization flag to reduce the footprint.
+`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flag to reduce the footprint.
 
 ===== Add the repositories
 
