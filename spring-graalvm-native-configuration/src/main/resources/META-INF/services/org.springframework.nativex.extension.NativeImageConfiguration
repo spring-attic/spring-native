@@ -1,4 +1,5 @@
 org.h2.H2Hints
+org.hsqldb.HSQLDBHints
 com.mysql.cj.MySqlHints
 com.wavefront.spring.actuate.WavefrontEndpointHints
 com.wavefront.spring.actuate.WavefrontHints
