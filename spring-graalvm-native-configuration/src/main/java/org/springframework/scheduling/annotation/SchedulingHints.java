@@ -22,5 +22,9 @@ import org.springframework.nativex.type.AccessBits;
 import org.springframework.scheduling.aspectj.AspectJAsyncConfiguration;
 
 @NativeImageHint(trigger=AsyncConfigurationSelector.class, typeInfos = {
-		@TypeInfo(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.CONFIGURATION)})
+	@TypeInfo(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.CONFIGURATION),
+})
+@NativeImageHint(trigger=SchedulingConfiguration.class, typeInfos = {
+	@TypeInfo(types = Schedules.class, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+})
 public class SchedulingHints implements NativeImageConfiguration { }
