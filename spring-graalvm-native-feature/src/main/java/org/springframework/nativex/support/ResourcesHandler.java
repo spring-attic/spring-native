@@ -1278,7 +1278,7 @@ public class ResourcesHandler {
 		checkForImportedConfigurations(type, toFollow);
 
 		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-			if (type.isAtComponent()) {
+			if (type.isAtComponent() && ConfigOptions.isVerifierOn()) {
 				type.verifyComponent();
 			}
 			if (type.isAtConfiguration()) {
