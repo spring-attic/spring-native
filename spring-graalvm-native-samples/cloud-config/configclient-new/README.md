@@ -1,3 +1,8 @@
 # configclient
 
-The config in the native-image folder was collected via an agent.
+This config client is using the new Boot 2.4 configuration loading scheme
+
+```
+spring.config.import=configserver:http://localhost:8888
+```
+

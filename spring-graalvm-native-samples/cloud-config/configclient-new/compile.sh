@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=configclient
+ARTIFACT=configclient-new
 MAINCLASS=com.example.configclient.ConfigclientApplication
 VERSION=0.0.1-SNAPSHOT
 
