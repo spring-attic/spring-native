@@ -19,6 +19,7 @@ import org.springframework.nativex.extension.NativeImageHint;
 import org.springframework.nativex.extension.NativeImageConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
+import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
 
 // TODO do these need to be more conditional? The triggers are either of the web stack configurations - do those
@@ -27,13 +28,18 @@ import org.springframework.http.HttpStatus;
 @NativeImageHint(typeInfos = {
 		// TODO What about some way to say "all annotations in this package"
 		@TypeInfo(types= {
-				ExceptionHandler.class,Mapping.class,RequestMethod[].class,
+				ExceptionHandler.class,
+				RequestMethod[].class,
 				ModelAttribute.class,
 				InitBinder.class,
 				RequestMethod.class,
-				ResponseBody.class,RequestBody.class,RestController.class, RequestParam.class,
+				ResponseBody.class,
+				RequestBody.class,
+				Controller.class,
+				RestController.class,
+				RequestParam.class,
 				PathVariable.class,
-				RequestMapping.class,GetMapping.class,PostMapping.class,PutMapping.class,DeleteMapping.class,PatchMapping.class,
+				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
 				ResponseStatus.class, HttpStatus.class
 		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 	})

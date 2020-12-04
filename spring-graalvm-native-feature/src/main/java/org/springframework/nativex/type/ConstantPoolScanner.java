@@ -63,6 +63,10 @@ public class ConstantPoolScanner {
 
 	private final static byte CONSTANT_InvokeDynamic = 18;
 
+	private final static byte CONSTANT_Module = 19;
+
+	private final static byte CONSTANT_Package = 20;
+
 	private byte[] classbytes;
 
 	// Used during the parse step
@@ -268,6 +272,8 @@ public class ConstantPoolScanner {
 				break;
 			case CONSTANT_String: // CONSTANT_String_info { u1 tag; u2 string_index; }
 			case CONSTANT_MethodType: // CONSTANT_MethodType_info { u1 tag; u2 descriptor_index; }
+			case CONSTANT_Module: // CONSTANT_Module_info { u1 tag; u2 name_index; }
+			case CONSTANT_Package: // CONSTANT_Package_info { u1 tag; u2 name_index; }
 				ptr += 2;
 				break;
 			default:
