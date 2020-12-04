@@ -11,11 +11,11 @@ cd ../configclient
 printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
 ./compile.sh || exit 1
 
-java -jar ../configserver/target/configserver-0.0.1-SNAPSHOT.jar &
-SERVERPID=$!
-sleep 10 
+#java -jar ../configserver/target/configserver-0.0.1-SNAPSHOT.jar &
+#SERVERPID=$!
+#sleep 10 
 
 ${PWD%/*samples/*}/scripts/test.sh
 
-kill ${SERVERPID}
+#kill ${SERVERPID}
 
