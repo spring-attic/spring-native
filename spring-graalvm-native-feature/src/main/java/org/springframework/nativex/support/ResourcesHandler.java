@@ -1028,6 +1028,7 @@ public class ResourcesHandler {
 		Other,
 		FromSpringFactoriesKey, // the type reference was discovered from a spring.factories entry
 		FromSpringComponent, // the type reference was discovered when reviewing spring.components
+		AtBeanReturnType, // the type reference is the return type of an @Bean method
 		NestedReference, // This was discovered as a nested type within some type currently being processed
 		HierarchyProcessing, // This was discovered whilst going up the hierarchy from some type currently being processed
 		Inferred, // This type was 'inferred' whilst processing a hint (e.g. the class in a @COC usage)
@@ -1721,6 +1722,9 @@ public class ResourcesHandler {
 				try {
 					passingMethodsSubset.add(atBeanMethod.asConfigurationArray());
 					toFollow.putAll(additionalFollows);
+					if (returnType.isComponent()) {
+						toFollow.put(returnType, ReachedBy.AtBeanReturnType);
+					}
 					rcm.mergeIn(methodRCM);
 					SpringFeature.log("method passed checks - adding configuration for it");
 				} catch (IllegalStateException ise) {
