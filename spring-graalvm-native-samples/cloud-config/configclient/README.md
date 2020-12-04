@@ -1,3 +1,5 @@
 # configclient
 
-The config in the native-image folder was collected via an agent.
+This sample is Boot 2.4 but using the bootstrap dependency to load 
+configuration data 'the old way'
+

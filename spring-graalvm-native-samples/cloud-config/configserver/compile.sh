@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ARTIFACT=configclient-new
-MAINCLASS=com.example.configclient.ConfigclientApplication
+ARTIFACT=configserver
+MAINCLASS=demo.ConfigServerApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
@@ -28,11 +28,14 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
-  -Dspring.native.mode=REFLECTION \
   -H:EnableURLProtocols=http \
+  -Dspring.native.mode=REFLECTION \
+  -Dspring.native.verbose=true \
+  -Dspring.native.dump-config=/tmp/rc.json \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
+#  -Dspring.native.evaluate-cop=true \
 #  -H:ReportAnalysisForbiddenType=com.sun.xml.internal.stream.dtd.nonvalidating.XMLSimpleType \
 #  -H:ReportAnalysisForbiddenType=org.jcp.xml.dsig.internal.dom.ApacheCanonicalizer \
 if [[ -f $ARTIFACT ]]
