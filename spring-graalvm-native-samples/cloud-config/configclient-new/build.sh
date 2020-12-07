@@ -6,7 +6,7 @@ NC='\033[0m'
 # Build the server
 cd ../configserver
 ./build.sh
-cd ../configclient
+cd ../configclient-new
 
 printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
 ./compile.sh || exit 1
