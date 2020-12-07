@@ -1069,7 +1069,9 @@ public class ResourcesHandler {
 	 * @return true if checks pass, false if one fails and the type should be considered inactive
 	 */
 	private boolean checkPropertyRelatedConditions(Type type) {
-		if (ConfigOptions.isBuildTimePropertyChecking()) {
+		// Problems observed discarding inner configurations due to eager property checks
+		// (configserver sample). Too aggressive, hence the $ check
+		if (ConfigOptions.isBuildTimePropertyChecking() && !type.getName().contains("$")) {
 			String testResult = type.testAnyConditionalOnProperty();
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnProperty property check: "+testResult;

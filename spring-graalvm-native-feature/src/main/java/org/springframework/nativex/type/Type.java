@@ -2781,6 +2781,9 @@ public class Type {
 
 
 	interface TestableDescriptor {
+		/**
+		 * @return null if test is successful, otherwise a string explanation of why it failed
+		 */
 		String test(Map<String, String> properties);
 	}
 
@@ -2792,13 +2795,16 @@ public class Type {
 			this.value = value;
 		}
 
+		@Override
 		public String test(Map<String, String> properties) {
 			String key = "management.health."+value+".enabled";
 			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
 				return null;
 			}
 			String value = properties.get(key);
-			if (value!=null && !value.equalsIgnoreCase("true")) {
+			// This check is successful if the property is set to true, otherwise
+			// either the property wasn't set or it wasn't set to a truthy value
+			if (value!=null && value.equalsIgnoreCase("true")) {
 				return null;
 			}
 			String defaultKey = "management.health.defaults.enabled";
@@ -2806,10 +2812,10 @@ public class Type {
 				return null;
 			}
 			String defaultValue = properties.get(defaultKey);
-			if (defaultValue!=null && !defaultValue.equalsIgnoreCase("true")) {
+			if (defaultValue!=null && defaultValue.equalsIgnoreCase("true")) {
 				return null;
 			}
-			return "neither "+key+" nor "+defaultKey+" are true";
+			return "neither "+key+" nor "+defaultKey+" are set to true";
 		}
 
 		public String toString() {
