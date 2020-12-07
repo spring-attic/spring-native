@@ -42,7 +42,6 @@ chmod +x ${EXECUTABLE}
 PID=$!
 sleep 3
 
-#if [[ `cat $TEST_OUTPUT_FILE | grep "commandlinerunner running!"` ]]
 ./verify.sh
 RC=$?
 if [[ $RC == 0 ]]
