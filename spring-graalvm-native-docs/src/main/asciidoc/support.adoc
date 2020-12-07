@@ -19,6 +19,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-cache`
 * `spring-boot-starter-data-elasticsearch`
+** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-data-jdbc`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-jpa`
