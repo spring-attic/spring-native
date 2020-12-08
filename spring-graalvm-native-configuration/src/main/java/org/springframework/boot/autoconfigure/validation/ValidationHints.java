@@ -42,6 +42,7 @@ import javax.validation.constraints.Size;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
 import org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator;
@@ -81,12 +82,12 @@ import org.springframework.nativex.type.AccessBits;
 			NotEmptyValidatorForCharSequence.class,
 			DigitsValidatorForCharSequence.class,
 			GenericBootstrap.class,
-			PatternValidator.class
+			PatternValidator.class, ReusableMessageFactory.class
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 				"org.hibernate.validator.internal.util.logging.Log_$logger",
 				"org.hibernate.validator.internal.util.logging.Log"}
-		, access = AccessBits.LOAD_AND_CONSTRUCT),
+		),
 		@TypeInfo(types = {
 				ValidatorFactory.class,
 				Pattern.class,
