@@ -81,4 +81,5 @@ org.springframework.security.config.annotation.web.reactive.ReactiveSecurityHint
 org.springframework.stereotype.ComponentHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
+org.springframework.web.socket.WebSocketHints
 org.thymeleaf.ThymeleafHints

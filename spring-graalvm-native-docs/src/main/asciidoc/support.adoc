@@ -63,6 +63,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 </dependency>
 ```
 ** `--enable-https` flag is required for HTTPS support.
+* `spring-boot-starter-websocket`
 * `com.wavefront:wavefront-spring-boot-starter`
 ** `--enable-https` flag is required.
 
