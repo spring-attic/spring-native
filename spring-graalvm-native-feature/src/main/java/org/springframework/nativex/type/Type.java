@@ -1599,20 +1599,7 @@ public class Type {
 	}
 
 	public boolean hasOnlySimpleConstructor() {
-		if (dimensions > 0)
-			return false;
-		boolean hasCtor = false;
-		List<MethodNode> methods = node.methods;
-		for (MethodNode mn : methods) {
-			if (mn.name.equals("<init>")) {
-				if (mn.desc.equals("()V")) {
-					hasCtor = true;
-				} else {
-					return false;
-				}
-			}
-		}
-		return hasCtor;
+		return getDefaultConstructor() != null;
 	}
 
 	/**
@@ -2389,6 +2376,20 @@ public class Type {
 				annotationType.collectAnnotationsHelper(collector, seen);
 			}
 		}
+	}
+
+	public Method getDefaultConstructor() {
+		if (dimensions > 0)
+			return null;
+		List<MethodNode> methods = node.methods;
+		for (MethodNode mn : methods) {
+			if (mn.name.equals("<init>")) {
+				if (mn.desc.equals("()V")) {
+					return wrap(mn);
+				}
+			}
+		}
+		return null;
 	}
 
 	public List<Method> getMethods(Predicate<Method> predicate) {
