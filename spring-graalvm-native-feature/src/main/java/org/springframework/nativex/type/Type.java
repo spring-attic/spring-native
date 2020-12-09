@@ -231,7 +231,7 @@ public class Type {
 	}
 
 	public String getPackageName() {
-		return dottedName.substring(0, dottedName.indexOf('.'));
+		return dottedName.substring(0, dottedName.lastIndexOf('.'));
 	}
 
 	/**
