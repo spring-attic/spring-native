@@ -69,6 +69,7 @@ public class Type {
 
 	public final static String AtResponseBody = "Lorg/springframework/web/bind/annotation/ResponseBody;";
 	public final static String AtMapping = "Lorg/springframework/web/bind/annotation/Mapping;";
+	public final static String AtMessageMapping = "Lorg/springframework/messaging/handler/annotation/MessageMapping;";
 	public final static String AtTransactional = "Lorg/springframework/transaction/annotation/Transactional;";
 	public final static String AtEndpoint = "Lorg/springframework/boot/actuate/endpoint/annotation/Endpoint;";
 	public final static String AtJavaxTransactional = "Ljavax/transaction/Transactional;";

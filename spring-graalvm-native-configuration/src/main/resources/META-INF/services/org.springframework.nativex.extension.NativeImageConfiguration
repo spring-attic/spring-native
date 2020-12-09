@@ -74,6 +74,7 @@ org.springframework.data.jpa.repository.support.EntityManagerHints
 org.springframework.data.web.config.SpringDataWebHints
 org.springframework.hateoas.config.HateoasHints
 org.springframework.kafka.annotation.KafkaHints
+org.springframework.messaging.MessagingAnnotationHints
 org.springframework.scheduling.annotation.SchedulingHints
 org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityHints
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints

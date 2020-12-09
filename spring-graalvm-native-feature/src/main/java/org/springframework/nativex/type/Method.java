@@ -304,11 +304,12 @@ public class Method {
 	public boolean isAtMapping() {
 		if (mn.visibleAnnotations!= null) {
 			for (AnnotationNode an: mn.visibleAnnotations) {
-				if (an.desc.equals(Type.AtMapping)) {
+				if (an.desc.equals(Type.AtMapping) || an.desc.equals(Type.AtMessageMapping)) {
 					return true;
 				}
 				Type annotationType = typeSystem.Lresolve(an.desc, true);
-				boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping));
+				boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping)) ||
+						annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMessageMapping));;
 				if (metaUsage) {
 					return true;
 				}

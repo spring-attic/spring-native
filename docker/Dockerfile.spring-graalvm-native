@@ -16,6 +16,8 @@ RUN apt-get -y update \
  && echo "mysql -e 'ALTER DATABASE petclinic DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'" >> /tmp/mysql.sh \
  && chmod +x /tmp/mysql.sh \
  && cd /opt \
+ && curl -LO https://github.com/making/rsc/releases/download/0.4.2/rsc-0.4.2.jar \
+ && mv rsc-0.4.2.jar rsc.jar \
  && curl -LO https://repo1.maven.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip \
  && unzip apache-maven-${MAVEN_VERSION}-bin.zip \
  && rm apache-maven-${MAVEN_VERSION}-bin.zip \

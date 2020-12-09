@@ -34,6 +34,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-logging`
 * `spring-boot-starter-thymeleaf`
+* `spring-boot-starter-rsocket`
 * `spring-boot-starter-validation`
 * `spring-boot-starter-webflux`: only Netty is supported for now.
 ** `--enable-https` flag is required for HTTPS support.

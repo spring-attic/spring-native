@@ -51,6 +51,18 @@
     "fields":[{"name":"producerLimit","allowUnsafeAccess" :  true}]
   },
   {
+    "name":"io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
+    "fields":[{"name":"producerLimit","allowUnsafeAccess" :  true}]
+  },
+  {
+    "name":"io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
+    "fields":[{"name":"producerIndex","allowUnsafeAccess" :  true}]
+  },
+  {
+    "name":"io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
+    "fields":[{"name":"consumerIndex","allowUnsafeAccess" :  true}]
+  },
+  {
     "name":"java.nio.Buffer",
     "fields":[{"name":"address", "allowUnsafeAccess":true}]
   },
