@@ -181,6 +181,10 @@ public class Type {
 		return dottedName;
 	}
 
+	public String getSimpleName() {
+		return dottedName.substring(dottedName.lastIndexOf('.') + 1);
+	}
+
 	public Type getSuperclass() {
 		if (dimensions > 0) {
 			return typeSystem.resolveSlashed("java/lang/Object");
