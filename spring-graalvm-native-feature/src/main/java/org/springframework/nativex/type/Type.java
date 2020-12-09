@@ -689,6 +689,10 @@ public class Type {
 		return dimensions > 0 ? false : Modifier.isInterface(node.access);
 	}
 
+	public boolean isPublic() {
+		return dimensions > 0 ? false : Modifier.isPublic(node.access);
+	}
+
 	public Map<String, String> getAnnotationValuesInHierarchy(String LdescriptorLookingFor) {
 		if (dimensions > 0) {
 			return Collections.emptyMap();
