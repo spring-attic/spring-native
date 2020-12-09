@@ -4,8 +4,7 @@
 		<pluginExecution>
 			<pluginExecutionFilter>
 				<goals>
-					<goal>generate</goal>
-					<goal>testGenerate</goal>
+					<goal>bootstrap</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
