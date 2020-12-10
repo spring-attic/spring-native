@@ -32,8 +32,7 @@ public class SpringFactory {
 			return new SpringFactory(factoryType, factory);
 		}
 		catch (MissingTypeException exc) {
-			logger.error("could not load factory", exc);
-			logger.error("typesystem classpath: " + typeSystem.getClasspath());
+			logger.debug("Could not load SpringFactory: " + exc.getMessage());
 			return null;
 		}
 	}
