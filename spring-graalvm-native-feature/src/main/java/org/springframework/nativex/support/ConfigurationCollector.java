@@ -15,11 +15,14 @@
  */
 package org.springframework.nativex.support;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.type.Type;
@@ -85,5 +88,86 @@ public class ConfigurationCollector {
 		proxiesDescriptor.add(ProxyDescriptor.of(interfaceNames));
 		return true;
 	}
+	
 
+//	public void includeInDump(String typename, String[][] methodsAndConstructors, Flag[] flags) {
+//		if (!ConfigOptions.shouldDumpConfig()) {
+//			return;
+//		}
+//		ClassDescriptor currentCD = null;
+//		for (ClassDescriptor cd: activeClassDescriptors) {
+//			if (cd.getName().equals(typename)) {
+//				currentCD = cd;
+//				break;
+//			}
+//		}
+//		if (currentCD == null) {
+//			currentCD  = ClassDescriptor.of(typename);
+//			activeClassDescriptors.add(currentCD);
+//		}
+//		// Update flags...
+//		for (Flag f : flags) {
+//			currentCD.setFlag(f);
+//		}
+//		if (methodsAndConstructors != null) {
+//			for (String[] mc: methodsAndConstructors) {
+//				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
+//				if (!currentCD.contains(md)) {
+//					currentCD.addMethodDescriptor(md);	
+//				}
+//			}
+//		}
+//	}
+	
+	public static String[] subarray(String[] array) {
+		if (array.length == 1) {
+			return null;
+		} else {
+			return Arrays.copyOfRange(array, 1, array.length);
+		}
+	}
+		
+		
+	public void dump() {
+		if (!ConfigOptions.shouldDumpConfig()) {
+			return;
+		}
+		File folder = new File(ConfigOptions.getDumpConfigLocation());
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		if (!folder.exists()) {
+			throw new RuntimeException("Unable to work with dump directory location: "+folder);
+		}
+//		activeClassDescriptors.sort((c1,c2) -> c1.getName().compareTo(c2.getName()));
+//		ReflectionDescriptor rd = new ReflectionDescriptor();
+//		for (ClassDescriptor cd: activeClassDescriptors) {
+//			rd.add(cd);
+//		}
+//		try (FileOutputStream fos = new FileOutputStream(new File(ConfigOptions.getDumpConfigLocation()))) {
+//			JsonMarshaller.write(rd,fos);
+//		} catch (IOException ioe) {
+//			ioe.printStackTrace();
+//		}
+	}
+
+//	DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+//	RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+//	cl = access.getImageClassLoader();
+//	ts = TypeSystem.get(cl.getClasspath());
+//	rra = new ReflectionRegistryAdapter(rrs, cl);
+
+	public void addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
+		if (graalVMConnector != null) {
+			graalVMConnector.addReflectionDescriptor(reflectionDescriptor);
+		}
+	}
+
+	public void addClassDescriptor(ClassDescriptor classDescriptor) {
+		// add it to existing refl desc stuff...
+		if (graalVMConnector != null) {
+			graalVMConnector.addClassDescriptor(classDescriptor);
+		}
+	}
+		
 }

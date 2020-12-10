@@ -59,7 +59,7 @@ public class SpringFeature implements Feature {
 			System.out.println(
 					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
 		}
-		reflectionHandler = new ReflectionHandler();
+		reflectionHandler = new ReflectionHandler(collector);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler();
 		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler, initializationHandler);
@@ -92,36 +92,37 @@ public class SpringFeature implements Feature {
 		ImageClassLoader imageClassLoader = ((DuringSetupAccessImpl)access).getImageClassLoader();
 		TypeSystem ts = TypeSystem.get(imageClassLoader.getClasspath());
 		dynamicProxiesHandler.setTypeSystem(ts);
+		reflectionHandler.setTypeSystem(ts);
 		
 		collector.setGraalConnector(new GraalVMConnector(imageClassLoader));
 		collector.setTypeSystem(ts);
 
 		ConfigOptions.ensureModeInitialized(access);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
-			reflectionHandler.register(access);
+			reflectionHandler.register();
 			dynamicProxiesHandler.register();
 		}
 		if (ConfigOptions.isFunctionalMode()) {
-			reflectionHandler.registerFunctional(access);
+			reflectionHandler.registerFunctional();
 			if (ConfigOptions.isSpringInitActive()) {
 			}
 		}
 		if (ConfigOptions.isAgentMode()) {
-			reflectionHandler.registerHybrid(access);
+			reflectionHandler.registerHybrid();
 		}
 		if (ConfigOptions.isInitMode()) {
-			reflectionHandler.registerAgent(access);
+			reflectionHandler.registerAgent();
 		}
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		initializationHandler.register(access);
 		resourcesHandler.register(access);
-		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
-			System.out.println("Number of types dynamically registered for reflective access: #"
-					+ reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
-			reflectionHandler.dump();
-		}
+//		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
+//			System.out.println("Number of types dynamically registered for reflective access: #"
+//					+ reflectionHandler.getTypesRegisteredForReflectiveAccessCount());
+//			reflectionHandler.dump();
+//		}
 		if (ConfigOptions.isVerbose() && resourcesHandler.failedPropertyChecks.size()!=0) {
 			SpringFeature.log("Failed property check summary:");
 			for (String failedPropertyCheck: resourcesHandler.failedPropertyChecks) {

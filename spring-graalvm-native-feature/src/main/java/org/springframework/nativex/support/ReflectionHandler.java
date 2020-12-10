@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,19 @@
  */
 package org.springframework.nativex.support;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Array;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.graalvm.nativeimage.ImageSingletons;
-import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
-import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
-import org.graalvm.util.GuardedAnnotationAccess;
+//import org.graalvm.nativeimage.ImageSingletons;
+//import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
+//import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
+//import org.graalvm.util.GuardedAnnotationAccess;
+//import com.oracle.svm.core.hub.ClassForNameSupport;
+//import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
+//import com.oracle.svm.hosted.ImageClassLoader;
+//import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
@@ -44,12 +37,7 @@ import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.TypeSystem;
 
-import com.oracle.svm.core.hub.ClassForNameSupport;
-import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
-import com.oracle.svm.hosted.ImageClassLoader;
-import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
 
 /**
  * Loads up the constant data defined in resource file and registers reflective
@@ -60,17 +48,20 @@ import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
  * 
  * @author Andy Clement
  */
-public class ReflectionHandler {
+public class ReflectionHandler extends Handler {
 
 	private final static String RESOURCE_FILE = "/reflect.json";
 
-	private ReflectionRegistryAdapter rra;
+//	private ReflectionRegistryAdapter rra;
+//	private ImageClassLoader cl;
 
 	private ReflectionDescriptor constantReflectionDescriptor;
 
-	private ImageClassLoader cl;
+	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
 
-	private int typesRegisteredForReflectiveAccessCount = 0;
+	public ReflectionHandler(ConfigurationCollector collector) {
+		super(collector);
+	}
 
 	public ReflectionDescriptor getConstantData() {
 		if (constantReflectionDescriptor == null) {
@@ -83,257 +74,68 @@ public class ReflectionHandler {
 		}
 		return constantReflectionDescriptor;
 	}
-	
-	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
 
-	private TypeSystem ts;
-
-	public void includeInDump(String typename, String[][] methodsAndConstructors, Flag[] flags) {
-		if (!ConfigOptions.shouldDumpConfig()) {
-			return;
-		}
-		ClassDescriptor currentCD = null;
-		for (ClassDescriptor cd: activeClassDescriptors) {
-			if (cd.getName().equals(typename)) {
-				currentCD = cd;
-				break;
-			}
-		}
-		if (currentCD == null) {
-			currentCD  = ClassDescriptor.of(typename);
-			activeClassDescriptors.add(currentCD);
-		}
-		// Update flags...
-		for (Flag f : flags) {
-			currentCD.setFlag(f);
-		}
-		if (methodsAndConstructors != null) {
-			for (String[] mc: methodsAndConstructors) {
-				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
-				if (!currentCD.contains(md)) {
-					currentCD.addMethodDescriptor(md);	
-				}
-			}
-		}
-	}
-	
-	public static String[] subarray(String[] array) {
-		if (array.length == 1) {
-			return null;
-		} else {
-			return Arrays.copyOfRange(array, 1, array.length);
-		}
-	}
-		
-		
-	public void dump() {
-		if (!ConfigOptions.shouldDumpConfig()) {
-			return;
-		}
-		activeClassDescriptors.sort((c1,c2) -> c1.getName().compareTo(c2.getName()));
-		ReflectionDescriptor rd = new ReflectionDescriptor();
-		for (ClassDescriptor cd: activeClassDescriptors) {
-			rd.add(cd);
-		}
-		try (FileOutputStream fos = new FileOutputStream(new File(ConfigOptions.getDumpConfigLocation()))) {
-			JsonMarshaller.write(rd,fos);
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-	}
-	
-	public void registerHybrid(DuringSetupAccess a) {
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-		cl = access.getImageClassLoader();
-		rra = new ReflectionRegistryAdapter(rrs, cl);
-		ts = TypeSystem.get(cl.getClasspath());
+	public void registerHybrid() {
+//	public void registerHybrid(DuringSetupAccess a) {
+//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+//		cl = access.getImageClassLoader();
+//		rra = new ReflectionRegistryAdapter(rrs, cl);
+//		ts = TypeSystem.get(cl.getClasspath());
 		getConstantData();
-
-		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
-			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
+			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
+				Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
 	}
-	
-	public void registerAgent(DuringSetupAccess a) {
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-		cl = access.getImageClassLoader();
-		rra = new ReflectionRegistryAdapter(rrs, cl);
-		ts = TypeSystem.get(cl.getClasspath());
+
+	public void registerAgent() {//DuringSetupAccess a) {
+//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+//		cl = access.getImageClassLoader();
+//		rra = new ReflectionRegistryAdapter(rrs, cl);
+//		ts = TypeSystem.get(cl.getClasspath());
 		getConstantData();
 	}
 
-	public void registerFunctional(DuringSetupAccess a) {
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-		cl = access.getImageClassLoader();
-		ts = TypeSystem.get(cl.getClasspath());
-		rra = new ReflectionRegistryAdapter(rrs, cl);
+	public void registerFunctional() {//DuringSetupAccess a) {
+//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+//		cl = access.getImageClassLoader();
+//		ts = TypeSystem.get(cl.getClasspath());
+//		rra = new ReflectionRegistryAdapter(rrs, cl);
 		getConstantData();
 
-		if (rra.resolveType("org.springframework.web.servlet.DispatcherServlet") != null) {
-			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
+			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
+				Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
 		registerWebApplicationTypeClasses();
 	}
 
 	private void registerWebApplicationTypeClasses() {
-		if (rra.resolveType("org.springframework.web.reactive.DispatcherHandler") !=null && rra.resolveType("org.springframework.web.servlet.DispatcherServlet") == null && rra.resolveType("org.glassfish.jersey.servlet.ServletContainer") == null) {
+		if (ts.resolveDotted("org.springframework.web.reactive.DispatcherHandler", true) !=null && 
+			ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) == null && 
+			ts.resolveDotted("org.glassfish.jersey.servlet.ServletContainer", true) == null) {
 			addAccess("org.springframework.web.reactive.DispatcherHandler");
-		} else
-		if (rra.resolveType("javax.servlet.Servlet") !=null && rra.resolveType("org.springframework.web.context.ConfigurableWebApplicationContext") != null) {
+		} else if (ts.resolveDotted("javax.servlet.Servlet", true) !=null && 
+			ts.resolveDotted("org.springframework.web.context.ConfigurableWebApplicationContext", true) != null) {
 			addAccess("javax.servlet.Servlet");
 			addAccess("org.springframework.web.context.ConfigurableWebApplicationContext");
 		}
 	}
 
-	public void register(DuringSetupAccess a) {
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-		cl = access.getImageClassLoader();
-		ts = TypeSystem.get(cl.getClasspath());
-		rra = new ReflectionRegistryAdapter(rrs, cl);
-		ReflectionDescriptor reflectionDescriptor = getConstantData();
-
-		System.out.println("Found #" + reflectionDescriptor.getClassDescriptors().size()
-				+ " types in static reflection list to register");
-		int missingFromClasspathCount = 0;
-		int flagHandlingCount = 0;
-		for (ClassDescriptor classDescriptor : reflectionDescriptor.getClassDescriptors()) {
-			Class<?> type = null;
-			String n2 = classDescriptor.getName();
-			if (n2.endsWith("[]")) {
-				type = rra.resolveType(n2.substring(0, n2.length() - 2));
-				if (type != null) {
-					Object o = Array.newInstance(type, 1);
-					type = o.getClass();
-				}
-			} else {
-				type = rra.resolveType(classDescriptor.getName());
-			}
-			if (type == null) {
-				missingFromClasspathCount++;
-				SpringFeature.log(RESOURCE_FILE + " included " + classDescriptor.getName()
-						+ " but it doesn't exist on the classpath, skipping...");
-				continue;
-			}
-			if (checkType(type)) {
-				activeClassDescriptors.add(classDescriptor);
-				rra.registerType(type);
-				Set<Flag> flags = classDescriptor.getFlags();
-				if (flags != null) {
-					for (Flag flag : flags) {
-						try {
-							switch (flag) {
-							case allDeclaredClasses:
-								rra.registerDeclaredClasses(type);
-								break;
-							case allDeclaredFields:
-								rra.registerDeclaredFields(type);
-								break;
-							case allPublicFields:
-								rra.registerPublicFields(type);
-								break;
-							case allDeclaredConstructors:
-								rra.registerDeclaredConstructors(type);
-								break;
-							case allPublicConstructors:
-								rra.registerPublicConstructors(type);
-								break;
-							case allDeclaredMethods:
-								rra.registerDeclaredMethods(type);
-								break;
-							case allPublicMethods:
-								rra.registerPublicMethods(type);
-								break;
-							case allPublicClasses:
-								rra.registerPublicClasses(type);
-								break;
-							}
-						} catch (NoClassDefFoundError ncdfe) {
-							flagHandlingCount++;
-							SpringFeature.log(RESOURCE_FILE + " problem handling flag: " + flag + " for "
-									+ type.getName() + " because of missing " + ncdfe.getMessage());
-						}
-					}
-				}
-				typesRegisteredForReflectiveAccessCount++;
-			}
-
-			// Process all specific methods defined in the input class descriptor (including
-			// constructors)
-			List<MethodDescriptor> methods = classDescriptor.getMethods();
-			if (methods != null) {
-				for (MethodDescriptor methodDescriptor : methods) {
-					String n = methodDescriptor.getName();
-					List<String> parameterTypes = methodDescriptor.getParameterTypes();
-					if (parameterTypes == null) {
-						if (n.equals("<init>")) {
-							rra.registerAllConstructors(type);
-						} else {
-							rra.registerAllMethodsWithName(type, n);
-						}
-					} else {
-						List<Class<?>> collect = parameterTypes.stream().map(pname -> rra.resolveType(pname))
-								.collect(Collectors.toList());
-						try {
-							if (n.equals("<init>")) {
-								rra.registerConstructor(type, collect);
-							} else {
-								rra.registerMethod(type, n, collect);
-							}
-						} catch (NoSuchMethodException nsme) {
-							throw new IllegalStateException("Couldn't find: " + methodDescriptor.toString(), nsme);
-						}
-					}
-				}
-			}
-
-			// Process all specific fields defined in the input class descriptor
-			List<FieldDescriptor> fields = classDescriptor.getFields();
-			if (fields != null) {
-				for (FieldDescriptor fieldDescriptor : fields) {
-					try {
-						rra.registerField(type, fieldDescriptor.getName(), fieldDescriptor.isAllowWrite(),
-								fieldDescriptor.isAllowUnsafeAccess());
-					} catch (NoSuchFieldException nsfe) {
-						throw new IllegalStateException(
-								"Couldn't find field: " + type.getName() + "." + fieldDescriptor.getName(), nsfe);
-//						System.out.println("SBG: WARNING: skipping reflection registration of field "+type.getName()+"."+fieldDescriptor.getName()+": field not found");
-					}
-				}
-			}
-		}
-		if (missingFromClasspathCount != 0) {
-			System.out.println("Skipping #" + missingFromClasspathCount + " types not on the classpath");
-		}
-		if (flagHandlingCount != 0) {
-			System.out.println(
-					"Number of problems processing field/method/constructor access requests: #" + flagHandlingCount);
-		}
-
+	public void register() {//DuringSetupAccess a) {
+//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
+//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
+//		cl = access.getImageClassLoader();
+//		ts = TypeSystem.get(cl.getClasspath());
+//		rra = new ReflectionRegistryAdapter(rrs, cl);
+		collector.addReflectionDescriptor(getConstantData());
 		registerWebApplicationTypeClasses();
-
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
-	}
-
-	private boolean checkType(Class clazz) {
-		try {
-			clazz.getDeclaredFields();
-			clazz.getFields();
-			clazz.getDeclaredMethods();
-			clazz.getMethods();
-			clazz.getDeclaredConstructors();
-			clazz.getConstructors();
-			clazz.getDeclaredClasses();
-			clazz.getClasses();
-		} catch (NoClassDefFoundError e) {
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -351,13 +153,13 @@ public class ReflectionHandler {
 	 * @return the class, if the type was successfully registered for reflective
 	 *         access, otherwise null
 	 */
-	public Class<?> addAccess(String typename, Flag...flags) {
-		return addAccess(typename, null, null, false, flags);
+	public void addAccess(String typename, Flag...flags) {
+		addAccess(typename, null, null, false, flags);
 	}
 	
-	public Class<?> addAccess(String typename, boolean silent, AccessDescriptor ad) {
+	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
 		if (ad.noMembersSpecified()) {
-			return addAccess(typename, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
 		} else {
 			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 			String[][] methodsAndConstructors = new String[mds.size()][];
@@ -380,11 +182,19 @@ public class ReflectionHandler {
 					fields[m]=new String[] {fieldDescriptor.getName()};
 				}
 			}
-			return addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+		}
+	}
+	
+	public static String[] subarray(String[] array) {
+		if (array.length == 1) {
+			return null;
+		} else {
+			return Arrays.copyOfRange(array, 1, array.length);
 		}
 	}
 
-	public Class<?> addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
+	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
@@ -393,178 +203,41 @@ public class ReflectionHandler {
 			boolean isOK = accessChecker.check(ts, typename);
 			if (!isOK) {
 				SpringFeature.log(typename+" discarded due to access check by "+accessChecker.getClass().getName());
-				return null;
+				return;
 			}
 		}
-		includeInDump(typename, methodsAndConstructors, flags);
 		// This can return null if, for example, the supertype of the specified type is
 		// not on the classpath. In a simple app there may be a number of types coming in
 		// from spring-boot-autoconfigure but they extend types not on the classpath.
-		Class<?> type = rra.resolveType(typename);
-		if (type == null) {
-			SpringFeature.log("WARNING: Possible problem, cannot resolve " + typename);
-			return null;
+//		Class<?> type = rra.resolveType(typename);
+//		if (type == null) {
+//			SpringFeature.log("WARNING: Possible problem, cannot resolve " + typename);
+//			return null;
+//		}
+		
+		ClassDescriptor cd = ClassDescriptor.of(typename);
+		if (cd == null) {
+			cd  = ClassDescriptor.of(typename);
 		}
-		if (constantReflectionDescriptor.hasClassDescriptor(typename)) {
-			SpringFeature.log("WARNING: type " + typename + " being added dynamically whilst " + RESOURCE_FILE
-					+ " already contains it - does it need to be in the file? ");
+		// Update flags...
+		for (Flag f : flags) {
+			cd.setFlag(f);
 		}
-		// The call on this next line and the need to guard with checkType on the
-		// register call feel dirty
-		// They are here because otherwise we start getting warnings to system.out -
-		// need graal bug to tidy this up
-		ClassForNameSupport.registerClass(type);
-		// TODO need a checkType() kinda guard on here? (to avoid rogue printouts from graal)
-		boolean specificConstructorsSpecified = false;
-		boolean specificMethodsSpecified = false;
-		boolean specificFieldsSpecified = false;
 		if (methodsAndConstructors != null) {
-			for (String[] methodOrCtor : methodsAndConstructors) {
-				String name = methodOrCtor[0];
-				List<Class<?>> params = new ArrayList<>();
-				for (int p = 1; p < methodOrCtor.length; p++) {
-					// TODO should use type system and catch problems?
-					params.add(rra.resolveType(methodOrCtor[p]));
-				}
-				try {
-					if (name.equals("<init>")) {
-						specificConstructorsSpecified=true;
-						rra.registerConstructor(type, params);
-					} else {
-						specificMethodsSpecified=true;
-						try {
-							rra.registerMethod(type, name, params);
-						} catch (NoClassDefFoundError ncdfe) {
-							SpringFeature.log("skipping problematic registration of method: "+name+" missing class: "+ncdfe.getMessage());
-						}
-					}
-				} catch (NoSuchMethodException nsme) {
-					throw new IllegalStateException(
-							"Problem registering member " + name + " for reflective access on type " + type, nsme);
+			for (String[] mc: methodsAndConstructors) {
+				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
+				if (!cd.contains(md)) {
+					cd.addMethodDescriptor(md);	
 				}
 			}
 		}
 		if (fields != null) {
-			for (String[] field : fields) {
-				String name = field[0];
-				boolean allowUnsafeAccess = Boolean.valueOf(field.length>1?field[1]:"false");
-				try {
-					rra.registerField(type, name, false, allowUnsafeAccess);
-				} catch (NoSuchFieldException nsfe) {
-					throw new IllegalStateException(
-							"Problem registering field " + name + " for reflective access on type " + type, nsfe);
-				}
+			for (String[] fs: fields) {
+				boolean allowUnsafeAccess = Boolean.valueOf(fs.length>1?fs[1]:"false");
+				FieldDescriptor fd = FieldDescriptor.of(fs[0],false,allowUnsafeAccess);
 			}
 		}
-		if (checkType(type)) {
-			rra.registerType(type);
-			for (Flag flag : flags) {
-				try {
-					switch (flag) {
-					case allDeclaredClasses:
-						if (verify(type.getDeclaredClasses())) {
-							rra.registerDeclaredClasses(type);
-						}
-						break;
-					case allDeclaredFields:
-						if (specificFieldsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getDeclaredFields())) {
-							rra.registerDeclaredFields(type);
-						}
-						break;
-					case allPublicFields:
-						if (specificFieldsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getFields())) {
-							rra.registerPublicFields(type);
-						}
-						break;
-					case allDeclaredConstructors:
-						if (specificConstructorsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getDeclaredConstructors())) {
-							rra.registerDeclaredConstructors(type);
-						}
-						break;
-					case allPublicConstructors:
-						if (specificConstructorsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getConstructors())) {
-							rra.registerPublicConstructors(type);
-						}
-						break;
-					case allDeclaredMethods:
-						if (specificMethodsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getDeclaredMethods())) {
-							rra.registerDeclaredMethods(type);
-						}
-						break;
-					case allPublicMethods:
-						if (specificMethodsSpecified) {
-							throw new IllegalStateException();
-						}
-						if (verify(type.getMethods())) {
-							rra.registerPublicMethods(type);
-						}
-						break;
-					case allPublicClasses:
-						if (verify(type.getClasses())) {
-							rra.registerPublicClasses(type);
-						}
-						break;
-					}
-				} catch (NoClassDefFoundError ncdfe) {
-					SpringFeature.log("WARNING: problem handling flag: " + flag + " for " + type.getName()
-							+ " because of missing " + ncdfe.getMessage());
-				}
-			}
-		}
-		typesRegisteredForReflectiveAccessCount++;
-		return type;
-	}
-
-	public int getTypesRegisteredForReflectiveAccessCount() {
-		return typesRegisteredForReflectiveAccessCount;
-	}
-
-	private boolean verify(Object[] things) {
-		for (Object o : things) {
-			try {
-				if (o instanceof Method) {
-					((Method) o).getGenericReturnType();
-				}
-				if (o instanceof Field) {
-					((Field) o).getGenericType();
-				}
-				if (o instanceof AccessibleObject) {
-					AccessibleObject accessibleObject = (AccessibleObject) o;
-					GuardedAnnotationAccess.getDeclaredAnnotations(accessibleObject);
-				}
-
-				if (o instanceof Parameter) {
-					Parameter parameter = (Parameter) o;
-					parameter.getType();
-				}
-				if (o instanceof Executable) {
-					Executable e = (Executable) o;
-					e.getGenericParameterTypes();
-					e.getGenericExceptionTypes();
-					e.getParameters();
-				}
-			} catch (Exception e) {
-				SpringFeature.log("WARNING: Possible reflection problem later due to (generics related) reference from "
-						+ o + " to " + e.getMessage());
-				return false;
-			}
-		}
-		return true;
+		collector.addClassDescriptor(cd);
 	}
 
 	private static boolean isPresent(String className) {
