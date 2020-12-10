@@ -14,8 +14,13 @@ import org.springframework.nativex.extension.NativeImageConfiguration;
 import org.springframework.nativex.extension.NativeImageHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
+	@TypeInfo(types = { 
+		BeforeBindCallback.class,
+		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class
+	}, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 	@TypeInfo(types = {
 		Neo4jRepositoryFactoryBean.class,
 		Neo4jRepositoryConfigurationExtension.class,
@@ -23,7 +28,6 @@ import org.springframework.nativex.extension.TypeInfo;
 		SimpleNeo4jRepository.class,
 		Neo4jTemplate.class,
 		Neo4jClient.class,
-		BeforeBindCallback.class,
 		AuditingBeforeBindCallback.class,
 		UUIDStringGenerator.class,
 		Neo4jEvaluationContextExtension.class
