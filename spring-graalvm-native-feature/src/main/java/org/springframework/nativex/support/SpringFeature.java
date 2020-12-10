@@ -19,12 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.oracle.svm.core.annotate.AutomaticFeature;
+import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
+import com.oracle.svm.hosted.ImageClassLoader;
 import com.oracle.svm.hosted.ResourcesFeature;
 import com.oracle.svm.reflect.hosted.ReflectionFeature;
 import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 import org.graalvm.nativeimage.hosted.Feature;
 
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.nativex.type.TypeSystem;
 
 @AutomaticFeature
 public class SpringFeature implements Feature {
@@ -44,16 +47,20 @@ public class SpringFeature implements Feature {
 			" ___/ /   / /_/ / / /     / /   / / / / / /_/ /         / /|  /  / /_/ / / /_   / /  | |/ / /  __/\n" +
 			"/____/   / .___/ /_/     /_/   /_/ /_/  \\__, /         /_/ |_/   \\__,_/  \\__/  /_/   |___/  \\___/ \n" +
 			"        /_/                            /____/                                                     ";
+	
+	private ConfigurationCollector collector;
 
 	public SpringFeature() {
 		System.out.println(banner);
+		
+		collector = new ConfigurationCollector();
 
 		if (!ConfigOptions.isVerbose()) {
 			System.out.println(
 					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
 		}
 		reflectionHandler = new ReflectionHandler();
-		dynamicProxiesHandler = new DynamicProxiesHandler();
+		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler();
 		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler, initializationHandler);
 	}
@@ -81,21 +88,26 @@ public class SpringFeature implements Feature {
 				System.out.println("Warning: " + message);
 			}
 		}
+		
+		ImageClassLoader imageClassLoader = ((DuringSetupAccessImpl)access).getImageClassLoader();
+		TypeSystem ts = TypeSystem.get(imageClassLoader.getClasspath());
+		dynamicProxiesHandler.setTypeSystem(ts);
+		
+		collector.setGraalConnector(new GraalVMConnector(imageClassLoader));
+		collector.setTypeSystem(ts);
 
 		ConfigOptions.ensureModeInitialized(access);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
 			reflectionHandler.register(access);
-			dynamicProxiesHandler.register(access);
+			dynamicProxiesHandler.register();
 		}
 		if (ConfigOptions.isFunctionalMode()) {
 			reflectionHandler.registerFunctional(access);
 			if (ConfigOptions.isSpringInitActive()) {
-				dynamicProxiesHandler.registerHybrid(access);
 			}
 		}
 		if (ConfigOptions.isAgentMode()) {
 			reflectionHandler.registerHybrid(access);
-			dynamicProxiesHandler.registerHybrid(access);
 		}
 		if (ConfigOptions.isInitMode()) {
 			reflectionHandler.registerAgent(access);
