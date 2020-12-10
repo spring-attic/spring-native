@@ -87,7 +87,7 @@ public class TypeSystem {
 	private Map<String, Type> typeCache = new HashMap<>();
 
 	// Map of which zip files contain which packages
-	private Map<String, List<File>> packageCache = new HashMap<>();
+	private Map<String, Set<File>> packageCache = new HashMap<>();
 
 	// Map of which application files contain particular packages
 	private Map<String, List<File>> appPackages = new HashMap<>();
@@ -396,12 +396,9 @@ public class TypeSystem {
 						int lastSlash = name.lastIndexOf("/");
 						if (lastSlash != -1 && name.endsWith(".class")) {
 							String packageName = name.substring(0, lastSlash);
-							List<File> jars = packageCache.get(packageName);
-							if (jars == null) {
-								jars = new ArrayList<>();
-								packageCache.put(packageName, jars);
-							}
+							Set<File> jars = packageCache.getOrDefault(packageName, new HashSet<>());
 							jars.add(jar);
+							packageCache.put(packageName, jars);
 						}
 					}
 				}
@@ -418,7 +415,6 @@ public class TypeSystem {
 		try {
 			int index = slashedTypeName.lastIndexOf("/");
 			String packageName = index == -1 ? "" : slashedTypeName.substring(0, index);
-
 			if (appPackages.containsKey(packageName)) {
 				List<File> list = appPackages.get(packageName);
 				for (File f : list) {
@@ -427,24 +423,22 @@ public class TypeSystem {
 						return loadFromStream(new FileInputStream(toTry));
 					}
 				}
-			} else {
-				List<File> jarfiles = packageCache.get(packageName);
-				if (jarfiles!=null) {
-					for (File jarfile: jarfiles) {
-						try (ZipFile zf = new ZipFile(jarfile)) {
-							Enumeration<? extends ZipEntry> entries = zf.entries();
-							while (entries.hasMoreElements()) {
-								ZipEntry entry = entries.nextElement();
-								String name = entry.getName();
-								if (name.equals(search)) {
-									return loadFromStream(zf.getInputStream(entry));
-								}
+			}
+			Set<File> jarfiles = packageCache.get(packageName);
+			if (jarfiles!=null) {
+				for (File jarfile: jarfiles) {
+					try (ZipFile zf = new ZipFile(jarfile)) {
+						Enumeration<? extends ZipEntry> entries = zf.entries();
+						while (entries.hasMoreElements()) {
+							ZipEntry entry = entries.nextElement();
+							String name = entry.getName();
+							if (name.equals(search)) {
+								return loadFromStream(zf.getInputStream(entry));
 							}
 						}
 					}
 				}
 			}
-
 			return null;
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem finding " + slashedTypeName, ioe);
