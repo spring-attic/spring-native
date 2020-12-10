@@ -4,7 +4,6 @@ import org.springframework.data.neo4j.config.AbstractNeo4jConfig;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.mapping.callback.AuditingBeforeBindCallback;
-import org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
@@ -17,9 +16,9 @@ import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
-	@TypeInfo(types = { 
-		BeforeBindCallback.class,
-		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class
+	@TypeInfo(types = {
+		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class,
+		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class,
 	}, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 	@TypeInfo(types = {
 		Neo4jRepositoryFactoryBean.class,
