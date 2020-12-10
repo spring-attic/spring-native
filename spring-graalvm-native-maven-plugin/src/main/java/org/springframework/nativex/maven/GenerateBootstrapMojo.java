@@ -1,16 +1,9 @@
 package org.springframework.nativex.maven;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,22 +80,6 @@ public class GenerateBootstrapMojo extends AbstractMojo {
 						version(compilerVersion)),
 				goal("compile"), configuration, executionEnvironment(this.project, this.session, this.pluginManager));
 		this.buildContext.refresh(this.outputDirectory);
-	}
-
-	private URLClassLoader getBootstrapClassLoader() throws MojoExecutionException {
-		try {
-			List<URL> urls = new ArrayList<>();
-			List<URI> uris = this.project.getRuntimeClasspathElements().stream().map(File::new).map(File::toURI)
-					.collect(Collectors.toList());
-			for (URI uri : uris) {
-				urls.add(uri.toURL());
-			}
-			logger.info("Classpath URIs: " + urls);
-			return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
-		}
-		catch (Exception ex) {
-			throw new MojoExecutionException("Unable to build classpath", ex);
-		}
 	}
 
 }
