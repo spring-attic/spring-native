@@ -36,6 +36,12 @@ The following starters are supported, the group ID is `org.springframework.boot`
 * `spring-boot-starter-thymeleaf`
 * `spring-boot-starter-rsocket`
 * `spring-boot-starter-validation`
+* `spring-boot-starter-security`: WebMvc and WebFlux form login, HTTP basic authentication and OAuth 2.0 are supported.
+** `--enable-all-security-services` flag is required.
+* `spring-boot-starter-oauth2-resource-server`: WebMvc and WebFlux are supported.
+** `--enable-all-security-services` flag is required.
+* `spring-boot-starter-oauth2-client`: WebMvc and WebFlux are supported.
+** `--enable-all-security-services` flag is required.
 * `spring-boot-starter-webflux`: only Netty is supported for now.
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-web`:
