@@ -18,6 +18,7 @@ package org.springframework.nativex.support;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -59,7 +60,7 @@ public class ConfigurationCollector {
 	}
 	
 	public ResourcesDescriptor getResourcesDescriptors() {
-		return resourcesDescriptors;
+		return resourcesDescriptor;
 	}
 	
 	public void setGraalConnector(GraalVMConnector graalConnector) {
@@ -119,7 +120,7 @@ public class ConfigurationCollector {
 				JsonMarshaller.write(reflectionDescriptor,fos);
 			}
 			try (FileOutputStream fos = new FileOutputStream(new File(folder,"resource-config.json"))) {
-				ResourcesJsonMarshaller.write(resourcesDescriptors,fos);
+				ResourcesJsonMarshaller.write(resourcesDescriptor,fos);
 			}
 			try (FileOutputStream fos = new FileOutputStream(new File(folder,"proxy-config.json"))) {
 				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
@@ -148,6 +149,63 @@ public class ConfigurationCollector {
 		// add it to existing refl desc stuff...
 		if (graalVMConnector != null) {
 			graalVMConnector.addClassDescriptor(classDescriptor);
+		}
+	}
+
+	public void registerResource(String resourceName, InputStream bais) {
+		if (graalVMConnector != null) {
+			graalVMConnector.registerResource(resourceName, bais);
+		}
+	}
+
+	public void addResource(String pattern, boolean isBundle) {
+		if (isBundle) {
+			resourcesDescriptor.addBundle(pattern);
+		} else {
+			resourcesDescriptor.add(pattern);
+		}
+		if (graalVMConnector != null) {
+			graalVMConnector.addResource(pattern, isBundle);
+		}
+	}
+	
+	public void initializeAtBuildTime(Type type) {
+		initializeAtBuildTime(type.getDottedName());
+	}
+
+	public void initializeAtRunTime(Type type) {
+		initializeAtRunTime(type.getDottedName());
+	}
+
+	public void initializeAtBuildTime(List<Type> types) {
+		for (Type type: types) {
+			initializeAtBuildTime(type.getDottedName());
+		}
+	}
+
+	public void initializeAtRunTime(String... typenames) {
+		// todo
+		if (graalVMConnector != null) {
+			graalVMConnector.initializeAtRunTime(typenames);
+		}
+	}
+
+	public void initializeAtBuildTime(String... typenames) {
+		// todo
+		if (graalVMConnector != null) {
+			graalVMConnector.initializeAtBuildTime(typenames);
+		}
+	}
+
+	public void initializeAtBuildTimePackages(String... packageNames) {
+		if (graalVMConnector != null) {
+			graalVMConnector.initializeAtBuildTimePackages(packageNames);
+		}
+	}
+
+	public void initializeAtRunTimePackages(String... packageNames) {
+		if (graalVMConnector != null) {
+			graalVMConnector.initializeAtRunTimePackages(packageNames);
 		}
 	}
 

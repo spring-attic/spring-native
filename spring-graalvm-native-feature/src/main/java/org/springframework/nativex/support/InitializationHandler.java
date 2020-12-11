@@ -21,24 +21,28 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
-import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.init.InitializationJsonMarshaller;
+import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
 import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
 import com.oracle.svm.hosted.ImageClassLoader;
+import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
+import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 
 /**
  * 
  * @author Andy Clement
  */
-public class InitializationHandler {
+public class InitializationHandler extends Handler {
 	
 	private ImageClassLoader cl;
-
 	private TypeSystem ts;
+
+	InitializationHandler(ConfigurationCollector collector) {
+		super(collector);
+	}
 
 	public InitializationDescriptor compute() {
 		try {
@@ -57,16 +61,23 @@ public class InitializationHandler {
 		if (id == null) {
 			throw new IllegalStateException("Unable to load initialization descriptor");
 		}
-		System.out.println(id.toString());
-		List<Class<?>> collect = id.getBuildtimeClasses().stream()
+//		List<Type> typenames = id.getBuildtimeClasses().stream()
+//				.map(t -> ts.resolveDotted(t,true)/*access::findClassByName*/).filter(Objects::nonNull).collect(Collectors.toList());
+//		collector.initializeAtBuildTime(typenames);
+		List<Class<?>> typenames = id.getBuildtimeClasses().stream()
 				.map(access::findClassByName).filter(Objects::nonNull).collect(Collectors.toList());
-		RuntimeClassInitialization.initializeAtBuildTime(collect.toArray(new Class[] {}));
+		RuntimeClassInitialization.initializeAtBuildTime(typenames.toArray(new Class[] {}));
+
 		id.getRuntimeClasses().stream()
 				.map(access::findClassByName).filter(Objects::nonNull)
 				.forEach(RuntimeClassInitialization::initializeAtRunTime);
+//				.map(t->ts.resolveDotted(t,true)/*access::findClassByName*/).filter(Objects::nonNull)
+//				.forEach(collector::initializeAtRunTime);
 		SpringFeature.log("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
+//		collector.initializeAtBuildTimePackages(id.getBuildtimePackages().toArray(new String[] {}));
 		RuntimeClassInitialization.initializeAtBuildTime(id.getBuildtimePackages().toArray(new String[] {}));
 		SpringFeature.log("Registering these packages for runtime initialization: \n"+id.getRuntimePackages());
+//		collector.initializeAtRunTimePackages(id.getRuntimePackages().toArray(new String[] {}));
 		RuntimeClassInitialization.initializeAtRunTime(id.getRuntimePackages().toArray(new String[] {}));
 
 		if (ConfigOptions.isVerifierOn()) {
@@ -85,21 +96,27 @@ public class InitializationHandler {
 		List<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
 		if (buildtimeClasses.size()!=0) {
 			buildtimeClasses.stream()
+//			.map(c -> ts.resolveDotted(c, true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
+//			.forEach(collector::initializeAtBuildTime);
 			.map(c -> cl.findClassByName(c, false)).filter(Objects::nonNull)
 			.forEach(RuntimeClassInitialization::initializeAtBuildTime);
 		}
 		List<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
 		if (runtimeClasses.size()!=0) {
 			runtimeClasses.stream()
+//			.map(c -> ts.resolveDotted(c,true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
+//			.forEach(collector::initializeAtRunTime);
 			.map(c -> cl.findClassByName(c, false)).filter(Objects::nonNull)
 			.forEach(RuntimeClassInitialization::initializeAtRunTime);
 		}
 		List<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
 		if (buildtimePackages.size()!=0) {
+//			collector.initializeAtBuildTimePackages(buildtimePackages.toArray(new String[0]));
 			RuntimeClassInitialization.initializeAtBuildTime(buildtimePackages.toArray(new String[0]));
 		}
 		List<String> runtimePackages = initializationDescriptor.getRuntimePackages();
 		if (runtimePackages.size()!=0) {
+//			collector.initializeAtRunTimePackages(runtimePackages.toArray(new String[0]));
 			RuntimeClassInitialization.initializeAtRunTime(runtimePackages.toArray(new String[0]));
 		}
 	}

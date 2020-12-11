@@ -992,7 +992,7 @@ public class TypeSystem {
 				SpringFeature.log("WARNING: unexpected null resourceconfiguration loaded from spring.factories at "+resourceConfiguration.getKey());
 				continue;
 			}
-			List<String> patterns = resourceConfiguration.getValue().getPatterns();
+			Set<String> patterns = resourceConfiguration.getValue().getPatterns();
 			for (String pattern: patterns) {
 				String slash = File.separator;
 				// Catches it raw or escaped (as the agent would do) - will not currently catch funky wildcarded variants

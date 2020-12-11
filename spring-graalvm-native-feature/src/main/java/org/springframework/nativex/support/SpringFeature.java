@@ -61,8 +61,8 @@ public class SpringFeature implements Feature {
 		}
 		reflectionHandler = new ReflectionHandler(collector);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
-		initializationHandler = new InitializationHandler();
-		resourcesHandler = new ResourcesHandler(reflectionHandler, dynamicProxiesHandler, initializationHandler);
+		initializationHandler = new InitializationHandler(collector);
+		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler);
 	}
 
 	public boolean isInConfiguration(IsInConfigurationAccess access) {
@@ -93,6 +93,8 @@ public class SpringFeature implements Feature {
 		TypeSystem ts = TypeSystem.get(imageClassLoader.getClasspath());
 		dynamicProxiesHandler.setTypeSystem(ts);
 		reflectionHandler.setTypeSystem(ts);
+		resourcesHandler.setTypeSystem(ts);
+		initializationHandler.setTypeSystem(ts);
 		
 		collector.setGraalConnector(new GraalVMConnector(imageClassLoader));
 		collector.setTypeSystem(ts);
@@ -117,7 +119,7 @@ public class SpringFeature implements Feature {
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
 		initializationHandler.register(access);
-		resourcesHandler.register(access);
+		resourcesHandler.register();
 //		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
 //			System.out.println("Number of types dynamically registered for reflective access: #"
 //					+ reflectionHandler.getTypesRegisteredForReflectiveAccessCount());

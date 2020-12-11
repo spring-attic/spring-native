@@ -41,9 +41,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.graalvm.nativeimage.ImageSingletons;
-import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
-import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -63,12 +60,15 @@ import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
-import com.oracle.svm.core.configure.ResourcesRegistry;
-import com.oracle.svm.core.jdk.Resources;
-import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
-import com.oracle.svm.hosted.ImageClassLoader;
+//import org.graalvm.nativeimage.ImageSingletons;
+//import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
+//import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
+//import com.oracle.svm.core.configure.ResourcesRegistry;
+//import com.oracle.svm.core.jdk.Resources;
+//import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
+//import com.oracle.svm.hosted.ImageClassLoader;
 
-public class ResourcesHandler {
+public class ResourcesHandler extends Handler {
 	
 	private final static String enableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 
@@ -76,19 +76,17 @@ public class ResourcesHandler {
 
 	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
 
-	public TypeSystem ts;
-
-	private ImageClassLoader cl;
+//	private ImageClassLoader cl;
+//	private ResourcesRegistry resourcesRegistry;
 
 	private ReflectionHandler reflectionHandler;
-
-	private ResourcesRegistry resourcesRegistry;
 
 	private DynamicProxiesHandler dynamicProxiesHandler;
 
 	private InitializationHandler initializationHandler;
 
-	public ResourcesHandler(ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler) {
+	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler) {
+		super(collector);
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 		this.initializationHandler = initializationHandler;
@@ -112,10 +110,10 @@ public class ResourcesHandler {
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
 	 * @param access provides API access to native image construction information
 	 */
-	public void register(BeforeAnalysisAccess access) {
-		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
-		ts = TypeSystem.get(cl.getClasspath());
-		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
+	public void register() {//BeforeAnalysisAccess access) {
+//		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
+//		ts = TypeSystem.get(cl.getClasspath());
+//		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		if (ConfigOptions.isFunctionalMode() ||
 			ConfigOptions.isAnnotationMode() ||
@@ -145,7 +143,8 @@ public class ResourcesHandler {
 			if (pattern.equals("META-INF/spring.factories")) {
 				continue; // leave to special handling which may trim these files...
 			}
-			resourcesRegistry.addResources(pattern);
+			collector.addResource(pattern, false);
+//			resourcesRegistry.addResources(pattern);
 		}
 	}
 
@@ -154,7 +153,8 @@ public class ResourcesHandler {
 		for (String bundle : rd.getBundles()) {
 			try {
 				ResourceBundle.getBundle(bundle);
-				resourcesRegistry.addResourceBundles(bundle);
+				collector.addResource(bundle, true);
+//				resourcesRegistry.addResourceBundles(bundle);
 			} catch (MissingResourceException e) {
 				//bundle not available. don't load it
 			}
@@ -216,15 +216,8 @@ public class ResourcesHandler {
 	public void registerResourcesDescriptor(org.springframework.nativex.type.ResourcesDescriptor rd) {
 		String[] patterns = rd.getPatterns();
 		for (String pattern: patterns) {
-			if (rd.isBundle()) {
-				try {
-					resourcesRegistry.addResourceBundles(pattern);
-				} catch (MissingResourceException mre) {
-					SpringFeature.log("WARNING: resource bundle "+pattern+" could not be registered");
-				}
-			} else {
-				resourcesRegistry.addResources(pattern);
-			}
+			collector.addResource(pattern,rd.isBundle());
+			
 		}	
 	}
 
@@ -284,7 +277,7 @@ public class ResourcesHandler {
 			baos.close();
 			byte[] bs = baos.toByteArray();
 			ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-			Resources.registerResource("META-INF/spring.components", bais);
+			collector.registerResource("META-INF/spring.components", bais);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -329,7 +322,8 @@ public class ResourcesHandler {
 			if (keyType.isAtSpringBootApplication()) {
 				System.out.println("hybrid: adding access to "+keyType+" since @SpringBootApplication");
 				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
-				resourcesRegistry.addResources(key.replace(".", "/")+".class");
+//				resourcesRegistry.addResources(key.replace(".", "/")+".class");
+				collector.addResource(key.replace(".", "/")+".class", false);
 			}
 			if (keyType.isAtController()) {
 				System.out.println("hybrid: Processing controller "+key);
@@ -399,7 +393,8 @@ public class ResourcesHandler {
 			for (Type t: metaAnnotated.getValue()) {
 				String name = t.getDottedName();
 				reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
-				resourcesRegistry.addResources(name.replace(".", "/")+".class");
+				collector.addResource(name.replace(".", "/")+".class", false);
+//				resourcesRegistry.addResources(name.replace(".", "/")+".class");
 			}
 		}
 
@@ -416,12 +411,14 @@ public class ResourcesHandler {
 				// There is a type in vanilla-orm called Bootstrap that shows this need
 				reflectionHandler.addAccess(componentTypename, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
 					Flag.allDeclaredClasses, Flag.allDeclaredFields);
-				resourcesRegistry.addResources(componentTypename.replace(".", "/") + ".class");
+//				resourcesRegistry.addResources(componentTypename.replace(".", "/") + ".class");
+				collector.addResource(componentTypename.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : kType.getNestedTypes()) {
 					reflectionHandler.addAccess(t.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
 							Flag.allDeclaredClasses);
-					resourcesRegistry.addResources(t.getName() + ".class");
+//					resourcesRegistry.addResources(t.getName() + ".class");
+					collector.addResource(t.getName()+".class", false);
 				}
 				registerHierarchy(pc, kType, requestor);
 			} catch (Throwable t) {
@@ -455,13 +452,15 @@ public class ResourcesHandler {
 				// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
 				// Flag.allPublicMethods, Flag.allDeclaredClasses);
 				reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
-				resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
+//				resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
+				collector.addResource(tt.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : baseType.getNestedTypes()) {
 					String n = t.getName().replace("/", ".");
 					reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
 //					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-					resourcesRegistry.addResources(t.getName() + ".class");
+//					resourcesRegistry.addResources(t.getName() + ".class");
+					collector.addResource(t.getName() + ".class", false);
 				}
 				registerHierarchy(pc, baseType, requestor);
 			} catch (Throwable t) {
@@ -486,7 +485,7 @@ public class ResourcesHandler {
 		}	
 		return true;
 	}
-	
+
 	/**
 	 * This is the type passed to the 'plugins' that process spring components or spring factories entries.
 	 */
@@ -527,11 +526,7 @@ public class ResourcesHandler {
 
 		@Override
 		public void initializeAtBuildTime(Type type) {
-			try {
-				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(type.getDottedName()));
-			} catch (ClassNotFoundException cnfe) {
-				throw new IllegalStateException("Unexpected - type " + type.getDottedName() +" cannot be found!",cnfe);
-			}
+			collector.initializeAtBuildTime(type.getDottedName());
 		}
 
 		@Override
@@ -878,7 +873,8 @@ public class ResourcesHandler {
 		// Filter spring.factories if necessary
 		try {
 			if (forRemoval.size() == 0 && !modified) {
-				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
+				collector.registerResource("META-INF/spring.factories", springFactory.openStream());
+//				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
 				SpringFeature.log("  removed " + forRemoval.size() + " classes");
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -889,7 +885,8 @@ public class ResourcesHandler {
 				SpringFeature.log(new String(bs));
 				SpringFeature.log("^^^^^^^^");
 				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-				Resources.registerResource("META-INF/spring.factories", bais);
+				collector.registerResource("META-INF/spring.factories", bais);
+//				Resources.registerResource("META-INF/spring.factories", bais);
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
@@ -1041,7 +1038,8 @@ public class ResourcesHandler {
 					!(pc.peekReachedBy()==ReachedBy.Import || pc.peekReachedBy()==ReachedBy.NestedReference)) {
 				SpringFeature.log(type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
 				if (!ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-					resourcesRegistry.addResources(type.getDottedName().replace(".", "/")+".class");
+//					resourcesRegistry.addResources(type.getDottedName().replace(".", "/")+".class");
+					collector.addResource(type.getDottedName().replace(".", "/")+".class", false);
 				}
 				return false;
 			}
@@ -1870,9 +1868,9 @@ public class ResourcesHandler {
 			}
 			*/
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
-				resourcesRegistry.addResources(
-						dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]")
-								+ ".class");
+//				resourcesRegistry.addResources(
+				collector.addResource(
+					dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class", false);
 			}
 		}
 	}

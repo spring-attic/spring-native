@@ -1,5 +1,6 @@
 package org.springframework.nativex.support;
 
+import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -7,9 +8,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Set;
 
 import org.graalvm.nativeimage.ImageSingletons;
+import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
 import org.graalvm.util.GuardedAnnotationAccess;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
@@ -19,7 +22,9 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
+import com.oracle.svm.core.configure.ResourcesRegistry;
 import com.oracle.svm.core.hub.ClassForNameSupport;
+import com.oracle.svm.core.jdk.Resources;
 import com.oracle.svm.core.jdk.proxy.DynamicProxyRegistry;
 import com.oracle.svm.hosted.ImageClassLoader;
 import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
@@ -36,10 +41,13 @@ public class GraalVMConnector {
 
 	private ReflectionRegistryAdapter rra;
 
+	private ResourcesRegistry resourcesRegistry;
+
 	public GraalVMConnector(ImageClassLoader imageClassLoader) {
 		this.imageClassLoader = imageClassLoader;
 		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
 		this.rra = new ReflectionRegistryAdapter(rrs, imageClassLoader);
+		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
 	}
 
 	public void addProxy(List<String> interfaceNames) {
@@ -348,6 +356,50 @@ public class GraalVMConnector {
 
 	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
 		
+	}
+
+	public void registerResource(String resourceName, InputStream bais) {
+		Resources.registerResource(resourceName, bais);
+	}
+
+	public void addResource(String pattern, boolean isBundle) {
+		if (isBundle) {
+			try {
+				resourcesRegistry.addResourceBundles(pattern);
+			} catch (MissingResourceException mre) {
+				SpringFeature.log("WARNING: resource bundle "+pattern+" could not be registered");
+			}
+		} else {
+			resourcesRegistry.addResources(pattern);
+		}
+	}
+
+	public void initializeAtBuildTime(String... typenames) {
+		for (String typename: typenames) {
+			try {
+				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(typename));
+			} catch (Throwable e) {
+//				throw new IllegalStateException("Unexpected - type " + typename +" cannot be found!",e);
+			}
+		}
+	}
+
+	public void initializeAtRunTime(String[] typenames) {
+	for (String typename: typenames) {
+		try {
+			RuntimeClassInitialization.initializeAtRunTime(Class.forName(typename));
+		} catch (Throwable e ) {
+//			throw new IllegalStateException("Unexpected - type " + typename +" cannot be found!",e);
+		}
+	}
+	}
+
+	public void initializeAtBuildTimePackages(String[] packageNames) {
+		RuntimeClassInitialization.initializeAtBuildTime(packageNames);
+	}
+
+	public void initializeAtRunTimePackages(String[] packageNames) {
+		RuntimeClassInitialization.initializeAtRunTime(packageNames);
 	}
 
 }
