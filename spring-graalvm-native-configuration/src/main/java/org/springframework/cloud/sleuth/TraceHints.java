@@ -24,7 +24,6 @@ import org.springframework.nativex.type.AccessBits;
 				CircuitBreakerFactory.class,
 				ConfigBuilder.class,
 				SimpleDiscoveryProperties.class,
-				SimpleDiscoveryProperties.SimpleServiceInstance.class,
 				TraceWebClientAutoConfiguration.class,
 				ContinueSpan.class,
 				NewSpan.class
