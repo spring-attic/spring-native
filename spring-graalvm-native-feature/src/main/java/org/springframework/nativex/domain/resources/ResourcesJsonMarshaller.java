@@ -35,7 +35,7 @@ public class ResourcesJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public void write(ResourcesDescriptor metadata, OutputStream outputStream)
+	public static void write(ResourcesDescriptor metadata, OutputStream outputStream)
 			throws IOException {
 		try {
 			ResourcesJsonConverter converter = new ResourcesJsonConverter();

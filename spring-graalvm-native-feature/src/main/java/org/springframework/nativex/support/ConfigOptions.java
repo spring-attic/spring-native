@@ -162,7 +162,7 @@ public abstract class ConfigOptions {
 		}
 		DUMP_CONFIG = System.getProperty("spring.native.dump-config");
 		if (DUMP_CONFIG!=null) {
-			System.out.println("Dumping computed config to "+DUMP_CONFIG);
+			System.out.println("Dumping computed config to directory "+DUMP_CONFIG);
 		}
 	}
 

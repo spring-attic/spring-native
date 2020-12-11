@@ -16,18 +16,9 @@
 package org.springframework.nativex.support;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//import org.graalvm.nativeimage.ImageSingletons;
-//import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
-//import org.graalvm.nativeimage.impl.RuntimeReflectionSupport;
-//import org.graalvm.util.GuardedAnnotationAccess;
-//import com.oracle.svm.core.hub.ClassForNameSupport;
-//import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
-//import com.oracle.svm.hosted.ImageClassLoader;
-//import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
@@ -50,14 +41,7 @@ import org.springframework.nativex.type.AccessDescriptor;
  */
 public class ReflectionHandler extends Handler {
 
-	private final static String RESOURCE_FILE = "/reflect.json";
-
-//	private ReflectionRegistryAdapter rra;
-//	private ImageClassLoader cl;
-
 	private ReflectionDescriptor constantReflectionDescriptor;
-
-	private List<ClassDescriptor> activeClassDescriptors = new ArrayList<>();
 
 	public ReflectionHandler(ConfigurationCollector collector) {
 		super(collector);
@@ -66,22 +50,16 @@ public class ReflectionHandler extends Handler {
 	public ReflectionDescriptor getConstantData() {
 		if (constantReflectionDescriptor == null) {
 			try {
-				InputStream s = this.getClass().getResourceAsStream(RESOURCE_FILE);
+				InputStream s = this.getClass().getResourceAsStream("/reflect.json");
 				constantReflectionDescriptor = JsonMarshaller.read(s);
 			} catch (Exception e) {
-				throw new IllegalStateException("Unexpectedly can't load " + RESOURCE_FILE, e);
+				throw new IllegalStateException("Unexpectedly can't load /reflect.json", e);
 			}
 		}
 		return constantReflectionDescriptor;
 	}
 
 	public void registerHybrid() {
-//	public void registerHybrid(DuringSetupAccess a) {
-//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-//		cl = access.getImageClassLoader();
-//		rra = new ReflectionRegistryAdapter(rrs, cl);
-//		ts = TypeSystem.get(cl.getClasspath());
 		getConstantData();
 		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
 			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
@@ -89,21 +67,11 @@ public class ReflectionHandler extends Handler {
 		}
 	}
 
-	public void registerAgent() {//DuringSetupAccess a) {
-//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-//		cl = access.getImageClassLoader();
-//		rra = new ReflectionRegistryAdapter(rrs, cl);
-//		ts = TypeSystem.get(cl.getClasspath());
+	public void registerAgent() {
 		getConstantData();
 	}
 
-	public void registerFunctional() {//DuringSetupAccess a) {
-//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-//		cl = access.getImageClassLoader();
-//		ts = TypeSystem.get(cl.getClasspath());
-//		rra = new ReflectionRegistryAdapter(rrs, cl);
+	public void registerFunctional() {
 		getConstantData();
 
 		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
@@ -125,12 +93,7 @@ public class ReflectionHandler extends Handler {
 		}
 	}
 
-	public void register() {//DuringSetupAccess a) {
-//		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-//		RuntimeReflectionSupport rrs = ImageSingletons.lookup(RuntimeReflectionSupport.class);
-//		cl = access.getImageClassLoader();
-//		ts = TypeSystem.get(cl.getClasspath());
-//		rra = new ReflectionRegistryAdapter(rrs, cl);
+	public void register() {
 		collector.addReflectionDescriptor(getConstantData());
 		registerWebApplicationTypeClasses();
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {

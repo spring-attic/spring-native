@@ -129,6 +129,7 @@ public class SpringFeature implements Feature {
 				SpringFeature.log(failedPropertyCheck);
 			}
 		}
+		collector.dump();
 	}
 
 	public static void log(int depth, String msg) {

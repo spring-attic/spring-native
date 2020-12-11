@@ -17,6 +17,7 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
+import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
 import com.oracle.svm.core.hub.ClassForNameSupport;
 import com.oracle.svm.core.jdk.proxy.DynamicProxyRegistry;
@@ -345,5 +346,8 @@ public class GraalVMConnector {
 				return true;
 			}
 
+	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
+		
+	}
 
 }

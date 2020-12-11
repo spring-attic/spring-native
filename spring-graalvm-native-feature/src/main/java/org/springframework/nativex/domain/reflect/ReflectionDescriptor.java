@@ -88,4 +88,30 @@ public class ReflectionDescriptor {
 		return null;
 	}
 
+	public void merge(ReflectionDescriptor rd) {
+		List<ClassDescriptor> classDescriptors = rd.getClassDescriptors();
+		if (classDescriptors != null) {
+			List<ClassDescriptor> toAdd = new ArrayList<>();
+			for (ClassDescriptor classDescriptor: classDescriptors) {
+				String typename = classDescriptor.getName();
+				ClassDescriptor existingCD = getClassDescriptor(typename);
+				if (existingCD != null) {
+					existingCD.merge(classDescriptor);
+				} else {
+					toAdd.add(classDescriptor.copy());
+				}
+			}
+			classDescriptors.addAll(toAdd);
+		}
+	}
+
+	public void merge(ClassDescriptor classDescriptor) {
+		ClassDescriptor existingCD = getClassDescriptor(classDescriptor.getName());
+		if (existingCD != null) {
+			existingCD.merge(classDescriptor);
+		} else {
+			classDescriptors.add(classDescriptor.copy());
+		}
+	}
+
 }

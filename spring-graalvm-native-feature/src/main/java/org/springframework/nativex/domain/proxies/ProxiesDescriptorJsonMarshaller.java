@@ -36,7 +36,7 @@ public class ProxiesDescriptorJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public void write(ProxiesDescriptor metadata, OutputStream outputStream)
+	public static void write(ProxiesDescriptor metadata, OutputStream outputStream)
 			throws IOException {
 		try {
 			ProxiesDescriptorJsonConverter converter = new ProxiesDescriptorJsonConverter();
