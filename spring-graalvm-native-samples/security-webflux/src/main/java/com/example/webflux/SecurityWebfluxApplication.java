@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication	
-public class SecuringWebfluxApplication {
+public class SecurityWebfluxApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SecuringWebfluxApplication.class, args);
+		SpringApplication.run(SecurityWebfluxApplication.class, args);
 	}
 
 }

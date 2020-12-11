@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=security-webflux
-MAINCLASS=com.example.webflux.SecuringWebfluxApplication
+MAINCLASS=com.example.webflux.SecurityWebfluxApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'
