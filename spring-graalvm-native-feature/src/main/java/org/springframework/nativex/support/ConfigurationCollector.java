@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
@@ -48,6 +49,8 @@ public class ConfigurationCollector {
 	private ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
 
 	private ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
+
+	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
 	private GraalVMConnector graalVMConnector;
 
@@ -125,11 +128,62 @@ public class ConfigurationCollector {
 			try (FileOutputStream fos = new FileOutputStream(new File(folder,"proxy-config.json"))) {
 				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
 			}
+			writeNativeImageProperties(new File(folder, "native-image.properties"));
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem writing out configuration",ioe);
 		}
 	}
 	
+	private void writeNativeImageProperties(File file) throws IOException {
+		StringBuilder s = new StringBuilder();
+		// From the existing native-image.properties in the feature
+		s.append("Args = --allow-incomplete-classpath --report-unsupported-elements-at-runtime --no-fallback --no-server --install-exit-handlers");
+		if (!initializationDescriptor.getBuildtimeClasses().isEmpty() || 
+			!initializationDescriptor.getBuildtimePackages().isEmpty()) {
+			s.append(" \\\n");
+			s.append("--initialize-at-build-time=");
+			int i = 0;
+			for (String name: initializationDescriptor.getBuildtimeClasses()) {
+				if (i>0) {
+					s.append(",");
+				}
+				s.append(name);
+				i++;
+			}
+			for (String name: initializationDescriptor.getBuildtimePackages()) {
+				if (i>0) {
+					s.append(",");
+				}
+				s.append(name);
+				i++;
+			}
+		}
+		if (!initializationDescriptor.getRuntimeClasses().isEmpty() || 
+			!initializationDescriptor.getRuntimePackages().isEmpty()) {
+			s.append(" \\\n");
+			s.append("--initialize-at-run-time=");
+			int i = 0;
+			for (String name: initializationDescriptor.getRuntimeClasses()) {
+				if (i>0) {
+					s.append(",");
+				}
+				s.append(name);
+				i++;
+			}
+			for (String name: initializationDescriptor.getRuntimePackages()) {
+				if (i>0) {
+					s.append(",");
+				}
+				s.append(name);
+				i++;
+			}
+		}
+		s.append("\n");
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+			fos.write(s.toString().getBytes());
+		}
+	}
+
 	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
 		this.resourcesDescriptor.merge(resourcesDescriptor);
 		if (graalVMConnector != null) {
@@ -177,39 +231,55 @@ public class ConfigurationCollector {
 		initializeAtRunTime(type.getDottedName());
 	}
 
-	public void initializeAtRunTime(List<Type> collect) {
+	public void initializeAtRunTime(List<Type> types) {
+		for (Type type: types) {
+			initializationDescriptor.addRuntimeClass(type.getDottedName());
+		}
 		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtRunTime(collect);
+			graalVMConnector.initializeAtRunTime(types);
 		}
 	}
 
 	public void initializeAtBuildTime(List<Type> types) {
+		for (Type type: types) {
+			initializationDescriptor.addBuildtimeClass(type.getDottedName());
+		}
 		for (Type type: types) {
 			initializeAtBuildTime(type.getDottedName());
 		}
 	}
 
 	public void initializeAtRunTime(String... typenames) {
-		// todo
+		for (String typename: typenames) {
+			initializationDescriptor.addRuntimeClass(typename);
+		}
 		if (graalVMConnector != null) {
 			graalVMConnector.initializeAtRunTime(typenames);
 		}
 	}
 
 	public void initializeAtBuildTime(String... typenames) {
-		// todo
+		for (String typename: typenames) {
+			initializationDescriptor.addBuildtimeClass(typename);
+		}
 		if (graalVMConnector != null) {
 			graalVMConnector.initializeAtBuildTime(typenames);
 		}
 	}
 
 	public void initializeAtBuildTimePackages(String... packageNames) {
+		for (String packageName: packageNames) {
+			initializationDescriptor.addBuildtimePackage(packageName);
+		}
 		if (graalVMConnector != null) {
 			graalVMConnector.initializeAtBuildTimePackages(packageNames);
 		}
 	}
 
 	public void initializeAtRunTimePackages(String... packageNames) {
+		for (String packageName: packageNames) {
+			initializationDescriptor.addRuntimePackage(packageName);
+		}
 		if (graalVMConnector != null) {
 			graalVMConnector.initializeAtRunTimePackages(packageNames);
 		}
