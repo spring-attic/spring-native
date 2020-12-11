@@ -177,6 +177,12 @@ public class ConfigurationCollector {
 		initializeAtRunTime(type.getDottedName());
 	}
 
+	public void initializeAtRunTime(List<Type> collect) {
+		if (graalVMConnector != null) {
+			graalVMConnector.initializeAtRunTime(collect);
+		}
+	}
+
 	public void initializeAtBuildTime(List<Type> types) {
 		for (Type type: types) {
 			initializeAtBuildTime(type.getDottedName());

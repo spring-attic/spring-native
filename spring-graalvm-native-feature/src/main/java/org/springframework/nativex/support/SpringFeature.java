@@ -118,7 +118,7 @@ public class SpringFeature implements Feature {
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
-		initializationHandler.register(access);
+		initializationHandler.register();//access);
 		resourcesHandler.register();
 //		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {
 //			System.out.println("Number of types dynamically registered for reflective access: #"

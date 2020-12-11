@@ -21,6 +21,7 @@ import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.type.Type;
 
 import com.oracle.svm.core.configure.ResourcesRegistry;
 import com.oracle.svm.core.hub.ClassForNameSupport;
@@ -400,6 +401,17 @@ public class GraalVMConnector {
 
 	public void initializeAtRunTimePackages(String[] packageNames) {
 		RuntimeClassInitialization.initializeAtRunTime(packageNames);
+	}
+
+	public void initializeAtRunTime(List<Type> types) {
+		for (Type type: types) {
+			try {
+			Class<?> clazz = imageClassLoader.findClassByName(type.getDottedName());
+			RuntimeClassInitialization.initializeAtRunTime(clazz);
+			} catch (Throwable t) {
+				
+			}
+		}
 	}
 
 }
