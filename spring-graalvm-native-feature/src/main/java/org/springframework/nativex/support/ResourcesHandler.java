@@ -541,7 +541,7 @@ public class ResourcesHandler extends Handler {
 			String typename = type.getDottedName();
 			if (visited.add(typename)) {
 				addReflectiveAccess(typename, AccessBits.getFlags(accessBits));
-				List<String> relatedTypes = type.getTypesInSignature();
+				Set<String> relatedTypes = type.getTypesInSignature();
 				for (String relatedType: relatedTypes) {
 					Type t = ts.resolveSlashed(relatedType, true);
 					if (t!=null) {
@@ -680,7 +680,7 @@ public class ResourcesHandler extends Handler {
 		Type superclass = type.getSuperclass();
 		registerHierarchyHelper(superclass, visited, typesToMakeAccessible, inferredRequiredAccess, true);
 		
-		List<String> relatedTypes = type.getTypesInSignature();
+		Set<String> relatedTypes = type.getTypesInSignature();
 		for (String relatedType: relatedTypes) {
 			Type t = ts.resolveSlashed(relatedType,true);
 			if (t!=null) {

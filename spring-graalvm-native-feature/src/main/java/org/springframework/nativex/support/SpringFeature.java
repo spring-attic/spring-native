@@ -52,6 +52,9 @@ public class SpringFeature implements Feature {
 
 	public SpringFeature() {
 		System.out.println(banner);
+		if (ConfigOptions.isOffMode()) {
+			return;
+		}
 		
 		collector = new ConfigurationCollector();
 
@@ -78,6 +81,9 @@ public class SpringFeature implements Feature {
 	}
 
 	public void duringSetup(DuringSetupAccess access) {
+		if (ConfigOptions.isOffMode()) {
+			return;
+		}
 		String springBootVersion = SpringBootVersion.getVersion();
 		if (springBootVersion != null && Float.parseFloat(springBootVersion.substring(0, 3)) < 2.4) {
 			String message = "Spring GraalVM Native requires Spring Boot 2.4.0-M2 or above";
@@ -118,6 +124,9 @@ public class SpringFeature implements Feature {
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
+		if (ConfigOptions.isOffMode()) {
+			return;
+		}
 		initializationHandler.register();//access);
 		resourcesHandler.register();
 //		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isFunctionalMode() || ConfigOptions.isAgentMode()) {

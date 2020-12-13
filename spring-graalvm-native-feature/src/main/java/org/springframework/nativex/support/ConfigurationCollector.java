@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -28,7 +29,9 @@ import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
@@ -42,8 +45,6 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class ConfigurationCollector {
 
-	private TypeSystem ts;
-
 	private ReflectionDescriptor reflectionDescriptor = new ReflectionDescriptor();
 
 	private ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
@@ -54,18 +55,24 @@ public class ConfigurationCollector {
 
 	private GraalVMConnector graalVMConnector;
 
+	private TypeSystem ts;
+
 	public ProxiesDescriptor getProxyDescriptors() {
 		return proxiesDescriptor;
 	}
-	
+
 	public ReflectionDescriptor getReflectionDescriptors() {
 		return reflectionDescriptor;
 	}
-	
+
 	public ResourcesDescriptor getResourcesDescriptors() {
 		return resourcesDescriptor;
 	}
-	
+
+	public InitializationDescriptor getInitializationDescriptor() {
+		return initializationDescriptor;
+	}
+
 	public void setGraalConnector(GraalVMConnector graalConnector) {
 		this.graalVMConnector = graalConnector;
 	}
@@ -192,13 +199,54 @@ public class ConfigurationCollector {
 	}
 
 	public void addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
-		this.reflectionDescriptor.merge(reflectionDescriptor);
+		ReflectionDescriptor filteredReflectionDescriptor = filterVerified(reflectionDescriptor);
+		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
 		if (graalVMConnector != null) {
-			graalVMConnector.addReflectionDescriptor(reflectionDescriptor);
+			graalVMConnector.addReflectionDescriptor(filteredReflectionDescriptor);
+		}
+	}
+	
+	private boolean areMembersSpecified(ClassDescriptor cd) {
+		List<MethodDescriptor> methods = cd.getMethods();
+		if (methods != null && !methods.isEmpty()) {
+			return true;
+		}
+		List<FieldDescriptor> fields = cd.getFields();
+		if (fields != null && !fields.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
+	private ReflectionDescriptor filterVerified(ReflectionDescriptor reflectionDescriptor2) {
+		boolean anyFailed = false;
+		List<ClassDescriptor> verified = new ArrayList<>();
+		List<ClassDescriptor> classDescriptors = reflectionDescriptor2.getClassDescriptors();
+		for (ClassDescriptor classDescriptor: classDescriptors) {
+			if (areMembersSpecified(classDescriptor) && !verify(classDescriptor)) {
+				System.out.println("FAILED: filtering out "+classDescriptor.getName());
+				anyFailed = true;
+			} else {
+				verified.add(classDescriptor);
+			}
+		}
+		return anyFailed?new ReflectionDescriptor(verified):reflectionDescriptor2;
+	}
+
+	private boolean verify(ClassDescriptor classDescriptor) {
+		Type t = ts.resolveDotted(classDescriptor.getName(),true);
+		if (t== null) {
+			System.out.println("FAILED VERIFICATION type missing "+classDescriptor.getName());
+			return false;
+		} else {
+			return t.verify();
 		}
 	}
 
 	public void addClassDescriptor(ClassDescriptor classDescriptor) {
+		if (areMembersSpecified(classDescriptor) && !verify(classDescriptor)) {
+			return;
+		}
 		reflectionDescriptor.merge(classDescriptor);
 		// add it to existing refl desc stuff...
 		if (graalVMConnector != null) {
@@ -207,6 +255,7 @@ public class ConfigurationCollector {
 	}
 
 	public void registerResource(String resourceName, InputStream bais) {
+		resourcesDescriptor.add(resourceName);
 		if (graalVMConnector != null) {
 			graalVMConnector.registerResource(resourceName, bais);
 		}
@@ -222,7 +271,7 @@ public class ConfigurationCollector {
 			graalVMConnector.addResource(pattern, isBundle);
 		}
 	}
-	
+
 	public void initializeAtBuildTime(Type type) {
 		initializeAtBuildTime(type.getDottedName());
 	}

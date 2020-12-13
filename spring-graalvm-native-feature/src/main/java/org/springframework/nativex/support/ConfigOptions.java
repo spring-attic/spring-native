@@ -372,4 +372,8 @@ public abstract class ConfigOptions {
 			return true;
 		}
 	}
+
+	public static boolean isOffMode() {
+		return MODE==Mode.OFF;
+	}
 }

@@ -40,7 +40,7 @@ public class ResourcesJsonMarshaller {
 		try {
 			ResourcesJsonConverter converter = new ResourcesJsonConverter();
 			JSONObject jsonObject = converter.toJsonArray(metadata);
-			outputStream.write(jsonObject.toString(2).getBytes(StandardCharsets.UTF_8));
+			outputStream.write(jsonObject.toString(2).replace("\\/","/").getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
 			if (ex instanceof IOException) {

@@ -18,6 +18,8 @@ package org.springframework.nativex.type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -62,14 +64,17 @@ public class Field {
 		return results == null ? Collections.emptyList() : results;
 	}
 	
-	public List<String> getTypesInSignature() {
+	public Set<String> getTypesInSignature() {
 		if (node.signature == null) {
 			String s = node.desc;
-			if (s.endsWith(";")) {
-				return Collections.singletonList(Type.fromLdescriptorToSlashed(s));
-			} else {
-				return Collections.emptyList();
+			Set<String> types = new TreeSet<>();
+			if (s.startsWith("[")) {
+				s = s.substring(s.lastIndexOf("[")+1);
 			}
+			if (s.length()!=1) { // check for primitive
+				types.add(Type.fromLdescriptorToSlashed(s));
+			}
+			return types;
 		} else {
 			// Pull out all the types from the generic signature
 			SignatureReader reader = new SignatureReader(node.signature);

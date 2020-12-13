@@ -330,7 +330,7 @@ public class TypeSystem {
 				missingTypes.add(slashedDescriptor);
 			} else {
 				// Check generics
-				List<String> typesInSignature = baseType.getTypesInSignature();
+				Set<String> typesInSignature = baseType.getTypesInSignature();
 //				for (String t: typesInSignature) {
 //					System.out.println("Found this "+t+" in signature of "+baseType.getName());
 //				}
@@ -1213,5 +1213,21 @@ public class TypeSystem {
 		}
 		return mergedApplicationProperties;
 	}
-	
+
+	public boolean isVoidOrPrimitive(String type) {
+		switch (type) {
+		case "void":
+		case "int":
+		case "double":
+		case "float":
+		case "long":
+		case "byte":
+		case "char":
+		case "short":
+		case "boolean":
+			return true;
+		}
+		return false;
+	}
+
 }

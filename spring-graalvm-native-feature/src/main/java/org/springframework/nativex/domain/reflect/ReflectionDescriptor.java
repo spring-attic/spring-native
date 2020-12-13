@@ -32,8 +32,12 @@ public class ReflectionDescriptor {
 		this.classDescriptors = new ArrayList<>();
 	}
 
-	public ReflectionDescriptor(ReflectionDescriptor metadata) {
-		this.classDescriptors = new ArrayList<>(metadata.classDescriptors);
+	public ReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
+		this.classDescriptors = new ArrayList<>(reflectionDescriptor.classDescriptors);
+	}
+
+	public ReflectionDescriptor(List<ClassDescriptor> classDescriptors) {
+		this.classDescriptors = new ArrayList<>(classDescriptors);
 	}
 	
 	public void sort() {

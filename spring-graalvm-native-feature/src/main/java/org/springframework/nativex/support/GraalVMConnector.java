@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.nativex.support;
 
 import java.io.InputStream;
@@ -304,6 +319,15 @@ public class GraalVMConnector {
 //			}
 //		}
 //	}
+	
+	public boolean checkType(Type t) {
+		Class<?> findClassByName = imageClassLoader.findClassByName(t.getDottedName(),false);
+		if (findClassByName == null) {
+			return false;
+		} else {
+			return checkType(findClassByName);
+		}
+	}
 
 			private boolean checkType(Class clazz) {
 				try {
@@ -378,7 +402,7 @@ public class GraalVMConnector {
 	public void initializeAtBuildTime(String... typenames) {
 		for (String typename: typenames) {
 			try {
-				RuntimeClassInitialization.initializeAtBuildTime(Class.forName(typename));
+				RuntimeClassInitialization.initializeAtBuildTime(imageClassLoader.findClassByName(typename));
 			} catch (Throwable e) {
 //				throw new IllegalStateException("Unexpected - type " + typename +" cannot be found!",e);
 			}
@@ -388,7 +412,7 @@ public class GraalVMConnector {
 	public void initializeAtRunTime(String[] typenames) {
 	for (String typename: typenames) {
 		try {
-			RuntimeClassInitialization.initializeAtRunTime(Class.forName(typename));
+			RuntimeClassInitialization.initializeAtRunTime(imageClassLoader.findClassByName(typename));
 		} catch (Throwable e ) {
 //			throw new IllegalStateException("Unexpected - type " + typename +" cannot be found!",e);
 		}

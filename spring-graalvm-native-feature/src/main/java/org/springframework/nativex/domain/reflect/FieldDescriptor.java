@@ -16,8 +16,6 @@
 
 package org.springframework.nativex.domain.reflect;
 
-import java.util.Arrays;
-
 /**
  *
  * @author Andy Clement

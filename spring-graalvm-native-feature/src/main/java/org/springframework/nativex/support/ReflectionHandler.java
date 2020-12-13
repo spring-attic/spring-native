@@ -198,19 +198,15 @@ public class ReflectionHandler extends Handler {
 			for (String[] fs: fields) {
 				boolean allowUnsafeAccess = Boolean.valueOf(fs.length>1?fs[1]:"false");
 				FieldDescriptor fd = FieldDescriptor.of(fs[0],false,allowUnsafeAccess);
+				FieldDescriptor existingFd = cd.getFieldDescriptorNamed(fd.getName());
+				if (existingFd != null) {
+					throw new IllegalStateException("nyi"); // merge of configuration necessary
+				} else {
+					cd.addFieldDescriptor(fd);
+				}
 			}
 		}
 		collector.addClassDescriptor(cd);
-	}
-
-	private static boolean isPresent(String className) {
-		try {
-			Class.forName(className);
-			return true;
-		}
-		catch (ClassNotFoundException ex) {
-			return false;
-		}
 	}
 
 }

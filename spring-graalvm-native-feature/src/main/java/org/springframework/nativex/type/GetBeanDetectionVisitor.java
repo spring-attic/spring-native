@@ -76,7 +76,6 @@ class GetBeanDetectionVisitor extends ClassVisitor {
 	class GetBeanFindingMethodVisitor extends MethodVisitor {
 
 		private String methodName;
-		private boolean atBeanCall = false;
 
 		public GetBeanFindingMethodVisitor(String name, int api) {
 			super(api);
@@ -89,7 +88,6 @@ class GetBeanDetectionVisitor extends ClassVisitor {
 		public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean itface) {
 			if (opcode == Opcodes.INVOKEINTERFACE && owner.equals("org/springframework/beans/factory/BeanFactory")
 					&& name.equals("getBean")) {
-				atBeanCall = true;
 				if (methodsUsingGetBeanCalls == null) {
 					methodsUsingGetBeanCalls = new ArrayList<>();
 				}

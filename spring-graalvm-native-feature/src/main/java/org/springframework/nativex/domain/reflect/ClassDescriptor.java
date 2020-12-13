@@ -263,6 +263,17 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		}
 		return false;
 	}
+
+	public boolean contains(FieldDescriptor toFind) {
+		if (fields != null) {
+			for (FieldDescriptor fd : fields) {
+				if (fd.equals(toFind)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	private boolean hasConstructors() {
 		if (methods != null) {
@@ -358,6 +369,15 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 			flagsCopy.addAll(flags);
 		}
 		return new ClassDescriptor(name, fieldsCopy, methodsCopy, flagsCopy);
+	}
+
+	public FieldDescriptor getFieldDescriptorNamed(String name) {
+		for (FieldDescriptor fd: fields) {
+			if (fd.getName().equals(name)) {
+				return fd;
+			}
+		}
+		return null;
 	}
 
 }

@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -260,12 +261,12 @@ public class Type {
 	 *
 	 * @return
 	 */
-	public List<String> getTypesInSignature() {
+	public Set<String> getTypesInSignature() {
 		if (dimensions > 0) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		} else if (node.signature == null) {
 			// With no generic signature it is just superclass and interfaces
-			List<String> ls = new ArrayList<>();
+			Set<String> ls = new TreeSet<>();
 			if (node.superName != null) {
 				ls.add(node.superName);
 			}
@@ -284,7 +285,7 @@ public class Type {
 
 	static class TypeCollector extends SignatureVisitor {
 
-		List<String> types = null;
+		Set<String> types = null;
 
 		public TypeCollector() {
 			super(Opcodes.ASM9);
@@ -293,14 +294,14 @@ public class Type {
 		@Override
 		public void visitClassType(String name) {
 			if (types == null) {
-				types = new ArrayList<String>();
+				types = new TreeSet<>();
 			}
 			types.add(name);
 		}
 
-		public List<String> getTypes() {
+		public Set<String> getTypes() {
 			if (types == null) {
-				return Collections.emptyList();
+				return Collections.emptySet();
 			} else {
 				return types;
 			}
@@ -2993,5 +2994,55 @@ public class Type {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Check all the type references from the types signature and the signatures of its members can be resolved.
+	 * @return true if verification is OK, false if there is a problem
+	 */
+	public boolean verify() {
+		List<String> verificationProblems = new ArrayList<>();
+		// Type
+		Set<String> typesInSignature = getTypesInSignature();
+		for (String type: typesInSignature) {
+			Type resolved = typeSystem.resolveSlashed(type,true);
+			if (resolved == null) {
+				verificationProblems.add("Cannot resolve "+type+" in type signature");
+			}
+		}
+		// Fields
+		List<Field> fields = getFields();
+		for (Field field: fields) {
+			typesInSignature = field.getTypesInSignature();
+			for (String type: typesInSignature) {
+				while (type.endsWith("[]")) {
+					type = type.substring(0,type.length()-2);
+				}
+				if (typeSystem.isVoidOrPrimitive(type)) continue;
+				Type resolved = typeSystem.resolveSlashed(type, true);
+				if (resolved == null) {
+					verificationProblems.add("Cannot resolve "+type+" in signature of field "+field.getName());
+				}
+			}
+		}
+		// Methods
+		List<Method> methods = getMethods();
+		for (Method method: methods) {
+			typesInSignature = method.getTypesInSignature();
+			for (String type: typesInSignature) {
+				while (type.endsWith("[]")) {
+					type = type.substring(0,type.length()-2);
+				}
+				if (typeSystem.isVoidOrPrimitive(type)) continue;
+				Type resolved = typeSystem.resolveSlashed(type, true);
+				if (resolved == null) {
+					verificationProblems.add("Cannot resolve "+type+" in signature of method "+method.getName());
+				}
+			}
+		}
+		if (verificationProblems.size()!=0) {
+			System.out.println("FAILED VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+		}
+		return verificationProblems.isEmpty();
 	}
 }
