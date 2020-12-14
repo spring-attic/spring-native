@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication(proxyBeanMethods=false)
+@SpringBootApplication
 @EnableConfigurationProperties(Creds.class)
 public class Application {
 

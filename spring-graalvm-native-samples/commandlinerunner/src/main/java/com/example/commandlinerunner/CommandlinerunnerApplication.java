@@ -3,7 +3,7 @@ package com.example.commandlinerunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(proxyBeanMethods=false)
+@SpringBootApplication
 public class CommandlinerunnerApplication {
 
 	public static void main(String[] args) throws InterruptedException {

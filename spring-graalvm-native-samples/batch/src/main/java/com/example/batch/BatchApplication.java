@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @EnableBatchProcessing
-@SpringBootApplication(proxyBeanMethods=false)
+@SpringBootApplication
 public class BatchApplication {
 
 	private static final Log logger = LogFactory.getLog(BatchApplication.class);
