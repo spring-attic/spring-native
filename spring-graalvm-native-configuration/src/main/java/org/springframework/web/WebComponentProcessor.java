@@ -76,7 +76,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 	private void analyze(NativeImageContext imageContext, Type type, Set<String> added) {
 		List<Field> fields = type.getFields();
 		for (Field field: fields) {
-			List<String> fieldTypenames = field.getTypesInSignature();
+			Set<String> fieldTypenames = field.getTypesInSignature();
 			for (String fieldTypename: fieldTypenames) {
 				if (fieldTypename == null) {
 					continue;

@@ -330,6 +330,7 @@ public class TypeTests {
 		assertEquals("java.lang.String",array[2]);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	static class TestMethods {
 		public void one(String a) {}
 		public void two(java.io.Serializable a,String b) {}

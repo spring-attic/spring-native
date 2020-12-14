@@ -198,12 +198,13 @@ public class ConfigurationCollector {
 		}
 	}
 
-	public void addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
+	public ReflectionDescriptor addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
 		ReflectionDescriptor filteredReflectionDescriptor = filterVerified(reflectionDescriptor);
 		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
 		if (graalVMConnector != null) {
 			graalVMConnector.addReflectionDescriptor(filteredReflectionDescriptor);
 		}
+		return filteredReflectionDescriptor;
 	}
 	
 	private boolean areMembersSpecified(ClassDescriptor cd) {

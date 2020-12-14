@@ -31,7 +31,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:EnableURLProtocols=http \
   -Dspring.native.mode=REFLECTION \
   -Dspring.native.verbose=true \
-  -Dspring.native.dump-config=/tmp/rc.json \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 

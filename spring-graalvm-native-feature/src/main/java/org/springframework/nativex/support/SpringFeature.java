@@ -168,6 +168,8 @@ public class SpringFeature implements Feature {
 
 	static class VersionCheckException extends IllegalStateException {
 
+		private static final long serialVersionUID = 1L;
+
 		public VersionCheckException(String message) {
 			super(message);
 		}

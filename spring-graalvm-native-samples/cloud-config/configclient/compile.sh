@@ -29,13 +29,9 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
   -H:EnableURLProtocols=http \
-  -H:DebugInfoSourceSearchPath=`echo $CP | sed 's/:/,/g'` \
-  -H:GenerateDebugInfo=1 \
   --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
-#  -H:ReportAnalysisForbiddenType=com.sun.xml.internal.stream.dtd.nonvalidating.XMLSimpleType \
-#  -H:ReportAnalysisForbiddenType=org.jcp.xml.dsig.internal.dom.ApacheCanonicalizer \
 if [[ -f $ARTIFACT ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"

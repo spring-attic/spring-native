@@ -17,6 +17,7 @@ package org.springframework.nativex.support;
 
 import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Array;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -98,9 +99,20 @@ public class GraalVMConnector {
 		// register call feel dirty
 		// They are here because otherwise we start getting warnings to system.out -
 		// need graal bug to tidy this up
-		Class<?> type = imageClassLoader.findClassByName(classDescriptor.getName(),false);
+		// Feels crude...
+		String name2 = classDescriptor.getName();
+		int dims = 0;
+		while (name2.endsWith("[]")) {
+			name2 = name2.substring(0,name2.length()-2);
+			dims++;
+		}
+		Class<?> type = imageClassLoader.findClassByName(name2,false);
 		if (type == null) {
 			return;
+		}
+		while (dims!=0) {
+			type = Array.newInstance(type, 0).getClass();
+			dims--;
 		}
 		ClassForNameSupport.registerClass(type);
 		// TODO need a checkType() kinda guard on here? (to avoid rogue printouts from graal)
@@ -329,7 +341,8 @@ public class GraalVMConnector {
 		}
 	}
 
-			private boolean checkType(Class clazz) {
+	// TODO verify should look at the difference between declared vs non-declared (since it includes super members in the latter case)
+			private boolean checkType(Class<?> clazz) {
 				try {
 				clazz.getDeclaredFields();
 				clazz.getFields();

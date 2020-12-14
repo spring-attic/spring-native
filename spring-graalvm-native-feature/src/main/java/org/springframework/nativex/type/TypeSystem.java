@@ -420,7 +420,10 @@ public class TypeSystem {
 				for (File f : list) {
 					File toTry = new File(f, search);
 					if (toTry.exists()) {
-						return loadFromStream(new FileInputStream(toTry));
+						try (FileInputStream fis = new FileInputStream(toTry)) {
+							return loadFromStream(fis);
+						}
+//						return loadFromStream(new FileInputStream(toTry));
 					}
 				}
 			}

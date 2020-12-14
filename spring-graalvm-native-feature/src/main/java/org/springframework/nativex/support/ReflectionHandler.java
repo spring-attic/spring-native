@@ -94,7 +94,8 @@ public class ReflectionHandler extends Handler {
 	}
 
 	public void register() {
-		collector.addReflectionDescriptor(getConstantData());
+		ReflectionDescriptor addReflectionDescriptor = collector.addReflectionDescriptor(getConstantData());
+		System.out.println("Registered this stuff from the reflective static config: "+addReflectionDescriptor);
 		registerWebApplicationTypeClasses();
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
