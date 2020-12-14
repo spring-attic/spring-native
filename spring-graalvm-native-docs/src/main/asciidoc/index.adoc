@@ -7,6 +7,7 @@
 :version: 0.8.4-SNAPSHOT
 :repository: milestone
 :boot-version: 2.4.0
+:cloud-version: 2020.0.0-RC1
 :graalvm-version: 20.3.0
 = Spring Native for GraalVM documentation
 Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
