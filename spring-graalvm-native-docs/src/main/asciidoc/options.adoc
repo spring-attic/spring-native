@@ -92,9 +92,11 @@ about specifying properties that activate configurations. (This is a work in dev
 
 === Other options
 
-* `--enable-all-security-services` required for HTTPS and crypto.
+* `--enable-all-security-services` required for crypto and some security services.
 
-* `-H:EnableURLProtocols=http,https` adds HTTPS support.
+* `--enable-http` enables HTTP support.
+
+* `--enable-https` enables HTTPS support.
 
 === Unsupported options
 

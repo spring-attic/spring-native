@@ -17,7 +17,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud-function.version>3.1.0-M5</spring-cloud-function.version>
+		<spring-cloud.version>2020.0.0-SNAPSHOT</spring-cloud.version>
 	</properties>
 
 	<dependencies>
@@ -30,12 +30,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<exclusions>
-                <!-- On purpose exclusion to test java.util.logging -->
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -47,8 +46,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-function-dependencies</artifactId>
-				<version>${spring-cloud-function.version}</version>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -64,8 +63,7 @@
 					<image>
 						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
-							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-							<!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
+							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.remove-yaml-support=true
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>

@@ -23,13 +23,6 @@
 			<artifactId>spring-graalvm-native</artifactId>
 			<version>0.8.4-SNAPSHOT</version>
 		</dependency>
-
-		<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context-indexer</artifactId>
-				<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -89,12 +82,10 @@
 					<image>
 						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
-							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-							<!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
+							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.remove-yaml-support=true
-								-H:EnableURLProtocols=http,https
-								--enable-all-security-services
+								--enable-https
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>

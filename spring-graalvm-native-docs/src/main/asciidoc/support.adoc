@@ -28,6 +28,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-mongodb`
 * `spring-boot-starter-data-neo4j`
+** `--enable-https --enable-all-security-services` are required to use any secure bolt connection (everything bolt+s(sc) or neo4j+s(sc).
 * `spring-boot-starter-data-r2dbc`
 * `spring-boot-starter-data-redis`
 * `spring-boot-starter-jdbc`

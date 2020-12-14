@@ -15,7 +15,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring.native.mode>reflection</spring.native.mode>
 	</properties>
 
 	<dependencies>
@@ -63,10 +62,8 @@
 					<image>
 						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
-							<BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-							<!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
+							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.native.mode=${spring.native.mode}
 								--enable-all-security-services
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>

@@ -64,7 +64,7 @@ plugins {
 ===== Configure the plugin
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
-To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1` and provide optionally additional build arguments.
+To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
@@ -76,7 +76,7 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `1`
         <image>
             <builder>paketobuildpacks/builder:tiny</builder>
             <env>
-                <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
+                <BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
                 <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                     -Dspring.native.remove-yaml-support=true
                     -Dspring.spel.ignore=true

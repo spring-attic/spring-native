@@ -14,6 +14,7 @@
 		<version>2.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -22,12 +23,11 @@
 	</properties>
 
 	<dependencies>
-
-        <dependency>
-            <groupId>org.springframework.experimental</groupId>
-            <artifactId>spring-graalvm-native</artifactId>
-            <version>0.8.4-SNAPSHOT</version>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graalvm-native</artifactId>
+			<version>0.8.4-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -36,16 +36,10 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-bootstrap</artifactId>
 		</dependency>
-		<!--dependency>
-		
-WARNING: Could not register reflection metadata for org.springframework.cloud.netflix.eureka.config.EurekaConfigServerBootstrapConfiguration. Reason: java.lang.NoClassDefFoundError: org/springframework/cloud/config/client/ConfigServerInstanceProvider$Function.
-		</dependency>-->
-		
-                <dependency>
-                        <groupId>org.springframework.cloud</groupId>
-                        <artifactId>spring-cloud-starter-config</artifactId>
-                </dependency>
-
+		<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
