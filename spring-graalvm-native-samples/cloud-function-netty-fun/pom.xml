@@ -60,7 +60,6 @@
 							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
 							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 								-Dspring.native.remove-yaml-support=true
-								--initialize-at-build-time=org.springframework.cloud.function.web.function.FunctionEndpointInitializer
 							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>
