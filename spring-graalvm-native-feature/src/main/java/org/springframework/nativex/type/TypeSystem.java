@@ -1218,6 +1218,8 @@ public class TypeSystem {
 	}
 
 	public boolean isVoidOrPrimitive(String type) {
+		return type.length()==1;
+		/*
 		switch (type) {
 		case "void":
 		case "int":
@@ -1231,6 +1233,7 @@ public class TypeSystem {
 			return true;
 		}
 		return false;
+		*/
 	}
 
 }
