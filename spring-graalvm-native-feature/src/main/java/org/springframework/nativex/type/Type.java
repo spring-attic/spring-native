@@ -2996,11 +2996,8 @@ public class Type {
 		return false;
 	}
 
-	/**
-	 * Check all the type references from the types signature and the signatures of its members can be resolved.
-	 * @return true if verification is OK, false if there is a problem
-	 */
-	public boolean verify() {
+	
+	public boolean verifyType() {
 		List<String> verificationProblems = new ArrayList<>();
 		// Type
 		Set<String> typesInSignature = getTypesInSignature();
@@ -3010,7 +3007,19 @@ public class Type {
 				verificationProblems.add("Cannot resolve "+type+" in type signature");
 			}
 		}
+		if (verificationProblems.size()!=0) {
+			System.out.println("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+		}
+		return verificationProblems.isEmpty();
+	}
+	/**
+	 * Check all the type references from the types signature and the signatures of its members can be resolved.
+	 * @return true if verification is OK, false if there is a problem
+	 */
+	public boolean verifyMembers() {
+		List<String> verificationProblems = new ArrayList<>();
 		// Fields
+		Set<String> typesInSignature = null;
 		List<Field> fields = getFields();
 		for (Field field: fields) {
 			typesInSignature = field.getTypesInSignature();
@@ -3041,7 +3050,7 @@ public class Type {
 			}
 		}
 		if (verificationProblems.size()!=0) {
-			System.out.println("FAILED VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+			System.out.println("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
 		}
 		return verificationProblems.isEmpty();
 	}

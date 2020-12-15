@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
@@ -30,11 +31,13 @@ import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshalle
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
+import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -216,6 +219,10 @@ public class ConfigurationCollector {
 		if (fields != null && !fields.isEmpty()) {
 			return true;
 		}
+		if (cd.getFlags()!=null && (cd.getFlags().contains(Flag.allDeclaredConstructors) || cd.getFlags().contains(Flag.allPublicConstructors))) {
+			System.out.println("constructors set");
+			return true;
+		}
 		return false;
 	}
 
@@ -224,30 +231,64 @@ public class ConfigurationCollector {
 		List<ClassDescriptor> verified = new ArrayList<>();
 		List<ClassDescriptor> classDescriptors = reflectionDescriptor2.getClassDescriptors();
 		for (ClassDescriptor classDescriptor: classDescriptors) {
-			if (areMembersSpecified(classDescriptor) && !verify(classDescriptor)) {
+			boolean verifyType = verifyType(classDescriptor);
+			if (!verifyType) {
 				System.out.println("FAILED: filtering out "+classDescriptor.getName());
-				anyFailed = true;
-			} else {
-				verified.add(classDescriptor);
+				// Give up now
+				anyFailed=true;
+				continue;
 			}
+			if (areMembersSpecified(classDescriptor)) {
+				if (!verifyMembers(classDescriptor)) {
+					System.out.println("Stripped down to a base class descriptor for "+classDescriptor.getName());
+					Set<Flag> existingFlags = classDescriptor.getFlags();
+					classDescriptor = ClassDescriptor.of(classDescriptor.getName());
+//					classDescriptor.setFlags(Flags.
+					anyFailed=true;
+				}
+			}
+			verified.add(classDescriptor);
 		}
 		return anyFailed?new ReflectionDescriptor(verified):reflectionDescriptor2;
 	}
 
-	private boolean verify(ClassDescriptor classDescriptor) {
+	private boolean verifyType(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t== null) {
 			System.out.println("FAILED VERIFICATION type missing "+classDescriptor.getName());
 			return false;
 		} else {
-			return t.verify();
+			return t.verifyType();
+		}
+	}
+
+	private boolean verifyMembers(ClassDescriptor classDescriptor) {
+		Type t = ts.resolveDotted(classDescriptor.getName(),true);
+		if (t== null) {
+			System.out.println("FAILED VERIFICATION type missing "+classDescriptor.getName());
+			return false;
+		} else {
+			return t.verifyMembers();
 		}
 	}
 
 	public void addClassDescriptor(ClassDescriptor classDescriptor) {
-		if (areMembersSpecified(classDescriptor) && !verify(classDescriptor)) {
+		System.out.println("ACD: "+classDescriptor.getName());
+		boolean verifyType = verifyType(classDescriptor);
+		if (!verifyType) {
+			// Give up now
+			System.out.println("Failed type verification ignoring");
 			return;
 		}
+		if (areMembersSpecified(classDescriptor)) {
+			if (!verifyMembers(classDescriptor)) {
+				System.out.println("Stripped down to a base class descriptor for "+classDescriptor.getName());
+				Set<Flag> existingFlags = classDescriptor.getFlags();
+				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
+//				classDescriptor.setFlags(existingFlags);
+			}
+		}
+		System.out.println("Merging it in as is "+classDescriptor.getName());
 		reflectionDescriptor.merge(classDescriptor);
 		// add it to existing refl desc stuff...
 		if (graalVMConnector != null) {

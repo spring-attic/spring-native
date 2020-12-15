@@ -203,7 +203,7 @@ public class ReflectionHandler extends Handler {
 				if (existingFd != null) {
 					throw new IllegalStateException("nyi"); // merge of configuration necessary
 				} else {
-					cd.addFieldDescriptor(fd);
+					//XXX cd.addFieldDescriptor(fd);
 				}
 			}
 		}
