@@ -203,6 +203,17 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			// transactional
 			imageContext.addProxy(repositoryType.getDottedName(), repositoryName, "org.springframework.transaction.interceptor.TransactionalProxy",
 					"org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy");
+
+			/*
+			 * Generated proxies extend Proxy and Proxy implements Serializable. So the call:
+			 * 	    protected void evaluateProxyInterfaces(Class<?> beanClass, ProxyFactory proxyFactory) {
+			 * 		    Class<?>[] targetInterfaces = ClassUtils.getAllInterfacesForClass(beanClass, getProxyClassLoader());
+			 * is going to find targetInterfaces contains Serializable when called on the beanClass.
+			 */
+			if (repositoryType.isAtComponent()) {
+				imageContext.addProxy(repositoryType.getDottedName(), repositoryName, "org.springframework.transaction.interceptor.TransactionalProxy",
+						"org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy", "java.io.Serializable");
+			}
 		}
 
 		// reactive repo
