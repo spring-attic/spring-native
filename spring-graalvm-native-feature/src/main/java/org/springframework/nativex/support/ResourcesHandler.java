@@ -60,13 +60,6 @@ import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
-//import org.graalvm.nativeimage.ImageSingletons;
-//import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
-//import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
-//import com.oracle.svm.core.configure.ResourcesRegistry;
-//import com.oracle.svm.core.jdk.Resources;
-//import com.oracle.svm.hosted.FeatureImpl.BeforeAnalysisAccessImpl;
-//import com.oracle.svm.hosted.ImageClassLoader;
 
 public class ResourcesHandler extends Handler {
 	
@@ -75,9 +68,6 @@ public class ResourcesHandler extends Handler {
 	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
 
 	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
-
-//	private ImageClassLoader cl;
-//	private ResourcesRegistry resourcesRegistry;
 
 	private ReflectionHandler reflectionHandler;
 
@@ -110,10 +100,7 @@ public class ResourcesHandler extends Handler {
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
 	 * @param access provides API access to native image construction information
 	 */
-	public void register() {//BeforeAnalysisAccess access) {
-//		cl = ((BeforeAnalysisAccessImpl) access).getImageClassLoader();
-//		ts = TypeSystem.get(cl.getClasspath());
-//		resourcesRegistry = ImageSingletons.lookup(ResourcesRegistry.class);
+	public void register() {
 		ResourcesDescriptor rd = readStaticResourcesConfiguration();
 		if (ConfigOptions.isFunctionalMode() ||
 			ConfigOptions.isAnnotationMode() ||
@@ -144,7 +131,6 @@ public class ResourcesHandler extends Handler {
 				continue; // leave to special handling which may trim these files...
 			}
 			collector.addResource(pattern, false);
-//			resourcesRegistry.addResources(pattern);
 		}
 	}
 
@@ -154,7 +140,6 @@ public class ResourcesHandler extends Handler {
 			try {
 				ResourceBundle.getBundle(bundle);
 				collector.addResource(bundle, true);
-//				resourcesRegistry.addResourceBundles(bundle);
 			} catch (MissingResourceException e) {
 				//bundle not available. don't load it
 			}

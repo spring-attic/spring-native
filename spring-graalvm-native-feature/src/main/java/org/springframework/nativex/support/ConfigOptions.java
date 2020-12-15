@@ -36,6 +36,8 @@ import com.oracle.svm.hosted.ImageClassLoader;
  */
 public abstract class ConfigOptions {
 	
+	public final static boolean debugVerification = Boolean.parseBoolean(System.getProperty("spring.nativex.debug.verify","false"));
+	
 	private final static boolean IGNORE_HINTS_ON_EXCLUDED_CONFIG;
 	
 	private static List<String> BUILD_TIME_PROPERTIES_CHECKS;
@@ -371,9 +373,5 @@ public abstract class ConfigOptions {
 		} else {
 			return true;
 		}
-	}
-
-	public static boolean isOffMode() {
-		return MODE==Mode.OFF;
 	}
 }

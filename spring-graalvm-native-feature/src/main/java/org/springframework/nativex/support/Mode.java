@@ -21,7 +21,6 @@ package org.springframework.nativex.support;
  * @author Andy Clement
  */
 public enum Mode {
-	OFF,
 	REFLECTION, // Default mode, provide everything
 	INIT, // initialization-only configuration provided from the feature
 	AGENT, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)

@@ -184,9 +184,6 @@ public class TypeTests {
 		for (String key: keys) {
 			Type t= typeSystem.resolveName(key);
 			assertNotNull(t);
-//			System.out.println(t.getName());
-//			System.out.println(t.isArray());
-//			System.out.println(t.getMethodCount(true));
 		}
 	}
 	

@@ -2253,6 +2253,7 @@ public class Type {
 		return findTypeParameterInSupertype("org.springframework.data.jpa.repository.JpaRepository", 0);
 	}
 
+
 	/**
 	 * Verify this type as a component, checking everything is set correctly for
 	 * native-image construction to succeed.
@@ -3008,7 +3009,9 @@ public class Type {
 			}
 		}
 		if (verificationProblems.size()!=0) {
-			System.out.println("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+			if (ConfigOptions.debugVerification) {
+				System.out.println("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+			}
 		}
 		return verificationProblems.isEmpty();
 	}
@@ -3050,7 +3053,9 @@ public class Type {
 			}
 		}
 		if (verificationProblems.size()!=0) {
-			System.out.println("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+			if (ConfigOptions.debugVerification) {
+				System.out.println("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+			}
 		}
 		return verificationProblems.isEmpty();
 	}
