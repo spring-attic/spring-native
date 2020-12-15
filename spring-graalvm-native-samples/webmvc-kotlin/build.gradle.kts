@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.experimental:spring-graalvm-native:0.9.0-SNAPSHOT")
+    implementation("org.springframework.experimental:spring-graalvm-native:0.8.5-SNAPSHOT")
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")
