@@ -220,7 +220,6 @@ public class ConfigurationCollector {
 			return true;
 		}
 		if (cd.getFlags()!=null && (cd.getFlags().contains(Flag.allDeclaredConstructors) || cd.getFlags().contains(Flag.allPublicConstructors))) {
-			System.out.println("constructors set");
 			return true;
 		}
 		return false;
