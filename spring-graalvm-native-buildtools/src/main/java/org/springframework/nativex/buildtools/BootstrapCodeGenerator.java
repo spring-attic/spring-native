@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
@@ -39,8 +37,7 @@ public class BootstrapCodeGenerator {
 	public void generate(Path path, List<String> classpath) throws IOException {
 		logger.debug("Starting code generation with classpath: " + classpath);
 		DefaultBuildContext buildContext = new DefaultBuildContext(classpath);
-		List<BootstrapContributor> contributors = SpringFactoriesLoader.loadFactories(BootstrapContributor.class, getClass().getClassLoader());
-		AnnotationAwareOrderComparator.sort(contributors);
+		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
 		for (BootstrapContributor contributor : contributors) {
 			logger.debug("Executing Contributor: " + contributor.getClass().getName());
 			contributor.contribute(buildContext);
