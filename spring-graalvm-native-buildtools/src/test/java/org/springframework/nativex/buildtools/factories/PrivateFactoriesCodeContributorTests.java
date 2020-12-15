@@ -40,7 +40,7 @@ class PrivateFactoriesCodeContributorTests {
 				"org.springframework.nativex.buildtools.factories.fixtures.ProtectedFactory", typeSystem);
 		this.contributor.contribute(factory, code);
 		assertThat(code.generateStaticSpringFactories().toString())
-				.contains("factories.add(TestFactory.class, _FactoryProvider.protectedFactory());\n");
+				.contains("factories.add(TestFactory.class, () -> _FactoryProvider.protectedFactory());\n");
 		assertThat(code.generateStaticFactoryClasses()).hasSize(1);
 		assertThat(code.generateStaticFactoryClasses().get(0).toString())
 				.isEqualTo("package org.springframework.nativex.buildtools.factories.fixtures;\n" +

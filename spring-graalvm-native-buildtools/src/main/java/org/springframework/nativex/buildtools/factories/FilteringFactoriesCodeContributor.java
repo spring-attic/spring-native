@@ -11,8 +11,6 @@ import java.util.List;
 class FilteringFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private static final List<String> IGNORED_FACTORIES = Arrays.asList(
-			// Spring Native Build Tools, not used in actual applications
-			"org.springframework.nativex.buildtools.BootstrapContributor",
 			// Handled with a substitution in Target_SpringApplication
 			"org.springframework.boot.SpringApplicationRunListener",
 			"org.springframework.boot.SpringBootExceptionReporter"

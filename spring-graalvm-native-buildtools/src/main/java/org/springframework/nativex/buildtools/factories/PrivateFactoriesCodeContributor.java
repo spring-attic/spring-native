@@ -36,7 +36,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 				.addStatement("return new $T()", factoryClass).build();
 		code.writeToStaticFactoryClass(packageName, builder -> builder.addMethod(creator));
 		code.writeToStaticBlock(block -> {
-			block.addStatement("factories.add($T.class, $T.$N())", factoryTypeClass, staticFactoryClass, creator);
+			block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
 		});
 	}
 

@@ -42,7 +42,7 @@ class DefaultFactoriesCodeContributorTests {
 		this.contributor.contribute(factory, code);
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.nativex.buildtools.factories.fixtures.TestFactory.class, " +
-						"new org.springframework.nativex.buildtools.factories.fixtures.PublicFactory());\n");
+						"() -> new org.springframework.nativex.buildtools.factories.fixtures.PublicFactory());\n");
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class DefaultFactoriesCodeContributorTests {
 		this.contributor.contribute(factory, code);
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.nativex.buildtools.factories.fixtures.TestFactory.class, " +
-						"new org.springframework.nativex.buildtools.factories.fixtures.PublicFactory.InnerFactory());\n");
+						"() -> new org.springframework.nativex.buildtools.factories.fixtures.PublicFactory.InnerFactory());\n");
 	}
 
 }

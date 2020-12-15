@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,11 +49,11 @@ public final class SpringFactoriesLoader {
 
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
-		List<T> result = (List<T>) StaticSpringFactories.factories.get(factoryType);
+		List<Supplier<Object>> result = (List<Supplier<Object>>) StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(result);
+		return (List<T>) result.stream().map(Supplier::get).collect(Collectors.toList());
 	}
 
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
@@ -61,11 +62,11 @@ public final class SpringFactoriesLoader {
 			return names;
 		}
 		else {
-			List<Object> stored = StaticSpringFactories.factories.get(factoryType);
+			List<Supplier<Object>> stored = StaticSpringFactories.factories.get(factoryType);
 			if (stored == null) {
 				return Collections.emptyList();
 			}
-			return stored.stream().map(factory -> factory.getClass().getName()).collect(Collectors.toList());
+			return stored.stream().map(Supplier::get).map(factory -> factory.getClass().getName()).collect(Collectors.toList());
 		}
 	}
 

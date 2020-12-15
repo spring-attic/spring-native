@@ -4,14 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.springframework.util.LinkedMultiValueMap;
@@ -64,7 +67,8 @@ class CodeGenerator {
 	}
 
 	private TypeSpec createSpringFactoriesType(CodeBlock staticBlock) {
-		ParameterizedTypeName factoriesType = ParameterizedTypeName.get(MultiValueMap.class, Class.class, Object.class);
+		ParameterizedTypeName factoriesType = ParameterizedTypeName.get(ClassName.get(MultiValueMap.class),
+				TypeName.get(Class.class), ParameterizedTypeName.get(Supplier.class, Object.class));
 		FieldSpec factories = FieldSpec.builder(factoriesType, "factories")
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
 				.initializer("new $T()", LinkedMultiValueMap.class)
