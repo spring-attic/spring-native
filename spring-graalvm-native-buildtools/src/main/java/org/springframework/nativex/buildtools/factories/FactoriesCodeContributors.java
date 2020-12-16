@@ -18,8 +18,7 @@ class FactoriesCodeContributors {
 	private final List<FactoriesCodeContributor> contributors;
 
 	FactoriesCodeContributors() {
-		this.contributors = Arrays.asList(new FilteringFactoriesCodeContributor(),
-				new AutoConfigurationFactoriesCodeContributor(),
+		this.contributors = Arrays.asList(new AutoConfigurationFactoriesCodeContributor(),
 				new NoArgConstructorFactoriesCodeContributor(),
 				new PrivateFactoriesCodeContributor(),
 				new DefaultFactoriesCodeContributor());
