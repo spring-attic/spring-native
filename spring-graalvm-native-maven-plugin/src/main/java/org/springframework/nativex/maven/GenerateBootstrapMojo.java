@@ -74,11 +74,20 @@ public class GenerateBootstrapMojo extends AbstractMojo {
 		}
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", "3.8.1");
 		Path sourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "java"));
-		Xpp3Dom configuration = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcePath.toString())));
+		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcePath.toString())));
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"),
 						version(compilerVersion)),
-				goal("compile"), configuration, executionEnvironment(this.project, this.session, this.pluginManager));
+				goal("compile"), compilerConfig, executionEnvironment(this.project, this.session, this.pluginManager));
+
+		String resourcesVersion = this.project.getProperties().getProperty("maven-resources-plugin.version", "3.2.0");
+		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
+		Xpp3Dom resourceConfig = configuration(element("resources", element("resource", element("directory", resourcePath.toString()))),
+				element("outputDirectory", project.getBuild().getOutputDirectory()));
+		executeMojo(
+				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-resources-plugin"),
+						version(resourcesVersion)),
+				goal("copy-resources"), resourceConfig, executionEnvironment(this.project, this.session, this.pluginManager));
 		this.buildContext.refresh(this.outputDirectory);
 	}
 
