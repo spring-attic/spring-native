@@ -144,6 +144,7 @@
   {"class": "org.apache.commons.logging.LogAdapter"},
   {"class": "org.apache.commons.logging.LogAdapter$1"},
   {"class": "org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog"},
+  {"class": "org.apache.commons.logging.LogAdapter$Log4jLog"},
 
   {"class": "org.slf4j.event.SubstituteLoggingEvent"},
   {"class": "org.slf4j.event.EventRecodingLogger"},
