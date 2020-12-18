@@ -1,0 +1,6 @@
+version: '3.1'
+services:
+  webmvc-kotlin:
+    image: webmvc-kotlin:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
