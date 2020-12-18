@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ARTIFACT=webflux-r2dbc
+ARTIFACT=data-r2dbc
 MAINCLASS=com.example.webflux.WebfluxApplication
 VERSION=0.0.1-SNAPSHOT
 

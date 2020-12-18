@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>webflux-r2dbc</artifactId>
+    <artifactId>data-r2dbc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
