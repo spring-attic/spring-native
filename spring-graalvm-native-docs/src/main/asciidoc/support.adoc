@@ -8,6 +8,7 @@ GraalVM version {graalvm-version} is supported, see related https://www.graalvm.
 === Language
 
 Java 8, Java 11 and Kotlin 1.3+ are supported.
+https://github.com/spring-projects-experimental/spring-graalvm-native/issues/409[Kotlin Coroutines are not yet supported].
 
 === Spring Boot
 
