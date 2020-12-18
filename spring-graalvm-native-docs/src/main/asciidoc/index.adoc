@@ -21,7 +21,7 @@ Compared to the Java Virtual Machine, GraalVM native offers advantages like the 
 sustainable hosting for certain kinds of workloads (microservices, functions) well suited for containers and https://kubernetes.io/[Kubernetes]:
 
 - Instant startup
-- Instant peek performance
+- Instant peak performance
 - Reduced memory consumption
 
 But also a few drawbacks that could be reduced in the future as GraalVM native evolves:
