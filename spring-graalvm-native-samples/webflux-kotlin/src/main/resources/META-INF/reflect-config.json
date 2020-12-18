@@ -1,8 +1,0 @@
-[
-    {
-        "name": "com.example.webflux.Bar",
-        "allDeclaredFields": true,
-        "allDeclaredMethods": true,
-        "allDeclaredConstructors": true
-    }
-]
