@@ -1,4 +1,4 @@
-:version: 0.8.4
+:version: 0.8.5
 :repository: milestone
 :boot-version: 2.4.1
 :graalvm-version: 20.3.0
