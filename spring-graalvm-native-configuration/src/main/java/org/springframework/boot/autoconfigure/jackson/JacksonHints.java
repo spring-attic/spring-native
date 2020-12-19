@@ -23,9 +23,14 @@ import org.springframework.nativex.type.AccessBits;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ext.Java7HandlersImpl;
+import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
 
 @NativeImageHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT) })
+		@TypeInfo(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types = Java7HandlersImpl.class, access = AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types = Java7SupportImpl.class, access = AccessBits.LOAD_AND_CONSTRUCT),
+})
 public class JacksonHints implements NativeImageConfiguration {
 }
