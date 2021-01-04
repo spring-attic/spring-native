@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
  */
 package org.springframework.boot.autoconfigure.jackson;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.TypeInfo;
+import com.fasterxml.jackson.databind.ext.Java7Handlers;
+import com.fasterxml.jackson.databind.ext.Java7HandlersImpl;
+import com.fasterxml.jackson.databind.ext.Java7Support;
+import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
+import com.fasterxml.jackson.databind.util.ClassUtil;
+import org.springframework.nativex.extension.*;
 import org.springframework.nativex.type.AccessBits;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +29,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeImageHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT) })
+		@TypeInfo(types = JsonGenerator.class) },
+		initializationInfos = @InitializationInfo(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
 public class JacksonHints implements NativeImageConfiguration {
 }
