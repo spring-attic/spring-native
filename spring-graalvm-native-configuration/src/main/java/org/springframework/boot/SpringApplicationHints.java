@@ -39,6 +39,7 @@ import org.springframework.nativex.type.AccessBits;
 			"banner.txt",
 			"META-INF/spring.components",
 			"application.*.yml",
+			"application.*.yaml",
 			"^git.properties",
 			"^META-INF/build-info.properties",
 			"application.*.properties",
