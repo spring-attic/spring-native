@@ -6,7 +6,7 @@
 :boot-dev-version: 2.4.1
 :documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
 
-image:https://ci.spring.io/api/v1/teams/spring-graalvm-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}/reference/index.html"]
+image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}/reference/index.html"]
 
 Spring Native provides an incubating support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] 
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
