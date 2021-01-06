@@ -1,5 +1,11 @@
 #commandlinerunner-bti
 
+WIP
+
+This builds it with the new bti:
+
+mvn -Dspring.nativex.collector.active=true -Pnative clean package 2>&1 | tee native.txt
+
 This is a variant of the commandlinerunner sample but using build time
 infrastructure processing (a maven plugin) to generate proxies such that
 there is no need to set `proxyBeanMethods=false` on the components.
