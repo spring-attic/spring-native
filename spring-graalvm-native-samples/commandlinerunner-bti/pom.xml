@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -14,11 +16,11 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.experimental</groupId>
-            <artifactId>spring-graalvm-native</artifactId>
-            <version>0.8.4-SNAPSHOT</version>
-        </dependency>
+            <dependency>
+              <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                    </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -49,31 +51,31 @@
                 <version>0.8.4-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <id>sources</id>
-                        <phase>process-sources</phase>
+                        <phase>process-classes</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>bootstrap</goal>
                         </goals>
-                        <inherited>false</inherited>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native-configuration</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <builder>paketobuildpacks/builder:tiny</builder>
-                        <env>
-                            <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
-                            <!-- See https://github.com/spring-projects/spring-boot/issues/23132 -->
-                            <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                                -Dspring.spel.ignore=true
-                                -Dspring.native.remove-yaml-support=true
-                            </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                        </env>
-                    </image>
-                </configuration>
+                <!--
+				<executions><execution><phase>package</phase><goals><goal>run</goal></goals></execution></executions>
+				-->
             </plugin>
         </plugins>
     </build>
@@ -84,12 +86,38 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native-maven-plugin</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>bootstrap</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-graalvm-native-configuration</artifactId>
+                        <version>0.8.4-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                    </plugin>
+                    <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>20.3.0</version>
                         <configuration>
                             <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
-                            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
+                            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true -Dspring.nativex.collector.active=true</buildArgs>
                             <imageName>commandlinerunner-bti</imageName>
                         </configuration>
                         <executions>
@@ -109,7 +137,6 @@
             </build>
         </profile>
     </profiles>
-
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
