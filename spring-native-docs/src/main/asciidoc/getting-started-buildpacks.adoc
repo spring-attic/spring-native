@@ -1,0 +1,280 @@
+[[getting-started-buildpacks]]
+=== Getting started with Buildpacks
+
+This section walks through how to build a Spring Boot native application with https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+
+==== Prerequisites
+
+You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
+Before proceeding further, verify you can run docker commands from the shell.
+
+On Mac and Windows, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add
+more CPUs as well) since `native-image` compiler is a heavy process.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
+On Linux, Docker uses by default the resources available on the host so no configuration is needed.
+
+==== Set up the sample project
+
+Like the instructions for using the feature, here we use the getting started REST service guide.
+This is the sample project we trace with the agent and then build into a native image.
+The following commands install the REST service guide:
+
+====
+[source,bash]
+----
+git clone https://github.com/spring-guides/gs-rest-service
+cd gs-rest-service/complete
+----
+====
+
+You may already be ready to go with your own project.
+
+===== Update the build file
+
+IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if necessary.
+
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{boot-version}</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+plugins {
+    id 'org.springframework.boot' version '{boot-version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+plugins {
+    id("org.springframework.boot") version "{boot-version}"
+}
+----
+====
+
+===== Configure the plugin
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
+To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <image>
+            <builder>paketobuildpacks/builder:tiny</builder>
+            <env>
+                <BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
+                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                    -Dspring.native.remove-yaml-support=true
+                    -Dspring.spel.ignore=true
+                </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+            </env>
+        </image>
+    </configuration>
+</plugin>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+bootBuildImage {
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_BOOT_NATIVE_IMAGE" : "1",
+        "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS": "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+    ]
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+    builder = "paketobuildpacks/builder:tiny"
+    environment = mapOf(
+            "BP_BOOT_NATIVE_IMAGE" to "1",
+            "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+    )
+}
+----
+====
+
+`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flags to reduce the footprint.
+
+Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks,
+`paketobuildpacks/builder:base` being the default (also works but less optimized).
+The `paketobuildpacks/builder:full` variant can be used in order to have more tools during the development.
+
+===== Add the repositories
+
+If necessary, add the repository for the `spring-native` dependency, as follows:
+
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<repositories>
+    <repository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </repository>
+</repositories>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+repositories {
+    maven { url 'https://repo.spring.io/{repository}' }
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+repositories {
+    maven { url = uri("https://repo.spring.io/{repository}") }
+}
+----
+====
+
+And for plugins:
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </pluginRepository>
+</pluginRepositories>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+pluginManagement {
+    repositories {
+        maven { url 'https://repo.spring.io/{repository}' }
+    }
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.spring.io/{repository}") }
+    }
+}
+----
+====
+
+===== spring-native dependency
+
+If not specified, the builder will automatically use the latest `spring-native` release available, but here to be
+sure of the version used we specify it explicitly:
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+dependencies {
+    implementation 'org.springframework.experimental:spring-native:{version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+dependencies {
+    implementation("org.springframework.experimental:spring-native:{version}")
+}
+----
+====
+
+==== Build the native application
+
+Building the native application is as simple as running:
+====
+[source,bash,role="primary"]
+.Maven
+----
+mvn spring-boot:build-image
+----
+[source,bash,role="secondary"]
+.Gradle Groovy
+----
+gradle bootBuildImage
+----
+[source,bash,role="secondary"]
+.Gradle Kotlin
+----
+gradle bootBuildImage
+----
+====
+This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally
+the related container image.
+
+==== Run the application
+
+To run your application, you need to run the previously created container image:
+
+====
+[source,bash]
+----
+docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
+----
+====
+
+As an alternative, you can also write a `docker-compose.yml` at the root of the project with the following content:
+====
+[source,yaml]
+----
+version: '3.1'
+services:
+  rest-service:
+    image: rest-service:0.0.1-SNAPSHOT
+----
+====
+
+And then run
+====
+[source,bash]
+----
+docker-compose up
+----
+====
+
+
+
+The startup time is <100ms, compared ~1500ms when starting the fat jar.
+
+Now that the service is up, visit http://localhost:8080/greeting, where you should see:
+
+====
+[source,json]
+----
+{"id":1,"content":"Hello, World!"}
+----
+====

@@ -12,10 +12,10 @@ resource_types:
       repository: cfcommunity/slack-notification-resource
       tag: latest
 resources:
-  - name: spring-graalvm-native
+  - name: spring-native
     type: git
     source:
-      uri: https://github.com/spring-projects-experimental/spring-graalvm-native
+      uri: https://github.com/spring-projects-experimental/spring-native
       branch: master
   - name: slack-alert
     type: slack-notification
@@ -29,7 +29,7 @@ jobs:
   - name: build-java8-key-samples
     public: true
     plan:
-    - get: spring-graalvm-native
+    - get: spring-native
       trigger: true
     - task: build
       config:
@@ -37,16 +37,16 @@ jobs:
         image_resource:
           type: registry-image
           source:
-            repository: springci/spring-graalvm-native
+            repository: springci/spring-native
             tag: 20.3-dev-java8
         inputs:
-          - name: spring-graalvm-native
+          - name: spring-native
         run:
-          path: spring-graalvm-native/ci/build-key-samples.sh
+          path: spring-native/ci/build-key-samples.sh
   - name: build-java11-key-samples
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
         trigger: true
       - task: build
         config:
@@ -54,16 +54,16 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: springci/spring-graalvm-native
+              repository: springci/spring-native
               tag: 20.3-dev-java11
           inputs:
-            - name: spring-graalvm-native
+            - name: spring-native
           run:
-            path: spring-graalvm-native/ci/build-key-samples.sh
+            path: spring-native/ci/build-key-samples.sh
   - name: build-20.3-dev-java8-samples
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
       - get: every-day
         trigger: true
       - task: build
@@ -72,16 +72,16 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: springci/spring-graalvm-native
+              repository: springci/spring-native
               tag: 20.3-dev-java8
           inputs:
-            - name: spring-graalvm-native
+            - name: spring-native
           run:
-            path: spring-graalvm-native/ci/build-samples.sh
+            path: spring-native/ci/build-samples.sh
   - name: build-20.3-dev-java11-samples
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
       - get: every-day
         trigger: true
       - do:
@@ -91,12 +91,12 @@ jobs:
             image_resource:
               type: registry-image
               source:
-                repository: springci/spring-graalvm-native
+                repository: springci/spring-native
                 tag: 20.3-dev-java11
             inputs:
-              - name: spring-graalvm-native
+              - name: spring-native
             run:
-              path: spring-graalvm-native/ci/build-samples.sh
+              path: spring-native/ci/build-samples.sh
         on_failure:
           do:
             - put: slack-alert
@@ -105,7 +105,7 @@ jobs:
   - name: build-master-java8-samples
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
       - get: every-day
         trigger: true
       - task: build
@@ -114,16 +114,16 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: springci/spring-graalvm-native
+              repository: springci/spring-native
               tag: master-java8
           inputs:
-            - name: spring-graalvm-native
+            - name: spring-native
           run:
-            path: spring-graalvm-native/ci/build-samples.sh
+            path: spring-native/ci/build-samples.sh
   - name: build-master-java11-samples
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
       - get: every-day
         trigger: true
       - task: build
@@ -132,16 +132,16 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: springci/spring-graalvm-native
+              repository: springci/spring-native
               tag: master-java11
           inputs:
-            - name: spring-graalvm-native
+            - name: spring-native
           run:
-            path: spring-graalvm-native/ci/build-samples.sh
+            path: spring-native/ci/build-samples.sh
   - name: deploy
     public: true
     plan:
-      - get: spring-graalvm-native
+      - get: spring-native
         passed:
           - build-java8-key-samples
           - build-java11-key-samples
@@ -158,9 +158,9 @@ jobs:
             ARTIFACTORY_USERNAME:
             ARTIFACTORY_PASSWORD:
           inputs:
-            - name: spring-graalvm-native
+            - name: spring-native
           run:
-            path: spring-graalvm-native/ci/deploy.sh
+            path: spring-native/ci/deploy.sh
         params:
           ARTIFACTORY_USERNAME: ((artifactory-username))
           ARTIFACTORY_PASSWORD: ((artifactory-password))

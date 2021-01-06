@@ -90,21 +90,21 @@ done
 
 DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/docker" >/dev/null 2>&1 && pwd )"
 CONTAINER_HOME=/home/$USER
-CONTAINER_WORK_DIR=$CONTAINER_HOME/spring-graalvm-native
-DEV_IMAGE=Dockerfile.spring-graalvm-native-dev
+CONTAINER_WORK_DIR=$CONTAINER_HOME/spring-native
+DEV_IMAGE=Dockerfile.spring-native-dev
 
 if [ "$PULL" = true ] ; then
     echo "Updating container image if needed"
-    docker pull springci/spring-graalvm-native:${GRAALVM_VERSION}-java${JAVA_VERSION}
+    docker pull springci/spring-native:${GRAALVM_VERSION}-java${JAVA_VERSION}
 fi
 
-docker image ls | grep spring-graalvm-native-dev | grep ${GRAALVM_VERSION}-java${JAVA_VERSION} >/dev/null 2>&1 || export REBUILD=true
+docker image ls | grep spring-native-dev | grep ${GRAALVM_VERSION}-java${JAVA_VERSION} >/dev/null 2>&1 || export REBUILD=true
 
 test "$REBUILD" = false || docker build \
-  --build-arg BASE_IMAGE=springci/spring-graalvm-native:${GRAALVM_VERSION}-java${JAVA_VERSION} \
+  --build-arg BASE_IMAGE=springci/spring-native:${GRAALVM_VERSION}-java${JAVA_VERSION} \
   --build-arg USER=$USER \
   --build-arg USER_ID=$(id -u ${USER}) \
   --build-arg USER_GID=$(id -g ${USER}) \
-  -t spring-graalvm-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION} - < $DOCKER_DIR/$DEV_IMAGE
+  -t spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION} - < $DOCKER_DIR/$DEV_IMAGE
 
-docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it -w $CONTAINER_WORK_DIR -u $(id -u ${USER}):$(id -g ${USER}) --group-add neo4j --group-add elasticsearch spring-graalvm-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
+docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it -w $CONTAINER_WORK_DIR -u $(id -u ${USER}):$(id -g ${USER}) --group-add neo4j --group-add elasticsearch spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}

@@ -11,7 +11,7 @@ fi
 
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for d in $(find spring-graalvm-native-samples -maxdepth $MAX_DEPTH -type d)
+for d in $(find spring-native-samples -maxdepth $MAX_DEPTH -type d)
 do
   if [[ -f "$d/build.sh" && ! -f "$d/.ignore" ]]; then
     if ! (cd "$d" && ./build.sh); then

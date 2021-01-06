@@ -1,0 +1,18 @@
+[[samples]]
+== Samples
+
+There are numerous samples in the {project-home}/tree/master/spring-native-samples[`spring-native-samples`] subfolder of the root project.
+These show the feature in use with different technologies.
+
+Most of them use Spring Boot Buildpacks support (Maven for most of the sample except the `webmvc-kotlin` one which is using Gradle).
+There are also `build.sh` and other related Bash scripts used for development and CI.
+
+Beware that native image compilation can takes a long time and eats RAM.
+
+The samples show the wide variety of tech that is working fine: Spring MVC with Tomcat, Spring WebFlux with Netty, Thymeleaf, JPA, and others.
+The Petclinic samples brings multiple technologies together in one application.
+
+{project-home}/tree/master/spring-native-samples/commandlinerunner-jafu[`commandlinerunner-jafu`] and {project-home}/tree/master/spring-native-samples/webmvc-jafu[`webmvc-jafu`] samples are based on the https://github.com/spring-projects-experimental/spring-fu[Spring Fu experimental project] and are designed to demonstrate how leveraging Spring infrastructure in a functional way ends up to smaller native images that consume less memory.
+{project-home}/tree/master/spring-native-samples/webmvc-functional[`webmvc-functional`] sample is based on the https://github.com/spring-projects-experimental/spring-int[Spring Init experimental project] and is designed to demonstrate how annotation based configuration can be turned to functional one to get similar benefits than with Spring Fu.
+
+If you are starting to build your first Spring Boot application, we recommend you follow one of the getting started guides.

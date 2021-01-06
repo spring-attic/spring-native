@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.springframework.experimental</groupId>
-	<artifactId>spring-graalvm-native-build</artifactId>
+	<artifactId>spring-native-build</artifactId>
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Native for GraalVM build</name>
+	<name>Spring Native build</name>
 
-	<url>https://github.com/spring-projects-experimental/spring-graalvm-native/</url>
+	<url>https://github.com/spring-projects-experimental/spring-native/</url>
 
 	<properties>
 		<graalvm.version>20.3.0</graalvm.version>
@@ -21,14 +21,14 @@
 	</properties>
 
 	<modules>
-		<module>spring-graalvm-native-feature</module>
-		<module>spring-graalvm-native-configuration</module>
-		<module>spring-graalvm-native-substitutions</module>
-		<module>spring-graalvm-native-tools</module>
-		<module>spring-graalvm-native-buildtools</module>
-		<module>spring-graalvm-native-maven-plugin</module>
-		<module>spring-graalvm-native-docs</module>
-		<module>spring-graalvm-native</module>
+		<module>spring-native-feature</module>
+		<module>spring-native-configuration</module>
+		<module>spring-native-substitutions</module>
+		<module>spring-native-tools</module>
+		<module>spring-native-buildtools</module>
+		<module>spring-native-maven-plugin</module>
+		<module>spring-native-docs</module>
+		<module>spring-native</module>
 	</modules>
 
 	<dependencyManagement>
@@ -98,7 +98,7 @@
 											<password>${artifactory.password}</password>
 											<repoKey>libs-milestone-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-											<excludePatterns>*/spring-graalvm-native-feature-*.*,*/spring-graalvm-native-configuration-*.*,*/spring-graalvm-native-substitutions-*.*,*/spring-graalvm-native-docs-*.pom</excludePatterns>
+											<excludePatterns>*/spring-native-feature-*.*,*/spring-native-configuration-*.*,*/spring-native-substitutions-*.*,*/spring-native-docs-*.pom</excludePatterns>
 										</publisher>
 									</configuration>
 								</execution>

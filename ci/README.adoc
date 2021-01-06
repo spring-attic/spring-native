@@ -1,17 +1,17 @@
 == Concourse pipeline
 
-Ensure that you've setup the spring-graalvm-native target and can login
+Ensure that you've setup the spring-native target and can login
 
 [source]
 ----
-$ fly -t spring-graalvm-native login -n spring-graalvm-native -c https://ci.spring.io
+$ fly -t spring-native login -n spring-native -c https://ci.spring.io
 ----
 
 The pipeline can be deployed using the following command:
 
 [source]
 ----
-$ fly -t spring-graalvm-native set-pipeline -p spring-graalvm-native -c ci/pipeline.yml
+$ fly -t spring-native set-pipeline -p spring-native -c ci/pipeline.yml
 ----
 
 NOTE: This assumes that you have configured the appropriate secrets.

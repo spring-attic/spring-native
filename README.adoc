@@ -8,10 +8,7 @@
 
 image:https://ci.spring.io/api/v1/teams/spring-graalvm-native/pipelines/spring-graalvm-native/badge["Build Status", link="https://ci.spring.io/teams/spring-graalvm-native/pipelines/spring-graalvm-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}/reference/index.html"]
 
-Spring Native for https://www.graalvm.org[GraalVM] provides support for compiling Spring to native executables using
-https://www.graalvm.org/reference-manual/native-image/[native-image] compiler.
-
-Spring Native for GraalVM provides an incubating support for compiling Spring applications to native executables using
+Spring Native provides an incubating support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] 
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
 option designed to be packaged in lightweight containers. In practice, the target is to support your Spring application
 (typically a Spring Boot one), unmodified, on this new platform.
@@ -21,13 +18,13 @@ image:https://img.youtube.com/vi/Um9djPTtPe0/maxresdefault.jpg["The Path Towards
 
 It is mainly composed of:
 
-- `spring-graalvm-native-feature`: this module is a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature]. It is a kind of plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
-- `spring-graalvm-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-graalvm-native-substitutions`: this module allows us to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
-- `spring-graalvm-native`: this module aggregates the feature, configuration, and substitutions ones to generate the artifact to consume.
-- `spring-graalvm-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
-- `spring-graalvm-native-docs`: contains the asciidoc documentation sources.
-- `spring-graalvm-native-tools`: tools used for reviewing image building configuration and output.
+- `spring-native-feature`: this module is a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature]. It is a kind of plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
+- `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
+- `spring-native-substitutions`: this module allows us to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
+- `spring-native`: this module aggregates the feature, configuration, and substitutions ones to generate the artifact to consume.
+- `spring-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+- `spring-native-docs`: contains the asciidoc documentation sources.
+- `spring-native-tools`: tools used for reviewing image building configuration and output.
 
 It supports the {documentation-url}/reference/index.html#_spring_graalvm_native_options[following modes] using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 
@@ -58,8 +55,8 @@ The latest {version} release supports GraalVM {graalvm-version} and Spring Boot 
 
 === Play with the samples
 
-- Download and extract https://github.com/spring-projects-experimental/spring-graalvm-native/archive/{version}.zip[sources from the latest release].
-- Go into the samples folder and pick one (e.g. `cd spring-graalvm-native-samples/commandlinerunner`)
+- Download and extract https://github.com/spring-projects-experimental/spring-native/archive/{version}.zip[sources from the latest release].
+- Go into the samples folder and pick one (e.g. `cd spring-native-samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
 `build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[samples documentation].

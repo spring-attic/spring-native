@@ -1,0 +1,289 @@
+[[troubleshooting]]
+== Troubleshooting
+
+While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
+Usually, the problem is a lack of configuration.
+GraalVM `native-image` compiler probably was not told about the application intending to reflectively call something or load a resource.
+However, there can also be more serious problems, the `native-image` crashing or the application using a third party library that includes code not compatible with `native-image`.
+
+This section explores some of the errors that can encountered and possible any fixes or workarounds.
+The two main sections of this page are problems at image-build time and problems at image runtime.
+https://www.graalvm.org/reference-manual/native-image/[Native image reference documentation] is also worth to read in details.
+
+The Spring team is actively working with the GraalVM team on issues.
+You can see the currently open issues https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[here].
+
+=== `native-image` is failing
+
+The image can fail for a number of reasons. We have described the most common causes and their solutions here.
+
+==== DataSize was unintentionally initialized at build time
+
+If you see an error like:
+
+====
+[source,bash]
+----
+Error: Classes that should be initialized at run time got initialized during image building:
+ org.springframework.util.unit.DataSize was unintentionally initialized at build time. To see why org.springframework.util.unit.DataSize got initialized use -H:+TraceClassInitialization
+----
+====
+
+You have probably tried to compile a Spring Boot native application without the `spring-native` dependency.
+Add such dependency to the classpath and this issue should be gone.
+
+
+==== Out of memory error when building the native image
+
+`native-image` consumes a lot of RAM, we recommend a machine with at least 16G of RAM.
+
+=== The built image does not run
+
+If your built image does not run, you can try a number of fixes.
+This section describes those possible fixes.
+
+==== Missing resource bundles
+
+In some cases, when there is a problem, the error message tries to tell you exactly what to do, as follows:
+
+====
+[source,bash]
+----
+Caused by: java.util.MissingResourceException:
+  Resource bundle not found javax.servlet.http.LocalStrings.
+  Register the resource bundle using the option
+    -H:IncludeResourceBundles=javax.servlet.http.LocalStrings.
+----
+====
+
+Here, it is clear we should add `-H:IncludeResourceBundles=javax.servlet.http.LocalStrings`. See https://www.graalvm.org/reference-manual/native-image/Resources/[related documentation] for more details.
+
+==== Missing configuration
+
+The feature will do the best it can to catch everything but it doesn't understand every bit of code out there. In these situations you can write manual configuration yourself, or use the agent to collect what is likely missing. In this setup you run the application as normal (on a JVM) with an agent attached. As the application runs the agent collects information (what the application is reflecting on, etc) and outputs it to a folder in a format suitable for inclusion in the next native-image run.  The agent configuration can be used *with* the feature. This may not produce the most optimal image, but it may produce a working image - and that is a great start.
+
+===== Create a location to contain the collected config
+
+This can be anywhere but the location must be on the classpath for the native-image build. It can be useful to put it into the application resources area as this will be on the classpath by default when the native executable build step occurs.
+
+`mkdir -p src/main/resources/META-INF/native-image`
+
+===== Run with the agent
+
+Now simply run the application, with the following addition to the Java command to collect configuration in that folder:
+
+`-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image`
+
+When the next native-image run happens it should automatically additionally include this collected configuration.
+
+==== Getting `ClassNotFoundException`
+
+The following listing shows a typical `ClassNotFoundException`:
+
+====
+[source,bash]
+----
+Caused by: java.lang.ClassNotFoundException:
+  org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl
+	at com.oracle.svm.core.hub.ClassForNameSupport.forName(ClassForNameSupport.java:60) ~[na:na]
+----
+====
+
+This exception indicates the `native-image` build was not told about the reflective need for a type and, so, did not include the data to satisfy a request to access it at runtime.
+
+If you use the agent, it can be a sign that the agent is missing something (this particular message was collected while debugging https://github.com/oracle/graal/issues/2198[issue 2198]).
+
+You have a number of options to address it:
+
+* Download a new version of GraalVM that includes a fixed agent.
+
+* Raise a bug against the `spring-native` project, as a key aim of the feature is to make sure these things get registered.
+If it is not "`obvious`" that it should be registered, it may be necessary for a new or expanded hint to the added to the `spring-native-configuration` project (see the <<how-to-contribute,how to contribute guide>> if you want to explore that).
+
+* Manually add it.
+The `native-image` run picks up any configuration it finds.
+In this case, you can create a `reflect-config.json` under a `META-INF/native-image` folder structure and ensure that is on the classpath.
+This is sometimes most easily accomplished by creating it in your project `src/main/resources` folder (so, `src/main/resources/META-INF/native-image/reflect-config.json`).
+Note that there are various access options to specify.
+To fix it, we set `allDeclaredConstructors` and `allDeclaredMethods`.
+We might need `allDeclaredFields` if the code intends to reflect on those, too.
+The following entry satisfies the preceding error:
+
+====
+[source,json]
+----
+[
+{
+ "name":"org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl",
+ "allDeclaredConstructors":true,
+ "allDeclaredMethods":true
+}
+]
+----
+====
+
+Recompiling should pick up this extra configuration, and the resultant image include metadata to satisfy reflection of `AuthConfigFactoryImpl`.
+
+=== These methods are directly invoking methods marked @Bean
+
+Rather than simply failing with a difficult to debug error, there is a verification system in the feature that
+will try to give early warnings and errors of what might be the problem. This mode is turned on by default and can be
+disabled via the option `-Dspring.native.verify=false`. Currently, it raises an error about cross `@Bean` method invocations,
+see <<support#_limitations>> for more details.
+
+==== No access hint found for import selector: XXX
+
+The feature chases down configuration references to other configurations (`@Import` usages).
+However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
+The feature does not do that level of analysis (it could get very complicated).
+This means that, although the feature can tell it has encountered a selector, it does not know what types that selector needs reflective access to or what further configurations it references.
+Now, the feature could continue.
+Maybe it would work, and maybe it would crash at runtime.
+Typically, the error you get can when there is a missing hint can be very cryptic.
+If the selector is doing a "`if this type is around, return this configuration to include`", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration.
+For this reason, the feature fails early and fast, indicating that it does not know what a particular selector is doing.
+To fix it, take a look in the selector in question and craft a quick hint for it.
+See {project-home}/commit/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for a Spring Security ({project-home}/issues/60[issue]).
+
+you can temporarily turn this hard error into a warning.
+It is possible that, in your case, you do not need what the selector is doing.
+To do so, specify the `-Dspring.native.missing-selector-hints=warning` option to cause log messages about the problem but not a hard fail.
+Note that using warnings rather than errors can cause serious problems for your application.
+
+=== Working with snapshots
+
+Snapshots are regularly published and obviously ahead of releases and milestones. If you wish to use the snapshot versions you should use the following repository:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<repositories>
+    <!-- ... -->
+    <repository>
+        <id>spring-snapshots</id>
+        <name>Spring Snapshots</name>
+        <url>https://repo.spring.io/snapshot</url>
+    </repository>
+</repositories>
+----
+====
+
+
+=== Diagnosing issues with the feature
+
+Sometimes, you want to use the feature but cannot.
+Maybe you like that the feature offers that more optimal mode of discarding unnecessary configuration at image-build time, which the agent mode does not.
+When you use the feature, you either get an error about some missing piece of configuration or, worse, you get no error and it does not work (implying there is probably missing configuration that is not critical for the app to start but is just critical for it to actually work).
+If the error is clear, you can follow the guidelines in the <<how-to-contribute,how to contribute guide>> and perhaps contribute it back.
+But in the case where you have no idea, what do you do?
+
+The first step to take here is try and run it with the agent, as follows:
+
+====
+[source,bash]
+----
+mkdir -p native-image-config
+mvn clean package
+java -agentlib:native-image-agent=config-output-dir=native-image-config \
+  -jar target/myapp-0.0.1-SNAPSHOT.jar
+----
+====
+
+After hitting the application through whatever endpoints you want to exercise and shutting it down, there should be config files in the output folder, as follows:
+
+====
+[source,bash]
+----
+ls -l native-image-config
+-rw-r--r--  1 foo bar    135 26 Mar 11:25 jni-config.json
+-rw-r--r--  1 foo bar    277 26 Mar 11:25 proxy-config.json
+-rw-r--r--  1 foo bar  32132 26 Mar 11:25 reflect-config.json
+-rw-r--r--  1 foo bar    461 26 Mar 11:25 resource-config.json
+----
+====
+
+Now, we want to compare `native-image-config/reflect-config.json` with the configuration being produced by the feature.
+Luckily, the feature supports a dump mode, where it puts it out on disk for us to see.
+Add the following to the maven `<buildArgs>...</buildArgs>` section or as a parameter in the direct call to `native-image`:
+
+====
+[source,bash]
+----
+-Dspring.native.dump-config=/a/b/c/feature-reflect-config.json
+----
+====
+
+Then, after running the native image build again, that file should exist.
+It is now possible to diff the computed one with the agent one.
+The scripts folder in `spring-native` contains a compare script, which you can invoke as follows:
+
+====
+[source,bash]
+----
+~/spring-native/scripts/reflectCompare.sh feature-reflect-config.json native-image-config/reflect-config.json > diff.txt
+----
+====
+
+This script produces a summary of the differences.
+It understands the format a little better than doing a plain `diff`:
+
+====
+[source,bash]
+----
+$ tail diff.txt
+...
+
+Summary:
+In first but not second: 395
+In second but not first: 69
+In both files but configured differently: 51
+In both files and configured the same: 67
+
+----
+====
+
+We might search that for entries are in the agent file that are not in the computed file for Spring, as follows:
+
+====
+[source,bash]
+----
+grep "^> org.spring" diff.txt
+----
+====
+
+This shows data similar to the following:
+
+====
+[source,bash]
+----
+> org.springframework.context.ApplicationEventPublisherAware setFlags:[allPublicMethods]
+> org.springframework.context.ApplicationListener setFlags:[allPublicMethods]
+> org.springframework.context.EnvironmentAware setFlags:[allPublicMethods]
+> org.springframework.context.SmartLifecycle setFlags:[allPublicMethods]
+> org.springframework.core.annotation.AliasFor setFlags:[allDeclaredMethods]
+> org.springframework.core.annotation.SynthesizedAnnotation
+----
+====
+
+You can craft these into a config file for the project, as follows:
+
+====
+[source,bash]
+----
+mkdir -p src/main/resources/META-INF/native-image
+----
+====
+
+Now create `src/main/resources/META-INF/native-image/reflect-config.json` with content similar to the following (including the first one from the diff in this example):
+
+====
+[source,json]
+----
+[
+{"name":"org.springframework.context.ApplicationEventPublisherAware","allPublicMethods":true}
+]
+----
+====
+
+As we add the details found in the diff, we can rebuild the `native-image` each time and see which bits help.
+Once computed, we can create a hint in the feature configuration project that captures this knowledge (see the <<how-to-contribute,how to contribute guide>> for more info on that) or, if it is more related to this specific application than the infrastructure, we might leave that `reflect-config.json` in the project and commit it to our repository alongside the source for future use.

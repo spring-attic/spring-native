@@ -1,0 +1,203 @@
+[[how-to-contribute]]
+== How to Contribute
+
+This section describes how to extend Spring Native for GraalVM. You can then https://github.com/spring-projects-experimental/spring-native/pulls[submit pull requests] in order to add support for a specific part of Spring ecosystem.
+
+=== Using container-based build environment
+
+In order to allow easily reproducible builds of `spring-native`, dedicated interactive Docker images are available for local development (tested on Linux and Mac) and are also used in the CI:
+
+- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.graalvm-ce[`graalvm-ce`]: base image with Ubuntu bionic + GraalVM native, built daily by the CI and available from https://hub.docker.com/r/springci/graalvm-ce/tags[Docker hub] or locally via `docker/build-graalvm-ce-images.sh`.
+- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.spring-native[`spring-native`]: base image with `graalvm-ce` + utilities required to build the project, available from https://hub.docker.com/r/springci/spring-native/tags[Docker hub] or locally via `docker/build-spring-native-images.sh`.
+- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.spring-native-dev[`spring-native-dev`]: local image built via `docker/build-dev-images.sh` designed to share the same user between the host and the container
+
+To use it:
+
+- https://docs.docker.com/engine/install/[Install Docker].
+- https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
+- On Mac, ensure in the Docker preferences resources tab that you give it enough memory, ideally 10G or more, otherwise you may see out of memory issues when building images.
+- Run `run-dev-container.sh` to run the Docker container with an interactive shell suitable to run `spring-native` build scripts (see bellow for more documentation).
+- The first time, it will download remote based images built by the https://ci.spring.io/teams/spring-native/pipelines/spring-native?group=Daily%20builds[CI].
+- The current and the Maven home directories are shared between the host (where is typically the IDE) and the container (where you can run builds).
+
+==== `run-dev-container.sh`
+
+`run-dev-container.sh` runs Spring Native for GraalVM dev container with an interactive shell.
+
+```
+run-dev-container.sh [options]
+
+options:
+-h, --help                show brief help
+-j, --java=VERSION        specify Java version to use, can be 8 or 11, 8 by default
+-g, --graalvm=VERSION     specify GraalVM version to use, can be 20.1-dev or master, 20.1-dev by default
+-w, --workdir             specify the working directory, should be an absolute path, current one by default
+-p, --pull                force pulling of remote container images
+-r, --rebuild             force container image rebuild
+```
+
+==== Usual dev workflow
+
+- Import the root project in your IDE.
+- Eventually import the sample you are working on as a distinct project in your IDE.
+- Run `run-dev-container.sh` to run the Docker container with an interactive shell.
+- Run the root project `build.sh` (from the host or the container) if you have made modification to the feature, substitutions or configuration modules.
+- Run `build.sh` of the sample you are working on from the container.
+
+To test the various samples You can also run the root `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples) from the container.
+
+=== Extending the feature
+
+We are experimenting with extension models, as you will see if you look in the `spring-native-configuration` module within the project.
+Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application, so not all the entries in the json file would be necessary.
+
+What the configuration module is trying to achieve is to tie the access to certain types to the Spring configuration that needs them.
+Then, for any given application, if we know the likely active configurations, we can expose only the types most likely to be needed.
+
+This section walks through the structure of this hint data and finishes with how to add more configuration for areas we have not yet looked at.
+Perhaps you want to work on one and submit it as a PR.
+
+=== Hints
+
+So the giant `.json` file the feature project used to include has been decomposed into lots of `@NativeImageHint` annotations.
+Each of these hint specifies some native image configuration (perhaps a resource that needs to be included in the image, or some types that need reflective access at runtime), and optionally, a trigger. The trigger might be piece of Spring infrastructure (like an autoconfiguration) or just a regular class. If the feature determines that Spring infrastructure may be active when the application runs, or (for a regular class trigger) that the named class is on the classpath, it will activate the associated hints, informing the native-image build process what is needed.
+
+These `@NativeImageHint` can be hosted in one of two places.
+
+First, in the `spring-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.nativex.extension.NativeImageConfiguration` interface (defined by the feature).
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
+
+Secondly, they can be put directly onto Spring configuration classes, and they are picked up by the feature.
+
+In this way, if you are experimenting with making your application into a native image, you can keep the hint configuration separate from the application code (the first case above).
+Once you are happy with it, you can keep it directly with your configuration.
+The first option also lets hints be provided for code you do not know or otherwise have access to change or rebuild.
+
+These hints are in addition to any .json files existing anywhere in the classpath that native-image will pick up, you don't have to choose one format or the other.
+
+
+=== Triggered
+
+We mentioned a trigger may be a piece of Spring infrastructure or just a regular class - but that it was also optional, what if there is no trigger? There are two possibilities:
+
+* If the hint is on a `NativeImageConfiguration` class then it is assumed this configuration should *always* apply. This is useful for common configuration necessary for all applications.
+
+* If the hint is on something other than a `NativeImageConfiguration` class (e.g. on a Spring auto-configuration class) then that type is considered to be the trigger, and it the feature determines that is 'active', the hint apply.
+
+=== What do hints look like?
+
+The following listing shows a hint:
+
+====
+[source,java]
+----
+@NativeImageHint(trigger = JacksonAutoConfiguration.class,
+  proxyInfos = {
+    @ProxyInfo(types={Serializable.class,SomeOtherInterface.class})
+  },
+  typeInfos = {
+    @TypeInfo(types = { JsonGenerator.class },
+    access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS
+			 | AccessBits.PUBLIC_CONSTRUCTORS)
+  })
+----
+====
+
+* the trigger is `JacksonAutoConfiguration` - if that configuration looks to be active in the application (which usually means: do the conditional on class checks on `JacksonAutoConfiguration` pass?) then the associated configuration will be used.
+
+* Within the `NativeImageHint` it is possible to include everything you can specify in the JSON files. Proxies, resources, reflection (down to the individual member), even initialization. Here, if the hint is 'active', it specifies we want a JDK proxy in the native image for the pair of classes `Serializable` and `SomeOtherInterface`. It also specifies reflective access is required to `JsonGenerator` - reflective access to the methods and constructors is necessary at runtime (not the fields).
+
+
+To fully complete the picture, here is the full list of what can be specified in a hint:
+
+* `proxyInfos` which list proxies for which types are needed and should be built into the image.
+
+* `typeInfos` which lists any reflective needs. It should use class references but string names for classes are allowed if visibility (private classes) prevents a class reference.
+
+* `resourcesInfos` which lists patterns that match resources (including .class files) that should be included in the image.
+
+* `initializationInfos` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
+
+* `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeImageHint`.
+
+* `applyToFunctional` if specified indicates whether this hint should apply when the feature is operating in functional mode. The operating mode is set via the `spring.native.mode` property (mode being one of REFLECTION/INIT/AGENT/FUNCTIONAL).
+
+
+=== Codifying hint computation/validation
+
+The `NativeImageConfiguration` interface contains a couple of default methods that can be implemented for more control.
+
+For example whether the hints on a `NativeImageConfiguration` should activate may be a more subtle condition that simply whether a configuration is active. It is possible to implement the `isValid` method in a `NativeImageConfiguration` implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
+
+Additionally sometimes the necessary configuration is hard to statically declare and needs a more dynamic approach. For example the interfaces involved in a proxy hint might need something to be checked beyond the simple presence of a class. In this case the method `computeHints` can be implemented which allows computation of hints in a more dynamic way, which are then combined with those statically declared via annotations.
+
+=== Structure of the `spring-native-configuration` module
+
+In the `spring-native-configuration`, numerous package names look like Spring package names.
+That is deliberate.
+Notice the use of direct class references in the hints rather than strings.
+This type safety is a little more robust.
+If we upgrade a Spring version and the configuration module no longer compiles, we know something has changed that needs to be addressed.
+We may not have noticed if we use only string references.
+The reason these package names match Spring package names is visibility.
+With this setup, the hint can refer to a type with only package visibility in the original code.
+What about private classes?
+There is a fallback, in that `@TypeInfo` can specify names as strings if it absolutely must, as follows:
+
+====
+[source,java]
+----
+@TypeInfo(
+  typeNames="com.foo.PrivateBar",
+  types= {PublicBar.class}
+)
+----
+====
+
+Notice no access is specified here.
+There is a default access of allowing the loading and construction of a type (so its constructors are exposed), by default methods and fields are not. There are cases where this default may be overridden by the feature if it *knows* more access is needed from looking at the characteristics of the type mentioned.
+
+=== Contributing new hints
+
+The typical approach is:
+
+. Notice an error if your application when you try to build it or run it -- a `classnotfound`, `methodnotfound`, or similar error.
+If you are using a piece of Spring we don't have a sample for, this is likely to happen.
+
+. Try to determine which configuration classes give rise to the need for that reflective access to occur.
+Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
+
+. If there is already a `NativeImageConfiguration` implementation for that configuration, augment it with the extra type info.
+If there is not, create one, attach a `@NativeImageHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` .
+You may also need to set the accessibility in the annotation (in the `@TypeInfo`).
+It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
+That is OK, so long as you ensure that they are provided scope.
+
+=== Taking more control via processors
+
+Within a Spring application there are going to be a number of active components (the main application, configurations, controllers, etc). There may be much more sophisticated analysis to be done for these components in order to compute the necessary configuration for the native-image invocation. It is possible to implement a couple of interfaces to participate in the process the feature is going through:
+
+* `ComponentProcessor` implementations are given the chance to process components and possibly register new configuration. For example this is used by spring-data (via `SpringDataComponentProcessor`) to do deeper analysis of repositories and the types used in generic signatures to compute reflection/proxy/resource hints.
+
+* `SpringFactoriesProcessor` implementations are given a chance to process the keys and values loaded from `spring.factories` files. Currently they are allowed to do filtering but this is likely to be expanded in the future. By filtering it means they may programmatically compute that for some spring.factories key one of the values makes no sense (by analysing classpath contents, for example). In this case they can filter out that value and the `spring.factories` subsequently added to the native-image will have it removed.
+
+
+=== Is this the way forward?
+
+As we play around with this extension mechanism to determine suitability, we are thinking through a number of pros and cons:
+
+Pros:
+
+* The type safety of using direct class references is nice.
+Grouping types and knowing the trigger that causes their need to be accessible makes the system easier to reason about and debug.
+
+* When looking at one entry in a giant json file, you may have no idea why that is needed.
+With the hint structure, you can know exactly which configuration causes it to be needed.
+
+Cons:
+
+* Not being able to use direct class references for everything is not ideal. (For example private classes).
+
+* It looks like split packages in some cases, which is not nice. This is because the visibility of the type needing to be specified is default (package) visibility.
+
+The project is still incubating, so be aware these mechanisms could still evolve significantly.
