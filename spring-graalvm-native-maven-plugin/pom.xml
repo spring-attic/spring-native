@@ -4,9 +4,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-graalvm-native-maven-plugin</artifactId>
-	<packaging>maven-plugin</packaging>
-
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-graalvm-native-build</artifactId>
@@ -15,6 +12,9 @@
 	</parent>
 
 	<name>Spring Native for GraalVM Maven plugin</name>
+	<artifactId>spring-graalvm-native-maven-plugin</artifactId>
+	<version>0.8.4-SNAPSHOT</version>
+	<packaging>maven-plugin</packaging>
 
 	<properties>
 		<maven.version>3.3.9</maven.version>
@@ -22,34 +22,24 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.shared</groupId>
-			<artifactId>maven-common-artifact-filters</artifactId>
-			<version>3.1.0</version>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-graalvm-native-buildtools</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>android-json</artifactId>
+			<version>0.0.20131108.vaadin1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.twdata.maven</groupId>
 			<artifactId>mojo-executor</artifactId>
 			<version>2.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.plugin-tools</groupId>
-			<artifactId>maven-plugin-annotations</artifactId>
-			<version>3.5.2</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.sonatype.plexus</groupId>
@@ -57,23 +47,38 @@
 			<version>0.0.7</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-graalvm-native-buildtools</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>${maven.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.vaadin.external.google</groupId>
-			<artifactId>android-json</artifactId>
-			<version>0.0.20131108.vaadin1</version>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugin-tools</groupId>
+			<artifactId>maven-plugin-annotations</artifactId>
+			<version>3.6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.5.2</version>
+				<version>3.6.0</version>
 				<configuration>
 					<goalPrefix>spring-graalvm-native</goalPrefix>
 					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
@@ -85,45 +90,168 @@
 							<goal>descriptor</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>generated-helpmojo</id>
+						<goals>
+							<goal>helpmojo</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-plugin-plugin
-										</artifactId>
-										<versionRange>
-											[3.2,)
-										</versionRange>
-										<goals>
-											<goal>descriptor</goal>
-											<goal>helpmojo</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-invoker-plugin</artifactId>
+						<configuration>
+							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>install</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+									<settingsFile>src/it/settings.xml</settingsFile>
+									<postBuildHookScript>verify</postBuildHookScript>
+									<addTestClassPath>true</addTestClassPath>
+									<streamLogs>true</streamLogs>
+									<properties>
+										<scan>false</scan>
+									</properties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>cleanup-local-integration-repo</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>full</id>
+			<activation>
+				<property>
+					<name>full</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>generate-site</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-invoker-plugin</artifactId>
+						<configuration>
+							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+						</configuration>
+						<executions>
+							<execution>
+								<id>prepare-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>install</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+									<settingsFile>src/it/settings.xml</settingsFile>
+									<postBuildHookScript>verify</postBuildHookScript>
+									<addTestClassPath>true</addTestClassPath>
+									<streamLogs>true</streamLogs>
+									<properties>
+										<scan>false</scan>
+									</properties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>cleanup-local-integration-repo</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-plugin-plugin</artifactId>
+						<version>3.3</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<version>2.9</version>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>index</report>
+									<report>cim</report>
+									<report>issue-tracking</report>
+									<report>license</report>
+									<report>scm</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+						<configuration>
+							<linkOnly>true</linkOnly>
+						</configuration>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+	</profiles>
 </project>

@@ -29,8 +29,10 @@ class ResourcesJsonConverter {
 	public JSONObject toJsonArray(ResourcesDescriptor metadata) throws Exception {
 		JSONObject object = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
-		for (String p : metadata.getPatterns()) {
-			jsonArray.put(toJsonObject(p));
+		if (metadata.getPatterns() != null) {
+			for (String p : metadata.getPatterns()) {
+				jsonArray.put(toJsonObject(p));
+			}
 		}
 		JSONObject includes = new JSONObject();
 		includes.put("includes", jsonArray);

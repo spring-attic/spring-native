@@ -30,8 +30,10 @@ public class JsonConverter {
 
 	public JSONArray toJsonArray(ReflectionDescriptor metadata) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		for (ClassDescriptor cd : metadata.getClassDescriptors()) {
+		if (metadata.getClassDescriptors() != null) {
+			for (ClassDescriptor cd : metadata.getClassDescriptors()) {
 				jsonArray.put(toJsonObject(cd));
+			}
 		}
 		return jsonArray;
 	}

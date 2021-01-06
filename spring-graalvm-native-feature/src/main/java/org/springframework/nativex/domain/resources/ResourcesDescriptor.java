@@ -15,8 +15,8 @@
  */
 package org.springframework.nativex.domain.resources;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/RESOURCES.md
@@ -25,20 +25,20 @@ import java.util.List;
  */
 public class ResourcesDescriptor {
 
-	private final List<String> patterns;
-	private final List<String> bundles;
+	private final Set<String> patterns;
+	private final Set<String> bundles;
 
 	public ResourcesDescriptor() {
-		this.patterns = new ArrayList<>();
-		this.bundles = new ArrayList<>();
+		this.patterns = new TreeSet<>();
+		this.bundles = new TreeSet<>();
 	}
 
 	public ResourcesDescriptor(ResourcesDescriptor metadata) {
-		this.patterns = new ArrayList<>(metadata.patterns);
-		this.bundles = new ArrayList<>(metadata.bundles);
+		this.patterns = new TreeSet<>(metadata.patterns);
+		this.bundles = new TreeSet<>(metadata.bundles);
 	}
 
-	public List<String> getPatterns() {
+	public Set<String> getPatterns() {
 		return this.patterns;
 	}
 
@@ -46,7 +46,7 @@ public class ResourcesDescriptor {
 		this.patterns.add(pattern);
 	}
 
-	public List<String> getBundles() {
+	public Set<String> getBundles() {
 		return this.bundles;
 	}
 
@@ -80,6 +80,13 @@ public class ResourcesDescriptor {
 		ResourcesDescriptor rd = new ResourcesDescriptor();
 		rd.addBundle(bundleName);
 		return rd;
+	}
+
+	public void merge(ResourcesDescriptor resourcesDescriptor) {
+		Set<String> patterns = resourcesDescriptor.getPatterns();
+		Set<String> bundles = resourcesDescriptor.getBundles();
+		this.patterns.addAll(patterns);
+		this.bundles.addAll(bundles);
 	}
 
 }

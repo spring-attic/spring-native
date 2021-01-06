@@ -15,22 +15,19 @@
  */
 package org.springframework.nativex;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.nativex.extension.NativeImageHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
@@ -42,11 +39,16 @@ import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class TypeTests {
 
 	static TypeSystem typeSystem;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		File file = new File("./target/classes");
 		// System.out.println(file.getCanonicalPath());
@@ -183,9 +185,6 @@ public class TypeTests {
 		for (String key: keys) {
 			Type t= typeSystem.resolveName(key);
 			assertNotNull(t);
-			System.out.println(t.getName());
-			System.out.println(t.isArray());
-			System.out.println(t.getMethodCount(true));
 		}
 	}
 	
@@ -224,38 +223,79 @@ public class TypeTests {
 	@Test
 	public void typeParameters() {
 		Type extenderClass = typeSystem.resolveName(Extender.class.getName());
-		List<String> typesInSignature = extenderClass.getTypesInSignature();
+		Set<String> typesInSignature = extenderClass.getTypesInSignature();
 		assertEquals(3, typesInSignature.size());
-		assertEquals("java/lang/Object",typesInSignature.get(0));
-		assertEquals("org/springframework/nativex/TypeTests$Finder",typesInSignature.get(1));
-		assertEquals("org/springframework/nativex/TypeTests$TXClass4",typesInSignature.get(2));
+		Iterator<String> iterator = typesInSignature.iterator();
+		assertEquals("java/lang/Object",iterator.next());
+		assertEquals("org/springframework/nativex/TypeTests$Finder",iterator.next());
+		assertEquals("org/springframework/nativex/TypeTests$TXClass4",iterator.next());
 		Type extender2 = typeSystem.resolveName(Extender2.class.getName());
 		typesInSignature = extender2.getTypesInSignature();
+		iterator = typesInSignature.iterator();
 		assertEquals(2, typesInSignature.size());
-		assertEquals("org/springframework/nativex/TypeTests$TXClass4",typesInSignature.get(0));
-		assertEquals("java/io/Serializable",typesInSignature.get(1));
+		assertEquals("java/io/Serializable",iterator.next());
+		assertEquals("org/springframework/nativex/TypeTests$TXClass4",iterator.next());
 	}
 	
 	@Test
 	public void testFields() {
 		Type t = typeSystem.resolveName(TestFields.class.getName());
 		Field one = t.getField("one");
-		List<String> tis = one.getTypesInSignature();
+		Set<String> tis = one.getTypesInSignature();
+		Iterator<String> iterator = tis.iterator();
 		assertEquals(1,tis.size());
-		assertEquals("java/lang/String",tis.get(0));
+		assertEquals("java/lang/String",iterator.next());
+
 		Field two = t.getField("two");
 		tis = two.getTypesInSignature();
+		iterator = tis.iterator();
 		assertEquals(2,tis.size());
-		assertEquals("java/util/List",tis.get(0));
-		assertEquals("java/lang/Integer",tis.get(1));
+		assertEquals("java/lang/Integer",iterator.next());
+		assertEquals("java/util/List",iterator.next());
+
+		Field three = t.getField("three");
+		tis = three.getTypesInSignature();
+		iterator = tis.iterator();
+		assertEquals(0,tis.size());
+
+		Field four = t.getField("four");
+		tis = four.getTypesInSignature();
+		iterator = tis.iterator();
+		assertEquals(1,tis.size());
+		assertEquals("java/lang/String",iterator.next());
+	}
+
+	@Test
+	public void testTypesInSignatureForMethods() {
+		Type t = typeSystem.resolveName(TestMethods.class.getName());
+		Method foo = t.getMethod("foo").get(0);
+		Set<String> tis = foo.getTypesInSignature();
+		Iterator<String> iterator = tis.iterator();
+		assertEquals("java/lang/String", iterator.next());
+		assertEquals("java/util/List", iterator.next());
+		assertFalse(iterator.hasNext());
+
+		Method bar = t.getMethod("bar").get(0);
+		tis = bar.getTypesInSignature();
+		iterator = tis.iterator();
+		assertEquals("java/lang/String", iterator.next());
+		assertEquals("java/util/List", iterator.next());
+		assertFalse(iterator.hasNext());
+
+		Method boo = t.getMethod("boo").get(0);
+		tis = boo.getTypesInSignature();
+		iterator = tis.iterator();
+		assertEquals("java/lang/String", iterator.next());
+		assertFalse(iterator.hasNext());
 	}
 	
 	static class TestFields {
 		String one;
 		List<Integer> two;
+		int[] three;
+		String[] four;
 	}
-	
-	
+
 	@Test
 	public void parameterCount() {
 		Type t = typeSystem.resolveName(TestMethods.class.getName());
@@ -288,9 +328,13 @@ public class TypeTests {
 		assertEquals("java.lang.String",array[2]);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	static class TestMethods {
 		public void one(String a) {}
 		public void two(java.io.Serializable a,String b) {}
+		public int foo(String s1, String[] s2, List<String> s3) { return 0; }
+		public int bar(String s1, List[] s2, float f) { return 0; }
+		public String boo() { return ""; }
 	}
 	
 	@SuppressWarnings("serial")

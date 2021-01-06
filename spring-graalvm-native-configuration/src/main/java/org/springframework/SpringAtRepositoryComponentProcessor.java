@@ -197,10 +197,10 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	private void processPossibleDomainType(Type type, NativeImageContext imageContext, Set<String> processed) {
 		List<Field> fields = type.getFields();
 		for (Field field: fields) {
-			List<String> fieldTypes = field.getTypesInSignature();
+			Set<String> fieldTypes = field.getTypesInSignature();
 			for (String fieldType: fieldTypes) {
 				if (processed.add(fieldType)) {
-					Type resolvedFieldType = imageContext.getTypeSystem().resolveDotted(fieldType,true);
+					Type resolvedFieldType = imageContext.getTypeSystem().resolveSlashed(fieldType,true);
 					if (resolvedFieldType != null && inSimilarPackage(resolvedFieldType, type)) {
 						imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - due to field %s.%s",
 								resolvedFieldType.getDottedName(),type.getDottedName(),field.getName()));

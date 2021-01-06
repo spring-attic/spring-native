@@ -36,13 +36,15 @@ import com.oracle.svm.hosted.ImageClassLoader;
  */
 public abstract class ConfigOptions {
 	
+	public final static boolean debugVerification = Boolean.parseBoolean(System.getProperty("spring.nativex.debug.verify","false"));
+	
 	private final static boolean IGNORE_HINTS_ON_EXCLUDED_CONFIG;
 	
 	private static List<String> BUILD_TIME_PROPERTIES_CHECKS;
 	
 	private final static boolean BUILD_TIME_PROPERTIES_MATCH_IF_MISSING;
 
-	private final static boolean REMOVE_UNUSED_AUTOCONFIG;
+	private static boolean REMOVE_UNUSED_AUTOCONFIG;
 
 	private final static boolean REMOVE_SPEL_SUPPORT;
 
@@ -162,7 +164,7 @@ public abstract class ConfigOptions {
 		}
 		DUMP_CONFIG = System.getProperty("spring.native.dump-config");
 		if (DUMP_CONFIG!=null) {
-			System.out.println("Dumping computed config to "+DUMP_CONFIG);
+			System.out.println("Dumping computed config to directory "+DUMP_CONFIG);
 		}
 	}
 
@@ -249,11 +251,8 @@ public abstract class ConfigOptions {
 	/*
 	 * Note - some similar inferencing for the substitutions is in FunctionalMode class.
 	 */
-	public static void ensureModeInitialized(DuringSetupAccess access) {
+	public static void ensureModeInitialized(TypeSystem ts) {
 		if (MODE == null || SPRING_INIT_ACTIVE== null) {
-			DuringSetupAccessImpl dsai = (DuringSetupAccessImpl) access;
-			ImageClassLoader icl = dsai.getImageClassLoader();
-			TypeSystem ts = TypeSystem.get(icl.getClasspath());
 			if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer", true) != null
 					|| ts.resolveDotted("org.springframework.fu.kofu.KofuApplication", true) != null
 					|| ts.resolveDotted("org.springframework.fu.jafu.JafuApplication", true) != null) {
@@ -371,5 +370,13 @@ public abstract class ConfigOptions {
 		} else {
 			return true;
 		}
+	}
+
+	public static void setMode(Mode mode) {
+		ConfigOptions.MODE = mode;
+	}
+
+	public static void setShouldRemoveUnusedAutoconfig(boolean b) {
+		REMOVE_UNUSED_AUTOCONFIG=b;
 	}
 }

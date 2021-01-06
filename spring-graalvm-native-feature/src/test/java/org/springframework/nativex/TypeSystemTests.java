@@ -15,23 +15,24 @@
  */
 package org.springframework.nativex;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.Collections;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypeSystemTests {
 
 	private static TypeSystem typeSystem;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		File file = new File("./target/classes");
 		// System.out.println(file.getCanonicalPath());

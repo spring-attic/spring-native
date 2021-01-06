@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,24 @@
 package org.springframework.nativex.support;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
-import org.graalvm.nativeimage.ImageSingletons;
-import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 
-import com.oracle.svm.core.jdk.proxy.DynamicProxyRegistry;
-import com.oracle.svm.hosted.FeatureImpl.DuringSetupAccessImpl;
-import com.oracle.svm.hosted.ImageClassLoader;
+/**
+ * 
+ * @author Andy Clement
+ */
+public class DynamicProxiesHandler extends Handler {
 
-public class DynamicProxiesHandler {
-	
-	private ImageClassLoader imageClassLoader;
+	public DynamicProxiesHandler(ConfigurationCollector collector) {
+		super(collector);
+	}
 
-	public ProxiesDescriptor compute() {
+	public ProxiesDescriptor loadStaticProxyConfiguration() {
 		try {
 			InputStream s = this.getClass().getResourceAsStream("/proxies.json");
 			ProxiesDescriptor pd = ProxiesDescriptorJsonMarshaller.read(s);
@@ -41,100 +42,26 @@ public class DynamicProxiesHandler {
 			return null;
 		}
 	}
-	
-	public boolean addProxy(org.springframework.nativex.type.ProxyDescriptor pd) {
-		String[] types = pd.getTypes();
-		Class<?>[] interfaces = new Class<?>[types.length];
-		boolean isOK = true;
-		for (int i=0;i<types.length;i++) {
-			String type = types[i];
-			Class<?> clazz = imageClassLoader.findClassByName(type, false);
-			if (clazz == null) {
-				isOK=false;
-				break;
-			}
-			if (!clazz.isInterface()) {
-				throw new RuntimeException("In ProxyDescriptor: "+pd+" the type \"" + type + "\" is not an interface.");
-			}
-			interfaces[i] = clazz;
-		}
-		if (isOK) {
-			addProxy(interfaces);
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public boolean addProxy(List<String> interfaceNames) {
-		boolean isOK = true;
-		Class<?>[] interfaces = new Class<?>[interfaceNames.size()];
-		for (int i = 0; i < interfaceNames.size(); i++) {
-			String className = interfaceNames.get(i);
-			Class<?> clazz = imageClassLoader.findClassByName(className, false);
-			if (clazz == null) {
-				isOK=false;
-				break;
-			}
-			if (!clazz.isInterface()) {
-				throw new RuntimeException("The type \"" + className + "\" is not an interface.");
-			}
-			interfaces[i] = clazz;
-		}
-		if (isOK) {
-			addProxy(interfaces);
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public void addProxy(Class<?>[] interfaces) {
-		DynamicProxyRegistry dynamicProxySupport = ImageSingletons.lookup(DynamicProxyRegistry.class);
-		dynamicProxySupport.addProxyClass(interfaces);
-	}
 
-	// TODO [0.9.0] rationalize initialization based on mode/spring-init being around
-	public void registerHybrid(DuringSetupAccess a) {
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		imageClassLoader = access.getImageClassLoader();
-	}
-
-	public void register(DuringSetupAccess a) {
-		ProxiesDescriptor pd = compute();
+	public void register() {
+		ProxiesDescriptor pd = loadStaticProxyConfiguration();
 		System.out.println("Attempting proxy registration of #"+pd.getProxyDescriptors().size()+" proxies");
-		int skippedProxiesCount = 0;
-		DuringSetupAccessImpl access = (DuringSetupAccessImpl) a;
-		imageClassLoader = access.getImageClassLoader();
-		// Should have been registered by DynamicProxyFeature already
-		DynamicProxyRegistry dynamicProxySupport = ImageSingletons.lookup(DynamicProxyRegistry.class);
-//      DynamicProxySupport dynamicProxySupport = new DynamicProxySupport(imageClassLoader.getClassLoader());
-//      ImageSingletons.add(DynamicProxyRegistry.class, dynamicProxySupport);
+		int skipped = 0;
 		for (ProxyDescriptor proxyDescriptor : pd.getProxyDescriptors()) {
-			List<String> interfaceNames = proxyDescriptor.getInterfaces();
-			boolean isOK = true;
-			Class<?>[] interfaces = new Class<?>[interfaceNames.size()];
-			for (int i = 0; i < interfaceNames.size(); i++) {
-				String className = interfaceNames.get(i);
-				Class<?> clazz = imageClassLoader.findClassByName(className, false);
-				if (clazz == null) {
-					SpringFeature.log("Skipping proxy registration for "+interfaceNames+" because of missing type: "+className);
-					skippedProxiesCount++;
-					isOK=false;
-					break;
-				}
-				if (!clazz.isInterface()) {
-					throw new RuntimeException("The class \"" + className + "\" is not an interface.");
-				}
-				interfaces[i] = clazz;
-			}
-			if (isOK) {
-				/* The interfaces array can be empty. The java.lang.reflect.Proxy API allows it. */
-				dynamicProxySupport.addProxyClass(interfaces);
+			if (!collector.addProxy(proxyDescriptor.getInterfaces(), true)) {
+				skipped++;
 			}
 		}
-		if (skippedProxiesCount != 0) {
-			System.out.println("Skipped registration of #"+skippedProxiesCount+" proxies - relevant types not on classpath");
+		if (skipped != 0) {
+			System.out.println("Skipped registration of #"+skipped+" statically declared proxies - relevant types not on classpath");
 		}
+	}
+
+	public boolean addProxy(org.springframework.nativex.type.ProxyDescriptor pd) {
+		return addProxy(Arrays.asList(pd.getTypes()));
+	}
+
+	public boolean addProxy(List<String> interfaceNames) {
+		return collector.addProxy(interfaceNames, true);
 	}
 }

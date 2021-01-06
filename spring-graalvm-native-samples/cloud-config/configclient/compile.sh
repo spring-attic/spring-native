@@ -28,9 +28,8 @@ GRAALVM_VERSION=`native-image --version`
 echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
 { time native-image \
   -H:Name=$ARTIFACT \
-  -H:DebugInfoSourceSearchPath=`echo $CP | sed 's/:/,/g'` \
-  -H:GenerateDebugInfo=1 \
-  --enable-http \
+  -H:EnableURLProtocols=http \
+  --enable-all-security-services \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

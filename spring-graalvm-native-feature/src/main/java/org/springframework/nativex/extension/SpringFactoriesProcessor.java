@@ -27,6 +27,6 @@ public interface SpringFactoriesProcessor {
 	public String enableAutoConfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 	public String applicationListenerKey = "org.springframework.context.ApplicationListener";
 
-	boolean filter(URL springFactoriesResource, String key, List<String> values);
+	boolean filter(String key, List<String> values);
 
 }

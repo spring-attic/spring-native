@@ -16,6 +16,7 @@
 
 package org.springframework.nativex.domain.reflect;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -132,6 +133,12 @@ public final class MethodDescriptor extends MemberDescriptor implements Comparab
 			s.append("NULL");
 		}
 		return s.toString();
+	}
+
+	public MethodDescriptor copy() {
+		List<String> parameterTypesCopy = new ArrayList<>();
+		parameterTypesCopy.addAll(parameterTypes);
+		return new MethodDescriptor(name, parameterTypesCopy);
 	}
 	
 }

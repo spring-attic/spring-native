@@ -35,12 +35,12 @@ public class ResourcesJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public void write(ResourcesDescriptor metadata, OutputStream outputStream)
+	public static void write(ResourcesDescriptor metadata, OutputStream outputStream)
 			throws IOException {
 		try {
 			ResourcesJsonConverter converter = new ResourcesJsonConverter();
 			JSONObject jsonObject = converter.toJsonArray(metadata);
-			outputStream.write(jsonObject.toString(2).getBytes(StandardCharsets.UTF_8));
+			outputStream.write(jsonObject.toString(2).replace("\\/","/").getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
 			if (ex instanceof IOException) {

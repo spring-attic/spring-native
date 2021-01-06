@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
@@ -30,6 +31,7 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.support.SpringFeature;
+import org.springframework.nativex.type.Type.TypeCollector;
 
 public class Method {
 	
@@ -429,5 +431,44 @@ public class Method {
 	public boolean isPrivate() {
 		return Modifier.isPrivate(mn.access);
 	}
+
+	/**
+	 * Determine the set of type names used throughout the message signature (return type, parameters, including generics).
+	 * TODO what about exception types? mn.exceptions
+	 * 
+	 * @return a set of type descriptor (slashed type names)
+	 */
+	public Set<String> getTypesInSignature() {
+		if (mn.signature == null) {
+			Set<String> s = new TreeSet<>();
+			org.objectweb.asm.Type methodType = org.objectweb.asm.Type.getMethodType(mn.desc);
+			// TODO not sure this code is properly discarding primitives like the other route (through else block)
+			org.objectweb.asm.Type t = methodType.getReturnType();
+			if (t.getDescriptor().charAt(0)=='[') {
+				t = t.getElementType();
+			}
+			if (t.getInternalName().length()!=1) {
+				s.add(t.getInternalName());
+			}
+			org.objectweb.asm.Type[] parameterTypes = resolveInternalParameterTypes();
+			for (org.objectweb.asm.Type parameterType: parameterTypes) {
+				org.objectweb.asm.Type ptype = parameterType;
+				if (ptype.getDescriptor().charAt(0)=='[') {
+					ptype = ptype.getElementType();
+				}
+				if (parameterType.getInternalName().length()!=1) {
+					s.add(ptype.getInternalName());
+				}
+			}
+			return s;
+		} else {
+			// Pull out all the types from the generic signature
+			SignatureReader reader = new SignatureReader(mn.signature);
+			TypeCollector tc = new TypeCollector();
+			reader.accept(tc);
+			return tc.getTypes();
+		}
+	}
+
 
 }

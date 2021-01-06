@@ -86,5 +86,14 @@ public final class FieldDescriptor extends MemberDescriptor implements Comparabl
 	public void setAllowUnsafeAccess(boolean b) {
 		this.allowUnsafeAccess = b;
 	}
+
+	public static FieldDescriptor of(String name, boolean allowWrite, boolean allowUnsafeAccess) {
+		FieldDescriptor fd = new FieldDescriptor(name, allowWrite, allowUnsafeAccess);
+		return fd;
+	}
+
+	public FieldDescriptor copy() {
+		return new FieldDescriptor(name, allowWrite, allowUnsafeAccess);
+	}
 	
 }

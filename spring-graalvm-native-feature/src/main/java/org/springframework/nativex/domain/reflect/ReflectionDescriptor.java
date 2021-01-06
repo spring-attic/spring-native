@@ -32,8 +32,12 @@ public class ReflectionDescriptor {
 		this.classDescriptors = new ArrayList<>();
 	}
 
-	public ReflectionDescriptor(ReflectionDescriptor metadata) {
-		this.classDescriptors = new ArrayList<>(metadata.classDescriptors);
+	public ReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
+		this.classDescriptors = new ArrayList<>(reflectionDescriptor.classDescriptors);
+	}
+
+	public ReflectionDescriptor(List<ClassDescriptor> classDescriptors) {
+		this.classDescriptors = new ArrayList<>(classDescriptors);
 	}
 	
 	public void sort() {
@@ -86,6 +90,32 @@ public class ReflectionDescriptor {
 			}
 		}
 		return null;
+	}
+
+	public void merge(ReflectionDescriptor rd) {
+		List<ClassDescriptor> classDescriptors = rd.getClassDescriptors();
+		if (classDescriptors != null) {
+			List<ClassDescriptor> toAdd = new ArrayList<>();
+			for (ClassDescriptor classDescriptor: classDescriptors) {
+				String typename = classDescriptor.getName();
+				ClassDescriptor existingCD = getClassDescriptor(typename);
+				if (existingCD != null) {
+					existingCD.merge(classDescriptor);
+				} else {
+					toAdd.add(classDescriptor.copy());
+				}
+			}
+			classDescriptors.addAll(toAdd);
+		}
+	}
+
+	public void merge(ClassDescriptor classDescriptor) {
+		ClassDescriptor existingCD = getClassDescriptor(classDescriptor.getName());
+		if (existingCD != null) {
+			existingCD.merge(classDescriptor);
+		} else {
+			classDescriptors.add(classDescriptor.copy());
+		}
 	}
 
 }
