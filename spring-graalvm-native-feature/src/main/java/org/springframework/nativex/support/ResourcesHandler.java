@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
+import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -212,14 +213,22 @@ public class ResourcesHandler extends Handler {
 	 */
 	public void handleSpringComponents() {
 		NativeImageContext context = new NativeImageContextImpl();
-		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
+//		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
+		Collection<byte[]> springComponents = ts.getResources("META-INF/spring.components");
 		List<String> alreadyProcessed = new ArrayList<>();
-		if (springComponents.hasMoreElements()) {
+		if (springComponents.size()!=0) {
+//		if (springComponents.hasMoreElements()) {
 			log("Processing existing META-INF/spring.components files...");
-			while (springComponents.hasMoreElements()) {
-				URL springFactory = springComponents.nextElement();
+			for (byte[] springComponentsFile: springComponents) {
+//			while (springComponents.hasMoreElements()) {
+//				URL springFactory = springComponents.nextElement();
 				Properties p = new Properties();
-				loadSpringFactoryFile(springFactory, p);
+				try (ByteArrayInputStream bais = new ByteArrayInputStream(springComponentsFile)) {
+					p.load(bais);
+				} catch (IOException e) {
+					throw new IllegalStateException("Unable to load spring.factories", e);
+				}
+//				loadSpringFactoryFile(springFactory, p);
 				if (ConfigOptions.isAgentMode()) {
 					processSpringComponentsAgent(p, context);
 				} else if (ConfigOptions.isFunctionalMode()) {
@@ -688,11 +697,21 @@ public class ResourcesHandler extends Handler {
 	 */
 	public void processSpringFactories() {
 		log("Processing META-INF/spring.factories files...");
-		Enumeration<URL> springFactories = fetchResources("META-INF/spring.factories");
-		while (springFactories.hasMoreElements()) {
-			URL springFactory = springFactories.nextElement();
-			processSpringFactory(ts, springFactory);
+		for (byte[] springFactory: ts.getResources("META-INF/spring.factories")) {
+			Properties p = new Properties();
+			try (ByteArrayInputStream bais = new ByteArrayInputStream(springFactory)) {
+				p.load(bais);
+			} catch (IOException e) {
+				throw new IllegalStateException("Unable to load bytes from spring factory file", e);
+			}
+//			loadSpringFactoryFile(springFactory, p);
+			processSpringFactory(ts, p);
 		}
+//		Enumeration<URL> springFactories = fetchResources("META-INF/spring.factories");
+//		while (springFactories.hasMoreElements()) {
+//			URL springFactory = springFactories.nextElement();
+//			processSpringFactory(ts, springFactory);
+//		}
 	}
 
 	private List<Entry<Type, List<Type>>> filterOutNestedTypes(List<Entry<Type, List<Type>>> springComponents) {
@@ -734,10 +753,15 @@ public class ResourcesHandler extends Handler {
 
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
 		SpringFeature.log("processing spring factory file "+springFactory);
-		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
-		List<String> forRemoval = new ArrayList<>();
 		Properties p = new Properties();
 		loadSpringFactoryFile(springFactory, p);
+		processSpringFactory(ts, p);
+	}
+		
+		
+	private void processSpringFactory(TypeSystem ts, Properties p) {
+		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
+		List<String> forRemoval = new ArrayList<>();
 		int excludedAutoConfigCount = 0;
 		Enumeration<Object> factoryKeys = p.keys();
 		boolean modified = false;
@@ -751,12 +775,14 @@ public class ResourcesHandler extends Handler {
 				for (String value : valueString.split(",")) {
 					values.add(value);
 				}
+				if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
 					int len = values.size();
-					if (springFactoriesProcessor.filter(springFactory, key, values)) {
+					if (springFactoriesProcessor.filter(key, values)) {
 						SpringFeature.log("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
 						modified = true;
 					}
+				}
 				}
 				if (modified) {
 					filteredProperties.put(key, String.join(",", values));
@@ -858,7 +884,10 @@ public class ResourcesHandler extends Handler {
 		// Filter spring.factories if necessary
 		try {
 			if (forRemoval.size() == 0 && !modified) {
-				collector.registerResource("META-INF/spring.factories", springFactory.openStream());
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				p.store(baos, null);
+				byte[] bs = baos.toByteArray();
+				collector.registerResource("META-INF/spring.factories", new ByteArrayInputStream(bs));
 //				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
 				SpringFeature.log("  removed " + forRemoval.size() + " classes");
@@ -1929,15 +1958,6 @@ public class ResourcesHandler extends Handler {
 				}
 			}
 			tar.requestTypeAccess(t.getDottedName(), Type.inferAccessRequired(t));
-		}
-	}
-
-	private Enumeration<URL> fetchResources(String resource) {
-		try {
-			Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(resource);
-			return resources;
-		} catch (IOException e1) {
-			return Collections.enumeration(Collections.emptyList());
 		}
 	}
 

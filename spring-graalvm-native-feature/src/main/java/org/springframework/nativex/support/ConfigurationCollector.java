@@ -15,6 +15,7 @@
  */
 package org.springframework.nativex.support;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,6 +49,7 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class ConfigurationCollector {
 
+
 	private ReflectionDescriptor reflectionDescriptor = new ReflectionDescriptor();
 
 	private ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
@@ -64,7 +66,7 @@ public class ConfigurationCollector {
 		return proxiesDescriptor;
 	}
 
-	public ReflectionDescriptor getReflectionDescriptors() {
+	public ReflectionDescriptor getReflectionDescriptor() {
 		return reflectionDescriptor;
 	}
 
@@ -116,35 +118,50 @@ public class ConfigurationCollector {
 		}
 	}
 
+
 	public void dump() {
-		if (!ConfigOptions.shouldDumpConfig()) {
-			return;
+		String dumpLocation = ConfigOptions.getDumpConfigLocation();
+		if (dumpLocation != null) {
+			dump(new File(dumpLocation));
 		}
-		File folder = new File(ConfigOptions.getDumpConfigLocation());
-		SpringFeature.log("Writing out configuration to directory "+folder);
-		if (!folder.exists()) {
-			folder.mkdirs();
+	}
+
+	public void dump(File locationToPlaceConfig) {
+		SpringFeature.log("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
+		if (!locationToPlaceConfig.exists()) {
+			locationToPlaceConfig.mkdirs();
 		}
-		if (!folder.exists()) {
-			throw new RuntimeException("Unable to work with dump directory location: "+folder);
+		if (!locationToPlaceConfig.exists()) {
+			throw new RuntimeException("Unable to work with dump directory location: "+locationToPlaceConfig);
 		}
 		try {
-			try (FileOutputStream fos = new FileOutputStream(new File(folder,"reflect-config.json"))) {
+			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"reflect-config.json"))) {
 				JsonMarshaller.write(reflectionDescriptor,fos);
 			}
-			try (FileOutputStream fos = new FileOutputStream(new File(folder,"resource-config.json"))) {
+			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"resource-config.json"))) {
 				ResourcesJsonMarshaller.write(resourcesDescriptor,fos);
 			}
-			try (FileOutputStream fos = new FileOutputStream(new File(folder,"proxy-config.json"))) {
+			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"proxy-config.json"))) {
 				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
 			}
-			writeNativeImageProperties(new File(folder, "native-image.properties"));
+			writeNativeImageProperties(new File(locationToPlaceConfig, "native-image.properties"));
+			// Create a temporary marker file so the feature knows it can turn itself OFF later
+			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"build-time-computed-config.properties"))) {
+				fos.write("build-time-computed-config=true".getBytes());
+			}
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem writing out configuration",ioe);
 		}
 	}
 	
 	private void writeNativeImageProperties(File file) throws IOException {
+		String content = getNativeImagePropertiesContent();
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+			fos.write(content.getBytes());
+		}
+	}
+	
+	private String getNativeImagePropertiesContent() {
 		StringBuilder s = new StringBuilder();
 		// From the existing native-image.properties in the feature
 		s.append("Args = --allow-incomplete-classpath --report-unsupported-elements-at-runtime --no-fallback --no-server --install-exit-handlers");
@@ -189,9 +206,7 @@ public class ConfigurationCollector {
 			}
 		}
 		s.append("\n");
-		try (FileOutputStream fos = new FileOutputStream(file)) {
-			fos.write(s.toString().getBytes());
-		}
+		return s.toString();
 	}
 
 	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
@@ -376,5 +391,10 @@ public class ConfigurationCollector {
 			graalVMConnector.initializeAtRunTimePackages(packageNames);
 		}
 	}
+
+	public InputStream getNativeImagePropertiesInputStream() {
+		return new ByteArrayInputStream(getNativeImagePropertiesContent().getBytes());
+	}
+
 
 }

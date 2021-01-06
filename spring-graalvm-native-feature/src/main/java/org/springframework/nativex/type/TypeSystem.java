@@ -16,11 +16,13 @@
 package org.springframework.nativex.type;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -1234,6 +1236,70 @@ public class TypeSystem {
 		}
 		return false;
 		*/
+	}
+
+	public <T> T getJson(String string,Function<InputStream,T> reader) {
+		long t = System.currentTimeMillis();
+		Map<String,T> configs = new HashMap<>();
+		for (String s: classpath) {
+			File f = new File(s);
+			if (f.isDirectory()) {
+				searchDir(f, filepath -> { 
+					return filepath.equals(string);
+				}, 
+						reader,
+//				ResourcesJsonMarshaller::read,
+				configs);
+			} else if (f.isFile() && f.toString().endsWith(".jar")) {
+				searchJar(f, filepath -> { 
+					return filepath.equals(string);
+				}, 
+				reader,
+//				ResourcesJsonMarshaller::read,
+				configs);
+			}
+		}
+		System.out.println("Took: "+(System.currentTimeMillis()-t)+"ms");
+		return configs.values().iterator().next();
+	}
+	
+	private byte[] readInputStream(InputStream is) {
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		int c;
+		byte[] buf = new byte[16384];
+		try {
+			while ((c = is.read(buf, 0, buf.length)) != -1) {
+				data.write(buf, 0, c);
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Problem reading input stream", e);
+		}
+		return data.toByteArray();
+	}
+
+	public Collection<byte[]> getResources(String resource) {
+		long t = System.currentTimeMillis();
+		Map<String, byte[]> resources = new HashMap<>();
+		for (String s: classpath) {
+			File f = new File(s);
+			if (f.isDirectory()) {
+				searchDir(f, filepath -> { 
+					return filepath.equals(resource);
+				}, 
+				this::readInputStream, // InputStream to a byte array?
+//				ResourcesJsonMarshaller::read,
+				resources);
+			} else if (f.isFile() && f.toString().endsWith(".jar")) {
+				searchJar(f, filepath -> { 
+					return filepath.equals(resource);
+				}, 
+				this::readInputStream,
+//				ResourcesJsonMarshaller::read,
+				resources);
+			}
+		}
+		System.out.println("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
+		return resources.values();
 	}
 
 }

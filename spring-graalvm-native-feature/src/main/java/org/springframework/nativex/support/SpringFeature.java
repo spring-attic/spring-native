@@ -16,6 +16,7 @@
 package org.springframework.nativex.support;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.oracle.svm.core.annotate.AutomaticFeature;
@@ -25,12 +26,16 @@ import com.oracle.svm.hosted.ResourcesFeature;
 import com.oracle.svm.reflect.hosted.ReflectionFeature;
 import com.oracle.svm.reflect.proxy.hosted.DynamicProxyFeature;
 import org.graalvm.nativeimage.hosted.Feature;
-
+import org.graalvm.nativeimage.hosted.Feature.BeforeAnalysisAccess;
+import org.graalvm.nativeimage.hosted.Feature.DuringSetupAccess;
+import org.graalvm.nativeimage.hosted.Feature.IsInConfigurationAccess;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.nativex.type.TypeSystem;
 
 @AutomaticFeature
 public class SpringFeature implements Feature {
+	
+	private static boolean ACTIVE_FEATURE = true;
 
 	private ReflectionHandler reflectionHandler;
 
@@ -51,14 +56,10 @@ public class SpringFeature implements Feature {
 	private ConfigurationCollector collector;
 
 	public SpringFeature() {
-		System.out.println(banner);
-		
-		collector = new ConfigurationCollector();
+	}
 
-		if (!ConfigOptions.isVerbose()) {
-			System.out.println(
-					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
-		}
+	public void initHandlers() {
+		collector = new ConfigurationCollector();
 		reflectionHandler = new ReflectionHandler(collector);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler(collector);
@@ -76,8 +77,30 @@ public class SpringFeature implements Feature {
 		fs.add(ReflectionFeature.class); // Ensures RuntimeReflectionSupport available
 		return fs;
 	}
+	
+	public void checkIfFeatureShouldBeActive(TypeSystem ts) {
+		Collection<byte[]> resources = ts.getResources("META-INF/native-image/build-time-computed-config.properties");
+		if (!resources.isEmpty()) {
+			System.out.println("spring-graalvm-native ran at build time -> deactivating feature");
+			ACTIVE_FEATURE=false;
+		} else {
+			ACTIVE_FEATURE=true;
+		}
+	}
 
 	public void duringSetup(DuringSetupAccess access) {
+		ImageClassLoader imageClassLoader = ((DuringSetupAccessImpl)access).getImageClassLoader();
+		TypeSystem ts = TypeSystem.get(imageClassLoader.getClasspath());
+		checkIfFeatureShouldBeActive(ts);
+		if (!ACTIVE_FEATURE) {
+			return;
+		}
+		System.out.println(banner);
+		if (!ConfigOptions.isVerbose()) {
+			System.out.println(
+					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
+		}
+		initHandlers();
 		String springBootVersion = SpringBootVersion.getVersion();
 		if (springBootVersion != null && Float.parseFloat(springBootVersion.substring(0, 3)) < 2.4) {
 			String message = "Spring GraalVM Native requires Spring Boot 2.4.0-M2 or above";
@@ -89,8 +112,6 @@ public class SpringFeature implements Feature {
 			}
 		}
 		
-		ImageClassLoader imageClassLoader = ((DuringSetupAccessImpl)access).getImageClassLoader();
-		TypeSystem ts = TypeSystem.get(imageClassLoader.getClasspath());
 		dynamicProxiesHandler.setTypeSystem(ts);
 		reflectionHandler.setTypeSystem(ts);
 		resourcesHandler.setTypeSystem(ts);
@@ -99,7 +120,7 @@ public class SpringFeature implements Feature {
 		collector.setGraalConnector(new GraalVMConnector(imageClassLoader));
 		collector.setTypeSystem(ts);
 
-		ConfigOptions.ensureModeInitialized(access);
+		ConfigOptions.ensureModeInitialized(ts);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
 			reflectionHandler.register();
 			dynamicProxiesHandler.register();
@@ -118,6 +139,9 @@ public class SpringFeature implements Feature {
 	}
 
 	public void beforeAnalysis(BeforeAnalysisAccess access) {
+		if (!ACTIVE_FEATURE) {
+			return;
+		}
 		initializationHandler.register();
 		resourcesHandler.register();
 		if (ConfigOptions.isVerbose() && resourcesHandler.failedPropertyChecks.size()!=0) {
@@ -126,7 +150,9 @@ public class SpringFeature implements Feature {
 				SpringFeature.log(failedPropertyCheck);
 			}
 		}
-		collector.dump();
+		if (ConfigOptions.shouldDumpConfig()) {
+			collector.dump();
+		}
 	}
 
 	public static void log(int depth, String msg) {

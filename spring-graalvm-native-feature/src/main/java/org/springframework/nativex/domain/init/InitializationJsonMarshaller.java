@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.nativex.json.JSONArray;
+import org.springframework.nativex.json.JSONException;
 import org.springframework.nativex.json.JSONObject;
 
 /**
@@ -65,9 +66,12 @@ public class InitializationJsonMarshaller {
 		}
 	}
 
-	public static InitializationDescriptor read(InputStream inputStream) throws Exception {
-		InitializationDescriptor metadata = toDelayInitDescriptor(new JSONObject(toString(inputStream)));
-		return metadata;
+	public static InitializationDescriptor read(InputStream inputStream) {
+		try {
+			return toDelayInitDescriptor(new JSONObject(toString(inputStream)));
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to read InitialiationDescriptor from inputstream", e);
+		}
 	}
 	
 	private static InitializationDescriptor toDelayInitDescriptor(JSONObject object) throws Exception {

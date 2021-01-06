@@ -65,7 +65,7 @@ public class ConfigurableSpringFactoriesProcessor implements SpringFactoriesProc
 	}
 
 	@Override
-	public boolean filter(URL springFactoryResource, String key, List<String> values) {
+	public boolean filter(String key, List<String> values) {
 		boolean modified = false;
 		for (Map.Entry<String, List<String>> exclusion: springFactoriesExclusions.entrySet()) {
 			if (exclusion.getKey().equals(key)) {

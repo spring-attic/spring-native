@@ -15,7 +15,6 @@
  */
 package org.springframework.boot;
 
-import java.net.URL;
 import java.util.List;
 
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
@@ -27,7 +26,7 @@ import org.springframework.nativex.extension.SpringFactoriesProcessor;
 public class BackgroundPreInitializerDeactivator implements SpringFactoriesProcessor {
 
 	@Override
-	public boolean filter(URL springFactoryResource, String key, List<String> values) {
+	public boolean filter(String key, List<String> values) {
 		if (key.equals(SpringFactoriesProcessor.applicationListenerKey)) {
 			return values.remove("org.springframework.boot.autoconfigure.BackgroundPreinitializer");
 		}

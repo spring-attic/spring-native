@@ -38,7 +38,7 @@ public class ActuatorMetricsEliminator implements SpringFactoriesProcessor {
 	}
 
 	@Override
-	public boolean filter(URL springFactoryResource, String key, List<String> values) {
+	public boolean filter(String key, List<String> values) {
 		if (!active) {
 			return false;
 		}

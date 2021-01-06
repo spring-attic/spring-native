@@ -25,7 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.json.JSONArray;
+import org.springframework.nativex.json.JSONObject;
 
 /**
  * Marshaller to write {@link ProxiesDescriptor} as JSON.
@@ -66,9 +68,13 @@ public class ProxiesDescriptorJsonMarshaller {
 		}
 	}
 
-	public static ProxiesDescriptor read(InputStream inputStream) throws Exception {
-		ProxiesDescriptor metadata = toProxiesDescriptor(new JSONArray(toString(inputStream)));
-		return metadata;
+	public static ProxiesDescriptor read(InputStream inputStream) {
+		try {
+			ProxiesDescriptor metadata = toProxiesDescriptor(new JSONArray(toString(inputStream)));
+			return metadata;
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to read ProxiesDescriptor from inputstream", e);
+		}
 	}
 	
 	private static ProxiesDescriptor toProxiesDescriptor(JSONArray array) throws Exception {
