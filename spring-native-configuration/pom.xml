@@ -39,7 +39,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>2020.0.0-SNAPSHOT</version>
+				<version>2020.0.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -60,12 +60,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-gateway-core</artifactId>
-			<version>2.2.3.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -121,18 +115,11 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-function-web</artifactId>
-			<version>3.0.3.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor.netty</groupId>
 			<artifactId>reactor-netty-http</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-sleuth-core</artifactId>
-			<version>2.2.3.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
