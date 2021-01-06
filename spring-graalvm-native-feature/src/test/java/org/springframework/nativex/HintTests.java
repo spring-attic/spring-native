@@ -15,18 +15,14 @@
  */
 package org.springframework.nativex;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.extension.FieldInfo;
 import org.springframework.nativex.extension.InitializationInfo;
@@ -44,11 +40,16 @@ import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class HintTests {
 
 	static TypeSystem typeSystem;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		File file = new File("./target/classes");
 		// System.out.println(file.getCanonicalPath());

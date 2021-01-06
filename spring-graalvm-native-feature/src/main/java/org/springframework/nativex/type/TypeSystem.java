@@ -56,6 +56,8 @@ import java.util.zip.ZipFile;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+
+import org.springframework.lang.Nullable;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -126,19 +128,34 @@ public class TypeSystem {
 		return classpath;
 	}
 
+	/**
+	 * Resolve the {@link Type} from this {@code TypeSystem} classpath,
+	 * returning {@code null} if not found.
+	 * @param typeName the name of the type to resolve
+	 * @return the resolved type, or {@code null}.
+	 */
+	@Nullable
+	public Type resolve(TypeName typeName) {
+		return resolveSlashed(typeName.toSlashName(), true);
+	}
+
+	@Deprecated
 	public Type resolveName(String dottedTypeName) {
 		return resolveDotted(dottedTypeName);
 	}
 
+	@Deprecated
 	public Type resolveDotted(String dottedTypeName) {
 		String slashedTypeName = toSlashedName(dottedTypeName);
 		return resolveSlashed(slashedTypeName);
 	}
 
+	@Deprecated
 	public Type resolveName(String desc, boolean silent) {
 		return resolveDotted(desc, silent);
 	}
 
+	@Deprecated
 	public Type resolveDotted(String desc, boolean silent) {
 		try {
 			return resolveDotted(desc);
@@ -150,6 +167,7 @@ public class TypeSystem {
 		}
 	}
 
+	@Deprecated
 	public boolean canResolveSlashed(String slashedTypeName) {
 		try {
 			return resolveSlashed(slashedTypeName) != null;
@@ -161,10 +179,12 @@ public class TypeSystem {
 		}
 	}
 
+	@Deprecated
 	public Type resolveSlashed(String slashedTypeName) {
 		return resolveSlashed(slashedTypeName, false);
 	}
 
+	@Deprecated
 	public Type resolveSlashed(String slashedTypeName, boolean allowNotFound) {
 		Type resolvedType = typeCache.get(slashedTypeName);
 		if (resolvedType == Type.MISSING) {
