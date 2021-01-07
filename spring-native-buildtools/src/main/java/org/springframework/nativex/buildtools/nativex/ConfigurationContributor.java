@@ -16,6 +16,8 @@
 package org.springframework.nativex.buildtools.nativex;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,25 +38,22 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class ConfigurationContributor implements BootstrapContributor {
 
-	private final static boolean active = System.getProperty("spring.nativex.collector.active","false").equalsIgnoreCase("true");
-
 	Path META_INF_NATIVE_IMAGE = Paths.get("META-INF", "native-image");
-
+	
 	@Override
 	public void contribute(BuildContext context) {
-		System.out.println("active says "+active);
-		if (!active) {
+		if (!isActive()) {
 			return;
 		}
 		ConfigOptions.setMode(Mode.REFLECTION);
 		ConfigOptions.setShouldRemoveUnusedAutoconfig(false);
-		System.out.println("Configuration contributor is running!");
 		TypeSystem typeSystem = context.getTypeSystem();
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
 		// TODO maybe should use groupid/artifactid in this path
 		configurationCollector.dump(new File("target/classes/META-INF/native-image"));
+
 //		ReflectionDescriptor reflectionDescriptor = configurationCollector.getReflectionDescriptor();
 //		ResourcesDescriptor resourcesDescriptor = configurationCollector.getResourcesDescriptors();
 //		ProxiesDescriptor proxiesDescriptor = configurationCollector.getProxyDescriptors();
@@ -64,5 +63,24 @@ public class ConfigurationContributor implements BootstrapContributor {
 //			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "proxy-config.json", proxiesDescriptor.getInputStream()),
 //			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "native-image.properties", configurationCollector.getNativeImagePropertiesInputStream()));
 	}
+
+	/**
+	 * Possibly a temporary measure. Check if the collector should be active by trying to resolve /reflect.json - if we
+	 * can't then things aren't setup with feature+configuration modules (which is the case when this runs during the tests
+	 * in the buildtools module, which only depends on feature). When collector is used alongside configuration in the plugin
+	 * dependencies section of a real build attempting to use the collector properly, this will resolve OK.
+	 */
+	private boolean isActive() {
+		try (InputStream s = this.getClass().getResourceAsStream("/reflect.json")) {
+			if (s==null) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
 
 }
