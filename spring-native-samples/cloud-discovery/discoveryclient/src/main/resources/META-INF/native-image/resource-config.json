@@ -223,7 +223,8 @@
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/DelegatingWebMvcConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurationSupport$NoOpValidator.class\\E"}, 
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurationSupport.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"}
+    {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"},
+    {"pattern":"\\Qorg/springframework/cloud/commons/security/ResourceServerTokenRelayAutoConfiguration.class\\E"}
   ],
   "bundles":[
     {"name":"javax.servlet.http.LocalStrings"}, 

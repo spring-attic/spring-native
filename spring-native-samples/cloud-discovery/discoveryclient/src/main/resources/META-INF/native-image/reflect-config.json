@@ -4020,5 +4020,13 @@
 {
   "name":"sun.security.provider.Sun",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

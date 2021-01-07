@@ -1520,5 +1520,13 @@
 {
   "name":"sun.security.provider.PolicyFile",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

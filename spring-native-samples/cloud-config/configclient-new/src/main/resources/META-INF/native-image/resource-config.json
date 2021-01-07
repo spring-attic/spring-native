@@ -119,7 +119,9 @@
     {"pattern":"\\Qorg/springframework/context/annotation/Configuration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/context/annotation/Import.class\\E"}, 
     {"pattern":"\\Qorg/springframework/context/annotation/ImportBeanDefinitionRegistrar.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/core/Ordered.class\\E"}
+    {"pattern":"\\Qorg/springframework/core/Ordered.class\\E"},
+    {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"},
+    {"pattern":"\\Qorg/springframework/cloud/commons/security/ResourceServerTokenRelayAutoConfiguration.class\\E"}
   ]},
   "bundles":[]
 }
