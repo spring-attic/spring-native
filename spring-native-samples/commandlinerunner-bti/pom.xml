@@ -16,9 +16,27 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
+    <!--
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-native</artifactId>
+            <version>0.9.0-SNAPSHOT</version>
+        </dependency>
+        -->
+        <!-- important to distill out exactly which bits of the spring-native project the
+             generated code is relying on. -->
+        <dependency>
+            <!-- this is needed for visibility of LiteConfigurationInitializer -->
+            <!-- (un)fortunately it also pulls in all the other substitutions, it might
+                 be nice to test without those. -->
+            <groupId>org.springframework.experimental</groupId>
+            <artifactId>spring-native-substitutions</artifactId>
+            <version>0.9.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <!-- this is needed so generated source can see NativePropertiesListener -->
+            <groupId>org.springframework.experimental</groupId>
+            <artifactId>spring-native-configuration</artifactId>
             <version>0.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -57,18 +75,18 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework.experimental</groupId>
-                        <artifactId>spring-native</artifactId>
-                        <version>0.9.0-SNAPSHOT</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.experimental</groupId>
-                        <artifactId>spring-native-configuration</artifactId>
-                        <version>0.9.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
+                        <dependencies>
+                            <!-- this enables the feature to 'see' the /reflect.json etc that activates it. Needed here
+                                 even if configuration is currently on the project classpath due to the way plugins run -->
+                            <!-- ideally everything related to it would go in here and the project would not depend on this
+                                 directly but for now it has to because the generated spring factories code depends on things
+                                 in there. -->
+                            <dependency>
+                                <groupId>org.springframework.experimental</groupId>
+                                <artifactId>spring-native-configuration</artifactId>
+                                <version>0.9.0-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -106,19 +124,18 @@
                                 </goals>
                             </execution>
                         </executions>
-                        
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework.experimental</groupId>
-                        <artifactId>spring-native</artifactId>
-                        <version>0.9.0-SNAPSHOT</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.experimental</groupId>
-                        <artifactId>spring-native-configuration</artifactId>
-                        <version>0.9.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
+                        <dependencies>
+                            <!-- this enables the feature to 'see' the /reflect.json etc that activates it. Needed here
+                                 even if configuration is currently on the project classpath due to the way plugins run -->
+                            <!-- ideally everything related to it would go in here and the project would not depend on this
+                                 directly but for now it has to because the generated spring factories code depends on things
+                                 in there. -->
+                            <dependency>
+                                <groupId>org.springframework.experimental</groupId>
+                                <artifactId>spring-native-configuration</artifactId>
+                                <version>0.9.0-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
@@ -126,7 +143,6 @@
                         <version>20.3.0</version>
                         <configuration>
                             <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
-                            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true -Dspring.nativex.collector.active=true</buildArgs>
                             <imageName>commandlinerunner-bti</imageName>
                         </configuration>
                         <executions>
