@@ -35,6 +35,7 @@ import org.springframework.http.HttpStatus;
 				RequestMethod.class,
 				ResponseBody.class,
 				RequestBody.class,
+				RequestHeader.class,
 				Controller.class,
 				RestController.class,
 				RequestParam.class,
