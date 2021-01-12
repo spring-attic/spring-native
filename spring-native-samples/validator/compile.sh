@@ -31,7 +31,6 @@ echo "Compiling $ARTIFACT with $GRAALVM_VERSION"
   -H:Name=$ARTIFACT \
   -Dspring.spel.ignore=true \
   -Dspring.native.remove-yaml-support=true \
-  -Dspring.native.dump-config=dump.json \
   -cp $CP $MAINCLASS >> output.txt ; } 2>> output.txt
 
 if [[ -f $ARTIFACT ]]

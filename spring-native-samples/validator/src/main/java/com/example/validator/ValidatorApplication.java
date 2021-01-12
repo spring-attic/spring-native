@@ -24,7 +24,7 @@ public class ValidatorApplication {
 		Thread.sleep(Integer.parseInt(System.getProperty("delay","5"))*1000);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		SpringApplication.run(ValidatorApplication.class, args);
 	}
 
