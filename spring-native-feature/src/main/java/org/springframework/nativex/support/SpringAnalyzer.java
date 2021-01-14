@@ -63,17 +63,7 @@ public class SpringAnalyzer {
 			reflectionHandler.register();
 			dynamicProxiesHandler.register();
 //		}
-//		if (ConfigOptions.isFunctionalMode()) {
-//			reflectionHandler.registerFunctional();
-//			if (ConfigOptions.isSpringInitActive()) {
-//			}
-//		}
-//		if (ConfigOptions.isAgentMode()) {
-//			reflectionHandler.registerHybrid();
-//		}
-//		if (ConfigOptions.isInitMode()) {
-//			reflectionHandler.registerAgent();
-//		}
+
 
 		initializationHandler.register();
 		resourcesHandler.register();
