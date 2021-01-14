@@ -84,35 +84,11 @@ public class ResourcesHandler extends Handler {
 	}
 
 	/**
-	 * Read in the static resource list from inside this project. Common resources for all Spring applications.
-	 * @return a ResourcesDescriptor describing the resources from the file
-	 */
-	public ResourcesDescriptor readStaticResourcesConfiguration() {
-		try {
-			InputStream s = this.getClass().getResourceAsStream("/resources.json");
-			return ResourcesJsonMarshaller.read(s);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	/**
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
-	 * @param access provides API access to native image construction information
 	 */
 	public void register() {
-		ResourcesDescriptor rd = readStaticResourcesConfiguration();
-		if (ConfigOptions.isFunctionalMode() ||
-			ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode()) {
-			SpringFeature.log("Registering statically declared resources - #" + rd.getPatterns().size() + " patterns");
-			registerPatterns(rd);
-			registerResourceBundles(rd);
-		}
 		if (ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode() ||
-			ConfigOptions.isSpringInitActive()) {
+			ConfigOptions.isAgentMode()) {
 			processSpringFactories();
 		}
 		if (!ConfigOptions.isInitMode()) {
@@ -120,8 +96,7 @@ public class ResourcesHandler extends Handler {
 		}
 		handleConstantInitializationHints();
 		if (ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode() ||
-			ConfigOptions.isFunctionalMode()) {
+			ConfigOptions.isAgentMode()) {
 			handleSpringComponents();
 		}
 	}
@@ -157,9 +132,6 @@ public class ResourcesHandler extends Handler {
 		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
 		SpringFeature.log("> Registering fixed hints: " + constantHints);
 		for (HintDeclaration ch : constantHints) {
-			if (!isHintValidForCurrentMode(ch)) {
-				continue;
-			}
 			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
 			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
 				String typename = dependantType.getKey();
@@ -231,8 +203,6 @@ public class ResourcesHandler extends Handler {
 //				loadSpringFactoryFile(springFactory, p);
 				if (ConfigOptions.isAgentMode()) {
 					processSpringComponentsAgent(p, context);
-				} else if (ConfigOptions.isFunctionalMode()) {
-					processSpringComponentsFunc(p, context, alreadyProcessed);
 				} else {
 					processSpringComponents(p, context, alreadyProcessed);
 				}
@@ -242,8 +212,6 @@ public class ResourcesHandler extends Handler {
 			Properties p = synthesizeSpringComponents();
 			if (ConfigOptions.isAgentMode()) {
 				processSpringComponentsAgent(p, context);
-			} else if (ConfigOptions.isFunctionalMode()) {
-				processSpringComponentsFunc(p, context, alreadyProcessed);
 			} else {
 				processSpringComponents(p, context, alreadyProcessed);
 			}
@@ -276,31 +244,6 @@ public class ResourcesHandler extends Handler {
 			throw new IllegalStateException(e);
 		}
 		return p;
-	}
-	
-	// TODO [0.9.0] rationalize duplicate processSpringComponentXXXX methods
-	private void processSpringComponentsFunc(Properties p, NativeImageContext context,List<String> alreadyProcessed) {
-		Enumeration<Object> keys = p.keys();
-		while (keys.hasMoreElements()) {
-			String key = (String)keys.nextElement();
-			String valueString = (String)p.get(key);
-			if (valueString.equals("package-info")) {
-				continue;
-			}
-			Type keyType = ts.resolveDotted(key);
-			if (keyType.isAtConfiguration()) {
-				checkAndRegisterConfigurationType(key,ReachedBy.FromSpringComponent);
-			}
-			// TODO [0.9.0] do we need to differentiate between 'functional' and 'functional with spring-init'
-			if (ConfigOptions.isSpringInitActive()) {
-				List<String> values = Arrays.asList(valueString.split(","));
-				for (ComponentProcessor componentProcessor: ts.getComponentProcessors()) {
-					if (componentProcessor.handle(context, key, values)) {
-						componentProcessor.process(context, key, values);
-					}
-				}	
-			}
-		}
 	}
 	
 	private void processSpringComponentsAgent(Properties p, NativeImageContext context) {
@@ -612,10 +555,6 @@ public class ResourcesHandler extends Handler {
 			TypeSystem typeSystem = type.getTypeSystem();
 			Type resolve = typeSystem.resolveDotted(s2,true);
 			isConfiguration = resolve.isAtConfiguration();
-		}
-		if (isConfiguration && ConfigOptions.isFunctionalMode()) {
-			SpringFeature.log("Not registering hierarchy of "+type.getDottedName()+" because functional mode and the type is configuration");
-			return;
 		}
 		registerHierarchyHelper(type, new HashSet<>(), typesToMakeAccessible, accessRequired, isConfiguration);
 	}
@@ -1272,11 +1211,10 @@ public class ResourcesHandler extends Handler {
 				break;
 			}
 			registerAnnotationChain(accessManager, hint.getAnnotationChain());
-			if (isHintValidForCurrentMode(hint)) {
-				accessManager.requestProxyDescriptors(hint.getProxyDescriptors());
-				accessManager.requestResourcesDescriptors(hint.getResourceDescriptors());
-				accessManager.requestInitializationDescriptors(hint.getInitializationDescriptors());
-			}
+
+			accessManager.requestProxyDescriptors(hint.getProxyDescriptors());
+			accessManager.requestResourcesDescriptors(hint.getResourceDescriptors());
+			accessManager.requestInitializationDescriptors(hint.getInitializationDescriptors());
 		}
 
 		// TODO think about pulling out into extension mechanism for condition evaluators
@@ -1397,23 +1335,19 @@ public class ResourcesHandler extends Handler {
 			Type resolve = typeSystem.resolveDotted(s2,true);
 			isConfiguration = resolve.isAtConfiguration();
 		}
-		boolean skip = (ConfigOptions.isFunctionalMode() && (isConfiguration || type.isImportSelector() || type.isCondition()));
-		if (!skip) {
-			if (ConfigOptions.isFunctionalMode()) {
-				System.out.println("WARNING: Functional mode but not skipping: "+type.getDottedName());
-			}
-			if (type.isImportSelector()) {
-				accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
+
+		if (type.isImportSelector()) {
+			accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
+		} else {
+			if (type.isCondition()) {
+				accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
 			} else {
-				if (type.isCondition()) {
-					accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
-				} else {
-					accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
-				}
+				accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
 			}
-			// TODO need this guard? if (isConfiguration(configType)) {
-			registerHierarchy(pc, type, accessManager);
 		}
+		// TODO need this guard? if (isConfiguration(configType)) {
+		registerHierarchy(pc, type, accessManager);
+
 		recursivelyCallProcessTypeForHierarchyOfType(pc, type);
 	}
 
@@ -1503,27 +1437,24 @@ public class ResourcesHandler extends Handler {
 	private boolean processExplicitTypeReferencesFromHint(ProcessingContext pc, 
 			RequestedConfigurationManager accessRequestor, HintApplication hint, Map<Type, ReachedBy> toFollow) {
 		boolean passesTests = true;
-		boolean hintExplicitReferencesValidInCurrentMode = isHintValidForCurrentMode(hint);
-		if (hintExplicitReferencesValidInCurrentMode) {
-			Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
-			if (specificNames.size() > 0) {
-				SpringFeature.log("attempting registration of " + specificNames.size() + " specific types");
-				for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
-					String specificTypeName = specificNameEntry.getKey();
-					if (!registerSpecific(pc, specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
-						if (hint.isSkipIfTypesMissing()) {
-							passesTests = false;
-							if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-								break;
-							}
+		Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
+		if (specificNames.size() > 0) {
+			SpringFeature.log("attempting registration of " + specificNames.size() + " specific types");
+			for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
+				String specificTypeName = specificNameEntry.getKey();
+				if (!registerSpecific(pc, specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
+					if (hint.isSkipIfTypesMissing()) {
+						passesTests = false;
+						if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+							break;
 						}
-					} else {
-						if (hint.isFollow()) {
-							// TODO I suspect only certain things need following, specific types lists could
-							// specify that in a suffix (like access required)
-							SpringFeature.log( "will follow specific type reference " + specificTypeName);
-							toFollow.put(ts.resolveDotted(specificTypeName),ReachedBy.Specific);
-						}
+					}
+				} else {
+					if (hint.isFollow()) {
+						// TODO I suspect only certain things need following, specific types lists could
+						// specify that in a suffix (like access required)
+						SpringFeature.log( "will follow specific type reference " + specificTypeName);
+						toFollow.put(ts.resolveDotted(specificTypeName),ReachedBy.Specific);
 					}
 				}
 			}
@@ -1713,7 +1644,7 @@ public class ResourcesHandler extends Handler {
 							}
 						}
 					}
-					if (passesTests && !ConfigOptions.isFunctionalMode()) {
+					if (passesTests) {
 						List<Type> annotationChain = hint.getAnnotationChain();
 						registerAnnotationChain(methodRCM, annotationChain);
 					}
@@ -1830,14 +1761,6 @@ public class ResourcesHandler extends Handler {
 				}
 			}
 
-			// Let's produce a message if this computed value is also in reflect.json
-			// This is a sign we can probably remove that entry from reflect.json (maybe
-			// depend if inferred access required matches declared)
-			if (reflectionHandler.getConstantData().hasClassDescriptor(dname)) {
-				System.out.println("This is in the constant data, does it need to stay in there? " + dname
-						+ "  (dynamically requested access is " + requestedAccess + ")");
-			}
-
 			// Only log new info that is being added at this stage to keep logging down
 			Integer access = reflectionConfigurationAlreadyAdded.get(dname);
 			if (access == null) {
@@ -1854,13 +1777,6 @@ public class ResourcesHandler extends Handler {
 			}
 			Flag[] flags = AccessBits.getFlags(requestedAccess);
 			Type rt = ts.resolveDotted(dname, true);
-			if (ConfigOptions.isFunctionalMode()) {
-				if (rt.isAtConfiguration() || rt.isConditional() || rt.isCondition() ||
-						rt.isImportSelector() || rt.isImportRegistrar()) {
-					SpringFeature.log("In functional mode, not actually adding reflective access for "+dname);
-					continue;
-				}
-			}
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
@@ -1903,22 +1819,6 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 		return ok.toArray(new Flag[0]);
-	}
-
-	private boolean isHintValidForCurrentMode(HintApplication hint) {
-		Mode currentMode = ConfigOptions.getMode();
-		if (!hint.applyToFunctional() && currentMode == Mode.FUNCTIONAL) {
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean isHintValidForCurrentMode(HintDeclaration hint) {
-		Mode currentMode = ConfigOptions.getMode();
-		if (!hint.applyToFunctional() && currentMode==Mode.FUNCTIONAL) {
-			return false;
-		}
-		return true;
 	}
 
 	private boolean isIgnored(Type configurationType) {

@@ -123,18 +123,6 @@ public class SpringFeature implements Feature {
 		ConfigOptions.ensureModeInitialized(ts);
 		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
 			reflectionHandler.register();
-			dynamicProxiesHandler.register();
-		}
-		if (ConfigOptions.isFunctionalMode()) {
-			reflectionHandler.registerFunctional();
-			if (ConfigOptions.isSpringInitActive()) {
-			}
-		}
-		if (ConfigOptions.isAgentMode()) {
-			reflectionHandler.registerHybrid();
-		}
-		if (ConfigOptions.isInitMode()) {
-			reflectionHandler.registerAgent();
 		}
 	}
 
@@ -142,7 +130,6 @@ public class SpringFeature implements Feature {
 		if (!ACTIVE_FEATURE) {
 			return;
 		}
-		initializationHandler.register();
 		resourcesHandler.register();
 		if (ConfigOptions.isVerbose() && resourcesHandler.failedPropertyChecks.size()!=0) {
 			SpringFeature.log("Failed property check summary:");

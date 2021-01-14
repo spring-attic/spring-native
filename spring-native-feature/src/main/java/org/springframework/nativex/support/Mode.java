@@ -24,5 +24,4 @@ public enum Mode {
 	REFLECTION, // Default mode, provide everything
 	INIT, // initialization-only configuration provided from the feature
 	AGENT, // assume agent for 'basic stuff' - feature provides initialization plus other (@Controller analysis?)
-	FUNCTIONAL; // For functional style, feature provides initialization and resource configuration
 }

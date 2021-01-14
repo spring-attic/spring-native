@@ -120,8 +120,6 @@ To fully complete the picture, here is the full list of what can be specified in
 
 * `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeImageHint`.
 
-* `applyToFunctional` if specified indicates whether this hint should apply when the feature is operating in functional mode. The operating mode is set via the `spring.native.mode` property (mode being one of REFLECTION/INIT/AGENT/FUNCTIONAL).
-
 
 === Codifying hint computation/validation
 

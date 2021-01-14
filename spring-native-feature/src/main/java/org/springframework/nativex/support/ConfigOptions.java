@@ -72,8 +72,6 @@ public abstract class ConfigOptions {
 	
 	private static Mode MODE; // Default is 'reflection'
 
-	private static Boolean SPRING_INIT_ACTIVE = null;
-
 	static {
 		String propChecks = System.getProperty("spring.native.build-time-properties-checks");
 		if (propChecks != null) {
@@ -220,10 +218,6 @@ public abstract class ConfigOptions {
 		return getMode()==Mode.REFLECTION;
 	}
 
-	public static boolean isFunctionalMode() {
-		return getMode()==Mode.FUNCTIONAL;
-	}
-
 	public static boolean isIgnoreHintsOnExcludedConfig() {
 		return IGNORE_HINTS_ON_EXCLUDED_CONFIG;
 	}
@@ -243,64 +237,23 @@ public abstract class ConfigOptions {
 	public static Mode getMode() {
 		return MODE;
 	}
-	
-	public static boolean isSpringInitActive() {
-		return SPRING_INIT_ACTIVE;
-	}
-	
-	/*
-	 * Note - some similar inferencing for the substitutions is in FunctionalMode class.
-	 */
+
 	public static void ensureModeInitialized(TypeSystem ts) {
-		if (MODE == null || SPRING_INIT_ACTIVE== null) {
-			if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer", true) != null
-					|| ts.resolveDotted("org.springframework.fu.kofu.KofuApplication", true) != null
-					|| ts.resolveDotted("org.springframework.fu.jafu.JafuApplication", true) != null) {
-				MODE = MODE==null?Mode.FUNCTIONAL:MODE;
-				if (ts.resolveDotted("org.springframework.init.func.InfrastructureInitializer",true)!=null) {
-					SPRING_INIT_ACTIVE = true;
-				}
-			} else {
-				Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts
-						.getReflectionConfigurationsOnClasspath();
-				for (ReflectionDescriptor reflectionDescriptor : reflectionConfigurationsOnClasspath.values()) {
-					if (reflectionDescriptor
-							.hasClassDescriptor("org.springframework.boot.autoconfigure.SpringBootApplication")) {
-						MODE = MODE==null?Mode.AGENT:MODE;
-						break;
-					}
+		if (MODE == null) {
+			Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts
+					.getReflectionConfigurationsOnClasspath();
+			for (ReflectionDescriptor reflectionDescriptor : reflectionConfigurationsOnClasspath.values()) {
+				if (reflectionDescriptor
+						.hasClassDescriptor("org.springframework.boot.autoconfigure.SpringBootApplication")) {
+					MODE = MODE==null?Mode.AGENT:MODE;
+					break;
 				}
 			}
 			if (MODE == null) {
 				MODE = MODE==null?Mode.REFLECTION:MODE;
 			}
-			if (SPRING_INIT_ACTIVE==null) {
-				SPRING_INIT_ACTIVE=false;
-			}
-			System.out.println("feature operating mode: " + MODE.name().toLowerCase()+" (spring init active? "+SPRING_INIT_ACTIVE+")");
+			System.out.println("feature operating mode: " + MODE.name().toLowerCase());
 		}
-	}
-
-	public static boolean checkForFunctionalModeFromHint() {
-		boolean isFunctionalMode = false;
-		String modeSet = System.getProperty("spring.native.mode");
-		if (modeSet != null) {
-			isFunctionalMode = modeSet.equalsIgnoreCase(Mode.FUNCTIONAL.name());
-		} else {
-			if (exists("org.springframework.init.func.InfrastructureInitializer")
-				|| exists("org.springframework.fu.kofu.KofuApplication")
-				|| exists("org.springframework.fu.jafu.JafuApplication")) {
-				isFunctionalMode = true;
-			} else {
-				isFunctionalMode = false;
-			}
-		}
-		if (isFunctionalMode) {
-			if (exists("org.springframework.init.func.InfrastructureInitializer")) {
-				SPRING_INIT_ACTIVE = true;
-			}
-		}
-		return isFunctionalMode;
 	}
 
 	private static boolean exists(String typename) {

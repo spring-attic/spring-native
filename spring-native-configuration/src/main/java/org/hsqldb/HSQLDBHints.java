@@ -11,7 +11,7 @@ import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger=JDBCDriver.class, typeInfos = {
     @TypeInfo( types= {FileUtil.class},
-            typeNames= {"org.hsqldb.dbinfo.DatabaseInformationFull"}, access=AccessBits.LOAD_AND_CONSTRUCT)
+            typeNames= {"org.hsqldb.dbinfo.DatabaseInformationFull"})
 }, resourcesInfos = {
     @ResourcesInfo(patterns = {"org/hsqldb/resources/information-schema.sql", "org/hsqldb/resources/lob-schema.sql", "org/hsqldb/resources/jdklogging-default.properties"}),
     @ResourcesInfo(isBundle = true, patterns = "org.hsqldb.resources.sql-state-messages")

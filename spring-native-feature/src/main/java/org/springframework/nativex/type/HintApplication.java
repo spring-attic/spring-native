@@ -163,10 +163,6 @@ public class HintApplication {
 	public List<ProxyDescriptor> getProxyDescriptors() {
 		return hintDeclaration.getProxyDescriptors();
 	}
-	
-	public boolean applyToFunctional() {
-		return hintDeclaration.applyToFunctional();
-	}
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {
 		return hintDeclaration.getInitializationDescriptors();

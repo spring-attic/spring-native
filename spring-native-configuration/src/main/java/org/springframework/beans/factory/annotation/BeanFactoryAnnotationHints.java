@@ -25,6 +25,6 @@ import org.springframework.nativex.type.AccessBits;
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class }, 
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
-},applyToFunctional = false)
+})
 public class BeanFactoryAnnotationHints implements NativeImageConfiguration {
 }

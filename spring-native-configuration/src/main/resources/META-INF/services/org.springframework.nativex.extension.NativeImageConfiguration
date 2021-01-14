@@ -1,5 +1,6 @@
 LoggingInitHints
 MiscInitHints
+io.netty.NettyHints
 kotlin.KotlinHints
 org.apache.catalina.TomcatHints
 org.h2.H2Hints
@@ -62,13 +63,11 @@ org.springframework.boot.autoconfigure.validation.ValidationHints
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketHints
 org.springframework.boot.autoconfigure.web.reactive.WebFluxHints
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientHints
-org.springframework.boot.autoconfigure.web.reactive.netty.NettyHints
 org.springframework.boot.autoconfigure.web.servlet.WebMvcHints
 org.springframework.boot.context.properties.ConfigurationPropertiesHints
 org.springframework.boot.context.config.ConfigDataPropertiesHints
 org.springframework.boot.context.ContextHints
 org.springframework.boot.logging.LogbackHints
-org.springframework.boot.logging.LogLevelHints
 org.springframework.cache.annotation.CachingHints
 org.springframework.cloud.client.FeaturesEndpointHints
 org.springframework.cloud.config.client.ConfigClientHints

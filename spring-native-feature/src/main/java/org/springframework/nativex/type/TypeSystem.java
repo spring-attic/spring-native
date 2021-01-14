@@ -716,10 +716,8 @@ public class TypeSystem {
 					// These are triggered by 'exploration' under default/hybrid mode
 				} else {
 					for (HintDeclaration hint: proposedhint.getValue()) {
-						if (hint.applyToFunctional() || ConfigOptions.getMode()!=Mode.FUNCTIONAL) {
-							SpringFeature.log("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
-							activeDefaultHints.add(hint);
-						}
+						SpringFeature.log("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
+						activeDefaultHints.add(hint);
 					}
 				}
 			}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.web.reactive.netty;
+package io.netty;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -28,6 +28,7 @@ import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
 
+import org.springframework.nativex.extension.FieldInfo;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.NativeImageConfiguration;
@@ -83,7 +84,47 @@ import org.springframework.nativex.type.AccessBits;
 						"io.netty.util.concurrent.GenericFutureListener",
 						"io.netty.bootstrap.ServerBootstrap$1",
 						"io.netty.bootstrap.ServerBootstrap$ServerBootstrapAcceptor"},
-				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS)
+				access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
+				fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
+				fields = @FieldInfo(name = "consumerIndex", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
+				fields = @FieldInfo(name = "producerIndex", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueConsumerIndexField",
+				fields = @FieldInfo(name = "consumerIndex", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerIndexField",
+				fields = @FieldInfo(name = "producerIndex", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerLimitField",
+				fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "java.nio.Buffer",
+				fields = @FieldInfo(name = "address", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "java.nio.DirectByteBuffer",
+				fields = @FieldInfo(name = "cleaner", allowUnsafeAccess = true)
+		),
+		@TypeInfo(
+				typeNames = "io.netty.buffer.AbstractReferenceCountedByteBuf",
+				fields = @FieldInfo(name = "refCnt", allowUnsafeAccess = true))
+})
+// TODO Seems not taken in account for some reason
+@NativeImageHint(typeInfos = {
+		@TypeInfo(
+				typeNames = "io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
+				fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
+				fields = @FieldInfo(name = "producerIndex", allowUnsafeAccess = true)),
+		@TypeInfo(
+				typeNames = "io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
+				fields = @FieldInfo(name = "consumerIndex", allowUnsafeAccess = true)),
 })
 public class NettyHints implements NativeImageConfiguration {
 }
