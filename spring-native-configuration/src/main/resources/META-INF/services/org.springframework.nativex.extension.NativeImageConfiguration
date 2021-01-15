@@ -52,6 +52,7 @@ org.springframework.boot.autoconfigure.http.HttpMessageConverterHints
 org.springframework.boot.autoconfigure.integration.IntegrationHints
 org.springframework.boot.autoconfigure.jackson.JacksonHints
 org.springframework.boot.autoconfigure.jdbc.JdbcHints
+org.springframework.boot.autoconfigure.mail.JavamailHints
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaHints
 org.springframework.boot.autoconfigure.r2dbc.R2dbcHints
 org.springframework.boot.autoconfigure.rsocket.RSocketMessagingHints

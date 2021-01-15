@@ -35,6 +35,7 @@ The following starters are supported, the group ID is `org.springframework.boot`
 * `spring-boot-starter-jdbc`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-logging`
+* `spring-boot-starter-mail`
 * `spring-boot-starter-thymeleaf`
 * `spring-boot-starter-rsocket`
 * `spring-boot-starter-validation`
