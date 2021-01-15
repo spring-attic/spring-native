@@ -149,6 +149,7 @@ public class GraalVMConnector {
 		if (classDescriptor.getFields()!=null) {
 		for (FieldDescriptor fd: classDescriptor.getFields()) {
 			try {
+				specificFieldsSpecified=true;
 				rra.registerField(type, fd.getName(), fd.isAllowWrite(), fd.isAllowUnsafeAccess());
 			} catch (NoSuchFieldException nsfe) {
 				throw new IllegalStateException(
@@ -170,7 +171,9 @@ public class GraalVMConnector {
 						break;
 					case allDeclaredFields:
 						if (specificFieldsSpecified) {
-							throw new IllegalStateException();
+							// TODO when there is time sort out to ensure flags for fields not set if specific fields specified (we do something like this already for methods)
+							break;
+//							throw new IllegalStateException("Why allDeclaredFields when specific fields set for "+type);
 						}
 						if (verify(type.getDeclaredFields())) {
 							rra.registerDeclaredFields(type);
@@ -178,7 +181,8 @@ public class GraalVMConnector {
 						break;
 					case allPublicFields:
 						if (specificFieldsSpecified) {
-							throw new IllegalStateException();
+							break;
+//							throw new IllegalStateException();
 						}
 						if (verify(type.getFields())) {
 							rra.registerPublicFields(type);

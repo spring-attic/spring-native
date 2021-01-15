@@ -53,6 +53,7 @@ import org.springframework.nativex.extension.NativeImageContext;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.FieldDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.HintApplication;
 import org.springframework.nativex.type.Method;
@@ -143,7 +144,8 @@ public class ResourcesHandler extends Handler {
 					SpringFeature.log("  type has #"+mds.size()+" members specified, removing typewide method access flags");
 					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 				}
-				reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds), null, true, accessFlags);
+				List<FieldDescriptor> fds = ad.getFieldDescriptors();
+				reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds), FieldDescriptor.toStringArray(fds), true, accessFlags);
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 			for (ProxyDescriptor pd: proxyDescriptors) {
