@@ -1,5 +1,6 @@
 package org.springframework;
 
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.NativeImageConfiguration;
@@ -60,7 +61,8 @@ import org.springframework.nativex.extension.ProxyInfo;
 				org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.class,
 				org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport.class,
 				org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService.class,
-				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class
+				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
+				org.springframework.core.ReactiveAdapterRegistry.class
 		}, typeNames = {
 				"org.springframework.aop.Advisor$1",
 				"org.springframework.core.annotation.AnnotationFilter$1",
