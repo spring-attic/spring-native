@@ -9,7 +9,7 @@ import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithBuildtools;
 import org.springframework.util.MultiValueMap;
 
-@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { WithBuildtools.class, OnlyIfPresent.class })
+@TargetClass(className="org.springframework.nativex.buildtools.StaticSpringFactories", onlyWith = { WithBuildtools.class, OnlyIfPresent.class })
 final class Target_StaticSpringFactories {
 
 	@Alias
