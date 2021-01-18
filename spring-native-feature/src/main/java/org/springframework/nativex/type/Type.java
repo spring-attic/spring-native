@@ -1651,8 +1651,13 @@ public class Type {
 		return result;
 	}
 
+	// TODO this isn't quite right as it doesn't check for other constructors!
 	public boolean hasOnlySimpleConstructor() {
 		return getDefaultConstructor() != null;
+	}
+	
+	public boolean hasNoArgConstructor() {
+		return getDefaultConstructor() !=null;
 	}
 
 	/**

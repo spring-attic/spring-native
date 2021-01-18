@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
@@ -45,10 +46,11 @@ public class ConfigurationContributor implements BootstrapContributor {
 		if (!isActive()) {
 			return;
 		}
-//		ConfigOptions.setMode(Mode.REFLECTION);
-		ConfigOptions.setMode(Mode.FUNCTIONAL);
+		ConfigOptions.setMode(Mode.REFLECTION);
+//		ConfigOptions.setMode(Mode.FUNCTIONAL);
 		ConfigOptions.setVerbose(true);
 		TypeSystem typeSystem = context.getTypeSystem();
+		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();

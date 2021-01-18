@@ -1300,18 +1300,19 @@ public class TypeSystem {
 	public Collection<byte[]> getResources(String resource) {
 		long t = System.currentTimeMillis();
 		Map<String, byte[]> resources = new HashMap<>();
+		boolean specific = resource.startsWith("/");
 		for (String s: classpath) {
 			File f = new File(s);
 			if (f.isDirectory()) {
 				searchDir(f, filepath -> { 
-					return filepath.equals(resource);
+					return specific?filepath.equals(resource):filepath.endsWith(resource);
 				}, 
 				this::readInputStream, // InputStream to a byte array?
 //				ResourcesJsonMarshaller::read,
 				resources);
 			} else if (f.isFile() && f.toString().endsWith(".jar")) {
 				searchJar(f, filepath -> { 
-					return filepath.equals(resource);
+					return specific?filepath.equals(resource):filepath.endsWith(resource);
 				}, 
 				this::readInputStream,
 //				ResourcesJsonMarshaller::read,

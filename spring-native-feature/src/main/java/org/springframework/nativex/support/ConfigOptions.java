@@ -74,6 +74,8 @@ public abstract class ConfigOptions {
 
 	private static Boolean SPRING_INIT_ACTIVE = null;
 
+	private static boolean BUILD_TIME_TRANSFORMATION;
+
 	static {
 		String propChecks = System.getProperty("spring.native.build-time-properties-checks");
 		if (propChecks != null) {
@@ -382,5 +384,13 @@ public abstract class ConfigOptions {
 
 	public static void setVerbose(boolean b) {
 		VERBOSE=b;
+	}
+
+	public static void setBuildTimeTransformation(boolean b) {
+		BUILD_TIME_TRANSFORMATION = b;
+	}
+
+	public static boolean isBuildTimeTransformation() {
+		return BUILD_TIME_TRANSFORMATION;
 	}
 }
