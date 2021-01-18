@@ -111,7 +111,7 @@
     <!-- this is the snippet that will invoke native-image during a regular maven build -->
     <profiles>
         <profile>
-            <id>native</id>
+            <id>bti-native</id>
             <build>
                 <plugins>
                     <plugin>
