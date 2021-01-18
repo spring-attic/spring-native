@@ -17,12 +17,14 @@
 package org.springframework.nativex.domain.resources;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 

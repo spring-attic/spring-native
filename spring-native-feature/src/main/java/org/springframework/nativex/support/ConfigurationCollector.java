@@ -17,6 +17,7 @@ package org.springframework.nativex.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,6 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
-import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -128,18 +128,39 @@ public class ConfigurationCollector {
 
 	public void dump(File locationToPlaceConfig) {
 		SpringFeature.log("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
+		System.out.println("a");
 		if (!locationToPlaceConfig.exists()) {
 			locationToPlaceConfig.mkdirs();
 		}
+		System.out.println("b");
 		if (!locationToPlaceConfig.exists()) {
 			throw new RuntimeException("Unable to work with dump directory location: "+locationToPlaceConfig);
 		}
+		System.out.println("c");
 		try {
-			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"reflect-config.json"))) {
+			File f = new File(locationToPlaceConfig,"reflect-config.json");
+			if (f.exists()) {
+				System.out.println("Merging new reflect-config.json with existing...");
+				try (FileInputStream fos = new FileInputStream(f)) {
+					ReflectionDescriptor existingRD = JsonMarshaller.read(fos);
+					System.out.println("Size bfore "+reflectionDescriptor.getClassDescriptors().size());
+					reflectionDescriptor.merge(existingRD);
+					System.out.println("existing: "+existingRD);
+					System.out.println("Size after merge "+reflectionDescriptor.getClassDescriptors().size());
+				}
+			}
+			try (FileOutputStream fos = new FileOutputStream(f)) {
 				JsonMarshaller.write(reflectionDescriptor,fos);
 			}
-			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"resource-config.json"))) {
-				ResourcesJsonMarshaller.write(resourcesDescriptor,fos);
+			f = new File(locationToPlaceConfig, "resource-config.json");
+			if (f.exists()) {
+				try (FileInputStream fis = new FileInputStream(f)) {
+					ResourcesDescriptor existingRD = ResourcesJsonMarshaller.read(fis);
+					resourcesDescriptor.merge(existingRD);
+				}
+			}
+			try (FileOutputStream fos = new FileOutputStream(f)) {
+				ResourcesJsonMarshaller.write(resourcesDescriptor, fos);
 			}
 			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"proxy-config.json"))) {
 				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
@@ -150,8 +171,13 @@ public class ConfigurationCollector {
 				fos.write("build-time-computed-config=true".getBytes());
 			}
 		} catch (IOException ioe) {
+			ioe.printStackTrace();
 			throw new RuntimeException("Problem writing out configuration",ioe);
+		} catch (RuntimeException re) {
+			re.printStackTrace();
+			throw re;
 		}
+		System.out.println("Finished writing out json");
 	}
 	
 	private void writeNativeImageProperties(File file) throws IOException {

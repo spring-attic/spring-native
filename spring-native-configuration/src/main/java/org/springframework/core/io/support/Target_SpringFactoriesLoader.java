@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.springframework.lang.Nullable;
-import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithBuildtools;
 import org.springframework.util.Assert;
 
@@ -22,24 +21,27 @@ final class Target_SpringFactoriesLoader {
 	@Alias
 	private static Log logger;
 
+	@SuppressWarnings("unchecked")
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
+		System.out.println("Substituted TSSF.lf");
 		List<Supplier<Object>> result = (List<Supplier<Object>>) Target_StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
 			return Collections.emptyList();
 		}
-		List<Object> list = new ArrayList<>();
-		for (Supplier<Object> objectSupplier : result) {
-			Object o = objectSupplier.get();
-			list.add(o);
+		List<T> facs = new ArrayList<>();
+		for (Supplier<Object> supplier: result) {
+			facs.add((T) supplier.get());
 		}
-		return (List<T>) list;
+		return facs;
+//		return (List<T>) result.stream().map(Supplier::get).collect(Collectors.toList());
 	}
 
 	@Substitute
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
 		List<String> names = Target_StaticSpringFactories.names.get(factoryType);
+		System.out.println("Substituted TSSF.lfn");
 		if (names != null) {
 			return names;
 		}
@@ -48,13 +50,12 @@ final class Target_SpringFactoriesLoader {
 			if (stored == null) {
 				return Collections.emptyList();
 			}
-			List<String> list = new ArrayList<>();
-			for (Supplier<Object> objectSupplier : stored) {
-				Object factory = objectSupplier.get();
-				String name = factory.getClass().getName();
-				list.add(name);
+			List<String> result = new ArrayList<>();
+			for (Supplier<Object> supplier: stored) {
+				result.add(supplier.get().getClass().getName());
 			}
-			return list;
+			return result;
+//			return stored.stream().map(Supplier::get).map(factory -> factory.getClass().getName()).collect(Collectors.toList());
 		}
 	}
 

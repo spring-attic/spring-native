@@ -56,7 +56,7 @@ public abstract class ConfigOptions {
 	
 	private final static String DUMP_CONFIG;
 
-	private final static boolean VERBOSE;
+	private static boolean VERBOSE;
 
 	private final static boolean FAIL_ON_VERSION_CHECK;
 	
@@ -71,6 +71,8 @@ public abstract class ConfigOptions {
 	public static final String ENABLE_AT_REPOSITORY_PROCESSING = "spring.native.enable-at-repository-processing";
 	
 	private static Mode MODE; // Default is 'reflection'
+
+	private static boolean BUILD_TIME_TRANSFORMATION;
 
 	static {
 		String propChecks = System.getProperty("spring.native.build-time-properties-checks");
@@ -331,5 +333,17 @@ public abstract class ConfigOptions {
 
 	public static void setShouldRemoveUnusedAutoconfig(boolean b) {
 		REMOVE_UNUSED_AUTOCONFIG=b;
+	}
+
+	public static void setVerbose(boolean b) {
+		VERBOSE=b;
+	}
+
+	public static void setBuildTimeTransformation(boolean b) {
+		BUILD_TIME_TRANSFORMATION = b;
+	}
+
+	public static boolean isBuildTimeTransformation() {
+		return BUILD_TIME_TRANSFORMATION;
 	}
 }

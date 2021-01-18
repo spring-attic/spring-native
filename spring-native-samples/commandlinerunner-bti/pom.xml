@@ -25,14 +25,16 @@
         -->
         <!-- important to distill out exactly which bits of the spring-native project the
              generated code is relying on. -->
+	     <!--
         <dependency>
-            <!-- this is needed for visibility of LiteConfigurationInitializer -->
-            <!-- (un)fortunately it also pulls in all the other substitutions, it might
-                 be nice to test without those. -->
+		<- this is needed for visibility of LiteConfigurationInitializer  ->
+            <- (un)fortunately it also pulls in all the other substitutions, it might
+	    be nice to test without those. ->
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-native-substitutions</artifactId>
             <version>0.9.0-SNAPSHOT</version>
         </dependency>
+	     --> 
         <dependency>
             <!-- this is needed so generated source can see NativePropertiesListener -->
             <groupId>org.springframework.experimental</groupId>
@@ -109,7 +111,7 @@
     <!-- this is the snippet that will invoke native-image during a regular maven build -->
     <profiles>
         <profile>
-            <id>native</id>
+            <id>bti-native</id>
             <build>
                 <plugins>
                     <plugin>

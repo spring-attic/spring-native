@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TypeSystemExtension.class)
 class AutoConfigurationFactoriesCodeContributorTests {
 
-	AutoConfigurationFactoriesCodeContributor contributor = new AutoConfigurationFactoriesCodeContributor();
+	FactoriesCodeContributor contributor = new AutoConfigurationFactoriesCodeContributor();
 
 	@Test
 	void shouldContributeWhenAutoConfiguration(TypeSystem typeSystem) {
