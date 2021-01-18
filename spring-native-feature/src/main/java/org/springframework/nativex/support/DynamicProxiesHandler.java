@@ -33,30 +33,6 @@ public class DynamicProxiesHandler extends Handler {
 		super(collector);
 	}
 
-	public ProxiesDescriptor loadStaticProxyConfiguration() {
-		try {
-			InputStream s = this.getClass().getResourceAsStream("/proxies.json");
-			ProxiesDescriptor pd = ProxiesDescriptorJsonMarshaller.read(s);
-			return pd;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public void register() {
-		ProxiesDescriptor pd = loadStaticProxyConfiguration();
-		System.out.println("Attempting proxy registration of #"+pd.getProxyDescriptors().size()+" proxies");
-		int skipped = 0;
-		for (ProxyDescriptor proxyDescriptor : pd.getProxyDescriptors()) {
-			if (!collector.addProxy(proxyDescriptor.getInterfaces(), true)) {
-				skipped++;
-			}
-		}
-		if (skipped != 0) {
-			System.out.println("Skipped registration of #"+skipped+" statically declared proxies - relevant types not on classpath");
-		}
-	}
-
 	public boolean addProxy(org.springframework.nativex.type.ProxyDescriptor pd) {
 		return addProxy(Arrays.asList(pd.getTypes()));
 	}

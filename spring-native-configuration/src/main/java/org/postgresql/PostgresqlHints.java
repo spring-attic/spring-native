@@ -21,7 +21,7 @@ import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 @NativeImageHint(trigger = Driver.class, typeInfos= {
-		@TypeInfo(types = Driver.class, access = AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeInfo(types = Driver.class),
 		@TypeInfo(types = PGProperty.class, access = AccessBits.DECLARED_FIELDS)
 	})
 public class PostgresqlHints implements NativeImageConfiguration {

@@ -29,5 +29,5 @@ import org.springframework.nativex.type.AccessBits;
 	AnnotationAttributes.class,AnnotationAttributes[].class,
 	DecoratingProxy.class,PriorityOrdered.class,
 	TypeMappedAnnotation[].class
-},access = AccessBits.CLASS)},applyToFunctional = false)
+},access = AccessBits.CLASS)})
 public class CoreAnnotationHints implements NativeImageConfiguration { }

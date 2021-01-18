@@ -1295,7 +1295,7 @@ public class Type {
 			if (hintsOnAnnotation.size() != 0) {
 				List<String> extractAttributeNames = hintsOnAnnotation.stream().map(hd -> hd.getExtractAttributeNames()).filter(x->x!=null).flatMap(List::stream).collect(Collectors.toList());
 				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an, extractAttributeNames);
-				if (an.desc.equals(Type.AtEnableConfigurationProperties) && !ConfigOptions.isFunctionalMode()) {
+				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
 					// TODO special handling here for @EnableConfigurationProperties - should we
 					// promote this to a hint annotation value or truly a special case?
 					addInners(typesCollectedFromAnnotation);
@@ -1645,8 +1645,6 @@ public class Type {
 				Object value = values.get(i + 1);
 				if (key.equals("trigger")) {
 					ch.setTriggerTypename(((org.objectweb.asm.Type) value).getClassName());
-				} else if (key.equals("applyToFunctional")) {
-					ch.setApplyToFunctional((Boolean) value);
 				} else if (key.equals("typeInfos")) {
 					processTypeInfoList(ch, value);
 				} else if (key.equals("importInfos")) {
@@ -2022,15 +2020,10 @@ public class Type {
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
-			if (!ConfigOptions.isFunctionalMode()) {
-				if (t.isAtValidated()) {
-					return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS;
-				} else {
-					return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
-				}
+			if (t.isAtValidated()) {
+				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS;
 			} else {
-				SpringFeature.log("Skipping registration of reflective access to configuration properties: "+t.getDottedName());
-				return AccessBits.NONE;
+				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
 			}
 		} else if (t.isCondition()) {
 			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;

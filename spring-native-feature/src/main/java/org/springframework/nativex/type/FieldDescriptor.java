@@ -15,6 +15,8 @@
  */
 package org.springframework.nativex.type;
 
+import java.util.List;
+
 public class FieldDescriptor {
 	
 	private final String name;
@@ -31,6 +33,27 @@ public class FieldDescriptor {
 
 	public boolean isAllowUnsafeAccess() {
 		return allowUnsafeAccess;
+	}
+
+	public static String[][] toStringArray(List<FieldDescriptor> fds) {
+		if (fds == null) {
+			return null;
+		}
+		String[][] array = new String[fds.size()][];
+		for (int m=0;m<fds.size();m++) {
+			org.springframework.nativex.type.FieldDescriptor fd = fds.get(m);
+			boolean aua = fd.allowUnsafeAccess;
+			String name = fd.getName();
+			if (aua) {
+				array[m] = new String[2];
+				array[m][0] = name;
+				array[m][1] = "true";
+			} else {
+				array[m] = new String[1];
+				array[m][0] = name;
+			}
+		}
+		return array;
 	}
 
 }

@@ -1,8 +1,0 @@
-[
-    {
-        "name": "com.example.validator.Foo",
-        "allDeclaredFields": true,
-        "allDeclaredMethods": true,
-        "allDeclaredConstructors": true
-    }
-]

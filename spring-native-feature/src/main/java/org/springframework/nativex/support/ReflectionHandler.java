@@ -47,40 +47,6 @@ public class ReflectionHandler extends Handler {
 		super(collector);
 	}
 
-	public ReflectionDescriptor getConstantData() {
-		if (constantReflectionDescriptor == null) {
-			try {
-				InputStream s = this.getClass().getResourceAsStream("/reflect.json");
-				constantReflectionDescriptor = JsonMarshaller.read(s);
-			} catch (Exception e) {
-				throw new IllegalStateException("Unexpectedly can't load /reflect.json", e);
-			}
-		}
-		return constantReflectionDescriptor;
-	}
-
-	public void registerHybrid() {
-		getConstantData();
-		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
-			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
-				Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
-	}
-
-	public void registerAgent() {
-		getConstantData();
-	}
-
-	public void registerFunctional() {
-		getConstantData();
-
-		if (ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) != null) {
-			addAccess("org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader",
-				Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
-		registerWebApplicationTypeClasses();
-	}
-
 	private void registerWebApplicationTypeClasses() {
 		if (ts.resolveDotted("org.springframework.web.reactive.DispatcherHandler", true) !=null && 
 			ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) == null && 
@@ -94,8 +60,6 @@ public class ReflectionHandler extends Handler {
 	}
 
 	public void register() {
-		ReflectionDescriptor addReflectionDescriptor = collector.addReflectionDescriptor(getConstantData());
-//		System.out.println("Registered this stuff from the reflective static config: "+addReflectionDescriptor);
 		registerWebApplicationTypeClasses();
 		if (!ConfigOptions.shouldRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
@@ -203,7 +167,7 @@ public class ReflectionHandler extends Handler {
 				if (existingFd != null) {
 					throw new IllegalStateException("nyi"); // merge of configuration necessary
 				} else {
-					//XXX cd.addFieldDescriptor(fd);
+					cd.addFieldDescriptor(fd);
 				}
 			}
 		}

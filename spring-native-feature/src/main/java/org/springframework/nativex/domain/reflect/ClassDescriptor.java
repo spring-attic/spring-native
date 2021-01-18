@@ -372,9 +372,11 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 	}
 
 	public FieldDescriptor getFieldDescriptorNamed(String name) {
-		for (FieldDescriptor fd: fields) {
-			if (fd.getName().equals(name)) {
-				return fd;
+		if (fields != null) {
+			for (FieldDescriptor fd: fields) {
+				if (fd.getName().equals(name)) {
+					return fd;
+				}
 			}
 		}
 		return null;

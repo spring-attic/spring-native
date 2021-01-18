@@ -38,8 +38,6 @@ public class HintDeclaration {
 
 	private List<InitializationDescriptor> initializationDescriptors = new ArrayList<>();
 
-	private boolean applyToFunctional = true; // True as per default for this attribute in NativeImageHint
-
 	public boolean follow = false;
 
 	public boolean skipIfTypesMissing = false;
@@ -115,14 +113,6 @@ public class HintDeclaration {
 	
 	public List<ResourcesDescriptor> getResourcesDescriptors() {
 		return resourceDescriptors;
-	}
-	
-	public void setApplyToFunctional(boolean b) {
-		applyToFunctional = b;
-	}
-
-	public boolean applyToFunctional() {
-		return applyToFunctional;
 	}
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {

@@ -113,21 +113,6 @@ public class HintTests {
 	}
 
 	@Test
-	public void modeRestrictions() {
-		Type testClass = typeSystem.resolveName(TestClass4.class.getName());
-		List<HintApplication> hints = testClass.getHints();
-		assertEquals(1,hints.size());
-		HintApplication hint = hints.get(0);
-		assertFalse(hint.applyToFunctional());
-	}
-
-	@NativeImageHint(applyToFunctional = false, resourcesInfos = { 
-			@ResourcesInfo(patterns = { "aaa","bbb" })
-	})
-	static class TestClass4 {
-	}
-
-	@Test
 	public void initializations() {
 		Type testClass = typeSystem.resolveName(TestClass5.class.getName());
 		List<HintApplication> hints = testClass.getHints();

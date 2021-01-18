@@ -36,47 +36,6 @@ public class InitializationHandler extends Handler {
 		super(collector);
 	}
 
-	public InitializationDescriptor compute() {
-		try {
-			InputStream s = this.getClass().getResourceAsStream("/initialization.json");
-			return InitializationJsonMarshaller.read(s);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public void register() {
-		InitializationDescriptor id = compute();
-		System.out.println("Configuring initialization time for specific types and packages:");
-		if (id == null) {
-			throw new IllegalStateException("Unable to load initialization descriptor");
-		}
-		List<Type> typenames = id.getBuildtimeClasses().stream()
-				.map(t -> ts.resolveDotted(t,true)/*access::findClassByName*/).filter(Objects::nonNull).collect(Collectors.toList());
-		collector.initializeAtBuildTime(typenames);
-
-		List<Type> collect = id.getRuntimeClasses().stream()
-				.map(t->ts.resolveDotted(t,true)).filter(Objects::nonNull)
-				.collect(Collectors.toList());
-		collector.initializeAtRunTime(collect);
-
-		SpringFeature.log("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
-		collector.initializeAtBuildTimePackages(id.getBuildtimePackages().toArray(new String[] {}));
-		SpringFeature.log("Registering these packages for runtime initialization: \n"+id.getRuntimePackages());
-		collector.initializeAtRunTimePackages(id.getRuntimePackages().toArray(new String[] {}));
-
-		if (ConfigOptions.isVerifierOn()) {
-			for (Map.Entry<String, List<String>> e : ts.getSpringClassesMakingIsPresentChecks().entrySet()) {
-				String k = e.getKey();
-				if (!id.getBuildtimeClasses().contains(k)) {
-					System.out.println("[verification] The type " + k
-							+ " is making isPresent() calls in the static initializer, could be worth specifying build-time-initialization. "
-							+ "It appears to be making isPresent() checks on " + e.getValue());
-				}
-			}
-		}
-	}
-
 	public void registerInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
 		List<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
 		if (buildtimeClasses.size()!=0) {

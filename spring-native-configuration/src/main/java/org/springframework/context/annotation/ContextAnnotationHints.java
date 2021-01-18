@@ -33,8 +33,8 @@ import org.springframework.nativex.type.AccessBits;
 @NativeImageHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 // TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 // @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-@NativeImageHint(trigger = Import.class, abortIfTypesMissing = false, follow = true, applyToFunctional = false) // TODO verify these flags...
-@NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }, applyToFunctional = false) // TODO need extract?
+@NativeImageHint(trigger = Import.class, follow = true) // TODO verify these flags...
+@NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
 @NativeImageHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })

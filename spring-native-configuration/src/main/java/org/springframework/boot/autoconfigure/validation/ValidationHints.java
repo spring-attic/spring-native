@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,15 @@ import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.constraintvalidators.bv.DigitsValidatorForCharSequence;
+import org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator;
 import org.hibernate.validator.internal.constraintvalidators.bv.PatternValidator;
 import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForCharSequence;
 import org.hibernate.validator.internal.engine.ConfigurationImpl;
 import org.hibernate.validator.internal.engine.resolver.JPATraversableResolver;
 import org.hibernate.validator.internal.engine.resolver.TraversableResolvers;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
+import org.hibernate.validator.internal.util.logging.Log;
+import org.hibernate.validator.internal.util.logging.Log_$logger;
 import org.hibernate.validator.internal.util.logging.Messages;
 import org.hibernate.validator.internal.xml.config.ValidationBootstrapParameters;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
@@ -82,12 +85,14 @@ import org.springframework.nativex.type.AccessBits;
 			NotEmptyValidatorForCharSequence.class,
 			DigitsValidatorForCharSequence.class,
 			GenericBootstrap.class,
-			PatternValidator.class, ReusableMessageFactory.class
+			PatternValidator.class,
+			ReusableMessageFactory.class,
+			NotNullValidator.class,
+			Log_$logger.class,
+			Log.class
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
-				"org.hibernate.validator.internal.util.logging.Log_$logger",
-				"org.hibernate.validator.internal.util.logging.Log"}
-		),
+		}),
 		@TypeInfo(types = {
 				ValidatorFactory.class,
 				Pattern.class,

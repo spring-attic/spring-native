@@ -25,12 +25,12 @@ import org.springframework.nativex.type.AccessBits;
 		@TypeInfo(types= { 
 				ImportAutoConfiguration.class }, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
-			})},applyToFunctional=false
+			})}
 )
-@NativeImageHint(trigger=AutoConfigurationImportSelector.class, applyToFunctional=false)
+@NativeImageHint(trigger=AutoConfigurationImportSelector.class)
 @NativeImageHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
-			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) },applyToFunctional=false)
+			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(types = { 
@@ -39,11 +39,11 @@ import org.springframework.nativex.type.AccessBits;
 		AutoConfigurationPackages.BasePackages.class,
 		EnableAutoConfiguration.class,SpringBootApplication.class
 	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
-},applyToFunctional=false)
+})
 @NativeImageHint(typeInfos = { 
 	@TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
-	},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
-},applyToFunctional=false)
+	})
+})
 public class AutoConfigurationHints implements NativeImageConfiguration {
 }
