@@ -101,16 +101,6 @@ public class SpringFeature implements Feature {
 					"Use -Dspring.native.verbose=true on native-image call to see more detailed information from the feature");
 		}
 		initHandlers();
-		String springBootVersion = SpringBootVersion.getVersion();
-		if (springBootVersion != null && Float.parseFloat(springBootVersion.substring(0, 3)) < 2.4) {
-			String message = "Spring GraalVM Native requires Spring Boot 2.4.0-M2 or above";
-			if (ConfigOptions.shouldFailOnVersionCheck()) {
-				throw new VersionCheckException(message);
-			}
-			else {
-				System.out.println("Warning: " + message);
-			}
-		}
 		
 		dynamicProxiesHandler.setTypeSystem(ts);
 		reflectionHandler.setTypeSystem(ts);
