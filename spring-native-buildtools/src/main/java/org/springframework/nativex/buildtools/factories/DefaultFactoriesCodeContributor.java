@@ -24,14 +24,11 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code) {
 		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
-		System.out.println("DFCC: checking "+factory.getFactory().getDottedName());	
 		boolean factoryOK = 
 			passesAnyConditionalOnClass(typeSystem, factory) &&
 			passesFilterCheck(typeSystem, factory);
 		if (factoryOK) {
 			code.writeToStaticBlock(generateStaticInit(factory));
-		} else {
-			System.out.println("DFCC: skipping "+factory.getFactory().getDottedName());
 		}
 	}
 

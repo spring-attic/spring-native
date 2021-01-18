@@ -59,6 +59,11 @@ public class InitializationHandler extends Handler {
 				.map(t->ts.resolveDotted(t,true)).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		collector.initializeAtRunTime(collect);
+		
+		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
+		if (ConfigOptions.isBuildTimeTransformation()) {
+			collector.initializeAtBuildTime("org.springframework.nativex.buildtools.StaticSpringFactories");
+		}
 
 		SpringFeature.log("Registering these packages for buildtime initialization: \n"+id.getBuildtimePackages());
 		collector.initializeAtBuildTimePackages(id.getBuildtimePackages().toArray(new String[] {}));

@@ -18,6 +18,8 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.MethodInfo;
 import org.springframework.nativex.extension.NativeImageConfiguration;
 import org.springframework.nativex.extension.NativeImageHint;
@@ -68,6 +70,10 @@ import org.springframework.nativex.type.AccessBits;
 				@TypeInfo(types= SpringApplication.class, methods = {
 						@MethodInfo(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
 				})
-		})
+		}
+//		initializationInfos = {
+//			@InitializationInfo(initTime = InitializationTime.BUILD, typeNames = "org.springframework.nativex.buildtools.StaticSpringFactories")
+//		}
+		)
 public class SpringApplicationHints implements NativeImageConfiguration {
 }

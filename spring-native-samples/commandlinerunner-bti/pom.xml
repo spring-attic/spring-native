@@ -146,9 +146,6 @@
                         <configuration>
                             <mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
                             <imageName>commandlinerunner-bti</imageName>
-			    <buildArgs>
-				    --initialize-at-build-time=org.springframework.nativex.buildtools.StaticSpringFactories
-			    </buildArgs>
                         </configuration>
                         <executions>
                             <execution>

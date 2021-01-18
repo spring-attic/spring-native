@@ -15,7 +15,8 @@ public class InitTests {
 		InitializationDescriptor read = InitializationJsonMarshaller.read(s);
 		read.getBuildtimeClasses().forEach(clazz -> {
 			try {
-				if(!clazz.equals("org.springframework.boot.SpringBootFactories")  // Substitution
+				if(!clazz.equals("org.springframework.boot.SpringBootFactories") // Substitution
+						&& !clazz.equals("org.springframework.nativex.buildtools.StaticSpringFactories") // When BTI in use
 				) {
 					Class.forName(clazz);
 				}

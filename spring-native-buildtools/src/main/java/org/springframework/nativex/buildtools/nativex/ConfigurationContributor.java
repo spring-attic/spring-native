@@ -55,7 +55,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
 		// TODO maybe should use groupid/artifactid in this path
-		System.out.println("DUMPING CONFIG:");
 		configurationCollector.dump(new File("target/classes/META-INF/native-image"));
 
 //		ReflectionDescriptor reflectionDescriptor = configurationCollector.getReflectionDescriptor();
