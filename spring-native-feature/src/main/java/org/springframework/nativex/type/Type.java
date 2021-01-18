@@ -82,6 +82,7 @@ public class Type {
 	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
 	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
+	public final static String AtConditionalOnSingleCandidate = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate;";
 	public final static String AtConditionalOnBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnBean;";
 	public final static String AtConfiguration = "Lorg/springframework/context/annotation/Configuration;";
 	public final static String AtImportAutoConfiguration = "Lorg/springframework/boot/autoconfigure/ImportAutoConfiguration;";
@@ -877,6 +878,14 @@ public class Type {
 		}
 		return findAnnotationValue;
 	}
+	
+	public String findConditionalOnSingleCandidateValue() {
+		if (dimensions > 0) {
+			return null;
+		}
+		String findAnnotationValue = findAnnotationSingleValue(AtConditionalOnSingleCandidate, false);
+		return findAnnotationValue;
+	}
 
 	public List<String> findConditionalOnClassValue() {
 		if (dimensions > 0) {
@@ -915,6 +924,13 @@ public class Type {
 			return Collections.emptyList();
 		}
 		return findAnnotationValue(annotationType, searchMeta, new HashSet<>());
+	}
+
+	public String findAnnotationSingleValue(String annotationType, boolean searchMeta) {
+		if (dimensions > 0) {
+			return null;
+		}
+		return findAnnotationSingleValue(annotationType, searchMeta, new HashSet<>());
 	}
 
 	public Map<String, List<String>> findAnnotationValueWithHostAnnotation(String annotationType, boolean searchMeta,
@@ -991,6 +1007,42 @@ public class Type {
 			}
 		}
 		return collectedResults;
+	}
+	
+
+	public String findAnnotationSingleValue(String annotationType, boolean searchMeta, Set<String> visited) {
+		if (dimensions > 0) {
+			return null;
+		}
+		if (!visited.add(this.getName())) {
+			return null;
+		}
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode an : node.visibleAnnotations) {
+				if (an.desc.equals(annotationType)) {
+					List<Object> values = an.values;
+					if (values != null) {
+						for (int i = 0; i < values.size(); i += 2) {
+							if (values.get(i).equals("value")) {
+								org.objectweb.asm.Type t = (org.objectweb.asm.Type) values.get(i+1);
+								return t.getDescriptor();
+							}
+						}
+					}
+				}
+			}
+			if (searchMeta) {
+				for (AnnotationNode an : node.visibleAnnotations) {
+					// For example @EnableSomething might have @Import on it
+					Type annoType = typeSystem.Lresolve(an.desc);
+					String value = annoType.findAnnotationSingleValue(annotationType, searchMeta, visited);
+					if (value != null) {
+						return value;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public List<Type> getAnnotations() {
@@ -2450,28 +2502,36 @@ public class Type {
 	public boolean checkConditionalOnWebApplication() {
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
+				System.out.println(">"+an.desc);
 				if (an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;")) {
+					boolean checkHappened = false;
 					List<Object> values = an.values;
 					if (values != null) {
 						for (int i = 0; i < values.size(); i += 2) {
 							if (values.get(i).equals("type")) {
-								// [Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication$Type;,
-								// SERVLET]
+								// [Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication$Type;, SERVLET]
 								String webApplicationType = ((String[]) values.get(i + 1))[1];
 								// SERVLET, REACTIVE, ANY
 								if (webApplicationType.equals("SERVLET")) {
 									// If GenericWebApplicationContext not around this check on SERVLET cannot pass
+									checkHappened=true;
 									return typeSystem.resolveDotted(
 											"org.springframework.web.context.support.GenericWebApplicationContext",
 											true) != null;
 								}
 								if (webApplicationType.equals("REACTIVE")) {
 									// If HandlerResult not around this check on REACTIVE cannot pass
+									checkHappened=true;
 									return typeSystem.resolveDotted("org.springframework.web.reactive.HandlerResult",
 											true) != null;
 								}
 							}
 						}
+					}
+					if (!checkHappened) {
+						// It was set to ANY (the default), let's check for both
+						return  typeSystem.resolveDotted( "org.springframework.web.context.support.GenericWebApplicationContext", true) != null || 
+								typeSystem.resolveDotted("org.springframework.web.reactive.HandlerResult", true) != null;
 					}
 				}
 			}

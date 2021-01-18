@@ -93,16 +93,16 @@ public class ReflectionDescriptor {
 	}
 
 	public void merge(ReflectionDescriptor rd) {
-		List<ClassDescriptor> classDescriptors = rd.getClassDescriptors();
-		if (classDescriptors != null) {
+		List<ClassDescriptor> otherClassDescriptors = rd.getClassDescriptors();
+		if (otherClassDescriptors != null) {
 			List<ClassDescriptor> toAdd = new ArrayList<>();
-			for (ClassDescriptor classDescriptor: classDescriptors) {
-				String typename = classDescriptor.getName();
+			for (ClassDescriptor otherClassDescriptor: otherClassDescriptors) {
+				String typename = otherClassDescriptor.getName();
 				ClassDescriptor existingCD = getClassDescriptor(typename);
 				if (existingCD != null) {
-					existingCD.merge(classDescriptor);
+					existingCD.merge(otherClassDescriptor);
 				} else {
-					toAdd.add(classDescriptor.copy());
+					toAdd.add(otherClassDescriptor.copy());
 				}
 			}
 			classDescriptors.addAll(toAdd);

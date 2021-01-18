@@ -45,13 +45,15 @@ public class ConfigurationContributor implements BootstrapContributor {
 		if (!isActive()) {
 			return;
 		}
-		ConfigOptions.setMode(Mode.REFLECTION);
-		ConfigOptions.setShouldRemoveUnusedAutoconfig(false);
+//		ConfigOptions.setMode(Mode.REFLECTION);
+		ConfigOptions.setMode(Mode.FUNCTIONAL);
+		ConfigOptions.setVerbose(true);
 		TypeSystem typeSystem = context.getTypeSystem();
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
 		// TODO maybe should use groupid/artifactid in this path
+		System.out.println("DUMPING CONFIG:");
 		configurationCollector.dump(new File("target/classes/META-INF/native-image"));
 
 //		ReflectionDescriptor reflectionDescriptor = configurationCollector.getReflectionDescriptor();

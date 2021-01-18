@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -34,12 +34,22 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code) {
 		// TODO: contribute reflection data
-		List<String> conditionClasses = factory.getFactory().findConditionalOnClassValue();
 		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
-		Optional<String> missingConditionClass = conditionClasses.stream()
-				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
-				.findAny();
-		if (!missingConditionClass.isPresent()) {
+		
+		// Condition checks
+		// TODO make into a pluggable system
+		boolean factoryOK = 
+			passesAnyConditionalOnClass(typeSystem, factory) && 
+			passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
+			passesAnyConditionalOnMissingBean(typeSystem, factory) &&
+			passesIgnoreJmxConstraint(typeSystem, factory) &&
+			passesAnyConditionalOnWebApplication(typeSystem, factory);
+		
+//		Optional<String> missingConditionClass = conditionClasses.stream()
+//				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
+//				.findAny();
+//		if (!missingConditionClass.isPresent()) {
+		if (factoryOK) {
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
 			code.writeToStaticBlock(builder -> {
 				builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
@@ -47,7 +57,56 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 			});
 		}
 	}
+	
+	private boolean passesIgnoreJmxConstraint(TypeSystem typeSystem, SpringFactory factory) {
+		String name = factory.getFactory().getDottedName();
+		if (name.toLowerCase().contains("jmx")) {
+			return false;
+		}
+		return true;
+	}
+	
+//	@Override
+//	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
+//		List<String> conditionClasses = factory.getFactory().findConditionalOnClassValue();
+//		Optional<String> missingConditionClass = conditionClasses.stream()
+//				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
+//				.findAny();
+//		if (missingConditionClass.isPresent()) {
+//			return false;
+//		}
+//		return true;
+//	}
 
+	private boolean passesAnyConditionalOnSingleCandidate(TypeSystem typeSystem, SpringFactory factory) {
+		String candidate = factory.getFactory().findConditionalOnSingleCandidateValue();
+		return check(typeSystem, candidate);
+	}
 
+	private boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
+		boolean b = factory.getFactory().checkConditionalOnWebApplication();
+		System.out.println("COWA on "+factory.getFactory().getName()+" is "+b);
+		return b;
+	}
+
+	private boolean passesAnyConditionalOnMissingBean(TypeSystem typeSystem, SpringFactory factory) {
+		List<String> conditionClasses = factory.getFactory().findConditionalOnMissingBeanValue();
+		// TODO if there are multiple is it really a fail if at least one is missing?
+		Optional<String> missingConditionClass = conditionClasses.stream()
+				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
+				.findAny();
+		if (missingConditionClass.isPresent()) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean check(TypeSystem typeSystem, String candidate) {
+		if (candidate == null) {
+			return true; // nothing to check, so its fine
+		}
+		Type resolvedType = typeSystem.Lresolve(candidate, true);
+		return resolvedType!=null;
+	}
 
 }

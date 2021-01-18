@@ -1,3 +1,10 @@
 {
+  "resources": {
+    "includes": [
+      {
+        "pattern": "META-INF/spring-configuration-metadata.json"
+        }
+]
+}
 }
 

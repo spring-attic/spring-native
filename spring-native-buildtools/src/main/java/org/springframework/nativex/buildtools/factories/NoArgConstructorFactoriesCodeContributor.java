@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.TypeSystem;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for some factories
@@ -34,6 +35,12 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 			builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
 					factory.getFactory().getDottedName());
 		});
+	}
+
+	@Override
+	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

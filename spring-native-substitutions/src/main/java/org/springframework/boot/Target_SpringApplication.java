@@ -20,6 +20,7 @@ final class Target_SpringApplication {
 	@SuppressWarnings("unchecked")
 	@Substitute
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
+		System.out.println("Intercept gsfi running");
 		List<T> instances;
 		if (type.equals(SpringApplicationRunListener.class)) {
 			instances = (List<T>) Arrays.asList(new EventPublishingRunListener((SpringApplication)(Object)this, new String[0])); // TODO convert args

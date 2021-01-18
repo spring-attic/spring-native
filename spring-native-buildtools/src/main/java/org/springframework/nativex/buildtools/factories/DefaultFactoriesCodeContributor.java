@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.TypeSystem;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link FactoriesCodeContributor} that handles default, public constructors.
@@ -21,12 +23,46 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code) {
-		code.writeToStaticBlock(generateStaticInit(factory));
+		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
+		System.out.println("DFCC: checking "+factory.getFactory().getDottedName());	
+		boolean factoryOK = 
+			passesAnyConditionalOnClass(typeSystem, factory) &&
+			passesFilterCheck(typeSystem, factory);
+		if (factoryOK) {
+			code.writeToStaticBlock(generateStaticInit(factory));
+		} else {
+			System.out.println("DFCC: skipping "+factory.getFactory().getDottedName());
+		}
 	}
 
 	Consumer<CodeBlock.Builder> generateStaticInit(SpringFactory factory) {
 		return builder ->
 				builder.addStatement("factories.add($N.class, $N::new)", factory.getFactoryType().getDottedName(),
 						factory.getFactory().getDottedName().replace('$', '.'));
+	}
+
+	// See the SpringBootFactories code in the substitutions module for more of these we need to factor in/support some how.
+	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
+		String factoryName = factory.getFactory().getDottedName();
+		// TODO shame no ConditionalOnClass on these providers
+		if (factoryName.endsWith("FreeMarkerTemplateAvailabilityProvider")) {
+			return typeSystem.resolveDotted("freemarker.template.Configuration",true)!=null;
+		}
+		if (factoryName.endsWith("MustacheTemplateAvailabilityProvider")) {
+			return typeSystem.resolveDotted("com.samskivert.mustache.Mustache",true)!=null;
+		}
+		if (factoryName.endsWith("GroovyTemplateAvailabilityProvider")) {
+			return typeSystem.resolveDotted("groovy.text.TemplateEngine",true)!=null;
+		}
+		if (factoryName.endsWith("ThymeleafTemplateAvailabilityProvider")) {
+			return typeSystem.resolveDotted("org.thymeleaf.spring5.SpringTemplateEngine",true)!=null;
+		}
+		if (factoryName.endsWith("JspTemplateAvailabilityProvider")) {
+			return typeSystem.resolveDotted("org.apache.jasper.compiler.JspConfig",true)!=null;
+		}
+		if (factoryName.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
+			return false;
+		}
+		return true;
 	}
 }

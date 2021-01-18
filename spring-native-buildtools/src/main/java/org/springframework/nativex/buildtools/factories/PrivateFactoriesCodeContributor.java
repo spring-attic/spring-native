@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,6 +39,12 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 		code.writeToStaticBlock(block -> {
 			block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
 		});
+	}
+
+	@Override
+	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

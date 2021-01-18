@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.springframework.lang.Nullable;
-import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithBuildtools;
 import org.springframework.util.Assert;
 

@@ -1,4 +1,4 @@
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.nativex.utils.LiteConfigurationInitializer
+#org.springframework.context.ApplicationContextInitializer=\
+#org.springframework.nativex.utils.LiteConfigurationInitializer
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.NativePropertiesListener
