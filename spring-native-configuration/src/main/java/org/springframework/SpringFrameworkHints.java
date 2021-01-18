@@ -64,6 +64,7 @@ import org.springframework.nativex.extension.ProxyInfo;
 				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
 				org.springframework.core.ReactiveAdapterRegistry.class
 		}, typeNames = {
+				"org.springframework.nativex.buildtools.StaticSpringFactories",
 				"org.springframework.aop.Advisor$1",
 				"org.springframework.core.annotation.AnnotationFilter$1",
 				"org.springframework.core.annotation.AnnotationFilter$2",

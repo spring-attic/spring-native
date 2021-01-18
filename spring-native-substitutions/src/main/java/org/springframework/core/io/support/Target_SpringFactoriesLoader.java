@@ -1,5 +1,6 @@
 package org.springframework.core.io.support;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -21,7 +22,6 @@ final class Target_SpringFactoriesLoader {
 	@Alias
 	private static Log logger;
 
-	@SuppressWarnings("unchecked")
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
@@ -29,7 +29,12 @@ final class Target_SpringFactoriesLoader {
 		if (result == null) {
 			return Collections.emptyList();
 		}
-		return (List<T>) result.stream().map(Supplier::get).collect(Collectors.toList());
+		List<Object> list = new ArrayList<>();
+		for (Supplier<Object> objectSupplier : result) {
+			Object o = objectSupplier.get();
+			list.add(o);
+		}
+		return (List<T>) list;
 	}
 
 	@Substitute
@@ -43,7 +48,13 @@ final class Target_SpringFactoriesLoader {
 			if (stored == null) {
 				return Collections.emptyList();
 			}
-			return stored.stream().map(Supplier::get).map(factory -> factory.getClass().getName()).collect(Collectors.toList());
+			List<String> list = new ArrayList<>();
+			for (Supplier<Object> objectSupplier : stored) {
+				Object factory = objectSupplier.get();
+				String name = factory.getClass().getName();
+				list.add(name);
+			}
+			return list;
 		}
 	}
 
