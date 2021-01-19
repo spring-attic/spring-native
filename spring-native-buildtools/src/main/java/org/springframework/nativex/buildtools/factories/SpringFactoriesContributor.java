@@ -43,7 +43,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		try {
 			List<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem(), context.getClassLoader());
 			FactoriesCodeContributors contributors = new FactoriesCodeContributors();
-			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories);
+			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context);
 
 			context.addSourceFiles(SourceFiles.fromJavaFile(codeGenerator.generateStaticSpringFactories()));
 			codeGenerator.generateStaticFactoryClasses().forEach(javaFile -> {

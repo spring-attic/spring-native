@@ -51,24 +51,26 @@ public class BootstrapCodeGenerator {
 		}
 		Path resourcesPath = path.resolve(ResourceFile.MAIN_RESOURCES_PATH);
 		Files.createDirectories(resourcesPath);
-		
+
+		Path graalVMConfigPath = resourcesPath.resolve(Paths.get("META-INF", "native-image"));
+		Files.createDirectories(graalVMConfigPath);
 		// reflect-config.json
 		ReflectionDescriptor reflectionDescriptor = buildContext.getReflectionDescriptor();
 		if (!reflectionDescriptor.isEmpty()) {
-			Path reflectConfigPath = resourcesPath.resolve(Paths.get("reflect-config.json"));
+			Path reflectConfigPath = graalVMConfigPath.resolve(Paths.get("reflect-config.json"));
 			JsonMarshaller.write(reflectionDescriptor, Files.newOutputStream(reflectConfigPath));
 		}
 		// proxy-config.json
 		ProxiesDescriptor proxiesDescriptor = buildContext.getProxiesDescriptor();
 		if (!proxiesDescriptor.isEmpty()) {
-			Path proxiesConfigPath = resourcesPath.resolve(Paths.get("proxy-config.json"));
+			Path proxiesConfigPath = graalVMConfigPath.resolve(Paths.get("proxy-config.json"));
 			ProxiesDescriptorJsonMarshaller proxiesMarshaller = new ProxiesDescriptorJsonMarshaller();
 			proxiesMarshaller.write(proxiesDescriptor, Files.newOutputStream(proxiesConfigPath));
 		}
 		// resource-config.json
 		ResourcesDescriptor resourcesDescriptor = buildContext.getResourcesDescriptor();
 		if (!resourcesDescriptor.isEmpty()) {
-			Path resourceConfigPath = resourcesPath.resolve(Paths.get("resource-config.json"));
+			Path resourceConfigPath = graalVMConfigPath.resolve(Paths.get("resource-config.json"));
 			ResourcesJsonMarshaller resourcesMarshaller = new ResourcesJsonMarshaller();
 			resourcesMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
 		}

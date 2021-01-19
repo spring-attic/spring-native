@@ -2,7 +2,9 @@ package org.springframework.nativex.buildtools.factories;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.TypeSystemExtension;
 import org.springframework.nativex.buildtools.factories.fixtures.PublicFactory;
 import org.springframework.nativex.buildtools.factories.fixtures.TestFactory;
@@ -39,7 +41,7 @@ class DefaultFactoriesCodeContributorTests {
 	void shouldContributeStaticStatement(TypeSystem typeSystem) {
 		CodeGenerator code = new CodeGenerator();
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), typeSystem);
-		this.contributor.contribute(factory, code);
+		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.nativex.buildtools.factories.fixtures.TestFactory.class, " +
 						"org.springframework.nativex.buildtools.factories.fixtures.PublicFactory::new);\n");
@@ -49,7 +51,7 @@ class DefaultFactoriesCodeContributorTests {
 	void shouldContributeStaticStatementForInnerClass(TypeSystem typeSystem) {
 		CodeGenerator code = new CodeGenerator();
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.InnerFactory.class.getName(), typeSystem);
-		this.contributor.contribute(factory, code);
+		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.nativex.buildtools.factories.fixtures.TestFactory.class, " +
 						"org.springframework.nativex.buildtools.factories.fixtures.PublicFactory.InnerFactory::new);\n");

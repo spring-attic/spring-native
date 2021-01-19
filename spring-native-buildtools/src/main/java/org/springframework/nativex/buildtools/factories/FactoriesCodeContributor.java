@@ -3,6 +3,7 @@ package org.springframework.nativex.buildtools.factories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -20,7 +21,7 @@ interface FactoriesCodeContributor {
 	/**
 	 * Contribute code for instantiating the factory given as argument.
 	 */
-	void contribute(SpringFactory factory, CodeGenerator code);
+	void contribute(SpringFactory factory, CodeGenerator code, BuildContext context);
 
 	default boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
 		List<String> conditionClasses = factory.getFactory().findConditionalOnClassValue();

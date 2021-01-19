@@ -4,7 +4,11 @@ import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.nativex.buildtools.BuildContext;
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -28,13 +32,19 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 	}
 
 	@Override
-	public void contribute(SpringFactory factory, CodeGenerator code) {
-		// TODO: contribute reflection data
+	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
+		generateReflectionMetadata(factory.getFactory(), context);
 		code.writeToStaticBlock(builder -> {
 			builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
 					factory.getFactory().getDottedName());
 		});
+	}
+
+	private void generateReflectionMetadata(Type factory, BuildContext context) {
+		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factory.getDottedName());
+		//factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 
 	@Override

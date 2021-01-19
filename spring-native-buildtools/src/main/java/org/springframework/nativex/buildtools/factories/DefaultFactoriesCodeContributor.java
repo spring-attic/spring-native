@@ -4,9 +4,9 @@ import java.util.function.Consumer;
 
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.TypeSystem;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link FactoriesCodeContributor} that handles default, public constructors.
@@ -22,7 +22,7 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 	}
 
 	@Override
-	public void contribute(SpringFactory factory, CodeGenerator code) {
+	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
 		boolean factoryOK = 
 			passesAnyConditionalOnClass(typeSystem, factory) &&

@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -32,19 +34,18 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 	}
 
 	@Override
-	public void contribute(SpringFactory factory, CodeGenerator code) {
-		// TODO: contribute reflection data
+	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
-		
+
 		// Condition checks
 		// TODO make into a pluggable system
-		boolean factoryOK = 
-			passesAnyConditionalOnClass(typeSystem, factory) && 
+		boolean factoryOK =
+			passesAnyConditionalOnClass(typeSystem, factory) &&
 			passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
 			passesAnyConditionalOnMissingBean(typeSystem, factory) &&
 			passesIgnoreJmxConstraint(typeSystem, factory) &&
 			passesAnyConditionalOnWebApplication(typeSystem, factory);
-		
+
 //		Optional<String> missingConditionClass = conditionClasses.stream()
 //				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
 //				.findAny();

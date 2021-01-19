@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.CodeGenerationException;
 
 /**
@@ -24,14 +25,14 @@ class FactoriesCodeContributors {
 				new DefaultFactoriesCodeContributor());
 	}
 
-	public CodeGenerator createCodeGenerator(List<SpringFactory> factories) {
+	public CodeGenerator createCodeGenerator(List<SpringFactory> factories, BuildContext context) {
 		CodeGenerator codeGenerator = new CodeGenerator();
 		for (SpringFactory factory : factories) {
 			FactoriesCodeContributor contributor = this.contributors.stream()
 					.filter(c -> c.canContribute(factory))
 					.findFirst()
 					.orElseThrow(() -> new CodeGenerationException("Cannot find contributor for factory: " + factory));
-			contributor.contribute(factory, codeGenerator);
+			contributor.contribute(factory, codeGenerator, context);
 		}
 		return codeGenerator;
 	}

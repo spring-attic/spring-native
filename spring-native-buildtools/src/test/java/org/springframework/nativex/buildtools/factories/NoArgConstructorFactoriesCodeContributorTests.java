@@ -2,7 +2,9 @@ package org.springframework.nativex.buildtools.factories;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
+import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.TypeSystemExtension;
 import org.springframework.nativex.buildtools.factories.fixtures.DeprecatedConstructorFactory;
 import org.springframework.nativex.buildtools.factories.fixtures.MissingDefaultConstructorFactory;
@@ -51,7 +53,7 @@ class NoArgConstructorFactoriesCodeContributorTests {
 	void shouldContributeFactoryNames(TypeSystem typeSystem) {
 		CodeGenerator code = new CodeGenerator();
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), typeSystem);
-		this.contributor.contribute(factory, code);
+		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("names.add(TestFactory.class, \"org.springframework.nativex.buildtools.factories.fixtures.MissingDefaultConstructorFactory\");");
 	}
