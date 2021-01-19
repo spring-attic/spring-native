@@ -27,7 +27,6 @@ class FactoriesCodeContributors {
 	public CodeGenerator createCodeGenerator(List<SpringFactory> factories) {
 		CodeGenerator codeGenerator = new CodeGenerator();
 		for (SpringFactory factory : factories) {
-			System.out.println();
 			FactoriesCodeContributor contributor = this.contributors.stream()
 					.filter(c -> c.canContribute(factory))
 					.findFirst()

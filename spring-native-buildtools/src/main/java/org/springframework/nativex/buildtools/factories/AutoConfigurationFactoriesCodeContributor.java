@@ -85,7 +85,6 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 
 	private boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
 		boolean b = factory.getFactory().checkConditionalOnWebApplication();
-		System.out.println("COWA on "+factory.getFactory().getName()+" is "+b);
 		return b;
 	}
 

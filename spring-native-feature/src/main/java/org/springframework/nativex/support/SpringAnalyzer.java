@@ -53,6 +53,9 @@ public class SpringAnalyzer {
 		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler);
 
 		collector.setTypeSystem(typeSystem);
+		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
+		// Whereas it may not be compiled yet
+		collector.initializeAtBuildTime("org.springframework.nativex.buildtools.StaticSpringFactories");
 		dynamicProxiesHandler.setTypeSystem(typeSystem);
 		reflectionHandler.setTypeSystem(typeSystem);
 		resourcesHandler.setTypeSystem(typeSystem);

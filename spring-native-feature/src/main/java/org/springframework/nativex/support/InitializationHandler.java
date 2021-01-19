@@ -36,10 +36,6 @@ public class InitializationHandler extends Handler {
 		super(collector);
 	}
 	
-	// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
-	if (ConfigOptions.isBuildTimeTransformation()) {
-		collector.initializeAtBuildTime("org.springframework.nativex.buildtools.StaticSpringFactories");
-	}
 
 	public void registerInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
 		List<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
