@@ -63,11 +63,8 @@ public class SpringAnalyzer {
 
 		ConfigOptions.ensureModeInitialized(typeSystem);
 //		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
-			reflectionHandler.register();
-
+		reflectionHandler.register();
 //		}
-
-
 		resourcesHandler.register();
 	}
 

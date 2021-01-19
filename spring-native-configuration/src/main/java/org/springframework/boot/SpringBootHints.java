@@ -40,6 +40,7 @@ import org.springframework.nativex.type.AccessBits;
 			"application.*.yaml",
 			"^git.properties",
 			"^META-INF/build-info.properties",
+		    "^META-INF/spring-configuration-metadata.json",
 			"application.*.properties",
 			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
 			"META-INF/services/.*",
