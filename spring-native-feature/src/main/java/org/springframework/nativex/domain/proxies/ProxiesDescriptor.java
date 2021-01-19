@@ -71,6 +71,10 @@ public class ProxiesDescriptor {
 		proxyDescriptors.stream().forEach(pd -> consumer.accept(pd.getInterfaces()));
 	}
 
+	public void merge(ProxiesDescriptor otherProxyDescriptor) {
+		proxyDescriptors.addAll(otherProxyDescriptor.getProxyDescriptors());
+	}
+
 //	public boolean hasClassDescriptor(String string) {
 //		for (ProxyDescriptor cd: classDescriptors) {
 //			if (cd.getName().equals(string)) {

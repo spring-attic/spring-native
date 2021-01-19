@@ -25,7 +25,6 @@ final class Target_SpringFactoriesLoader {
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
-		System.out.println("Substituted TSSF.lf");
 		List<Supplier<Object>> result = (List<Supplier<Object>>) Target_StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
 			return Collections.emptyList();
@@ -41,7 +40,6 @@ final class Target_SpringFactoriesLoader {
 	@Substitute
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
 		List<String> names = Target_StaticSpringFactories.names.get(factoryType);
-		System.out.println("Substituted TSSF.lfn");
 		if (names != null) {
 			return names;
 		}

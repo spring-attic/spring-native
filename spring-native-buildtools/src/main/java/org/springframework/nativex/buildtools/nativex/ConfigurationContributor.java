@@ -15,15 +15,18 @@
  */
 package org.springframework.nativex.buildtools.nativex;
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
+
+import javax.annotation.processing.Filer;
 
 import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
+import org.springframework.nativex.buildtools.ResourceFile;
 import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.support.ConfigurationCollector;
 import org.springframework.nativex.support.Mode;
@@ -54,17 +57,34 @@ public class ConfigurationContributor implements BootstrapContributor {
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
-		// TODO maybe should use groupid/artifactid in this path
-		configurationCollector.dump(new File("target/classes/META-INF/native-image"));
 
-//		ReflectionDescriptor reflectionDescriptor = configurationCollector.getReflectionDescriptor();
-//		ResourcesDescriptor resourcesDescriptor = configurationCollector.getResourcesDescriptors();
-//		ProxiesDescriptor proxiesDescriptor = configurationCollector.getProxyDescriptors();
-//		context.addResources(
-//			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "reflect-config.json", reflectionDescriptor.getInputStream()),
-//			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "resource-config.json", resourcesDescriptor.getInputStream()),
-//			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "proxy-config.json", proxiesDescriptor.getInputStream()),
-//			ResourceFiles.fromInputStream(META_INF_NATIVE_IMAGE, "native-image.properties", configurationCollector.getNativeImagePropertiesInputStream()));
+		context.describeReflection(reflect -> reflect.merge(configurationCollector.getReflectionDescriptor()));
+		context.describeResources(resources -> resources.merge(configurationCollector.getResourcesDescriptors()));
+		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
+		// Create native-image.properties
+		context.addResources(new ResourceFile() {
+			@Override
+			public void writeTo(Path rootPath) throws IOException {
+				Path nativeImageFolder = rootPath.resolve(Paths.get("src/main/resources/META-INF/native-image"));
+				Files.createDirectories(nativeImageFolder);
+				Path nativeImagePropertiesFile = nativeImageFolder.resolve("native-image.properties");
+				try (FileOutputStream fos = new FileOutputStream(nativeImagePropertiesFile.toFile())) {
+					fos.write(configurationCollector.getNativeImagePropertiesContent().getBytes());
+				}
+			}
+		});
+		// Create an indicator file that will ensure the feature switches off if it is somehow on the classpath
+		context.addResources(new ResourceFile() {
+			@Override
+			public void writeTo(Path rootPath) throws IOException {
+				Path nativeImageFolder = rootPath.resolve(Paths.get("src/main/resources/META-INF/native-image"));
+				Files.createDirectories(nativeImageFolder);
+				Path btcFile = nativeImageFolder.resolve("build-time-computed-config.properties");
+				try (FileOutputStream fos = new FileOutputStream(btcFile.toFile())) {
+					fos.write("build-time-generation=true".getBytes());
+				}
+			}
+		});
 	}
 
 	/**

@@ -183,7 +183,7 @@ public class ConfigurationCollector {
 		}
 	}
 	
-	private String getNativeImagePropertiesContent() {
+	public String getNativeImagePropertiesContent() {
 		StringBuilder s = new StringBuilder();
 		// From the existing native-image.properties in the feature
 		s.append("Args = --allow-incomplete-classpath --report-unsupported-elements-at-runtime --no-fallback --no-server --install-exit-handlers");
@@ -417,6 +417,5 @@ public class ConfigurationCollector {
 	public InputStream getNativeImagePropertiesInputStream() {
 		return new ByteArrayInputStream(getNativeImagePropertiesContent().getBytes());
 	}
-
 
 }
