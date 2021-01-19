@@ -2500,7 +2500,6 @@ public class Type {
 	public boolean checkConditionalOnWebApplication() {
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				System.out.println(">"+an.desc);
 				if (an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication;")) {
 					boolean checkHappened = false;
 					List<Object> values = an.values;

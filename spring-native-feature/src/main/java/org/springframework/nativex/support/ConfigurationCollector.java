@@ -128,15 +128,12 @@ public class ConfigurationCollector {
 
 	public void dump(File locationToPlaceConfig) {
 		SpringFeature.log("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
-		System.out.println("a");
 		if (!locationToPlaceConfig.exists()) {
 			locationToPlaceConfig.mkdirs();
 		}
-		System.out.println("b");
 		if (!locationToPlaceConfig.exists()) {
 			throw new RuntimeException("Unable to work with dump directory location: "+locationToPlaceConfig);
 		}
-		System.out.println("c");
 		try {
 			File f = new File(locationToPlaceConfig,"reflect-config.json");
 			if (f.exists()) {
@@ -177,7 +174,6 @@ public class ConfigurationCollector {
 			re.printStackTrace();
 			throw re;
 		}
-		System.out.println("Finished writing out json");
 	}
 	
 	private void writeNativeImageProperties(File file) throws IOException {
