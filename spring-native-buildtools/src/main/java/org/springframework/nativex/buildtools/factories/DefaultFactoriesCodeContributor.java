@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.nativex.buildtools.BuildContext;
+import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -59,6 +60,10 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 		}
 		if (factoryName.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
 			return false;
+		}
+		if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {
+			// to trigger this... mvn -Dspring.native.remove-yaml-support=true
+			return !ConfigOptions.shouldRemoveYamlSupport(); 
 		}
 		return true;
 	}

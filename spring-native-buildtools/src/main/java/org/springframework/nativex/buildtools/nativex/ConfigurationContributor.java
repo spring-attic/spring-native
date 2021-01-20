@@ -71,18 +71,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 				}
 			}
 		});
-		// Create an indicator file that will ensure the feature switches off if it is somehow on the classpath
-		context.addResources(new ResourceFile() {
-			@Override
-			public void writeTo(Path rootPath) throws IOException {
-				Path nativeImageFolder = rootPath.resolve(ResourceFile.NATIVE_IMAGE_PATH);
-				Files.createDirectories(nativeImageFolder);
-				Path btcFile = nativeImageFolder.resolve("build-time-computed-config.properties");
-				try (FileOutputStream fos = new FileOutputStream(btcFile.toFile())) {
-					fos.write("build-time-generation=true".getBytes());
-				}
-			}
-		});
 	}
 
 	/**
