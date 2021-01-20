@@ -63,9 +63,9 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.addResources(new ResourceFile() {
 			@Override
 			public void writeTo(Path rootPath) throws IOException {
-				Path nativeImageFolder = rootPath.resolve(Paths.get("src/main/resources/META-INF/native-image"));
-				Files.createDirectories(nativeImageFolder);
-				Path nativeImagePropertiesFile = nativeImageFolder.resolve("native-image.properties");
+				Path nativeConfigFolder = rootPath.resolve(ResourceFile.NATIVE_CONFIG_PATH);
+				Files.createDirectories(nativeConfigFolder);
+				Path nativeImagePropertiesFile = nativeConfigFolder.resolve("native-image.properties");
 				try (FileOutputStream fos = new FileOutputStream(nativeImagePropertiesFile.toFile())) {
 					fos.write(configurationCollector.getNativeImagePropertiesContent().getBytes());
 				}
@@ -75,7 +75,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.addResources(new ResourceFile() {
 			@Override
 			public void writeTo(Path rootPath) throws IOException {
-				Path nativeImageFolder = rootPath.resolve(Paths.get("src/main/resources/META-INF/native-image"));
+				Path nativeImageFolder = rootPath.resolve(ResourceFile.NATIVE_IMAGE_PATH);
 				Files.createDirectories(nativeImageFolder);
 				Path btcFile = nativeImageFolder.resolve("build-time-computed-config.properties");
 				try (FileOutputStream fos = new FileOutputStream(btcFile.toFile())) {

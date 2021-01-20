@@ -49,10 +49,8 @@ public class BootstrapCodeGenerator {
 		for (ResourceFile resourceFile : buildContext.getResourceFiles()) {
 			resourceFile.writeTo(path);
 		}
-		Path resourcesPath = path.resolve(ResourceFile.MAIN_RESOURCES_PATH);
-		Files.createDirectories(resourcesPath);
 
-		Path graalVMConfigPath = resourcesPath.resolve(Paths.get("META-INF", "native-image"));
+		Path graalVMConfigPath = path.resolve(ResourceFile.NATIVE_CONFIG_PATH);
 		Files.createDirectories(graalVMConfigPath);
 		// reflect-config.json
 		ReflectionDescriptor reflectionDescriptor = buildContext.getReflectionDescriptor();
