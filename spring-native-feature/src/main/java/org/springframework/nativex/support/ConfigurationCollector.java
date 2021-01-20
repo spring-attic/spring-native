@@ -186,7 +186,7 @@ public class ConfigurationCollector {
 	public String getNativeImagePropertiesContent() {
 		StringBuilder s = new StringBuilder();
 		// From the existing native-image.properties in the feature
-		s.append("Args = --allow-incomplete-classpath --report-unsupported-elements-at-runtime --no-fallback --no-server --install-exit-handlers");
+		s.append("Args = --allow-incomplete-classpath --report-unsupported-elements-at-runtime --no-fallback --no-server --install-exit-handlers -H:+InlineBeforeAnalysis");
 		if (!initializationDescriptor.getBuildtimeClasses().isEmpty() || 
 			!initializationDescriptor.getBuildtimePackages().isEmpty()) {
 			s.append(" \\\n");
