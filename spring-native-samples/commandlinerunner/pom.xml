@@ -72,7 +72,7 @@
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
-						<version>20.3.0</version>
+						<version>21.0.0</version>
 						<configuration>
 							<mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
 							<buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>

@@ -22,6 +22,8 @@ These options are enabled by default when using `spring-native`, since they are 
 
 * `--install-exit-handlers` allows to react to a shutdown request from Docker.
 
+* `-H:+InlineBeforeAnalysis` enables inlining before analysis in order to allow utility methods returning a constant to be taken in account for code removal for example.
+
 Notice that XML and JMX support is disable by default, see options bellow to enable them if needed.
 
 ==== Options recommended by default

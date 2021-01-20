@@ -38,7 +38,7 @@ jobs:
           type: registry-image
           source:
             repository: springci/spring-native
-            tag: 20.3-dev-java8
+            tag: 21.0-dev-java8
         inputs:
           - name: spring-native
         run:
@@ -55,12 +55,13 @@ jobs:
             type: registry-image
             source:
               repository: springci/spring-native
-              tag: 20.3-dev-java11
+              tag: 21.0-dev-java11
           inputs:
             - name: spring-native
           run:
             path: spring-native/ci/build-key-samples.sh
-  - name: build-20.3-dev-java8-samples
+  - name: build-21.0-dev-java8-samples
+    old_name: build-20.3-dev-java8-samples
     public: true
     plan:
       - get: spring-native
@@ -73,12 +74,13 @@ jobs:
             type: registry-image
             source:
               repository: springci/spring-native
-              tag: 20.3-dev-java8
+              tag: 21.0-dev-java8
           inputs:
             - name: spring-native
           run:
             path: spring-native/ci/build-samples.sh
-  - name: build-20.3-dev-java11-samples
+  - name: build-21.0-dev-java11-samples
+    old_name: build-20.3-dev-java11-samples
     public: true
     plan:
       - get: spring-native
@@ -92,7 +94,7 @@ jobs:
               type: registry-image
               source:
                 repository: springci/spring-native
-                tag: 20.3-dev-java11
+                tag: 21.0-dev-java11
             inputs:
               - name: spring-native
             run:
@@ -172,7 +174,7 @@ groups:
       "deploy"]
   - name: "daily-builds"
     jobs: [
-      "build-20.3-dev-java8-samples",
-      "build-20.3-dev-java11-samples",
+      "build-21.0-dev-java8-samples",
+      "build-21.0-dev-java11-samples",
       "build-master-java8-samples",
       "build-master-java11-samples"]
