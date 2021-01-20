@@ -17,8 +17,7 @@ import org.springframework.nativex.extension.TypeInfo;
                 @TypeInfo(types = text_plain.class),
                 @TypeInfo(types = text_html.class),
                 @TypeInfo(types = text_xml.class),
-                @TypeInfo(types = message_rfc822.class),
-                @TypeInfo(types = SMTPProvider.class)
+                @TypeInfo(types = message_rfc822.class)
         },
         resourcesInfos = {
                 @ResourcesInfo(patterns = {"org/springframework/mail/javamail/mime.types", "META-INF/mailcap", "META-INF/javamail.*"})
