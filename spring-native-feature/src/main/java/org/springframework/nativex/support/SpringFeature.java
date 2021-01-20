@@ -84,7 +84,6 @@ public class SpringFeature implements Feature {
 			System.out.println("spring-native ran at build time -> deactivating feature");
 			ACTIVE_FEATURE=false;
 		} else {
-			System.out.println("NOT TURNING THE FEATURE OFF");
 			ACTIVE_FEATURE=true;
 		}
 	}
