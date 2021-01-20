@@ -1158,6 +1158,11 @@ public class ResourcesHandler extends Handler {
 			// Now entry points to the first non HierarchyProcessing case
 			return entry.typename;
 		}
+
+		public boolean isFromSpringFactoriesKey() {
+			ContextEntry contextEntry = get(0);
+			return contextEntry.reachedBy==ReachedBy.FromSpringFactoriesKey;
+		}
 		
 	}
 
@@ -1242,7 +1247,9 @@ public class ResourcesHandler extends Handler {
 				if (validMethodsSubset != null) {
 					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
 				}
-				configureMethodAccess(accessManager, type, validMethodsSubset,false);
+				if (!ConfigOptions.isBuildTimeTransformation()) {
+					configureMethodAccess(accessManager, type, validMethodsSubset,false);
+				}
 			}
 			processTypesToFollow(pc, accessManager, type, reachedBy, toFollow);
 			registerAllRequested(accessManager);

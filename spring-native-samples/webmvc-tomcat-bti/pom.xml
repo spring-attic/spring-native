@@ -20,6 +20,12 @@
 	</properties>
 
 	<dependencies>
+
+           <dependency>
+                   <groupId>org.springframework.experimental</groupId>
+                   <artifactId>spring-native-substitutions</artifactId>
+                   <version>0.9.0-SNAPSHOT</version>
+           </dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-native-configuration</artifactId>
@@ -118,6 +124,7 @@
                         <configuration>
                             <mainClass>com.example.webmvc.WebmvcApplication</mainClass>
                             <imageName>webmvc-tomcat-bti</imageName>
+                              <buildArgs>-Dspring.xml.ignore=true -Dspring.spel.ignore=true</buildArgs>
                         </configuration>
                         <executions>
                             <execution>

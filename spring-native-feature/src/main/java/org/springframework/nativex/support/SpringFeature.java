@@ -79,7 +79,7 @@ public class SpringFeature implements Feature {
 	}
 	
 	public void checkIfFeatureShouldBeActive(TypeSystem ts) {
-		Collection<byte[]> resources = ts.getResources("META-INF/native-image/build-time-computed-config.properties");
+		Collection<byte[]> resources = ts.getResources("META-INF/native-image/org.springframework.nativex/buildtools/native-image.properties");
 		if (!resources.isEmpty()) {
 			System.out.println("spring-native ran at build time -> deactivating feature");
 			ACTIVE_FEATURE=false;
