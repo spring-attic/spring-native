@@ -137,13 +137,9 @@ public class ConfigurationCollector {
 		try {
 			File f = new File(locationToPlaceConfig,"reflect-config.json");
 			if (f.exists()) {
-				System.out.println("Merging new reflect-config.json with existing...");
 				try (FileInputStream fos = new FileInputStream(f)) {
 					ReflectionDescriptor existingRD = JsonMarshaller.read(fos);
-					System.out.println("Size bfore "+reflectionDescriptor.getClassDescriptors().size());
 					reflectionDescriptor.merge(existingRD);
-					System.out.println("existing: "+existingRD);
-					System.out.println("Size after merge "+reflectionDescriptor.getClassDescriptors().size());
 				}
 			}
 			try (FileOutputStream fos = new FileOutputStream(f)) {
@@ -163,10 +159,6 @@ public class ConfigurationCollector {
 				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
 			}
 			writeNativeImageProperties(new File(locationToPlaceConfig, "native-image.properties"));
-			// Create a temporary marker file so the feature knows it can turn itself OFF later
-			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"build-time-computed-config.properties"))) {
-				fos.write("build-time-computed-config=true".getBytes());
-			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			throw new RuntimeException("Problem writing out configuration",ioe);

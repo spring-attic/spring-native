@@ -49,7 +49,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		}
 		ConfigOptions.setMode(Mode.REFLECTION);
 //		ConfigOptions.setMode(Mode.FUNCTIONAL);
-		ConfigOptions.setVerbose(true);
+//		ConfigOptions.setVerbose(true);
 		TypeSystem typeSystem = context.getTypeSystem();
 		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
@@ -74,13 +74,13 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 
 	/**
-	 * Possibly a temporary measure. Check if the collector should be active by trying to resolve /reflect.json - if we
+	 * Possibly a temporary measure. Check if the collector should be active by trying to resolve a hint class - if we
 	 * can't then things aren't setup with feature+configuration modules (which is the case when this runs during the tests
-	 * in the buildtools module, which only depends on feature). When collector is used alongside configuration in the plugin
+	 * in the buildtools module, which does not depend on configuration). When collector is used alongside configuration in the plugin
 	 * dependencies section of a real build attempting to use the collector properly, this will resolve OK.
 	 */
 	private boolean isActive() {
-		try (InputStream s = this.getClass().getResourceAsStream("/reflect.json")) {
+		try (InputStream s = this.getClass().getResourceAsStream("/org/springframework/boot/SpringBootHints.class")) {
 			if (s==null) {
 				return false;
 			} else {

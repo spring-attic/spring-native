@@ -73,6 +73,7 @@ There are two main ways to build Spring Boot native application:
 
 - Using <<getting-started-buildpacks, Spring Boot Maven or Gradle Buildpacks support>> to generate a lightweight container containing a native executable
 - Using <<getting-started-native-image, GraalVM native image Maven plugin support>> to generate a native executable
+- new in 0.9.0 - using <<getting-started-build-time-infrastructure-native-image, GraalVM native image Maven plugin support>> to generate a native executable. This mode is using spring-native as a build time configuration generator and *not* as a GraalVM native image feature plugin.
 
 include::getting-started-buildpacks.adoc[]
 

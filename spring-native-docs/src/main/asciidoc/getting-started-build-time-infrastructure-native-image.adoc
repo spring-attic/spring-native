@@ -1,0 +1,209 @@
+[[getting-started-build-time-infrastructure-native-image]]
+=== Getting started with native image Maven plugin if wanting to use build time infrastructure
+
+This section walks through how to build a Spring Boot native application with https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native image Maven plugin].
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+
+This differs from the other native-image maven guide because whilst that guide is using spring-native as 
+a feature (a plugin to the native-image build process). The process here will use spring-native as a build time processor
+that runs as part of the regular application build process (ahead of native-image building) and produces all the necessary
+native-image configuration in .json files in the project. The native-image step will then run without the spring-native
+feature.
+
+==== Prerequisites
+
+You need a local install of native image compiler.
+
+From GraalVM builds:
+
+- Install GraalVM {graalvm-version} from https://github.com/graalvm/graalvm-ce-builds/releases[here] (dev builds are also available from https://github.com/graalvm/graalvm-ce-dev-builds/releases[here]).
+- Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
+
+- https://sdkman.io/install[Install SDKMAN]
+- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+
+==== Set up the sample project
+
+Like the instructions for using the feature, here we use the getting started REST service guide.
+This is the sample project we trace with the agent and then build into a native image.
+The following commands install the REST service guide:
+
+====
+[source,bash]
+----
+git clone https://github.com/spring-guides/gs-rest-service
+cd gs-rest-service/complete
+----
+====
+
+You may already be ready to go with your own project.
+
+===== Update the `pom.xml` file
+
+IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if necessary.
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{boot-version}</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+----
+====
+
+===== Add the Maven plugin
+
+GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin].
+Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<profiles>
+  <profile>
+    <id>native</id>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.experimental</groupId>
+          <artifactId>spring-native-maven-plugin</artifactId>
+          <version>0.9.0-SNAPSHOT</version>
+          <executions>
+            <execution>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>bootstrap</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.springframework.experimental</groupId>
+              <artifactId>spring-native-configuration</artifactId>
+              <version>0.9.0-SNAPSHOT</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.graalvm.nativeimage</groupId>
+          <artifactId>native-image-maven-plugin</artifactId>
+          <version>{graalvm-version}</version>
+          <configuration>
+            <mainClass>com.example.restservice.RestServiceApplication</mainClass>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>native-image</goal>
+              </goals>
+              <phase>package</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
+----
+====
+
+The native image build needs to know the entry point to your application hence the `<mainClass>` element.
+
+Even if declared outside of native image profile, `spring-boot-maven-plugin` need to be redeclared in the `native` Maven
+profile in order to work correctly with `native-image-maven-plugin`.
+
+===== Add the repositories
+
+If necessary, add the repository for the `spring-native` dependency, as follows:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<repositories>
+    <!-- ... -->
+    <repository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </repository>
+</repositories>
+----
+====
+
+And for plugins:
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>spring-{repository}</id>
+        <name>Spring {repository}</name>
+        <url>https://repo.spring.io/{repository}</url>
+    </pluginRepository>
+</pluginRepositories>
+----
+====
+
+===== spring-native dependency
+
+With `native-image-maven-plugin`, the `spring-native` dependency should be specified explicitly:
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<dependencies>
+    <!-- ... -->
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+----
+====
+
+==== Build the native application
+
+Building the native application is as simple as running:
+====
+[source,bash]
+----
+mvn -Pnative clean package
+----
+====
+This will create a native executable containing your Spring Boot application.
+
+==== Run the application
+
+To run your application, you need to run the previously created container image:
+
+====
+[source,bash]
+----
+target/com.example.restservice.restserviceapplication
+----
+====
+
+The startup time is <100ms, compared ~1500ms when starting the fat jar.
+
+Now that the service is up, visit http://localhost:8080/greeting, where you should see:
+
+====
+[source,json]
+----
+{"id":1,"content":"Hello, World!"}
+----
+====
+
+
