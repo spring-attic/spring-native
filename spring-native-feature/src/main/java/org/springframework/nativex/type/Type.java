@@ -989,7 +989,6 @@ public class Type {
 					List<Object> values = an.values;
 					if (values != null) {
 						for (int i = 0; i < values.size(); i += 2) {
-							System.out.println("n "+values.get(i));
 							if (values.get(i).equals("value")) {
 								((List<org.objectweb.asm.Type>) values.get(i + 1)).stream()
 									.map(t -> t.getDescriptor())
