@@ -24,7 +24,7 @@ compilationDiff.sh build1/target/native-image/output.txt build2/target/native-im
 The inputs are the two collected PrintAOTCompilation outputs to compare and the name for an HTML
 file that should be generated (this will contain the navigable tree). Then simply open the HTML file.
 
-image::CompilationDiffView.png[]
+image::CompilationDiffTreeView.png[]
 
 One of the key entries to look at in the diff is under the path `com/oracle/svm` as that shows
 the entries included due to reflection.
