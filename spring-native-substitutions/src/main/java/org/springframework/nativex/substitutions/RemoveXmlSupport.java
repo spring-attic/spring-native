@@ -6,7 +6,7 @@ public class RemoveXmlSupport implements BooleanSupplier {
 
 	@Override
 	public boolean getAsBoolean() {
-		return Boolean.valueOf(System.getProperty("spring.xml.ignore", "false"));
+		return Boolean.valueOf(System.getProperty("spring.xml.ignore", "true"));
 	}
 
 }

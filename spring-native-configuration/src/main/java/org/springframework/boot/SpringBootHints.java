@@ -78,7 +78,8 @@ import org.springframework.nativex.type.AccessBits;
 			org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.class,
 			org.springframework.boot.logging.LoggingSystem.class,
 			org.springframework.boot.context.properties.bind.Bindable.class,
-			org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener.class
+			org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener.class,
+			org.springframework.boot.logging.logback.LogbackLoggingSystem.class
 	},
 	typeNames = {
 			"org.springframework.boot.SpringBootFactories",
