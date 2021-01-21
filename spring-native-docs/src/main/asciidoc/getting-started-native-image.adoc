@@ -6,15 +6,16 @@ This is a practical guide, so we perform this for real on the https://spring.io/
 
 ==== Prerequisites
 
-You need a local install of native image compiler.
+Before installing the GraalVM `native-image` compiler, install https://www.graalvm.org/reference-manual/native-image/#prerequisites[the prerequisites]
+(pay attention to the Windows ones if you are using that platform) You need a local install of native image compiler.
 
 From GraalVM builds:
 
-- Install GraalVM {graalvm-version} from https://github.com/graalvm/graalvm-ce-builds/releases[here] (dev builds are also available from https://github.com/graalvm/graalvm-ce-dev-builds/releases[here]).
+- Install GraalVM {graalvm-version} from https://www.graalvm.org/downloads/[here].
 - Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
-Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
+On Mac or Linux, you can use https://sdkman.io/[SDKMAN] to easily switch between JDKs:
 
 - https://sdkman.io/install[Install SDKMAN]
 - Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
@@ -159,6 +160,9 @@ Building the native application is as simple as running:
 mvn -Pnative clean package
 ----
 ====
+
+IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in https://www.graalvm.org/reference-manual/native-image/#prerequisites[GraalVM native-image prerequisites].
+
 This will create a native executable containing your Spring Boot application.
 
 ==== Run the application

@@ -9,10 +9,11 @@ This is a practical guide, so we perform this for real on the https://spring.io/
 You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
 Before proceeding further, verify you can run docker commands from the shell.
 
-On Mac and Windows, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add
+On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add
 more CPUs as well) since `native-image` compiler is a heavy process.
 See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
-On Linux, Docker uses by default the resources available on the host so no configuration is needed.
+
+On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
 
 ==== Set up the sample project
 

@@ -67,7 +67,7 @@ This project is in the `spring-projects-experimental` org indicating it is not a
 === Baseline
 
 The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {boot-dev-version}.
-Mac and Linux are supported, Windows is untested.
+Mac, Linux and Windows are supported.
 
 == License
 
