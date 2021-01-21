@@ -18,7 +18,7 @@ Thousands and thousands of lines typically. Typically we turn on that option for
 builds done, we can use a script from this folder to produce a tree diff:
 
 ----
-compilationDiff.sh build1/target/native-image/output.txt build2/target/native-image/output.txt b1-b2.html
+compilationDiff.sh java8build/target/native-image/output.txt java11build/target/native-image/output.txt 8-11.html
 ----
 
 The inputs are the two collected PrintAOTCompilation outputs to compare and the name for an HTML
@@ -26,5 +26,5 @@ file that should be generated (this will contain the navigable tree). Then simpl
 
 image::CompilationDiffTreeView.png[]
 
-One of the key entries to look at in the diff is under the path `com/oracle/svm` as that shows
+One of the key entries to look at in the diff is under the path `com/oracle/svm/reflect` as that shows
 the entries included due to reflection.
