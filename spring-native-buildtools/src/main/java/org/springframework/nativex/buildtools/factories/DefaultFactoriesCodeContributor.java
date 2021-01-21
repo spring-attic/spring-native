@@ -27,7 +27,8 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
 		boolean factoryOK = 
 			passesAnyConditionalOnClass(typeSystem, factory) &&
-			passesFilterCheck(typeSystem, factory);
+			passesFilterCheck(typeSystem, factory) &&
+			passesAnyConditionalOnWebApplication(typeSystem, factory);
 		if (factoryOK) {
 			code.writeToStaticBlock(generateStaticInit(factory));
 		}
@@ -67,4 +68,5 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 		}
 		return true;
 	}
+
 }

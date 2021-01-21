@@ -53,4 +53,10 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 		return false;
 	}
 
+	@Override
+	public boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

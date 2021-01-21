@@ -33,4 +33,9 @@ interface FactoriesCodeContributor {
 		}
 		return true;
 	}
+
+	default boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
+		boolean b = factory.getFactory().checkConditionalOnWebApplication();
+		return b;
+	}
 }

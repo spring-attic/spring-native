@@ -68,10 +68,6 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		return check(typeSystem, candidate);
 	}
 
-	private boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
-		boolean b = factory.getFactory().checkConditionalOnWebApplication();
-		return b;
-	}
 
 	private boolean passesAnyConditionalOnMissingBean(TypeSystem typeSystem, SpringFactory factory) {
 		List<String> conditionClasses = factory.getFactory().findConditionalOnMissingBeanValue();

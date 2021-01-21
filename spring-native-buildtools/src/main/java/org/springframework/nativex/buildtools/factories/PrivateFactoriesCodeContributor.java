@@ -47,4 +47,10 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 		}
 	}
 
+	@Override
+	public boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
