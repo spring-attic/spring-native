@@ -40,6 +40,7 @@ public class JsonMarshaller {
 			throws IOException {
 		try {
 			JsonConverter converter = new JsonConverter();
+			metadata.sort();
 			JSONArray jsonArray = converter.toJsonArray(metadata);
 			outputStream.write(jsonArray.toString(2).getBytes(StandardCharsets.UTF_8));
 		}
