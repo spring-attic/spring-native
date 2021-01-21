@@ -849,7 +849,7 @@ public class Type {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnBean, false);
+		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnBean, false, false);
 		if (findAnnotationValue == null) {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
@@ -866,7 +866,7 @@ public class Type {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnMissingBean, false);
+		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnMissingBean, false, false);
 		if (findAnnotationValue == null) {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
@@ -891,7 +891,7 @@ public class Type {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnClass, false);
+		List<String> findAnnotationValue = findAnnotationValue(AtConditionalOnClass, true, false);
 		if (findAnnotationValue == null) {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
@@ -908,7 +908,7 @@ public class Type {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false);
+		List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false, false);
 		return values;
 	}
 
@@ -919,11 +919,11 @@ public class Type {
 		return findAnnotationValueWithHostAnnotation(AtImports, true, new HashSet<>());
 	}
 
-	public List<String> findAnnotationValue(String annotationType, boolean searchMeta) {
+	public List<String> findAnnotationValue(String annotationType, boolean treatNameAsAliasForValue, boolean searchMeta) {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
-		return findAnnotationValue(annotationType, searchMeta, new HashSet<>());
+		return findAnnotationValue(annotationType, searchMeta, treatNameAsAliasForValue, new HashSet<>());
 	}
 
 	public String findAnnotationSingleValue(String annotationType, boolean searchMeta) {
@@ -975,7 +975,7 @@ public class Type {
 		return collectedResults;
 	}
 
-	public List<String> findAnnotationValue(String annotationType, boolean searchMeta, Set<String> visited) {
+	public List<String> findAnnotationValue(String annotationType, boolean searchMeta, boolean treatNameAsAliasForValue, Set<String> visited) {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
@@ -989,10 +989,16 @@ public class Type {
 					List<Object> values = an.values;
 					if (values != null) {
 						for (int i = 0; i < values.size(); i += 2) {
+							System.out.println("n "+values.get(i));
 							if (values.get(i).equals("value")) {
-								return ((List<org.objectweb.asm.Type>) values.get(i + 1)).stream()
-										.map(t -> t.getDescriptor())
-										.collect(Collectors.toCollection(() -> collectedResults));
+								((List<org.objectweb.asm.Type>) values.get(i + 1)).stream()
+									.map(t -> t.getDescriptor())
+									.collect(Collectors.toCollection(() -> collectedResults));
+							} else if (values.get(i).equals("name") && treatNameAsAliasForValue) {
+								List<String> names = (List<String>) values.get(i+1);
+								for (String name: names) {
+									collectedResults.add(fromDottedToLDescriptor(name));
+								}
 							}
 						}
 					}
@@ -1002,7 +1008,7 @@ public class Type {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					// For example @EnableSomething might have @Import on it
 					Type annoType = typeSystem.Lresolve(an.desc);
-					collectedResults.addAll(annoType.findAnnotationValue(annotationType, searchMeta, visited));
+					collectedResults.addAll(annoType.findAnnotationValue(annotationType, searchMeta, false, visited));
 				}
 			}
 		}
@@ -1550,6 +1556,13 @@ public class Type {
 			return false;
 		}
 	}
+	
+	public static String fromDottedToLDescriptor(String dotted)  {
+		if (dotted.contains("[")) 
+			throw new IllegalStateException("arrays not handled yet");
+		return "L"+dotted.replace(".","/")+";";
+	}
+	
 
 	public static String fromLdescriptorToSlashed(String Ldescriptor) {
 		int dims = 0;

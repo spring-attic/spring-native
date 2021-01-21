@@ -28,24 +28,23 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		String packageName = factory.getFactory().getPackageName();
-		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
-		ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getDottedName());
-		ClassName staticFactoryClass = ClassName.get(packageName, code.getStaticFactoryClass(packageName).name);
-		MethodSpec creator = MethodSpec.methodBuilder(StringUtils.uncapitalize(factory.getFactory().getSimpleName()))
-				.addModifiers(javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC)
-				.returns(factoryClass)
-				.addStatement("return new $T()", factoryClass).build();
-		code.writeToStaticFactoryClass(packageName, builder -> builder.addMethod(creator));
-		code.writeToStaticBlock(block -> {
-			block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
-		});
-	}
-
-	@Override
-	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
-		// TODO Auto-generated method stub
-		return false;
+		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
+		boolean factoryOK = 
+				passesAnyConditionalOnClass(typeSystem, factory);
+		if (factoryOK) {
+			String packageName = factory.getFactory().getPackageName();
+			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
+			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getDottedName());
+			ClassName staticFactoryClass = ClassName.get(packageName, code.getStaticFactoryClass(packageName).name);
+			MethodSpec creator = MethodSpec.methodBuilder(StringUtils.uncapitalize(factory.getFactory().getSimpleName()))
+					.addModifiers(javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC)
+					.returns(factoryClass)
+					.addStatement("return new $T()", factoryClass).build();
+			code.writeToStaticFactoryClass(packageName, builder -> builder.addMethod(creator));
+			code.writeToStaticBlock(block -> {
+				block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
+			});
+		}
 	}
 
 }

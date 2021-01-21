@@ -46,10 +46,6 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 			passesIgnoreJmxConstraint(typeSystem, factory) &&
 			passesAnyConditionalOnWebApplication(typeSystem, factory);
 
-//		Optional<String> missingConditionClass = conditionClasses.stream()
-//				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
-//				.findAny();
-//		if (!missingConditionClass.isPresent()) {
 		if (factoryOK) {
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
 			code.writeToStaticBlock(builder -> {
@@ -67,18 +63,6 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		return true;
 	}
 	
-//	@Override
-//	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
-//		List<String> conditionClasses = factory.getFactory().findConditionalOnClassValue();
-//		Optional<String> missingConditionClass = conditionClasses.stream()
-//				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
-//				.findAny();
-//		if (missingConditionClass.isPresent()) {
-//			return false;
-//		}
-//		return true;
-//	}
-
 	private boolean passesAnyConditionalOnSingleCandidate(TypeSystem typeSystem, SpringFactory factory) {
 		String candidate = factory.getFactory().findConditionalOnSingleCandidateValue();
 		return check(typeSystem, candidate);
