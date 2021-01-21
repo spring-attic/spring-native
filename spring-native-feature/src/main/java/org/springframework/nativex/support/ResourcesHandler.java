@@ -744,6 +744,28 @@ public class ResourcesHandler extends Handler {
 						&& !k.equals(propertySourceLoaderKey)
 						&& !k.equals(managementContextConfigurationKey) 
 						) {
+					if (ConfigOptions.isBuildTimeTransformation() && (
+						k.equals("org.springframework.boot.diagnostics.FailureAnalyzer") ||
+						k.equals("org.springframework.context.ApplicationListener") ||
+						k.equals("org.springframework.context.ApplicationContextInitializer")
+						)) {
+						// TODO really needs to register all those values without a no arg ctor (for now)
+						// something like this:
+						/*
+						for (String v: p.getProperty(k).split(",")) {
+							Type t = ts.resolveDotted(v, true);
+							if (t != null) {
+								// This 'name' may not be the same as 'v' if 'v' referred to an inner type -
+								// 'name' will include the right '$' characters.
+								String name = t.getDottedName();
+								if (!t.hasNoArgConstructor()) {
+									reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
+								}
+							}	
+						}
+						*/
+						continue;
+					}
 					if (ts.shouldBeProcessed(k)) {
 						for (String v : p.getProperty(k).split(",")) {
 							registerTypeReferencedBySpringFactoriesKey(v);
