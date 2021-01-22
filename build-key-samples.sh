@@ -16,7 +16,7 @@ do
     echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
   fi
 
-  if [ ! -z "grep bti-native spring-native-samples/$i/pom.xml" ]; then
+  if grep -q bti-native spring-native-samples/$i/pom.xml; then
     if ! (./build-bti.sh $i); then
       RC=1
     fi
