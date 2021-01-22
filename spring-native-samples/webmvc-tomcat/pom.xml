@@ -166,18 +166,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <dependencies>
-                            <!-- this enables the feature to 'see' the /reflect.json etc that activates it. Needed here
-                                 even if configuration is currently on the project classpath due to the way plugins run -->
-                            <!-- ideally everything related to it would go in here and the project would not depend on this
-                                 directly but for now it has to because the generated spring factories code depends on things
-                                 in there. -->
-                            <dependency>
-                                <groupId>org.springframework.experimental</groupId>
-                                <artifactId>spring-native-configuration</artifactId>
-                                <version>0.9.0-SNAPSHOT</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>

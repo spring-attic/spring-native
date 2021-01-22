@@ -84,22 +84,15 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.springframework.experimental</groupId>
-                                <artifactId>spring-native-configuration</artifactId>
-                                <version>0.9.0-SNAPSHOT</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
-                        <version>20.3.0</version>
+                        <version>21.0.0</version>
                         <configuration>
-				<mainClass>${main.class}</mainClass>
-				<imageName>${image.name}</imageName>
-				<buildArgs>${build.args}</buildArgs>
+							<mainClass>${main.class}</mainClass>
+							<imageName>${image.name}</imageName>
+							<buildArgs>${build.args}</buildArgs>
                         </configuration>
                         <executions>
                             <execution>

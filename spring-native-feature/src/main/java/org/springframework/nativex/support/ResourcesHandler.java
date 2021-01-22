@@ -511,6 +511,9 @@ public class ResourcesHandler extends Handler {
 		  if (returnType==null) {
 			  continue;
 		  }
+		  if (returnType.getDottedName().startsWith("java.lang")) {
+			  continue;
+		  }
 		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
 	  }
 	}
