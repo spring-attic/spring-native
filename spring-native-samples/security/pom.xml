@@ -178,8 +178,8 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>21.0.0</version>
                         <configuration>
-                            <mainClass>com.example.batch.BatchApplication</mainClass>
-                            <imageName>batch</imageName>
+                            <mainClass>com.example.securingweb.SecuringWebApplication</mainClass>
+                            <imageName>security</imageName>
                         </configuration>
                         <executions>
                             <execution>
