@@ -147,7 +147,6 @@
                             </dependency>
                         </dependencies>
                     </plugin>
-		    <!--
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
@@ -165,7 +164,6 @@
                             </execution>
                         </executions>
                     </plugin>
-		    -->
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>

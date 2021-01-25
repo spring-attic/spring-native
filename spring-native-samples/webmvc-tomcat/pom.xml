@@ -166,6 +166,13 @@
                                 </goals>
                             </execution>
                         </executions>
+			<dependencies>
+                        <dependency>
+                                <groupId>org.springframework.experimental</groupId>
+                                <artifactId>spring-native-configuration</artifactId>
+                                <version>0.9.0-SNAPSHOT</version>
+                        </dependency>
+                </dependencies>
                     </plugin>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>

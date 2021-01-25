@@ -79,6 +79,56 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+        <profile>
+           <id>bti-native</id>
+           <build>
+               <plugins>
+                   <plugin>
+                       <groupId>org.springframework.experimental</groupId>
+                       <artifactId>spring-native-maven-plugin</artifactId>
+                       <version>0.9.0-SNAPSHOT</version>
+                       <executions>
+                           <execution>
+                               <phase>process-classes</phase>
+                               <goals>
+                                   <goal>bootstrap</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                       <dependencies>
+                           <dependency>
+                               <groupId>org.springframework.experimental</groupId>
+                               <artifactId>spring-native-configuration</artifactId>
+                               <version>0.9.0-SNAPSHOT</version>
+                           </dependency>
+                       </dependencies>
+                   </plugin>
+                   <plugin>
+                       <groupId>org.graalvm.nativeimage</groupId>
+                       <artifactId>native-image-maven-plugin</artifactId>
+                       <version>21.0.0</version>
+                       <configuration>
+                           <mainClass>com.example.bootfeatures.Application</mainClass>
+                           <imageName>boot-features</imageName>
+                       </configuration>
+                       <executions>
+                           <execution>
+                               <goals>
+                                   <goal>native-image</goal>
+                               </goals>
+                               <phase>package</phase>
+                           </execution>
+                       </executions>
+                   </plugin>
+                   <plugin>
+                       <groupId>org.springframework.boot</groupId>
+                       <artifactId>spring-boot-maven-plugin</artifactId>
+                   </plugin>
+               </plugins>
+           </build>
+        </profile>
+	</profiles>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>central</id>
