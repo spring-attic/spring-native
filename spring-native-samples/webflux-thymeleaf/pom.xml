@@ -152,7 +152,7 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>21.0.0</version>
                         <configuration>
-                            <mainClass>java.hello.Application</mainClass>
+                            <mainClass>hello.Application</mainClass>
                             <imageName>webflux-thymeleaf</imageName>
                         </configuration>
                         <executions>
