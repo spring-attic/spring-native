@@ -1,6 +1,7 @@
 LoggingInitHints
 MiscInitHints
 io.netty.NettyHints
+io.rsocket.RSocketHints
 kotlin.KotlinHints
 org.apache.catalina.TomcatHints
 org.h2.H2Hints
