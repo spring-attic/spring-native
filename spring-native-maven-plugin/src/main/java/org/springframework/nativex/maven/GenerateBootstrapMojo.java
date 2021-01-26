@@ -1,13 +1,26 @@
 package org.springframework.nativex.maven;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,18 +33,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.sonatype.plexus.build.incremental.BuildContext;
-
 import org.springframework.nativex.buildtools.BootstrapCodeGenerator;
-
-import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 /**
  * @author Brian Clozel
@@ -63,9 +65,14 @@ public class GenerateBootstrapMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		Set<Path> resourceFolders = new HashSet<>();
+		for (Resource r: project.getResources()) {
+			// TODO respect includes/excludes
+			resourceFolders.add(new File(r.getDirectory()).toPath());
+		}
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator();
-			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getRuntimeClasspathElements());
+			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getRuntimeClasspathElements(), resourceFolders);
 		}
 		catch (Throwable exc) {
 			logger.error(exc);

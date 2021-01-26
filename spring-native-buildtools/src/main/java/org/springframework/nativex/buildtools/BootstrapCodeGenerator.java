@@ -6,10 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
@@ -33,8 +33,9 @@ public class BootstrapCodeGenerator {
 	 *
 	 * @param path the root path generated files should be written to
 	 * @param classpath the "compile+runtime" classpath of the application
+	 * @param resourceFolders paths to folders containing project main resources
 	 */
-	public void generate(Path path, List<String> classpath) throws IOException {
+	public void generate(Path path, List<String> classpath, Set<Path> resourceFolders) throws IOException {
 		logger.debug("Starting code generation with classpath: " + classpath);
 		DefaultBuildContext buildContext = new DefaultBuildContext(classpath);
 		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
@@ -42,6 +43,23 @@ public class BootstrapCodeGenerator {
 			logger.debug("Executing Contributor: " + contributor.getClass().getName());
 			contributor.contribute(buildContext);
 		}
+		
+		if (!resourceFolders.isEmpty()) {
+			System.out.println("Processing resource folders: " + resourceFolders);
+			for (Path resourceFolder : resourceFolders) {
+				int resourceFolderLen = resourceFolder.toString().length() + 1;
+				Files.walk(resourceFolder).filter(p -> !p.toFile().isDirectory()).forEach(p -> {
+					String resourcePattern = p.toString().substring(resourceFolderLen);
+					if (!resourcePattern.startsWith("META-INF/native-image")) {
+						System.out.println("Resource pattern: " + resourcePattern);
+						// TODO recognize resource bundles?
+						// TODO escape the patterns (add leading trailing Q and E sequences...)
+						buildContext.describeResources(crd -> crd.add(resourcePattern));
+					}
+				});
+			}
+		}
+		
 		logger.debug("Writing generated sources to: " + path);
 		for (SourceFile sourceFile : buildContext.getSourceFiles()) {
 			sourceFile.writeTo(path);

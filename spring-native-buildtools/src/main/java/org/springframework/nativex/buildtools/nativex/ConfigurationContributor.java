@@ -55,7 +55,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
-
 		context.describeReflection(reflect -> reflect.merge(configurationCollector.getReflectionDescriptor()));
 		context.describeResources(resources -> resources.merge(configurationCollector.getResourcesDescriptors()));
 		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
