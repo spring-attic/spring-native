@@ -769,6 +769,26 @@ public class ResourcesHandler extends Handler {
 						*/
 						continue;
 					}
+					if (ConfigOptions.isBuildTimeTransformation() && 
+						(k.equals("org.springframework.boot.env.EnvironmentPostProcessor")
+						|| k.equals("org.springframework.boot.context.config.ConfigDataLoader")
+						|| k.equals("org.springframework.boot.logging.LoggingSystemFactory")
+//						 || k.equals("org.springframework.boot.env.PropertySourceLoader")
+						)) {
+						for (String v: p.getProperty(k).split(",")) {
+							Type t = ts.resolveDotted(v, true);
+							if (t != null) {
+								// This 'name' may not be the same as 'v' if 'v' referred to an inner type -
+								// 'name' will include the right '$' characters.
+								String name = t.getDottedName();
+								Method defaultConstructor = t.getDefaultConstructor();
+								if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
+									reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
+								}
+							}	
+						}
+						continue;
+					}
 					if (ts.shouldBeProcessed(k)) {
 						for (String v : p.getProperty(k).split(",")) {
 							registerTypeReferencedBySpringFactoriesKey(v);
@@ -785,23 +805,36 @@ public class ResourcesHandler extends Handler {
 			// Handle PropertySourceLoader
 			String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
 			if (propertySourceLoaderValues != null) {
-				List<String> propertySourceLoaders = new ArrayList<>();
-				for (String s : propertySourceLoaderValues.split(",")) {
-					if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
-							|| !ConfigOptions.shouldRemoveYamlSupport()) {
-						registerTypeReferencedBySpringFactoriesKey(s);
-						propertySourceLoaders.add(s);
-					} else {
-						forRemoval.add(s);
+				if (ConfigOptions.isBuildTimeTransformation()) {
+					for (String v: propertySourceLoaderValues.split(",")) {
+						Type t = ts.resolveDotted(v, true);
+						if (t != null) {
+							String name = t.getDottedName();
+							Method defaultConstructor = t.getDefaultConstructor();
+							if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
+								reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
+							}	
+						}
 					}
+				} else {
+					List<String> propertySourceLoaders = new ArrayList<>();
+					for (String s : propertySourceLoaderValues.split(",")) {
+						if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
+								|| !ConfigOptions.shouldRemoveYamlSupport()) {
+							registerTypeReferencedBySpringFactoriesKey(s);
+							propertySourceLoaders.add(s);
+						} else {
+						forRemoval.add(s);
+						}
+					}
+					System.out.println("Processing spring.factories - PropertySourceLoader lists #"
+											+ propertySourceLoaders.size() + " property source loaders");
+					SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
+					for (int c = 0; c < propertySourceLoaders.size(); c++) {
+						SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
+					}
+					p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 				}
-				System.out.println("Processing spring.factories - PropertySourceLoader lists #"
-						+ propertySourceLoaders.size() + " property source loaders");
-				SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
-				for (int c = 0; c < propertySourceLoaders.size(); c++) {
-					SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
-				}
-				p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 			}
 		}
 
