@@ -95,6 +95,7 @@ public class Type {
 	public final static String AtValidated = "Lorg/springframework/validation/annotation/Validated;";
 	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
 	public final static String BeanFactoryPostProcessor = "Lorg/springframework/beans/factory/config/BeanFactoryPostProcessor;";
+	public final static String BeanPostProcessor = "Lorg/springframework/beans/factory/config/BeanPostProcessor;";
 	public final static String ImportBeanDefinitionRegistrar = "Lorg/springframework/context/annotation/ImportBeanDefinitionRegistrar;";
 	public final static String ImportSelector = "Lorg/springframework/context/annotation/ImportSelector;";
 	public final static String ApplicationListener = "Lorg/springframework/context/ApplicationListener;";
@@ -1547,6 +1548,15 @@ public class Type {
 			return false;
 		}
 	}
+	
+	public boolean isBeanPostProcessor() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(BeanPostProcessor));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
+
 
 	public boolean isImportRegistrar() {
 		try {
@@ -2086,6 +2096,8 @@ public class Type {
 			// TODO investigate if deeper pattern can tell us why certain things need
 			// RESOURCE
 			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE;
+		} else if (t.isBeanPostProcessor()) {
+			return AccessBits.LOAD_AND_CONSTRUCT /*| AccessBits.DECLARED_METHODS*/ | AccessBits.RESOURCE;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
