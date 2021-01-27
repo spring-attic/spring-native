@@ -50,7 +50,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		ConfigOptions.setMode(Mode.REFLECTION);
 //		ConfigOptions.setMode(Mode.FUNCTIONAL);
 //		ConfigOptions.setVerbose(true);
-		TypeSystem typeSystem = context.getTypeSystem();
+		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
 		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();

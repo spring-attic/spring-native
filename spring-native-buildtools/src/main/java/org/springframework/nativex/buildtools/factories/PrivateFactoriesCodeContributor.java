@@ -5,9 +5,10 @@ import com.squareup.javapoet.MethodSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.type.classreading.ClassDescriptor;
+import org.springframework.core.type.classreading.MethodDescriptor;
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -21,22 +22,21 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	@Override
 	public boolean canContribute(SpringFactory springFactory) {
-		Type factory = springFactory.getFactory();
-		return !factory.isPublic() || factory.getDefaultConstructor() == null
-				|| !factory.getDefaultConstructor().isPublic();
+		ClassDescriptor factory = springFactory.getFactory();
+		return !factory.isPublic() || !factory.getDefaultConstructor().map(MethodDescriptor::isPublic).orElse(false);
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
+		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK = 
 				passesAnyConditionalOnClass(typeSystem, factory);
 		if (factoryOK) {
 			String packageName = factory.getFactory().getPackageName();
-			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
-			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getDottedName());
+			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
+			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getCanonicalClassName());
 			ClassName staticFactoryClass = ClassName.get(packageName, code.getStaticFactoryClass(packageName).name);
-			MethodSpec creator = MethodSpec.methodBuilder(StringUtils.uncapitalize(factory.getFactory().getSimpleName()))
+			MethodSpec creator = MethodSpec.methodBuilder(StringUtils.uncapitalize(factory.getFactory().getShortName()))
 					.addModifiers(javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC)
 					.returns(factoryClass)
 					.addStatement("return new $T()", factoryClass).build();

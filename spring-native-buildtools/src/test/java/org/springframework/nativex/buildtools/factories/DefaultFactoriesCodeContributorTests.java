@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.TypeSystemExtension;
 import org.springframework.nativex.buildtools.factories.fixtures.PublicFactory;
 import org.springframework.nativex.buildtools.factories.fixtures.TestFactory;
-import org.springframework.nativex.type.TypeSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

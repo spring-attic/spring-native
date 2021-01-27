@@ -16,12 +16,13 @@
 
 package org.springframework.nativex.buildtools;
 
+import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.type.TypeSystem;
 
 /**
  * Provide build context information.
@@ -30,13 +31,10 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public interface BuildContext {
 
-	/**
-	 * Return the "compile+runtime" {@link ClassLoader} for the application.
-	 * @deprecated in favor of the {@link #getTypeSystem() TypeSystem}.
-	 */
-	@Deprecated
-	ClassLoader getClassLoader();
 
+	@Deprecated // for org.springframework.nativex.type.TypeSystem
+	List<String> getClasspath();
+	
 	/**
 	 * Return the {@link TypeSystem} based on the "compile+runtime" application classpath.
 	 */

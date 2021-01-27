@@ -16,11 +16,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.CodeGenerationException;
 import org.springframework.nativex.buildtools.SourceFiles;
-import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,7 +41,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 	@Override
 	public void contribute(BuildContext context) {
 		try {
-			List<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem(), context.getClassLoader());
+			List<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem());
 			FactoriesCodeContributors contributors = new FactoriesCodeContributors();
 			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context);
 
@@ -58,9 +58,10 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		}
 	}
 
-	List<SpringFactory> loadSpringFactories(TypeSystem typeSystem, ClassLoader classLoader) throws IOException {
+	List<SpringFactory> loadSpringFactories(TypeSystem typeSystem) throws IOException {
 		List<SpringFactory> factories = new ArrayList<>();
-		Enumeration<URL> factoriesLocations = classLoader.getResources(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
+		Enumeration<URL> factoriesLocations = typeSystem.getResourceLoader()
+				.getClassLoader().getResources(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
 		while (factoriesLocations.hasMoreElements()) {
 			URL url = factoriesLocations.nextElement();
 			UrlResource resource = new UrlResource(url);

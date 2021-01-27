@@ -1,15 +1,17 @@
 package org.springframework.nativex.buildtools.factories;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeSystem;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for {@code EnableAutoConfiguration} factories.
@@ -30,63 +32,59 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		return AUTO_CONFIGURATION_TYPE.equals(factory.getFactoryType().getDottedName());
+		return AUTO_CONFIGURATION_TYPE.equals(factory.getFactoryType().getClassName());
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		TypeSystem typeSystem = factory.getFactory().getTypeSystem();
-
+		TypeSystem typeSystem = context.getTypeSystem();
 		// Condition checks
 		// TODO make into a pluggable system
 		boolean factoryOK =
-			passesAnyConditionalOnClass(typeSystem, factory) &&
-			passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
-			passesAnyConditionalOnMissingBean(typeSystem, factory) &&
-			passesIgnoreJmxConstraint(typeSystem, factory) &&
-			passesAnyConditionalOnWebApplication(typeSystem, factory);
+				passesAnyConditionalOnClass(typeSystem, factory) &&
+						passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
+						passesAnyConditionalOnMissingBean(typeSystem, factory) &&
+						passesIgnoreJmxConstraint(typeSystem, factory) &&
+						passesAnyConditionalOnWebApplication(typeSystem, factory);
 
 		if (factoryOK) {
-			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
+			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
 			code.writeToStaticBlock(builder -> {
 				builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
-						factory.getFactory().getDottedName());
+						factory.getFactory().getCanonicalClassName());
 			});
 		}
 	}
-	
+
 	private boolean passesIgnoreJmxConstraint(TypeSystem typeSystem, SpringFactory factory) {
-		String name = factory.getFactory().getDottedName();
+		String name = factory.getFactory().getCanonicalClassName();
 		if (name.toLowerCase().contains("jmx")) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	private boolean passesAnyConditionalOnSingleCandidate(TypeSystem typeSystem, SpringFactory factory) {
-		String candidate = factory.getFactory().findConditionalOnSingleCandidateValue();
-		return check(typeSystem, candidate);
-	}
-
-
-	private boolean passesAnyConditionalOnMissingBean(TypeSystem typeSystem, SpringFactory factory) {
-		List<String> conditionClasses = factory.getFactory().findConditionalOnMissingBeanValue();
-		// TODO if there are multiple is it really a fail if at least one is missing?
-		Optional<String> missingConditionClass = conditionClasses.stream()
-				.filter(conditionClass -> typeSystem.Lresolve(conditionClass, true) == null)
-				.findAny();
-		if (missingConditionClass.isPresent()) {
-			return false;
+		MergedAnnotation<Annotation> onSingleCandidate = factory.getFactory().getAnnotations()
+				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate");
+		if (onSingleCandidate.isPresent()) {
+			String singleCandidateClass = onSingleCandidate.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING)
+					.getString("value");
+			return typeSystem.resolveClass(singleCandidateClass) != null;
 		}
 		return true;
 	}
-	
-	private boolean check(TypeSystem typeSystem, String candidate) {
-		if (candidate == null) {
-			return true; // nothing to check, so its fine
+
+	private boolean passesAnyConditionalOnMissingBean(TypeSystem typeSystem, SpringFactory factory) {
+		MergedAnnotation<Annotation> missingBeanCondition = factory.getFactory().getAnnotations()
+				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
+		if (missingBeanCondition.isPresent()) {
+			AnnotationAttributes attributes = missingBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
+			return Stream.concat(Arrays.stream(attributes.getStringArray("value")),
+					Arrays.stream(attributes.getStringArray("type")))
+					.anyMatch(beanClass -> typeSystem.resolveClass(beanClass) == null);
 		}
-		Type resolvedType = typeSystem.Lresolve(candidate, true);
-		return resolvedType!=null;
+		return true;
 	}
 
 }

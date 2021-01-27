@@ -1,15 +1,15 @@
 package org.springframework.nativex.buildtools.factories;
 
+import java.util.Optional;
+
 import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.type.classreading.MethodDescriptor;
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.domain.reflect.Flag;
-import org.springframework.nativex.type.Method;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeSystem;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for some factories
@@ -26,23 +26,21 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		Method defaultConstructor = factory.getFactory().getDefaultConstructor();
-		return defaultConstructor == null ||
-				defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false);
+		return !factory.getFactory().getDefaultConstructor().isPresent();
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getDottedName());
-		generateReflectionMetadata(factory.getFactory(), context);
+		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getClassName());
+		generateReflectionMetadata(factory.getFactory().getClassName(), context);
 		code.writeToStaticBlock(builder -> {
 			builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
-					factory.getFactory().getDottedName());
+					factory.getFactory().getClassName());
 		});
 	}
 
-	private void generateReflectionMetadata(Type factory, BuildContext context) {
-		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factory.getDottedName());
+	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
+		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
 		//factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}

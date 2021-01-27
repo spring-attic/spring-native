@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.type.TypeSystem;
 
 /**
  * Default implementation for the {@link BuildContext}
@@ -22,7 +23,7 @@ class DefaultBuildContext implements BuildContext {
 
 	private final TypeSystem typeSystem;
 
-	private final ClassLoader classLoader;
+	private final List<String> classpath;
 
 	private final List<SourceFile> sourceFiles = new ArrayList<>();
 
@@ -35,18 +36,18 @@ class DefaultBuildContext implements BuildContext {
 	private final ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
 
 	DefaultBuildContext(List<String> classpath) {
-		this.typeSystem = new TypeSystem(classpath);
-		this.classLoader = getBootstrapClassLoader(classpath);
-	}
-
-	@Override
-	public ClassLoader getClassLoader() {
-		return this.classLoader;
+		this.classpath = classpath;
+		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(getBootstrapClassLoader(classpath)));
 	}
 
 	@Override
 	public TypeSystem getTypeSystem() {
 		return this.typeSystem;
+	}
+
+	@Override
+	public List<String> getClasspath() {
+		return this.classpath;
 	}
 
 	@Override
