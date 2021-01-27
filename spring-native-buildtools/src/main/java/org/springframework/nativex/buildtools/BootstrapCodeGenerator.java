@@ -48,15 +48,17 @@ public class BootstrapCodeGenerator {
 			System.out.println("Processing resource folders: " + resourceFolders);
 			for (Path resourceFolder : resourceFolders) {
 				int resourceFolderLen = resourceFolder.toString().length() + 1;
-				Files.walk(resourceFolder).filter(p -> !p.toFile().isDirectory()).forEach(p -> {
-					String resourcePattern = p.toString().substring(resourceFolderLen);
-					if (!resourcePattern.startsWith("META-INF/native-image")) {
-						System.out.println("Resource pattern: " + resourcePattern);
-						// TODO recognize resource bundles?
-						// TODO escape the patterns (add leading trailing Q and E sequences...)
-						buildContext.describeResources(crd -> crd.add(resourcePattern));
-					}
-				});
+				if (Files.exists(resourceFolder)) {
+					Files.walk(resourceFolder).filter(p -> !p.toFile().isDirectory()).forEach(p -> {
+						String resourcePattern = p.toString().substring(resourceFolderLen);
+						if (!resourcePattern.startsWith("META-INF/native-image")) {
+							System.out.println("Resource pattern: " + resourcePattern);
+							// TODO recognize resource bundles?
+							// TODO escape the patterns (add leading trailing Q and E sequences...)
+							buildContext.describeResources(crd -> crd.add(resourcePattern));
+						}
+					});
+				}
 			}
 		}
 		
