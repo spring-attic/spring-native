@@ -20,11 +20,6 @@
 			<artifactId>spring-native-feature</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-tree</artifactId>
-			<version>9.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.graalvm.nativeimage</groupId>
@@ -51,7 +46,7 @@
 			<artifactId>spring-boot-autoconfigure</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
