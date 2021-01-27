@@ -1,14 +1,26 @@
 [[getting-started-build-time-infrastructure-native-image]]
-=== Getting started with native image Maven plugin if wanting to use build time infrastructure
+=== Getting started with native image using build time infrastructure
 
-This section walks through how to build a Spring Boot native application with https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native image Maven plugin].
+There are two modes in which spring-native can be run:
+
+- as a GraalVM feature, which is a plugin to the native-image command, it operates (analyses the spring app to compute native-image configuration) at the same time as native-image runs.
+
+- as a build time plugin (when the project is compiled source>bytecode), where
+it runs when 'javac' runs and produces native-image configuration as .json files that can later be consumed by native-image (so running 'feature' mode is not required).
+
+Feature mode is going to be deprecated, the build time mode of operation is the
+future.
+
+This section walks through setting up a project to use the build time transformation mode.
+
+What are the benefits of the build time mode of operation?
+
+The new version of spring-native is being build on some new, general purpose, Spring
+application build time transformation support. This general purpose support is
+pushing some of the work that usually happens an application startup time to build time. For example, instead of spending valuable startup cycles reflectively instantiating factories,
+code will be generated at build time to do that, and it will effectively evaluate conditions like ConditionalOnClass at build time rather than runtime.
+
 This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
-
-This differs from the other native-image maven guide because whilst that guide is using spring-native as 
-a feature (a plugin to the native-image build process). The process here will use spring-native as a build time processor
-that runs as part of the regular application build process (ahead of native-image building) and produces all the necessary
-native-image configuration in .json files in the project. The native-image step will then run without the spring-native
-feature.
 
 ==== Prerequisites
 
@@ -23,7 +35,7 @@ From GraalVM builds:
 Or you can use https://sdkman.io/[SDKMAN] to easily switch between GraalVM versions:
 
 - https://sdkman.io/install[Install SDKMAN]
-- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
+- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11 (11 is recommended).
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 
@@ -169,6 +181,20 @@ With `native-image-maven-plugin`, the `spring-native` dependency should be speci
         <artifactId>spring-native</artifactId>
         <version>{version}</version>
     </dependency>
+</dependencies>
+----
+====
+
+Also, the spring component indexer must be added to generate spring.components at build time.
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<dependencies>
+    <!-- ... -->
+		<dependency>
+			  <groupId>org.springframework</groupId>
+			  <artifactId>spring-context-indexer</artifactId>
+		</dependency>
 </dependencies>
 ----
 ====
