@@ -80,7 +80,7 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
 		if (missingBeanCondition.isPresent()) {
 			AnnotationAttributes attributes = missingBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
-			return Stream.concat(Arrays.stream(attributes.getStringArray("value")),
+			return !Stream.concat(Arrays.stream(attributes.getStringArray("value")),
 					Arrays.stream(attributes.getStringArray("type")))
 					.anyMatch(beanClass -> typeSystem.resolveClass(beanClass) == null);
 		}
