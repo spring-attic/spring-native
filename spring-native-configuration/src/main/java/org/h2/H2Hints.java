@@ -26,12 +26,12 @@ import org.h2.store.fs.FilePathRetryOnInterrupt;
 import org.h2.store.fs.FilePathSplit;
 import org.h2.store.fs.FilePathZip;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger= Driver.class, typeInfos= {
+@NativeHint(trigger= Driver.class, typeInfos= {
 		@TypeInfo( types = { 
 			FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, 
 			FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class,
@@ -40,5 +40,5 @@ import org.springframework.nativex.type.AccessBits;
 			typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
 			access=AccessBits.LOAD_AND_CONSTRUCT)}
 		)
-public class H2Hints implements NativeImageConfiguration {
+public class H2Hints implements NativeConfiguration {
 }

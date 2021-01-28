@@ -27,8 +27,8 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.TypeSystem;
@@ -39,7 +39,7 @@ import org.springframework.nativex.type.TypeSystem;
 // key that will handle hints against these (so we can use a ...ContextConfiguration trigger class
 // here - we don't have to use a standard auto config visible through EnableAutoConfiguration).
 // If we wanted to use a standard config, we'd trigger on WebEndpointAutoConfiguration
-@NativeImageHint(trigger=WebMvcEndpointManagementContextConfiguration.class, 
+@NativeHint(trigger=WebMvcEndpointManagementContextConfiguration.class,
 	importInfos = CommonWebActuatorTypes.class,
  	typeInfos = {
 		@TypeInfo(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
@@ -65,7 +65,7 @@ import org.springframework.nativex.type.TypeSystem;
 		"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
 	})//,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
-public class WebMvcEndpointManagementContextConfigurationHints implements NativeImageConfiguration {
+public class WebMvcEndpointManagementContextConfigurationHints implements NativeConfiguration {
 
 	@Override
 	public boolean isValid(TypeSystem typeSystem) {

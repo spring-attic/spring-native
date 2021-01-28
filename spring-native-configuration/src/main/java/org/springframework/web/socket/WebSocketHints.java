@@ -11,8 +11,8 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
 import org.springframework.messaging.simp.user.UserDestinationResolver;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketConfiguration;
@@ -21,7 +21,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 
-@NativeImageHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, typeInfos = {
+@NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, typeInfos = {
 		@TypeInfo(types= {
 				DelegatingWebSocketMessageBrokerConfiguration.class,
 				WebSocketHandlerRegistry.class,
@@ -41,8 +41,8 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 		}, access = AccessBits.RESOURCE),
 		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
 })
-@NativeImageHint(trigger = DelegatingWebSocketConfiguration.class, typeInfos = {
+@NativeHint(trigger = DelegatingWebSocketConfiguration.class, typeInfos = {
 		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
 })
-public class WebSocketHints implements NativeImageConfiguration {
+public class WebSocketHints implements NativeConfiguration {
 }

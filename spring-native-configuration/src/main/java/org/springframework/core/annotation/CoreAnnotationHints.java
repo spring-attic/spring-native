@@ -17,17 +17,17 @@ package org.springframework.core.annotation;
 
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {
+@NativeHint( typeInfos = {@TypeInfo(types= {
 	Order.class, AliasFor.class,
 },access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
-@NativeImageHint( typeInfos = {@TypeInfo(types= {
+@NativeHint( typeInfos = {@TypeInfo(types= {
 	AnnotationAttributes.class,AnnotationAttributes[].class,
 	DecoratingProxy.class,PriorityOrdered.class,
 	TypeMappedAnnotation[].class
 },access = AccessBits.CLASS)})
-public class CoreAnnotationHints implements NativeImageConfiguration { }
+public class CoreAnnotationHints implements NativeConfiguration { }

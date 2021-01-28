@@ -25,25 +25,25 @@ import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
+@NativeHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 // TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 // @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-@NativeImageHint(trigger = Import.class, follow = true) // TODO verify these flags...
-@NativeImageHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
+@NativeHint(trigger = Import.class, follow = true) // TODO verify these flags...
+@NativeHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
-@NativeImageHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
+@NativeHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO Check required access for enums like this FilterType
-@NativeImageHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
-@NativeImageHint(typeInfos = {
+@NativeHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
+@NativeHint(typeInfos = {
 	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
 	)})
-@NativeImageHint(typeInfos = {
+@NativeHint(typeInfos = {
 		@TypeInfo(types = {
 				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
@@ -63,5 +63,5 @@ import org.springframework.nativex.type.AccessBits;
 		),
 		@TypeInfo(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE)
 })
-public class ContextAnnotationHints implements NativeImageConfiguration {
+public class ContextAnnotationHints implements NativeConfiguration {
 }

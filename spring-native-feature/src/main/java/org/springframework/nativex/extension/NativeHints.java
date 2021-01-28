@@ -19,11 +19,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeatable annotation container for {@link NativeImageHint} annotations.
+ * Repeatable annotation container for {@link NativeHint} annotations.
  * 
  * @author Andy Clement
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NativeImageHints {
-	NativeImageHint[] value();
+public @interface NativeHints {
+	NativeHint[] value();
 }

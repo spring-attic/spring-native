@@ -18,10 +18,27 @@ package org.springframework.nativex.extension;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Configure reflection for a given field.
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
+ * @author Andy Clement
+ * @author Sebastien Deleuze
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldInfo {
+
+	/**
+	 * The name of the field.
+	 * @return the name
+	 */
 	String name();
 
+	/**
+	 * Allow unsafe access on the related field.
+	 * @return {@code true} if allowed
+	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#unsafe-accesses">Unsafe accesses</a>
+	 */
 	boolean allowUnsafeAccess() default false;
 
 }

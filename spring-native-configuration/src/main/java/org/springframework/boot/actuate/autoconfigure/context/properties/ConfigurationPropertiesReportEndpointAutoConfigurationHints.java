@@ -16,13 +16,13 @@
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 // Hitting /configprops endpoint
-@NativeImageHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 			io.micrometer.core.instrument.simple.CountingMode.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor.class,
@@ -31,5 +31,5 @@ import org.springframework.nativex.type.AccessBits;
 	}),
 	@TypeInfo(types= ConfigurationPropertiesReportEndpoint.class,access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
-public class ConfigurationPropertiesReportEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class ConfigurationPropertiesReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

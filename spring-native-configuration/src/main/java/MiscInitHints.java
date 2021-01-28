@@ -1,9 +1,9 @@
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 
-@NativeImageHint(
+@NativeHint(
 		initializationInfos = @InitializationInfo(types = {
 				org.h2.util.Bits.class,
 				org.hibernate.EntityMode.class,
@@ -23,5 +23,5 @@ import org.springframework.nativex.extension.NativeImageHint;
 				"io.r2dbc.spi",
 				"javax.transaction"
 		}, initTime = InitializationTime.BUILD))
-public class MiscInitHints implements NativeImageConfiguration {
+public class MiscInitHints implements NativeConfiguration {
 }

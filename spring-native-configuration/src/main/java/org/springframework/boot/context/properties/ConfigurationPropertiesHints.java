@@ -17,12 +17,12 @@ package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = EnableConfigurationPropertiesRegistrar.class, typeInfos = {
+@NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, typeInfos = {
 		@TypeInfo(types = {
 				BoundConfigurationProperties.class,
 				ConfigurationPropertiesBindingPostProcessor.class			
@@ -37,10 +37,10 @@ import org.springframework.nativex.type.AccessBits;
 			"java.lang.String[]"
 			})
 })
-@NativeImageHint(trigger = EnableConfigurationProperties.class,
+@NativeHint(trigger = EnableConfigurationProperties.class,
 	typeInfos={@TypeInfo(types= {ConstructorBinding.class})}
 )
-@NativeImageHint(typeInfos = {
+@NativeHint(typeInfos = {
 		@TypeInfo(types= {
 				ConfigurationPropertiesScan.class,
 				ConfigurationPropertiesScanRegistrar.class
@@ -51,5 +51,5 @@ import org.springframework.nativex.type.AccessBits;
 		}),
 		@TypeInfo(types= ArrayList.class)
 })
-public class ConfigurationPropertiesHints implements NativeImageConfiguration {
+public class ConfigurationPropertiesHints implements NativeConfiguration {
 }

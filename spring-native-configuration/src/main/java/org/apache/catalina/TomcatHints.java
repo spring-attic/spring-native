@@ -9,12 +9,12 @@ import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoa
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger= Tomcat.class, typeInfos = {
+@NativeHint(trigger= Tomcat.class, typeInfos = {
 		@TypeInfo(types = TomcatEmbeddedWebappClassLoader.class),
 		@TypeInfo(types = AbstractProtocol.class, methods = @MethodInfo(name = "getLocalPort"),access=AccessBits.CLASS),
 		@TypeInfo(types = Http11NioProtocol.class),
@@ -24,5 +24,5 @@ import org.springframework.nativex.type.AccessBits;
 				org.apache.catalina.Globals.class
 		}, initTime = InitializationTime.BUILD)
 }, importInfos = CommonWebInfos.class)
-public class TomcatHints implements NativeImageConfiguration  {
+public class TomcatHints implements NativeConfiguration {
 }

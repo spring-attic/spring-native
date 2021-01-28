@@ -15,12 +15,12 @@
  */
 package org.springframework.data.jpa.repository.support;
 
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint( typeInfos = {@TypeInfo(types= {
+@NativeHint( typeInfos = {@TypeInfo(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
 		},access = AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS)})
-public class EntityManagerHints implements NativeImageConfiguration { }
+public class EntityManagerHints implements NativeConfiguration { }

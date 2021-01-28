@@ -16,14 +16,14 @@
 package org.springframework.beans.factory.config;
 
 import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint( typeInfos = {
+@NativeHint( typeInfos = {
 	@TypeInfo(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
 			  access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-public class PropertiesHints implements NativeImageConfiguration {
+public class PropertiesHints implements NativeConfiguration {
 }

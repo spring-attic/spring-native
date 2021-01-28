@@ -2,11 +2,11 @@ package org.hibernate.validator;
 
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 
-@NativeImageHint(
+@NativeHint(
 		initializationInfos = @InitializationInfo(types = {
 				org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator.class,
 				org.hibernate.validator.internal.engine.ValidatorImpl.class,
@@ -52,5 +52,5 @@ import org.springframework.nativex.extension.ProxyInfo;
 				org.springframework.core.DecoratingProxy.class
 		})
 )
-public class ValidatorHints implements NativeImageConfiguration {
+public class ValidatorHints implements NativeConfiguration {
 }

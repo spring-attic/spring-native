@@ -15,10 +15,10 @@
  */
 package org.springframework.boot.context;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(typeInfos = {@TypeInfo(types= TypeExcludeFilter.class)})
-public class ContextHints implements NativeImageConfiguration {
+@NativeHint(typeInfos = {@TypeInfo(types= TypeExcludeFilter.class)})
+public class ContextHints implements NativeConfiguration {
 }

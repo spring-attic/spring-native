@@ -125,6 +125,7 @@ public class HintApplication {
 
 	/**
 	 * Convert a list of types into a more compact form where package names are single letters.
+	 * @return the more compact form
 	 */
 	public String shortChain() {
 		StringBuilder s = new StringBuilder();

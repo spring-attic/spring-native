@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.Field;
@@ -105,7 +105,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	private static boolean ACTIVE = System.getProperty(ConfigOptions.ENABLE_AT_REPOSITORY_PROCESSING,"true").equalsIgnoreCase("true");
 	
 	@Override
-	public boolean handle(NativeImageContext imageContext, String key, List<String> values) {
+	public boolean handle(NativeContext imageContext, String key, List<String> values) {
 		if (!ACTIVE) {
 			return false;
 		}
@@ -118,7 +118,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	}
 
 	@Override
-	public void process(NativeImageContext imageContext, String key, List<String> values) {
+	public void process(NativeContext imageContext, String key, List<String> values) {
 		try {
 			Type repositoryType = imageContext.getTypeSystem().resolveDotted(key);
 			Set<String> processed = new HashSet<>(); 
@@ -130,7 +130,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 		}
 	}
 	
-	public void processRepositoryType(Type repositoryType, NativeImageContext imageContext, Set<String> processed) {
+	public void processRepositoryType(Type repositoryType, NativeContext imageContext, Set<String> processed) {
 		Type[] repositoryInterfaces = repositoryType.getInterfaces(); // For example: JdbcOwnerRepositoryImpl implements OwnerRepository
 		for (Type repositoryInterface: repositoryInterfaces) {
 			addAllTypesFromSignaturesInRepositoryInterface(repositoryInterface, imageContext, processed);
@@ -140,7 +140,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	}
 
 	public void addAllTypesFromSignaturesInRepositoryInterface(Type repositoryInterface,
-			NativeImageContext imageContext, Set<String> processed) {
+			NativeContext imageContext, Set<String> processed) {
 		boolean addValidationMessagesBundle = false;
 		List<Method> publicRepositoryMethods = repositoryInterface.getMethods(m -> m.isPublic());
 		for (Method publicRepositoryMethod : publicRepositoryMethods) {
@@ -194,7 +194,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 	/**
 	 * Within a domain type there may be other types that need access. For example in class <tt>Pet</tt> there may be a <tt>Set&lt;Visit&gt; visits</tt>
 	 */
-	private void processPossibleDomainType(Type type, NativeImageContext imageContext, Set<String> processed) {
+	private void processPossibleDomainType(Type type, NativeContext imageContext, Set<String> processed) {
 		List<Field> fields = type.getFields();
 		for (Field field: fields) {
 			Set<String> fieldTypes = field.getTypesInSignature();
@@ -222,7 +222,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 		return false;
 	}
 
-	public void registerRepositoryProxy(NativeImageContext imageContext, Type repositoryType, Set<String> processed) {
+	public void registerRepositoryProxy(NativeContext imageContext, Type repositoryType, Set<String> processed) {
 		List<String> repositoryInterfacesStrings = repositoryType.getInterfacesStrings();
 		if (repositoryInterfacesStrings.size()!=0) {
 			List<String> repositoryInterfaces = new ArrayList<>();

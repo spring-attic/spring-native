@@ -15,7 +15,17 @@
  */
 package org.springframework.nativex.extension;
 
+/**
+ * Specifies the initialization time of a type.
+ */
 public enum InitializationTime {
+	/**
+	 * Build-time initialization.
+	 */
 	BUILD,
+
+	/**
+	 * Runtime initialization (GraalVM default).
+	 */
 	RUN;
 }

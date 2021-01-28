@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.type.Type;
 
 /**
@@ -30,14 +30,14 @@ import org.springframework.nativex.type.Type;
 public class TransactionalComponentProcessor implements ComponentProcessor {
 
 	@Override
-	public boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		boolean isInteresting =  (type != null && (type.isTransactional() || type.hasTransactionalMethods())); 
 		return isInteresting;
 	}
 
 	@Override
-	public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		List<String> transactionalInterfaces = new ArrayList<>();
 		for (Type intface: type.getInterfaces()) {

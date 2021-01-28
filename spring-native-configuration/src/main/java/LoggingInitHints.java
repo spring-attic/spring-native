@@ -1,9 +1,9 @@
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 
-@NativeImageHint(
+@NativeHint(
 		initializationInfos = @InitializationInfo(types = {
 				org.slf4j.spi.LocationAwareLogger.class,
 				org.slf4j.Logger.class,
@@ -34,5 +34,5 @@ import org.springframework.nativex.extension.NativeImageHint;
 				"org.apache.logging.slf4j",
 				"org.jboss.logging"
 		}, initTime = InitializationTime.BUILD))
-public class LoggingInitHints implements NativeImageConfiguration {
+public class LoggingInitHints implements NativeConfiguration {
 }

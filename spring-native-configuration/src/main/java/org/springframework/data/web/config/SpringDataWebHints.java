@@ -17,8 +17,8 @@ package org.springframework.data.web.config;
 
 import org.springframework.data.web.config.EnableSpringDataWebSupport.QuerydslActivator;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.SpringDataWebConfigurationImportSelector;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 
@@ -30,7 +30,7 @@ proposedHints.put(SpringDataWebConfigurationSelector,
 			"org.springframework.data.web.config.SpringDataWebConfiguration"
 		}));
 */
-@NativeImageHint(trigger = SpringDataWebConfigurationImportSelector.class, typeInfos = {
+@NativeHint(trigger = SpringDataWebConfigurationImportSelector.class, typeInfos = {
 	@TypeInfo(types= {
 			HateoasAwareSpringDataWebConfiguration.class,
 			SpringDataWebConfiguration.class,
@@ -46,8 +46,8 @@ proposedHints.put(SpringDataWebQueryDslSelector,
 			"org.springframework.data.web.config.QuerydslWebConfiguration"}
 		));
 */
-@NativeImageHint(trigger = QuerydslActivator.class, typeInfos = {
+@NativeHint(trigger = QuerydslActivator.class, typeInfos = {
 	@TypeInfo(types= {QuerydslWebConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) 
-public class SpringDataWebHints implements NativeImageConfiguration {
+public class SpringDataWebHints implements NativeConfiguration {
 }

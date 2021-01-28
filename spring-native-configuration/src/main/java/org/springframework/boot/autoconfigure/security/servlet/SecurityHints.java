@@ -20,8 +20,8 @@ import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
@@ -44,7 +44,7 @@ import org.springframework.security.authentication.event.AuthenticationFailureSe
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
-@NativeImageHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
+@NativeHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
 		@TypeInfo(
 				// This one is interesting. This type is the return value of an @Bean method but needs DECLARED_METHODS
 				// which the default @Bean processing doesn't currently include (because not all @Bean methods need it
@@ -84,5 +84,5 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 		}, access = AccessBits.ALL),
 		@TypeInfo(types= BasicErrorController.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
-public class SecurityHints implements NativeImageConfiguration {
+public class SecurityHints implements NativeConfiguration {
 }

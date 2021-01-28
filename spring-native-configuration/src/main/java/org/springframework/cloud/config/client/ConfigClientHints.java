@@ -17,13 +17,13 @@ package org.springframework.cloud.config.client;
 
 import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.environment.PropertySource;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = ConfigClientAutoConfiguration.class, typeInfos = { @TypeInfo(types = {
+@NativeHint(trigger = ConfigClientAutoConfiguration.class, typeInfos = { @TypeInfo(types = {
         Environment.class, PropertySource.class }, access = AccessBits.ALL) })
-public class ConfigClientHints implements NativeImageConfiguration {
+public class ConfigClientHints implements NativeConfiguration {
 
 }

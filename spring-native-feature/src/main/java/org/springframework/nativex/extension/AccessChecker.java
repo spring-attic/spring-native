@@ -21,6 +21,9 @@ public interface AccessChecker {
 
 	/**
 	 * Check if reflective/resource access should be allowed to the specified type
+	 * @param typeSystem the type system
+	 * @param typename the type name
+	 * @return {@code true} if the access is allowed.
 	 */
 	boolean check(TypeSystem typeSystem, String typename);
 }

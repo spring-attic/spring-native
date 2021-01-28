@@ -26,8 +26,8 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
 import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.support.ConfigOptions;
@@ -38,22 +38,22 @@ import org.springframework.nativex.type.TypeSystem;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
 
-@NativeImageHint(trigger=DataSourceInitializationConfiguration.Registrar.class, typeInfos= {
+@NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, typeInfos= {
 		@TypeInfo(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
 
-@NativeImageHint(trigger=EmbeddedDataSourceConfiguration.class, typeInfos= {
+@NativeHint(trigger=EmbeddedDataSourceConfiguration.class, typeInfos= {
 		@TypeInfo(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)})
 
-@NativeImageHint(trigger=Hikari.class, typeInfos= {
+@NativeHint(trigger=Hikari.class, typeInfos= {
 		@TypeInfo(types=DatabaseMetaData.class,methods= {@MethodInfo(name="getDatabaseProductName")}),
 		@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
 		@TypeInfo(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
 	@TypeInfo(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
-@NativeImageHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
+@NativeHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
 		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
 })
-public class JdbcHints implements NativeImageConfiguration {
+public class JdbcHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 		if (!ConfigOptions.shouldRemoveXmlSupport()) {

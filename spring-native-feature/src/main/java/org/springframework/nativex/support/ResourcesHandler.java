@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,13 +42,11 @@ import java.util.stream.Stream;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
-import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
@@ -186,7 +183,7 @@ public class ResourcesHandler extends Handler {
 	 * in hybrid mode then process the spring.components entries.
 	 */
 	public void handleSpringComponents() {
-		NativeImageContext context = new NativeImageContextImpl();
+		NativeContext context = new NativeContextImpl();
 //		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		Collection<byte[]> springComponents = ts.getResources("META-INF/spring.components");
 		List<String> alreadyProcessed = new ArrayList<>();
@@ -247,7 +244,7 @@ public class ResourcesHandler extends Handler {
 		return p;
 	}
 	
-	private void processSpringComponentsAgent(Properties p, NativeImageContext context) {
+	private void processSpringComponentsAgent(Properties p, NativeContext context) {
 		Enumeration<Object> keys = p.keys();
 		while (keys.hasMoreElements()) {
 			String key = (String)keys.nextElement();
@@ -296,7 +293,7 @@ public class ResourcesHandler extends Handler {
 	 * </code></pre>
 	 * @param p the properties object containing spring components
 	 */
-	private void processSpringComponents(Properties p, NativeImageContext context, List<String> alreadyProcessed) {
+	private void processSpringComponents(Properties p, NativeContext context, List<String> alreadyProcessed) {
 		int registeredComponents = 0;
 		RequestedConfigurationManager requestor = new RequestedConfigurationManager();
 		for (Entry<Object, Object> entry : p.entrySet()) {
@@ -310,7 +307,7 @@ public class ResourcesHandler extends Handler {
 		SpringFeature.log("Registered " + registeredComponents + " entries");
 	}
 	
-	private boolean processSpringComponent(String componentTypename, String classifiers, NativeImageContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
+	private boolean processSpringComponent(String componentTypename, String classifiers, NativeContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
 		ProcessingContext pc = ProcessingContext.of(componentTypename, ReachedBy.FromSpringComponent);
 		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		boolean isComponent = false;
@@ -427,7 +424,7 @@ public class ResourcesHandler extends Handler {
 	/**
 	 * This is the type passed to the 'plugins' that process spring components or spring factories entries.
 	 */
-	class NativeImageContextImpl implements NativeImageContext {
+	class NativeContextImpl implements NativeContext {
 
 		private final HashMap<String, Flag[]> reflectiveFlags = new LinkedHashMap<>();
 
@@ -537,8 +534,7 @@ public class ResourcesHandler extends Handler {
 
 	/**
 	 * Walk a type hierarchy and register them all for reflective access.
-	 * @param pc 
-	 * 
+	 * @param pc Processing context
 	 * @param type the type whose hierarchy to register
 	 * @param typesToMakeAccessible if non null required accesses are collected here rather than recorded directly on the runtime
 	 */

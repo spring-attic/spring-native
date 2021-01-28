@@ -15,16 +15,16 @@
  */
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
 
 // TODO tests or not point keeping it...
 // Hitting /info endpoint
-//@NativeImageHint(trigger = InfoEndpointAutoConfiguration.class, typeInfos = { 
+//@NativeHint(trigger = InfoEndpointAutoConfiguration.class, typeInfos = {
 ////	@TypeInfo(types = {
 //////		EnvironmentInfoContributor.class,
 //////		InfoContributor.class,
 //////		InfoEndpoint.class
 ////	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 //})
-public class InfoEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class InfoEndpointAutoConfigurationHints implements NativeConfiguration {
 }

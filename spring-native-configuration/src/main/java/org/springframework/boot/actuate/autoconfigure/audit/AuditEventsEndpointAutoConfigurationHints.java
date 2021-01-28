@@ -17,16 +17,16 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 // Hitting /auditevents endpoint
-@NativeImageHint(trigger = AuditEventsEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = AuditEventsEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		AuditEventRepository.class, AuditEventsEndpoint.class,
 		// TODO likely incomplete, not fully tested
 	})
 })
-public class AuditEventsEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class AuditEventsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

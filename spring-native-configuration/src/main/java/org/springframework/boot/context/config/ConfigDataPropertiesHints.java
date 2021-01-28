@@ -16,12 +16,12 @@
 package org.springframework.boot.context.config;
 
 import org.springframework.boot.context.properties.bind.Name;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(typeInfos = {
+@NativeHint(typeInfos = {
 	@TypeInfo(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),
 	@TypeInfo(types = ConfigDataLocation[].class,access=AccessBits.CLASS),
 	@TypeInfo(types = {
@@ -36,5 +36,5 @@ import org.springframework.nativex.type.AccessBits;
 		Name.class
 	})
 })
-public class ConfigDataPropertiesHints implements NativeImageConfiguration {
+public class ConfigDataPropertiesHints implements NativeConfiguration {
 }

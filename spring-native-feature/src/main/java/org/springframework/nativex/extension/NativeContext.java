@@ -29,7 +29,7 @@ import org.springframework.nativex.type.TypeSystem;
  * 
  * @author Andy Clement
  */
-public interface NativeImageContext {
+public interface NativeContext {
 
 	boolean addProxy(List<String> interfaces);
 

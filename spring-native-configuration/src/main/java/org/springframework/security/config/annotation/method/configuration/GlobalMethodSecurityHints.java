@@ -16,14 +16,14 @@
 package org.springframework.security.config.annotation.method.configuration;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
 
-@NativeImageHint(trigger=GlobalMethodSecuritySelector.class, typeInfos = {
+@NativeHint(trigger=GlobalMethodSecuritySelector.class, typeInfos = {
 		@TypeInfo(types= {EnableGlobalMethodSecurity.class,GlobalMethodSecurityConfiguration.class,
 				AutoProxyRegistrar.class,GlobalMethodSecurityAspectJAutoProxyRegistrar.class,
 				MethodSecurityMetadataSourceAdvisorRegistrar.class,Jsr250MetadataSourceConfiguration.class,
@@ -32,12 +32,12 @@ import org.springframework.security.access.intercept.aopalliance.MethodSecurityM
 		@TypeInfo(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access=AccessBits.DECLARED_CONSTRUCTORS),
 
 })
-@NativeImageHint(trigger=ReactiveMethodSecuritySelector.class, typeInfos = {
+@NativeHint(trigger=ReactiveMethodSecuritySelector.class, typeInfos = {
 		@TypeInfo(types= {AutoProxyRegistrar.class,ReactiveMethodSecurityConfiguration.class})})
-@NativeImageHint(proxyInfos = {
+@NativeHint(proxyInfos = {
 		@ProxyInfo(types = {
 				org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,
 				org.springframework.core.annotation.SynthesizedAnnotation.class
 		})
 })
-public class GlobalMethodSecurityHints implements NativeImageConfiguration { }
+public class GlobalMethodSecurityHints implements NativeConfiguration { }

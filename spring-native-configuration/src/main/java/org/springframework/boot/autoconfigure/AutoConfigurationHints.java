@@ -15,24 +15,24 @@
  */
 package org.springframework.boot.autoconfigure;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 
-@NativeImageHint(trigger=ImportAutoConfigurationImportSelector.class, typeInfos={
+@NativeHint(trigger=ImportAutoConfigurationImportSelector.class, typeInfos={
 		@TypeInfo(types= { 
 				ImportAutoConfiguration.class }, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
 			})}
 )
-@NativeImageHint(trigger=AutoConfigurationImportSelector.class)
-@NativeImageHint(typeInfos = {
+@NativeHint(trigger=AutoConfigurationImportSelector.class)
+@NativeHint(typeInfos = {
 	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
-@NativeImageHint(typeInfos = { 
+@NativeHint(typeInfos = {
 	@TypeInfo(types = { 
 		AutoConfigurationImportSelector.class,
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
@@ -40,10 +40,10 @@ import org.springframework.nativex.type.AccessBits;
 		EnableAutoConfiguration.class,SpringBootApplication.class
 	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
-@NativeImageHint(typeInfos = { 
+@NativeHint(typeInfos = {
 	@TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
 	})
 })
-public class AutoConfigurationHints implements NativeImageConfiguration {
+public class AutoConfigurationHints implements NativeConfiguration {
 }

@@ -19,20 +19,20 @@ import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
 import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
 // Hitting /beans endpoint
-@NativeImageHint(trigger = BeansEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = BeansEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class
 	})
 	// TODO infer this
 	,@TypeInfo(types = BeansEndpoint.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
-public class BeansEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class BeansEndpointAutoConfigurationHints implements NativeConfiguration {
 }

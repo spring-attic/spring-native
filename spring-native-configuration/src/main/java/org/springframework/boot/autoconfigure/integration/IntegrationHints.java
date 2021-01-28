@@ -15,14 +15,14 @@
  */
 package org.springframework.boot.autoconfigure.integration;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 
-@NativeImageHint(trigger = IntegrationAutoConfiguration.class,
+@NativeHint(trigger = IntegrationAutoConfiguration.class,
 	resourcesInfos = {
 		@ResourcesInfo(patterns="META-INF/spring.integration.default.properties")
 	}
 )
-public class IntegrationHints implements NativeImageConfiguration {
+public class IntegrationHints implements NativeConfiguration {
 }

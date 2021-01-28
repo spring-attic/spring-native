@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorView
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
@@ -34,7 +34,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 
 
-@NativeImageHint(trigger=WebMvcAutoConfiguration.class, 
+@NativeHint(trigger=WebMvcAutoConfiguration.class,
 	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
 	typeInfos = {
 			@TypeInfo(types = {
@@ -59,8 +59,8 @@ import org.springframework.web.servlet.view.InternalResourceView;
 				access = AccessBits.LOAD_AND_CONSTRUCT)
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
-@NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
+@NativeHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
-public class WebMvcHints implements NativeImageConfiguration {
+public class WebMvcHints implements NativeConfiguration {
 }

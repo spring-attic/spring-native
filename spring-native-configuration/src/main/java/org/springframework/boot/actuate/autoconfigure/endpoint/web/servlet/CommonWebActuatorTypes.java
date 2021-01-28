@@ -31,7 +31,7 @@ import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 /**
- * Example... this could host @TypeInfo annotations that any other @NativeImageHint could pull in
+ * Example... this could host @TypeInfo annotations that any other @NativeHint could pull in
  * via an importInfos reference to this type.
  * 
  * @author Andy Clement

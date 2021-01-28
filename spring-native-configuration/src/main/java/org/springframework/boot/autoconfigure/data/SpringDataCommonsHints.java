@@ -26,13 +26,13 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
+@NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
 		typeInfos = {
 				@TypeInfo(types = {
 						RepositoryFactoryBeanSupport.class,
@@ -52,6 +52,6 @@ import org.springframework.nativex.type.AccessBits;
 				)
 		}
 )
-public class SpringDataCommonsHints implements NativeImageConfiguration {
+public class SpringDataCommonsHints implements NativeConfiguration {
 
 }

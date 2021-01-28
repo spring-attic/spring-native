@@ -22,24 +22,50 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.nativex.type.AccessBits;
 
 /**
- * Used by {@link NativeImageHint} annotations to indicate which types need which type of access. Class references 
- * via the `types()` member are the preferred form of use but sometimes due to accessibility restrictions the type names
- * may need to be specified in the `typeNames()` member. See {@link AccessBits} for the configurable types of access - it
+ * Configure reflection or {@code *.class} resources access on specified types. Class references
+ * via the {@link #types()} member are the preferred form of use but sometimes due to accessibility restrictions the type names
+ * may need to be specified in the {@link #typeNames} member. See {@link AccessBits} for the configurable types of access - it
  * can be important to limit it to only what is necessary for an absolutely optimal compiled image size.
- * 
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 @Repeatable(TypeInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TypeInfo {
-	
+
+	/**
+	 * Preferred (because typesafe) way to specify class references.
+	 * @return the types
+	 */
 	Class<?>[] types() default {};
 
+	/**
+	 * Alternative way to specify class references, should be used when type visibility prevents using {@link Class}
+	 * references, or for nested types which should be specified using a {@code $} separator (for example
+	 * {@code com.example.Foo$Bar}).
+	 * @return the type names
+	 */
 	String[] typeNames() default {};
 
+	/**
+	 * Access scope to be configured (class and declared constructors by default). See the various predefined ones
+	 * defined in {@link AccessBits}. You can also use custom combinations like {@code CLASS | DECLARED_FIELDS}.
+	 * @return the access
+	 */
 	int access() default AccessBits.LOAD_AND_CONSTRUCT;
 
+	/**
+	 * Specific method information, useful to reduce the footprint impact of the generated configuration.
+	 * @return the methods information
+	 */
 	MethodInfo[] methods() default {};
 
+	/**
+	 * Specific fields information, useful to reduce the footprint impact of the generated configuration or to specify
+	 * unsafe access.
+	 * @return the fields information
+	 */
 	FieldInfo[] fields() default {};
 }

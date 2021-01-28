@@ -344,7 +344,7 @@ public class ConstantPoolScanner {
 		}
 		
 		/**
-		 * @return list of classes of the form <tt>org/springframework/boot/configurationprocessor/json/JSONException</tt>
+		 * @return list of classes of the form {@code org/springframework/boot/configurationprocessor/json/JSONException}.
 		 */
 		public List<String> getReferencedClasses() {
 			return referencedClasses;

@@ -24,12 +24,12 @@ import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger=AopAutoConfiguration.class,
+@NativeHint(trigger=AopAutoConfiguration.class,
 	typeInfos = {
 		@TypeInfo(types= {
 			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
@@ -38,4 +38,4 @@ import org.springframework.nativex.type.AccessBits;
 			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class,
 			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
 })
-public class AopHints implements NativeImageConfiguration { }
+public class AopHints implements NativeConfiguration { }

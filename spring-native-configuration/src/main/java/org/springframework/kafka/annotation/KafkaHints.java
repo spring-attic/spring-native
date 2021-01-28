@@ -22,14 +22,9 @@ import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
-import org.apache.kafka.common.utils.Crc32C;
-import org.apache.kafka.common.utils.Java;
 
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageHints;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
@@ -49,7 +44,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 
-@NativeImageHint(trigger=KafkaListenerConfigurationSelector.class, 
+@NativeHint(trigger=KafkaListenerConfigurationSelector.class,
 	typeInfos = {
 		@TypeInfo(types= {
 			PartitionOffset.class, TopicPartition.class,
@@ -85,4 +80,4 @@ import org.springframework.kafka.support.ProducerListener;
 			}, typeNames = "java.util.zip.CRC32C")
 	}
 )
-public class KafkaHints implements NativeImageConfiguration { }
+public class KafkaHints implements NativeConfiguration { }

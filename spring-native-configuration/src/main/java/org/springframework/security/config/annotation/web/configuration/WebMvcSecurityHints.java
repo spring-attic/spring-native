@@ -15,8 +15,8 @@
  */
 package org.springframework.security.config.annotation.web.configuration;
 
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -39,7 +39,7 @@ proposedHints.put(SpringWebMvcImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
 		}));
 		*/
-@NativeImageHint(trigger=SpringWebMvcImportSelector.class,follow = true, typeInfos= {
+@NativeHint(trigger=SpringWebMvcImportSelector.class,follow = true, typeInfos= {
 		@TypeInfo(types= {DispatcherServlet.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {WebMvcSecurityConfiguration.class})
 })
@@ -52,14 +52,14 @@ proposedHints.put(OAuth2ImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
 		}));
 */
-@NativeImageHint(trigger=OAuth2ImportSelector.class,follow = true, typeInfos= {
+@NativeHint(trigger=OAuth2ImportSelector.class,follow = true, typeInfos= {
 		@TypeInfo(types= {ClientRegistration.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {OAuth2ClientConfiguration.class}),
 		@TypeInfo(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
 })
 // from gs-securing-web sample
-@NativeImageHint(trigger=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
+@NativeHint(trigger=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
 	@TypeInfo(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})	
 })
-public class WebMvcSecurityHints implements NativeImageConfiguration {
+public class WebMvcSecurityHints implements NativeConfiguration {
 }

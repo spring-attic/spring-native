@@ -45,12 +45,13 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationInfos;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageHints;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeHints;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ProxyInfos;
 import org.springframework.nativex.extension.ResourcesInfo;
@@ -260,8 +261,7 @@ public class Type {
 
 	/**
 	 * Compute all the types referenced in the signature of this type.
-	 *
-	 * @return
+	 * @return the types
 	 */
 	public Set<String> getTypesInSignature() {
 		if (dimensions > 0) {
@@ -1108,6 +1108,7 @@ public class Type {
 	 * org.springframework.samples.petclinic.owner.JpaOwnerRepositoryImpl=[org.springframework.stereotype.Component,javax.transaction.Transactional]
 	 * </code>
 	 * </pre>
+	 * @return the stereotypes
 	 */
 	public Entry<Type, List<Type>> getRelevantStereotypes() {
 		if (dimensions > 0) {
@@ -1297,6 +1298,7 @@ public class Type {
 	/**
 	 * Find compilation hints directly on this type or used as a meta-annotation on
 	 * annotations on this type.
+	 * @return the hints
 	 */
 	public List<HintApplication> getHints() {
 		if (dimensions > 0) {
@@ -1685,10 +1687,9 @@ public class Type {
 	/**
 	 * Find the @ConfigurationHint annotations on this type (may be more than one)
 	 * and from them build CompilationHints, taking care to convert class references
-	 * to strings because they may not be resolvable. TODO ok to discard those that
-	 * aren't resolvable at this point?
-	 *
-	 * @return
+	 * to strings because they may not be resolvable.
+	 * TODO ok to discard those that aren't resolvable at this point?
+	 * @return the hint declarations
 	 */
 	public List<HintDeclaration> unpackConfigurationHints() {
 		if (dimensions > 0)
@@ -1696,13 +1697,13 @@ public class Type {
 		List<HintDeclaration> hints = null;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				if (fromLdescriptorToDotted(an.desc).equals(NativeImageHint.class.getName())) {
+				if (fromLdescriptorToDotted(an.desc).equals(NativeHint.class.getName())) {
 					HintDeclaration hint = fromConfigurationHintToHintDeclaration(an);
 					if (hints == null) {
 						hints = new ArrayList<>();
 					}
 					hints.add(hint);
-				} else if (fromLdescriptorToDotted(an.desc).equals(NativeImageHints.class.getName())) {
+				} else if (fromLdescriptorToDotted(an.desc).equals(NativeHints.class.getName())) {
 					List<HintDeclaration> chints = fromConfigurationHintsToCompilationHints(an);
 					if (hints == null) {
 						hints = new ArrayList<>();
@@ -2571,6 +2572,7 @@ public class Type {
 	 * String name() default "";
 	 * </code>
 	 * </pre>
+	 * @return {@code true} if has alias
 	 */
 	public boolean hasAliasForMarkedMembers() {
 		for (Method m : getMethods()) {
@@ -2624,6 +2626,7 @@ public class Type {
 	 * </pre>
 	 * 
 	 * So this method is checking if a class is meta annotated with @Import
+	 * @return {@code true} if meta import annotated
 	 */
 	public boolean isMetaImportAnnotated() {
 		return isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
@@ -3059,7 +3062,9 @@ public class Type {
 	}
 
 	/**
-	 * Does the specified method on this type have the @Bean annotation on it.
+	 * @param methodName the method name
+	 * @param descriptor the descriptor
+	 * @return if the specified method on this type have the {@code @Bean} annotation on it
 	 */
 	public boolean isAtBeanMethod(String methodName, String descriptor) {
 		List<MethodNode> ms = this.node.methods;

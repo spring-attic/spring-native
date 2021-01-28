@@ -16,15 +16,15 @@
 package org.springframework.transaction.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration;
 import org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration;
 
 // TODO really the 'skip if missing' can be different for each one here...
-@NativeImageHint(trigger=TransactionManagementConfigurationSelector.class, typeInfos = {
+@NativeHint(trigger=TransactionManagementConfigurationSelector.class, typeInfos = {
 	@TypeInfo(types= {
 			AutoProxyRegistrar.class,
 			ProxyTransactionManagementConfiguration.class,
@@ -32,12 +32,12 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 			AspectJTransactionManagementConfiguration.class
 	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1", access = AccessBits.LOAD_AND_CONSTRUCT)
 }, follow=true)
-@NativeImageHint(typeInfos= {
+@NativeHint(typeInfos= {
 		@TypeInfo(types= {
 				Transactional.class,
 				javax.transaction.Transactional.class
 		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 		@TypeInfo(types= Propagation.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
-public class TransactionManagementHints implements NativeImageConfiguration {
+public class TransactionManagementHints implements NativeConfiguration {
 }

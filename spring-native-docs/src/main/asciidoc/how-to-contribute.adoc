@@ -46,28 +46,21 @@ options:
 
 To test the various samples You can also run the root `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples) from the container.
 
-=== Extending the feature
-
-We are experimenting with extension models, as you will see if you look in the `spring-native-configuration` module within the project.
-Giant `.json` files are a little unwieldy, and the structure of the Spring Boot autoconfigure module means many types would need to be mentioned in a `.json` file for that module, even though only a fraction of the autoconfigurations are likely to be active in a single application, so not all the entries in the json file would be necessary.
-
-What the configuration module is trying to achieve is to tie the access to certain types to the Spring configuration that needs them.
-Then, for any given application, if we know the likely active configurations, we can expose only the types most likely to be needed.
-
-This section walks through the structure of this hint data and finishes with how to add more configuration for areas we have not yet looked at.
-Perhaps you want to work on one and submit it as a PR.
-
 === Hints
 
-So the giant `.json` file the feature project used to include has been decomposed into lots of `@NativeImageHint` annotations.
-Each of these hint specifies some native image configuration (perhaps a resource that needs to be included in the image, or some types that need reflective access at runtime), and optionally, a trigger. The trigger might be piece of Spring infrastructure (like an autoconfiguration) or just a regular class. If the feature determines that Spring infrastructure may be active when the application runs, or (for a regular class trigger) that the named class is on the classpath, it will activate the associated hints, informing the native-image build process what is needed.
+Native configuration is provided via `@NativeHint` annotations.
+Each of these hint specifies some native image configuration (perhaps a resource that needs to be included in the image, or some types that need reflective access at runtime), and optionally, a trigger.
+The trigger might be piece of Spring infrastructure (like an autoconfiguration) or just a regular class.
+If the feature determines that Spring infrastructure may be active when the application runs, or (for a regular class trigger) that the named class is on the classpath, it will activate the associated hints,
+informing the native-image build process what is needed.
 
-These `@NativeImageHint` can be hosted in one of two places.
+These `@NativeHint` can be hosted in one of two places.
 
-First, in the `spring-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.nativex.extension.NativeImageConfiguration` interface (defined by the feature).
-Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` file, which the feature loads through regular Java service loading.
+First, in the `spring-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.nativex.extension.NativeConfiguration` interface (defined by the feature).
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.extension.NativeConfiguration` file, which the feature loads through regular Java service loading.
 
 Secondly, they can be put directly onto Spring configuration classes, and they are picked up by the feature.
+That's useful for project-specific hints and while crafting hints on a sample before moving it to the `spring-native-configuration` module.
 
 In this way, if you are experimenting with making your application into a native image, you can keep the hint configuration separate from the application code (the first case above).
 Once you are happy with it, you can keep it directly with your configuration.
@@ -80,9 +73,9 @@ These hints are in addition to any .json files existing anywhere in the classpat
 
 We mentioned a trigger may be a piece of Spring infrastructure or just a regular class - but that it was also optional, what if there is no trigger? There are two possibilities:
 
-* If the hint is on a `NativeImageConfiguration` class then it is assumed this configuration should *always* apply. This is useful for common configuration necessary for all applications.
+* If the hint is on a `@NativeConfiguration` class then it is assumed this configuration should *always* apply. This is useful for common configuration necessary for all applications.
 
-* If the hint is on something other than a `NativeImageConfiguration` class (e.g. on a Spring auto-configuration class) then that type is considered to be the trigger, and it the feature determines that is 'active', the hint apply.
+* If the hint is on something other than a `@NativeConfiguration` class (e.g. on a Spring auto-configuration class) then that type is considered to be the trigger, and it the feature determines that is 'active', the hint apply.
 
 === What do hints look like?
 
@@ -91,7 +84,7 @@ The following listing shows a hint:
 ====
 [source,java]
 ----
-@NativeImageHint(trigger = JacksonAutoConfiguration.class,
+@NativeHint(trigger = JacksonAutoConfiguration.class,
   proxyInfos = {
     @ProxyInfo(types={Serializable.class,SomeOtherInterface.class})
   },
@@ -105,7 +98,7 @@ The following listing shows a hint:
 
 * the trigger is `JacksonAutoConfiguration` - if that configuration looks to be active in the application (which usually means: do the conditional on class checks on `JacksonAutoConfiguration` pass?) then the associated configuration will be used.
 
-* Within the `NativeImageHint` it is possible to include everything you can specify in the JSON files. Proxies, resources, reflection (down to the individual member), even initialization. Here, if the hint is 'active', it specifies we want a JDK proxy in the native image for the pair of classes `Serializable` and `SomeOtherInterface`. It also specifies reflective access is required to `JsonGenerator` - reflective access to the methods and constructors is necessary at runtime (not the fields).
+* Within the `NativeHint` it is possible to include everything you can specify in the JSON files. Proxies, resources, reflection (down to the individual member), even initialization. Here, if the hint is 'active', it specifies we want a JDK proxy in the native image for the pair of classes `Serializable` and `SomeOtherInterface`. It also specifies reflective access is required to `JsonGenerator` - reflective access to the methods and constructors is necessary at runtime (not the fields).
 
 
 To fully complete the picture, here is the full list of what can be specified in a hint:
@@ -118,14 +111,14 @@ To fully complete the picture, here is the full list of what can be specified in
 
 * `initializationInfos` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
 
-* `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeImageHint`.
+* `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeHint`.
 
 
 === Codifying hint computation/validation
 
-The `NativeImageConfiguration` interface contains a couple of default methods that can be implemented for more control.
+The `@NativeConfiguration` interface contains a couple of default methods that can be implemented for more control.
 
-For example whether the hints on a `NativeImageConfiguration` should activate may be a more subtle condition that simply whether a configuration is active. It is possible to implement the `isValid` method in a `NativeImageConfiguration` implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
+For example whether the hints on a `@NativeConfiguration` should activate may be a more subtle condition that simply whether a configuration is active. It is possible to implement the `isValid` method in a `@NativeConfiguration` implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
 
 Additionally sometimes the necessary configuration is hard to statically declare and needs a more dynamic approach. For example the interfaces involved in a proxy hint might need something to be checked beyond the simple presence of a class. In this case the method `computeHints` can be implemented which allows computation of hints in a more dynamic way, which are then combined with those statically declared via annotations.
 
@@ -165,8 +158,8 @@ If you are using a piece of Spring we don't have a sample for, this is likely to
 . Try to determine which configuration classes give rise to the need for that reflective access to occur.
 Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
 
-. If there is already a `NativeImageConfiguration` implementation for that configuration, augment it with the extra type info.
-If there is not, create one, attach a `@NativeImageHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeImageConfiguration` .
+. If there is already a `@NativeConfiguration` implementation for that configuration, augment it with the extra type info.
+If there is not, create one, attach a `@NativeHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeConfiguration` .
 You may also need to set the accessibility in the annotation (in the `@TypeInfo`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.

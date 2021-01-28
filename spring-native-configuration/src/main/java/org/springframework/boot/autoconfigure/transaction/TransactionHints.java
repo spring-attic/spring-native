@@ -15,8 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.transaction;
 
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.transaction.TransactionDefinition;
@@ -24,9 +24,9 @@ import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration;
 
-@NativeImageHint(trigger=TransactionAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger=TransactionAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
 		@TypeInfo(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
 },abortIfTypesMissing = true)
-public class TransactionHints implements NativeImageConfiguration {
+public class TransactionHints implements NativeConfiguration {
 }

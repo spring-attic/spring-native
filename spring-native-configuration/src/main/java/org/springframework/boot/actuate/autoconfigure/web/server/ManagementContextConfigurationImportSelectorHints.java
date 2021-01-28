@@ -15,10 +15,10 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 
-@NativeImageHint(trigger = ManagementContextConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger = ManagementContextConfigurationImportSelector.class, typeInfos= {
 })
-public class ManagementContextConfigurationImportSelectorHints implements NativeImageConfiguration {
+public class ManagementContextConfigurationImportSelectorHints implements NativeConfiguration {
 }

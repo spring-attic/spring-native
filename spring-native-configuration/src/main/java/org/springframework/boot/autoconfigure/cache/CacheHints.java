@@ -16,11 +16,11 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(trigger=CacheConfigurationImportSelector.class, follow=true,
+@NativeHint(trigger=CacheConfigurationImportSelector.class, follow=true,
 	typeInfos = {@TypeInfo(types= {
 		GenericCacheConfiguration.class, EhCacheCacheConfiguration.class,
 		HazelcastCacheConfiguration.class, InfinispanCacheConfiguration.class,
@@ -28,4 +28,4 @@ import org.springframework.nativex.extension.TypeInfo;
 		RedisCacheConfiguration.class, CaffeineCacheConfiguration.class,
 		SimpleCacheConfiguration.class, NoOpCacheConfiguration.class
 	})})
-public class CacheHints implements NativeImageConfiguration { }
+public class CacheHints implements NativeConfiguration { }

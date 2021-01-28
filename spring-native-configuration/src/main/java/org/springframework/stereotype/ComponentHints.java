@@ -18,13 +18,13 @@ package org.springframework.stereotype;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(typeInfos = {
+@NativeHint(typeInfos = {
 	@TypeInfo(types= {Component.class,PostConstruct.class, Resource.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 })
-public class ComponentHints implements NativeImageConfiguration {
+public class ComponentHints implements NativeConfiguration {
 }

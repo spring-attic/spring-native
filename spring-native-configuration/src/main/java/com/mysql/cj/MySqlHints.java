@@ -43,12 +43,12 @@ import com.mysql.cj.protocol.NamedPipeSocketFactory;
 import com.mysql.cj.protocol.SocksProxySocketFactory;
 import com.mysql.cj.protocol.StandardSocketFactory;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(trigger= Driver.class, typeInfos= {
+@NativeHint(trigger= Driver.class, typeInfos= {
 		@TypeInfo(types = {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,
@@ -100,5 +100,5 @@ import org.springframework.nativex.extension.TypeInfo;
 		@ResourcesInfo(patterns = "com/mysql/cj/TlsSettings.properties"),
 		@ResourcesInfo(isBundle = true, patterns = "com.mysql.cj.LocalizedErrorMessages")
 })
-public class MySqlHints implements NativeImageConfiguration {
+public class MySqlHints implements NativeConfiguration {
 }

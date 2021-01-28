@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 Compiling Enumeration java.lang.ClassLoader.getSystemResources(String)  [Direct call from boolean ServiceLoader$LazyIterator.hasNextService()]
 Compiling boolean com.oracle.svm.core.jdk8.zipfile.ZipFile$ZipEntryIterator.hasMoreElements()  [Virtual call from boolean ServiceLoader$LazyIterator.hasNextService(), callTarget boolean Enumeration.hasMoreElements()]
 Compiling String org.springframework.core.MethodParameter.lambda$validateIndex$0(int)  [Direct call from Object MethodParameter$$Lambda$c0f2232e503449199c16c75cdafef268b35dd263.get()]
-Compiling void org.springframework.beans.factory.BeanCreationException.<init>(String, String, Throwable)  [Direct call from void ConfigurationPropertiesBindException.<init>(ConfigurationPropertiesBean, Exception)]
+Compiling void org.springframework.beans.factory.BeanCreationException.&lt;init&gt;(String, String, Throwable)  [Direct call from void ConfigurationPropertiesBindException.&lt;init&gt;(ConfigurationPropertiesBean, Exception)]
 Compiling Object org.springframework.core.annotation.MergedAnnotationCollectors$$Lambda$387827c9271df01b9dedb80939c6683492e200b9.get()  [Virtual call from void SystemPropertiesSupport.initializeLazyValue(String), callTarget Object Supplier.get()]
  * </code></pre>
  * This information is output from a native-image run.

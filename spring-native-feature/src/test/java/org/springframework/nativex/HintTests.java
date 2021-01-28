@@ -28,7 +28,7 @@ import org.springframework.nativex.extension.FieldInfo;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
@@ -67,7 +67,7 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 	}
 
-	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1 {
 	}
 	
@@ -84,7 +84,7 @@ public class HintTests {
 		assertEquals("java.lang.Integer",types[1]);
 	}
 
-	@NativeImageHint(proxyInfos = { @ProxyInfo(types = { String.class,Integer.class }) })
+	@NativeHint(proxyInfos = { @ProxyInfo(types = { String.class,Integer.class }) })
 	static class TestClass2 {
 	}
 
@@ -105,7 +105,7 @@ public class HintTests {
 		assertTrue(resourcesDescriptors.get(1).isBundle());
 	}
 
-	@NativeImageHint(resourcesInfos = { 
+	@NativeHint(resourcesInfos = {
 			@ResourcesInfo(patterns = { "aaa","bbb" }),
 			@ResourcesInfo(patterns = { "ccc" }, isBundle = true)
 	})
@@ -142,7 +142,7 @@ public class HintTests {
 		assertEquals(0,rtp.size());
 	}
 
-	@NativeImageHint(initializationInfos = { 
+	@NativeHint(initializationInfos = {
 			@InitializationInfo(
 					typeNames = { "aaa","bbb" }, 
 					types=String.class,
@@ -168,7 +168,7 @@ public class HintTests {
 		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
 	}
 
-	@NativeImageHint(typeInfos = {
+	@NativeHint(typeInfos = {
 		@TypeInfo(typeNames = "java.lang.String",
 				methods= @MethodInfo(name="foo",parameterTypes = String.class)
 		)
@@ -192,7 +192,7 @@ public class HintTests {
 		assertTrue(fd.isAllowUnsafeAccess());
 	}
 
-	@NativeImageHint(typeInfos = {
+	@NativeHint(typeInfos = {
 		@TypeInfo(typeNames = "java.lang.String",
 				fields= @FieldInfo(name="foo",allowUnsafeAccess = true)
 		)

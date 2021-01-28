@@ -29,7 +29,7 @@ import org.springframework.data.annotation.QueryAnnotation;
 import org.springframework.data.repository.Repository;
 import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
@@ -157,7 +157,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 	@Override
-	public boolean handle(NativeImageContext imageContext, String key, List<String> values) {
+	public boolean handle(NativeContext imageContext, String key, List<String> values) {
 		if (repositoryName != null && values.contains(repositoryName)) {
 			return !keysSeen.contains(key);
 		}
@@ -165,7 +165,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 	@Override
-	public void process(NativeImageContext imageContext, String key, List<String> values) {
+	public void process(NativeContext imageContext, String key, List<String> values) {
 
 		keysSeen.add(key);
 
@@ -191,7 +191,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		}
 	}
 
-	private void registerRepositoryInterface(Type repositoryType, NativeImageContext imageContext) {
+	private void registerRepositoryInterface(Type repositoryType, NativeContext imageContext) {
 
 		imageContext.addReflectiveAccess(repositoryType, Flag.allPublicMethods, Flag.allDeclaredConstructors);
 
@@ -222,7 +222,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		}
 	}
 
-	private void detectCustomRepositoryImplementations(Type repositoryType, NativeImageContext imageContext) {
+	private void detectCustomRepositoryImplementations(Type repositoryType, NativeContext imageContext) {
 
 		List<Type> customImplementations = new ArrayList<>();
 
@@ -268,7 +268,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		}
 	}
 
-	private void registerQueryMethodResultTypes(Type repositoryType, Type repositoryDomainType, NativeImageContext imageContext) {
+	private void registerQueryMethodResultTypes(Type repositoryType, Type repositoryDomainType, NativeContext imageContext) {
 
 		// Grab all partTreeQueryMethods
 		List<Method> methods = repositoryType.getMethods(this::isQueryMethod);
@@ -318,7 +318,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	}
 
 
-	private void registerDomainType(Type domainType, NativeImageContext imageContext) {
+	private void registerDomainType(Type domainType, NativeContext imageContext) {
 
 		if (domainType.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || imageContext.hasReflectionConfigFor(domainType.getDottedName())) {
 			return;
@@ -383,14 +383,14 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		return "Impl";
 	}
 
-	private void registerSpringDataAnnotations(Method method, NativeImageContext context) {
+	private void registerSpringDataAnnotations(Method method, NativeContext context) {
 
 		for (Type annotation : method.getAnnotationTypes()) {
 			registerSpringDataAnnotation(annotation, context);
 		}
 	}
 
-	private void registerSpringDataAnnotation(Type annotation, NativeImageContext context) {
+	private void registerSpringDataAnnotation(Type annotation, NativeContext context) {
 
 		if (!context.hasReflectionConfigFor(annotation) && isPartOfSpringData(annotation)) {
 

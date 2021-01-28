@@ -15,14 +15,14 @@
  */
 package org.postgresql;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = Driver.class, typeInfos= {
+@NativeHint(trigger = Driver.class, typeInfos= {
 		@TypeInfo(types = Driver.class),
 		@TypeInfo(types = PGProperty.class, access = AccessBits.DECLARED_FIELDS)
 	})
-public class PostgresqlHints implements NativeImageConfiguration {
+public class PostgresqlHints implements NativeConfiguration {
 }

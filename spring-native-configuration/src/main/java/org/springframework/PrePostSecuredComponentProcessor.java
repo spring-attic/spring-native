@@ -16,7 +16,7 @@
 package org.springframework;
 
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.type.Type;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ import java.util.List;
 public class PrePostSecuredComponentProcessor implements ComponentProcessor {
 
     @Override
-    public boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+    public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
         Type type = imageContext.getTypeSystem().resolveName(componentType);
         return (type != null && (type.isAtPrePostSecured()));
     }
 
     @Override
-    public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+    public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
         Type type = imageContext.getTypeSystem().resolveName(componentType);
         List<String> prePostSecuredInterfaces = new ArrayList<>();
         for (Type intface: type.getInterfaces()) {

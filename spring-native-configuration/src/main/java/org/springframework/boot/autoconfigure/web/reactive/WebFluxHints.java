@@ -20,8 +20,8 @@ import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFact
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryConfiguration.EmbeddedNetty;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
@@ -30,7 +30,7 @@ import org.springframework.web.reactive.HandlerResult;
 import reactor.core.publisher.Flux;
 import reactor.netty.DisposableServer;
 
-@NativeImageHint(trigger=WebFluxAutoConfiguration.class,
+@NativeHint(trigger=WebFluxAutoConfiguration.class,
 	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
 	typeInfos = {
 	@TypeInfo(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
@@ -38,14 +38,14 @@ import reactor.netty.DisposableServer;
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-@NativeImageHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
+@NativeHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
-@NativeImageHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = {
 		@TypeInfo(
 				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
 				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-@NativeImageHint(trigger=EmbeddedNetty.class, importInfos = CommonWebInfos.class)
-public class WebFluxHints implements NativeImageConfiguration {
+@NativeHint(trigger=EmbeddedNetty.class, importInfos = CommonWebInfos.class)
+public class WebFluxHints implements NativeConfiguration {
 }

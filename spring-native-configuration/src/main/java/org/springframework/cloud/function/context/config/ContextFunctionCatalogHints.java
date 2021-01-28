@@ -17,15 +17,15 @@ package org.springframework.cloud.function.context.config;
 
 import java.util.function.Supplier;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.messaging.MessageHeaders;
 
-@NativeImageHint(trigger=ContextFunctionCatalogAutoConfiguration.class, 
+@NativeHint(trigger=ContextFunctionCatalogAutoConfiguration.class,
 		typeInfos = {@TypeInfo(types= {MessageHeaders.class,Supplier.class},
 		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
-public class ContextFunctionCatalogHints implements NativeImageConfiguration {
+public class ContextFunctionCatalogHints implements NativeConfiguration {
 }
 

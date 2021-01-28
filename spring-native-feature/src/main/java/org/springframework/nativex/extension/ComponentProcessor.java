@@ -26,11 +26,15 @@ public interface ComponentProcessor {
 	 * componentType=app.main.SampleApplication classifiers=[org.springframework.stereotype.Component]
 	 * componentType=app.main.model.Foo classifiers=[javax.persistence.Entity]
 	 * componentType=app.main.model.FooRepository classifiers=[org.springframework.data.repository.Repository]
-	 * </code></pre> 
+	 * </code></pre>
+	 * @param imageContext the image context
+	 * @param componentType the component type
+	 * @param classifiers the classifier
+	 * @return {@code true} if processing should be done
 	 */
-	boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers);
+	boolean handle(NativeContext imageContext, String componentType, List<String> classifiers);
 
-	void process(NativeImageContext imageContext, String componentType, List<String> classifiers);
+	void process(NativeContext imageContext, String componentType, List<String> classifiers);
 
 	default void printSummary() {}
 }

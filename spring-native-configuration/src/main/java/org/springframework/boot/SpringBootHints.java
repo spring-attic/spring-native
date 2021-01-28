@@ -21,15 +21,15 @@ import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 
-@NativeImageHint(
+@NativeHint(
 	resourcesInfos = {
 		@ResourcesInfo(patterns= {
 			"db/.*", // TODO should be conditional on database active?
@@ -94,11 +94,11 @@ import org.springframework.nativex.type.AccessBits;
 			})
 		}
 )
-@NativeImageHint(
+@NativeHint(
 		typeInfos = {
 				@TypeInfo(types= SpringApplication.class, methods = {
 						@MethodInfo(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
 				})
 		})
-public class SpringBootHints implements NativeImageConfiguration {
+public class SpringBootHints implements NativeConfiguration {
 }

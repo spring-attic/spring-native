@@ -26,15 +26,15 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 import org.springframework.data.relational.core.mapping.event.BeforeDeleteCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback;
 import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
 /**
  * @author Christoph Strobl
  */
-@NativeImageHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
+@NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
 		typeInfos = {
 				@TypeInfo(types = {
 						JdbcRepositoryFactoryBean.class,
@@ -56,6 +56,6 @@ import org.springframework.nativex.extension.TypeInfo;
 				})
 		}
 )
-public class JdbcRepositoriesHints implements NativeImageConfiguration {
+public class JdbcRepositoriesHints implements NativeConfiguration {
 
 }

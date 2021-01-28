@@ -15,16 +15,15 @@
  */
 package org.springframework.boot.autoconfigure.data.redis;
 
-import org.springframework.nativex.extension.FieldInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
 /**
  * @author Christoph Strobl
  */
-@NativeImageHint(trigger = RedisAutoConfiguration.class, //
+@NativeHint(trigger = RedisAutoConfiguration.class, //
 		typeInfos = {
 				@TypeInfo(types = {
 
@@ -94,7 +93,7 @@ import org.springframework.nativex.extension.TypeInfo;
 		}
 )
 
-@NativeImageHint(trigger = RedisRepositoriesAutoConfiguration.class, //
+@NativeHint(trigger = RedisRepositoriesAutoConfiguration.class, //
 		typeInfos = {
 				@TypeInfo(types = {
 
@@ -132,6 +131,6 @@ import org.springframework.nativex.extension.TypeInfo;
 				})
 		}
 )
-public class RedisDataSupportHints implements NativeImageConfiguration {
+public class RedisDataSupportHints implements NativeConfiguration {
 
 }

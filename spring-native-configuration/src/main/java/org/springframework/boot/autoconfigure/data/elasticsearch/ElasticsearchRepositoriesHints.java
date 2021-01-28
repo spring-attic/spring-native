@@ -31,8 +31,8 @@ import org.springframework.data.elasticsearch.repository.support.SimpleElasticse
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
@@ -41,7 +41,7 @@ import org.springframework.nativex.type.AccessBits;
 /**
  * @author Christoph Strobl
  */
-@NativeImageHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
 		typeInfos = {
 				@TypeInfo(types = {
 						ElasticsearchRepositoryFactoryBean.class,
@@ -56,7 +56,7 @@ import org.springframework.nativex.type.AccessBits;
 				}, access = AccessBits.ALL)
 		},
 		resourcesInfos = @ResourcesInfo(patterns = "versions.properties"))
-@NativeImageHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
 		importInfos = {SpringDataReactiveHints.class},
 		typeInfos = {
 				@TypeInfo(
@@ -98,7 +98,7 @@ import org.springframework.nativex.type.AccessBits;
 )
 
 // org.elasticsearch.client.RestClient - required logging configuration
-@NativeImageHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
 		typeInfos = {
 				@TypeInfo(types = {
 						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
@@ -156,6 +156,6 @@ import org.springframework.nativex.type.AccessBits;
 			}, initTime = InitializationTime.BUILD)
 		}
 )
-public class ElasticsearchRepositoriesHints implements NativeImageConfiguration {
+public class ElasticsearchRepositoriesHints implements NativeConfiguration {
 
 }

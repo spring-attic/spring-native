@@ -21,18 +21,17 @@ import java.util.List;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.TypeSystem;
 
-public interface NativeImageConfiguration {
+public interface NativeConfiguration {
 	
-	// TODO using typeSystem here is a little basic but a good starting
-	// point (doesn't enable us to ask 'springy' questions)
+	// TODO using typeSystem here is a little basic but a good starting point (doesn't enable us to ask 'springy' questions)
 	default List<HintDeclaration> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
 	
 	/**
-	 * Implementing this method enables hints on the NativeImageConfiguration implementation to be
+	 * Implementing this method enables hints on the @NativeConfiguration implementation to be
 	 * conditional on some programmatic test.
 	 * 
 	 * @param typeSystem a type system which can be used to query types available in the closed world
-	 * @return true if the hints on this configuration are valid
+	 * @return {@code true} if the hints on this configuration are valid
 	 */
 	default boolean isValid(TypeSystem typeSystem) { return true; }
 }

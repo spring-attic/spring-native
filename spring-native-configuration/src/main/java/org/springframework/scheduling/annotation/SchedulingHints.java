@@ -15,16 +15,16 @@
  */
 package org.springframework.scheduling.annotation;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.scheduling.aspectj.AspectJAsyncConfiguration;
 
-@NativeImageHint(trigger=AsyncConfigurationSelector.class, typeInfos = {
+@NativeHint(trigger=AsyncConfigurationSelector.class, typeInfos = {
 	@TypeInfo(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.CONFIGURATION),
 })
-@NativeImageHint(trigger=SchedulingConfiguration.class, typeInfos = {
+@NativeHint(trigger=SchedulingConfiguration.class, typeInfos = {
 	@TypeInfo(types = Schedules.class, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 })
-public class SchedulingHints implements NativeImageConfiguration { }
+public class SchedulingHints implements NativeConfiguration { }

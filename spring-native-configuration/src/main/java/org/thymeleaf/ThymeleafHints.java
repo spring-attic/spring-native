@@ -15,8 +15,8 @@
  */
 package org.thymeleaf;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.thymeleaf.extras.java8time.expression.Temporals;
@@ -30,7 +30,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeImageHint(trigger= ISpringTemplateEngine.class, typeInfos= {
+@NativeHint(trigger= ISpringTemplateEngine.class, typeInfos= {
 		@TypeInfo( types = { 
 						AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class, SpringResourceTemplateResolver.class, 
 		}, access=AccessBits.LOAD_AND_CONSTRUCT),
@@ -45,5 +45,5 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 		),
 		@TypeInfo(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
-public class ThymeleafHints implements NativeImageConfiguration {
+public class ThymeleafHints implements NativeConfiguration {
 }

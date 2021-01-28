@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
@@ -49,14 +49,14 @@ public class SynthesizerComputationComponentProcessor implements ComponentProces
 	};
 
 	@Override
-	public boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
 		// Need to do deeper digging here so let's look at everything that can be resolved 
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		return type != null;
 	}
 
 	@Override
-	public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		
 		Predicate<Type> isSpringAnnotation =  anno->anno.getDottedName().startsWith("org.springframework");

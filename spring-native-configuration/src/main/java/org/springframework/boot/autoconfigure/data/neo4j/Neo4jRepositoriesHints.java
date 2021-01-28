@@ -9,13 +9,13 @@ import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigura
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
 import org.springframework.data.neo4j.repository.support.SimpleNeo4jRepository;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class,
 		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class,
@@ -46,6 +46,6 @@ import org.springframework.nativex.type.AccessBits;
 			"org.springframework.core.annotation.SynthesizedAnnotation"
 		})
 	})
-public class Neo4jRepositoriesHints implements NativeImageConfiguration {
+public class Neo4jRepositoriesHints implements NativeConfiguration {
 
 }

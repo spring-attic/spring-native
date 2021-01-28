@@ -20,18 +20,29 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Used by {@link NativeImageHint} annotations to indicate which resources should be pulled into the image. 
- * Resources are described by patterns and may be resource bundles (in which case <tt>isBundle</tt> should
+ * Used by {@link NativeHint} annotations to indicate which resources should be pulled into the image.
+ * Resources are described by patterns and may be resource bundles (in which case {@link #isBundle} should
  * be set).
- * 
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Resources/">Accessing resources in native images</a>
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 @Repeatable(ResourcesInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResourcesInfo {
-	
+
+	/**
+	 * Resource patterns specified with Java regexp for regular resources, and with the bundle name (regexp not supported) if {@link #isBundle()} is set to true.
+	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Resources/">Accessing resources in native images</a>
+	 * return the patterns
+	 */
 	String[] patterns() default {};
-	
+
+	/**
+	 * Specify the {@link #patterns()} identify a bundle when set to true.
+	 * @return {@code true} if a bundle, {@code false} otherwise.
+	 */
 	boolean isBundle() default false;
 
 }

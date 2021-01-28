@@ -19,14 +19,14 @@ import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
 import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger=BatchConfigurationSelector.class, 
+@NativeHint(trigger=BatchConfigurationSelector.class,
 		resourcesInfos = { 
 			@ResourcesInfo(patterns = { 
 				"org/springframework/batch/core/schema-h2.sql"
@@ -78,4 +78,4 @@ import org.springframework.nativex.type.AccessBits;
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"})
 		})
-public class BatchHints implements NativeImageConfiguration { }
+public class BatchHints implements NativeConfiguration { }

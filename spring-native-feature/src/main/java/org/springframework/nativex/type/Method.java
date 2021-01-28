@@ -184,6 +184,7 @@ public class Method {
 	}
 
 	/**
+	 * @param returnTypeOnly {@code true} if should return only the type
 	 * @return full list of types involved in the signature, including those embedded in generics.
 	 */
 	public Set<Type> getSignatureTypes(boolean returnTypeOnly) {
@@ -360,6 +361,7 @@ public class Method {
 	 * if there is no @AliasFor otherwise it will be a pair containing the name of the type
 	 * specified for 'annotation' (may be null if not set) and true/false depending on whether
 	 * a value was set for 'value' or 'attribute'.
+	 * @return {@code null} or the related pair
 	 */
 	public Pair<String,Boolean> getAliasForSummary() {
 		AnnotationNode aliasForAnnotation = getAliasForAnnotation();

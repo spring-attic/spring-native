@@ -1,12 +1,12 @@
 package io.lettuce;
 
 import org.springframework.nativex.extension.FieldInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(trigger = io.lettuce.core.RedisClient.class,
+@NativeHint(trigger = io.lettuce.core.RedisClient.class,
 		typeInfos = {
 				@TypeInfo(types = {
 						io.lettuce.core.AbstractRedisAsyncCommands.class,
@@ -74,5 +74,5 @@ import org.springframework.nativex.extension.TypeInfo;
 				})
 		}
 )
-public class LettuceHints implements NativeImageConfiguration {
+public class LettuceHints implements NativeConfiguration {
 }

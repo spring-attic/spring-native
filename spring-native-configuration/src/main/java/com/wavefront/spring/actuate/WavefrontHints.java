@@ -33,15 +33,15 @@ import io.micrometer.core.instrument.config.MeterRegistryConfig;
 import io.micrometer.core.instrument.push.PushMeterRegistry;
 import io.micrometer.core.instrument.push.PushRegistryConfig;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-@NativeImageHint(trigger = WavefrontAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = WavefrontAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {
 				AbstractFuture.class,
 				WavefrontJvmReporter.class,
@@ -94,5 +94,5 @@ import org.springframework.web.client.RestTemplate;
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 
 }, resourcesInfos = @ResourcesInfo(patterns = "build", isBundle = true))
-public class WavefrontHints implements NativeImageConfiguration  {
+public class WavefrontHints implements NativeConfiguration {
 }

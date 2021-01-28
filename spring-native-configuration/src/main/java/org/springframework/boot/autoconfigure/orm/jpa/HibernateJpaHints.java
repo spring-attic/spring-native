@@ -123,8 +123,8 @@ import org.hibernate.tuple.entity.PojoEntityTuplizer;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
@@ -132,10 +132,10 @@ import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcesso
 import org.springframework.stereotype.Repository;
 
 @SuppressWarnings("deprecation")
-@NativeImageHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
+@NativeHint(trigger=HibernateJpaAutoConfiguration.class,typeInfos= {
 		@TypeInfo(types= {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
 })
-@NativeImageHint(trigger=HibernateJpaConfiguration.class,
+@NativeHint(trigger=HibernateJpaConfiguration.class,
 	resourcesInfos = {
 			@ResourcesInfo(patterns={"hibernate.properties","org/hibernate/.*.xsd","org/hibernate/.*.dtd"})
 	},
@@ -228,5 +228,5 @@ import org.springframework.stereotype.Repository;
 		}),
 		@TypeInfo(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
 })
-public class HibernateJpaHints implements NativeImageConfiguration {
+public class HibernateJpaHints implements NativeConfiguration {
 }

@@ -15,14 +15,12 @@
  */
 package org.springframework.nativex.support;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
-import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.extension.AccessChecker;
@@ -33,7 +31,7 @@ import org.springframework.nativex.type.AccessDescriptor;
 /**
  * Loads up the constant data defined in resource file and registers reflective
  * access being necessary with the image build. Also provides an method
- * (<tt>addAccess(String typename, Flag... flags)</tt>} usable from elsewhere
+ * ({@code addAccess(String typename, Flag... flags)} usable from elsewhere
  * when needing to register reflective access to a type (e.g. used when resource
  * processing).
  * 
@@ -78,8 +76,6 @@ public class ReflectionHandler extends Handler {
 	 * 
 	 * @param typename the dotted type name for which to add reflective access
 	 * @param flags    any members that should be accessible via reflection
-	 * @return the class, if the type was successfully registered for reflective
-	 *         access, otherwise null
 	 */
 	public void addAccess(String typename, Flag...flags) {
 		addAccess(typename, null, null, false, flags);

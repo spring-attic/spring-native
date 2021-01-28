@@ -33,13 +33,13 @@ import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
-@NativeImageHint(trigger = EndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = EndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
 		DeleteOperation.class, Selector.class, Match.class, EndpointFilter.class,
@@ -59,5 +59,5 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
 	})
 })
-public class EndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class EndpointAutoConfigurationHints implements NativeConfiguration {
 }

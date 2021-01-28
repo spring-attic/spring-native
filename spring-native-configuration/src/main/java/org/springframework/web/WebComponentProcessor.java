@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageContext;
+import org.springframework.nativex.extension.NativeContext;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.Method;
@@ -38,13 +38,13 @@ public class WebComponentProcessor implements ComponentProcessor {
 	private Set<String> added = new HashSet<>();
 
 	@Override
-	public boolean handle(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type resolvedComponentType = imageContext.getTypeSystem().resolveDotted(componentType,true);
 		return resolvedComponentType!=null && resolvedComponentType.isAtController();
 	}
 
 	@Override
-	public void process(NativeImageContext imageContext, String componentType, List<String> classifiers) {
+	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type controllerType = imageContext.getTypeSystem().resolveDotted(componentType,true);
 		List<Method> mappings = controllerType.getMethods(m -> m.isAtMapping());
 		imageContext.log("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
@@ -73,7 +73,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 		}
 	}
 
-	private void analyze(NativeImageContext imageContext, Type type, Set<String> added) {
+	private void analyze(NativeContext imageContext, Type type, Set<String> added) {
 		List<Field> fields = type.getFields();
 		for (Field field: fields) {
 			Set<String> fieldTypenames = field.getTypesInSignature();

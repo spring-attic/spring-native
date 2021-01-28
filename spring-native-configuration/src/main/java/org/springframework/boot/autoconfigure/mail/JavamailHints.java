@@ -3,12 +3,13 @@ package org.springframework.boot.autoconfigure.mail;
 import com.sun.mail.handlers.*;
 import com.sun.mail.smtp.SMTPProvider;
 import com.sun.mail.smtp.SMTPTransport;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(
+@NativeHint(
         trigger = MailSenderPropertiesConfiguration.class,
         typeInfos = {
                 @TypeInfo(types = SMTPProvider.class),
@@ -23,5 +24,5 @@ import org.springframework.nativex.extension.TypeInfo;
                 @ResourcesInfo(patterns = {"org/springframework/mail/javamail/mime.types", "META-INF/mailcap", "META-INF/javamail.*"})
         }
 )
-public class JavamailHints implements NativeImageConfiguration {
+public class JavamailHints implements NativeConfiguration {
 }

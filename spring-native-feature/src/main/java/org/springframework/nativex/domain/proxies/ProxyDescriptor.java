@@ -23,7 +23,7 @@ import java.util.List;
  * Reflection information about a single class.
  *
  * @author Andy Clement
- * @see ReflectionDescriptor
+ * @see org.springframework.nativex.domain.reflect.ReflectionDescriptor
  */
 public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 
@@ -113,39 +113,6 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 		this.interfaces = new ArrayList<>();
 		this.interfaces.addAll(interfaces);
 	}
-
-	/**
-	 * Used when new data is to be added to an already existing class descriptor
-	 * (additional members, flag settings).
-	 * 
-	 * @param cd the ClassDescriptor to merge into this one
-	 */
-//	public void merge(ProxyDescriptor cd) {
-//		for (Flag flag : cd.getFlags()) {
-//			this.setFlag(flag);
-//		}
-//		for (FieldDescriptor fd : cd.getFields()) {
-//			FieldDescriptor existingSimilarOne = null;
-//			for (FieldDescriptor existingFd: getFields()) {
-//				if (existingFd.getName().equals(fd.getName())) {
-//					existingSimilarOne = existingFd;
-//					break;
-//				}
-//			}
-//			if (existingSimilarOne != null) {
-//				if (fd.isAllowWrite()) {
-//					existingSimilarOne.setAllowWrite(true);
-//				}
-//			} else {
-//				addFieldDescriptor(fd);
-//			}
-//		}
-//		for (MethodDescriptor methodDescriptor : cd.getMethods()) {
-//			if (!containsMethodDescriptor(methodDescriptor)) {
-//				addMethodDescriptor(methodDescriptor);
-//			}
-//		}
-//	}
 
 	public boolean containsInterface(String intface) {
 		return interfaces.contains(intface);

@@ -18,22 +18,22 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ReactiveSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ServletSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(trigger=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class, NoOpReactiveSessionConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) // follow should be per entry and obvious as these are configurations
-@NativeImageHint(trigger=SessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=SessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisSessionConfiguration.class, RedisReactiveSessionConfiguration.class, MongoSessionConfiguration.class, MongoReactiveSessionConfiguration.class,
 		JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class,NoOpReactiveSessionConfiguration.class	
 	})
 },abortIfTypesMissing = true,follow = true)
-@NativeImageHint(trigger=ServletSessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=ServletSessionConfigurationImportSelector.class, typeInfos= {
 	@TypeInfo(types= {RedisSessionConfiguration.class,MongoSessionConfiguration.class,
 					  JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class	
 					})
 },abortIfTypesMissing=true,follow=true)
-public class SessionHints implements NativeImageConfiguration {
+public class SessionHints implements NativeConfiguration {
 }

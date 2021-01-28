@@ -22,24 +22,82 @@ import org.springframework.nativex.domain.reflect.Flag;
 
 /**
  * Specifies the reflective access desired for a type and whether it needs to be accessible as
- * a resource in the image (i.e. the .class is going to be read as a byte array).
- * 
+ * a resource in the image (i.e. the {@code .class} resource to read as a byte array).
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public class AccessBits {
+
+	/**
+	 * Resource access required when ASM is used at runtime to access to {@code *.class} resources.
+	 */
 	public static final int RESOURCE              = 0x0001;
+
+	/**
+	 * Class access, for example when {@code Class.forName(String)} is invoked with a non constant parameter that can't
+	 * be recognized automatically by the native image compiler.
+	 */
 	public static final int CLASS                 = 0x0002;
+
+	/**
+	 * Declared constructors access: public, protected, default (package) access, and private ones.
+	 * @see Class#getDeclaredConstructors()
+	 */
 	public static final int DECLARED_CONSTRUCTORS = 0x0004;
+
+	/**
+	 * Declared methods access: public, protected, default (package) access, and private, but excluding inherited ones.
+	 * Use the more restrictive {@link #PUBLIC_METHODS} when possible.
+	 * @see Class#getDeclaredMethods()
+	 */
 	public static final int DECLARED_METHODS      = 0x0008;
+
+	/**
+	 * Declared fields access: public, protected, default (package) access, and private, but excluding inherited ones.
+	 * @see Class#getDeclaredFields()
+	 */
 	public static final int DECLARED_FIELDS       = 0x0010;
+
+	/**
+	 * Public methods access.
+	 */
 	public static final int PUBLIC_METHODS        = 0x0020;
 
+	/**
+	 * No access.
+	 */
 	public static final int NONE = 0;
+
+	/**
+	 * Full reflection access.
+	 */
 	public static final int FULL_REFLECTION = (CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+
+	/**
+	 * Combine all kinds of access.
+	 */
 	public static final int ALL = (RESOURCE | CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+
+	/**
+	 * Predefined set of access suitable for {@code @Configuration}.
+	 */
 	public static final int CONFIGURATION = (RESOURCE | CLASS | DECLARED_METHODS | DECLARED_CONSTRUCTORS | DECLARED_FIELDS);
+
+	/**
+	 * Predefined set of access suitable for annotations.
+	 */
 	public static final int ANNOTATION = (RESOURCE | CLASS | DECLARED_METHODS);
+
+	/**
+	 * Class and declared constructor access (default).
+	 */
 	public static final int LOAD_AND_CONSTRUCT = (CLASS | DECLARED_CONSTRUCTORS);
+
+	/**
+	 * Class, declared constructor and public method access.
+	 */
 	public static final int LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS = LOAD_AND_CONSTRUCT | PUBLIC_METHODS;
 
 	private int value;
@@ -169,6 +227,9 @@ public class AccessBits {
 	/**
 	 * Compare a current access level with a proposed access level and return what
 	 * the new proposed access is adding.
+	 * @param currentAccess the current access level
+	 * @param newAccess the new access level
+	 * @return what the new proposed access is adding
 	 */
 	public static int compareAccess(int currentAccess, int newAccess) {
 		int result = 0;

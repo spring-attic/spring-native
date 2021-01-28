@@ -20,19 +20,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Used by {@link NativeImageHint} annotations to indicate which types sets of types need proxies.
- * Class references via the <tt>types()</tt> member are the preferred form of use but sometimes due
- * to accessibility restrictions the type names may need to be specified in the <tt>typeNames()</tt>
+ * Used by {@link NativeHint} annotations to indicate which interfaces (since only JDK dynamic proxies are supported)
+ * sets of types need proxies.
+ * Interface references via the {@link #types} member are the preferred form of use but sometimes due
+ * to accessibility restrictions or nested types the type names may need to be specified in the {@link #typeNames}
  * member.
- * 
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/DynamicProxy/">Dynamic proxy in native image</a>
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 @Repeatable(ProxyInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProxyInfo {
-	
+
+	/**
+	 * Preferred way to configure interfaces for a given JDK dynamic proxy.
+	 * @return the types
+	 */
 	Class<?>[] types() default {};
 
+	/**
+	 * Alternative way to configure interfaces for a given JDK dynamic proxy, should be used when type visibility
+	 * prevents using {@link Class} references, or for nested types which should be specific using a {@code $} separator
+	 * (for example {@code com.example.Foo$Bar}).
+	 * @return the type names
+	 */
 	String[] typeNames() default {};
 
 }

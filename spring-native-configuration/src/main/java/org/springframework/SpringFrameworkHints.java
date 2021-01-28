@@ -1,14 +1,13 @@
 package org.springframework;
 
-import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 
 
-@NativeImageHint(
+@NativeHint(
 		initializationInfos = @InitializationInfo(types = {
 				org.springframework.aop.TargetSource.class,
 				org.springframework.aop.framework.Advised.class,
@@ -97,5 +96,5 @@ import org.springframework.nativex.extension.ProxyInfo;
 		}
 
 )
-public class SpringFrameworkHints implements NativeImageConfiguration {
+public class SpringFrameworkHints implements NativeConfiguration {
 }

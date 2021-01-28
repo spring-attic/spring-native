@@ -24,7 +24,7 @@ import java.util.ServiceLoader;
 
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.nativex.support.SpringFeature;
 
@@ -48,8 +48,8 @@ public class SpringConfiguration {
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
 		SpringFeature.log("SpringConfiguration: Discovering hints");
-		ServiceLoader<NativeImageConfiguration> hintProviders = ServiceLoader.load(NativeImageConfiguration.class);
-		for (NativeImageConfiguration hintProvider: hintProviders) {
+		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
+		for (NativeConfiguration hintProvider: hintProviders) {
 			SpringFeature.log("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {

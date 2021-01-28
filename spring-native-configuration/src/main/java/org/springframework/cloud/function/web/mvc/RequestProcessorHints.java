@@ -16,14 +16,14 @@
 package org.springframework.cloud.function.web.mvc;
 
 import org.springframework.cloud.function.web.RequestProcessor;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger=RequestProcessor.class, 
+@NativeHint(trigger=RequestProcessor.class,
 		typeInfos = {@TypeInfo(types= {java.util.function.Consumer.class},
 		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)})
-public class RequestProcessorHints implements NativeImageConfiguration {
+public class RequestProcessorHints implements NativeConfiguration {
 }
 

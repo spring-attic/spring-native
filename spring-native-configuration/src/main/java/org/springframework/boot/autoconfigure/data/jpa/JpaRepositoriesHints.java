@@ -18,15 +18,15 @@ package org.springframework.boot.autoconfigure.data.jpa;
 import org.springframework.data.jpa.repository.query.JpaQueryMethodFactory;
 import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
-@NativeImageHint(trigger = JpaRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
 		resourcesInfos = {
 				@ResourcesInfo(patterns = "META-INF/jpa-named-queries.properties"),
 				@ResourcesInfo(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
@@ -50,6 +50,6 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 )
 // TODO Why can't I make this conditional on JpaReposAutoConfig above? The vanilla-orm sample needs this but JpaRepositoriesAutoConfiguration is not active in that sample
 //@ConfigurationHint(typeInfos= {@TypeInfo(types= {PersistenceAnnotationBeanPostProcessor.class})}) // temporarily moved this to be HibernateJpaConfiguration dependant
-public class JpaRepositoriesHints implements NativeImageConfiguration {
+public class JpaRepositoriesHints implements NativeConfiguration {
 
 }

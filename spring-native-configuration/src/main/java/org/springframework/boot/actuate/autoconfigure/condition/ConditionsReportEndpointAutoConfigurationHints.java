@@ -19,15 +19,15 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndCondition;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndConditions;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 // Hitting /conditions endpoint
-@NativeImageHint(trigger = ConditionsReportEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = ConditionsReportEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		ConditionsReportEndpoint.class,
 		ApplicationConditionEvaluation.class,
@@ -38,5 +38,5 @@ import org.springframework.util.MultiValueMap;
 		LinkedMultiValueMap.class,
 	},access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
-public class ConditionsReportEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class ConditionsReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

@@ -18,12 +18,12 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactoryBean;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 
-@NativeImageHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {
 				MongoRepositoryFactoryBean.class,
 				MongoRepositoryConfigurationExtension.class,
@@ -35,7 +35,7 @@ import org.springframework.nativex.extension.TypeInfo;
 				AfterConvertCallback.class
 		})
 })
-@NativeImageHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
 		importInfos = {SpringDataReactiveHints.class},
 		typeInfos = {
 				@TypeInfo(types = {
@@ -49,6 +49,6 @@ import org.springframework.nativex.extension.TypeInfo;
 						ReactiveAfterConvertCallback.class
 				})
 		})
-public class MongoRepositoriesHints implements NativeImageConfiguration {
+public class MongoRepositoriesHints implements NativeConfiguration {
 
 }

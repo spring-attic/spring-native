@@ -17,12 +17,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 // Hitting /metrics endpoint - needs tests
-@NativeImageHint(trigger = MetricsEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = MetricsEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 //		MetricsEndpoint.class,
 //		PropertiesMeterFilter.class,
@@ -45,5 +45,5 @@ import org.springframework.nativex.extension.TypeInfo;
 //		"org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration"
 	})
 })
-public class MetricsEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class MetricsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

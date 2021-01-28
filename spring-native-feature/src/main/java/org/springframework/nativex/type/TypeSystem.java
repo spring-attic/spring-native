@@ -797,9 +797,9 @@ public class TypeSystem {
 
 	/**
 	 * Retrieve the map from files (possibly inside jar files) to {@link ResourcesDescriptor} objects parsed
-	 * from the contents of those files. This method is looking for files that start <tt>META-INF/native-image</tt>
-	 * and end with <tt>resource-config.json</tt>. If the file is a path into a jar it has the form
-	 * <tt>path/to/foo.jar!path/to/file</tt>.
+	 * from the contents of those files. This method is looking for files that start {@code META-INF/native-image}
+	 * and end with {@code resource-config.json}. If the file is a path into a jar it has the form
+	 * {@code path/to/foo.jar!path/to/file}.
 	 * 
 	 * @return map from files to @link {@link ResourcesDescriptor}
 	 */
@@ -974,7 +974,7 @@ public class TypeSystem {
 	/**
 	 * Scan the entries in a specified jar file. Any entry paths that match the specified predicate will have
 	 * their contents converted by the supplied function and the resultant information stored in the collector map.
-	 * Jar file paths are of the form <tt>foo/bar/boo.jar!path/index/jar.txt</tt>.
+	 * Jar file paths are of the form {@code foo/bar/boo.jar!path/index/jar.txt}.
 	 * 
 	 * @param <T> The type of object produced by the converter function
 	 * @param jar the jar to scan
@@ -1002,10 +1002,10 @@ public class TypeSystem {
 	}
 
 	/**
-	 * Discover if there is any <tt>resource-config.json</tt> on the classpath for this type system that
-	 * contains an entry that would include <tt>META-INF/spring.factories</tt>.
+	 * Discover if there is any {@code resource-config.json} on the classpath for this type system that
+	 * contains an entry that would include {@code META-INF/spring.factories}.
 	 * 
-	 * @return the file path to the <tt>resource-config.json</tt> containing <tt>META-INF/spring.factories</tt> or null if there is none
+	 * @return the file path to the {@code resource-config.json} containing {@code META-INF/spring.factories} or null if there is none
 	 */
 	public String findAnyResourceConfigIncludingSpringFactoriesPattern() {
 		String existingConfigThatIncludesSpringFactories = null; 

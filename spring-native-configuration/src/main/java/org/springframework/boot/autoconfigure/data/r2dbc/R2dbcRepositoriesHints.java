@@ -20,12 +20,12 @@ import org.springframework.data.r2dbc.repository.config.R2dbcRepositoryConfigura
 import org.springframework.data.r2dbc.repository.support.R2dbcRepositoryFactoryBean;
 import org.springframework.data.r2dbc.repository.support.SimpleR2dbcRepository;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger = R2dbcRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = R2dbcRepositoriesAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {
 				R2dbcRepositoryFactoryBean.class,
 				R2dbcRepositoryConfigurationExtension.class,
@@ -37,6 +37,6 @@ import org.springframework.nativex.type.AccessBits;
 				, access = AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE
 		)
 })
-public class R2dbcRepositoriesHints implements NativeImageConfiguration {
+public class R2dbcRepositoriesHints implements NativeConfiguration {
 
 }

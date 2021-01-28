@@ -20,21 +20,39 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Used by {@link NativeImageHint} annotations to indicate which classes/packages
- * should be initialized explicitly at buildtime or runtime.
+ * Used by {@link NativeHint} annotations to indicate which classes/packages
+ * should be initialized explicitly at build-time or runtime.
  * 
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 @Repeatable(InitializationInfos.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InitializationInfo {
-	
-	Class<?>[] types() default {};
-	
-	String[] typeNames() default {};
-	
-	String[] packageNames() default {};
-	
-	InitializationTime initTime();
 
+	/**
+	 * Preferred way to configure initialization.
+	 * @return the types
+	 */
+	Class<?>[] types() default {};
+
+	/**
+	 * Alternative way to configure initialization, should be used when type visibility prevents using {@link Class}
+	 * references, or for nested types which should be specified using a {@code $} separator (for example
+	 * {@code com.example.Foo$Bar}).
+	 * @return the type names
+	 */
+	String[] typeNames() default {};
+
+	/**
+	 * Configure initialization for a set of packages.
+	 * @return the package names
+	 */
+	String[] packageNames() default {};
+
+	/**
+	 * Set the initialization time, usually set to {@link InitializationTime#BUILD} since runtime is GraalVM native image default.
+	 * @return the initialization time
+	 */
+	InitializationTime initTime();
 }

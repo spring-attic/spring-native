@@ -60,12 +60,12 @@ import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(trigger=ValidationAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger=ValidationAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {
 			ParameterMessageInterpolator.class,
 			HibernateValidatorConfiguration.class,
@@ -120,5 +120,5 @@ import org.springframework.nativex.type.AccessBits;
 				Size.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
-public class ValidationHints implements NativeImageConfiguration {
+public class ValidationHints implements NativeConfiguration {
 }

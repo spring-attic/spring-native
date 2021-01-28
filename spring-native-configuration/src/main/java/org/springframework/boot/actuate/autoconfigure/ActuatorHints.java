@@ -1,10 +1,10 @@
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
 
-@NativeImageHint(trigger = org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
+@NativeHint(trigger = org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
 		proxyInfos = {
 		@ProxyInfo(types = {
 				org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
@@ -14,5 +14,5 @@ import org.springframework.nativex.extension.ProxyInfo;
 				org.springframework.core.annotation.SynthesizedAnnotation.class
 		})
 })
-public class ActuatorHints implements NativeImageConfiguration {
+public class ActuatorHints implements NativeConfiguration {
 }

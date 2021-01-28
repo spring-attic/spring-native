@@ -29,8 +29,8 @@ import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.AfterSaveCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
@@ -41,7 +41,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
-@NativeImageHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
+@NativeHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
 		@TypeInfo(types = {Statement.class,Statement[].class}),
 		@TypeInfo(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
@@ -53,7 +53,7 @@ import reactor.core.publisher.Mono;
 				AfterSaveCallback.class, BeforeConvertCallback.class, BeforeSaveCallback.class
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 		})
-@NativeImageHint(trigger=R2dbcAutoConfiguration.class, 
+@NativeHint(trigger=R2dbcAutoConfiguration.class,
 		resourcesInfos = {
 				@ResourcesInfo(patterns="META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
 		},
@@ -70,5 +70,5 @@ import reactor.core.publisher.Mono;
 		// Enables 'dispose' method to be found
 		@TypeInfo(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)
 })
-public class R2dbcHints implements NativeImageConfiguration {
+public class R2dbcHints implements NativeConfiguration {
 }

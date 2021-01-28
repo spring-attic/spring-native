@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 │   ├── directly calls com.oracle.svm.core.classinitialization.ClassInitializationInfo.setInitializationStateAndNotify(com.oracle.svm.core.classinitialization.ClassInitializationInfo$InitState):void id=882 @bci=256 
 │   │   ├── virtually calls java.util.concurrent.locks.Condition.signalAll():void @bci=34
 │   │   │   └── is overridden by java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.signalAll():void id=1450 
-│   │   │       ├── directly calls java.lang.IllegalMonitorStateException.<init>():void id-ref=1520 @bci=14 
+│   │   │       ├── directly calls java.lang.IllegalMonitorStateException.&lt;init&gt;():void id-ref=1520 @bci=14
  * </code>
  * </pre>
  * 

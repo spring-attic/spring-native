@@ -17,18 +17,18 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 // Hitting /caches endpoint
-@NativeImageHint(trigger = CachesEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = CachesEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,
 		// TODO likely incomplete, not tested
 	},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
-public class CachesEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class CachesEndpointAutoConfigurationHints implements NativeConfiguration {
 }

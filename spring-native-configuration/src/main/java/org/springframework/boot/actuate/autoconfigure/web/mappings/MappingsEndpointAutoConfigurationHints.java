@@ -15,12 +15,12 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
 // Hitting /mappings endpoint
-@NativeImageHint(trigger = MappingsEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = MappingsEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		org.springframework.boot.actuate.web.mappings.HandlerMethodDescription.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings.class,
@@ -35,5 +35,5 @@ import org.springframework.nativex.extension.TypeInfo;
 		org.springframework.web.bind.annotation.RequestMethod.class
 	})
 })
-public class MappingsEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class MappingsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

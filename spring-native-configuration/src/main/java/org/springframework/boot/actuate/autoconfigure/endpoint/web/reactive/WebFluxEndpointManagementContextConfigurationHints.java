@@ -16,14 +16,14 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CommonWebActuatorTypes;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.TypeSystem;
 
 
-@NativeImageHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
+@NativeHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
 	importInfos = { CommonWebActuatorTypes.class},
 	typeInfos = {
 	@TypeInfo(
@@ -48,7 +48,7 @@ import org.springframework.nativex.type.TypeSystem;
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
 	}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
-public class WebFluxEndpointManagementContextConfigurationHints implements NativeImageConfiguration {
+public class WebFluxEndpointManagementContextConfigurationHints implements NativeConfiguration {
 
 	@Override
 	public boolean isValid(TypeSystem typeSystem) {

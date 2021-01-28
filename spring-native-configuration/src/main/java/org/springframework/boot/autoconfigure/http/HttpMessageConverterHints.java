@@ -16,15 +16,15 @@
 package org.springframework.boot.autoconfigure.http;
 
 import org.springframework.boot.web.servlet.server.Encoding;
-import org.springframework.nativex.extension.NativeImageHint;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
-@NativeImageHint(trigger=HttpMessageConvertersAutoConfiguration.class, typeInfos= {
+@NativeHint(trigger=HttpMessageConvertersAutoConfiguration.class, typeInfos= {
 	@TypeInfo(types= {FormHttpMessageConverter.class}, access = AccessBits.DECLARED_FIELDS),
 	@TypeInfo(types= {Encoding.class}, access = AccessBits.DECLARED_CONSTRUCTORS)
 })
-public class HttpMessageConverterHints implements NativeImageConfiguration {
+public class HttpMessageConverterHints implements NativeConfiguration {
 }

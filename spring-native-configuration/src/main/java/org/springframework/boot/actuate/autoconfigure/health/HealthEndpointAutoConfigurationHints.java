@@ -31,13 +31,13 @@ import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
 // Hitting /health endpoint
-@NativeImageHint(trigger = HealthEndpointAutoConfiguration.class, typeInfos = { 
+@NativeHint(trigger = HealthEndpointAutoConfiguration.class, typeInfos = {
 	@TypeInfo(types = {
 		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,
@@ -88,5 +88,5 @@ import org.springframework.nativex.type.AccessBits;
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 ,@TypeInfo(types=Health.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
-public class HealthEndpointAutoConfigurationHints implements NativeImageConfiguration {
+public class HealthEndpointAutoConfigurationHints implements NativeConfiguration {
 }

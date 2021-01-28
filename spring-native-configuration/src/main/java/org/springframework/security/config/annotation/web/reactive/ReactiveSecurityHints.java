@@ -15,14 +15,14 @@
  */
 package org.springframework.security.config.annotation.web.reactive;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.security.config.annotation.web.reactive.ReactiveOAuth2ClientImportSelector.OAuth2ClientWebFluxSecurityConfiguration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
-@NativeImageHint(trigger=ReactiveOAuth2ClientImportSelector.class, follow = true, typeInfos= {
+@NativeHint(trigger=ReactiveOAuth2ClientImportSelector.class, follow = true, typeInfos= {
 		@TypeInfo(types= {ClientRegistration.class,OAuth2ClientWebFluxSecurityConfiguration.class})
 })
-public class ReactiveSecurityHints implements NativeImageConfiguration {
+public class ReactiveSecurityHints implements NativeConfiguration {
 }

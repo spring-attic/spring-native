@@ -1,7 +1,7 @@
 package kotlin;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ResourcesInfo;
 import org.springframework.nativex.extension.TypeInfo;
 
@@ -10,7 +10,7 @@ import static org.springframework.nativex.type.AccessBits.DECLARED_FIELDS;
 import static org.springframework.nativex.type.AccessBits.DECLARED_METHODS;
 import static org.springframework.nativex.type.AccessBits.PUBLIC_METHODS;
 
-@NativeImageHint(
+@NativeHint(
 		trigger=kotlin.Unit.class,
 		resourcesInfos= {
 				@ResourcesInfo(patterns= {
@@ -27,5 +27,5 @@ import static org.springframework.nativex.type.AccessBits.PUBLIC_METHODS;
 						"kotlin.KotlinVersion$Companion[]"
 				})
 })
-public class KotlinHints implements NativeImageConfiguration {
+public class KotlinHints implements NativeConfiguration {
 }

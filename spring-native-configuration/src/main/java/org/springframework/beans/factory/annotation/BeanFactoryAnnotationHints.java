@@ -17,14 +17,14 @@ package org.springframework.beans.factory.annotation;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 
-@NativeImageHint(typeInfos = { 
+@NativeHint(typeInfos = {
 	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class }, 
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
 })
-public class BeanFactoryAnnotationHints implements NativeImageConfiguration {
+public class BeanFactoryAnnotationHints implements NativeConfiguration {
 }

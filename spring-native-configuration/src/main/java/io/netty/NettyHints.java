@@ -27,10 +27,10 @@ import io.netty.resolver.HostsFileEntriesResolver;
 
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 
-@NativeImageHint(initializationInfos = {
+@NativeHint(initializationInfos = {
 		@InitializationInfo(initTime=InitializationTime.RUN,
 		packageNames = "io.netty.channel.epoll",
 		types = {
@@ -42,5 +42,5 @@ import org.springframework.nativex.extension.NativeImageHint;
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
 		})
 })
-public class NettyHints implements NativeImageConfiguration {
+public class NettyHints implements NativeConfiguration {
 }

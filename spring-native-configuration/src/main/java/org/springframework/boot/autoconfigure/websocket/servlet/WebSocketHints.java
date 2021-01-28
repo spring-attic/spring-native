@@ -16,15 +16,15 @@
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import org.apache.tomcat.websocket.server.WsContextListener;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
 
-@NativeImageHint(trigger=WebSocketServletAutoConfiguration.class,typeInfos = { 
+@NativeHint(trigger=WebSocketServletAutoConfiguration.class,typeInfos = {
 	@TypeInfo(types = { 
 		WsContextListener.class
 	})
 })
-public class WebSocketHints implements NativeImageConfiguration {
+public class WebSocketHints implements NativeConfiguration {
     
 }

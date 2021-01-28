@@ -15,14 +15,14 @@
  */
 package org.springframework.cloud.gateway.config;
 
-import org.springframework.nativex.extension.NativeImageConfiguration;
+import org.springframework.nativex.extension.NativeConfiguration;
 
-//@NativeImageHint(trigger=GatewayAutoConfiguration.class, 
+//@NativeHint(trigger=GatewayAutoConfiguration.class,
 //		typeInfos = {@TypeInfo(types= {
 //				PathRoutePredicateFactory.Config.class,
 //				SetPathGatewayFilterFactory.Config.class,
 //				ReusableMessageFactory.class
 //				})})
-public class GatewayHints implements NativeImageConfiguration {
+public class GatewayHints implements NativeConfiguration {
 }
 

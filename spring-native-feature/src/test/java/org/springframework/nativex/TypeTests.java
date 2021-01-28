@@ -28,7 +28,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
@@ -379,48 +379,48 @@ public class TypeTests {
 		public void m() {}
 	}
 
-	@NativeImageHint(trigger = Integer.class)
+	@NativeHint(trigger = Integer.class)
 	static class TestClass1 {
 	}
 
-	@NativeImageHint
+	@NativeHint
 	static class TestClass1a {
 	}
 
-	@NativeImageHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(typeInfos = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1b {
 	}
 
-	@NativeImageHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
+	@NativeHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
 	static class TestClass2 {
 	}
 
-	@NativeImageHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class }) })
-	@NativeImageHint(trigger = String.class, typeInfos = { @TypeInfo(types = { Float.class }) })
+	@NativeHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class }) })
+	@NativeHint(trigger = String.class, typeInfos = { @TypeInfo(types = { Float.class }) })
 	static class TestClass3 {
 	}
 
-	@NativeImageHint(trigger = Integer.class, abortIfTypesMissing = true)
+	@NativeHint(trigger = Integer.class, abortIfTypesMissing = true)
 	static class TestClass4 {
 	}
 
-	@NativeImageHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, typeInfos = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass5 {
 	}
 
-	@NativeImageHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, typeInfos = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
 			@TypeInfo(types = { Integer.class }, access = AccessBits.RESOURCE) })
 	static class TestClass6 {
 	}
 
-	@NativeImageHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, typeInfos = {
 			@TypeInfo(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass7 {
 	}
 
-	@NativeImageHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
+	@NativeHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
 			"org.springframework.nativex.TypeTests$TestClass7[]", }) })
 	static class TestClass8 {
 

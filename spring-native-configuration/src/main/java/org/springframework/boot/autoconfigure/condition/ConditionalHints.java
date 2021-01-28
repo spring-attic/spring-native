@@ -16,37 +16,37 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
-@NativeImageHint(trigger=OnWebApplicationCondition.class, typeInfos = {
+@NativeHint(trigger=OnWebApplicationCondition.class, typeInfos = {
 	@TypeInfo(types= {
 			GenericWebApplicationContext.class,
 			WebApplicationObjectSupport.class,
 			ApplicationObjectSupport.class},
 	access = AccessBits.LOAD_AND_CONSTRUCT)
 })
-@NativeImageHint(trigger=ConditionalOnWebApplication.class, 
+@NativeHint(trigger=ConditionalOnWebApplication.class,
 	typeInfos= {
 		@TypeInfo(types= {
 				GenericWebApplicationContext.class,
 				ConditionalOnWebApplication.Type.class}
 		)},
 		abortIfTypesMissing = true)
-@NativeImageHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
-@NativeImageHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
+@NativeHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
+@NativeHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
 // Here exposing SearchStrategy as it is the type of a field within the annotation. 
 // TODO Feels like all conditions should just get this 'for free'
-@NativeImageHint(
+@NativeHint(
 		trigger = ConditionalOnMissingBean.class,
 		extractTypesFromAttributes = { "value", "name" },
 		typeInfos = @TypeInfo(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
 		abortIfTypesMissing = true)
 // TODO [0.9.0] get rid of all the extractTypesFromAttributes/abortIfMissing
-@NativeImageHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)
-public class ConditionalHints implements NativeImageConfiguration {
+@NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)
+public class ConditionalHints implements NativeConfiguration {
 }

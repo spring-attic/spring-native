@@ -15,7 +15,6 @@
  */
 package org.springframework.nativex.support;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +23,10 @@ import java.util.Map;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
 
 /**
- * A SpringFactoriesProcessor that is configurable by an option:
- * <tt>spring.native.spring-factories-exclusions</tt>. This should be supplied with
+ * A {@link SpringFactoriesProcessor} that is configurable by an option:
+ * {@code spring.native.spring-factories-exclusions}. This should be supplied with
  * information of the form 'key=value,value;key2=value;key3=value,value,value' and
- * then when <tt>spring.factories</tt> files are processed this configurable processor
+ * then when {@code spring.factories} files are processed this configurable processor
  * is given the option to filter out the values for any keys it matches within that file.
  * 
  * @author Andy Clement

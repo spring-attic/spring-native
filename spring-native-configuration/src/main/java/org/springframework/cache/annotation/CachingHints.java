@@ -16,15 +16,15 @@
 package org.springframework.cache.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.extension.NativeImageConfiguration;
-import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
 
-@NativeImageHint(trigger=CachingConfigurationSelector.class, typeInfos = {
+@NativeHint(trigger=CachingConfigurationSelector.class, typeInfos = {
 		@TypeInfo(types= {AutoProxyRegistrar.class,ProxyCachingConfiguration.class},typeNames= {
 				"org.springframework.cache.jcache.config.ProxyJCacheConfiguration",
 				"org.springframework.cache.aspectj.AspectJCachingConfiguration",
 				"org.springframework.cache.aspectj.AspectJJCacheConfiguration"
 
 		})})
-public class CachingHints implements NativeImageConfiguration { }
+public class CachingHints implements NativeConfiguration { }
