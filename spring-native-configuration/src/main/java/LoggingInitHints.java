@@ -18,7 +18,8 @@ import org.springframework.nativex.extension.NativeImageHint;
 				org.slf4j.helpers.SubstituteLoggerFactory.class,
 				org.slf4j.impl.StaticLoggerBinder.class,
 				org.slf4j.LoggerFactory.class,
-				org.slf4j.MDC.class
+				org.slf4j.MDC.class,
+				org.apache.commons.logging.LogFactory.class,
 		}, typeNames = {
 				"org.apache.commons.logging.LogAdapter",
 				"org.apache.commons.logging.LogAdapter$1",
