@@ -90,7 +90,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <version>0.9.0-SNAPSHOT</version>
           <executions>
             <execution>
-              <phase>process-classes</phase>
+              <phase>prepare-package</phase>
               <goals>
                 <goal>bootstrap</goal>
               </goals>

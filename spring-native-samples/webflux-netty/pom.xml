@@ -95,7 +95,7 @@
                         <version>0.9.0-SNAPSHOT</version>
                         <executions>
                             <execution>
-                                <phase>process-classes</phase>
+                                <phase>prepare-package</phase>
                                 <goals>
                                     <goal>bootstrap</goal>
                                 </goals>

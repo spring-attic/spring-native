@@ -38,7 +38,7 @@ import org.springframework.nativex.buildtools.BootstrapCodeGenerator;
 /**
  * @author Brian Clozel
  */
-@Mojo(name = "bootstrap", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresProject = true, threadSafe = true,
+@Mojo(name = "bootstrap", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class GenerateBootstrapMojo extends AbstractMojo {

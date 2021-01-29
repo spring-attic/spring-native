@@ -188,6 +188,7 @@
 								<id>prepare-integration-test</id>
 								<phase>pre-integration-test</phase>
 								<goals>
+									<goal>test</goal>
 									<goal>install</goal>
 								</goals>
 							</execution>
