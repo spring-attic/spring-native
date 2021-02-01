@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2-M2</version>
+		<version>2.4.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -23,7 +23,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.11.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -38,22 +37,6 @@
 			<artifactId>spring-native</artifactId>
 			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-core</artifactId>
-		</dependency>
-		-->
 	</dependencies>
 
 	<build>
@@ -70,37 +53,6 @@
 			<id>native</id>
 			<build>
 				<plugins>
-					<!--
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>make-native-image-config-folder</id>
-								<phase>test-compile</phase>
-								<configuration>
-									<target>
-										<mkdir dir="target/classes/META-INF/native-image" />
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>-Dorg.graalvm.nativeimage.imagecode=agent
-								-Dspring.xml.ignore=true
-								-agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
-							<includes>
-								<include>**/GraalKafka1ApplicationTests.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-					-->
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
