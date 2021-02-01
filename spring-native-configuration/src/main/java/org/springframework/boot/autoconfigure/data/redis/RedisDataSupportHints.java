@@ -15,6 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.data.redis;
 
+import org.springframework.nativex.extension.FieldInfo;
 import org.springframework.nativex.extension.NativeImageConfiguration;
 import org.springframework.nativex.extension.NativeImageHint;
 import org.springframework.nativex.extension.ProxyInfo;
@@ -23,107 +24,6 @@ import org.springframework.nativex.extension.TypeInfo;
 /**
  * @author Christoph Strobl
  */
-@NativeImageHint(trigger = LettuceConnectionConfiguration.class,
-		typeInfos = {
-				@TypeInfo(typeNames = {
-						// lettuce
-
-						// TODO: open pr with config for Lettuce driver
-
-						"io.lettuce.core.AbstractRedisAsyncCommands",
-						"io.lettuce.core.ChannelGroupListener",
-						"io.lettuce.core.ConnectionEventTrigger",
-						"io.lettuce.core.PlainChannelInitializer$1",
-						"io.lettuce.core.RedisAsyncCommandsImpl",
-						"io.lettuce.core.RedisClient",
-
-						"io.lettuce.core.api.sync.BaseRedisCommands",
-						"io.lettuce.core.api.sync.RedisCommands",
-						"io.lettuce.core.api.sync.RedisGeoCommands",
-						"io.lettuce.core.api.sync.RedisHLLCommands",
-						"io.lettuce.core.api.sync.RedisHashCommands",
-						"io.lettuce.core.api.sync.RedisKeyCommands",
-						"io.lettuce.core.api.sync.RedisListCommands",
-						"io.lettuce.core.api.sync.RedisScriptingCommands",
-						"io.lettuce.core.api.sync.RedisServerCommands",
-						"io.lettuce.core.api.sync.RedisSetCommands",
-						"io.lettuce.core.api.sync.RedisSortedSetCommands",
-						"io.lettuce.core.api.sync.RedisStreamCommands",
-						"io.lettuce.core.api.sync.RedisStringCommands",
-						"io.lettuce.core.api.sync.RedisTransactionalCommands",
-
-						"io.lettuce.core.cluster.api.sync.RedisClusterCommands",
-
-						"io.lettuce.core.protocol.CommandHandler",
-						"io.lettuce.core.protocol.ConnectionWatchdog",
-
-						"io.lettuce.core.resource.ClientResources",
-						"io.lettuce.core.resource.DefaultClientResources",
-
-						// netty
-						"io.netty.buffer.AbstractByteBufAllocator",
-						"io.netty.buffer.PooledByteBufAllocator",
-						"io.netty.channel.ChannelDuplexHandler",
-						"io.netty.channel.ChannelHandlerAdapter",
-						"io.netty.channel.ChannelInboundHandlerAdapter",
-						"io.netty.channel.ChannelInitializer",
-						"io.netty.channel.ChannelOutboundHandlerAdapter",
-						"io.netty.channel.DefaultChannelPipeline$HeadContext",
-						"io.netty.channel.DefaultChannelPipeline$TailContext",
-						"io.netty.channel.socket.nio.NioSocketChannel",
-						"io.netty.handler.codec.MessageToByteEncoder",
-						"io.netty.util.ReferenceCountUtil"
-
-				/*
-				   and we need some unsafe methods in the reflect config (listed here so we find a better place)
-
-				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
- 				     "fields":[{"name":"producerLimit","allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
- 				     "fields":[{"name":"consumerIndex","allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
- 				     "fields":[{"name":"producerIndex", "allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueConsumerIndexField",
- 				     "fields":[{"name":"consumerIndex", "allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerIndexField",
- 				     "fields":[{"name":"producerIndex", "allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerLimitField",
- 				     "fields":[{"name":"producerLimit","allowUnsafeAccess" :  true}]
- 				   },
- 				   {
- 				     "name":"java.nio.Buffer",
- 				     "fields":[{"name":"address", "allowUnsafeAccess":true}]
- 				   },
- 				   {
- 				     "name":"java.nio.DirectByteBuffer",
- 				     "fields":[{"name":"cleaner", "allowUnsafeAccess":true}],
- 				     "methods":[{"name":"<init>","parameterTypes":["long","int"] }]
- 				   },
- 				   {
- 				     "name":"io.netty.buffer.AbstractReferenceCountedByteBuf",
- 				     "fields":[{"name":"refCnt", "allowUnsafeAccess":true}]
- 				   }
-				 */
-				})
-		},
-		proxyInfos = {
-				@ProxyInfo(typeNames = {
-						"io.lettuce.core.api.sync.RedisCommands", "io.lettuce.core.cluster.api.sync.RedisClusterCommands"
-				})
-		}
-)
-
 @NativeImageHint(trigger = RedisAutoConfiguration.class, //
 		typeInfos = {
 				@TypeInfo(types = {

@@ -1,5 +1,6 @@
 LoggingInitHints
 MiscInitHints
+io.lettuce.LettuceHints
 io.netty.NettyHints
 io.rsocket.RSocketHints
 kotlin.KotlinHints
