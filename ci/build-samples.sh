@@ -11,6 +11,7 @@ chown -R mysql:mysql /var/log/mysql
 chown -R mysql:mysql /var/run/mysqld
 /tmp/mysql.sh
 native-image --version
+/bin/start-docker.sh
 cd spring-native
 if ! (./build.sh); then
     RC=1
