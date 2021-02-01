@@ -5,16 +5,12 @@ ARG MAVEN_VERSION=3.6.3
 
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
 ENV SPRING_PROFILES_ACTIVE=ci
+ADD docker-lib.sh /bin/docker-lib.sh
+ADD start-docker.sh /bin/start-docker.sh
+
 
 RUN apt-get -y update \
- && apt-get -y install git jq curl python unzip bc bsdmainutils mongodb-server redis-server mysql-client mysql-server build-essential gdb daemon sudo \
- && mkdir -p /var/run/mysqld \
- && mkdir -p /var/log/mysql \
- && echo "mysqld_safe --skip-grant-tables &" > /tmp/mysql.sh \
- && echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/mysql.sh \
- && echo "mysql -e 'CREATE DATABASE IF NOT EXISTS petclinic;'" >> /tmp/mysql.sh \
- && echo "mysql -e 'ALTER DATABASE petclinic DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'" >> /tmp/mysql.sh \
- && chmod +x /tmp/mysql.sh \
+ && apt-get -y install git jq curl python unzip bc bsdmainutils build-essential gdb net-tools iptables iproute2 sudo \
  && cd /opt \
  && curl -LO https://github.com/making/rsc/releases/download/0.7.1/rsc-x86_64-pc-linux \
  && mv rsc-x86_64-pc-linux rsc \
@@ -31,21 +27,21 @@ RUN apt-get -y update \
  && rm master.zip \
  && cd tty-table-master \
  && npm i -g \
- && cd .. \
- && rm -rf tty-table-master \
-	 && curl -LO https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.3-amd64.deb \
- && dpkg -i elasticsearch-7.9.3-amd64.deb \
- && rm elasticsearch-7.9.3-amd64.deb \
- && echo "JAVA=\"\$ES_HOME/jdk/bin/java\"" | tee -a /usr/share/elasticsearch/bin/elasticsearch-env \
- && echo "JAVA_TYPE=\"bundled jdk\"" | tee -a /usr/share/elasticsearch/bin/elasticsearch-env \
- && chmod 770 /var/lib/elasticsearch \
- && chmod 770 /var/log/elasticsearch \
- && curl -LO https://dist.neo4j.org/deb/neo4j_3.5.21_all.deb \
- && dpkg --force-all -i neo4j_3.5.21_all.deb \
- && rm neo4j_3.5.21_all.deb \
- && echo "dbms.security.auth_enabled=false" | tee -a  /etc/neo4j/neo4j.conf \
  && npm cache clean --force \
  && rm -rf /var/cache/apt/archives \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && cd / \
+ && curl -L https://download.docker.com/linux/static/stable/x86_64/docker-19.03.14.tgz | tar zx \
+ && mv /docker/* /bin/ \
+ && chmod +x /bin/docker* \
+ && export ENTRYKIT_VERSION=0.4.0 \
+ && curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSION}/entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz | tar zx \
+ && chmod +x entrykit \
+ && mv entrykit /bin/entrykit \
+ && entrykit --symlink \
+ && groupadd docker \
+ && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+ && curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o /bin/docker-compose \
+ && chmod +x /bin/docker-compose
 
-CMD mkdir /tmp/data && /usr/bin/mongod --fork --dbpath /tmp/data --logpath /tmp/data/mongod.log && redis-server --daemonize yes && /tmp/mysql.sh && /usr/share/elasticsearch/bin/elasticsearch -d && neo4j start && native-image --version && /bin/bash
+CMD native-image --version && sudo /bin/start-docker.sh && /bin/bash

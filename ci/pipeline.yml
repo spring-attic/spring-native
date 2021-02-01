@@ -1,27 +1,9 @@
-anchors:
-  slack-fail-params: &slack-fail-params
-    text: >
-      :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
-    silent: true
-    icon_emoji: ":concourse:"
-    username: concourse-ci
-resource_types:
-  - name: slack-notification
-    type: docker-image
-    source:
-      repository: cfcommunity/slack-notification-resource
-      tag: latest
 resources:
   - name: spring-native
     type: git
     source:
       uri: https://github.com/spring-projects-experimental/spring-native
       branch: master
-  - name: slack-alert
-    type: slack-notification
-    icon: slack
-    source:
-      url: ((slack-webhook-url))
   - name: every-day
     type: time
     source: {interval: 24h}
@@ -32,6 +14,7 @@ jobs:
     - get: spring-native
       trigger: true
     - task: build
+      privileged: true
       config:
         platform: linux
         image_resource:
@@ -49,6 +32,7 @@ jobs:
       - get: spring-native
         trigger: true
       - task: build
+        privileged: true
         config:
           platform: linux
           image_resource:
@@ -68,6 +52,7 @@ jobs:
       - get: every-day
         trigger: true
       - task: build
+        privileged: true
         config:
           platform: linux
           image_resource:
@@ -88,6 +73,7 @@ jobs:
         trigger: true
       - do:
         - task: build
+          privileged: true
           config:
             platform: linux
             image_resource:
@@ -99,11 +85,6 @@ jobs:
               - name: spring-native
             run:
               path: spring-native/ci/build-samples.sh
-        on_failure:
-          do:
-            - put: slack-alert
-              params:
-                <<: *slack-fail-params
   - name: build-master-java8-samples
     public: true
     plan:
@@ -111,6 +92,7 @@ jobs:
       - get: every-day
         trigger: true
       - task: build
+        privileged: true
         config:
           platform: linux
           image_resource:
@@ -129,6 +111,7 @@ jobs:
       - get: every-day
         trigger: true
       - task: build
+        privileged: true
         config:
           platform: linux
           image_resource:

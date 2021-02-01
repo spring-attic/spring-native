@@ -9,7 +9,15 @@ else
     MAX_DEPTH=2
 fi
 
-echo "Graal: `native-image --version`" > samples-summary.csv
+echo "Testing buildpacks-based builds"
+if ! (cd "spring-native-samples/commandlinerunner" && mvn spring-boot:build-image); then
+  RC=1
+fi
+if ! (cd "spring-native-samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
+  RC=1
+fi
+
+echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
 for d in $(find spring-native-samples -maxdepth $MAX_DEPTH -type d)
 do

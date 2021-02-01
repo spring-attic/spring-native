@@ -9,13 +9,9 @@ RUN (groupadd --gid "${USER_GID}" "${USER}" || echo "No groupadd needed") && \
     useradd \
       --uid ${USER_ID} \
       --gid ${USER_GID} \
+      -G sudo,docker \
       --create-home \
       --shell /bin/bash \
-      ${USER} && \
-      chown -R ${USER_ID}:${USER_GID} /var/lib/mysql && \
-      chown -R ${USER_ID}:${USER_GID} /var/log/mysql && \
-      chown -R ${USER_ID}:${USER_GID} /var/run/mysqld && \
-      chown -R ${USER_ID}:${USER_GID} /var/log/elasticsearch && \
-      chown -R ${USER_ID}:${USER_GID} /var/lib/neo4j && \
-      chown -R ${USER_ID}:${USER_GID} /var/log/neo4j && \
-      chown -R ${USER_ID}:${USER_GID} /var/run/neo4j
+      ${USER}
+
+USER ${USER}

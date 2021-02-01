@@ -107,4 +107,4 @@ test "$REBUILD" = false || docker build \
   --build-arg USER_GID=$(id -g ${USER}) \
   -t spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION} - < $DOCKER_DIR/$DEV_IMAGE
 
-docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it -w $CONTAINER_WORK_DIR -u $(id -u ${USER}):$(id -g ${USER}) --group-add neo4j --group-add elasticsearch spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
+docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it --privileged -w $CONTAINER_WORK_DIR spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
