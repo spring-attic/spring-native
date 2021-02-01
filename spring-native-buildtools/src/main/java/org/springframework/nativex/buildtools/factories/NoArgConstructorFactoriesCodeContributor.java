@@ -45,16 +45,4 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 
-	@Override
-	public boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
