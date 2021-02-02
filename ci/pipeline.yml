@@ -1,3 +1,7 @@
+anchors:
+  docker-hub-task-params: &docker-hub-task-params
+    DOCKER_HUB_USERNAME: ((docker-hub-username))
+    DOCKER_HUB_PASSWORD: ((docker-hub-password))
 resources:
   - name: spring-native
     type: git
@@ -15,6 +19,8 @@ jobs:
       trigger: true
     - task: build
       privileged: true
+      params:
+        <<: *docker-hub-task-params
       config:
         platform: linux
         image_resource:
@@ -33,6 +39,8 @@ jobs:
         trigger: true
       - task: build
         privileged: true
+        params:
+          <<: *docker-hub-task-params
         config:
           platform: linux
           image_resource:
@@ -52,6 +60,8 @@ jobs:
       - get: every-day
         trigger: true
       - task: build
+        params:
+          <<: *docker-hub-task-params
         privileged: true
         config:
           platform: linux
@@ -74,6 +84,8 @@ jobs:
       - do:
         - task: build
           privileged: true
+          params:
+            <<: *docker-hub-task-params
           config:
             platform: linux
             image_resource:
@@ -93,6 +105,8 @@ jobs:
         trigger: true
       - task: build
         privileged: true
+        params:
+          <<: *docker-hub-task-params
         config:
           platform: linux
           image_resource:
@@ -112,6 +126,8 @@ jobs:
         trigger: true
       - task: build
         privileged: true
+        params:
+          <<: *docker-hub-task-params
         config:
           platform: linux
           image_resource:
