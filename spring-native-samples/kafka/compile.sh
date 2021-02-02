@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ARTIFACT=kafka
-MAINCLASS=com.example.kafka.GraalKafka1Application
+MAINCLASS=com.example.kafka.KafkaApplication
 VERSION=0.0.1-SNAPSHOT
 
 GREEN='\033[0;32m'

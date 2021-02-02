@@ -22,8 +22,14 @@ import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
+import org.apache.kafka.common.utils.Crc32C;
+import org.apache.kafka.common.utils.Java;
+
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.NativeImageConfiguration;
 import org.springframework.nativex.extension.NativeImageHint;
+import org.springframework.nativex.extension.NativeImageHints;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
@@ -76,7 +82,7 @@ import org.springframework.kafka.support.ProducerListener;
 		@TypeInfo(types = {
 				AppInfo.class,
 				RangeAssignor.class,DefaultPartitioner.class,StringDeserializer.class,StringSerializer.class
-			},access=AccessBits.LOAD_AND_CONSTRUCT)
+			}, typeNames = "java.util.zip.CRC32C")
 	}
 )
 public class KafkaHints implements NativeImageConfiguration { }

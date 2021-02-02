@@ -58,7 +58,7 @@
 						<artifactId>native-image-maven-plugin</artifactId>
 						<version>21.0.0</version>
 						<configuration>
-							<mainClass>com.example.kafka.GraalKafka1Application</mainClass>
+							<mainClass>com.example.kafka.KafkaApplication</mainClass>
 							<buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.native.verbose=true</buildArgs>
 							<imageName>kafka1</imageName>
 						</configuration>
