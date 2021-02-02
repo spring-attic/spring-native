@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.core.io.Resource;
 import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.ResourceFile;
@@ -48,9 +49,8 @@ public class ConfigurationContributor implements BootstrapContributor {
 			return;
 		}
 		ConfigOptions.setMode(Mode.REFLECTION);
-//		ConfigOptions.setMode(Mode.FUNCTIONAL);
-//		ConfigOptions.setVerbose(true);
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
+		verifyIndexerPresent(context);
 		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
@@ -70,6 +70,13 @@ public class ConfigurationContributor implements BootstrapContributor {
 				}
 			}
 		});
+	}
+	
+	private void verifyIndexerPresent(BuildContext context) {
+		String cp = context.getClasspath().toString();
+		if (!cp.contains("spring-context-indexer")) {
+			throw new IllegalStateException("Missing dependency on org.springframework:spring-content-indexer - without it, no components will be found by the native image build");
+		}
 	}
 
 	/**
