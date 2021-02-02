@@ -207,7 +207,6 @@ import org.springframework.stereotype.Repository;
 			SingleTableEntityPersister.class,CollectionDataAccess.class,PersistentClass.class,
 			PersisterCreationContext.class,
 
-			DataSourceInitializedPublisher.class,
 			// related to Naming.applyNamingStrategies
 			SpringImplicitNamingStrategy.class,SpringPhysicalNamingStrategy.class,
 			
@@ -222,7 +221,8 @@ import org.springframework.stereotype.Repository;
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.annotations.common.util.impl.Log_$logger",
 			"org.hibernate.annotations.common.util.impl.Log",
-		})
+		}),
+		@TypeInfo(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
 })
 public class HibernateJpaHints implements NativeImageConfiguration {
 }
