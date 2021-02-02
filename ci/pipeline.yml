@@ -139,9 +139,6 @@ jobs:
             source:
               repository: openjdk
               tag: 11-jdk
-          params:
-            ARTIFACTORY_USERNAME:
-            ARTIFACTORY_PASSWORD:
           inputs:
             - name: spring-native
           run:
