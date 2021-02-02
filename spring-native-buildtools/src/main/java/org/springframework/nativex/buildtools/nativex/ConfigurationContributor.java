@@ -50,7 +50,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 		}
 		ConfigOptions.setMode(Mode.REFLECTION);
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
-		verifyIndexerPresent(context);
 		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
 		springAnalyzer.analyze();
@@ -58,6 +57,22 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.describeReflection(reflect -> reflect.merge(configurationCollector.getReflectionDescriptor()));
 		context.describeResources(resources -> resources.merge(configurationCollector.getResourcesDescriptors()));
 		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
+		byte[] springComponentsFileContents = configurationCollector.getResources("META-INF/spring.components");
+		if (springComponentsFileContents!=null) {
+			System.out.println("Storing synthesized META-INF/spring.components");
+			context.addResources(new ResourceFile() {
+				@Override
+				public void writeTo(Path rootPath) throws IOException {
+					Path srcMainResourcesFolder = rootPath.resolve(ResourceFile.MAIN_RESOURCES_PATH);
+					Path metaInfFolder = srcMainResourcesFolder.resolve(Paths.get("META-INF"));
+					Files.createDirectories(metaInfFolder);
+					Path springComponentsFile = rootPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH);
+					try (FileOutputStream fos = new FileOutputStream(rootPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
+						fos.write(springComponentsFileContents);
+					}
+				}
+			});
+		}
 		// Create native-image.properties
 		context.addResources(new ResourceFile() {
 			@Override
@@ -70,13 +85,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 				}
 			}
 		});
-	}
-	
-	private void verifyIndexerPresent(BuildContext context) {
-		String cp = context.getClasspath().toString();
-		if (!cp.contains("spring-context-indexer")) {
-			throw new IllegalStateException("Missing dependency on org.springframework:spring-content-indexer - without it, no components will be found by the native image build");
-		}
 	}
 
 	/**

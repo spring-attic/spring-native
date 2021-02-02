@@ -240,8 +240,7 @@ public class ResourcesHandler extends Handler {
 			p.store(baos, "");
 			baos.close();
 			byte[] bs = baos.toByteArray();
-			ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-			collector.registerResource("META-INF/spring.components", bais);
+			collector.registerResource("META-INF/spring.components", bs);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -886,7 +885,7 @@ public class ResourcesHandler extends Handler {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				p.store(baos, null);
 				byte[] bs = baos.toByteArray();
-				collector.registerResource("META-INF/spring.factories", new ByteArrayInputStream(bs));
+				collector.registerResource("META-INF/spring.factories", bs);
 //				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
 				SpringFeature.log("  removed " + forRemoval.size() + " classes");
@@ -897,8 +896,8 @@ public class ResourcesHandler extends Handler {
 				SpringFeature.log("The new spring.factories is: vvvvvvvvv");
 				SpringFeature.log(new String(bs));
 				SpringFeature.log("^^^^^^^^");
-				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-				collector.registerResource("META-INF/spring.factories", bais);
+//				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
+				collector.registerResource("META-INF/spring.factories", bs);
 //				Resources.registerResource("META-INF/spring.factories", bais);
 			}
 		} catch (IOException e) {

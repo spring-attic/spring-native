@@ -29,5 +29,7 @@ public interface ResourceFile extends GeneratedFile {
 	Path NATIVE_IMAGE_PATH = MAIN_RESOURCES_PATH.resolve(Paths.get("META-INF", "native-image"));
 
 	Path NATIVE_CONFIG_PATH = NATIVE_IMAGE_PATH.resolve(Paths.get("org.springframework.nativex", "buildtools"));
+	
+	Path SPRING_COMPONENTS_PATH = MAIN_RESOURCES_PATH.resolve(Paths.get("META-INF", "spring.components"));
 
 }

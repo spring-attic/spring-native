@@ -15,15 +15,19 @@
  */
 package org.springframework.nativex.support;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -59,7 +63,9 @@ public class ConfigurationCollector {
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
 	private GraalVMConnector graalVMConnector;
-
+	
+	private Map<String,byte[]> newResourceFiles = new HashMap<>();
+	
 	private TypeSystem ts;
 
 	public ProxiesDescriptor getProxyDescriptors() {
@@ -72,6 +78,10 @@ public class ConfigurationCollector {
 
 	public ResourcesDescriptor getResourcesDescriptors() {
 		return resourcesDescriptor;
+	}
+	
+	public byte[] getResources(String name) {
+		return newResourceFiles.get(name);
 	}
 
 	public InitializationDescriptor getInitializationDescriptor() {
@@ -326,13 +336,14 @@ public class ConfigurationCollector {
 		}
 	}
 
-	public void registerResource(String resourceName, InputStream bais) {
+	public void registerResource(String resourceName, byte[] bytes) {
 		resourcesDescriptor.add(resourceName);
+		newResourceFiles.put(resourceName, bytes);
 		if (graalVMConnector != null) {
-			graalVMConnector.registerResource(resourceName, bais);
+			graalVMConnector.registerResource(resourceName, new ByteArrayInputStream(bytes));
 		}
 	}
-
+	
 	public void addResource(String pattern, boolean isBundle) {
 		if (isBundle) {
 			resourcesDescriptor.addBundle(pattern);
