@@ -51,7 +51,7 @@ public final class SpringFactoriesLoader {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
 		List<Supplier<Object>> result = (List<Supplier<Object>>) StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
-			return Collections.emptyList();
+			return new ArrayList<>(0);
 		}
 		return (List<T>) result.stream().map(Supplier::get).collect(Collectors.toList());
 	}
