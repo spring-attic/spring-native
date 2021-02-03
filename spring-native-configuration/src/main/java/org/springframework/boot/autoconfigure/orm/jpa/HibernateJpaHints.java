@@ -76,10 +76,12 @@ import org.hibernate.hql.internal.antlr.HqlTokenTypes;
 import org.hibernate.hql.internal.antlr.SqlTokenTypes;
 import org.hibernate.hql.internal.ast.HqlToken;
 import org.hibernate.hql.internal.ast.tree.BinaryLogicOperatorNode;
+import org.hibernate.hql.internal.ast.tree.ConstructorNode;
 import org.hibernate.hql.internal.ast.tree.DotNode;
 import org.hibernate.hql.internal.ast.tree.FromClause;
 import org.hibernate.hql.internal.ast.tree.FromElement;
 import org.hibernate.hql.internal.ast.tree.IdentNode;
+import org.hibernate.hql.internal.ast.tree.LiteralNode;
 import org.hibernate.hql.internal.ast.tree.Node;
 import org.hibernate.hql.internal.ast.tree.OrderByClause;
 import org.hibernate.hql.internal.ast.tree.ParameterNode;
@@ -144,7 +146,9 @@ import org.springframework.stereotype.Repository;
 				HqlTokenTypes.class,SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				// TODO what about having a way to specify everything in a package? More resilient and less verbose? do those things matter?
 				OrderByClause.class,SelectExpressionImpl.class,SqlFragment.class,SelectClause.class,BinaryLogicOperatorNode.class,
-				ParameterNode.class,DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,
+				ParameterNode.class,
+				DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,
+				LiteralNode.class,ConstructorNode.class,
 				Node.class,HqlToken.class,
 		},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
 		@TypeInfo(types= {
