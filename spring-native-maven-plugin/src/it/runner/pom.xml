@@ -39,6 +39,14 @@
 				<version>@project.version@</version>
 				<executions>
 					<execution>
+						<id>bootstrap-tests</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>bootstrapTests</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>bootstrap</id>
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>bootstrap</goal>

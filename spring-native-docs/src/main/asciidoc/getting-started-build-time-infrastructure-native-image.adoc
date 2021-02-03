@@ -90,6 +90,14 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <version>0.9.0-SNAPSHOT</version>
           <executions>
             <execution>
+              <id>bootstrap-tests</id>
+              <phase>process-test-classes</phase>
+              <goals>
+                <goal>bootstrapTests</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>bootstrap</id>
               <phase>prepare-package</phase>
               <goals>
                 <goal>bootstrap</goal>
