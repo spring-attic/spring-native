@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.nativex.buildtools.factories;
 
 import java.lang.annotation.Annotation;
@@ -43,7 +59,7 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		boolean factoryOK =
 				passesAnyConditionalOnClass(typeSystem, factory) &&
 						passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
-						passesAnyConditionalOnMissingBean(typeSystem, factory) &&
+						passesAnyConditionalOnBean(typeSystem, factory) &&
 						passesIgnoreJmxConstraint(typeSystem, factory) &&
 						passesAnyConditionalOnWebApplication(typeSystem, factory);
 
@@ -75,14 +91,14 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		return true;
 	}
 
-	private boolean passesAnyConditionalOnMissingBean(TypeSystem typeSystem, SpringFactory factory) {
-		MergedAnnotation<Annotation> missingBeanCondition = factory.getFactory().getAnnotations()
-				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
-		if (missingBeanCondition.isPresent()) {
-			AnnotationAttributes attributes = missingBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
-			return !Stream.concat(Arrays.stream(attributes.getStringArray("value")),
+	private boolean passesAnyConditionalOnBean(TypeSystem typeSystem, SpringFactory factory) {
+		MergedAnnotation<Annotation> onBeanCondition = factory.getFactory().getAnnotations()
+				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
+		if (onBeanCondition.isPresent()) {
+			AnnotationAttributes attributes = onBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
+			return Stream.concat(Arrays.stream(attributes.getStringArray("value")),
 					Arrays.stream(attributes.getStringArray("type")))
-					.anyMatch(beanClass -> typeSystem.resolveClass(beanClass) == null);
+					.anyMatch(beanClass -> typeSystem.resolveClass(beanClass) != null);
 		}
 		return true;
 	}
