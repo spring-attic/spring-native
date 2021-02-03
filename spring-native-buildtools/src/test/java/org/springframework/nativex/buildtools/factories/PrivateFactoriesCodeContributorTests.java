@@ -41,17 +41,24 @@ class PrivateFactoriesCodeContributorTests {
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(),
 				"org.springframework.nativex.buildtools.factories.fixtures.ProtectedFactory", typeSystem);
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
+		factory = SpringFactory.resolve(TestFactory.class.getName(),
+				"org.springframework.nativex.buildtools.factories.fixtures.ProtectedFactory.InnerProtectedFactory", typeSystem);
+		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(TestFactory.class, () -> _FactoryProvider.protectedFactory());\n");
 		assertThat(code.generateStaticFactoryClasses()).hasSize(1);
 		assertThat(code.generateStaticFactoryClasses().get(0).toString())
 				.isEqualTo("package org.springframework.nativex.buildtools.factories.fixtures;\n" +
-				"\n" +
-				"public abstract class _FactoryProvider {\n" +
-				"  public static ProtectedFactory protectedFactory() {\n" +
-				"    return new ProtectedFactory();\n" +
-				"  }\n" +
-				"}\n");
+						"\n" +
+						"public abstract class _FactoryProvider {\n" +
+						"  public static ProtectedFactory protectedFactory() {\n" +
+						"    return new ProtectedFactory();\n" +
+						"  }\n" +
+						"\n" +
+						"  public static ProtectedFactory.InnerProtectedFactory protectedFactoryInnerProtectedFactory() {\n" +
+						"    return new ProtectedFactory.InnerProtectedFactory();\n" +
+						"  }\n" +
+						"}\n");
 	}
 
 }

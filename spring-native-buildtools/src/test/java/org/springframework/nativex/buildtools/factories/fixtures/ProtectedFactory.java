@@ -6,4 +6,12 @@ class ProtectedFactory implements TestFactory {
 		
 	}
 
+	static class InnerProtectedFactory {
+
+		InnerProtectedFactory() {
+			
+		}
+
+	}
+
 }

@@ -36,7 +36,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
 			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getCanonicalClassName());
 			ClassName staticFactoryClass = ClassName.get(packageName, code.getStaticFactoryClass(packageName).name);
-			MethodSpec creator = MethodSpec.methodBuilder(StringUtils.uncapitalize(factory.getFactory().getShortName()))
+			MethodSpec creator = MethodSpec.methodBuilder(generateMethodName(factory.getFactory()))
 					.addModifiers(javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC)
 					.returns(factoryClass)
 					.addStatement("return new $T()", factoryClass).build();
@@ -45,6 +45,10 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 				block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
 			});
 		}
+	}
+
+	private String generateMethodName(ClassDescriptor factory) {
+		return StringUtils.uncapitalize(factory.getShortName().replaceAll("\\.", ""));
 	}
 
 }
