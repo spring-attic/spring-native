@@ -16,6 +16,11 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+        <start-class>com.example.demo.DemoApplication</start-class>
+        <image-name>actuator-webmvc</image-name>
+	<!--
+	<bild-args>-Dspring.native.build-time-properties-checks=default-include-all -Dspring.native.factories.no-actuator-metrics=true</build-args>
+	-->
 	</properties>
 
 	<dependencies>
@@ -58,7 +63,7 @@
 
 
 	<profiles>
-	  <profile>
+        <profile>
             <id>bti-native</id>
             <build>
                 <plugins>
@@ -68,6 +73,14 @@
                         <version>0.9.0-SNAPSHOT</version>
                         <executions>
                             <execution>
+                                <id>bootstrap-tests</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>bootstrapTests</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>bootstrap</id>
                                 <phase>prepare-package</phase>
                                 <goals>
                                     <goal>bootstrap</goal>
@@ -87,11 +100,9 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>21.0.0</version>
                         <configuration>
-                            <mainClass>com.example.demo.DemoApplication</mainClass>
-                            <imageName>actuator-webmvc</imageName>
-			    <!--
-                            <buildArgs>-Dspring.native.build-time-properties-checks=default-include-all -Dspring.native.build-time-properties-match-if-missing=false -Dspring.native.factories.no-actuator-metrics=true -Dspring.native.remove-yaml-support=true</buildArgs>
-			    -->
+                            <mainClass>${start-class}</mainClass>
+                            <imageName>${image-name}</imageName>
+                            <buildArgs>${build-args}</buildArgs>
                         </configuration>
                         <executions>
                             <execution>
