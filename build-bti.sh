@@ -6,7 +6,7 @@ SAMPLE=$1
 
 printf "=== ${BLUE}Building $SAMPLE sample (bti-native profile)${NC} ===\n"
 cd spring-native-samples/$SAMPLE
-ARGS=`grep "<build.args>" pom.xml | sed 's/<[^>]*>//g' | sed 's/^[ 	]*//'`
+ARGS=`grep "<build.args>" pom.xml | sed 's/<[^>]*>//g' | sed 's/^[ 	]*//' | sed 's/--[^ ]*//g'`
 if [ ! -z "$ARGS" ]; then
 	echo "Arguments to build process: $ARGS"
 fi
