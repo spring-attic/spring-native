@@ -27,7 +27,7 @@ final class Target_SpringFactoriesLoader {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
 		List<Supplier<Object>> result = (List<Supplier<Object>>) Target_StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
-			return Collections.emptyList();
+			return new ArrayList<>(0);
 		}
 		List<T> facs = new ArrayList<>();
 		for (Supplier<Object> supplier: result) {

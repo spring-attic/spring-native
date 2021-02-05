@@ -16,6 +16,11 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+        <start-class>com.example.actuator.ActuatorApplication</start-class>
+        <image-name>actuator-webflux</image-name>
+		<!--
+        <bildArgs>-Dspring.native.build-time-properties-checks=default-include-all -Dspring.native.build-time-properties-match-if-missing=false -Dspring.native.factories.no-actuator-metrics=true -Dspring.native.remove-yaml-support=true</buildArgs>
+		-->
 	</properties>
 
 	<dependencies>
@@ -46,7 +51,7 @@
 	</dependencies>
 
 	<profiles>
-	  <profile>
+	    <profile>
             <id>bti-native</id>
             <build>
                 <plugins>
@@ -56,6 +61,14 @@
                         <version>0.9.0-SNAPSHOT</version>
                         <executions>
                             <execution>
+                                <id>bootstrap-tests</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>bootstrapTests</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>bootstrap</id>
                                 <phase>prepare-package</phase>
                                 <goals>
                                     <goal>bootstrap</goal>
@@ -75,11 +88,9 @@
                         <artifactId>native-image-maven-plugin</artifactId>
                         <version>21.0.0</version>
                         <configuration>
-                            <mainClass>com.example.actuator.ActuatorApplication</mainClass>
-                            <imageName>actuator-webflux</imageName>
-			    <!--
-                            <buildArgs>-Dspring.native.build-time-properties-checks=default-include-all -Dspring.native.build-time-properties-match-if-missing=false -Dspring.native.factories.no-actuator-metrics=true -Dspring.native.remove-yaml-support=true</buildArgs>
-			    -->
+                            <mainClass>${start-class}</mainClass>
+                            <imageName>${image-name}</imageName>
+							<buildArgs>${build-args}</buildArgs>
                         </configuration>
                         <executions>
                             <execution>
@@ -97,7 +108,7 @@
                 </plugins>
             </build>
         </profile>
-</profiles>
+	</profiles>
 
 	<build>
 		<plugins>

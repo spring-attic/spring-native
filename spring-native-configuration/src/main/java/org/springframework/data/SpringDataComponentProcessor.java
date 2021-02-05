@@ -148,8 +148,10 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	static {
 		try {
-			repositoryName = Repository.class.getName();
-			queryAnnotationName = QueryAnnotation.class.getName();
+			repositoryName = "org.springframework.data.repository.Repository";
+			queryAnnotationName = "org.springframework.data.annotation.QueryAnnotation";
+//			repositoryName = Repository.class.getName();
+//			queryAnnotationName = QueryAnnotation.class.getName();
 		} catch (NoClassDefFoundError ncdfe) {
 			// This component processor isn't useful anyway in this run, so OK that these
 			// aren't here
