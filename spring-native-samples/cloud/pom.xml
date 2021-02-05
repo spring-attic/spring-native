@@ -16,6 +16,9 @@
 		<spring.native.mode>reflection</spring.native.mode>
 		<graalvm.version>21.0.0</graalvm.version>
 		<spring-cloud.version>2020.0.0</spring-cloud.version>
+		<start-class>com.example.webflux.WebfluxApplication</start-class>
+		<image-name>cloud</image-name>
+		<build-args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build-args>
 	</properties>
 
 	<dependencies>
@@ -24,12 +27,6 @@
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-native</artifactId>
 			<version>0.9.0-SNAPSHOT</version>
-		</dependency>
-
-		<!-- Required for the agent mode -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
 
 		<dependency>
@@ -85,11 +82,7 @@
 					<image>
 						<env>
 							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.native.mode=${spring.native.mode}
-								-Dspring.spel.ignore=true
-								-Dspring.native.remove-yaml-support=true
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build-args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>
 				</configuration>
@@ -99,30 +92,45 @@
 
 	<profiles>
 		<profile>
-			<id>agent</id>
-			<properties>
-				<spring.native.mode>agent</spring.native.mode>
-			</properties>
+			<id>bti-native</id>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.spel.ignore=true -agentlib:native-image-agent=config-merge-dir=target/native-image</argLine>
-							<includes>
-								<include>**/WebfluxApplicationTests.java</include>
-							</includes>
-						</configuration>
+						<groupId>org.springframework.experimental</groupId>
+						<artifactId>spring-native-maven-plugin</artifactId>
+						<version>0.9.0-SNAPSHOT</version>
+						<executions>
+							<execution>
+								<id>bootstrap-tests</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>bootstrapTests</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>bootstrap</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>bootstrap</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.springframework.experimental</groupId>
+								<artifactId>spring-native-configuration</artifactId>
+								<version>0.9.0-SNAPSHOT</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
-						<version>${graalvm.version}</version>
+						<version>21.0.0</version>
 						<configuration>
-							<mainClass>com.example.webflux.WebfluxApplication</mainClass>
-							<imageName>app</imageName>
-							<buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
+							<mainClass>${start-class}</mainClass>
+							<imageName>${image-name}</imageName>
+							<buildArgs>${build-args}</buildArgs>
 						</configuration>
 						<executions>
 							<execution>
@@ -132,6 +140,10 @@
 								<phase>package</phase>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>
