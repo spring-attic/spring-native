@@ -56,7 +56,10 @@ public class JsonConverter {
 				JSONObject fieldjo = new JSONObject();
 				fieldjo.put("name", fd.getName());
 				if (fd.isAllowWrite()) {
-					fieldjo.put("allowWrite", "true");
+					fieldjo.put("allowWrite", true);
+				}
+				if (fd.isAllowUnsafeAccess()) {
+					fieldjo.put("allowUnsafeAccess", true);
 				}
 				fieldJsonArray.put(fieldjo);
 			}
