@@ -42,10 +42,7 @@
 						<builder>paketobuildpacks/builder:tiny</builder>
 						<env>
 							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.spel.ignore=true
-								--enable-all-security-services
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build-args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>
 				</configuration>
