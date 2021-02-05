@@ -15,6 +15,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<start-class>com.example.webflux.SecurityWebfluxApplication</start-class>
+		<image-name>security-webflux</image-name>
+		<build-args>--enable-all-security-services</build-args>
 	</properties>
 
 	<dependencies>
@@ -74,6 +77,63 @@
 	</build>
 	
    <profiles>
+	   <profile>
+		   <id>bti-native</id>
+		   <build>
+			   <plugins>
+				   <plugin>
+					   <groupId>org.springframework.experimental</groupId>
+					   <artifactId>spring-native-maven-plugin</artifactId>
+					   <version>0.9.0-SNAPSHOT</version>
+					   <executions>
+						   <execution>
+							   <id>bootstrap-tests</id>
+							   <phase>process-test-classes</phase>
+							   <goals>
+								   <goal>bootstrapTests</goal>
+							   </goals>
+						   </execution>
+						   <execution>
+							   <id>bootstrap</id>
+							   <phase>prepare-package</phase>
+							   <goals>
+								   <goal>bootstrap</goal>
+							   </goals>
+						   </execution>
+					   </executions>
+					   <dependencies>
+						   <dependency>
+							   <groupId>org.springframework.experimental</groupId>
+							   <artifactId>spring-native-configuration</artifactId>
+							   <version>0.9.0-SNAPSHOT</version>
+						   </dependency>
+					   </dependencies>
+				   </plugin>
+				   <plugin>
+					   <groupId>org.graalvm.nativeimage</groupId>
+					   <artifactId>native-image-maven-plugin</artifactId>
+					   <version>21.0.0</version>
+					   <configuration>
+						   <mainClass>${start-class}</mainClass>
+						   <imageName>${image-name}</imageName>
+						   <buildArgs>${build-args}</buildArgs>
+					   </configuration>
+					   <executions>
+						   <execution>
+							   <goals>
+								   <goal>native-image</goal>
+							   </goals>
+							   <phase>package</phase>
+						   </execution>
+					   </executions>
+				   </plugin>
+				   <plugin>
+					   <groupId>org.springframework.boot</groupId>
+					   <artifactId>spring-boot-maven-plugin</artifactId>
+				   </plugin>
+			   </plugins>
+		   </build>
+	   </profile>
 	   <profile>
 		   <id>agent</id>
 		   <properties>
