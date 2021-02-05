@@ -4,7 +4,6 @@ FROM $BASE_IMAGE
 ARG MAVEN_VERSION=3.6.3
 
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
-ENV SPRING_PROFILES_ACTIVE=ci
 ADD docker-lib.sh /bin/docker-lib.sh
 ADD start-docker.sh /bin/start-docker.sh
 
