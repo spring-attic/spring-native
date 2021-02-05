@@ -25,10 +25,10 @@
 		<module>spring-native-configuration</module>
 		<module>spring-native-substitutions</module>
 		<module>spring-native-tools</module>
-		<module>spring-native-buildtools</module>
-		<module>spring-native-maven-plugin</module>
 		<module>spring-native-docs</module>
 		<module>spring-native</module>
+		<module>spring-native-buildtools</module>
+		<module>spring-native-maven-plugin</module>
 	</modules>
 
 	<dependencyManagement>
