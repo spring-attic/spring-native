@@ -30,9 +30,17 @@ public class SpringFactory {
 		try {
 			ClassDescriptor factoryType = typeSystem.resolveClass(factoryTypeName);
 			ClassDescriptor factory = typeSystem.resolveClass(factoryName);
+			if (factoryType == null) {
+				logger.debug("Could not resolve factory type "+factoryType);
+				return null;
+			}
+			if (factory == null) {
+				logger.debug("Could not resolve factory "+factoryName);
+				return null;
+			}
 			return new SpringFactory(factoryType, factory);
 		}
-		catch (MissingTypeException exc) {
+		catch (MissingTypeException exc) { // TODO can this still happen with the new type system?
 			logger.debug("Could not load SpringFactory: " + exc.getMessage());
 			return null;
 		}
