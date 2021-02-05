@@ -3,6 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../../</relativePath> <!-- lookup parent from repository -->
+	</parent>
+	
 	<groupId>org.demo</groupId>
 	<artifactId>configserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -11,19 +18,14 @@
 	<name>Config Server</name>
 	<description>Config Server demo project</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>demo.ConfigServerApplication</start-class>
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 		<docker.image.prefix>springcloud</docker.image.prefix>
 		<spring-cloud.version>2020.0.0</spring-cloud.version>
+		<main.class>demo.ConfigServerApplication</main.class>
+		<build.args>--enable-all-security-services</build.args>
 	</properties>
 
 	<dependencies>
@@ -58,85 +60,32 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.2.3</version>
-				<configuration>
-					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
-					<dockerDirectory>src/main/docker</dockerDirectory>
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.jar</include>
-						</resource>
-					</resources>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<configuration>
-					<failOnNoGitDirectory>false</failOnNoGitDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<!--skip deploy (this is just a test module) -->
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/libs-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/libs-milestone-local</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-releases</id>
-			<name>Spring Releases</name>
-			<url>https://repo.spring.io/libs-release-local</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/libs-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/libs-milestone-local</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+	
+	<profiles>
+	    <profile>
+            <id>bti-native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-native-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+       	    </profile>	
+	</profiles>
 
 </project>
