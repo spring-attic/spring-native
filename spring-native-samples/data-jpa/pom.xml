@@ -4,18 +4,21 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../</relativePath> <!-- lookup parent from repository -->
+	</parent>
+	
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>data-jpa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2</version>
-	</parent>
-
 	<properties>
 		<java.version>1.8</java.version>
+		<main.class>app.main.SampleApplication</main.class>
+		<build.args> -Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>
@@ -89,18 +92,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.spel.ignore=true
-								-Dspring.native.remove-yaml-support=true
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-						</env>
-					</image>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.hibernate.orm.tooling</groupId>
@@ -122,106 +113,27 @@
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+	</build>	
 	<profiles>
-		<profile>
-           <id>bti-native</id>
-           <build>
-               <plugins>
-                   <plugin>
-                       <groupId>org.springframework.experimental</groupId>
-                       <artifactId>spring-native-maven-plugin</artifactId>
-                       <version>0.9.0-SNAPSHOT</version>
-                       <executions>
-                           <execution>
-                               <phase>prepare-package</phase>
-                               <goals>
-                                   <goal>bootstrap</goal>
-                               </goals>
-                           </execution>
-                       </executions>
-                       <dependencies>
-                           <dependency>
-                               <groupId>org.springframework.experimental</groupId>
-                               <artifactId>spring-native-configuration</artifactId>
-                               <version>0.9.0-SNAPSHOT</version>
-                           </dependency>
-                       </dependencies>
-                   </plugin>
-                   <plugin>
-                       <groupId>org.graalvm.nativeimage</groupId>
-                       <artifactId>native-image-maven-plugin</artifactId>
-                       <version>21.0.0</version>
-                       <configuration>
-                           <mainClass>app.main.SampleApplication</mainClass>
-                           <imageName>data-jpa</imageName>
-                       </configuration>
-                       <executions>
-                           <execution>
-                               <goals>
-                                   <goal>native-image</goal>
-                               </goals>
-                               <phase>package</phase>
-                           </execution>
-                       </executions>
-                   </plugin>
-                   <plugin>
-                       <groupId>org.springframework.boot</groupId>
-                       <artifactId>spring-boot-maven-plugin</artifactId>
-                   </plugin>
-               </plugins>
-           </build>
-       </profile>
+	    <profile>
+            <id>bti-native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.experimental</groupId>
+                        <artifactId>spring-native-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>	
 	</profiles>
-
-	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>spring-libs-snapshot</id>
-			<url>https://repo.spring.io/libs-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>spring-libs-milestone</id>
-			<url>https://repo.spring.io/libs-milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-libs-snapshot</id>
-			<url>https://repo.spring.io/libs-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-libs-milestone</id>
-			<url>https://repo.spring.io/libs-milestone</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
