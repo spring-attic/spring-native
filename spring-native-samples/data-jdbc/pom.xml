@@ -7,16 +7,18 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.2</version>
-        <relativePath/>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../</relativePath> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<main.class>com.example.data.jdbc.JdbcApplication</main.class>
+		<build.args>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</build.args>
     </properties>
 
     <dependencies>
@@ -99,88 +101,20 @@
            <id>bti-native</id>
            <build>
                <plugins>
-                   <plugin>
-                       <groupId>org.springframework.experimental</groupId>
-                       <artifactId>spring-native-maven-plugin</artifactId>
-                       <version>0.9.0-SNAPSHOT</version>
-                       <executions>
-                           <execution>
-                               <phase>prepare-package</phase>
-                               <goals>
-                                   <goal>bootstrap</goal>
-                               </goals>
-                           </execution>
-                       </executions>
-                       <dependencies>
-                           <dependency>
-                               <groupId>org.springframework.experimental</groupId>
-                               <artifactId>spring-native-configuration</artifactId>
-                               <version>0.9.0-SNAPSHOT</version>
-                           </dependency>
-                       </dependencies>
-                   </plugin>
-                   <plugin>
-                       <groupId>org.graalvm.nativeimage</groupId>
-                       <artifactId>native-image-maven-plugin</artifactId>
-                       <version>21.0.0</version>
-                       <configuration>
-                           <mainClass>com.example.data.jdbc.JdbcApplication</mainClass>
-                           <imageName>data-jdbc</imageName>
-                       </configuration>
-                       <executions>
-                           <execution>
-                               <goals>
-                                   <goal>native-image</goal>
-                               </goals>
-                               <phase>package</phase>
-                           </execution>
-                       </executions>
-                   </plugin>
-                   <plugin>
-                       <groupId>org.springframework.boot</groupId>
-                       <artifactId>spring-boot-maven-plugin</artifactId>
-                   </plugin>
-               </plugins>
+				   <plugin>
+					   <groupId>org.springframework.experimental</groupId>
+					   <artifactId>spring-native-maven-plugin</artifactId>
+				   </plugin>
+				   <plugin>
+					   <groupId>org.graalvm.nativeimage</groupId>
+					   <artifactId>native-image-maven-plugin</artifactId>
+				   </plugin>
+				   <plugin>
+					   <groupId>org.springframework.boot</groupId>
+					   <artifactId>spring-boot-maven-plugin</artifactId>
+				   </plugin>
+			   </plugins>
            </build>
        </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
 </project>
