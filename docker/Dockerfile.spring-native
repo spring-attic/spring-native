@@ -2,11 +2,9 @@ ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 ARG MAVEN_VERSION=3.6.3
+ARG DOCKER_GID=130
 
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH"
-ADD docker-lib.sh /bin/docker-lib.sh
-ADD start-docker.sh /bin/start-docker.sh
-
 
 RUN apt-get -y update \
  && apt-get -y install git jq curl python unzip bc bsdmainutils build-essential gdb net-tools iptables iproute2 sudo \
@@ -38,9 +36,12 @@ RUN apt-get -y update \
  && chmod +x entrykit \
  && mv entrykit /bin/entrykit \
  && entrykit --symlink \
- && groupadd docker \
+ && groupadd -g $DOCKER_GID docker \
  && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
  && curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o /bin/docker-compose \
  && chmod +x /bin/docker-compose
+
+ADD docker-lib.sh /bin/docker-lib.sh
+ADD start-docker.sh /bin/start-docker.sh
 
 CMD native-image --version && sudo /bin/start-docker.sh && /bin/bash

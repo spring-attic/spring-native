@@ -77,7 +77,7 @@ start_docker() {
   fi
 
   try_start() {
-    dockerd --data-root /scratch/docker ${server_args} >$DOCKER_LOG_FILE 2>&1 &
+    dockerd --data-root /scratch/docker --storage-driver=vfs ${server_args} >$DOCKER_LOG_FILE 2>&1 &
     echo $! > /tmp/docker.pid
 
     sleep 1
