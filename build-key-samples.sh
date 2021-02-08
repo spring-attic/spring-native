@@ -16,25 +16,6 @@ do
     echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
   fi
 
-  if grep -q bti-native spring-native-samples/$i/pom.xml; then
-    if ! (./build-bti.sh $i); then
-      RC=1
-    fi
-    if [ -f "spring-native-samples/$i/target/native-image/summary.csv" ]; then
-      cat spring-native-samples/$i/target/native-image/summary.csv | sed "s/$i/$i-bti/" >> samples-summary.csv
-    else
-      echo `date +%Y%m%d-%H%M`,$i-bti,ERROR,,,,, >> samples-summary.csv
-    fi
-  fi
-
-  if [ -d "spring-native-samples/$i/agent" ]; then
-    (cd spring-native-samples/$i/agent && ./build.sh)
-    if [ -f "spring-native-samples/$i/agent/target/native-image/summary.csv" ]; then
-      cat spring-native-samples/$i/agent/target/native-image/summary.csv >> samples-summary.csv
-    else
-      echo `date +%Y%m%d-%H%M`,${i}-agent,ERROR,,,,, >> samples-summary.csv
-    fi
-  fi
 done
 
 head -1 samples-summary.csv

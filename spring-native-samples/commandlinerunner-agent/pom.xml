@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+    <groupId>com.example</groupId>
+    <artifactId>commandlinerunner-agent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <properties>
+        <java.version>1.8</java.version>
+		<build.args>-Dspring.xml.ignore=true -Dspring.spel.ignore=true -Dspring.native.mode=agent</build.args>
+		<main.class>com.example.commandlinerunner.CommandlinerunnerApplication</main.class>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.experimental</groupId>
+            <artifactId>spring-native</artifactId>
+            <version>0.9.0-SNAPSHOT</version>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-indexer</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <!-- On purpose exclusion to test java.util.logging -->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+	<!-- Check out the parent POM (in ../pom.xml) for the plugins configuration -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.spel.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+					<includes>
+						<include>**/CommandlinerunnerApplicationTests.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+        </plugins>
+    </build>
+</project>
