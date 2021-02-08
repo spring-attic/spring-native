@@ -1,8 +1,7 @@
 {
-  "resources":[
+  "resources":{
+  "includes":[
     {"pattern":"\\QMETA-INF/services/javax.validation.spi.ValidationProvider\\E"}, 
-    {"pattern":"\\QMETA-INF/services/jdk.vm.ci.hotspot.HotSpotJVMCIBackendFactory\\E"}, 
-    {"pattern":"\\QMETA-INF/services/jdk.vm.ci.services.JVMCIServiceLocator\\E"}, 
     {"pattern":"\\QMETA-INF/services/org.apache.logging.log4j.spi.Provider\\E"}, 
     {"pattern":"\\QMETA-INF/services/org.apache.logging.log4j.util.PropertySource\\E"}, 
     {"pattern":"\\QMETA-INF/spring-autoconfigure-metadata.properties\\E"}, 
@@ -43,7 +42,6 @@
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnBean.class\\E"}, 
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnClass.class\\E"}, 
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.class\\E"}, 
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty.class\\E"}, 
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnResource.class\\E"}, 
     {"pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.class\\E"}, 
@@ -143,9 +141,6 @@
     {"pattern":"\\Qorg/springframework/cloud/client/ReactiveCommonsClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/client/discovery/composite/CompositeDiscoveryClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/client/discovery/composite/reactive/ReactiveCompositeDiscoveryClientAutoConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/client/discovery/noop/NoopDiscoveryClientAutoConfiguration$Boot15PortFinderConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/client/discovery/noop/NoopDiscoveryClientAutoConfiguration$PortFinder.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/client/discovery/noop/NoopDiscoveryClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/client/discovery/simple/SimpleDiscoveryClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/client/discovery/simple/reactive/SimpleReactiveDiscoveryClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/client/hypermedia/CloudHypermediaAutoConfiguration.class\\E"}, 
@@ -168,6 +163,7 @@
     {"pattern":"\\Qorg/springframework/cloud/commons/httpclient/HttpClientConfiguration$ApacheHttpClientConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/commons/httpclient/HttpClientConfiguration$OkHttpClientConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/commons/httpclient/HttpClientConfiguration.class\\E"}, 
+    {"pattern":"\\Qorg/springframework/cloud/commons/security/ResourceServerTokenRelayAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/commons/util/UtilAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigClientWatchConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigServerHealthIndicatorConfiguration.class\\E"}, 
@@ -185,6 +181,9 @@
     {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$DefaultLoadBalancerCacheManagerConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$LoadBalancerCacheManagerWarnConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger.class\\E"}, 
+    {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$OnCaffeineCacheMissingCondition$CaffeineCacheManagerClassMissing.class\\E"}, 
+    {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$OnCaffeineCacheMissingCondition$CaffeineClassMissing.class\\E"}, 
+    {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration$OnCaffeineCacheMissingCondition.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/loadbalancer/config/LoadBalancerCacheAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaClientAutoConfiguration$ConditionalOnMissingRefreshScope.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaClientAutoConfiguration$ConditionalOnRefreshScope.class\\E"}, 
@@ -198,7 +197,6 @@
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaClientAutoConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaDiscoveryClientConfiguration$EurekaClientConfigurationRefresher.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaDiscoveryClientConfiguration$EurekaHealthCheckHandlerConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaDiscoveryClientConfiguration$Marker.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/EurekaDiscoveryClientConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/config/DiscoveryClientOptionalArgsConfiguration$WebClientConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/cloud/netflix/eureka/config/DiscoveryClientOptionalArgsConfiguration$WebClientNotFoundConfiguration.class\\E"}, 
@@ -223,9 +221,8 @@
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/DelegatingWebMvcConfiguration.class\\E"}, 
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurationSupport$NoOpValidator.class\\E"}, 
     {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurationSupport.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"},
-    {"pattern":"\\Qorg/springframework/cloud/commons/security/ResourceServerTokenRelayAutoConfiguration.class\\E"}
-  ],
+    {"pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"}
+  ]},
   "bundles":[
     {"name":"javax.servlet.http.LocalStrings"}, 
     {"name":"org.apache.catalina.authenticator.LocalStrings"}, 

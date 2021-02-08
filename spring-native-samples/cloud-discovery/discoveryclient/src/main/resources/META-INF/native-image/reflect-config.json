@@ -1,4 +1,11 @@
 [
+	{"name":"jdk.vm.ci.meta.JavaKind$FormatWithToString[]"},
+{
+  "name":"boolean[]"
+},
+{
+  "name":"byte[]"
+},
 {
   "name":"ch.qos.logback.classic.pattern.DateConverter",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -27,6 +34,9 @@
   "name":"ch.qos.logback.core.Appender"
 },
 {
+  "name":"char[]"
+},
+{
   "name":"com.example.discoveryclient.CLR",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -34,10 +44,26 @@
   "methods":[{"name":"run","parameterTypes":["java.lang.String[]"] }]
 },
 {
+  "name":"com.example.discoveryclient.CLR$$EnhancerBySpringCGLIB$$d09e30d9",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
+},
+{
   "name":"com.example.discoveryclient.DiscoveryClientApplication",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "allDeclaredClasses":true,
+  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "name":"com.example.discoveryclient.DiscoveryClientApplication$$EnhancerBySpringCGLIB$$2143646d",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.example.discoveryclient.Foo",
@@ -381,12 +407,43 @@
   "allPublicMethods":true
 },
 {
+  "name":"com.sun.management.internal.GarbageCollectorExtImpl",
+  "allPublicConstructors":true
+},
+{
+  "name":"com.sun.management.internal.HotSpotDiagnostic",
+  "allPublicConstructors":true
+},
+{
+  "name":"com.sun.management.internal.HotSpotThreadImpl",
+  "allPublicConstructors":true
+},
+{
+  "name":"com.sun.management.internal.OperatingSystemImpl",
+  "allPublicConstructors":true
+},
+{
   "name":"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"double[]"
+},
+{
+  "name":"float[]"
+},
+{
+  "name":"int[]"
+},
+{
+  "name":"java.beans.PropertyVetoException"
+},
+{
   "name":"java.io.Closeable",
   "allPublicMethods":true
+},
+{
+  "name":"java.io.FilePermission"
 },
 {
   "name":"java.io.Serializable",
@@ -413,7 +470,12 @@
 },
 {
   "name":"java.lang.Class",
-  "allDeclaredMethods":true
+  "allDeclaredMethods":true,
+  "methods":[{"name":"getModule","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.ClassLoader",
+  "methods":[{"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int","java.security.ProtectionDomain"] }]
 },
 {
   "name":"java.lang.Class[]",
@@ -443,6 +505,22 @@
   "fields":[{"name":"TYPE"}]
 },
 {
+  "name":"java.lang.Module",
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"isExported","parameterTypes":["java.lang.String"] }, 
+    {"name":"isNamed","parameterTypes":[] }
+  ]
+},
+{
+  "name":"java.lang.ModuleLayer",
+  "methods":[
+    {"name":"boot","parameterTypes":[] }, 
+    {"name":"configuration","parameterTypes":[] }
+  ]
+},
+{
   "name":"java.lang.Object",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -451,6 +529,14 @@
 },
 {
   "name":"java.lang.Object[]"
+},
+{
+  "name":"java.lang.Runtime",
+  "methods":[{"name":"version","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.Runtime$Version",
+  "methods":[{"name":"major","parameterTypes":[] }]
 },
 {
   "name":"java.lang.RuntimePermission"
@@ -469,15 +555,6 @@
 },
 {
   "name":"java.lang.String[]"
-},
-{
-  "name":"jdk.vm.ci.meta.JavaKind$FormatWithToString[]"
-},
-{
-  "name":"java.lang.String[][]"
-},
-{
-  "name":"java.lang.Class[][]"
 },
 {
   "name":"java.lang.Void",
@@ -502,6 +579,14 @@
 {
   "name":"java.lang.annotation.Target",
   "allDeclaredMethods":true
+},
+{
+  "name":"java.lang.invoke.MethodHandles",
+  "methods":[{"name":"privateLookupIn","parameterTypes":["java.lang.Class","java.lang.invoke.MethodHandles$Lookup"] }]
+},
+{
+  "name":"java.lang.invoke.MethodHandles$Lookup",
+  "methods":[{"name":"defineClass","parameterTypes":["byte[]"] }]
 },
 {
   "name":"java.lang.management.BufferPoolMXBean",
@@ -544,12 +629,33 @@
   "allPublicMethods":true
 },
 {
+  "name":"java.lang.management.PlatformLoggingMXBean",
+  "allPublicMethods":true
+},
+{
   "name":"java.lang.management.RuntimeMXBean",
   "allPublicMethods":true
 },
 {
   "name":"java.lang.management.ThreadInfo",
   "allPublicMethods":true
+},
+{
+  "name":"java.lang.module.Configuration",
+  "methods":[{"name":"modules","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.module.ModuleReference",
+  "methods":[{"name":"location","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.module.ResolvedModule",
+  "methods":[{"name":"reference","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.reflect.AccessibleObject",
+  "fields":[{"name":"override"}],
+  "methods":[{"name":"canAccess","parameterTypes":["java.lang.Object"] }]
 },
 {
   "name":"java.lang.reflect.AnnotatedElement",
@@ -566,6 +672,9 @@
   "name":"java.lang.reflect.GenericDeclaration[]"
 },
 {
+  "name":"java.lang.reflect.InaccessibleObjectException"
+},
+{
   "name":"java.lang.reflect.Type",
   "allPublicMethods":true
 },
@@ -579,13 +688,30 @@
   "name":"java.math.BigInteger"
 },
 {
+  "name":"java.net.NetPermission"
+},
+{
   "name":"java.net.SocketPermission"
+},
+{
+  "name":"java.net.URLConnection",
+  "methods":[{"name":"setDefaultUseCaches","parameterTypes":["java.lang.String","boolean"] }]
+},
+{
+  "name":"java.net.URLPermission",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]
 },
 {
   "name":"java.security.AllPermission"
 },
 {
   "name":"java.security.MessageDigestSpi"
+},
+{
+  "name":"java.security.SecureRandomParameters"
+},
+{
+  "name":"java.security.SecurityPermission"
 },
 {
   "name":"java.sql.DriverManager"
@@ -613,6 +739,13 @@
   "name":"java.util.HashSet"
 },
 {
+  "name":"java.util.Optional",
+  "methods":[
+    {"name":"get","parameterTypes":[] }, 
+    {"name":"isPresent","parameterTypes":[] }
+  ]
+},
+{
   "name":"java.util.PropertyPermission",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]
 },
@@ -625,15 +758,31 @@
   "name":"java.util.concurrent.Executor"
 },
 {
+  "name":"java.util.concurrent.Flow$Publisher"
+},
+{
   "name":"java.util.concurrent.ThreadFactory",
+  "allPublicMethods":true
+},
+{
+  "name":"java.util.jar.JarFile",
+  "methods":[
+    {"name":"<init>","parameterTypes":["java.io.File","boolean","int","java.lang.Runtime$Version"] }, 
+    {"name":"isMultiRelease","parameterTypes":[] }, 
+    {"name":"runtimeVersion","parameterTypes":[] }
+  ]
+},
+{
+  "name":"java.util.logging.LogManager",
+  "methods":[{"name":"getLoggingMXBean","parameterTypes":[] }]
+},
+{
+  "name":"java.util.logging.LoggingMXBean",
   "allPublicMethods":true
 },
 {
   "name":"java.util.logging.SimpleFormatter",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"javax.activation.MimeType"
 },
 {
   "name":"javax.annotation.ManagedBean"
@@ -685,6 +834,9 @@
 },
 {
   "name":"javax.management.openmbean.CompositeData[]"
+},
+{
+  "name":"javax.management.openmbean.OpenMBeanOperationInfoSupport"
 },
 {
   "name":"javax.management.openmbean.TabularData"
@@ -754,7 +906,8 @@
   "methods":[{"name":"service","parameterTypes":["javax.servlet.ServletRequest","javax.servlet.ServletResponse"] }]
 },
 {
-  "name":"javax.servlet.http.HttpServletMapping"
+  "name":"javax.servlet.http.HttpServletRequest",
+  "methods":[{"name":"getHttpServletMapping","parameterTypes":[] }]
 },
 {
   "name":"javax.servlet.http.PushBuilder"
@@ -781,16 +934,6 @@
   "name":"javax.websocket.server.ServerContainer"
 },
 {
-  "name":"javax.xml.bind.Binder"
-},
-{
-  "name":"javax.xml.ws.WebServiceRef"
-},
-{
-  "name":"jdk.Exported",
-  "allPublicMethods":true
-},
-{
   "name":"jdk.management.jfr.ConfigurationInfo",
   "allPublicMethods":true
 },
@@ -815,8 +958,7 @@
   "allPublicMethods":true
 },
 {
-  "name":"jdk.management.jfr.internal.FlightRecorderMXBeanProvider",
-  "methods":[{"name":"getFlightRecorderMXBean","parameterTypes":[] }]
+  "name":"long[]"
 },
 {
   "name":"org.apache.catalina.core.ApplicationContextFacade",
@@ -951,8 +1093,15 @@
   "name":"org.apache.tomcat.websocket.server.WsSci"
 },
 {
+  "name":"org.graalvm.nativeimage.ImageInfo",
+  "methods":[{"name":"inImageCode","parameterTypes":[] }]
+},
+{
   "name":"org.hibernate.validator.internal.engine.AbstractConfigurationImpl",
   "methods":[{"name":"externalClassLoader","parameterTypes":["java.lang.ClassLoader"] }]
+},
+{
+  "name":"org.hibernate.validator.internal.engine.ConfigurationImpl"
 },
 {
   "name":"org.hibernate.validator.internal.util.logging.Log_$logger",
@@ -1047,6 +1196,7 @@
 },
 {
   "name":"org.springframework.beans.factory.BeanFactoryAware",
+  "allDeclaredMethods":true,
   "allPublicMethods":true
 },
 {
@@ -1703,7 +1853,6 @@
   "allDeclaredConstructors":true,
   "methods":[
     {"name":"addFormatters","parameterTypes":["org.springframework.format.FormatterRegistry"] }, 
-    {"name":"addResourceHandlers","parameterTypes":["org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry"] }, 
     {"name":"configureAsyncSupport","parameterTypes":["org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer"] }, 
     {"name":"configureContentNegotiation","parameterTypes":["org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer"] }, 
     {"name":"configureMessageConverters","parameterTypes":["java.util.List"] }, 
@@ -1869,10 +2018,6 @@
   "methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.SpringApplication","java.lang.String[]"] }]
 },
 {
-  "name":"org.springframework.boot.context.logging.ClasspathLoggingApplicationListener",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"org.springframework.boot.context.logging.LoggingApplicationListener",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -2002,7 +2147,7 @@
   "allPublicMethods":true
 },
 {
-  "name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda$245/1995616381",
+  "name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda$316/0x000000084024c440",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
 },
@@ -2215,7 +2360,26 @@
   "name":"org.springframework.cache.CacheManager"
 },
 {
+  "name":"org.springframework.cache.caffeine.CaffeineCacheManager"
+},
+{
   "name":"org.springframework.cache.interceptor.CacheAspectSupport"
+},
+{
+  "name":"org.springframework.cglib.core.MethodWrapper$MethodWrapperKey",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.cglib.core.MethodWrapper$MethodWrapperKey$$KeyFactoryByCGLIB$$552be97a",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cglib.proxy.Enhancer$EnhancerKey",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.cglib.proxy.Enhancer$EnhancerKey$$KeyFactoryByCGLIB$$4ce19e8f",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration",
@@ -2254,10 +2418,15 @@
   "name":"org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "allDeclaredClasses":true
 },
 {
   "name":"org.springframework.cloud.bootstrap.LoggingSystemShutdownListener",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -2279,6 +2448,19 @@
 {
   "name":"org.springframework.cloud.bootstrap.config.PropertySourceLocator",
   "allPublicMethods":true
+},
+{
+  "name":"org.springframework.cloud.bootstrap.encrypt.AbstractEnvironmentDecrypt",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "methods":[
+    {"name":"isFailOnError","parameterTypes":[] }, 
+    {"name":"setFailOnError","parameterTypes":["boolean"] }
+  ]
+},
+{
+  "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
+  "allDeclaredConstructors":true
 },
 {
   "name":"org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration",
@@ -2369,9 +2551,6 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration"
-},
-{
   "name":"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClient",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -2403,7 +2582,7 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration$AsyncRestTemplateCustomizerConfig$$Lambda$595/1363560175",
+  "name":"org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration$AsyncRestTemplateCustomizerConfig$$Lambda$686/0x0000000840577c40",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
 },
@@ -2414,7 +2593,7 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig$$Lambda$594/1138697171",
+  "name":"org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig$$Lambda$685/0x0000000840577840",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
 },
@@ -2438,7 +2617,7 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$$Lambda$597/1128132589",
+  "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$$Lambda$688/0x0000000840576840",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
 },
@@ -2449,7 +2628,7 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig$$Lambda$596/88646218",
+  "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig$$Lambda$687/0x0000000840577440",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
 },
@@ -2467,6 +2646,12 @@
   "allDeclaredMethods":true
 },
 {
+  "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerProperties",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
@@ -2481,12 +2666,6 @@
 {
   "name":"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$OnAnyLoadBalancerImplementationPresentCondition",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerProperties",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
 },
 {
   "name":"org.springframework.cloud.client.loadbalancer.reactive.ReactiveLoadBalancer$Factory",
@@ -2562,6 +2741,14 @@
   "allDeclaredConstructors":true
 },
 {
+  "name":"org.springframework.cloud.commons.security.ResourceServerTokenRelayAutoConfiguration$ConditionalOnOAuth2ClientInResourceServer",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.springframework.cloud.commons.security.ResourceServerTokenRelayAutoConfiguration$OAuth2OnClientInResourceServerCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.cloud.commons.util.InetUtils",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -2591,6 +2778,12 @@
   "allDeclaredMethods":true,
   "allPublicMethods":true,
   "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.cloud.config.client.ConfigClientRetryBootstrapper","allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.Bootstrapper"
 },
 {
   "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLoader",
@@ -2796,6 +2989,10 @@
   "allDeclaredMethods":true
 },
 {
+  "name":"org.springframework.cloud.loadbalancer.config.LoadBalancerCacheAutoConfiguration$OnCaffeineCacheMissingCondition",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.cloud.loadbalancer.config.LoadBalancerZoneConfig",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
@@ -2869,11 +3066,6 @@
   "methods":[{"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }]
 },
 {
-  "name":"org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration$Marker",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
   "name":"org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -2890,10 +3082,19 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.cloud.netflix.eureka.http.DefaultEurekaClientHttpRequestFactorySupplier",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true
+},
+{
   "name":"org.springframework.cloud.netflix.eureka.http.EurekaApplications",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "allDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.cloud.netflix.eureka.http.EurekaClientHttpRequestFactorySupplier",
+  "allPublicMethods":true
 },
 {
   "name":"org.springframework.cloud.netflix.eureka.http.RestTemplateDiscoveryClientOptionalArgs",
@@ -3038,6 +3239,11 @@
   "allDeclaredMethods":true
 },
 {
+  "name":"org.springframework.context.annotation.ConfigurationClassEnhancer$EnhancedConfiguration",
+  "allDeclaredMethods":true,
+  "allPublicMethods":true
+},
+{
   "name":"org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
   "allDeclaredConstructors":true
 },
@@ -3178,10 +3384,6 @@
     {"name":"addPrinter","parameterTypes":["org.springframework.format.Printer"] }, 
     {"name":"setEmbeddedValueResolver","parameterTypes":["org.springframework.util.StringValueResolver"] }
   ]
-},
-{
-  "name":"org.springframework.nativex.utils.LiteConfigurationInitializer",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.http.ReactiveHttpInputMessage"
@@ -3951,7 +4153,17 @@
   "allDeclaredMethods":true
 },
 {
+  "name":"reactor.adapter.JdkFlowAdapter",
+  "methods":[
+    {"name":"flowPublisherToFlux","parameterTypes":["java.util.concurrent.Flow$Publisher"] }, 
+    {"name":"publisherToFlowPublisher","parameterTypes":["org.reactivestreams.Publisher"] }
+  ]
+},
+{
   "name":"reactor.core.publisher.Flux"
+},
+{
+  "name":"short[]"
 },
 {
   "name":"sun.management.ClassLoadingImpl",
@@ -3962,20 +4174,8 @@
   "allPublicConstructors":true
 },
 {
-  "name":"sun.management.GarbageCollectorImpl",
-  "allPublicConstructors":true
-},
-{
-  "name":"sun.management.HotSpotDiagnostic",
-  "allPublicConstructors":true
-},
-{
   "name":"sun.management.ManagementFactoryHelper$1",
   "allPublicConstructors":true
-},
-{
-  "name":"sun.management.ManagementFactoryHelper$LoggingMXBean",
-  "allPublicMethods":true
 },
 {
   "name":"sun.management.ManagementFactoryHelper$PlatformLoggingImpl",
@@ -3994,39 +4194,19 @@
   "allPublicConstructors":true
 },
 {
-  "name":"sun.management.OperatingSystemImpl",
-  "allPublicConstructors":true
-},
-{
   "name":"sun.management.RuntimeImpl",
   "allPublicConstructors":true
 },
 {
-  "name":"sun.management.ThreadImpl",
-  "allPublicConstructors":true
+  "name":"sun.misc.Unsafe",
+  "fields":[{"name":"theUnsafe"}]
 },
 {
   "name":"sun.security.provider.NativePRNG",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.PolicyFile",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.Sun",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

@@ -9,7 +9,7 @@ mvn clean package
 cd ../discoveryclient
 
 printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
-./compile.sh || exit 1
+${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
 
 java -jar ../discoveryserver/target/discoveryserver-0.0.1-SNAPSHOT.jar &
 SERVERPID=$!
