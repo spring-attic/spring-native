@@ -1,0 +1,42 @@
+{
+	"name": "Java",
+    "dockerFile": "Dockerfile",
+    "build": {
+        "args": {
+            "USER": "${env:USER}",
+            "USER_ID": 1000, // VSCode adjusts the IDs when it builds
+			"USER_GID": 1000
+        }
+	},
+	"postStartCommand": "sudo /bin/start-docker.sh",
+	"runArgs": [
+		"--hostname", "docker", "--privileged",
+		"--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined",
+		"--mount", "type=bind,source=${env:HOME}/.ssh,target=${env:HOME}/.ssh",
+		"--mount", "type=bind,source=${env:HOME}/.m2,target=${env:HOME}/.m2"
+	],
+	"remoteUser": "${env:USER}",
+
+	// Use 'settings' to set *default* container specific settings.json values on container create. 
+	// You can edit these settings after create using File > Preferences > Settings > Remote.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"remote.extensionKind": {
+			"ms-azuretools.vscode-docker": "workspace",
+			"vscjava.vscode-java-pack": "workspace"
+		}
+	},
+	
+	// Uncomment the next line if you want to publish any ports. Or use the Remote Explorer to open 
+	// up ports in a running container.
+    // "appPort": [8080],
+
+	// Uncomment the next line to run commands after the container is created.
+	// "postCreateCommand": "java -version",
+
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"vscjava.vscode-java-pack",
+		"ms-vscode.cpptools"
+	]
+}
