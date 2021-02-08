@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-${PWD%/*samples/*}/scripts/compileWithMaven.sh && ${PWD%/*samples/*}/scripts/test.sh
+docker-compose up -d mongo && ${PWD%/*samples/*}/scripts/compileWithMaven.sh && ${PWD%/*samples/*}/scripts/test.sh && docker-compose down
