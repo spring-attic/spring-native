@@ -6,7 +6,7 @@
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-samples</artifactId>
 		<version>0.9.0-SNAPSHOT</version>
-		<relativePath>../</relativePath> <!-- lookup parent from repository -->
+		<relativePath>../</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>websocket</artifactId>
@@ -39,43 +39,14 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Check out the parent POM (in ../pom.xml) for the plugins configuration -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-						</env>
-					</image>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>bti-native</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.springframework.experimental</groupId>
-						<artifactId>spring-native-maven-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.graalvm.nativeimage</groupId>
-						<artifactId>native-image-maven-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

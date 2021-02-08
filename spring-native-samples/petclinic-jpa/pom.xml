@@ -6,7 +6,7 @@
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-samples</artifactId>
 		<version>0.9.0-SNAPSHOT</version>
-		<relativePath>../</relativePath> <!-- lookup parent from repository -->
+		<relativePath>../</relativePath>
 	</parent>
 
     <groupId>org.springframework.samples</groupId>
@@ -44,10 +44,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-indexer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
