@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2</version>
-		<relativePath/> 
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>cloud-function-netty-fun</artifactId>
@@ -17,7 +17,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>2020.0.0</spring-cloud.version>
+		<build.args> -Dspring.native.remove-yaml-support=true</build.args>
+		<main.class>com.example.demo.DemoApplication</main.class>
 	</properties>
 
 	<dependencies>
@@ -36,103 +37,14 @@
 		</dependency>
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
+	<!-- Check out the parent POM (in ../pom.xml) for the plugins configuration -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-								-Dspring.native.remove-yaml-support=true
-							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-						</env>
-					</image>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestone</id>
-			<name>Spring Milestone</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
-		<repository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestone</id>
-			<name>Spring Milestone</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 </project>
