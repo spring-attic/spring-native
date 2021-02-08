@@ -9,6 +9,7 @@ import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
+import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,11 +45,21 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 			code.writeToStaticBlock(block -> {
 				block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
 			});
+			// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
+			if (factory.getFactoryType().getClassName().endsWith("EnvironmentPostProcessor")) {
+				generateReflectionMetadata(factory.getFactory().getClassName(), context);
+			}
 		}
 	}
 
 	private String generateMethodName(ClassDescriptor factory) {
 		return StringUtils.uncapitalize(factory.getShortName().replaceAll("\\.", ""));
+	}
+
+	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
+		org.springframework.nativex.domain.reflect.ClassDescriptor factoryDescriptor = org.springframework.nativex.domain.reflect.ClassDescriptor.of(factoryClassName);
+		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 
 }
