@@ -7,12 +7,15 @@ import com.squareup.javapoet.CodeBlock;
 import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.support.ConfigOptions;
 
 /**
  * {@link FactoriesCodeContributor} that handles default, public constructors.
  *
  * @author Brian Clozel
+ * @author Sebasten Deleuze
  */
 class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
@@ -30,6 +33,10 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 						passesAnyConditionalOnWebApplication(typeSystem, factory);
 		if (factoryOK) {
 			code.writeToStaticBlock(generateStaticInit(factory));
+			// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
+			if (factory.getFactoryType().getClassName().endsWith("EnvironmentPostProcessor")) {
+				generateReflectionMetadata(factory.getFactory().getClassName(), context);
+			}
 		}
 	}
 
@@ -66,6 +73,12 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 			return !ConfigOptions.shouldRemoveYamlSupport();
 		}
 		return true;
+	}
+
+	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
+		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
+		factoryDescriptor.setFlag(Flag.allPublicConstructors);
+		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 
 }
