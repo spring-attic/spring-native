@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  lambda:
+    image: lambci/lambda:provided
+    environment:
+      - DOCKER_LAMBDA_STAY_OPEN=1
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./src/test/resources:/var/task
