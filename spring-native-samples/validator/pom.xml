@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2</version>
-		<relativePath />
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-samples</artifactId>
+		<version>0.9.0-SNAPSHOT</version>
+		<relativePath>../</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>validator</artifactId>
@@ -13,7 +13,6 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<start-class>com.example.validator.ValidatorApplication</start-class>
-		<image-name>validator</image-name>
 		<build-args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build-args>
 	</properties>
 	<dependencies>
@@ -40,149 +39,15 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<!-- this is the snippet that will use the buildpacks to produce a container image of the native executable -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build-args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-						</env>
-					</image>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
-	<profiles>
-		<profile>
-			<id>bti-native</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.springframework.experimental</groupId>
-						<artifactId>spring-native-maven-plugin</artifactId>
-						<version>0.9.0-SNAPSHOT</version>
-						<executions>
-							<execution>
-								<id>bootstrap-tests</id>
-								<phase>process-test-classes</phase>
-								<goals>
-									<goal>bootstrapTests</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>bootstrap</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>bootstrap</goal>
-								</goals>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.springframework.experimental</groupId>
-								<artifactId>spring-native-configuration</artifactId>
-								<version>0.9.0-SNAPSHOT</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-					<plugin>
-						<groupId>org.graalvm.nativeimage</groupId>
-						<artifactId>native-image-maven-plugin</artifactId>
-						<version>21.0.0</version>
-						<configuration>
-							<mainClass>${start-class}</mainClass>
-							<imageName>${image-name}</imageName>
-							<buildArgs>${build-args}</buildArgs>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>native-image</goal>
-								</goals>
-								<phase>package</phase>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestone</id>
-			<name>Spring Milestone</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
-		<repository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestone</id>
-			<name>Spring Milestone</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
