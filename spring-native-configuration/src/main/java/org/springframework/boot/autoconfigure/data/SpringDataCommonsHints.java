@@ -26,6 +26,8 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.nativex.extension.InitializationInfo;
+import org.springframework.nativex.extension.InitializationTime;
 import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.ProxyInfo;
@@ -52,6 +54,7 @@ import org.springframework.nativex.type.AccessBits;
 				)
 		}
 )
+@NativeHint(initializationInfos = @InitializationInfo(types = org.springframework.data.mapping.context.AbstractMappingContext.class, initTime = InitializationTime.BUILD))
 public class SpringDataCommonsHints implements NativeConfiguration {
 
 }
