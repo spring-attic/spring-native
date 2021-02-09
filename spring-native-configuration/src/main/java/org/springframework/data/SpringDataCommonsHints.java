@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.data;
 
 import java.util.Properties;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.data.jpa.repository.support.EntityManagerBeanDefinitionRegistrarPostProcessor;
+import org.springframework.data.mapping.context.AbstractMappingContext;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.PropertiesBasedNamedQueries;
@@ -48,13 +51,14 @@ import org.springframework.nativex.type.AccessBits;
 				@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
 				@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
 		},
-		proxyInfos = {
-				@ProxyInfo(
-						typeNames = {"org.springframework.data.annotation.QueryAnnotation", "org.springframework.core.annotation.SynthesizedAnnotation" }
-				)
-		}
+		proxyInfos = @ProxyInfo(typeNames = {
+				"org.springframework.data.annotation.QueryAnnotation",
+				"org.springframework.core.annotation.SynthesizedAnnotation" })
 )
-@NativeHint(initializationInfos = @InitializationInfo(types = org.springframework.data.mapping.context.AbstractMappingContext.class, initTime = InitializationTime.BUILD))
+@NativeHint(initializationInfos = @InitializationInfo(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
+@NativeHint(typeInfos = @TypeInfo(types= {
+		EntityManagerBeanDefinitionRegistrarPostProcessor.class
+}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS))
 public class SpringDataCommonsHints implements NativeConfiguration {
 
 }

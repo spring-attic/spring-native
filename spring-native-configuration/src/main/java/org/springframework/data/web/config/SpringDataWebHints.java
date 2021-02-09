@@ -15,39 +15,26 @@
  */
 package org.springframework.data.web.config;
 
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
+import org.springframework.data.mongodb.config.GeoJsonConfiguration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.QuerydslActivator;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.SpringDataWebConfigurationImportSelector;
 import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.AccessBits;
 
-
-/*
-//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-proposedHints.put(SpringDataWebConfigurationSelector,
-		new CompilationHint(true, true, new String[] {
-			"org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration",
-			"org.springframework.data.web.config.SpringDataWebConfiguration"
-		}));
-*/
+// TODO there are others in spring.factories
 @NativeHint(trigger = SpringDataWebConfigurationImportSelector.class, typeInfos = {
-	@TypeInfo(types= {
+	@TypeInfo(types = {
 			HateoasAwareSpringDataWebConfiguration.class,
 			SpringDataWebConfiguration.class,
 			ProjectingArgumentResolverRegistrar.class,
 			SpringDataJacksonConfiguration.class
-	})
-},abortIfTypesMissing = true,follow=true) 
-/*
-public final static String SpringDataWebQueryDslSelector = "Lorg/springframework/data/web/config/EnableSpringDataWebSupport$QuerydslActivator;";
-//  EnableSpringDataWebSupport. TODO: there are others in spring.factories.
-proposedHints.put(SpringDataWebQueryDslSelector,
-		new CompilationHint(true, true, new String[] {
-			"org.springframework.data.web.config.QuerydslWebConfiguration"}
-		));
-*/
+	})}, abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = QuerydslActivator.class, typeInfos = {
-	@TypeInfo(types= {QuerydslWebConfiguration.class})	
-},abortIfTypesMissing = true,follow=true) 
+	@TypeInfo(types= QuerydslWebConfiguration.class) }, abortIfTypesMissing = true, follow = true)
+@NativeHint(trigger = SpringDataWebAutoConfiguration.class, typeInfos =
+	@TypeInfo(types = GeoJsonConfiguration.class, access = AccessBits.CONFIGURATION))
 public class SpringDataWebHints implements NativeConfiguration {
 }

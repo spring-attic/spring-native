@@ -16,6 +16,7 @@
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.elasticsearch.common.xcontent.XContentParser;
+
 import org.springframework.boot.autoconfigure.data.SpringDataReactiveHints;
 import org.springframework.data.elasticsearch.core.event.AfterConvertCallback;
 import org.springframework.data.elasticsearch.core.event.AfterSaveCallback;
@@ -57,7 +58,7 @@ import org.springframework.nativex.type.AccessBits;
 		},
 		resourcesInfos = @ResourcesInfo(patterns = "versions.properties"))
 @NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
-		importInfos = {SpringDataReactiveHints.class},
+		importInfos = SpringDataReactiveHints.class,
 		typeInfos = {
 				@TypeInfo(
 						types = {
