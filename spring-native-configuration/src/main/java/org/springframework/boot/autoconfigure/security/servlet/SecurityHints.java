@@ -15,6 +15,9 @@
  */
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -24,6 +27,10 @@ import org.springframework.nativex.extension.NativeHint;
 import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -46,10 +53,6 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 
 @NativeHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
 		@TypeInfo(
-				// This one is interesting. This type is the return value of an @Bean method but needs DECLARED_METHODS
-				// which the default @Bean processing doesn't currently include (because not all @Bean methods need it
-				// and if you add it for all the memory jump is a little annoying - 3M on gs-securing-web)
-				typeNames = "org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",
 				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
 				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
 		@TypeInfo(types= {
@@ -85,4 +88,16 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 		@TypeInfo(types= BasicErrorController.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class SecurityHints implements NativeConfiguration {
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+		boolean javaxServletFilterAround = typeSystem.resolveDotted("javax.servlet.Filter",true)!=null;
+		if (javaxServletFilterAround) {
+			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
+			HintDeclaration hd = new HintDeclaration();
+			hd.addDependantType("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",
+					new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS));
+			return Collections.singletonList(hd);
+		}
+		return Collections.emptyList();
+	}
 }
