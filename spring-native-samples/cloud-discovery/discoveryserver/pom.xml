@@ -21,7 +21,6 @@
 		<start-class>demo.ConfigServerApplication</start-class>
 		<java.version>1.7</java.version>
 		<docker.image.prefix>springcloud</docker.image.prefix>
-		<spring-cloud.version>2020.0.1</spring-cloud.version>
 		<main.class>demo.ConfigServerApplication</main.class>
 		<build.args>--enable-all-security-services</build.args>
 	</properties>

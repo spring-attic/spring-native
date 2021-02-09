@@ -16,8 +16,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>		
-		<spring-cloud.version>2020.0.1</spring-cloud.version>
+		<java.version>1.8</java.version>
 		<main.class>com.example.discoveryclient.DiscoveryClientApplication</main.class>
 		<build.args>--initialize-at-build-time=javax.el --enable-http</build.args>
 	</properties>
