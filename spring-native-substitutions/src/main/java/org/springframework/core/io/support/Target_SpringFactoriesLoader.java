@@ -10,7 +10,6 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.commons.logging.Log;
 
 import org.springframework.lang.Nullable;
-import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithBuildtools;
 import org.springframework.util.Assert;
 
@@ -30,7 +29,13 @@ final class Target_SpringFactoriesLoader {
 		}
 		List<T> factories = new ArrayList<>(result.size());
 		for (Supplier<Object> supplier: result) {
-			factories.add((T) supplier.get());
+			// TODO: protect against factories that fail during instantiation
+			try {
+				factories.add((T) supplier.get());
+			}
+			catch (Throwable throwable) {
+				logger.trace("Could not instantiate factory for " + factoryType, throwable);
+			}
 		}
 		return factories;
 	}
