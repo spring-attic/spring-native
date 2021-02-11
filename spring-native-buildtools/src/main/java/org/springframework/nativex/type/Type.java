@@ -37,6 +37,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -59,7 +61,7 @@ import org.springframework.nativex.extension.ResourcesInfos;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.extension.TypeInfos;
 import org.springframework.nativex.support.ConfigOptions;
-import org.springframework.nativex.support.SpringFeature;
+import org.springframework.nativex.support.ResourcesHandler;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -68,6 +70,8 @@ import org.springframework.util.ClassUtils;
  */
 @SuppressWarnings("unchecked")
 public class Type {
+
+	private static Log logger = LogFactory.getLog(Type.class);	
 
 	public final static String AtResponseBody = "Lorg/springframework/web/bind/annotation/ResponseBody;";
 	public final static String AtMapping = "Lorg/springframework/web/bind/annotation/Mapping;";
@@ -1317,7 +1321,7 @@ public class Type {
 			for (AnnotationNode an : node.visibleAnnotations) {
 				Type annotationType = typeSystem.Lresolve(an.desc, true);
 				if (annotationType == null) {
-					SpringFeature.log("Couldn't resolve " + an.desc + " annotation type whilst searching for hints on "
+					logger.debug("Couldn't resolve " + an.desc + " annotation type whilst searching for hints on "
 							+ getName());
 				} else {
 					Stack<Type> s = new Stack<>();
@@ -1371,7 +1375,7 @@ public class Type {
 				for (AnnotationNode visibleAnnotation : node.visibleAnnotations) {
 					Type annotationType = typeSystem.Lresolve(visibleAnnotation.desc, true);
 					if (annotationType == null) {
-						SpringFeature.log("Couldn't resolve " + visibleAnnotation.desc
+						logger.debug("Couldn't resolve " + visibleAnnotation.desc
 								+ " annotation type whilst searching for hints on " + getName());
 					} else {
 						annotationType.collectHints(visibleAnnotation, hints, visited, annotationChain);
@@ -1918,7 +1922,7 @@ public class Type {
 			}
 		}
 		if (inferredAccess != originalAccess) {
-			SpringFeature.log("Modifying default inferred access to "+type.getClassName()+" from "+
+			logger.debug("Modifying default inferred access to "+type.getClassName()+" from "+
 					AccessBits.toString(originalAccess)+" to "+AccessBits.toString(inferredAccess));
 		}
 		return inferredAccess;
@@ -1969,7 +1973,7 @@ public class Type {
 			for (org.objectweb.asm.Type ptype : parameterTypes) {
 				message.append(ptype.getClassName()).append(" ");
 			}
-			SpringFeature.log("Unable to fully resolve method " + name + "(" + message.toString().trim() + ")");
+			logger.debug("Unable to fully resolve method " + name + "(" + message.toString().trim() + ")");
 		} else {
 			mds.add(new MethodDescriptor(name, resolvedParameterTypes));
 		}
@@ -2943,11 +2947,11 @@ public class Type {
 			String[] exposedEndpointIds = webExposedEndpoints.split(",");
 			for (String exposedEndpointId: exposedEndpointIds) {
 				if (exposedEndpointId.equals(endpointId)) {
-					SpringFeature.log("COAE check: endpoint "+endpointId+" *is* exposed via management.endpoints.web.exposed.include");
+					logger.debug("COAE check: endpoint "+endpointId+" *is* exposed via management.endpoints.web.exposed.include");
 					return null;
 				}
 			}
-			SpringFeature.log("COAE check: endpoint "+endpointId+" *is not* exposed via management.endpoints.web.exposed.include");
+			logger.debug("COAE check: endpoint "+endpointId+" *is not* exposed via management.endpoints.web.exposed.include");
 			return "management.endpoints.web.exposed.include="+webExposedEndpoints+" does not contain endpoint "+endpointId;
 		}
 
@@ -2957,7 +2961,7 @@ public class Type {
 
 	}
 
-	static class ConditionalOnPropertyDescriptor implements TestableDescriptor {
+	public static class ConditionalOnPropertyDescriptor implements TestableDescriptor {
 
 		private List<String> propertyNames;
 		private String havingValue;

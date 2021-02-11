@@ -52,7 +52,7 @@ import com.oracle.svm.hosted.config.ReflectionRegistryAdapter;
  * 
  * @author Andy Clement
  */
-public class GraalVMConnector {
+public class GraalVMConnector implements Connector {
 
 	private ImageClassLoader imageClassLoader;
 

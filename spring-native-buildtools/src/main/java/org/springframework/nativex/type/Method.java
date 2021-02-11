@@ -25,15 +25,19 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.springframework.nativex.support.SpringFeature;
+import org.springframework.nativex.buildtools.BootstrapCodeGenerator;
 import org.springframework.nativex.type.Type.TypeCollector;
 
 public class Method {
+	
+	private static Log logger = LogFactory.getLog(Method.class);
 	
 	private static org.objectweb.asm.Type[] NONE = new org.objectweb.asm.Type[0];
 
@@ -70,7 +74,7 @@ public class Method {
 			for (AnnotationNode an: mn.visibleAnnotations) {
 				Type annotationType = typeSystem.Lresolve(an.desc, true);
 				if (annotationType == null) {
-					SpringFeature.log("Couldn't resolve "+an.desc+" annotation type whilst searching for hints on "+getName());
+					logger.debug("Couldn't resolve "+an.desc+" annotation type whilst searching for hints on "+getName());
 				} else {
 					Stack<Type> s = new Stack<>();
 					// s.push(this);
@@ -196,7 +200,7 @@ public class Method {
 			if (returnType.getDescriptor().length()!=1) {
 				t = typeSystem.resolve(methodType.getReturnType(), true);
 				if (t == null) {
-					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
+					logger.debug("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+methodType.getDescriptor());
 				} else {
 					signatureTypes.add(t);
 				}
@@ -206,7 +210,7 @@ public class Method {
 					if (at.getDescriptor().length()!=1) {
 						t = typeSystem.resolve(methodType.getReturnType(), true);
 						if (t == null) {
-							SpringFeature.log("Can't resolve the type used in this @Bean method: " + mn.name + mn.desc
+							logger.debug("Can't resolve the type used in this @Bean method: " + mn.name + mn.desc
 									+ ": " + at.getDescriptor());
 						} else {
 							signatureTypes.add(t);
@@ -222,7 +226,7 @@ public class Method {
 			for (String s: collectedTypes) {
 				Type t = typeSystem.resolveDotted(s,true);
 				if (t == null) {
-					SpringFeature.log("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+s);
+					logger.debug("Can't resolve the type used in this @Bean method: "+mn.name+mn.desc+": "+s);
 				} else {
 					signatureTypes.add(t);
 				}
@@ -293,7 +297,7 @@ public class Method {
 					}
 					Type ptype = typeSystem.resolve(t, true);
 					if (ptype == null) {
-						SpringFeature.log("WARNING: method has unresolvable parameters: " + mn.name + mn.desc);
+						logger.debug("WARNING: method has unresolvable parameters: " + mn.name + mn.desc);
 						unresolvableParams = true;
 					}
 					results.add(ptype);

@@ -22,16 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.extension.ComponentProcessor;
 import org.springframework.nativex.extension.NativeConfiguration;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
-import org.springframework.nativex.support.SpringFeature;
 
 /**
  * @author Andy Clement
  */
 public class SpringConfiguration {
+
+	private static Log logger = LogFactory.getLog(SpringConfiguration.class);
 
 	private TypeSystem typeSystem;
 
@@ -47,10 +50,10 @@ public class SpringConfiguration {
 	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		this.typeSystem = typeSystem;
-		SpringFeature.log("SpringConfiguration: Discovering hints");
+		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
 		for (NativeConfiguration hintProvider: hintProviders) {
-			SpringFeature.log("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
+			logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
 				boolean valid = hintProvider.isValid(typeSystem);
@@ -66,7 +69,7 @@ public class SpringConfiguration {
 						hintProvider.getClass().getName()+" threw a NoClassDefFoundError for "+ncdfe.getMessage()+
 						": it is better if they handle that internally in case they are computing a variety of hints");
 				}
-				SpringFeature.log("Found "+hints.size()+" hints from provider "+hintProvider.getClass().getName());
+				logger.debug("Found "+hints.size()+" hints from provider "+hintProvider.getClass().getName());
 				for (HintDeclaration hint: hints) {
 					if (hint.getTriggerTypename() == null) {
 						// Default to Object which means this hint always applies
@@ -81,22 +84,22 @@ public class SpringConfiguration {
 				}
 			}
 		}
-		SpringFeature.log("Discovering component processors...");
+		logger.debug("Discovering component processors...");
 		ServiceLoader<ComponentProcessor> componentProcessors = ServiceLoader.load(ComponentProcessor.class);
 		for (ComponentProcessor componentProcessor: componentProcessors) {
-			SpringFeature.log("SpringConfiguration: found component processor: "+componentProcessor.getClass().getName());
+			logger.debug("SpringConfiguration: found component processor: "+componentProcessor.getClass().getName());
 			processors.add(componentProcessor);
 		}
-		SpringFeature.log("Discovering spring.factories processors...");
+		logger.debug("Discovering spring.factories processors...");
 		ServiceLoader<SpringFactoriesProcessor> sfps = ServiceLoader.load(SpringFactoriesProcessor.class);
 		for (SpringFactoriesProcessor springFactoryProcessor: sfps) {
-			SpringFeature.log("SpringConfiguration: found spring.factories processor: "+springFactoryProcessor.getClass().getName());
+			logger.debug("SpringConfiguration: found spring.factories processor: "+springFactoryProcessor.getClass().getName());
 			springFactoriesProcessors.add(springFactoryProcessor);
 		}
-		SpringFeature.log("Discovering access verifiers...");
+		logger.debug("Discovering access verifiers...");
 		ServiceLoader<AccessChecker> avs = ServiceLoader.load(AccessChecker.class);
 		for (AccessChecker av: avs) {
-			SpringFeature.log("SpringConfiguration: found access verifier: "+av.getClass().getName());
+			logger.debug("SpringConfiguration: found access verifier: "+av.getClass().getName());
 			accessVerifiers.add(av);
 		}
 	}

@@ -37,7 +37,7 @@ import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
-import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -188,22 +188,22 @@ public class TypeTests {
 		}
 	}
 	
-	@Test
-	public void isTransactional() {
-		// TODO verify how to deal with a type extending a type that has transactional methods - are instances
-		// of the subtype considered transactional?
-		Type txClass1 = typeSystem.resolveName(TXClass1.class.getName());
-		assertTrue(txClass1.isTransactional());
-		Type txClass2 = typeSystem.resolveName(TXClass2.class.getName());
-		assertFalse(txClass2.isTransactional());
-		assertTrue(txClass2.hasTransactionalMethods());
-		Type tClass1 = typeSystem.resolveName(TestClass1.class.getName());
-		assertFalse(tClass1.isTransactional());
-		Type txClass3 = typeSystem.resolveName(TXClass3.class.getName());
-		assertFalse(txClass3.isTransactional());
-		Type txClass4 = typeSystem.resolveName(TXClass4.class.getName());
-		assertFalse(txClass4.isTransactional());
-	}
+//	@Test
+//	public void isTransactional() {
+//		// TODO verify how to deal with a type extending a type that has transactional methods - are instances
+//		// of the subtype considered transactional?
+//		Type txClass1 = typeSystem.resolveName(TXClass1.class.getName());
+//		assertTrue(txClass1.isTransactional());
+//		Type txClass2 = typeSystem.resolveName(TXClass2.class.getName());
+//		assertFalse(txClass2.isTransactional());
+//		assertTrue(txClass2.hasTransactionalMethods());
+//		Type tClass1 = typeSystem.resolveName(TestClass1.class.getName());
+//		assertFalse(tClass1.isTransactional());
+//		Type txClass3 = typeSystem.resolveName(TXClass3.class.getName());
+//		assertFalse(txClass3.isTransactional());
+//		Type txClass4 = typeSystem.resolveName(TXClass4.class.getName());
+//		assertFalse(txClass4.isTransactional());
+//	}
 	
 	@Test
 	public void responseBody() {
@@ -370,12 +370,12 @@ public class TypeTests {
 	@RestController // Meta annotated with ResponseBody
 	static class TestController2 {}
 
-	@Transactional
+//	@Transactional
 	static class TXClass1 {
 	}
 
 	static class TXClass2 {
-		@Transactional
+//		@Transactional
 		public void m() {}
 	}
 

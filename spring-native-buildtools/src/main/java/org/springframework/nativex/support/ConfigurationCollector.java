@@ -15,14 +15,12 @@
  */
 package org.springframework.nativex.support;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
@@ -52,7 +52,8 @@ import org.springframework.nativex.type.TypeSystem;
  * @author Andy Clement
  */
 public class ConfigurationCollector {
-
+	
+	private static Log logger = LogFactory.getLog(ConfigurationCollector.class);
 
 	private ReflectionDescriptor reflectionDescriptor = new ReflectionDescriptor();
 
@@ -62,7 +63,7 @@ public class ConfigurationCollector {
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
-	private GraalVMConnector graalVMConnector;
+	private Connector graalVMConnector;
 	
 	private Map<String,byte[]> newResourceFiles = new HashMap<>();
 	
@@ -88,7 +89,7 @@ public class ConfigurationCollector {
 		return initializationDescriptor;
 	}
 
-	public void setGraalConnector(GraalVMConnector graalConnector) {
+	public void setGraalConnector(Connector graalConnector) {
 		this.graalVMConnector = graalConnector;
 	}
 	
@@ -137,7 +138,7 @@ public class ConfigurationCollector {
 	}
 
 	public void dump(File locationToPlaceConfig) {
-		SpringFeature.log("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
+		logger.debug("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
 		if (!locationToPlaceConfig.exists()) {
 			locationToPlaceConfig.mkdirs();
 		}

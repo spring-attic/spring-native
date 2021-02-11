@@ -53,6 +53,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -67,13 +69,14 @@ import org.springframework.nativex.extension.ComponentProcessor;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.support.Mode;
-import org.springframework.nativex.support.SpringFeature;
 import org.springframework.nativex.support.Utils;
 
 /**
  * Simple type system with some rudimentary caching.
  */
 public class TypeSystem {
+	
+	private static Log logger = LogFactory.getLog(TypeSystem.class);
 
 	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
 
@@ -716,7 +719,7 @@ public class TypeSystem {
 					// These are triggered by 'exploration' under default/hybrid mode
 				} else {
 					for (HintDeclaration hint: proposedhint.getValue()) {
-						SpringFeature.log("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
+						logger.debug("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
 						activeDefaultHints.add(hint);
 					}
 				}
@@ -875,7 +878,7 @@ public class TypeSystem {
 			for (Map.Entry<String,List<String>> entry: collectedExclusions.entrySet()) {
 				excludedAutoConfigurations.addAll(entry.getValue());
 			}
-			SpringFeature.log("INFO: these spring auto configuration exclusions have been detected: "+excludedAutoConfigurations);
+			logger.debug("INFO: these spring auto configuration exclusions have been detected: "+excludedAutoConfigurations);
 		}
 		return this.excludedAutoConfigurations;
 	}
@@ -1012,7 +1015,7 @@ public class TypeSystem {
 		Map<String,ResourcesDescriptor> resourceConfigurations = getResourceConfigurationsOnClasspath();
 		outer: for (Map.Entry<String,ResourcesDescriptor> resourceConfiguration: resourceConfigurations.entrySet()) {
 			if (resourceConfiguration.getValue() == null) {
-				SpringFeature.log("WARNING: unexpected null resourceconfiguration loaded from spring.factories at "+resourceConfiguration.getKey());
+				logger.debug("WARNING: unexpected null resourceconfiguration loaded from spring.factories at "+resourceConfiguration.getKey());
 				continue;
 			}
 			Set<String> patterns = resourceConfiguration.getValue().getPatterns();

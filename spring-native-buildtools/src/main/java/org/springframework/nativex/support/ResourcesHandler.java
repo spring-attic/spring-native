@@ -40,6 +40,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -61,7 +63,9 @@ import org.springframework.nativex.type.TypeSystem;
 
 
 public class ResourcesHandler extends Handler {
-	
+
+	private static Log logger = LogFactory.getLog(ResourcesHandler.class);	
+
 	private final static String enableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
 
 	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
@@ -128,17 +132,17 @@ public class ResourcesHandler extends Handler {
 	 */
 	private void handleConstantHints() {
 		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
-		SpringFeature.log("> Registering fixed hints: " + constantHints);
+		logger.debug("> Registering fixed hints: " + constantHints);
 		for (HintDeclaration ch : constantHints) {
 			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
 			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
 				String typename = dependantType.getKey();
 				AccessDescriptor ad = dependantType.getValue();
-				SpringFeature.log("  fixed type registered "+typename+" with "+ad);
+				logger.debug("  fixed type registered "+typename+" with "+ad);
 				List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits()); 
 				if (mds!=null && mds.size()!=0 && AccessBits.isSet(ad.getAccessBits(),AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
-					SpringFeature.log("  type has #"+mds.size()+" members specified, removing typewide method access flags");
+					logger.debug("  type has #"+mds.size()+" members specified, removing typewide method access flags");
 					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 				}
 				List<FieldDescriptor> fds = ad.getFieldDescriptors();
@@ -146,25 +150,25 @@ public class ResourcesHandler extends Handler {
 			}
 			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 			for (ProxyDescriptor pd: proxyDescriptors) {
-				SpringFeature.log("Registering proxy descriptor: "+pd);
+				logger.debug("Registering proxy descriptor: "+pd);
 				dynamicProxiesHandler.addProxy(pd);
 			}
 			List<org.springframework.nativex.type.ResourcesDescriptor> resourcesDescriptors = ch.getResourcesDescriptors();
 			for (org.springframework.nativex.type.ResourcesDescriptor rd: resourcesDescriptors) {
-				SpringFeature.log("Registering resource descriptor: "+rd);
+				logger.debug("Registering resource descriptor: "+rd);
 				registerResourcesDescriptor(rd);
 			}
 		}
-		SpringFeature.log("< Registering fixed hints");
+		logger.debug("< Registering fixed hints");
 	}
 	
 	private void handleConstantInitializationHints() {
 		List<HintDeclaration> constantHints = ts.findHints("java.lang.Object");
-		SpringFeature.log("Registering fixed initialization entries: ");
+		logger.debug("Registering fixed initialization entries: ");
 		for (HintDeclaration ch : constantHints) {
 			List<InitializationDescriptor> ids = ch.getInitializationDescriptors();
 			for (InitializationDescriptor id: ids) {
-				SpringFeature.log(" registering initialization descriptor: "+id);
+				logger.debug(" registering initialization descriptor: "+id);
 				initializationHandler.registerInitializationDescriptor(id);
 			}
 		}
@@ -304,7 +308,7 @@ public class ResourcesHandler extends Handler {
 		}
 		registerAllRequested(requestor);
 		ts.getComponentProcessors().forEach(ComponentProcessor::printSummary);
-		SpringFeature.log("Registered " + registeredComponents + " entries");
+		logger.debug("Registered " + registeredComponents + " entries");
 	}
 	
 	private boolean processSpringComponent(String componentTypename, String classifiers, NativeContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
@@ -319,7 +323,7 @@ public class ResourcesHandler extends Handler {
 		}
 		alreadyProcessed.add(componentTypename+":"+classifiers);
 		Type kType = ts.resolveDotted(componentTypename);
-		SpringFeature.log("Registering Spring Component: " + componentTypename);
+		logger.debug("Registering Spring Component: " + componentTypename);
 
 		// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
 		// exposed
@@ -488,7 +492,7 @@ public class ResourcesHandler extends Handler {
 
 		@Override
 		public void log(String message) {
-			SpringFeature.log(message);
+			logger.debug(message);
 		}
 
 		@Override
@@ -502,7 +506,7 @@ public class ResourcesHandler extends Handler {
 	  // If a controller is marked up @ResponseBody (possibly via @RestController), need to register reflective access to
 	  // the return types of the methods marked @Mapping (meta marked) 
 	  Collection<Type> returnTypes = t.collectAtMappingMarkedReturnTypes();
-	  SpringFeature.log("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
+	  logger.debug("Found these return types from Mapped methods in "+t.getName()+" > "+returnTypes);
 	  for (Type returnType: returnTypes ) {
 		  if (returnType==null) {
 			  continue;
@@ -521,7 +525,7 @@ public class ResourcesHandler extends Handler {
 	//              org.springframework.aop.framework.Advised,org.springframework.core.DecoratingProxy] 
 	// And entering here with r = JpaVisitRepositoryImpl
 	private void processRepository2(Type r) {
-		SpringFeature.log("Processing @oss.Repository annotated "+r.getDottedName());
+		logger.debug("Processing @oss.Repository annotated "+r.getDottedName());
 		List<String> repositoryInterfaces = new ArrayList<>();
 		for (String s: r.getInterfacesStrings()) {
 			repositoryInterfaces.add(s.replace("/", "."));
@@ -691,7 +695,7 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private void processSpringFactory(TypeSystem ts, URL springFactory) {
-		SpringFeature.log("processing spring factory file "+springFactory);
+		logger.debug("processing spring factory file "+springFactory);
 		Properties p = new Properties();
 		loadSpringFactoryFile(springFactory, p);
 		processSpringFactory(ts, p);
@@ -718,7 +722,7 @@ public class ResourcesHandler extends Handler {
 				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
 					int len = values.size();
 					if (springFactoriesProcessor.filter(key, values)) {
-						SpringFeature.log("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
+						logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
 						modified = true;
 					}
 				}
@@ -737,7 +741,7 @@ public class ResourcesHandler extends Handler {
 		if (!ConfigOptions.isAgentMode()) {
 			while (factoryKeys.hasMoreElements()) {
 				String k = (String) factoryKeys.nextElement();
-				SpringFeature.log("Adding all the classes for this key: " + k);
+				logger.debug("Adding all the classes for this key: " + k);
 				if (!k.equals(enableAutoconfigurationKey) 
 						&& !k.equals(propertySourceLoaderKey)
 						&& !k.equals(managementContextConfigurationKey) 
@@ -789,8 +793,7 @@ public class ResourcesHandler extends Handler {
 							registerTypeReferencedBySpringFactoriesKey(v);
 						}
 					} else {
-						SpringFeature
-								.log("Skipping processing spring.factories key " + k + " due to missing guard types");
+						logger.debug("Skipping processing spring.factories key " + k + " due to missing guard types");
 					}
 				}
 			}
@@ -824,9 +827,9 @@ public class ResourcesHandler extends Handler {
 					}
 					System.out.println("Processing spring.factories - PropertySourceLoader lists #"
 											+ propertySourceLoaders.size() + " property source loaders");
-					SpringFeature.log("These property source loaders are remaining in the PropertySourceLoader key value:");
+					logger.debug("These property source loaders are remaining in the PropertySourceLoader key value:");
 					for (int c = 0; c < propertySourceLoaders.size(); c++) {
-						SpringFeature.log((c + 1) + ") " + propertySourceLoaders.get(c));
+						logger.debug((c + 1) + ") " + propertySourceLoaders.get(c));
 					}
 					p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 				}
@@ -849,7 +852,7 @@ public class ResourcesHandler extends Handler {
 				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
 					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 						excludedAutoConfigCount++;
-						SpringFeature.log("Excluding auto-configuration " + config);
+						logger.debug("Excluding auto-configuration " + config);
 						forRemoval.add(config);
 					}
 				}
@@ -859,9 +862,9 @@ public class ResourcesHandler extends Handler {
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
 				p.put(enableAutoconfigurationKey, String.join(",", configurations));
-				SpringFeature.log("These configurations are remaining in the EnableAutoConfiguration key value:");
+				logger.debug("These configurations are remaining in the EnableAutoConfiguration key value:");
 				for (int c = 0; c < configurations.size(); c++) {
-					SpringFeature.log((c + 1) + ") " + configurations.get(c));
+					logger.debug((c + 1) + ") " + configurations.get(c));
 				}
 			}
 		}
@@ -884,14 +887,14 @@ public class ResourcesHandler extends Handler {
 				collector.registerResource("META-INF/spring.factories", bs);
 //				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
 			} else {
-				SpringFeature.log("  removed " + forRemoval.size() + " classes");
+				logger.debug("  removed " + forRemoval.size() + " classes");
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				p.store(baos, "");
 				baos.close();
 				byte[] bs = baos.toByteArray();
-				SpringFeature.log("The new spring.factories is: vvvvvvvvv");
-				SpringFeature.log(new String(bs));
-				SpringFeature.log("^^^^^^^^");
+				logger.debug("The new spring.factories is: vvvvvvvvv");
+				logger.debug(new String(bs));
+				logger.debug("^^^^^^^^");
 //				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
 				collector.registerResource("META-INF/spring.factories", bs);
 //				Resources.registerResource("META-INF/spring.factories", bais);
@@ -920,7 +923,7 @@ public class ResourcesHandler extends Handler {
 			for (String configuration: configurations) {
 				if (!checkAndRegisterConfigurationType(configuration,ReachedBy.FromSpringFactoriesKey)) {
 					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-						SpringFeature.log("Excluding auto-configuration (key="+configurationsKey+") =" +configuration);
+						logger.debug("Excluding auto-configuration (key="+configurationsKey+") =" +configuration);
 						inactiveConfigurations.add(configuration);
 					}
 				}
@@ -929,7 +932,7 @@ public class ResourcesHandler extends Handler {
 				int totalConfigurations = configurations.size();
 				configurations.removeAll(inactiveConfigurations);
 				p.put(configurationsKey, String.join(",", configurations));
-				SpringFeature.log("Removed "+inactiveConfigurations.size()+" of the "+totalConfigurations+" configurations specified for the key "+configurationsKey);
+				logger.debug("Removed "+inactiveConfigurations.size()+" of the "+totalConfigurations+" configurations specified for the key "+configurationsKey);
 				modified = true;
 			}
 		}
@@ -956,14 +959,14 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private boolean processType(ProcessingContext pc, String typename, ReachedBy reachedBy) {
-		SpringFeature.log("\n\nProcessing type " + typename);
+		logger.debug("\n\nProcessing type " + typename);
 		Type resolvedConfigType = ts.resolveDotted(typename,true);
 		if (resolvedConfigType==null) {
-			SpringFeature.log("Configuration type " + typename + " is missing - presuming stripped out - considered failed validation");
+			logger.debug("Configuration type " + typename + " is missing - presuming stripped out - considered failed validation");
 			return false;
 		} 
 		boolean b = processType(pc, resolvedConfigType, reachedBy);
-		SpringFeature.log("Configuration type " + typename + " has " + (b ? "passed" : "failed") + " validation");
+		logger.debug("Configuration type " + typename + " has " + (b ? "passed" : "failed") + " validation");
 		return b;
 	}
 
@@ -980,7 +983,7 @@ public class ResourcesHandler extends Handler {
 		int accessBits = ad.getAccessBits();
 		Type t = ts.resolveDotted(typename, true);
 		if (t == null) {
-			SpringFeature.log("WARNING: Unable to resolve specific type: " + typename);
+			logger.debug("WARNING: Unable to resolve specific type: " + typename);
 			return false;
 		} else {
 			boolean importRegistrarOrSelector = false;
@@ -1044,7 +1047,7 @@ public class ResourcesHandler extends Handler {
 		if (ConfigOptions.shouldRemoveJmxSupport()) {
 			if (type.getDottedName().toLowerCase().contains("jmx") && 
 					!(pc.peekReachedBy()==ReachedBy.Import || pc.peekReachedBy()==ReachedBy.NestedReference)) {
-				SpringFeature.log(type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
+				logger.debug(type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
 				if (!ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 //					resourcesRegistry.addResources(type.getDottedName().replace(".", "/")+".class");
 					collector.addResource(type.getDottedName().replace(".", "/")+".class", false);
@@ -1059,7 +1062,7 @@ public class ResourcesHandler extends Handler {
 //	private boolean checkConditionalOnEnabledMetricsExport(Type type) {
 //		boolean isOK = type.testAnyConditionalOnEnabledMetricsExport();
 //		if (!isOK) {
-//			SpringFeature.log(type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport check - returning FALSE");
+//			logger.debug(type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport check - returning FALSE");
 //			return false;
 //		}
 //		return true;
@@ -1082,7 +1085,7 @@ public class ResourcesHandler extends Handler {
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnProperty property check: "+testResult;
 				failedPropertyChecks.add(message);
-				SpringFeature.log(message);
+				logger.debug(message);
 				return false;
 			}
 			// These are like a ConditionalOnProperty check but using a special condition to check the property
@@ -1090,21 +1093,21 @@ public class ResourcesHandler extends Handler {
 			if (testResult != null) {
 				String message =  type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
 				failedPropertyChecks.add(message);
-				SpringFeature.log(message);
+				logger.debug(message);
 				return false;
 			}
 			testResult = type.testAnyConditionalOnEnabledMetricsExport();
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
 				failedPropertyChecks.add(message);
-				SpringFeature.log(message);
+				logger.debug(message);
 				return false;
 			}
 			testResult = type.testAnyConditionalOnEnabledHealthIndicator();
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
 				failedPropertyChecks.add(message);
-				SpringFeature.log(message);
+				logger.debug(message);
 				return false;
 			}
 		}
@@ -1117,7 +1120,7 @@ public class ResourcesHandler extends Handler {
 		// run the types are not on the classpath and so this type isn't being used.
 		Set<String> missingTypes = ts.findMissingTypesInHierarchyOfThisType(type);
 		if (!missingTypes.isEmpty()) {
-			SpringFeature.log("for " + type.getName() + " missing types in hierarchy are " + missingTypes );
+			logger.debug("for " + type.getName() + " missing types in hierarchy are " + missingTypes );
 			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 				return false;
 			}
@@ -1128,7 +1131,7 @@ public class ResourcesHandler extends Handler {
 	private boolean isIgnoredConfiguration(Type type) {
 		if (ConfigOptions.isIgnoreHintsOnExcludedConfig() && type.isAtConfiguration()) {
 			if (isIgnored(type)) {
-				SpringFeature.log("skipping hint processing on "+type.getName()+" because it is explicitly excluded in this application");
+				logger.debug("skipping hint processing on "+type.getName()+" because it is explicitly excluded in this application");
 				return true;
 			}
 		}
@@ -1140,7 +1143,7 @@ public class ResourcesHandler extends Handler {
 		if (!missingAnnotationTypes.isEmpty()) {
 			// If only the annotations are missing, it is ok to reflect on the existence of
 			// the type, it is just not safe to reflect on the annotations on that type.
-			SpringFeature.log("for " + type.getName() + " missing annotation types are "
+			logger.debug("for " + type.getName() + " missing annotation types are "
 					+ missingAnnotationTypes);
 		}
 	}
@@ -1222,7 +1225,7 @@ public class ResourcesHandler extends Handler {
 	private boolean processType(ProcessingContext pc, Type type, ReachedBy reachedBy) {
 		pc.push(type, reachedBy);
 		String typename = type.getDottedName();
-		SpringFeature.log("Analyzing " + typename + " reached by " + pc);
+		logger.debug("Analyzing " + typename + " reached by " + pc);
 		
 		if (!checkJmxConstraint(type, pc)) {
 			pc.pop();
@@ -1261,7 +1264,7 @@ public class ResourcesHandler extends Handler {
 		printHintSummary(type, hints);
 		Map<Type,ReachedBy> toFollow = new HashMap<>();
 		for (HintApplication hint : hints) {
-			SpringFeature.log("processing hint " + hint);
+			logger.debug("processing hint " + hint);
 			passesTests = processExplicitTypeReferencesFromHint(pc, accessManager, hint, toFollow);
 			if (!passesTests && ConfigOptions.shouldRemoveUnusedAutoconfig()) {
 				break;
@@ -1319,7 +1322,7 @@ public class ResourcesHandler extends Handler {
 	private void checkForImportedConfigurations(Type type, Map<Type, ReachedBy> toFollow) {
 		List<String> importedConfigurations = type.getImportedConfigurations();
 		if (importedConfigurations.size()>0) {
-			SpringFeature.log("found these imported configurations by "+type.getDottedName()+": "+importedConfigurations);
+			logger.debug("found these imported configurations by "+type.getDottedName()+": "+importedConfigurations);
 		}
 		for (String importedConfiguration: importedConfigurations) {
 			toFollow.put(ts.resolveSlashed(Type.fromLdescriptorToSlashed(importedConfiguration)),ReachedBy.Import);
@@ -1334,7 +1337,7 @@ public class ResourcesHandler extends Handler {
 	private void checkForAutoConfigureBeforeOrAfter(Type type, RequestedConfigurationManager accessManager) {
 		List<Type> boaTypes = type.getAutoConfigureBeforeOrAfter();
 		if (boaTypes.size() != 0) {
-			SpringFeature.log("registering " + boaTypes.size() + " @AutoConfigureBefore/After references");
+			logger.debug("registering " + boaTypes.size() + " @AutoConfigureBefore/After references");
 			for (Type t : boaTypes) {
 				List<Type> transitiveBOAs = t.getAutoConfigureBeforeOrAfter();
 				// If this linked configuration also has @AutoconfigureBeforeOrAfter, we need to include it as a
@@ -1356,14 +1359,14 @@ public class ResourcesHandler extends Handler {
 			if (ConfigOptions.isAgentMode() && t.isAtConfiguration()) {
 				boolean existsInVisibleConfig = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
 				if (!existsInVisibleConfig) {
-					SpringFeature.log("in agent mode not following "+t.getDottedName()+" from "+type.getName()+" - it is not mentioned in existing reflect configuration");
+					logger.debug("in agent mode not following "+t.getDottedName()+" from "+type.getName()+" - it is not mentioned in existing reflect configuration");
 					continue;
 				}
 			}
 			try {
 				boolean b = processType(pc, t, entry.getValue());
 				if (!b) {
-					SpringFeature.log("followed " + t.getName() + " and it failed validation (whilst processing "+type.getDottedName()+" reached by "+reachedBy+")");
+					logger.debug("followed " + t.getName() + " and it failed validation (whilst processing "+type.getDottedName()+" reached by "+reachedBy+")");
 //						if (t.isAtConfiguration()) {
 //							accessRequestor.removeTypeAccess(t.getDottedName());
 //						} else {
@@ -1373,13 +1376,13 @@ public class ResourcesHandler extends Handler {
 			} catch (MissingTypeException mte) {
 				// Failed to follow that type because some element involved is not on the classpath 
 				// (Typically happens when not specifying discard-unused-autconfiguration)
-				SpringFeature.log("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
+				logger.debug("Unable to completely process followed type "+t.getName()+": "+mte.getMessage());
 			}
 		}
 	}
 
 	private void processHierarchy(ProcessingContext pc, RequestedConfigurationManager accessManager, Type type) {
-		SpringFeature.log(">processHierarchy "+type.getShortName());
+		logger.debug(">processHierarchy "+type.getShortName());
 		String typename = type.getDottedName();
 		boolean isConfiguration = type.isAtConfiguration();
 		if (!isConfiguration) {
@@ -1414,7 +1417,7 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private void processNestedTypes(ProcessingContext pc, Type type) {
-		SpringFeature.log(" processing nested types of "+type.getName());
+		logger.debug(" processing nested types of "+type.getName());
 		List<Type> nestedTypes = type.getNestedTypes();
 		for (Type t : nestedTypes) {
 			if (pc.recordVisit(t.getName())) {
@@ -1424,12 +1427,12 @@ public class ResourcesHandler extends Handler {
 				try {
 					boolean b = processType(pc, t, ReachedBy.NestedReference);
 					if (!b) {
-						SpringFeature.log("verification of nested type " + t.getName() + " failed");
+						logger.debug("verification of nested type " + t.getName() + " failed");
 					}
 				} catch (MissingTypeException mte) {
 					// Failed to process that type because some element involved is not on the classpath 
 					// (Typically happens when not specifying discard-unused-autoconfiguration)
-					SpringFeature.log("Unable to completely process nested type "+t.getName()+": "+mte.getMessage());
+					logger.debug("Unable to completely process nested type "+t.getName()+": "+mte.getMessage());
 				}
 			}
 		}
@@ -1440,13 +1443,13 @@ public class ResourcesHandler extends Handler {
 		boolean passesTests = true;
 		Map<String, Integer> inferredTypes = hint.getInferredTypes();
 		if (inferredTypes.size() > 0) {
-			SpringFeature.log("attempting registration of " + inferredTypes.size() + " inferred types");
+			logger.debug("attempting registration of " + inferredTypes.size() + " inferred types");
 			for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 				String s = inferredType.getKey();
 				Type t = ts.resolveDotted(s, true);
 				boolean exists = (t != null);
 				if (!exists) {
-					SpringFeature.log("inferred type " + s + " not found");
+					logger.debug("inferred type " + s + " not found");
 				}
 				if (exists) {
 					// TODO
@@ -1460,7 +1463,7 @@ public class ResourcesHandler extends Handler {
 					//}
 					
 					if (hint.isFollow()) {
-						SpringFeature.log("will follow " + t);
+						logger.debug("will follow " + t);
 						ReachedBy reason = isImportHint(hint)?ReachedBy.Import:ReachedBy.Inferred;
 						toFollow.put(t,reason);
 					}
@@ -1474,7 +1477,7 @@ public class ResourcesHandler extends Handler {
 //									at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:311) ~[na:na]
 				} else if (hint.isSkipIfTypesMissing() && (pc.depth() == 1 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || pc.peekReachedBy()==ReachedBy.Import)) {
 					if (pc.depth()>1) {
-						SpringFeature.log("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+pc.peekReachedBy()+") - discarding "+type.getDottedName());
+						logger.debug("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+pc.peekReachedBy()+") - discarding "+type.getDottedName());
 					}
 					// Notes: if an inferred type is missing, we have to be careful. Although it should suggest we discard
 					// the type being processed, that is not always possible depending on how the type being processed
@@ -1501,7 +1504,7 @@ public class ResourcesHandler extends Handler {
 		boolean passesTests = true;
 		Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
 		if (specificNames.size() > 0) {
-			SpringFeature.log("attempting registration of " + specificNames.size() + " specific types");
+			logger.debug("attempting registration of " + specificNames.size() + " specific types");
 			for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 				String specificTypeName = specificNameEntry.getKey();
 				if (!registerSpecific(pc, specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
@@ -1515,7 +1518,7 @@ public class ResourcesHandler extends Handler {
 					if (hint.isFollow()) {
 						// TODO I suspect only certain things need following, specific types lists could
 						// specify that in a suffix (like access required)
-						SpringFeature.log( "will follow specific type reference " + specificTypeName);
+						logger.debug( "will follow specific type reference " + specificTypeName);
 						toFollow.put(ts.resolveDotted(specificTypeName),ReachedBy.Specific);
 					}
 				}
@@ -1531,7 +1534,7 @@ public class ResourcesHandler extends Handler {
 	 */
 	private void configureMethodAccess(RequestedConfigurationManager accessRequestor, Type type,
 			String[][] validMethodsSubset, boolean atBeanMethodsOnly) {
-		SpringFeature.log("computing full reflective method access list for "+type.getDottedName()+" validMethodSubset incoming = "+MethodDescriptor.toString(validMethodsSubset));
+		logger.debug("computing full reflective method access list for "+type.getDottedName()+" validMethodSubset incoming = "+MethodDescriptor.toString(validMethodsSubset));
 //		boolean onlyPublicMethods = (accessRequestor.getTypeAccessRequestedFor(type.getDottedName())&AccessBits.PUBLIC_METHODS)!=0;
 		boolean onlyNonPrivateMethods = true;
 		List<String> toMatchAgainst = new ArrayList<>();
@@ -1541,18 +1544,18 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 		List<String[]> allRelevantMethods = new ArrayList<>();
-		SpringFeature.log("There are "+allRelevantMethods.size()+" possible members");
+		logger.debug("There are "+allRelevantMethods.size()+" possible members");
 		for (Method method : type.getMethods()) {
 			if (!method.getName().equals("<init>") && !method.getName().equals("<clinit>")) { // ignore constructors
 				if (onlyNonPrivateMethods && method.isPrivate()) {
-					SpringFeature.log("checking '"+method.getName()+method.getDesc()+"' -> private - skipping");
+					logger.debug("checking '"+method.getName()+method.getDesc()+"' -> private - skipping");
 					continue;
 				}
 //				if (onlyPublicMethods && !method.isPublic()) {
 //					continue;
 //				}
 				if (method.hasUnresolvableParams()) {
-					SpringFeature.log("checking '"+method.getName()+method.getDesc()+"' -> unresolvable parameters, ignoring");
+					logger.debug("checking '"+method.getName()+method.getDesc()+"' -> unresolvable parameters, ignoring");
 					continue;
 				}
 				String[] candidate = method.asConfigurationArray();
@@ -1575,7 +1578,7 @@ public class ResourcesHandler extends Handler {
 
 	private void printMemberSummary(String prefix, String[][] processTypeAtBeanMethods) {
 		if (processTypeAtBeanMethods != null) {
-			SpringFeature.log(prefix+" member summary: " + processTypeAtBeanMethods.length);
+			logger.debug(prefix+" member summary: " + processTypeAtBeanMethods.length);
 			for (int i = 0; i < processTypeAtBeanMethods.length; i++) {
 				String[] member = processTypeAtBeanMethods[i];
 				StringBuilder s = new StringBuilder();
@@ -1587,7 +1590,7 @@ public class ResourcesHandler extends Handler {
 					s.append(member[p]);
 				}
 				s.append(")");
-				SpringFeature.log(s.toString());
+				logger.debug(s.toString());
 			}
 		}
 	}
@@ -1599,12 +1602,12 @@ public class ResourcesHandler extends Handler {
 
 	private void printHintSummary(Type type, List<HintApplication> hints) {
 		if (hints.size() != 0) {
-			SpringFeature.log("found "+ hints.size() + " hints on " + type.getDottedName()+":");
+			logger.debug("found "+ hints.size() + " hints on " + type.getDottedName()+":");
 			for (int h = 0; h < hints.size(); h++) {
-				SpringFeature.log((h + 1) + ") " + hints.get(h));
+				logger.debug((h + 1) + ") " + hints.get(h));
 			}
 		} else {
-			SpringFeature.log("no hints on " + type.getName());
+			logger.debug("no hints on " + type.getName());
 		}
 	}
 
@@ -1625,13 +1628,13 @@ public class ResourcesHandler extends Handler {
 		List<Method> atBeanMethods = type.getMethodsWithAtBean();
 		int rogue = (totalMethodCount - atBeanMethods.size());
 		if (rogue != 0) {
-			SpringFeature.log(
+			logger.debug(
 					"WARNING: Methods unnecessarily being exposed by reflection on this config type "
 					+ type.getName() + " = " + rogue + " (total methods including @Bean ones:" + totalMethodCount + ")");
 		}
 
 		if (atBeanMethods.size() != 0) {
-			SpringFeature.log("processing " + atBeanMethods.size() + " @Bean methods on type "+type.getDottedName());
+			logger.debug("processing " + atBeanMethods.size() + " @Bean methods on type "+type.getDottedName());
 		}
 
 		for (Method atBeanMethod : atBeanMethods) {
@@ -1665,17 +1668,17 @@ public class ResourcesHandler extends Handler {
 			//	}
 			if (!ConfigOptions.isSkipAtBeanHintProcessing()) {
 				List<HintApplication> methodHints = atBeanMethod.getHints();
-				SpringFeature.log("@Bean method "+atBeanMethod + " hints: #"+methodHints.size());
+				logger.debug("@Bean method "+atBeanMethod + " hints: #"+methodHints.size());
 				for (int i=0;i<methodHints.size();i++) {
-					SpringFeature.log((i+1)+") "+methodHints.get(i));
+					logger.debug((i+1)+") "+methodHints.get(i));
 				}
 				for (int h=0;h<methodHints.size() && passesTests;h++) {
 					HintApplication hint = methodHints.get(h);
-					SpringFeature.log("processing hint " + hint);
+					logger.debug("processing hint " + hint);
 
 					Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
 					if (specificNames.size() != 0) {
-						SpringFeature.log("handling " + specificNames.size() + " specific types");
+						logger.debug("handling " + specificNames.size() + " specific types");
 						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
 							registerSpecific(pc, specificNameEntry.getKey(),
 									specificNameEntry.getValue(), methodRCM);
@@ -1684,15 +1687,15 @@ public class ResourcesHandler extends Handler {
 
 					Map<String, Integer> inferredTypes = hint.getInferredTypes();
 					if (inferredTypes.size()!=0) {
-						SpringFeature.log("handling " + inferredTypes.size() + " inferred types");
+						logger.debug("handling " + inferredTypes.size() + " inferred types");
 						for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
 							String s = inferredType.getKey();
 							Type t = ts.resolveDotted(s, true);
 							boolean exists = (t != null);
 							if (!exists) {
-								SpringFeature.log("inferred type " + s + " not found");
+								logger.debug("inferred type " + s + " not found");
 							} else {
-								SpringFeature.log("inferred type " + s + " found, will get accessibility " + AccessBits.toString(inferredType.getValue()));
+								logger.debug("inferred type " + s + " found, will get accessibility " + AccessBits.toString(inferredType.getValue()));
 							}
 							if (exists) {
 								// TODO if already there, should we merge access required values?
@@ -1733,16 +1736,16 @@ public class ResourcesHandler extends Handler {
 						toFollow.put(returnType, ReachedBy.AtBeanReturnType);
 					}
 					rcm.mergeIn(methodRCM);
-					SpringFeature.log("method passed checks - adding configuration for it");
+					logger.debug("method passed checks - adding configuration for it");
 				} catch (IllegalStateException ise) {
 					// usually if asConfigurationArray() fails - due to an unresolvable type - it indicates
 					// this method is no use
-					SpringFeature.log("method failed checks - ise on "+atBeanMethod.getName()+" so ignoring");
+					logger.debug("method failed checks - ise on "+atBeanMethod.getName()+" so ignoring");
 					anyMethodFailedValidation = true;
 				}
 			} else {
 				anyMethodFailedValidation = true;
-				SpringFeature.log("method failed checks - not adding configuration for it");
+				logger.debug("method failed checks - not adding configuration for it");
 			}
 		}
 		if (anyMethodFailedValidation) {
@@ -1762,7 +1765,7 @@ public class ResourcesHandler extends Handler {
 			if (pc.recordVisit(s.getName())) {
 				boolean b = processType(pc, s, ReachedBy.HierarchyProcessing);
 				if (!b) {
-					SpringFeature.log("WARNING: whilst processing type " + type.getName()
+					logger.debug("WARNING: whilst processing type " + type.getName()
 							+ " superclass " + s.getName() + " verification failed");
 				}
 			} else {
@@ -1826,13 +1829,13 @@ public class ResourcesHandler extends Handler {
 			// Only log new info that is being added at this stage to keep logging down
 			Integer access = reflectionConfigurationAlreadyAdded.get(dname);
 			if (access == null) {
-				SpringFeature.log(spaces(depth) + "configuring reflective access to " + dname + "   " + AccessBits.toString(requestedAccess)+
+				logger.debug(spaces(depth) + "configuring reflective access to " + dname + "   " + AccessBits.toString(requestedAccess)+
 						(methods==null?"":" mds="+methods));
 				reflectionConfigurationAlreadyAdded.put(dname, requestedAccess);
 			} else {
 				int extraAccess = AccessBits.compareAccess(access,requestedAccess);
 				if (extraAccess>0) {
-					SpringFeature.log(spaces(depth) + "configuring reflective access, adding access for " + dname + " of " + 
+					logger.debug(spaces(depth) + "configuring reflective access, adding access for " + dname + " of " + 
 							AccessBits.toString(extraAccess)+" (total now: "+AccessBits.toString(requestedAccess)+")");
 					reflectionConfigurationAlreadyAdded.put(dname, access);
 				}
@@ -1842,11 +1845,11 @@ public class ResourcesHandler extends Handler {
 
 			if (methods != null) {
 				// methods are explicitly specified, remove them from flags
-				SpringFeature.log(dname+" has #"+methods.size()+" methods directly specified so removing any general method access needs");
+				logger.debug(dname+" has #"+methods.size()+" methods directly specified so removing any general method access needs");
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
-//			SpringFeature.log(spaces(depth) + "fixed flags? "+Flag.toString(flags));
-//			SpringFeature.log(depth, "ms: "+methods);
+//			logger.debug(spaces(depth) + "fixed flags? "+Flag.toString(flags));
+//			logger.debug(depth, "ms: "+methods);
 			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), null, true, flags);
 			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
@@ -1907,7 +1910,7 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private void registerAnnotationChain(RequestedConfigurationManager tar, List<Type> annotationChain) {
-		SpringFeature.log("attempting registration of " + annotationChain.size()
+		logger.debug("attempting registration of " + annotationChain.size()
 				+ " elements of annotation hint chain");
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
@@ -1915,7 +1918,7 @@ public class ResourcesHandler extends Handler {
 			if (i==0 && ConfigOptions.isAgentMode()) {
 				boolean beingReflectedUponInIncomingConfiguration = existingReflectionConfigContains(t.getDottedName());
 				if (!beingReflectedUponInIncomingConfiguration) {
-					SpringFeature.log("In agent mode skipping "+t.getDottedName()+" because in already existing configuration");
+					logger.debug("In agent mode skipping "+t.getDottedName()+" because in already existing configuration");
 					break;
 				}
 			}

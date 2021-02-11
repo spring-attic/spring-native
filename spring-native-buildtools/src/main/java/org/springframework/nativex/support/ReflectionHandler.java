@@ -18,6 +18,8 @@ package org.springframework.nativex.support;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.Flag;
@@ -26,6 +28,7 @@ import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.Method;
 
 
 /**
@@ -38,6 +41,8 @@ import org.springframework.nativex.type.AccessDescriptor;
  * @author Andy Clement
  */
 public class ReflectionHandler extends Handler {
+	
+	private static Log logger = LogFactory.getLog(ReflectionHandler.class);
 
 	private ReflectionDescriptor constantReflectionDescriptor;
 
@@ -120,13 +125,13 @@ public class ReflectionHandler extends Handler {
 
 	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
-			SpringFeature.log("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
+			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
 		List<AccessChecker> accessCheckers = ts.getAccessCheckers();
 		for (AccessChecker accessChecker: accessCheckers) {
 			boolean isOK = accessChecker.check(ts, typename);
 			if (!isOK) {
-				SpringFeature.log(typename+" discarded due to access check by "+accessChecker.getClass().getName());
+				logger.debug(typename+" discarded due to access check by "+accessChecker.getClass().getName());
 				return;
 			}
 		}
@@ -135,7 +140,7 @@ public class ReflectionHandler extends Handler {
 		// from spring-boot-autoconfigure but they extend types not on the classpath.
 //		Class<?> type = rra.resolveType(typename);
 //		if (type == null) {
-//			SpringFeature.log("WARNING: Possible problem, cannot resolve " + typename);
+//			logger.info("WARNING: Possible problem, cannot resolve " + typename);
 //			return null;
 //		}
 		

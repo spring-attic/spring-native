@@ -15,7 +15,6 @@
  */
 package org.springframework.nativex.support;
 
-import org.graalvm.nativeimage.hosted.Feature;
 import org.springframework.nativex.type.TypeSystem;
 
 /**

@@ -131,7 +131,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native-feature</artifactId>
+			<artifactId>spring-native-buildtools</artifactId>
 			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 		<!-- these are only here to support the substrate substitution -->
