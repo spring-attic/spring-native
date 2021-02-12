@@ -32,7 +32,6 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.springframework.nativex.buildtools.BootstrapCodeGenerator;
 import org.springframework.nativex.type.Type.TypeCollector;
 
 public class Method {

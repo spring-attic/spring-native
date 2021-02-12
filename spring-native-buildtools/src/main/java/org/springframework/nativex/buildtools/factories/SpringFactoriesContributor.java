@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +22,7 @@ import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.CodeGenerationException;
 import org.springframework.nativex.buildtools.SourceFiles;
+import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,6 +34,8 @@ import org.springframework.util.StringUtils;
 public class SpringFactoriesContributor implements BootstrapContributor {
 
 	private static final Log logger = LogFactory.getLog(SpringFactoriesContributor.class);
+	
+	private static List<SpringFactoriesProcessor> springFactoriesProcessors;
 
 	@Override
 	public int getOrder() {
@@ -66,6 +70,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 			URL url = factoriesLocations.nextElement();
 			UrlResource resource = new UrlResource(url);
 			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+			properties = filterProperties(properties);
 			for (Map.Entry<?, ?> entry : properties.entrySet()) {
 				String factoryTypeName = ((String) entry.getKey()).trim();
 				logger.debug("Loading factory Type:" + factoryTypeName);
@@ -88,4 +93,43 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		}
 		return factories;
 	}
+	
+	private List<SpringFactoriesProcessor> getSpringFactoriesProcessors() {
+		if (springFactoriesProcessors == null) {
+			springFactoriesProcessors = new ArrayList<>();
+			ServiceLoader<SpringFactoriesProcessor> sfps = ServiceLoader.load(SpringFactoriesProcessor.class);
+			for (SpringFactoriesProcessor springFactoryProcessor: sfps) {
+				springFactoriesProcessors.add(springFactoryProcessor);
+			}
+		}
+		return springFactoriesProcessors;
+	}
+	
+	private Properties filterProperties(Properties properties) {
+		List<SpringFactoriesProcessor> springFactoriesProcessors = getSpringFactoriesProcessors();
+		boolean modified = false;
+		Properties filteredProperties = new Properties();
+		for (Map.Entry<Object, Object> factoriesEntry : properties.entrySet()) {
+			String key = (String) factoriesEntry.getKey();
+			String valueString = (String) factoriesEntry.getValue();
+			List<String> values = new ArrayList<>();
+			for (String value : valueString.split(",")) {
+				values.add(value);
+			}
+			for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
+				int len = values.size();
+				if (springFactoriesProcessor.filter(key, values)) {
+					logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
+					modified = true;
+				}
+			}
+			if (modified) {
+				filteredProperties.put(key, String.join(",", values));
+			} else {
+				filteredProperties.put(key, valueString);
+			}
+		}
+		return filteredProperties;
+	}
 }
+

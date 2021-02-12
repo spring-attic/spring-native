@@ -60,6 +60,7 @@ import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.TypeUtils;
 
 
 public class ResourcesHandler extends Handler {
@@ -1081,7 +1082,7 @@ public class ResourcesHandler extends Handler {
 		// Problems observed discarding inner configurations due to eager property checks
 		// (configserver sample). Too aggressive, hence the $ check
 		if (ConfigOptions.isBuildTimePropertyChecking() && !type.getName().contains("$")) {
-			String testResult = type.testAnyConditionalOnProperty();
+			String testResult = TypeUtils.testAnyConditionalOnProperty(type);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnProperty property check: "+testResult;
 				failedPropertyChecks.add(message);
@@ -1089,21 +1090,21 @@ public class ResourcesHandler extends Handler {
 				return false;
 			}
 			// These are like a ConditionalOnProperty check but using a special condition to check the property
-			testResult = type.testAnyConditionalOnAvailableEndpoint();
+			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(type);
 			if (testResult != null) {
 				String message =  type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
 				failedPropertyChecks.add(message);
 				logger.debug(message);
 				return false;
 			}
-			testResult = type.testAnyConditionalOnEnabledMetricsExport();
+			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(type);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
 				failedPropertyChecks.add(message);
 				logger.debug(message);
 				return false;
 			}
-			testResult = type.testAnyConditionalOnEnabledHealthIndicator();
+			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(type);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
 				failedPropertyChecks.add(message);

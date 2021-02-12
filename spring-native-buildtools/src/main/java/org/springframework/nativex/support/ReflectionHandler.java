@@ -28,7 +28,6 @@ import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.type.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.Method;
 
 
 /**

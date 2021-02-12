@@ -47,7 +47,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
-
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.extension.InitializationInfo;
 import org.springframework.nativex.extension.InitializationInfos;
@@ -61,7 +60,6 @@ import org.springframework.nativex.extension.ResourcesInfos;
 import org.springframework.nativex.extension.TypeInfo;
 import org.springframework.nativex.extension.TypeInfos;
 import org.springframework.nativex.support.ConfigOptions;
-import org.springframework.nativex.support.ResourcesHandler;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -81,11 +79,13 @@ public class Type {
 	public final static String AtJavaxTransactional = "Ljavax/transaction/Transactional;";
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
-	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
-	public final static String AtConditionalOnEnabledMetricsExport = "Lorg/springframework/boot/actuate/autoconfigure/metrics/export/ConditionalOnEnabledMetricsExport;";
 	public final static String AtConditionalOnCloudPlatform = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnCloudPlatform;";
-	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
-	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
+
+	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
+//	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
+//	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
+//	public final static String AtConditionalOnEnabledMetricsExport = "Lorg/springframework/boot/actuate/autoconfigure/metrics/export/ConditionalOnEnabledMetricsExport;";
+
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConditionalOnSingleCandidate = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate;";
 	public final static String AtConditionalOnBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnBean;";
@@ -2705,7 +2705,7 @@ public class Type {
 		return (importedConfigurations == null ? Collections.emptyList() : importedConfigurations);
 	}
 
-	private AnnotationNode getAnnotation(String Ldescriptor) {
+	public AnnotationNode getAnnotation(String Ldescriptor) {
 		if (node.visibleAnnotations !=null) {
 			for (AnnotationNode annotationNode : node.visibleAnnotations) {
 				if (annotationNode.desc.equals(Ldescriptor)) {
@@ -2715,153 +2715,8 @@ public class Type {
 		}
 		return null;
 	}
-	
-	/**
-	 * Find any @ConditionalOnProperty and see if the specified property should be checked at build time. If it should be and
-	 * fails the check, return the property name in question.
-	 * 
-	 * @return the property name if it fails a check, otherwise null (meaning everything is OK)
-	 */
-	public String testAnyConditionalOnProperty() {
-		// Examples:
-		//	found COP on org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
-		//	copDescriptor: @COP(names=[spring.flyway.enabled],matchIfMissing=true
-		//  found COP on org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
-		//	copDescriptor @COP(names=[spring.h2.console.enabled],havingValue=true,matchIfMissing=false
-		AnnotationNode annotation = getAnnotation(AtConditionalOnProperty);
-		if (annotation != null) {
-			ConditionalOnPropertyDescriptor copDescriptor = unpackConditionalOnPropertyAnnotation(annotation);
-			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			return copDescriptor.test(activeProperties);
-		}
-		return null;
-	}
-	
-	private ConditionalOnEnabledMetricsExportDescriptor unpackConditionalOnEnabledMetricsExportDescriptor(AnnotationNode annotation) {
-		List<Object> values = annotation.values;
-		String name = null;
-		for (int i=0;i<values.size();i++) {
-			String attributeName = (String)values.get(i);
-			if (attributeName.equals("name") || attributeName.equals("value")) {
-				name = (String)values.get(++i);
-			}
-		}
-		return new ConditionalOnEnabledMetricsExportDescriptor(name);
-	}
 
-	static class ConditionalOnEnabledMetricsExportDescriptor implements TestableDescriptor {
-
-		private String metricsExporter;
-
-		public ConditionalOnEnabledMetricsExportDescriptor(String metricsExporter) {
-			this.metricsExporter = metricsExporter;
-		}
-
-		public String test(Map<String, String> properties) {
-			String key = "management.metrics.export."+metricsExporter+".enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
-				return null;
-			}
-			String value = properties.get(key);
-			if (value!=null && !value.equalsIgnoreCase("true")) {
-				return null;
-			}
-			String defaultKey = "management.metrics.export.defaults.enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
-				return null;
-			}
-			String defaultValue = properties.get(defaultKey);
-			if (defaultValue!=null && !defaultValue.equalsIgnoreCase("true")) {
-				return null;
-			}
-			return "neither "+key+" nor "+defaultKey+" are true";
-		}
-
-		public String toString() {
-			return "@COEME("+metricsExporter+")";
-		}
-
-	}
-
-	
-	private ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation) {
-		List<Object> values = annotation.values;
-		List<String> names = new ArrayList<>();
-		String prefix = null;
-		String havingValue = null;
-		boolean matchIfMissing = false;;
-		for (int i=0;i<values.size();i++) {
-			String attributeName = (String)values.get(i);
-			if (attributeName.equals("name") || attributeName.equals("value")) {
-				names.addAll((List<String>)values.get(++i));
-			} else if (attributeName.equals("prefix")) {
-				prefix = (String)values.get(++i);
-			} else if (attributeName.equals("matchIfMissing")) {
-				matchIfMissing = (Boolean)values.get(++i);
-			} else if (attributeName.equals("havingValue")) {
-				havingValue = (String)values.get(++i);
-			} else {
-				throw new IllegalStateException("Not expecting attribute named '"+attributeName+"' in ConditionalOnProperty annotation");
-			}
-		}
-		if (prefix != null) {
-			if (!prefix.endsWith(".")) {
-				prefix = prefix + ".";
-			}
-			for (int i=0;i<names.size();i++) {
-				names.set(i, prefix+names.get(i));
-			}
-		}
-		return new ConditionalOnPropertyDescriptor(names, havingValue, matchIfMissing);
-	}
-	
-	
-	private String fetchAnnotationAttributeValueAsString(AnnotationNode annotation, String attributeName) {
-		List<Object> values = annotation.values;
-		for (int i=0;i<values.size();i+=2) {
-			String n = (String)values.get(i);
-			if (n.equals(attributeName)) {
-				return (String)values.get(i+1);
-			}
-		}
-		return null;
-	}
-
-	private Type fetchAnnotationAttributeValueAsClass(AnnotationNode annotation, String attributeName) {
-		List<Object> values = annotation.values;
-		for (int i=0;i<values.size();i+=2) {
-			String n = (String)values.get(i);
-			if (n.equals(attributeName)) {
-				String cn = ((org.objectweb.asm.Type)values.get(i+1)).getClassName();
-				return typeSystem.resolveDotted(cn,true);
-			}
-		}
-		return null;
-	}
-	
-	// @ConditionalOnEnabledHealthIndicator("cassandra")
-	private ConditionalOnEnabledHealthIndicatorDescriptor unpackConditionalOnEnabledHealthIndicatorAnnotation(AnnotationNode annotation) {
-		String value = fetchAnnotationAttributeValueAsString(annotation, "value");
-		return new ConditionalOnEnabledHealthIndicatorDescriptor(value);
-	}
-
-	private ConditionalOnAvailableEndpointDescriptor unpackConditionalOnAvailableEndpointAnnotation(AnnotationNode annotation) {
-		Type endpointClass = fetchAnnotationAttributeValueAsClass(annotation, "endpoint");
-		AnnotationNode endpointAnnotation = endpointClass.getAnnotation(AtEndpoint);
-		if (endpointAnnotation == null) {
-			System.out.println("Couldn't find @Endpoint on "+endpointClass.getName());
-			// We are seeing meta usage of the endpoint annotation
-			endpointAnnotation = endpointClass.getAnnotationMetaAnnotatedWith(AtEndpoint);
-			if (endpointAnnotation == null) {
-				System.out.println("Couldn't find meta usage of @Endpoint on "+endpointClass.getName());
-			}
-		}
-		String endpointId = fetchAnnotationAttributeValueAsString(endpointAnnotation,"id");
-		// TODO pull in enableByDefault option from endpointAnnotation
-		return new ConditionalOnAvailableEndpointDescriptor(endpointId);
-	}
-
-	private AnnotationNode getAnnotationMetaAnnotatedWith(String Ldescriptor) {
+	AnnotationNode getAnnotationMetaAnnotatedWith(String Ldescriptor) {
 		if (node.visibleAnnotations !=null) {
 			for (AnnotationNode annotationNode : node.visibleAnnotations) {
 				if (annotationNode.desc.equals(Ldescriptor)) {
@@ -2879,167 +2734,6 @@ public class Type {
 		return null;
 	}
 
-
-	interface TestableDescriptor {
-		/**
-		 * @return null if test is successful, otherwise a string explanation of why it failed
-		 */
-		String test(Map<String, String> properties);
-	}
-
-	static class ConditionalOnEnabledHealthIndicatorDescriptor implements TestableDescriptor {
-
-		private String value;
-
-		public ConditionalOnEnabledHealthIndicatorDescriptor(String value) {
-			this.value = value;
-		}
-
-		@Override
-		public String test(Map<String, String> properties) {
-			String key = "management.health."+value+".enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
-				return null;
-			}
-			String value = properties.get(key);
-			// This check is successful if the property is set to true, otherwise
-			// either the property wasn't set or it wasn't set to a truthy value
-			if (value!=null && value.equalsIgnoreCase("true")) {
-				return null;
-			}
-			String defaultKey = "management.health.defaults.enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
-				return null;
-			}
-			String defaultValue = properties.get(defaultKey);
-			if (defaultValue!=null && defaultValue.equalsIgnoreCase("true")) {
-				return null;
-			}
-			return "neither "+key+" nor "+defaultKey+" are set to true";
-		}
-
-		public String toString() {
-			return "@COEHI("+value+")";
-		}
-
-	}
-	
-	static class ConditionalOnAvailableEndpointDescriptor implements TestableDescriptor {
-
-		private String endpointId;
-
-		public ConditionalOnAvailableEndpointDescriptor(String endpointId) {
-			this.endpointId = endpointId;
-		}
-
-		// https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html
-		// Crude first pass - ignore JMX exposure and only consider web exposure include (not exclude)
-		public String test(Map<String, String> properties) {
-			String key = "management.endpoints.web.exposure.include";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
-				return null;
-			}
-			String webExposedEndpoints = properties.get(key);
-			if (webExposedEndpoints==null) {
-				webExposedEndpoints="";
-			}
-			webExposedEndpoints+=(webExposedEndpoints.length()==0?"info,health":",info,health");
-			String[] exposedEndpointIds = webExposedEndpoints.split(",");
-			for (String exposedEndpointId: exposedEndpointIds) {
-				if (exposedEndpointId.equals(endpointId)) {
-					logger.debug("COAE check: endpoint "+endpointId+" *is* exposed via management.endpoints.web.exposed.include");
-					return null;
-				}
-			}
-			logger.debug("COAE check: endpoint "+endpointId+" *is not* exposed via management.endpoints.web.exposed.include");
-			return "management.endpoints.web.exposed.include="+webExposedEndpoints+" does not contain endpoint "+endpointId;
-		}
-
-		public String toString() {
-			return "@COAE(id="+endpointId+")";
-		}
-
-	}
-
-	public static class ConditionalOnPropertyDescriptor implements TestableDescriptor {
-
-		private List<String> propertyNames;
-		private String havingValue;
-		private boolean matchIfMissing;
-
-		public ConditionalOnPropertyDescriptor(List<String> names, String havingValue, boolean matchIfMissing) {
-			this.propertyNames = names;
-			this.havingValue = havingValue;
-			this.matchIfMissing = matchIfMissing;
-		}
-		
-		public String test(Map<String, String> properties) {
-			for (String name: propertyNames) {
-				if (!ConfigOptions.buildTimeCheckableProperty(name)) {
-					return null;
-				}
-				String definedValue = properties.get(name);
-				if ((havingValue == null && !(definedValue==null || definedValue.toLowerCase().equals("false"))) ||
-					(havingValue != null && definedValue!=null && definedValue.toLowerCase().equals(havingValue.toLowerCase()))) {
-					// all is well!
-				} else if (matchIfMissing && definedValue == null) {
-					if (ConfigOptions.shouldRespectMatchIfMissing()) {
-						// all is well
-					} else {
-						return name+(havingValue==null?"":"="+havingValue)+" property check failed because configuration indicated matchIfMissing should be ignored";
-					}
-				} else {
-					return name+(havingValue==null?"":"="+havingValue)+" property check failed "+(definedValue==null?"":" against the discovered value "+definedValue);
-				}
-			}
-			return null;
-		}
-
-		public String toString() {
-			return "@COP(names="+propertyNames+","+(havingValue==null?"":"havingValue="+havingValue+",")+"matchIfMissing="+matchIfMissing;
-		}
-		
-	}
-	
-	// Examples:
-	// @ConditionalOnEnabledMetricsExport("simple")
-	public String testAnyConditionalOnEnabledMetricsExport() {
-		AnnotationNode annotation = getAnnotation(AtConditionalOnEnabledMetricsExport);
-		if (annotation != null) {
-			ConditionalOnEnabledMetricsExportDescriptor coemedDescriptor = unpackConditionalOnEnabledMetricsExportDescriptor(annotation);
-			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			return coemedDescriptor.test(activeProperties);
-		}
-		return null;
-	}
-
-	// Example:
-	// @ConditionalOnAvailableEndpoint(endpoint = FlywayEndpoint.class) public class FlywayEndpointAutoConfiguration {
-	// @Endpoint(id = "flyway") public class FlywayEndpoint {
-	public String testAnyConditionalOnAvailableEndpoint() {
-		AnnotationNode annotation = getAnnotation(AtConditionalOnAvailableEndpoint);
-		if (annotation != null) {
-			ConditionalOnAvailableEndpointDescriptor coaeDescriptor = unpackConditionalOnAvailableEndpointAnnotation(annotation);
-			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			return coaeDescriptor.test(activeProperties);
-		}
-		return null;
-	}
-	
-	// Example:
-	// @ConditionalOnEnabledHealthIndicator("diskspace")
-	// @AutoConfigureBefore(HealthContributorAutoConfiguration.class)
-	// @EnableConfigurationProperties(DiskSpaceHealthIndicatorProperties.class)
-	// public class DiskSpaceHealthContributorAutoConfiguration {
-	public String testAnyConditionalOnEnabledHealthIndicator() {
-		AnnotationNode annotation = getAnnotation(AtConditionalOnEnabledHealthIndicator);
-		if (annotation != null) {
-			ConditionalOnEnabledHealthIndicatorDescriptor coehiDescriptor = unpackConditionalOnEnabledHealthIndicatorAnnotation(annotation);
-			Map<String,String> activeProperties = typeSystem.getActiveProperties();
-			return coehiDescriptor.test(activeProperties);
-		}
-		return null;
-	}
 
 	public TypeSystem getTypeSystem() {
 		return this.typeSystem;

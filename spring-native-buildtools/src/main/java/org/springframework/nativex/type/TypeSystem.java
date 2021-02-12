@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -58,7 +57,7 @@ import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
-
+import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -67,8 +66,6 @@ import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.extension.AccessChecker;
 import org.springframework.nativex.extension.ComponentProcessor;
 import org.springframework.nativex.extension.SpringFactoriesProcessor;
-import org.springframework.nativex.support.ConfigOptions;
-import org.springframework.nativex.support.Mode;
 import org.springframework.nativex.support.Utils;
 
 /**
@@ -142,23 +139,19 @@ public class TypeSystem {
 		return resolveSlashed(typeName.toSlashName(), true);
 	}
 
-	@Deprecated
 	public Type resolveName(String dottedTypeName) {
 		return resolveDotted(dottedTypeName);
 	}
 
-	@Deprecated
 	public Type resolveDotted(String dottedTypeName) {
 		String slashedTypeName = toSlashedName(dottedTypeName);
 		return resolveSlashed(slashedTypeName);
 	}
 
-	@Deprecated
 	public Type resolveName(String desc, boolean silent) {
 		return resolveDotted(desc, silent);
 	}
 
-	@Deprecated
 	public Type resolveDotted(String desc, boolean silent) {
 		try {
 			return resolveDotted(desc);
@@ -170,7 +163,6 @@ public class TypeSystem {
 		}
 	}
 
-	@Deprecated
 	public boolean canResolveSlashed(String slashedTypeName) {
 		try {
 			return resolveSlashed(slashedTypeName) != null;
@@ -182,12 +174,10 @@ public class TypeSystem {
 		}
 	}
 
-	@Deprecated
 	public Type resolveSlashed(String slashedTypeName) {
 		return resolveSlashed(slashedTypeName, false);
 	}
 
-	@Deprecated
 	public Type resolveSlashed(String slashedTypeName, boolean allowNotFound) {
 		Type resolvedType = typeCache.get(slashedTypeName);
 		if (resolvedType == Type.MISSING) {
@@ -1322,6 +1312,10 @@ public class TypeSystem {
 		}
 		System.out.println("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
 		return resources.values();
+	}
+
+	public Type resolve(ClassDescriptor classDescriptor) {
+		return resolveDotted(classDescriptor.getClassName());
 	}
 
 }

@@ -25,9 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.json.JSONArray;
-import org.springframework.nativex.json.JSONObject;
 
 /**
  * Marshaller to write {@link ProxiesDescriptor} as JSON.

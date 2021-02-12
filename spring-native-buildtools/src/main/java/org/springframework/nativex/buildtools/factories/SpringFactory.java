@@ -2,9 +2,7 @@ package org.springframework.nativex.buildtools.factories;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.type.classreading.ClassDescriptor;
-import org.springframework.core.type.classreading.TypeDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.type.MissingTypeException;
 

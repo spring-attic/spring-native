@@ -15,15 +15,10 @@
  */
 package org.springframework.nativex.support;
 
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.init.InitializationJsonMarshaller;
-import org.springframework.nativex.type.Type;
 
 /**
  * 

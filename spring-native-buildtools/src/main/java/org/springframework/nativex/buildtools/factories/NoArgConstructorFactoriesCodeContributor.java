@@ -1,15 +1,11 @@
 package org.springframework.nativex.buildtools.factories;
 
-import java.util.Optional;
-
-import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.type.classreading.MethodDescriptor;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+
+import com.squareup.javapoet.ClassName;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for some factories

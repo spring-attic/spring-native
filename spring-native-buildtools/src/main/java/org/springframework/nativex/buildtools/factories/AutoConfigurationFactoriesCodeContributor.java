@@ -17,17 +17,19 @@
 package org.springframework.nativex.buildtools.factories;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
-import com.squareup.javapoet.ClassName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
+
+import com.squareup.javapoet.ClassName;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for {@code EnableAutoConfiguration} factories.
@@ -56,13 +58,17 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		TypeSystem typeSystem = context.getTypeSystem();
 		// Condition checks
 		// TODO make into a pluggable system
+		List<String> failedPropertyChecks = new ArrayList<>();
 		boolean factoryOK =
 				passesAnyConditionalOnClass(typeSystem, factory) &&
-						passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
-						passesAnyConditionalOnBean(typeSystem, factory) &&
-						passesIgnoreJmxConstraint(typeSystem, factory) &&
-						passesAnyConditionalOnWebApplication(typeSystem, factory);
-
+				passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
+				passesAnyConditionalOnBean(typeSystem, factory) &&
+				passesIgnoreJmxConstraint(typeSystem, factory) &&
+				passesAnyConditionalOnWebApplication(typeSystem, factory) &&
+				passesAnyPropertyRelatedConditions(context.getClasspath(), typeSystem, factory, failedPropertyChecks);
+		if (!failedPropertyChecks.isEmpty()) {
+			logger.debug("Following property checks failed on "+factory.getFactory().getClassName()+": "+failedPropertyChecks);
+		}
 		if (factoryOK) {
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
 			code.writeToStaticBlock(builder -> {

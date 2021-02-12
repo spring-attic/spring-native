@@ -11,7 +11,7 @@ rm -rf target
 mkdir -p target/native-image
 
 echo "Packaging ${PWD##*/} with Maven"
-mvn -ntp -Pbti-native package > target/native-image/output.txt
+mvn $* -ntp -Pbti-native package > target/native-image/output.txt
 
 if [[ -f target/${PWD##*/} ]]
 then

@@ -15,7 +15,6 @@
  */
 package org.springframework.nativex.extension;
 
-import java.net.URL;
 import java.util.List;
 
 /**

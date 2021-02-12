@@ -15,13 +15,8 @@
  */
 package org.springframework.nativex.support;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 
 /**
  * 
