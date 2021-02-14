@@ -1,10 +1,10 @@
 package org.springframework.messaging;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(typeInfos = {
 		@TypeInfo(types= {

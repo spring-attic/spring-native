@@ -19,12 +19,12 @@ import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
 import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ProxyInfo;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyInfo;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=BatchConfigurationSelector.class,
 		resourcesInfos = { 
@@ -35,7 +35,7 @@ import org.springframework.nativex.type.AccessBits;
 		typeInfos = {
 		@TypeInfo(types = {
 			AbstractDataSourceInitializer.class,
-		}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
+		}, access=AccessBits.LOAD_AND_CONSTRUCT| AccessBits.DECLARED_METHODS),
 		@TypeInfo(types = {
 			BasicBatchConfigurer.class,
 			JobLauncherApplicationRunner.class,

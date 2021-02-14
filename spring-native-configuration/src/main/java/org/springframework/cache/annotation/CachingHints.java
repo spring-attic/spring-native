@@ -16,12 +16,12 @@
 package org.springframework.cache.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = CachingConfigurationSelector.class, typeInfos =
 		@TypeInfo(types = { AutoProxyRegistrar.class, ProxyCachingConfiguration.class }, typeNames= {

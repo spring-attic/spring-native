@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.nativex.hint.Flag;
+
 /**
  * Reflection information about a single class.
  *

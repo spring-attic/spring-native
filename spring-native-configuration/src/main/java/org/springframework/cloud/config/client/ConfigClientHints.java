@@ -17,10 +17,10 @@ package org.springframework.cloud.config.client;
 
 import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.environment.PropertySource;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = ConfigClientAutoConfiguration.class, typeInfos = { @TypeInfo(types = {
         Environment.class, PropertySource.class }, access = AccessBits.ALL) })

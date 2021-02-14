@@ -8,7 +8,7 @@ import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.domain.reflect.Flag;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.support.ConfigOptions;
 
 /**

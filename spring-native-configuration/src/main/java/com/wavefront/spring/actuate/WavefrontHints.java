@@ -33,11 +33,11 @@ import io.micrometer.core.instrument.config.MeterRegistryConfig;
 import io.micrometer.core.instrument.push.PushMeterRegistry;
 import io.micrometer.core.instrument.push.PushRegistryConfig;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 

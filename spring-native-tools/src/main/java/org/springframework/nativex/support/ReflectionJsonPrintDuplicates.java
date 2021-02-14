@@ -21,7 +21,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.domain.reflect.Flag;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;

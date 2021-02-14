@@ -22,7 +22,7 @@ import org.springframework.nativex.buildtools.BootstrapContributor;
 import org.springframework.nativex.buildtools.BuildContext;
 import org.springframework.nativex.buildtools.CodeGenerationException;
 import org.springframework.nativex.buildtools.SourceFiles;
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
+import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.util.StringUtils;
 
 /**

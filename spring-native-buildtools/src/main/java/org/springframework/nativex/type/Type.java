@@ -48,17 +48,18 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationInfos;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.NativeHints;
-import org.springframework.nativex.extension.ProxyInfo;
-import org.springframework.nativex.extension.ProxyInfos;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.ResourcesInfos;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.extension.TypeInfos;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationInfos;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.NativeHints;
+import org.springframework.nativex.hint.ProxyInfo;
+import org.springframework.nativex.hint.ProxyInfos;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.ResourcesInfos;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeInfos;
 import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.util.ClassUtils;
 
@@ -1419,7 +1420,7 @@ public class Type {
 			} else {
 				ar = inferAccessRequired(type);
 			}
-			if (ar!=AccessBits.NONE) {
+			if (ar!= AccessBits.NONE) {
 				map.put(fromLdescriptorToDotted(t), ar);
 			}
 		}

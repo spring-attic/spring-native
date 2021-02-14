@@ -18,13 +18,14 @@ image:https://img.youtube.com/vi/Um9djPTtPe0/maxresdefault.jpg["The Path Towards
 
 It is mainly composed of:
 
-- `spring-native-feature`: this module is a https://www.graalvm.org/sdk/javadoc/org/graalvm/nativeimage/hosted/Feature.html[GraalVM feature]. It is a kind of plugin for the native-image compilation process (which creates the native-image from the built class files). The feature participates in the compilation lifecycle, being invoked at different compilation stages to offer extra information about the application to aid in the image construction.
 - `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
 - `spring-native-substitutions`: this module allows us to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
-- `spring-native`: this module aggregates the feature, configuration, and substitutions ones to generate the artifact to consume.
+- `spring-native-buildtools`: this module contains the build-time transformation infrastructure common to Maven and Gradle plugins.
+- `spring-native-maven-plugin`: this module contains the Maven plugin that invokes build-time transformations.
 - `spring-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
+- `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
 
 It supports the {documentation-url}/reference/index.html#_spring_graalvm_native_options[following modes] using `-Dspring.native.mode=<mode>` on the `native-image` command line:
 

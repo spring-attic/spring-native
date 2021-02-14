@@ -15,8 +15,8 @@
  */
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(trigger = ManagementContextConfigurationImportSelector.class, typeInfos= {
 })

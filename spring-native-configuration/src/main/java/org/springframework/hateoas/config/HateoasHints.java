@@ -15,11 +15,11 @@
  */
 package org.springframework.hateoas.config;
 
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.util.MimeTypeUtils;

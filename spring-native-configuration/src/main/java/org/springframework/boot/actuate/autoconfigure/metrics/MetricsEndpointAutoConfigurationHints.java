@@ -17,9 +17,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
 
 // Hitting /metrics endpoint - needs tests
 @NativeHint(trigger = MetricsEndpointAutoConfiguration.class, typeInfos = {

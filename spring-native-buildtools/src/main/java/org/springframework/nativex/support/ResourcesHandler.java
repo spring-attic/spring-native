@@ -43,14 +43,14 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeContext;
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.ComponentProcessor;
+import org.springframework.nativex.type.NativeContext;
+import org.springframework.nativex.type.SpringFactoriesProcessor;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.FieldDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -141,7 +141,7 @@ public class ResourcesHandler extends Handler {
 				AccessDescriptor ad = dependantType.getValue();
 				logger.debug("  fixed type registered "+typename+" with "+ad);
 				List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
-				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits()); 
+				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
 				if (mds!=null && mds.size()!=0 && AccessBits.isSet(ad.getAccessBits(),AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
 					logger.debug("  type has #"+mds.size()+" members specified, removing typewide method access flags");
 					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);

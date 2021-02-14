@@ -15,7 +15,7 @@
  */
 package org.springframework.cloud.gateway.config;
 
-import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.type.NativeConfiguration;
 
 //@NativeHint(trigger=GatewayAutoConfiguration.class,
 //		typeInfos = {@TypeInfo(types= {

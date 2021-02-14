@@ -15,11 +15,10 @@
  */
 package org.springframework.boot;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
+import org.springframework.nativex.type.SpringFactoriesProcessor;
 
 /**
  * If using actuators purely for a health endpoint, there is a high memory cost to pay

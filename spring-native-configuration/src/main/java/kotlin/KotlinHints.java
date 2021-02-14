@@ -1,14 +1,14 @@
 package kotlin;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
 
-import static org.springframework.nativex.type.AccessBits.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.type.AccessBits.DECLARED_FIELDS;
-import static org.springframework.nativex.type.AccessBits.DECLARED_METHODS;
-import static org.springframework.nativex.type.AccessBits.PUBLIC_METHODS;
+import static org.springframework.nativex.hint.AccessBits.DECLARED_CONSTRUCTORS;
+import static org.springframework.nativex.hint.AccessBits.DECLARED_FIELDS;
+import static org.springframework.nativex.hint.AccessBits.DECLARED_METHODS;
+import static org.springframework.nativex.hint.AccessBits.PUBLIC_METHODS;
 
 @NativeHint(
 		trigger=kotlin.Unit.class,

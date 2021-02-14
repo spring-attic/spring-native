@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.springframework.nativex.extension.NativeConfiguration;
+import org.springframework.nativex.type.NativeConfiguration;
 
 // TODO tests or not point keeping it...
 // Hitting /info endpoint

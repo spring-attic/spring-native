@@ -18,7 +18,7 @@ package org.springframework;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.nativex.extension.AccessChecker;
+import org.springframework.nativex.type.AccessChecker;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 

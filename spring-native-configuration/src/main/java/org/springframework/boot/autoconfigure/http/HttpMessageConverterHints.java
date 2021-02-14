@@ -16,10 +16,10 @@
 package org.springframework.boot.autoconfigure.http;
 
 import org.springframework.boot.web.servlet.server.Encoding;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
 @NativeHint(trigger=HttpMessageConvertersAutoConfiguration.class, typeInfos= {

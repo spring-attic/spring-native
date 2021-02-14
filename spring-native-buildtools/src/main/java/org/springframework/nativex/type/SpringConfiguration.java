@@ -24,10 +24,6 @@ import java.util.ServiceLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.nativex.extension.AccessChecker;
-import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
 
 /**
  * @author Andy Clement

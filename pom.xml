@@ -21,9 +21,7 @@
 	</properties>
 
 	<modules>
-		<module>spring-native-feature</module>
 		<module>spring-native-configuration</module>
-		<module>spring-native-substitutions</module>
 		<module>spring-native-tools</module>
 		<module>spring-native-docs</module>
 		<module>spring-native</module>
@@ -103,7 +101,7 @@
 											<password>${artifactory.password}</password>
 											<repoKey>libs-milestone-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-											<excludePatterns>*/spring-native-feature-*.*,*/spring-native-configuration-*.*,*/spring-native-substitutions-*.*,*/spring-native-docs-*.pom</excludePatterns>
+											<excludePatterns>*/spring-native-configuration-*.*,*/spring-native-docs-*.pom</excludePatterns>
 										</publisher>
 									</configuration>
 								</execution>

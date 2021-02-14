@@ -1,8 +1,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ProxyInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyInfo;
 
 @NativeHint(trigger = org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
 		proxyInfos = {

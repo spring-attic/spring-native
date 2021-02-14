@@ -15,10 +15,10 @@
  */
 package org.springframework.amqp.rabbit.annotation;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
 
 // There is no Rabbit sample currently in the repo to confirm this is correct
 @NativeHint(trigger=RabbitListenerConfigurationSelector.class,

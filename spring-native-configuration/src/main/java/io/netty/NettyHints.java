@@ -25,10 +25,10 @@ import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
 
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(initializationInfos = {
 		@InitializationInfo(initTime=InitializationTime.RUN,

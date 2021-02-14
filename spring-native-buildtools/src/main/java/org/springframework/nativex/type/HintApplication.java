@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.hint.AccessBits;
 
 /**
  * Represents a real application of a @type {@link HintDeclaration}. This is different

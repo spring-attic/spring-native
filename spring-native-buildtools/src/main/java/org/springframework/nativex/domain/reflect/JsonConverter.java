@@ -18,6 +18,7 @@ package org.springframework.nativex.domain.reflect;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 

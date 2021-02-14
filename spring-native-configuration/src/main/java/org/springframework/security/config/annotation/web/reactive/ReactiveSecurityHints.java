@@ -15,9 +15,9 @@
  */
 package org.springframework.security.config.annotation.web.reactive;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.security.config.annotation.web.reactive.ReactiveOAuth2ClientImportSelector.OAuth2ClientWebFluxSecurityConfiguration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 

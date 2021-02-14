@@ -23,13 +23,12 @@ import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
 import org.springframework.security.access.expression.SecurityExpressionRoot;

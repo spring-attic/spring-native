@@ -24,15 +24,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.extension.FieldInfo;
-import org.springframework.nativex.extension.InitializationInfo;
-import org.springframework.nativex.extension.InitializationTime;
-import org.springframework.nativex.extension.MethodInfo;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ProxyInfo;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.FieldInfo;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.MethodInfo;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyInfo;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintApplication;
 import org.springframework.nativex.type.ProxyDescriptor;
@@ -163,7 +163,7 @@ public class HintTests {
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);
-		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals((Integer) AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
 		assertEquals("foo(java.lang.String)",accessDescriptor.getMethodDescriptors().get(0).toString());
 		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
 	}

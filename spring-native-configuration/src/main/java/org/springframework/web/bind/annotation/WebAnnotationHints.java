@@ -15,10 +15,10 @@
  */
 package org.springframework.web.bind.annotation;
 
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
 

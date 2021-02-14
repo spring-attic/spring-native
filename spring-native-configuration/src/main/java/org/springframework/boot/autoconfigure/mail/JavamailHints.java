@@ -4,10 +4,10 @@ import com.sun.mail.handlers.*;
 import com.sun.mail.smtp.SMTPProvider;
 import com.sun.mail.smtp.SMTPTransport;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.ResourcesInfo;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.TypeInfo;
 
 @NativeHint(
         trigger = MailSenderPropertiesConfiguration.class,

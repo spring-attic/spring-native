@@ -16,10 +16,10 @@
 package org.springframework.boot.context.config;
 
 import org.springframework.boot.context.properties.bind.Name;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(typeInfos = {
 	@TypeInfo(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),

@@ -2,10 +2,10 @@ package io.rsocket;
 
 import io.netty.util.internal.shaded.org.jctools.queues.IndexedQueueSizeUtil;
 
-import org.springframework.nativex.extension.FieldInfo;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
+import org.springframework.nativex.hint.FieldInfo;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
 
 @NativeHint(trigger = IndexedQueueSizeUtil.class, typeInfos = {
 		@TypeInfo(

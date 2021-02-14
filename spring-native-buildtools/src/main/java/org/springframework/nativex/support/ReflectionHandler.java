@@ -22,11 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
-import org.springframework.nativex.domain.reflect.Flag;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
-import org.springframework.nativex.extension.AccessChecker;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.AccessChecker;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
 
 

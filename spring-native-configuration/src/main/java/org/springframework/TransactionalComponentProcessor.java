@@ -18,8 +18,8 @@ package org.springframework;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.NativeContext;
+import org.springframework.nativex.type.ComponentProcessor;
+import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 
 /**

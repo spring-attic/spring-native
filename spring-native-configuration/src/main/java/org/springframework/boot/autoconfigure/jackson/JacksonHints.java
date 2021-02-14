@@ -20,8 +20,13 @@ import com.fasterxml.jackson.databind.ext.Java7HandlersImpl;
 import com.fasterxml.jackson.databind.ext.Java7Support;
 import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-import org.springframework.nativex.extension.*;
-import org.springframework.nativex.type.AccessBits;
+
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.type.NativeConfiguration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
+import org.springframework.nativex.type.SpringFactoriesProcessor;
 
 /**
  * A {@link SpringFactoriesProcessor} that is configurable by an option:

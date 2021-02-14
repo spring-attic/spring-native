@@ -17,10 +17,10 @@ package org.springframework.core.annotation;
 
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint( typeInfos = {@TypeInfo(types= {
 	Order.class, AliasFor.class,

@@ -15,8 +15,8 @@
  */
 package org.springframework.cloud.commons.util;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(trigger = SpringFactoryImportSelector.class, typeInfos = { })
 public class CloudCommonsHints implements NativeConfiguration {

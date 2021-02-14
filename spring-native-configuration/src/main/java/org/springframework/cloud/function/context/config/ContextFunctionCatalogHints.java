@@ -17,10 +17,10 @@ package org.springframework.cloud.function.context.config;
 
 import java.util.function.Supplier;
 
-import org.springframework.nativex.extension.NativeConfiguration;
-import org.springframework.nativex.extension.NativeHint;
-import org.springframework.nativex.extension.TypeInfo;
-import org.springframework.nativex.type.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.messaging.MessageHeaders;
 
 @NativeHint(trigger=ContextFunctionCatalogAutoConfiguration.class,

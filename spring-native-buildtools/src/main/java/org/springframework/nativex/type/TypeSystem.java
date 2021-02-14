@@ -63,9 +63,6 @@ import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
-import org.springframework.nativex.extension.AccessChecker;
-import org.springframework.nativex.extension.ComponentProcessor;
-import org.springframework.nativex.extension.SpringFactoriesProcessor;
 import org.springframework.nativex.support.Utils;
 
 /**
