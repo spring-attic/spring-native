@@ -49,14 +49,13 @@ Beware that we are not here yet, see the <<support>> documentation for more deta
 
 The Spring Native for GraalVM project is composed of the following modules:
 
+- `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
 - `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-native-substitutions`: this module allows us to patch temporarily some part of Spring Boot and Spring Framework to improve compatibility and efficiency of Spring native images.
 - `spring-native-buildtools`: this module contains the build-time transformation infrastructure common to Maven and Gradle plugins.
 - `spring-native-maven-plugin`: this module contains the Maven plugin that invokes build-time transformations.
 - `spring-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
-- `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
 
 === Modes
 
