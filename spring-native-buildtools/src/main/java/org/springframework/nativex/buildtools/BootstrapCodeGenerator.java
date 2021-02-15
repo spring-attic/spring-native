@@ -50,6 +50,7 @@ public class BootstrapCodeGenerator {
 	 * @param path the root path generated files should be written to
 	 * @param classpath the "compile+runtime" classpath of the application
 	 * @param resourceFolders paths to folders containing project main resources
+	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
 	public void generate(Path path, List<String> classpath, Set<Path> resourceFolders) throws IOException {
 		logger.debug("Starting code generation with classpath: " + classpath);

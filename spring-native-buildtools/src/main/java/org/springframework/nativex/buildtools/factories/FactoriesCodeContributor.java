@@ -73,16 +73,16 @@ interface FactoriesCodeContributor {
 	 * 
 	 * The format is of this style (which you specify with the call to mvn):
 	 * <ul>
-	 * <li> <tt>-Dspring.native.build-time-properties-checks=</tt> switches on build time evaluation of some configuration
-	 * conditions related to properties. It must include at least an initial setting of <tt>default-include-all</tt> or
-	 * <tt>default-exclude-all</tt> and that may be followed by a comma separated list of prefixes to explicitly include
-	 * or exclude (for example <tt>=default-include-all,!spring.dont.include.these.,!or.these</tt> or 
-	 * <tt>=default-exclude-all,spring.include.this.one.though.,and.this.one</tt>). 
+	 * <li> {@code -Dspring.native.build-time-properties-checks=} switches on build time evaluation of some configuration
+	 * conditions related to properties. It must include at least an initial setting of {@code default-include-all} or
+	 * {@code default-exclude-all} and that may be followed by a comma separated list of prefixes to explicitly include
+	 * or exclude (for example {@code =default-include-all,!spring.dont.include.these.,!or.these} or
+	 * {@code =default-exclude-all,spring.include.this.one.though.,and.this.one}).
 	 * When considering a property the longest matching prefix in this setting will apply (in cases where a property matches 
 	 * multiple prefixes).
 	 * 
-	 * <li> <tt>-Dspring.native.build-time-properties-match-if-missing=false</tt> means for any properties specifying 
-	 * <tt>matchIfMissing=true</tt> that will be overridden and not respected. This does flip the application into a
+	 * <li> {@code -Dspring.native.build-time-properties-match-if-missing=false} means for any properties specifying
+	 * {@code matchIfMissing=true} that will be overridden and not respected. This does flip the application into a
 	 * mode where it needs to be much more explicit about specifying properties that activate configurations. 
 	 * </ul>
 	 * 

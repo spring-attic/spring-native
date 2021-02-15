@@ -34,6 +34,8 @@ public abstract class SourceFiles {
 
 	/**
 	 * Create a {@link SourceFile} from a {@link JavaFile} generated with Javapoet.
+	 * @param javaFile the java file
+	 * @return the source file
 	 */
 	public static SourceFile fromJavaFile(JavaFile javaFile) {
 		return rootPath -> javaFile.writeTo(rootPath.resolve(SourceFile.MAIN_SRC_PATH));
@@ -42,6 +44,10 @@ public abstract class SourceFiles {
 	/**
 	 * Create a {@link SourceFile} from an {@link InputStream}, usually associated
 	 * with a static resource on disk.
+	 * @param packageName the package name
+	 * @param className the class name
+	 * @param staticFile the static file
+	 * @return the source file
 	 */
 	public static SourceFile fromStaticFile(String packageName, String className, InputStream staticFile) {
 		return rootPath -> {

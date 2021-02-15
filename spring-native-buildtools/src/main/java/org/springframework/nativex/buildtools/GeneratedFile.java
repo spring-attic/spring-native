@@ -33,6 +33,7 @@ public interface GeneratedFile {
 	 * <p>This method should write the file to the expected location,
 	 * given the type of the generated file and relative to the given root path.
 	 * @param rootPath the root path for writing generated files
+	 * @throws IOException if an I/O error is thrown
 	 */
 	void writeTo(Path rootPath) throws IOException;
 

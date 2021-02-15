@@ -36,34 +36,39 @@ public interface BuildContext {
 	List<String> getClasspath();
 	
 	/**
-	 * Return the {@link TypeSystem} based on the "compile+runtime" application classpath.
+	 * @return The {@link TypeSystem} based on the "compile+runtime" application classpath.
 	 */
 	TypeSystem getTypeSystem();
 
 	/**
 	 * Contribute source files to the application.
 	 * <p>This additional source code will be compiled and packaged with the application by a build plugin.
+	 * @param sourceFile the source files to add
 	 */
 	void addSourceFiles(SourceFile... sourceFile);
 
 	/**
 	 * Contribute resource files to the application.
 	 * <p>This additional packaged with the application by a build plugin.
+	 * @param resourceFile the resource files to add
 	 */
 	void addResources(ResourceFile... resourceFile);
 
 	/**
 	 * Contribute reflection information to the application.
+	 * @param consumer The reflection descriptor consumer
 	 */
 	void describeReflection(Consumer<ReflectionDescriptor> consumer);
 
 	/**
 	 * Contribute proxies information to the application.
+	 * @param consumer The proxies descriptor consumer
 	 */
 	void describeProxies(Consumer<ProxiesDescriptor> consumer);
 
 	/**
 	 * Contribute resources information to the application.
+	 * @param consumer The resources descriptor consumer
 	 */
 	void describeResources(Consumer<ResourcesDescriptor> consumer);
 
