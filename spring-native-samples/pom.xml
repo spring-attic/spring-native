@@ -18,7 +18,14 @@
 	<artifactId>spring-native-samples</artifactId>
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -76,6 +83,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>central</id>
@@ -160,10 +168,6 @@
 			<id>native</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.springframework.experimental</groupId>
-						<artifactId>spring-native-maven-plugin</artifactId>
-					</plugin>
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
