@@ -47,7 +47,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		if (!isActive()) {
 			return;
 		}
-		ConfigOptions.setMode(Mode.REFLECTION);
+		ConfigOptions.setMode(Mode.DEFAULT);
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
 		ConfigOptions.setBuildTimeTransformation(true);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);

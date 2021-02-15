@@ -15,7 +15,6 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
-        <spring.native.mode>reflection</spring.native.mode>
         <main.class>com.example.webmvc.WebmvcApplication</main.class>
         <build.args>-Dspring.xml.ignore=true -Dspring.spel.ignore=true -Dspring.native.mode=agent</build.args>
     </properties>

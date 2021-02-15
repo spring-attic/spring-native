@@ -106,9 +106,9 @@ public abstract class ConfigOptions {
 			MODE = Mode.valueOf(modeValue.toUpperCase());
 			if (MODE == null) {
 				// Default
-				MODE = Mode.REFLECTION;
+				MODE = Mode.DEFAULT;
 			}
-			System.out.println("Feature operating in "+MODE+" mode");
+			System.out.println("Spring Native operating in "+MODE+" mode");
 		}
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
@@ -213,7 +213,7 @@ public abstract class ConfigOptions {
 	}
 
 	public static boolean isAnnotationMode() {
-		return getMode()==Mode.REFLECTION;
+		return getMode()==Mode.DEFAULT;
 	}
 
 	public static boolean isIgnoreHintsOnExcludedConfig() {
@@ -248,7 +248,7 @@ public abstract class ConfigOptions {
 				}
 			}
 			if (MODE == null) {
-				MODE = MODE==null?Mode.REFLECTION:MODE;
+				MODE = MODE==null?Mode.DEFAULT :MODE;
 			}
 			System.out.println("feature operating mode: " + MODE.name().toLowerCase());
 		}
