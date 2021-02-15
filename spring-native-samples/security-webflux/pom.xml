@@ -16,7 +16,7 @@
 		<java.version>1.8</java.version>
 		<main.class>com.example.webflux.SecurityWebfluxApplication</main.class>
 		<image-name>security-webflux</image-name>
-		<build.args>-Dspring.native.verbose=true --enable-all-security-services</build.args>
+		<build.args>--enable-all-security-services</build.args>
 	</properties>
 	<dependencies>
 		<dependency>
