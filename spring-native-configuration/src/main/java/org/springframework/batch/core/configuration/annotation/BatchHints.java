@@ -15,6 +15,7 @@
  */
 package org.springframework.batch.core.configuration.annotation;
 
+import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
 import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
@@ -39,7 +40,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeInfo(types = {
 			BasicBatchConfigurer.class,
 			JobLauncherApplicationRunner.class,
-			DataSourcePoolMetadataProvider.class
+			DataSourcePoolMetadataProvider.class,
+			InfrastructureAdvisorAutoProxyCreator.class
 		}, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
 		@TypeInfo(types= {ModularBatchConfiguration.class,
 				SimpleBatchConfiguration.class,

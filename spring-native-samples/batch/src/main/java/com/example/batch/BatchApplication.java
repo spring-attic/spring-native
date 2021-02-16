@@ -14,11 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
 
-@NativeHint(typeInfos = @TypeInfo(types = InfrastructureAdvisorAutoProxyCreator.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS))
 @EnableBatchProcessing
 @SpringBootApplication
 public class BatchApplication {
