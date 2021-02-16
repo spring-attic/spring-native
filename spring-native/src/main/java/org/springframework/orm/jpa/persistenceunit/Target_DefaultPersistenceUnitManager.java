@@ -23,25 +23,11 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 /**
- * Workaround for
- * 
- * Caused by: javax.persistence.PersistenceException: Unable to resolve persistence unit
- * root URL at
- * org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager.determineDefaultPersistenceUnitRootUrl(DefaultPersistenceUnitManager.java:640)
- * at
- * org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager.preparePersistenceUnitInfos(DefaultPersistenceUnitManager.java:462)
- * at
- * org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager.afterPropertiesSet(DefaultPersistenceUnitManager.java:443)
- * at
- * org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:328)
- * at
- * org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1841)
- * at
- * org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1778)
- * ... 16 more Caused by: java.io.FileNotFoundException: class path resource [] cannot be
+ * Workaround for javax.persistence.PersistenceException: Unable to resolve persistence unit
+ * Caused by: java.io.FileNotFoundException: class path resource [] cannot be
  * resolved to URL because it does not exist at
- * org.springframework.core.io.ClassPathResource.getURL(ClassPathResource.java:195) at
- * org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager.determineDefaultPersistenceUnitRootUrl(DefaultPersistenceUnitManager.java:636)
+ * org.springframework.core.io.ClassPathResource.getURL(ClassPathResource.java:195)
+ *
  * @author Andy Clement
  */
 @TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = OnlyIfPresent.class)
