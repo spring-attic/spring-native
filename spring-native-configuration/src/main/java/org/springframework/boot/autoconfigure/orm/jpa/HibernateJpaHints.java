@@ -68,24 +68,24 @@ import java.util.EventListener;
 @NativeHint(trigger = HibernateJpaAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
 })
-@NativeHint(trigger=HibernateJpaConfiguration.class,
-	resourcesInfos = {
-			@ResourcesInfo(patterns={"hibernate.properties","org/hibernate/.*.xsd","org/hibernate/.*.dtd"})
-	},
-	typeInfos= {
-		@TypeInfo(types= {
-				// petclinic
-				// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
-				HqlTokenTypes.class,SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
-		},access=AccessBits.DECLARED_CONSTRUCTORS),
-		@TypeInfo(types= {
-				// petclinic
-				Repository.class,
-				PersistenceContext.class,MappedSuperclass.class,Column.class,ManyToOne.class,JoinColumn.class,Table.class,Transient.class
-		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types= {
-				SessionImpl.class,
-				EventType.class,
+@NativeHint(trigger = HibernateJpaConfiguration.class,
+		resourcesInfos = {
+				@ResourcesInfo(patterns = {"hibernate.properties", "org/hibernate/.*.xsd", "org/hibernate/.*.dtd"})
+		},
+		typeInfos = {
+				@TypeInfo(types = {
+						// petclinic
+						// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
+						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
+				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				@TypeInfo(types = {
+						// petclinic
+						Repository.class,
+						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, JoinColumn.class, Table.class, Transient.class
+				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
+				@TypeInfo(types = {
+						SessionImpl.class,
+						EventType.class,
 
 						JdbcResourceLocalTransactionCoordinatorBuilderImpl.class,
 						SimpleJpaRepository.class,
@@ -120,41 +120,42 @@ import java.util.EventListener;
 				@TypeInfo(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
 				@TypeInfo(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory
-						Tuplizer.class,EntityTuplizer.class,AbstractEntityTuplizer.class,PojoEntityTuplizer.class,
+						Tuplizer.class, EntityTuplizer.class, AbstractEntityTuplizer.class, PojoEntityTuplizer.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				// Persisters
 				@TypeInfo(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
-						// Persisters
-						OneToManyPersister.class,JoinedSubclassEntityPersister.class,SingleTableEntityPersister.class,UnionSubclassEntityPersister.class,
+						OneToManyPersister.class, JoinedSubclassEntityPersister.class, SingleTableEntityPersister.class, UnionSubclassEntityPersister.class,
 						BasicCollectionPersister.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-				@TypeInfo(types = {				OrderByClause.class,SelectExpressionImpl.class,SqlFragment.class,SelectClause.class,BinaryLogicOperatorNode.class,
+				@TypeInfo(types = {OrderByClause.class, SelectExpressionImpl.class, SqlFragment.class, SelectClause.class, BinaryLogicOperatorNode.class,
 						ParameterNode.class,
-						DotNode.class,IdentNode.class,FromElement.class,QueryNode.class,SqlNode.class,FromClause.class,
-						LiteralNode.class,ConstructorNode.class,
-						Node.class,HqlToken.class,
+						DotNode.class, IdentNode.class, FromElement.class, QueryNode.class, SqlNode.class, FromClause.class,
+						LiteralNode.class, ConstructorNode.class,
+						Node.class, HqlToken.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-				@TypeInfo(types = {	// Related to EventListenerRegistry...
+				// EventListener
+				@TypeInfo(types = {
 						ReplicateEventListener[].class,
-						PostInsertEventListener[].class,PostLoadEventListener[].class,PostUpdateEventListener[].class,
-						PreCollectionRecreateEventListener[].class,PreCollectionRemoveEventListener[].class,PreCollectionUpdateEventListener[].class,
-						PreLoadEventListener[].class,PreUpdateEventListener[].class,RefreshEventListener[].class,SaveOrUpdateEventListener[].class,
-						LockEventListener[].class,InitializeCollectionEventListener[].class,ResolveNaturalIdEventListener[].class,
-						LoadEventListener[].class,FlushEntityEventListener[].class,FlushEventListener[].class,
-						EvictEventListener[].class,DirtyCheckEventListener[].class,DeleteEventListener[].class,
-						AutoFlushEventListener[].class,PersistEventListener[].class,EventType[].class,
-						ClearEventListener[].class,MergeEventListener[].class,PostCollectionRecreateEventListener[].class,
-						PostCollectionRemoveEventListener[].class,PostCollectionUpdateEventListener[].class,PostDeleteEventListener[].class,
+						PostInsertEventListener[].class, PostLoadEventListener[].class, PostUpdateEventListener[].class,
+						PreCollectionRecreateEventListener[].class, PreCollectionRemoveEventListener[].class, PreCollectionUpdateEventListener[].class,
+						PreLoadEventListener[].class, PreUpdateEventListener[].class, RefreshEventListener[].class, SaveOrUpdateEventListener[].class,
+						LockEventListener[].class, InitializeCollectionEventListener[].class, ResolveNaturalIdEventListener[].class,
+						LoadEventListener[].class, FlushEntityEventListener[].class, FlushEventListener[].class,
+						EvictEventListener[].class, DirtyCheckEventListener[].class, DeleteEventListener[].class,
+						AutoFlushEventListener[].class, PersistEventListener[].class, EventType[].class,
+						ClearEventListener[].class, MergeEventListener[].class, PostCollectionRecreateEventListener[].class,
+						PostCollectionRemoveEventListener[].class, PostCollectionUpdateEventListener[].class, PostDeleteEventListener[].class,
 
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-			// Id Generators
-			@TypeInfo(types = {
-					IdentityGenerator.class, SequenceStyleGenerator.class,
-					SequenceIdentityGenerator.class,
-					UUIDGenerator.class, GUIDGenerator.class, UUIDHexGenerator.class, Assigned.class,
-					SelectGenerator.class,  SequenceHiLoGenerator.class, IncrementGenerator.class,
-					ForeignGenerator.class,
-					TableGenerator.class,
-			}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				// Id Generators
+				@TypeInfo(types = {
+						IdentityGenerator.class, SequenceStyleGenerator.class,
+						SequenceIdentityGenerator.class,
+						UUIDGenerator.class, GUIDGenerator.class, UUIDHexGenerator.class, Assigned.class,
+						SelectGenerator.class, SequenceHiLoGenerator.class, IncrementGenerator.class,
+						ForeignGenerator.class,
+						TableGenerator.class,
+				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		})
 // Dialects
 @NativeHint(trigger = org.h2.Driver.class, typeInfos = @TypeInfo(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
