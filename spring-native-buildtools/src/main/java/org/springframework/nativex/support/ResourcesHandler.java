@@ -94,10 +94,7 @@ public class ResourcesHandler extends Handler {
 			ConfigOptions.isAgentMode()) {
 			processSpringFactories();
 		}
-		if (!ConfigOptions.isInitMode()) {
-			handleConstantHints();
-		}
-		handleConstantInitializationHints();
+		handleConstantHints(ConfigOptions.isInitMode());
 		if (ConfigOptions.isAnnotationMode() ||
 			ConfigOptions.isAgentMode()) {
 			handleSpringComponents();
@@ -131,48 +128,46 @@ public class ResourcesHandler extends Handler {
 	 * registered in regular analysis, here we explicitly register those. Initialization hints are handled
 	 * separately.
 	 */
-	private void handleConstantHints() {
+	private void handleConstantHints(boolean isInitMode) {
 		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
 		logger.debug("> Registering fixed hints: " + constantHints);
 		for (HintDeclaration ch : constantHints) {
-			Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
-			for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
-				String typename = dependantType.getKey();
-				AccessDescriptor ad = dependantType.getValue();
-				logger.debug("  fixed type registered "+typename+" with "+ad);
-				List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
-				Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
-				if (mds!=null && mds.size()!=0 && AccessBits.isSet(ad.getAccessBits(),AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
-					logger.debug("  type has #"+mds.size()+" members specified, removing typewide method access flags");
-					accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+			if (!isInitMode) {
+				Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
+				for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
+					String typename = dependantType.getKey();
+					AccessDescriptor ad = dependantType.getValue();
+					logger.debug("  fixed type registered " + typename + " with " + ad);
+					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
+					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
+					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
+							AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
+						logger.debug("  type has #" + mds.size()
+								+ " members specified, removing typewide method access flags");
+						accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+					}
+					List<FieldDescriptor> fds = ad.getFieldDescriptors();
+					reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds),
+							FieldDescriptor.toStringArray(fds), true, accessFlags);
 				}
-				List<FieldDescriptor> fds = ad.getFieldDescriptors();
-				reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds), FieldDescriptor.toStringArray(fds), true, accessFlags);
+				List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
+				for (ProxyDescriptor pd : proxyDescriptors) {
+					logger.debug("Registering proxy descriptor: " + pd);
+					dynamicProxiesHandler.addProxy(pd);
+				}
+				List<org.springframework.nativex.type.ResourcesDescriptor> resourcesDescriptors = ch
+						.getResourcesDescriptors();
+				for (org.springframework.nativex.type.ResourcesDescriptor rd : resourcesDescriptors) {
+					logger.debug("Registering resource descriptor: " + rd);
+					registerResourcesDescriptor(rd);
+				}
 			}
-			List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
-			for (ProxyDescriptor pd: proxyDescriptors) {
-				logger.debug("Registering proxy descriptor: "+pd);
-				dynamicProxiesHandler.addProxy(pd);
-			}
-			List<org.springframework.nativex.type.ResourcesDescriptor> resourcesDescriptors = ch.getResourcesDescriptors();
-			for (org.springframework.nativex.type.ResourcesDescriptor rd: resourcesDescriptors) {
-				logger.debug("Registering resource descriptor: "+rd);
-				registerResourcesDescriptor(rd);
+			for (InitializationDescriptor initializationDescriptor : ch.getInitializationDescriptors()) {
+				logger.debug("Registering initialization descriptor: " + initializationDescriptor);
+				initializationHandler.registerInitializationDescriptor(initializationDescriptor);
 			}
 		}
 		logger.debug("< Registering fixed hints");
-	}
-	
-	private void handleConstantInitializationHints() {
-		List<HintDeclaration> constantHints = ts.findHints("java.lang.Object");
-		logger.debug("Registering fixed initialization entries: ");
-		for (HintDeclaration ch : constantHints) {
-			List<InitializationDescriptor> ids = ch.getInitializationDescriptors();
-			for (InitializationDescriptor id: ids) {
-				logger.debug(" registering initialization descriptor: "+id);
-				initializationHandler.registerInitializationDescriptor(id);
-			}
-		}
 	}
 	
 	public void registerResourcesDescriptor(org.springframework.nativex.type.ResourcesDescriptor rd) {

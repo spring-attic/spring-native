@@ -15,8 +15,8 @@
  */
 package org.springframework.nativex.support;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 
@@ -33,23 +33,23 @@ public class InitializationHandler extends Handler {
 	
 
 	public void registerInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
-		List<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
+		Set<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
 		if (buildtimeClasses.size()!=0) {
 			buildtimeClasses.stream()
 			.map(c -> ts.resolveDotted(c, true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
 			.forEach(collector::initializeAtBuildTime);
 		}
-		List<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
+		Set<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
 		if (runtimeClasses.size()!=0) {
 			runtimeClasses.stream()
 			.map(c -> ts.resolveDotted(c,true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
 			.forEach(collector::initializeAtRunTime);
 		}
-		List<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
+		Set<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
 		if (buildtimePackages.size()!=0) {
 			collector.initializeAtBuildTimePackages(buildtimePackages.toArray(new String[0]));
 		}
-		List<String> runtimePackages = initializationDescriptor.getRuntimePackages();
+		Set<String> runtimePackages = initializationDescriptor.getRuntimePackages();
 		if (runtimePackages.size()!=0) {
 			collector.initializeAtRunTimePackages(runtimePackages.toArray(new String[0]));
 		}

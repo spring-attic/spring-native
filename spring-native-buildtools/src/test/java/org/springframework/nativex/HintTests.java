@@ -15,14 +15,20 @@
  */
 package org.springframework.nativex;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldInfo;
@@ -39,11 +45,6 @@ import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HintTests {
 
@@ -120,15 +121,15 @@ public class HintTests {
 		HintApplication hint = hints.get(0);
 		List<InitializationDescriptor> initializationDescriptors = hint.getInitializationDescriptors();
 		assertEquals(2,initializationDescriptors.size());
-		List<String> btc = initializationDescriptors.get(0).getBuildtimeClasses();
-		List<String> btp = initializationDescriptors.get(0).getBuildtimePackages();
-		List<String> rtc = initializationDescriptors.get(0).getRuntimeClasses();
-		List<String> rtp = initializationDescriptors.get(0).getRuntimePackages();
+		Set<String> btc = initializationDescriptors.get(0).getBuildtimeClasses();
+		Set<String> btp = initializationDescriptors.get(0).getBuildtimePackages();
+		Set<String> rtc = initializationDescriptors.get(0).getRuntimeClasses();
+		Set<String> rtp = initializationDescriptors.get(0).getRuntimePackages();
 		assertEquals(0,btc.size());
 		assertEquals(3,rtc.size());
-		assertEquals("aaa",rtc.get(0));
-		assertEquals("bbb",rtc.get(1));
-		assertEquals("java.lang.String",rtc.get(2));
+		assertContains("aaa",rtc);
+		assertContains("bbb",rtc);
+		assertContains("java.lang.String",rtc);
 		assertEquals(0,btp.size());
 		assertEquals(0,rtp.size());
 		btc = initializationDescriptors.get(1).getBuildtimeClasses();
@@ -138,8 +139,22 @@ public class HintTests {
 		assertEquals(0,btc.size());
 		assertEquals(0,rtc.size());
 		assertEquals(1,btp.size());
-		assertEquals("ccc",btp.get(0));
+		assertContains("ccc",btp);
 		assertEquals(0,rtp.size());
+	}
+
+	private void assertContains(String string, Set<String> set) {
+		boolean found = false;
+		if (set != null) {
+			for (String s: set) {
+				if (s.equals(string)) {
+					found = true;
+				}
+			}
+		}
+		if (!found) {
+			fail("Did not find '"+string+"' in "+set);
+		}
 	}
 
 	@NativeHint(initializationInfos = {

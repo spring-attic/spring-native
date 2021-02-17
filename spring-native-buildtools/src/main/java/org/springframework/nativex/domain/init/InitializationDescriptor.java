@@ -16,49 +16,49 @@
 
 package org.springframework.nativex.domain.init;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Andy Clement
  */
 public class InitializationDescriptor {
 
-	private final List<String> buildtimeClasses;
+	private final Set<String> buildtimeClasses;
 	
-	private final List<String> buildtimePackages;
+	private final Set<String> buildtimePackages;
 
-	private final List<String> runtimeClasses;
+	private final Set<String> runtimeClasses;
 	
-	private final List<String> runtimePackages;
+	private final Set<String> runtimePackages;
 
 	public InitializationDescriptor() {
-		this.buildtimeClasses = new ArrayList<>();
-		this.buildtimePackages = new ArrayList<>();
-		this.runtimeClasses = new ArrayList<>();
-		this.runtimePackages = new ArrayList<>();
+		this.buildtimeClasses = new TreeSet<>();
+		this.buildtimePackages = new TreeSet<>();
+		this.runtimeClasses = new TreeSet<>();
+		this.runtimePackages = new TreeSet<>();
 	}
 
 	public InitializationDescriptor(InitializationDescriptor metadata) {
-		this.buildtimeClasses = new ArrayList<>(metadata.buildtimeClasses);
-		this.buildtimePackages = new ArrayList<>(metadata.buildtimePackages);
-		this.runtimeClasses = new ArrayList<>(metadata.runtimeClasses);
-		this.runtimePackages = new ArrayList<>(metadata.runtimePackages);
+		this.buildtimeClasses = new TreeSet<>(metadata.buildtimeClasses);
+		this.buildtimePackages = new TreeSet<>(metadata.buildtimePackages);
+		this.runtimeClasses = new TreeSet<>(metadata.runtimeClasses);
+		this.runtimePackages = new TreeSet<>(metadata.runtimePackages);
 	}
 
-	public List<String> getBuildtimeClasses() {
+	public Set<String> getBuildtimeClasses() {
 		return this.buildtimeClasses;
 	}
 
-	public List<String> getBuildtimePackages() {
+	public Set<String> getBuildtimePackages() {
 		return this.buildtimePackages;
 	}
 
-	public List<String> getRuntimeClasses() {
+	public Set<String> getRuntimeClasses() {
 		return this.runtimeClasses;
 	}
 
-	public List<String> getRuntimePackages() {
+	public Set<String> getRuntimePackages() {
 		return this.runtimePackages;
 	}
 
