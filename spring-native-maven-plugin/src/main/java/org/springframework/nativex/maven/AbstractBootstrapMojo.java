@@ -78,7 +78,7 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 
 	protected void compileGeneratedTestSources(Path generatedRootFolder) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
-		Path sourcePath = generatedRootFolder.resolve(Paths.get("src", "test", "java"));
+		Path sourcePath = generatedRootFolder.resolve(Paths.get("src", "main", "java"));
 		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcePath.toString())));
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
