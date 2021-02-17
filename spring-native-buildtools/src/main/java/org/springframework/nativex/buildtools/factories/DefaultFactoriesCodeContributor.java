@@ -42,7 +42,7 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	Consumer<CodeBlock.Builder> generateStaticInit(SpringFactory factory) {
 		return builder ->
-				builder.addStatement("factories.add($N.class, $N::new)", factory.getFactoryType().getCanonicalClassName(),
+				builder.addStatement("factories.add($N.class, () -> new $N())", factory.getFactoryType().getCanonicalClassName(),
 						factory.getFactory().getCanonicalClassName());
 	}
 
