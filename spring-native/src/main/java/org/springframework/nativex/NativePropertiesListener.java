@@ -23,6 +23,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 
 public class NativePropertiesListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+
+	static {
+		String imagecode = "org.graalvm.nativeimage.imagecode";
+		if (System.getProperty(imagecode) == null) {
+			System.setProperty(imagecode, "runtime");
+		}
+	}
+
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		Properties props = new Properties();
