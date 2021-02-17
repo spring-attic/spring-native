@@ -6,7 +6,7 @@
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-samples</artifactId>
 		<version>0.9.0-SNAPSHOT</version>
-		<relativePath>../../</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>discoveryclient</artifactId>
