@@ -125,7 +125,7 @@
 											<password>${artifactory.password}</password>
 											<repoKey>libs-milestone-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-											<excludePatterns>*/spring-native-configuration-*.*,*/spring-native-docs-*.pom</excludePatterns>
+											<excludePatterns>*/spring-native-docs-*.pom</excludePatterns>
 										</publisher>
 									</configuration>
 								</execution>
