@@ -21,10 +21,14 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.util.ClassUtils;
 
 public class NativePropertiesListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
 	static {
+		if (!ClassUtils.isPresent("org.springframework.nativex.buildtools.StaticSpringFactories", null)) {
+			throw new IllegalStateException("Mandatory generated class org.springframework.nativex.buildtools.StaticSpringFactories not found, please make sure spring-native-maven-plugin or spring-native-gradle-plugin are configured properly.");
+		}
 		String imagecode = "org.graalvm.nativeimage.imagecode";
 		if (System.getProperty(imagecode) == null) {
 			System.setProperty(imagecode, "runtime");
