@@ -49,25 +49,41 @@ public final class SpringFactoriesLoader {
 
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
-		List<Supplier<Object>> result = (List<Supplier<Object>>) StaticSpringFactories.factories.get(factoryType);
+		List<Supplier<Object>> result = StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
 			return new ArrayList<>(0);
 		}
-		return (List<T>) result.stream().map(Supplier::get).collect(Collectors.toList());
+		List<T> factories = new ArrayList<>(result.size());
+		for (Supplier<Object> supplier: result) {
+			// TODO: protect against factories that fail during instantiation
+			try {
+				factories.add((T) supplier.get());
+			}
+			catch (Throwable throwable) {
+				logger.trace("Could not instantiate factory for " + factoryType, throwable);
+			}
+		}
+		return factories;
 	}
 
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
+		List<String> result = new ArrayList<>();
 		List<String> names = StaticSpringFactories.names.get(factoryType);
 		if (names != null) {
-			return names;
+			result.addAll(names);
 		}
-		else {
-			List<Supplier<Object>> stored = StaticSpringFactories.factories.get(factoryType);
-			if (stored == null) {
-				return Collections.emptyList();
+		List<Supplier<Object>> stored = StaticSpringFactories.factories.get(factoryType);
+		if (stored != null) {
+			for (Supplier<Object> supplier: stored) {
+				try {
+					result.add(supplier.get().getClass().getName());
+				}
+				catch (Throwable throwable) {
+					logger.trace("Could not get factory name for " + factoryType, throwable);
+				}
 			}
-			return stored.stream().map(Supplier::get).map(factory -> factory.getClass().getName()).collect(Collectors.toList());
 		}
+		return result;
 	}
 
 }

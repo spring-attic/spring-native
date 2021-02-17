@@ -51,7 +51,12 @@ final class Target_SpringFactoriesLoader {
 		List<Supplier<Object>> stored = Target_StaticSpringFactories.factories.get(factoryType);
 		if (stored != null) {
 			for (Supplier<Object> supplier: stored) {
-				result.add(supplier.get().getClass().getName());
+				try {
+					result.add(supplier.get().getClass().getName());
+				}
+				catch (Throwable throwable) {
+					logger.trace("Could not get factory name for " + factoryType, throwable);
+				}
 			}
 		}
 		return result;
