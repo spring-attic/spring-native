@@ -4,16 +4,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.example.bootfeatures.nestedcfg.School;
+import com.example.bootfeatures.separatecfg.*;
+
 @Component
 public class CLR implements CommandLineRunner {
 	
 	@Autowired
 	Creds credentials;
+	
+	@Autowired
+	AcmeProperties acme;
+	
+	@Autowired
+	University university;
+	
+	@Autowired
+	School school;
 
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("bootfeatures running "+
 			credentials.getUsername()+":"+credentials.getPassword());
+		System.out.println("school is "+school);
+		System.out.println("uni is "+university);
+		System.out.println("acme is "+acme);
 	}
 	
 }

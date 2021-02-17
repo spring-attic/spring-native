@@ -910,14 +910,6 @@ public class Type {
 		return findAnnotationValue;
 	}
 
-	public List<String> findEnableConfigurationPropertiesValue() {
-		if (dimensions > 0) {
-			return Collections.emptyList();
-		}
-		List<String> values = findAnnotationValue(AtEnableConfigurationProperties, false, false);
-		return values;
-	}
-
 	public Map<String, List<String>> findImports() {
 		if (dimensions > 0) {
 			return Collections.emptyMap();
@@ -1361,9 +1353,7 @@ public class Type {
 				List<String> extractAttributeNames = hintsOnAnnotation.stream().map(hd -> hd.getExtractAttributeNames()).filter(x->x!=null).flatMap(List::stream).collect(Collectors.toList());
 				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an, extractAttributeNames);
 				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
-					// TODO special handling here for @EnableConfigurationProperties - should we
-					// promote this to a hint annotation value or truly a special case?
-					addInners(typesCollectedFromAnnotation);
+					processConfigurationProperties(typesCollectedFromAnnotation);
 				}
 				for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
 					hints.add(new HintApplication(new ArrayList<>(annotationChain),
@@ -1388,24 +1378,31 @@ public class Type {
 		}
 	}
 	
-
-	private void addInners(List<String> propertiesTypes) {
+	private void processConfigurationProperties(List<String> propertiesTypes) {
 		Set<String> collector = new HashSet<>();
-		for (String propertiesType : propertiesTypes) {
-			Type type = typeSystem.Lresolve(propertiesType, true);
-			if (type != null) {
-				collectInners(type, collector);
-			}
+		for (String propertiesType: propertiesTypes) {
+			walkPropertyType(propertiesType, collector);
 		}
 		propertiesTypes.addAll(collector);
 	}
-	
-	private void collectInners(Type type, Set<String> collector) {
-		List<Type> nestedTypes = type.getNestedTypes();
-		for (Type nestedType: nestedTypes) {
-			String name = nestedType.getDescriptor();
-			if (collector.add(name)) {
-				collectInners(nestedType, collector);
+
+	/**
+	 * Review the getters in a given configuration properties type, for any types in the return
+	 * types of the getter, add them for later reflective access. Include any in the generic
+	 * signature of the return type too.
+	 */
+	private void walkPropertyType(String propertiesType, Set<String> collector) {
+		Type type = typeSystem.Lresolve(propertiesType, true);
+		if (type != null) {
+			if (collector.add(propertiesType)) {
+				for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
+					for (Type returnSignatureType: method.getSignatureTypes(true)) {
+						String returnTypeDescriptor = returnSignatureType.getDescriptor();
+						if (!returnTypeDescriptor.startsWith("Ljava/")) {
+							walkPropertyType(returnTypeDescriptor, collector);
+						}
+					}
+				}
 			}
 		}
 	}
