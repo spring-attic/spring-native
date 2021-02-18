@@ -1,2 +1,2 @@
 org.springframework.context.ApplicationListener=\
-org.springframework.nativex.NativePropertiesListener
+org.springframework.nativex.NativeListener

@@ -23,7 +23,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.ClassUtils;
 
-public class NativePropertiesListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+public class NativeListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
 	static {
 		String imagecode = "org.graalvm.nativeimage.imagecode";
