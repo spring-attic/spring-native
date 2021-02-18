@@ -128,56 +128,6 @@ public class ConfigurationCollector {
 			return Arrays.copyOfRange(array, 1, array.length);
 		}
 	}
-
-
-	public void dump() {
-		String dumpLocation = ConfigOptions.getDumpConfigLocation();
-		if (dumpLocation != null) {
-			dump(new File(dumpLocation));
-		}
-	}
-
-	public void dump(File locationToPlaceConfig) {
-		logger.debug("Writing out configuration to directory "+locationToPlaceConfig.getAbsolutePath());
-		if (!locationToPlaceConfig.exists()) {
-			locationToPlaceConfig.mkdirs();
-		}
-		if (!locationToPlaceConfig.exists()) {
-			throw new RuntimeException("Unable to work with dump directory location: "+locationToPlaceConfig);
-		}
-		try {
-			File f = new File(locationToPlaceConfig,"reflect-config.json");
-			if (f.exists()) {
-				try (FileInputStream fos = new FileInputStream(f)) {
-					ReflectionDescriptor existingRD = JsonMarshaller.read(fos);
-					reflectionDescriptor.merge(existingRD);
-				}
-			}
-			try (FileOutputStream fos = new FileOutputStream(f)) {
-				JsonMarshaller.write(reflectionDescriptor,fos);
-			}
-			f = new File(locationToPlaceConfig, "resource-config.json");
-			if (f.exists()) {
-				try (FileInputStream fis = new FileInputStream(f)) {
-					ResourcesDescriptor existingRD = ResourcesJsonMarshaller.read(fis);
-					resourcesDescriptor.merge(existingRD);
-				}
-			}
-			try (FileOutputStream fos = new FileOutputStream(f)) {
-				ResourcesJsonMarshaller.write(resourcesDescriptor, fos);
-			}
-			try (FileOutputStream fos = new FileOutputStream(new File(locationToPlaceConfig,"proxy-config.json"))) {
-				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor,fos);
-			}
-			writeNativeImageProperties(new File(locationToPlaceConfig, "native-image.properties"));
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			throw new RuntimeException("Problem writing out configuration",ioe);
-		} catch (RuntimeException re) {
-			re.printStackTrace();
-			throw re;
-		}
-	}
 	
 	private void writeNativeImageProperties(File file) throws IOException {
 		String content = getNativeImagePropertiesContent();

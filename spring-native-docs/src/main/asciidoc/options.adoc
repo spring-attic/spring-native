@@ -69,8 +69,6 @@ to native-image.
 
 * `-Dspring.native.remove-yaml-support=true` removes Spring Boot Yaml support, enabling faster compilation and smaller executables.
 
-* `-Dspring.native.dump-config=/tmp/dump.txt` dumps the configuration to the specified file.
-
 * `-Dspring.native.verify=false` switches off the verifier mode (on by default).
 See the <<support#_limitations>> section for more details on this experimental option.
 

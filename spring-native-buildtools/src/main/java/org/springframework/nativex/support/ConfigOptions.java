@@ -49,8 +49,6 @@ public abstract class ConfigOptions {
 	private final static boolean REMOVE_JMX_SUPPORT;
 
 	private final static boolean REMOVE_YAML_SUPPORT;
-	
-	private final static String DUMP_CONFIG;
 
 	private static boolean VERBOSE;
 
@@ -158,10 +156,6 @@ public abstract class ConfigOptions {
 		if (REMOVE_JMX_SUPPORT) {
 			System.out.println("Removing JMX support");
 		}
-		DUMP_CONFIG = System.getProperty("spring.native.dump-config");
-		if (DUMP_CONFIG!=null) {
-			System.out.println("Dumping computed config to directory "+DUMP_CONFIG);
-		}
 	}
 
 	public static boolean shouldRemoveUnusedAutoconfig() {
@@ -182,10 +176,6 @@ public abstract class ConfigOptions {
 
 	public static boolean isVerifierOn() {
 		return VERIFIER_ON;
-	}
-
-	public static boolean shouldDumpConfig() {
-		return DUMP_CONFIG != null;
 	}
 
 	public static boolean shouldRemoveYamlSupport() {
@@ -218,10 +208,6 @@ public abstract class ConfigOptions {
 
 	public static boolean isIgnoreHintsOnExcludedConfig() {
 		return IGNORE_HINTS_ON_EXCLUDED_CONFIG;
-	}
-
-	public static String getDumpConfigLocation() {
-		return DUMP_CONFIG;
 	}
 
 	public static boolean isSkipAtBeanHintProcessing() {
