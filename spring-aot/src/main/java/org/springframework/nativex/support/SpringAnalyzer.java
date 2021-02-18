@@ -19,8 +19,6 @@ import org.springframework.nativex.type.TypeSystem;
 
 /**
  * Drive analysis of the Spring application to compute the configuration for the native-image build.
- * This analyzer drives the same stages of the analysis that SpringFeature does, except this uses no
- * GraalVM dependencies.
  * 
  * @author Andy Clement
  */

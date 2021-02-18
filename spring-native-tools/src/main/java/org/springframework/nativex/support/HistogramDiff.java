@@ -74,7 +74,7 @@ public class HistogramDiff {
 		System.out.println("These types are in the first and not the second:"+typesInFirstAndNotInSecond.size());
 		typesInFirstAndNotInSecond.stream().forEach(System.out::println);
 
-		System.out.println("Comparing feature vs hybrid");
+		System.out.println("Comparing default vs agent");
 		Set<String> packagesInSecondAndNotInFirst = b.packagesNotIn(a);
 		System.out.println("These packages are in the second and not the first:"+packagesInSecondAndNotInFirst.size());
 		packagesInSecondAndNotInFirst.stream().forEach(System.out::println);

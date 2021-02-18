@@ -25,7 +25,7 @@ import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
- * Encapsulate configurable feature behaviour.
+ * Encapsulate configurable Spring Native behaviour.
  * 
  * @author Andy Clement
  * @author Sebastien Deleuze
@@ -118,7 +118,7 @@ public abstract class ConfigOptions {
 		}
 		VERBOSE = Boolean.valueOf(System.getProperty("spring.native.verbose","false"));
 		if (VERBOSE) {
-			System.out.println("Turning on verbose mode for the feature");
+			System.out.println("Turning on verbose mode for Spring Native");
 		}
 		FAIL_ON_VERSION_CHECK = Boolean.valueOf(System.getProperty("spring.native.fail-on-version-check","true"));
 		if (!FAIL_ON_VERSION_CHECK) {
@@ -224,19 +224,10 @@ public abstract class ConfigOptions {
 
 	public static void ensureModeInitialized(TypeSystem ts) {
 		if (MODE == null) {
-			Map<String, ReflectionDescriptor> reflectionConfigurationsOnClasspath = ts
-					.getReflectionConfigurationsOnClasspath();
-			for (ReflectionDescriptor reflectionDescriptor : reflectionConfigurationsOnClasspath.values()) {
-				if (reflectionDescriptor
-						.hasClassDescriptor("org.springframework.boot.autoconfigure.SpringBootApplication")) {
-					MODE = MODE==null?Mode.AGENT:MODE;
-					break;
-				}
-			}
 			if (MODE == null) {
 				MODE = MODE==null?Mode.DEFAULT :MODE;
 			}
-			System.out.println("feature operating mode: " + MODE.name().toLowerCase());
+			System.out.println("Spring Native operating mode: " + MODE.name().toLowerCase());
 		}
 	}
 
