@@ -13,27 +13,41 @@
 	<groupId>org.springframework.experimental</groupId>
 
 	<properties>
+		<!-- native profile set it to false in order to allow to disable Spring Boot repackaging to avoid conflicts with native-image-maven-plugin -->
+		<repackage>true</repackage>
+
+		<!-- Tiny builder allow small footpring and reduced surface attack, you can also use paketobuildpacks/builder:base to have more tool available in the image-->
+		<builder>paketobuildpacks/builder:tiny</builder>
+
 		<spring-cloud.version>2020.0.1</spring-cloud.version>
 	</properties>
-	<artifactId>spring-native-samples</artifactId>
+
+	<artifactId>spring-native-parent</artifactId>
+	<name>Spring Native parent</name>
+
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+						<id>repackage</id>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<skip>${boot-repackage}</skip>
+						</configuration>
+						</execution>
+					</executions>
 					<configuration>
 						<image>
-							<builder>paketobuildpacks/builder:tiny</builder>
+							<builder>${builder}</builder>
 							<env>
 								<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
 								<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
@@ -154,6 +168,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native</artifactId>
+				<version>0.9.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
@@ -164,17 +183,17 @@
 	</dependencyManagement>
 
 	<profiles>
+		<!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
 		<profile>
 			<id>native</id>
+			<properties>
+				<boot-repackage>false</boot-repackage>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.graalvm.nativeimage</groupId>
 						<artifactId>native-image-maven-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>

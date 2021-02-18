@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
-		<artifactId>spring-native-samples</artifactId>
+		<artifactId>spring-native-parent</artifactId>
 		<version>0.9.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>scheduling-tasks</artifactId>
@@ -24,7 +24,6 @@
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-native</artifactId>
-            <version>0.9.0-SNAPSHOT</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,9 +49,13 @@
 		</dependency>
 	</dependencies>
 
-	<!-- Check out the parent POM (in ../pom.xml) for the plugins configuration -->
+	<!-- Check out the parent POM for the plugins configuration -->
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

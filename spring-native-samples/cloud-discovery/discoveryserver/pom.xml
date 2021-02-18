@@ -47,8 +47,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	<!-- Check out the parent POM (in ../pom.xml) for the plugins configuration -->
+
 	<build>
 		<plugins>
 			<plugin>

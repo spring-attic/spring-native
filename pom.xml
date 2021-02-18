@@ -25,6 +25,7 @@
 		<module>spring-native-tools</module>
 		<module>spring-native-docs</module>
 		<module>spring-native</module>
+		<module>spring-native-parent</module>
 		<module>spring-aot</module>
 		<module>spring-aot-maven-plugin</module>
 	</modules>

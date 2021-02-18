@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
-		<artifactId>spring-native-samples</artifactId>
+		<artifactId>spring-native-parent</artifactId>
 		<version>0.9.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>validator</artifactId>
@@ -19,7 +19,6 @@
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-native</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -39,6 +38,10 @@
 	<!-- this is the snippet that will use the buildpacks to produce a container image of the native executable -->
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
