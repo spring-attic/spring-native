@@ -64,7 +64,7 @@ public abstract class ConfigOptions {
 
 	public static final String ENABLE_AT_REPOSITORY_PROCESSING = "spring.native.enable-at-repository-processing";
 	
-	private static Mode MODE; // Default is 'reflection'
+	private static Mode MODE;
 
 	private static boolean BUILD_TIME_TRANSFORMATION;
 

@@ -39,14 +39,9 @@ import org.springframework.nativex.type.TypeSystem;
  * @author Andy Clement
  */
 public class ConfigurationContributor implements BootstrapContributor {
-
-	Path META_INF_NATIVE_IMAGE = Paths.get("META-INF", "native-image");
 	
 	@Override
 	public void contribute(BuildContext context) {
-		if (!isActive()) {
-			return;
-		}
 		ConfigOptions.setMode(Mode.DEFAULT);
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
 		ConfigOptions.setBuildTimeTransformation(true);
@@ -85,24 +80,4 @@ public class ConfigurationContributor implements BootstrapContributor {
 			}
 		});
 	}
-
-	/**
-	 * Possibly a temporary measure. Check if the collector should be active by trying to resolve a hint class - if we
-	 * can't then things aren't setup with feature+configuration modules (which is the case when this runs during the tests
-	 * in the buildtools module, which does not depend on configuration). When collector is used alongside configuration in the plugin
-	 * dependencies section of a real build attempting to use the collector properly, this will resolve OK.
-	 */
-	private boolean isActive() {
-		try (InputStream s = this.getClass().getResourceAsStream("/org/springframework/boot/SpringBootHints.class")) {
-			if (s==null) {
-				return false;
-			} else {
-				return true;
-			}
-		} catch (IOException e) {
-			return false;
-		}
-	}
-
-
 }
