@@ -76,82 +76,19 @@ public class AppContextStartupTest {
 
 Now take the `access-filter.json` file from above and place it in `src/main/resources` folder.
 
-
-Finally, this following snippet would go into the maven pom:
+This following snippet would go into the maven pom:
 
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
-    <profiles>
-    ...
-       <profile>
-            <id>native</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>make-native-image-config-folder</id>
-                                <phase>test-compile</phase>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="target/classes/META-INF/native-image"/>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <argLine>-Dorg.graalvm.nativeimage.imagecode=agent -Dspring.xml.ignore=true -Dspring.spel.ignore=true -agentlib:native-image-agent=access-filter-file=target/classes/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
-                            <includes>
-                              <include>**/AppContextStartupTest.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.graalvm.nativeimage</groupId>
-                        <artifactId>native-image-maven-plugin</artifactId>
-                        <version>{graalvm-version}</version>
-                        <configuration>
-                            <mainClass>com.example.demo.DemoApplication</mainClass>
-                            <imageName>example-compiled-app</imageName>
-                            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>native-image</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<configuration>
+			<argLine>${build.args} -agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+		</configuration>
+	</plugin>
 ----
 ====
 
-What does all of that do:
-
-* `make-native-image-config-folder` creates the target folder for the agent generated configuration 
-* `maven-surefire-plugin` is used to run the single test above (in this case) to start/stop the application context. Notice
-the test is run with the `-agentlib` specified including the `access-filter.json` option and the target folder for the
-generated configuration.
-* `native-image-maven-plugin` will invoke native-image with the computed configuration. Update the `<imageName>example-compiled-app</imageName>`
-to give a name to the native-image built executable. Also tweak the `<mainClass>...</mainClass>` to point to the main application class.
-
-Then, running `mvn -Pnative clean package` will do everything from end-to-end. It will compile the app,
-run the test with agent attached, finally building the native-image executable.
+Also update the `native-image` arguments to enable the agent mode with `-Dspring.native.mode=agent`.
