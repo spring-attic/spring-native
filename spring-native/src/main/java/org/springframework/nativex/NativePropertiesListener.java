@@ -26,11 +26,11 @@ import org.springframework.util.ClassUtils;
 public class NativePropertiesListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
 	static {
-		if (!ClassUtils.isPresent("org.springframework.nativex.buildtools.StaticSpringFactories", null)) {
-			throw new IllegalStateException("Mandatory generated class org.springframework.nativex.buildtools.StaticSpringFactories not found, please make sure spring-native-maven-plugin or spring-native-gradle-plugin are configured properly.");
-		}
 		String imagecode = "org.graalvm.nativeimage.imagecode";
 		if (System.getProperty(imagecode) == null) {
+			if (!ClassUtils.isPresent("org.springframework.nativex.buildtools.StaticSpringFactories", null)) {
+				throw new IllegalStateException("Mandatory generated class org.springframework.nativex.buildtools.StaticSpringFactories not found, please make sure spring-native-maven-plugin or spring-native-gradle-plugin are configured properly.");
+			}
 			System.setProperty(imagecode, "runtime");
 		}
 	}
