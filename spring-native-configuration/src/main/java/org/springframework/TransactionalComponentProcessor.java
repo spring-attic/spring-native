@@ -33,6 +33,10 @@ public class TransactionalComponentProcessor implements ComponentProcessor {
 	public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
 		boolean isInteresting =  (type != null && (type.isTransactional() || type.hasTransactionalMethods())); 
+		if (isInteresting && !type.isInterface()) {
+			throw new IllegalStateException("Unable to process @Transactional on a class (found on: "+
+					componentType+"), only proxies for @Transactional annotated interfaces are currently supported");
+		}
 		return isInteresting;
 	}
 
