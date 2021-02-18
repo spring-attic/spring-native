@@ -50,7 +50,7 @@ public class BootstrapTestsMojo extends AbstractBootstrapMojo {
 
 		compileGeneratedTestSources(this.outputDirectory.toPath());
 
-		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
+		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
 		processGeneratedResources(resourcePath, Paths.get(project.getBuild().getOutputDirectory()));
 
 		this.buildContext.refresh(this.buildDir);
