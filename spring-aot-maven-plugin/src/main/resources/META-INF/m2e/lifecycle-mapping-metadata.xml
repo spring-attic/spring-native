@@ -5,6 +5,7 @@
 			<pluginExecutionFilter>
 				<goals>
 					<goal>bootstrap</goal>
+					<goal>bootstrapTests</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>

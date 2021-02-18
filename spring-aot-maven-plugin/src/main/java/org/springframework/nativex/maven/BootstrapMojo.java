@@ -41,6 +41,7 @@ public class BootstrapMojo extends AbstractBootstrapMojo {
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator();
 			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getRuntimeClasspathElements(), resourceFolders);
+			project.addCompileSourceRoot(this.outputDirectory.getAbsolutePath());
 		}
 		catch (Throwable exc) {
 			logger.error(exc);
