@@ -11,10 +11,10 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
-import org.springframework.nativex.substitutions.WithBuildtools;
+import org.springframework.nativex.substitutions.WithAot;
 import org.springframework.util.Assert;
 
-@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { WithBuildtools.class, OnlyIfPresent.class })
+@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_SpringFactoriesLoader {
 
 	@Alias

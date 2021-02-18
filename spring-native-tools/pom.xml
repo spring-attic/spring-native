@@ -17,7 +17,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native-buildtools</artifactId>
+			<artifactId>spring-aot</artifactId>
 			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 

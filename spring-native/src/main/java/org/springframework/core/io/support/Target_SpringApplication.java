@@ -11,9 +11,9 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
-import org.springframework.nativex.substitutions.WithBuildtools;
+import org.springframework.nativex.substitutions.WithAot;
 
-@TargetClass(className="org.springframework.boot.SpringApplication", onlyWith = { WithBuildtools.class, OnlyIfPresent.class })
+@TargetClass(className="org.springframework.boot.SpringApplication", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_SpringApplication {
 
 	@Substitute

@@ -1,0 +1,2 @@
+org.springframework.aot.factories.SpringFactoriesContributor
+org.springframework.aot.nativex.ConfigurationContributor

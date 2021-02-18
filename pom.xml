@@ -25,8 +25,8 @@
 		<module>spring-native-tools</module>
 		<module>spring-native-docs</module>
 		<module>spring-native</module>
-		<module>spring-native-buildtools</module>
-		<module>spring-native-maven-plugin</module>
+		<module>spring-aot</module>
+		<module>spring-aot-maven-plugin</module>
 	</modules>
 
 	<dependencyManagement>

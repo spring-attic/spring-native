@@ -61,7 +61,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 				org.springframework.core.ReactiveAdapterRegistry.class,
 				org.springframework.core.NativeDetector.class
 		}, typeNames = {
-				"org.springframework.nativex.buildtools.StaticSpringFactories",
+				"org.springframework.aot.StaticSpringFactories",
 				"org.springframework.aop.Advisor$1",
 				"org.springframework.core.annotation.AnnotationFilter$1",
 				"org.springframework.core.annotation.AnnotationFilter$2",

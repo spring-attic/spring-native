@@ -6,10 +6,10 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.nativex.substitutions.OnlyIfPresent;
-import org.springframework.nativex.substitutions.WithBuildtools;
+import org.springframework.nativex.substitutions.WithAot;
 import org.springframework.util.MultiValueMap;
 
-@TargetClass(className="org.springframework.nativex.buildtools.StaticSpringFactories", onlyWith = { WithBuildtools.class, OnlyIfPresent.class })
+@TargetClass(className="org.springframework.aot.StaticSpringFactories", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_StaticSpringFactories {
 
 	@Alias

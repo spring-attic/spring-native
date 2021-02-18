@@ -23,7 +23,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-native-maven-plugin</artifactId>
+				<artifactId>spring-aot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -43,7 +43,7 @@
 				</plugin>
 				<plugin>
 					<groupId>org.springframework.experimental</groupId>
-					<artifactId>spring-native-maven-plugin</artifactId>
+					<artifactId>spring-aot-maven-plugin</artifactId>
 					<version>0.9.0-SNAPSHOT</version>
 					<executions>
 						<execution>
