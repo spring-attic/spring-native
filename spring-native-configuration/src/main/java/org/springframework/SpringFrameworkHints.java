@@ -12,9 +12,6 @@ import org.springframework.nativex.hint.ProxyInfo;
 				org.springframework.aop.TargetSource.class,
 				org.springframework.aop.framework.Advised.class,
 				org.springframework.aop.Advisor.class,
-				org.springframework.aop.framework.DefaultAopProxyFactory.class,
-				org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.class,
-				org.springframework.context.annotation.ConfigurationClassPostProcessor.class,
 				org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.class,
 				org.springframework.core.DecoratingProxy.class,
 				org.springframework.core.annotation.AnnotationFilter.class,
@@ -61,7 +58,8 @@ import org.springframework.nativex.hint.ProxyInfo;
 				org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport.class,
 				org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService.class,
 				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
-				org.springframework.core.ReactiveAdapterRegistry.class
+				org.springframework.core.ReactiveAdapterRegistry.class,
+				org.springframework.core.NativeDetector.class
 		}, typeNames = {
 				"org.springframework.nativex.buildtools.StaticSpringFactories",
 				"org.springframework.aop.Advisor$1",
@@ -69,10 +67,6 @@ import org.springframework.nativex.hint.ProxyInfo;
 				"org.springframework.core.annotation.AnnotationFilter$2",
 				"org.springframework.core.annotation.PackagesAnnotationFilter",
 				"org.springframework.core.annotation.TypeMappedAnnotations",
-				"org.springframework.core.SerializableTypeWrapper",
-				"org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy",
-				"org.springframework.context.annotation.ConfigurationClassEnhancer",
-				"org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader",
 				"org.springframework.format.annotation.DateTimeFormat$ISO",
 				"org.springframework.http.codec.CodecConfigurerFactory",
 				// For XML removal
