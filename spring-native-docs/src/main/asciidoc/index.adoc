@@ -54,6 +54,7 @@ The Spring Native for GraalVM project is composed of the following modules:
 - `spring-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
+- `spring-native-parent`: Maven parent pom with preconfigured dependency and plugin management.
 - `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
 - `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
 
