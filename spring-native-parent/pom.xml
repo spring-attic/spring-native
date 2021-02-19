@@ -185,7 +185,7 @@
 	<profiles>
 		<!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
 		<profile>
-			<id>native</id>
+			<id>native-image</id>
 			<properties>
 				<boot-repackage>false</boot-repackage>
 			</properties>
