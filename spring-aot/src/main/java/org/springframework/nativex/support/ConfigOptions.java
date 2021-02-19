@@ -34,7 +34,7 @@ public abstract class ConfigOptions {
 	
 	private static Log logger = LogFactory.getLog(ConfigOptions.class);	
 	
-	public final static boolean debugVerification = Boolean.parseBoolean(System.getProperty("spring.nativex.debug.verify","false"));
+	public final static boolean debugVerification = Boolean.parseBoolean(System.getProperty("spring.native.debug.verify","false"));
 	
 	private final static boolean IGNORE_HINTS_ON_EXCLUDED_CONFIG;
 	
