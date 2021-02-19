@@ -61,17 +61,17 @@
 					<version>0.9.0-SNAPSHOT</version>
 					<executions>
 						<execution>
-							<id>bootstrap-tests</id>
+							<id>test-generate</id>
 							<phase>process-test-classes</phase>
 							<goals>
-								<goal>bootstrapTests</goal>
+								<goal>test-generate</goal>
 							</goals>
 						</execution>
 						<execution>
-							<id>bootstrap</id>
+							<id>generate</id>
 							<phase>prepare-package</phase>
 							<goals>
-								<goal>bootstrap</goal>
+								<goal>generate</goal>
 							</goals>
 						</execution>
 					</executions>

@@ -1,4 +1,4 @@
-package org.springframework.nativex.maven;
+package org.springframework.aot.maven;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -19,16 +19,17 @@ import org.springframework.aot.BootstrapCodeGenerator;
 
 /**
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
-@Mojo(name = "bootstrapTests", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, requiresProject = true, threadSafe = true,
+@Mojo(name = "test-generate", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, requiresProject = true, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.TEST,
 		requiresDependencyCollection = ResolutionScope.TEST)
-public class BootstrapTestsMojo extends AbstractBootstrapMojo {
+public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	/**
 	 * The location of the generated bootstrap test sources.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot-test/")
+	@Parameter(defaultValue = "${project.build.directory}/generated-test-sources/spring-aot/")
 	private File outputDirectory;
 
 	@Override
@@ -41,7 +42,6 @@ public class BootstrapTestsMojo extends AbstractBootstrapMojo {
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator();
 			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getTestClasspathElements(), resourceFolders);
-			project.addTestCompileSourceRoot(this.outputDirectory.getAbsolutePath());
 		}
 		catch (Throwable exc) {
 			logger.error(exc);
@@ -52,7 +52,7 @@ public class BootstrapTestsMojo extends AbstractBootstrapMojo {
 		compileGeneratedTestSources(this.outputDirectory.toPath());
 
 		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
-		processGeneratedResources(resourcePath, Paths.get(project.getBuild().getOutputDirectory()));
+		processGeneratedTestResources(resourcePath, Paths.get(project.getBuild().getOutputDirectory()));
 
 		this.buildContext.refresh(this.buildDir);
 	}

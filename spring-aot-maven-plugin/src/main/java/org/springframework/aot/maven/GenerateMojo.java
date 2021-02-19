@@ -1,4 +1,4 @@
-package org.springframework.nativex.maven;
+package org.springframework.aot.maven;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -19,16 +19,17 @@ import org.springframework.aot.BootstrapCodeGenerator;
 
 /**
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
-@Mojo(name = "bootstrap", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true, threadSafe = true,
+@Mojo(name = "generate", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresProject = true, threadSafe = true,
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class BootstrapMojo extends AbstractBootstrapMojo {
+public class GenerateMojo extends AbstractBootstrapMojo {
 
 	/**
 	 * The location of the generated bootstrap sources.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot/")
+	@Parameter(defaultValue = "${project.build.directory}/generated-sources/spring-aot/")
 	private File outputDirectory;
 
 	@Override
@@ -41,7 +42,6 @@ public class BootstrapMojo extends AbstractBootstrapMojo {
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator();
 			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getRuntimeClasspathElements(), resourceFolders);
-			project.addCompileSourceRoot(this.outputDirectory.getAbsolutePath());
 		}
 		catch (Throwable exc) {
 			logger.error(exc);

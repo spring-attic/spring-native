@@ -4,8 +4,7 @@
 		<pluginExecution>
 			<pluginExecutionFilter>
 				<goals>
-					<goal>bootstrap</goal>
-					<goal>bootstrapTests</goal>
+					<goal>generate</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
@@ -13,6 +12,16 @@
 					<runOnConfiguration>true</runOnConfiguration>
 					<runOnIncremental>false</runOnIncremental>
 				</execute>
+			</action>
+		</pluginExecution>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<goals>
+					<goal>test-generate</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<ignore />
 			</action>
 		</pluginExecution>
 	</pluginExecutions>

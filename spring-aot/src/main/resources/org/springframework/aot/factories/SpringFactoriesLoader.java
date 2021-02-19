@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot.factories;
+package org.springframework.core.io.support;
 
 import java.util.ArrayList;
 import java.util.List;
