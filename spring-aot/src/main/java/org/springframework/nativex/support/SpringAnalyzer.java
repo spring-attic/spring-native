@@ -15,6 +15,8 @@
  */
 package org.springframework.nativex.support;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -23,6 +25,8 @@ import org.springframework.nativex.type.TypeSystem;
  * @author Andy Clement
  */
 public class SpringAnalyzer {
+	
+	private static Log logger = LogFactory.getLog(SpringAnalyzer.class);	
 
 	private final TypeSystem typeSystem;
 
@@ -41,7 +45,7 @@ public class SpringAnalyzer {
 	}
 
 	public void analyze() {
-		System.out.println("Spring analysis running");
+		logger.debug("Spring analysis running");
 		collector = new ConfigurationCollector();
 
 		reflectionHandler = new ReflectionHandler(collector);

@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -31,6 +31,8 @@ import org.springframework.nativex.type.TypeSystem;
  * @author Sebastien Deleuze
  */
 public abstract class ConfigOptions {
+	
+	private static Log logger = LogFactory.getLog(ConfigOptions.class);	
 	
 	public final static boolean debugVerification = Boolean.parseBoolean(System.getProperty("spring.nativex.debug.verify","false"));
 	
@@ -81,23 +83,23 @@ public abstract class ConfigOptions {
 			}
 		}
 		if (BUILD_TIME_PROPERTIES_CHECKS != null) {
-			System.out.println("System is matching some properties at build time: "+propChecks);
+			logger.debug("System is matching some properties at build time: "+propChecks);
 		}
 		BUILD_TIME_PROPERTIES_MATCH_IF_MISSING = Boolean.valueOf(System.getProperty("spring.native.build-time-properties-match-if-missing","true"));
 		if (!BUILD_TIME_PROPERTIES_MATCH_IF_MISSING) {
-			System.out.println("For matchIfMissing property checks system will assume if the property is not specified the check will fail");
+			logger.debug("For matchIfMissing property checks system will assume if the property is not specified the check will fail");
 		}
 		IGNORE_HINTS_ON_EXCLUDED_CONFIG = Boolean.valueOf(System.getProperty("spring.native.ignore-hints-on-excluded-config","true"));
 		if (!IGNORE_HINTS_ON_EXCLUDED_CONFIG) {
-			System.out.println("Currently not processing any spring.autoconfigure.exclude property in application.properties)");
+			logger.debug("Currently not processing any spring.autoconfigure.exclude property in application.properties)");
 		}
 		SKIP_AT_BEAN_HINT_PROCESSING = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-hint-processing", "false"));
 		if (SKIP_AT_BEAN_HINT_PROCESSING) {
-			System.out.println("Skipping @Bean hint processing");
+			logger.debug("Skipping @Bean hint processing");
 		}
 		SKIP_AT_BEAN_SIGNATURE_TYPES = Boolean.valueOf(System.getProperty("spring.native.skip-at-bean-signature-types-processing", "false"));
 		if (SKIP_AT_BEAN_SIGNATURE_TYPES) {
-			System.out.println("Skipping @Bean signature type processing");
+			logger.debug("Skipping @Bean signature type processing");
 		}
 		String modeValue = System.getProperty("spring.native.mode");
 		if (modeValue != null) {
@@ -106,33 +108,33 @@ public abstract class ConfigOptions {
 				// Default
 				MODE = Mode.DEFAULT;
 			}
-			System.out.println("Spring Native operating in "+MODE+" mode");
+			logger.debug("Spring Native operating in "+MODE+" mode");
 		}
 		REMOVE_UNUSED_AUTOCONFIG = Boolean.valueOf(System.getProperty("spring.native.remove-unused-autoconfig", "true"));
 		if(REMOVE_UNUSED_AUTOCONFIG) {
-			System.out.println("Removing unused configurations");
+			logger.debug("Removing unused configurations");
 		}
 		VERIFIER_ON = Boolean.valueOf(System.getProperty("spring.native.verify","true"));
 		if(VERIFIER_ON) {
-			System.out.println("Verification turned on");
+			logger.debug("Verification turned on");
 		}
 		VERBOSE = Boolean.valueOf(System.getProperty("spring.native.verbose","false"));
 		if (VERBOSE) {
-			System.out.println("Turning on verbose mode for Spring Native");
+			logger.debug("Turning on verbose mode for Spring Native");
 		}
 		FAIL_ON_VERSION_CHECK = Boolean.valueOf(System.getProperty("spring.native.fail-on-version-check","true"));
 		if (!FAIL_ON_VERSION_CHECK) {
-			System.out.println("Turning off Spring Boot version check");
+			logger.debug("Turning off Spring Boot version check");
 		}
 		MISSING_SELECTOR_HINTS = System.getProperty("spring.native.missing-selector-hints","error");
 		if (MISSING_SELECTOR_HINTS.equals("warning")) {
-			System.out.println("Selectors missing hints will be reported as a warning, not an error");
+			logger.debug("Selectors missing hints will be reported as a warning, not an error");
 		} else if (!MISSING_SELECTOR_HINTS.equals("error")) {
 			throw new IllegalStateException("Supported values for 'spring.native.missing-selector-hints' are 'error' (default) or 'warning'");
 		}
 		REMOVE_YAML_SUPPORT = Boolean.valueOf(System.getProperty("spring.native.remove-yaml-support", "false"));
 		if (REMOVE_YAML_SUPPORT) {
-			System.out.println("Removing Yaml support");
+			logger.debug("Removing Yaml support");
 		}
 		String springXmlIgnore = System.getProperty("spring.xml.ignore");
 		if (springXmlIgnore == null) {
@@ -141,11 +143,11 @@ public abstract class ConfigOptions {
 		}
 		REMOVE_XML_SUPPORT = Boolean.valueOf(springXmlIgnore);
 		if (REMOVE_XML_SUPPORT) {
-			System.out.println("Removing XML support");
+			logger.debug("Removing XML support");
 		}
 		REMOVE_SPEL_SUPPORT = Boolean.valueOf(System.getProperty("spring.spel.ignore", "false"));
 		if (REMOVE_SPEL_SUPPORT) {
-			System.out.println("Removing SpEL support");
+			logger.debug("Removing SpEL support");
 		}
 		String removeJmxSupport = System.getProperty("spring.native.remove-jmx-support");
 		if (removeJmxSupport == null) {
@@ -154,7 +156,7 @@ public abstract class ConfigOptions {
 		}
 		REMOVE_JMX_SUPPORT = Boolean.valueOf(removeJmxSupport);
 		if (REMOVE_JMX_SUPPORT) {
-			System.out.println("Removing JMX support");
+			logger.debug("Removing JMX support");
 		}
 	}
 
@@ -227,7 +229,7 @@ public abstract class ConfigOptions {
 			if (MODE == null) {
 				MODE = MODE==null?Mode.DEFAULT :MODE;
 			}
-			System.out.println("Spring Native operating mode: " + MODE.name().toLowerCase());
+			logger.debug("Spring Native operating mode: " + MODE.name().toLowerCase());
 		}
 	}
 

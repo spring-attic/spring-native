@@ -20,7 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.type.SpringFactoriesProcessor;
+import org.springframework.nativex.type.TypeUtils;
 
 /**
  * A {@link SpringFactoriesProcessor} that is configurable by an option:
@@ -32,6 +35,8 @@ import org.springframework.nativex.type.SpringFactoriesProcessor;
  * @author Andy Clement
  */
 public class ConfigurableSpringFactoriesProcessor implements SpringFactoriesProcessor {
+
+	private static Log logger = LogFactory.getLog(ConfigurableSpringFactoriesProcessor.class);	
 
 	private final static String option = "spring.native.spring-factories-exclusions";
 
@@ -59,7 +64,7 @@ public class ConfigurableSpringFactoriesProcessor implements SpringFactoriesProc
 			throw new IllegalStateException("Unable to process spring.native.spring-factories-exclusions: "+springFactoriesExclusions,t);
 		}
 		if (springFactoriesExclusions.size()>0) {
-			System.out.println("The following map of spring.factories entries will be removed if encountered: "+springFactoriesExclusions);
+			logger.debug("The following map of spring.factories entries will be removed if encountered: "+springFactoriesExclusions);
 		}
 	}
 

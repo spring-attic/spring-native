@@ -17,7 +17,6 @@ package org.springframework.nativex.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,15 +32,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
-import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
@@ -223,7 +219,7 @@ public class ConfigurationCollector {
 			boolean verifyType = verifyType(classDescriptor);
 			if (!verifyType) {
 				if (ConfigOptions.debugVerification) {
-					System.out.println("FAILED: filtering out "+classDescriptor.getName());
+					logger.debug("FAILED: filtering out "+classDescriptor.getName());
 				}
 				// Give up now
 				anyFailed=true;
@@ -231,7 +227,7 @@ public class ConfigurationCollector {
 			}
 			if (areMembersSpecified(classDescriptor)) {
 				if (!verifyMembers(classDescriptor)) {
-					System.out.println("Stripped down to a base class descriptor for "+classDescriptor.getName());
+					logger.debug("Stripped down to a base class descriptor for "+classDescriptor.getName());
 					Set<Flag> existingFlags = classDescriptor.getFlags();
 					classDescriptor = ClassDescriptor.of(classDescriptor.getName());
 //					classDescriptor.setFlags(Flags.
@@ -247,7 +243,7 @@ public class ConfigurationCollector {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t== null) {
 			if (ConfigOptions.debugVerification) {
-				System.out.println("FAILED VERIFICATION type missing "+classDescriptor.getName());
+				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
 			}
 			return false;
 		} else {
@@ -259,7 +255,7 @@ public class ConfigurationCollector {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t== null) {
 			if (ConfigOptions.debugVerification) {
-				System.out.println("FAILED VERIFICATION type missing "+classDescriptor.getName());
+				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
 			}
 			return false;
 		} else {

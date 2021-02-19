@@ -21,9 +21,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BootstrapContributor;
-import org.springframework.aot.ResourceFile;
 import org.springframework.aot.BuildContext;
+import org.springframework.aot.ResourceFile;
 import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.support.ConfigurationCollector;
 import org.springframework.nativex.support.Mode;
@@ -39,6 +41,8 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class ConfigurationContributor implements BootstrapContributor {
 	
+	private static Log logger = LogFactory.getLog(ConfigurationContributor.class);	
+	
 	@Override
 	public void contribute(BuildContext context) {
 		ConfigOptions.setMode(Mode.DEFAULT);
@@ -52,7 +56,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
 		byte[] springComponentsFileContents = configurationCollector.getResources("META-INF/spring.components");
 		if (springComponentsFileContents!=null) {
-			System.out.println("Storing synthesized META-INF/spring.components");
+			logger.debug("Storing synthesized META-INF/spring.components");
 			context.addResources(new ResourceFile() {
 				@Override
 				public void writeTo(Path rootPath) throws IOException {

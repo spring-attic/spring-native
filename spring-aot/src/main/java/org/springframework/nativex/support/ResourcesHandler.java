@@ -111,7 +111,7 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private void registerResourceBundles(ResourcesDescriptor rd) {
-		System.out.println("Registering resources - #" + rd.getBundles().size() + " bundles");
+		logger.debug("Registering resources - #" + rd.getBundles().size() + " bundles");
 		for (String bundle : rd.getBundles()) {
 			try {
 				ResourceBundle.getBundle(bundle);
@@ -189,7 +189,7 @@ public class ResourcesHandler extends Handler {
 		List<String> alreadyProcessed = new ArrayList<>();
 		if (springComponents.size()!=0) {
 //		if (springComponents.hasMoreElements()) {
-			log("Processing existing META-INF/spring.components files...");
+			logger.debug("Processing existing META-INF/spring.components files...");
 			for (byte[] springComponentsFile: springComponents) {
 //			while (springComponents.hasMoreElements()) {
 //				URL springFactory = springComponents.nextElement();
@@ -207,7 +207,7 @@ public class ResourcesHandler extends Handler {
 				}
 			}
 		} else {
-			log("Found no META-INF/spring.components -> synthesizing one...");
+			logger.debug("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
 			if (ConfigOptions.isAgentMode()) {
 				processSpringComponentsAgent(p, context);
@@ -226,12 +226,12 @@ public class ResourcesHandler extends Handler {
 			p.put(k, filteredComponent.getValue().stream().map(t -> t.getDottedName())
 					.collect(Collectors.joining(",")));
 		}
-		System.out.println("Computed spring.components is ");
-		System.out.println("vvv");
+		logger.debug("Computed spring.components is ");
+		logger.debug("vvv");
 		for (Object k : p.keySet()) {
-			System.out.println(k + "=" + p.getProperty((String) k));
+			logger.debug(k + "=" + p.getProperty((String) k));
 		}
-		System.out.println("^^^");
+		logger.debug("^^^");
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			p.store(baos, "");
@@ -255,13 +255,13 @@ public class ResourcesHandler extends Handler {
 			Type keyType = ts.resolveDotted(key);
 			// The context start/stop test may not exercise the @SpringBootApplication class
 			if (keyType.isAtSpringBootApplication()) {
-				System.out.println("hybrid: adding access to "+keyType+" since @SpringBootApplication");
+				logger.debug("hybrid: adding access to "+keyType+" since @SpringBootApplication");
 				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
 //				resourcesRegistry.addResources(key.replace(".", "/")+".class");
 				collector.addResource(key.replace(".", "/")+".class", false);
 			}
 			if (keyType.isAtController()) {
-				System.out.println("hybrid: Processing controller "+key);
+				logger.debug("hybrid: Processing controller "+key);
 				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
 				// Example:
 				// @GetMapping("/greeting")
@@ -274,7 +274,7 @@ public class ResourcesHandler extends Handler {
 								List<String> interfaces = new ArrayList<>();
 								interfaces.add(parameterAnnotationType.getDottedName());
 								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
-								System.out.println("Adding dynamic proxy for "+interfaces);
+								logger.debug("Adding dynamic proxy for "+interfaces);
 								dynamicProxiesHandler.addProxy(interfaces);
 							}
 						}
@@ -400,7 +400,7 @@ public class ResourcesHandler extends Handler {
 				registerHierarchy(pc, baseType, requestor);
 			} catch (Throwable t) {
 				t.printStackTrace();
-				System.out.println("Problems with value " + tt);
+				logger.debug("Problems with value " + tt);
 			}
 		}
 		if (isComponent && ConfigOptions.isVerifierOn()) {
@@ -590,12 +590,12 @@ public class ResourcesHandler extends Handler {
 		// Rather than just looking at superclass and interfaces, this will dig into everything including
 		// parameterized type references so nothing is missed
 //		if (type.getSuperclass()!=null) {
-//			System.out.println("RH>SC "+type.getSuperclass());
+//			logger.debug("RH>SC "+type.getSuperclass());
 //		registerHierarchyHelper(type.getSuperclass(),visited, typesToMakeAccessible,inferredRequiredAccess);
 //		}
 //		Type[] intfaces = type.getInterfaces();
 //		for (Type intface: intfaces) {
-//			System.out.println("RH>IF "+intface);
+//			logger.debug("RH>IF "+intface);
 //			registerHierarchyHelper(intface,visited, typesToMakeAccessible,inferredRequiredAccess);
 //		}
 /*		
@@ -623,7 +623,7 @@ public class ResourcesHandler extends Handler {
 		}
 //		lst.removeAll(supers);
 //		if (lst.size()!=0) {
-//		System.out.println("MISSED THESE ("+type.getDottedName()+"): "+lst);
+//		logger.debug("MISSED THESE ("+type.getDottedName()+"): "+lst);
 //		}
 	}
 
@@ -635,7 +635,7 @@ public class ResourcesHandler extends Handler {
 	 * files with the system.
 	 */
 	public void processSpringFactories() {
-		log("Processing META-INF/spring.factories files...");
+		logger.debug("Processing META-INF/spring.factories files...");
 		for (byte[] springFactory: ts.getResources("META-INF/spring.factories")) {
 			Properties p = new Properties();
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(springFactory)) {
@@ -685,7 +685,7 @@ public class ResourcesHandler extends Handler {
 				}
 			}
 		} catch (NoClassDefFoundError ncdfe) {
-			System.out.println(
+			logger.debug(
 					"spring.factories processing, problem adding access for key " + s + ": " + ncdfe.getMessage());
 		}
 	}
@@ -821,7 +821,7 @@ public class ResourcesHandler extends Handler {
 						forRemoval.add(s);
 						}
 					}
-					System.out.println("Processing spring.factories - PropertySourceLoader lists #"
+					logger.debug("Processing spring.factories - PropertySourceLoader lists #"
 											+ propertySourceLoaders.size() + " property source loaders");
 					logger.debug("These property source loaders are remaining in the PropertySourceLoader key value:");
 					for (int c = 0; c < propertySourceLoaders.size(); c++) {
@@ -842,7 +842,7 @@ public class ResourcesHandler extends Handler {
 			for (String s : enableAutoConfigurationValues.split(",")) {
 				configurations.add(s);
 			}
-			System.out.println("Processing spring.factories - EnableAutoConfiguration lists #" + configurations.size()
+			logger.debug("Processing spring.factories - EnableAutoConfiguration lists #" + configurations.size()
 					+ " configurations");
 			for (String config : configurations) {
 				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
@@ -854,7 +854,7 @@ public class ResourcesHandler extends Handler {
 				}
 			}
 			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-				System.out.println(
+				logger.debug(
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
 				p.put(enableAutoconfigurationKey, String.join(",", configurations));
@@ -868,7 +868,7 @@ public class ResourcesHandler extends Handler {
 		if (forRemoval.size() > 0) {
 			String existingRC = ts.findAnyResourceConfigIncludingSpringFactoriesPattern();
 			if (existingRC != null) {
-				System.out.println("WARNING: unable to trim META-INF/spring.factories (for example to disable unused auto configurations)"+
+				logger.debug("WARNING: unable to trim META-INF/spring.factories (for example to disable unused auto configurations)"+
 					" because an existing resource-config is directly including it: "+existingRC);
 				return;
 			}
@@ -1796,28 +1796,28 @@ public class ResourcesHandler extends Handler {
 			// TODO promote this approach to a plugin if becomes a little more common...
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Jetty")) { // See EmbeddedJetty @COC check
 				if (!ts.canResolve("org/eclipse/jetty/webapp/WebAppContext")) {
-					System.out.println("Reducing access on "+dname+" because WebAppContext not around");
+					logger.debug("Reducing access on "+dname+" because WebAppContext not around");
 					requestedAccess = AccessBits.CLASS;
 				}
 			}
 
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Undertow")) { // See EmbeddedUndertow @COC check
 				if (!ts.canResolve("io/undertow/Undertow")) {
-					System.out.println("Reducing access on "+dname+" because Undertow not around");
+					logger.debug("Reducing access on "+dname+" because Undertow not around");
 					requestedAccess = AccessBits.CLASS;
 				}
 			}
 
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat")) { // See EmbeddedTomcat @COC check
 				if (!ts.canResolve("org/apache/catalina/startup/Tomcat")) {
-					System.out.println("Reducing access on "+dname+" because Tomcat not around");
+					logger.debug("Reducing access on "+dname+" because Tomcat not around");
 					requestedAccess = AccessBits.CLASS;
 				}
 			}
 
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Netty")) { // See EmbeddedNetty @COC check
 				if (!ts.canResolve("reactor/netty/http/server/HttpServer")) {
-					System.out.println("Reducing access on "+dname+" because HttpServer not around");
+					logger.debug("Reducing access on "+dname+" because HttpServer not around");
 					requestedAccess = AccessBits.CLASS;
 				}
 			}
@@ -1920,10 +1920,6 @@ public class ResourcesHandler extends Handler {
 			}
 			tar.requestTypeAccess(t.getDottedName(), Type.inferAccessRequired(t));
 		}
-	}
-
-	private void log(String msg) {
-		System.out.println(msg);
 	}
 
 	private String spaces(int depth) {

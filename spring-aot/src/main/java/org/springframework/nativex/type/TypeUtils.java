@@ -62,11 +62,11 @@ public class TypeUtils {
 		Type endpointClass = fetchAnnotationAttributeValueAsClass(typeSystem, annotation, "endpoint");
 		AnnotationNode endpointAnnotation = endpointClass.getAnnotation(AtEndpoint);
 		if (endpointAnnotation == null) {
-			System.out.println("Couldn't find @Endpoint on "+endpointClass.getName());
+			logger.debug("Couldn't find @Endpoint on "+endpointClass.getName());
 			// We are seeing meta usage of the endpoint annotation
 			endpointAnnotation = endpointClass.getAnnotationMetaAnnotatedWith(AtEndpoint);
 			if (endpointAnnotation == null) {
-				System.out.println("Couldn't find meta usage of @Endpoint on "+endpointClass.getName());
+				logger.debug("Couldn't find meta usage of @Endpoint on "+endpointClass.getName());
 			}
 		}
 		String endpointId = fetchAnnotationAttributeValueAsString(endpointAnnotation,"id");

@@ -18,6 +18,9 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.nativex.support.ResourcesHandler;
 import org.springframework.nativex.type.SpringFactoriesProcessor;
 
 /**
@@ -26,13 +29,15 @@ import org.springframework.nativex.type.SpringFactoriesProcessor;
  */
 public class ActuatorMetricsEliminator implements SpringFactoriesProcessor {
 
+	private static Log logger = LogFactory.getLog(ActuatorMetricsEliminator.class);	
+	
 	private final static boolean active;
 	
 	static {
 		String value = System.getProperty("spring.native.factories.no-actuator-metrics","false");
 		active = Boolean.valueOf(value.equalsIgnoreCase("true"));
 		if (active) {
-			System.out.println("ActuatorMetricsEliminator: active");
+			logger.debug("ActuatorMetricsEliminator: active");
 		}
 	}
 
@@ -49,7 +54,7 @@ public class ActuatorMetricsEliminator implements SpringFactoriesProcessor {
 				}
 			}
 			if (toRemove.size()>0) {
-				System.out.println("ActuatorMetricsEliminator: removing "+toRemove.size()+" configurations from "+enableAutoConfigurationKey);
+				logger.debug("ActuatorMetricsEliminator: removing "+toRemove.size()+" configurations from "+enableAutoConfigurationKey);
 				values.removeAll(toRemove);
 				return true;
 			}

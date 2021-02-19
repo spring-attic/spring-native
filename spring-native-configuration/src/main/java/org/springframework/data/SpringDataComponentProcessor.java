@@ -27,8 +27,11 @@ import java.util.regex.Pattern;
 
 import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.NativeContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.support.ResourcesHandler;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
@@ -88,6 +91,8 @@ import org.springframework.util.StringUtils;
  * @author Christoph Strobl
  */ 
 public class SpringDataComponentProcessor implements ComponentProcessor {
+	
+	private static Log logger = LogFactory.getLog(SpringDataComponentProcessor.class);	
 
 	private static final String LOG_PREFIX = "SDCP: ";
 	private static final String SPRING_DATA_NAMESPACE = "org.springframework.data";
@@ -176,7 +181,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 			if (repositoryDomainType == null) {
 				// give up!
-				System.out.println(LOG_PREFIX + "Unable to work out repository contents for repository " + key);
+				logger.debug(LOG_PREFIX + "Unable to work out repository contents for repository " + key);
 				return;
 			}
 
@@ -187,7 +192,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			registerQueryMethodResultTypes(repositoryType, repositoryDomainType, imageContext);
 			detectCustomRepositoryImplementations(repositoryType, imageContext);
 		} catch (Throwable t) {
-			System.out.println("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
+			logger.debug("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
 		}
 	}
 
@@ -428,7 +433,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		void message(String msg) {
 
 			if (verbose) {
-				System.out.println(LOG_PREFIX + msg);
+				logger.debug(LOG_PREFIX + msg);
 			}
 		}
 
@@ -458,7 +463,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 				return;
 			}
 
-			System.out.println(String.format(LOG_PREFIX + "Found %s repositories, %s custom implementations and registered %s annotations used by domain types.",
+			logger.debug(String.format(LOG_PREFIX + "Found %s repositories, %s custom implementations and registered %s annotations used by domain types.",
 					repositoryInterfaces.size(), customImplementations.size(), annotations.size()));
 		}
 	}

@@ -82,7 +82,6 @@ public class JsonMarshaller {
 		for (int i=0;i<array.length();i++) {
 			ClassDescriptor cd = toClassDescriptor((JSONObject)array.get(i));
 			if (rd.hasClassDescriptor(cd.getName())) {
-				System.out.println("DUPLICATE: "+cd.getName());
 				rd.getClassDescriptor(cd.getName()).merge(cd);
 			} else {
 				rd.add(cd);

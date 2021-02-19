@@ -18,9 +18,6 @@ package org.springframework.nativex.type;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.TypeSystem;
-
 public interface NativeConfiguration {
 	
 	// TODO using typeSystem here is a little basic but a good starting point (doesn't enable us to ask 'springy' questions)

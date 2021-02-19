@@ -344,7 +344,7 @@ public class TypeSystem {
 				// Check generics
 				Set<String> typesInSignature = baseType.getTypesInSignature();
 //				for (String t: typesInSignature) {
-//					System.out.println("Found this "+t+" in signature of "+baseType.getName());
+//					logger.debug("Found this "+t+" in signature of "+baseType.getName());
 //				}
 				String superclassString = baseType.getSuperclassString();
 				if (superclassString != null) {
@@ -472,7 +472,7 @@ public class TypeSystem {
 				if ((read + dataReadSoFar) > theData.length) {
 					// need to make more room
 					byte[] newTheData = new byte[theData.length * 2];
-					// System.out.println("doubled to " + newTheData.length);
+					// logger.debug("doubled to " + newTheData.length);
 					System.arraycopy(theData, 0, newTheData, 0, dataReadSoFar);
 					theData = newTheData;
 				}
@@ -522,7 +522,7 @@ public class TypeSystem {
 					reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 					AnnotationInfo ai = new AnnotationInfo(this, node);
 					if (ai.hasData()) {
-						System.out.println("From " + entry.toString() + " got " + ai.toAnnotationString());
+						logger.debug("From " + entry.toString() + " got " + ai.toAnnotationString());
 						annotatedTypes.put(node.name, ai);
 					}
 				}
@@ -547,7 +547,7 @@ public class TypeSystem {
 				reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 				AnnotationInfo ai = new AnnotationInfo(this, node);
 				if (ai.hasData()) {
-					System.out.println("From " + file.getName() + " got " + ai.toAnnotationString());
+					logger.debug("From " + file.getName() + " got " + ai.toAnnotationString());
 					annotatedTypes.put(node.name, ai);
 				}
 			} catch (IOException ioe) {
@@ -642,13 +642,6 @@ public class TypeSystem {
 				if (ai != null && ai.hasData()) {
 					metaAnnotationsList.addAll(ai.getAnnotations());
 					metaAnnotationsList.addAll(ai.getMetaAnnotations());
-					if (name.endsWith("DemoApplication")) {
-						System.out.println("111");
-						for (AnnotationNode ann : metaAnnotationsList) {
-							System.out.println(ann.desc);
-						}
-						System.out.println("222");
-					}
 				}
 			}
 		}
@@ -669,7 +662,7 @@ public class TypeSystem {
 			annotatedTypes = new HashMap<>();
 			long t = System.currentTimeMillis();
 			scan();
-			System.out.println("SBG: scan time: " + (System.currentTimeMillis() - t) + "ms");
+			logger.debug("SBG: scan time: " + (System.currentTimeMillis() - t) + "ms");
 		}
 	}
 
@@ -1267,7 +1260,7 @@ public class TypeSystem {
 				configs);
 			}
 		}
-		System.out.println("Took: "+(System.currentTimeMillis()-t)+"ms");
+		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms");
 		return configs.values().iterator().next();
 	}
 	
@@ -1307,7 +1300,7 @@ public class TypeSystem {
 				resources);
 			}
 		}
-		System.out.println("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
+		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
 		return resources.values();
 	}
 

@@ -352,7 +352,7 @@ public class Type {
 	}
 
 	public List<Method> getMethodsWithAnnotation(String string) {
-		// System.out.println("looking through methods "+node.methods+" for "+string);
+		// logger.debug("looking through methods "+node.methods+" for "+string);
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().filter(m -> hasAnnotation(m, string)).map(m -> wrap(m))
 						.collect(Collectors.toList());
@@ -719,7 +719,7 @@ public class Type {
 				if (seen.contains(anno.desc))
 					continue;
 				seen.add(anno.desc);
-				// System.out.println("Comparing "+anno.desc+" with "+lookingFor);
+				// logger.debug("Comparing "+anno.desc+" with "+lookingFor);
 				if (anno.desc.equals(lookingFor)) {
 					List<Object> os = anno.values;
 					for (int i = 0; i < os.size(); i += 2) {
@@ -752,7 +752,7 @@ public class Type {
 				if (seen.contains(anno.desc))
 					continue;
 				seen.add(anno.desc);
-				// System.out.println("Comparing "+anno.desc+" with "+lookingFor);
+				// logger.debug("Comparing "+anno.desc+" with "+lookingFor);
 				if (anno.desc.equals(lookingFor)) {
 					return true;
 				}
@@ -860,7 +860,7 @@ public class Type {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					if (an.desc.equals(AtConditionalOnBean)) {
-						System.out.println("??? found nothing on this @COB annotated thing " + this.getName());
+						logger.debug("??? found nothing on this @COB annotated thing " + this.getName());
 					}
 				}
 			}
@@ -877,7 +877,7 @@ public class Type {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					if (an.desc.equals(AtConditionalOnMissingBean)) {
-						System.out.println("??? found nothing on this @COMB annotated thing " + this.getName());
+						logger.debug("??? found nothing on this @COMB annotated thing " + this.getName());
 					}
 				}
 			}
@@ -902,7 +902,7 @@ public class Type {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					if (an.desc.equals(AtConditionalOnClass)) {
-						System.out.println("??? found nothing on this @COC annotated thing " + this.getName());
+						logger.debug("??? found nothing on this @COC annotated thing " + this.getName());
 					}
 				}
 			}
@@ -962,7 +962,7 @@ public class Type {
 					try {
 						annoType = typeSystem.Lresolve(an.desc);
 					} catch (MissingTypeException mte) {
-						System.out.println("SBG: WARNING: Unable to find " + an.desc + " skipping...");
+						logger.debug("SBG: WARNING: Unable to find " + an.desc + " skipping...");
 						continue;
 					}
 					collectedResults.putAll(
@@ -1267,7 +1267,7 @@ public class Type {
 		List<InnerClassNode> innerClasses = node.innerClasses;
 		for (InnerClassNode inner : innerClasses) {
 			if (inner.outerName == null || !inner.outerName.equals(getName())) {
-				// System.out.println("SKIPPING "+inner.name+" because outer is
+				// logger.debug("SKIPPING "+inner.name+" because outer is
 				// "+inner.outerName+" and we are looking at "+getName());
 				continue;
 			}
@@ -1330,11 +1330,11 @@ public class Type {
 				if (ConfigOptions.areMissingSelectorHintsAnError()) {
 					throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
 				} else {
-					System.out.println("WARNING: No access hint found for import selector: " + getDottedName());
+					logger.debug("WARNING: No access hint found for import selector: " + getDottedName());
 				}
 			}
 		} catch (MissingTypeException mte) {
-			System.out.println("Unable to determine if type " + getName()
+			logger.debug("Unable to determine if type " + getName()
 					+ " is import selector - can't fully resolve hierarchy - ignoring");
 		}
 		return hints.size() == 0 ? Collections.emptyList() : hints;
@@ -1435,7 +1435,7 @@ public class Type {
 					result.add(typeSystem.resolveSlashed(icn.name));
 				}
 			}
-			System.out.println(this.getName()
+			logger.debug(this.getName()
 					+ " has inners " + nestMembers.stream().map(f -> "oo=" + this.getDescriptor() + "::o=" + f.outerName
 							+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
 					+ "  >> " + result);
@@ -1746,7 +1746,7 @@ public class Type {
 				} else if (key.equals("extractTypesFromAttributes")) {
 					ch.setAttributesToExtract((List<String>)value);
 				} else {
-					System.out.println("annotation " + key + "=" + value + "(" + value.getClass() + ")");
+					logger.debug("annotation " + key + "=" + value + "(" + value.getClass() + ")");
 				}
 			}
 		}
@@ -2204,6 +2204,13 @@ public class Type {
 		}
 		return false;
 	}
+	
+	public List<Method> getTransactionalMethods() {
+		List<Method> results = new ArrayList<>();
+		results.addAll(getMethodsWithAnnotation(AtTransactional));
+		results.addAll(getMethodsWithAnnotation(AtJavaxTransactional));
+		return results;
+	}
 
 	public boolean isAnnotatedInHierarchy(String anno) {
 		if (isAnnotated(AtTransactional)) {
@@ -2241,7 +2248,7 @@ public class Type {
 
 	public boolean isAtResponseBody() {
 		boolean b = hasAnnotation(AtResponseBody, true);
-		// System.out.println("Checking if " + getName() + " is @ResponseBody meta
+		// logger.debug("Checking if " + getName() + " is @ResponseBody meta
 		// annotated: " + b);
 		return b;
 	}
@@ -2378,7 +2385,7 @@ public class Type {
 				}
 			}
 			if (!atLeastSetFalseSomewhere) {
-				System.out.println("[verification] Warning: component " + this.getDottedName()
+				logger.debug("[verification] Warning: component " + this.getDottedName()
 						+ " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
 			}
 		}
@@ -2792,7 +2799,7 @@ public class Type {
 		}
 		if (verificationProblems.size()!=0) {
 			if (ConfigOptions.debugVerification) {
-				System.out.println("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+				logger.debug("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
 			}
 		}
 		return verificationProblems.isEmpty();
@@ -2836,7 +2843,7 @@ public class Type {
 		}
 		if (verificationProblems.size()!=0) {
 			if (ConfigOptions.debugVerification) {
-				System.out.println("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+				logger.debug("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
 			}
 		}
 		return verificationProblems.isEmpty();
