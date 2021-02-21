@@ -12,21 +12,27 @@
 	</parent>
 	<groupId>org.springframework.experimental</groupId>
 
-	<properties>
-		<!-- native profile set it to false in order to allow to disable Spring Boot repackaging to avoid conflicts with native-image-maven-plugin -->
-		<repackage>true</repackage>
-
-		<!-- Tiny builder allow small footpring and reduced surface attack, you can also use paketobuildpacks/builder:base to have more tool available in the image-->
-		<builder>paketobuildpacks/builder:tiny</builder>
-
-		<spring-cloud.version>2020.0.1</spring-cloud.version>
-	</properties>
-
 	<artifactId>spring-native-parent</artifactId>
 	<name>Spring Native parent</name>
 
 	<version>0.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<properties>
+		<!-- Customize native-image arguments with this property -->
+		<build.args></build.args>
+
+		<!-- Specify main class to allow native-image-maven-plugin to find it -->
+		<main.class></main.class>
+
+		<!-- native profile set it to false in order to allow to disable Spring Boot repackaging to avoid conflicts with native-image-maven-plugin -->
+		<repackage>true</repackage>
+
+		<!-- Tiny builder allow small footprint and reduced surface attack, you can also use paketobuildpacks/builder:base to have more tool available in the image-->
+		<builder>paketobuildpacks/builder:tiny</builder>
+
+		<spring-cloud.version>2020.0.1</spring-cloud.version>
+	</properties>
 
 	<build>
 		<pluginManagement>
@@ -41,7 +47,7 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<skip>${boot-repackage}</skip>
+							<skip>${repackage}</skip>
 						</configuration>
 						</execution>
 					</executions>

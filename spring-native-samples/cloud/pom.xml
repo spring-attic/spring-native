@@ -14,8 +14,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<graalvm.version>21.0.0</graalvm.version>
-		<start-class>com.example.webflux.WebfluxApplication</start-class>
-		<build-args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build-args>
+		<main.class>com.example.webflux.WebfluxApplication</main.class>
+		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>

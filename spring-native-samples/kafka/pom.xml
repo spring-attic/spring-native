@@ -17,9 +17,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>com.example.kafka.KafkaApplication</start-class>
+		<main.class>com.example.kafka.KafkaApplication</main.class>
 		<image-name>kafka</image-name>
-		<build-args>-Dspring.native.remove-yaml-support=true</build-args>
+		<build.args>-Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>

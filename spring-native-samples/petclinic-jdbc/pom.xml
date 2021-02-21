@@ -27,9 +27,9 @@
 
         <jacoco.version>0.9.0-SNAPSHOT</jacoco.version>
         
-        <start-class>org.springframework.samples.petclinic.PetClinicApplication</start-class>
+        <main.class>org.springframework.samples.petclinic.PetClinicApplication</main.class>
         <image-name>petclinic-jdbc</image-name>
-        <build-args>-Dspring.native.remove-yaml-support=true --enable-all-security-services</build-args>
+        <build.args>-Dspring.native.remove-yaml-support=true --enable-all-security-services</build.args>
     </properties>
 
     <dependencies>

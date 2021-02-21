@@ -16,8 +16,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<start-class>com.example.rsocket.RSocketApplication</start-class>
-		<build-args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build-args>
+		<main.class>com.example.rsocket.RSocketApplication</main.class>
+		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>

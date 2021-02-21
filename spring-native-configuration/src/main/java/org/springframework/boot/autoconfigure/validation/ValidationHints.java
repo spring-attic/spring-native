@@ -60,6 +60,9 @@ import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
+import org.springframework.boot.validation.MessageInterpolatorFactory;
+import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
@@ -120,5 +123,6 @@ import org.springframework.nativex.hint.AccessBits;
 				Size.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
+@NativeHint(initializationInfos = @InitializationInfo(types = MessageInterpolatorFactory.class, initTime = InitializationTime.BUILD))
 public class ValidationHints implements NativeConfiguration {
 }
