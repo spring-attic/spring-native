@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.experimental</groupId>
-		<artifactId>spring-native-parent</artifactId>
-		<version>0.9.0-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+    <parent>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native-parent</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
     <groupId>com.example</groupId>
     <artifactId>commandlinerunner-agent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <java.version>1.8</java.version>
-		<main.class>com.example.commandlinerunner.CommandlinerunnerApplication</main.class>
+        <main.class>com.example.commandlinerunner.CommandlinerunnerApplication</main.class>
     </properties>
     <dependencies>
         <dependency>
@@ -40,28 +40,28 @@
         </dependency>
     </dependencies>
 
-	<!-- Check out the parent POM for the plugins configuration -->
+    <!-- Check out the parent POM for the plugins configuration -->
     <build>
         <plugins>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-				<configuration>
-					<mode>native-agent</mode>
-					<removeSpelSupport>true</removeSpelSupport>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.springframework.experimental</groupId>
+                <artifactId>spring-aot-maven-plugin</artifactId>
+                <configuration>
+                    <mode>native-agent</mode>
+                    <removeSpelSupport>true</removeSpelSupport>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
