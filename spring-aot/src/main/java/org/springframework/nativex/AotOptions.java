@@ -63,10 +63,21 @@ public class AotOptions {
 	private boolean removeSpelSupport;
 
 	/**
-	 * For matchIfMissing property checks system will assume if the property is not specified the check will fail.
+	 * Experimental.
+	 * <p>For any properties specifying {@code true} that will be overridden and not respected.
+	 * This does flip the application into a mode where it needs to be much more explicit
+	 * about specifying properties that activate configurations.
 	 */
 	private boolean buildTimePropertiesMatchIfMissing;
 
+	/**
+	 * Experimental.
+	 * <p>Switches on build time evaluation of some configuration conditions related to properties. It must include at least
+	 * an initial setting of default-include-all or default-exclude-all and that may be followed by a comma separated
+	 * list of prefixes to explicitly include or exclude (for example =default-include-all,!spring.dont.include.these.,!or.these
+	 * or =default-exclude-all,spring.include.this.one.though.,and.this.one).
+	 * When considering a property the longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
+	 */
 	private String[] buildTimePropertiesChecks;
 
 
