@@ -84,7 +84,7 @@ include::samples.adoc[]
 
 include::options.adoc[]
 
-include::agent.adoc[]
+include::tracing-agent.adoc[]
 
 include::troubleshooting.adoc[]
 

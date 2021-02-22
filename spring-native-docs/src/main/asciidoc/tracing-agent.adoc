@@ -69,26 +69,42 @@ public class AppContextStartupTest {
 	@Test
 	public void contextLoads() {
 	}
-
 }
 ----
 ====
 
-Now take the `access-filter.json` file from above and place it in `src/main/resources` folder.
+Now take the `access-filter.json` file from above and place it in `src/test/resources` folder.
 
 This following snippet would go into the maven pom:
 
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
-    <plugin>
+	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-surefire-plugin</artifactId>
 		<configuration>
-			<argLine>${build.args} -agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+			<argLine>-agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
 		</configuration>
 	</plugin>
 ----
 ====
 
-Also update the `native-image` arguments to enable the agent mode with `-Dspring.native.mode=agent`.
+Also update the `spring-aot` build plugin to enable the agent mode:
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+	<plugin>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-aot-maven-plugin</artifactId>
+		<configuration>
+			<mode>native-agent</mode>
+		</configuration>
+	</plugin>
+----
+====
+
+That's it, build your native image, it should generate the native configuration during the tests and run with the `native-agent`
+mode design to just add the missing bits. If that's not enough, you can add additional native configuration using `@NativeHint`
+annotations.
