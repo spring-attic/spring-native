@@ -85,7 +85,7 @@ import org.springframework.nativex.hint.AccessBits;
 		typeInfos = {
 				@TypeInfo(types= SpringApplication.class, methods = {
 						@MethodInfo(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
-				})
+				},access=AccessBits.CLASS)
 		})
 public class SpringBootHints implements NativeConfiguration {
 }

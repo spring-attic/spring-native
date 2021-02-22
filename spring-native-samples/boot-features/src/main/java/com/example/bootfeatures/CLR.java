@@ -21,6 +21,9 @@ public class CLR implements CommandLineRunner {
 	
 	@Autowired
 	School school;
+	
+	@Autowired
+	Props2 props2;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -29,6 +32,7 @@ public class CLR implements CommandLineRunner {
 		System.out.println("school is "+school);
 		System.out.println("uni is "+university);
 		System.out.println("acme is "+acme);
+		System.out.println("props is "+props2);
 	}
 	
 }

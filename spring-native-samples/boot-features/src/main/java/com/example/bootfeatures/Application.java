@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({Creds.class,University.class,School.class,AcmeProperties.class})
+@EnableConfigurationProperties({Creds.class,University.class,School.class,AcmeProperties.class,Props2.class})
 public class Application {
 
 	public static void main(String[] args) throws InterruptedException {

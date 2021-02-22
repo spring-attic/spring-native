@@ -3,7 +3,7 @@ package com.example.bootfeatures.separatecfg;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-@ConstructorBinding
+// @ConstructorBinding
 public class Student {
     
     private String firstname;

@@ -99,6 +99,7 @@ public class Type {
 	public final static String AtEnableConfigurationProperties = "Lorg/springframework/boot/context/properties/EnableConfigurationProperties;";
 	public final static String AtImports = "Lorg/springframework/context/annotation/Import;";
 	public final static String AtValidated = "Lorg/springframework/validation/annotation/Validated;";
+	public final static String AtConstructorBinding = "Lorg/springframework/boot/context/properties/ConstructorBinding;";
 	public final static String AtComponent = "Lorg/springframework/stereotype/Component;";
 	public final static String BeanFactoryPostProcessor = "Lorg/springframework/beans/factory/config/BeanFactoryPostProcessor;";
 	public final static String BeanPostProcessor = "Lorg/springframework/beans/factory/config/BeanPostProcessor;";
@@ -1353,12 +1354,24 @@ public class Type {
 				List<String> extractAttributeNames = hintsOnAnnotation.stream().map(hd -> hd.getExtractAttributeNames()).filter(x->x!=null).flatMap(List::stream).collect(Collectors.toList());
 				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an, extractAttributeNames);
 				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
-					processConfigurationProperties(typesCollectedFromAnnotation);
-				}
-				for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
-					hints.add(new HintApplication(new ArrayList<>(annotationChain),
+					Map<String,Integer> propertyTypesForAccess = processConfigurationProperties(typesCollectedFromAnnotation);
+					Map<String,Integer> newMap = new HashMap<>();
+					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
+						newMap.put(fromLdescriptorToDotted(entry.getKey()),entry.getValue());
+					}
+					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+						logger.debug("ConfigurationPropertyAnalysis: whilst looking at type "+typesCollectedFromAnnotation+" making these accessible:"+
+								newMap.entrySet().stream().map(e -> "\n"+e.getKey()+":"+AccessBits.toString(e.getValue())).collect(Collectors.toList()));
+					}
+					for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
+						hints.add(new HintApplication(new ArrayList<>(annotationChain), newMap, hintOnAnnotation));
+					}
+				} else {
+					for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
+						hints.add(new HintApplication(new ArrayList<>(annotationChain),
 							asMap(typesCollectedFromAnnotation, hintOnAnnotation.skipIfTypesMissing),
 							hintOnAnnotation));
+					}
 				}
 			}
 			// check for hints on meta annotation
@@ -1378,12 +1391,93 @@ public class Type {
 		}
 	}
 	
-	private void processConfigurationProperties(List<String> propertiesTypes) {
-		Set<String> collector = new HashSet<>();
+	private final static boolean DEBUG_CONFIGURATION_PROPERTY_ANALYSIS = false;
+	
+	private Map<String,Integer> processConfigurationProperties(List<String> propertiesTypes) {
+		Map<String,Integer> collector = new HashMap<>();
 		for (String propertiesType: propertiesTypes) {
-			walkPropertyType(propertiesType, collector);
+			Type type = typeSystem.Lresolve(propertiesType, true);
+			if (type != null) {
+				boolean shouldWalk = true;
+				if (ConfigOptions.isBuildTimePropertyChecking()) {
+					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+						logger.debug("Build time property checking for "+type.getDottedName());
+					}
+					String prefix = type.getConfigurationPropertiesPrefix();
+					if (prefix!=null && ConfigOptions.buildTimeCheckableProperty(prefix)) {
+						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+							logger.debug("found "+prefix+" is checkable at build time");
+						}
+						boolean foundSomethingToBindInThatConfigProps = false;
+						Map<String, String> activeProperties = typeSystem.getActiveProperties();
+						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
+						}
+						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
+							if (activeProperty.getKey().startsWith(prefix)) {
+								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+									logger.debug("found something binding to that prefix in specified set of active properties");
+								}
+								foundSomethingToBindInThatConfigProps = true;
+							}
+						}
+						if (!foundSomethingToBindInThatConfigProps) {
+							shouldWalk=false;
+						}
+					}
+				}
+				if (shouldWalk) {
+					walkPropertyType(propertiesType, collector);
+				} else {
+					// Nothing is binding to this so we don't need to expose any fields or methods
+					collector.put(propertiesType, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS);
+				}
+			}
 		}
-		propertiesTypes.addAll(collector);
+		return collector;
+	}
+	
+	private String getConfigurationPropertiesPrefix() {
+		Map<String,String> values = getAnnotationValuesInHierarchy(AtConfigurationProperties);
+		if (values != null) {
+			String prefix = values.get("prefix");
+			if ((prefix == null || prefix.length()==0) && values.get("value")!=null) {
+				prefix = values.get("value");
+			}
+			return prefix;
+		}
+		return null;
+	}
+
+	private Integer inferPropertyAccessRequired(String propertiesType) {
+		if (propertiesType.startsWith("Ljava/lang/") || // String/Integer/...
+			propertiesType.startsWith("Ljava/nio/") || // Charset
+			propertiesType.startsWith("Ljava/io/") || // File
+			propertiesType.startsWith("Ljava/net/") || // InetAddress
+			propertiesType.startsWith("Ljava/util/")) { // Map/List/Set/...
+			return 0;
+		}
+		// See convertors in ApplicationConversionService.addApplicationConverters
+		if (propertiesType.equals("Ljava/time/Period;") ||
+			propertiesType.equals("Ljava/time/Duration;") ||
+			propertiesType.equals("Lorg/springframework/util/unit/DataSize;") ||
+			propertiesType.startsWith("Lorg/springframework/core/io/")) { // catching Resource, anything else?
+			return AccessBits.CLASS;
+		}
+		Type type = typeSystem.Lresolve(propertiesType, true);
+		if (type.isEnum()) {
+			return AccessBits.CLASS;
+		}
+		int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
+		if (type.isAtValidated()) {
+			// Need access to the annotations on the fields that define validation constraints
+			access |= AccessBits.DECLARED_FIELDS;
+		}
+		if (!type.isAtConstructorBinding()) {
+			// If not constructor binding, need access to the setters (yes, this will currently give too much access as it will include getters)
+			access |= AccessBits.DECLARED_METHODS;
+		}
+		return access;
 	}
 
 	/**
@@ -1391,20 +1485,28 @@ public class Type {
 	 * types of the getter, add them for later reflective access. Include any in the generic
 	 * signature of the return type too.
 	 */
-	private void walkPropertyType(String propertiesType, Set<String> collector) {
+	private void walkPropertyType(String propertiesType, Map<String,Integer> collector) {
 		Type type = typeSystem.Lresolve(propertiesType, true);
 		if (type != null) {
-			if (collector.add(propertiesType)) {
-				for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
-					for (Type returnSignatureType: method.getSignatureTypes(true)) {
-						String returnTypeDescriptor = returnSignatureType.getDescriptor();
-						if (!returnTypeDescriptor.startsWith("Ljava/")) {
+			if (!collector.containsKey(propertiesType)) {
+				int inferredAccess = inferPropertyAccessRequired(propertiesType);
+				if (inferredAccess !=0) {
+					collector.put(propertiesType, inferredAccess);
+					if (inferredAccess != AccessBits.CLASS) { 
+					for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
+						for (Type returnSignatureType: method.getSignatureTypes(true)) {
+							String returnTypeDescriptor = returnSignatureType.getDescriptor();
 							walkPropertyType(returnTypeDescriptor, collector);
 						}
+					}
 					}
 				}
 			}
 		}
+	}
+
+	private boolean isEnum() {
+		return (node.access & Opcodes.ACC_ENUM)!=0;
 	}
 
 	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
@@ -1531,6 +1633,10 @@ public class Type {
 	
 	public boolean isAtValidated() {
 		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtValidated));	
+	}
+	
+	public boolean isAtConstructorBinding() {
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtConstructorBinding));	
 	}
 
 	public boolean isApplicationListener() {
@@ -2104,11 +2210,14 @@ public class Type {
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
+			int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
 			if (t.isAtValidated()) {
-				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS;
-			} else {
-				return AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS;
+				access |= AccessBits.DECLARED_FIELDS;
 			}
+			if (!t.isAtConstructorBinding()) {
+				access |= AccessBits.DECLARED_METHODS;
+			}
+			return access;
 		} else if (t.isCondition()) {
 			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
 		} else if (t.isComponent() || t.isApplicationListener()) {

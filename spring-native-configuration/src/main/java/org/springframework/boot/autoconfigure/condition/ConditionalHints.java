@@ -32,8 +32,8 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 })
 @NativeHint(trigger=ConditionalOnWebApplication.class,
 	typeInfos= {
+		@TypeInfo(types=GenericWebApplicationContext.class,access=AccessBits.LOAD_AND_CONSTRUCT),
 		@TypeInfo(types= {
-				GenericWebApplicationContext.class,
 				ConditionalOnWebApplication.Type.class}
 		)},
 		abortIfTypesMissing = true)

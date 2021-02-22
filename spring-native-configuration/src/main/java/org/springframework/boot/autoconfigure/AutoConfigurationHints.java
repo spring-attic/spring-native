@@ -43,7 +43,7 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(typeInfos = {
 	@TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
-	})
+	},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class AutoConfigurationHints implements NativeConfiguration {
 }

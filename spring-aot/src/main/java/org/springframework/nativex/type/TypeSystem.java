@@ -820,7 +820,7 @@ public class TypeSystem {
 			File f = new File(s);
 			if (f.isDirectory()) {
 				searchDir(f, filepath -> { 
-					return  filepath.contains("application") && filepath.endsWith(".properties");
+					return filepath.contains("application") && filepath.endsWith(".properties");
 				},
 				TypeSystem::loadApplicationProperties,
 				collectedProperties);

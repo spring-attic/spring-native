@@ -34,7 +34,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeHint(trigger = JacksonAutoConfiguration.class, typeInfos = {
 		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = JsonGenerator.class) },
+		@TypeInfo(types = JsonGenerator.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS) },
 		initializationInfos = @InitializationInfo(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
 public class JacksonHints implements NativeConfiguration {
 }

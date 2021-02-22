@@ -22,7 +22,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeInfo;
@@ -84,7 +83,6 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
 		}, access = AccessBits.ALL),
-		@TypeInfo(types= BasicErrorController.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class SecurityHints implements NativeConfiguration {
 	@Override

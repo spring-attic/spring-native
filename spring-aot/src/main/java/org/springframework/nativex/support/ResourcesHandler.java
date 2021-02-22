@@ -1403,7 +1403,7 @@ public class ResourcesHandler extends Handler {
 			if (type.isCondition()) {
 				accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
 			} else {
-				accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);//Flag.allDeclaredConstructors);
+				accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);
 			}
 		}
 		// TODO need this guard? if (isConfiguration(configType)) {
