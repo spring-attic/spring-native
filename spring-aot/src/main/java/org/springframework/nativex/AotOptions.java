@@ -64,7 +64,8 @@ public class AotOptions {
 
 	/**
 	 * Experimental.
-	 * <p>For any properties specifying {@code true} that will be overridden and not respected.
+	 * <p>Set to {@code false} means for any properties specifying {@code matchIfMissing=true} that will be overridden and not respected.
+	 * For any properties specifying {@code true} that will be overridden and not respected.
 	 * This does flip the application into a mode where it needs to be much more explicit
 	 * about specifying properties that activate configurations.
 	 */
