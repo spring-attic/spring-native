@@ -18,7 +18,6 @@
     <properties>
         <java.version>1.8</java.version>
         <main.class>com.example.kafka.KafkaApplication</main.class>
-        <image-name>kafka</image-name>
     </properties>
 
     <dependencies>

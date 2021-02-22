@@ -28,7 +28,6 @@
         <jacoco.version>0.9.0-SNAPSHOT</jacoco.version>
         
         <main.class>org.springframework.samples.petclinic.PetClinicApplication</main.class>
-        <image-name>petclinic-jdbc</image-name>
         <native.build.args>--enable-all-security-services</native.build.args>
     </properties>
 
