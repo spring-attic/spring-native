@@ -22,6 +22,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.util.StringUtils;
 
@@ -43,11 +44,11 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 	}
 
 	@Override
-	public void contribute(BuildContext context) {
+	public void contribute(BuildContext context, AotOptions aotOptions) {
 		try {
 			List<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem());
-			FactoriesCodeContributors contributors = new FactoriesCodeContributors();
-			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context);
+			FactoriesCodeContributors contributors = new FactoriesCodeContributors(aotOptions);
+			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context, aotOptions);
 
 			context.addSourceFiles(SourceFiles.fromJavaFile(codeGenerator.generateStaticSpringFactories()));
 			codeGenerator.generateStaticFactoryClasses().forEach(javaFile -> {

@@ -17,7 +17,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<build.args>-H:EnableURLProtocols=http --enable-all-security-services</build.args>
+		<native.build.args>-H:EnableURLProtocols=http --enable-all-security-services</native.build.args>
 		<main.class>com.example.configclient.ConfigclientApplication</main.class>
 	</properties>
 

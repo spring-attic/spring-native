@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.2</version>
+		<version>2.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.spring.test</groupId>
@@ -42,6 +42,22 @@
 				<groupId>@project.groupId@</groupId>
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
+				<configuration>
+					<mode>native</mode>
+					<debugVerify>true</debugVerify>
+					<ignoreHintsOnExcludedConfig>true</ignoreHintsOnExcludedConfig>
+					<removeUnusedConfig>true</removeUnusedConfig>
+					<verify>true</verify>
+					<removeYamlSupport>true</removeYamlSupport>
+					<removeJmxSupport>true</removeJmxSupport>
+					<removeXmlSupport>true</removeXmlSupport>
+					<removeSpelSupport>true</removeSpelSupport>
+					<buildTimePropertiesMatchIfMissing>true</buildTimePropertiesMatchIfMissing>
+					<buildTimePropertiesChecks>
+						<buildTimePropertiesCheck>foo</buildTimePropertiesCheck>
+						<buildTimePropertiesCheck>bar</buildTimePropertiesCheck>
+					</buildTimePropertiesChecks>
+				</configuration>
 				<executions>
 					<execution>
 						<id>test-generate</id>

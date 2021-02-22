@@ -17,7 +17,6 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<main.class>com.example.javamail.JavamailApplication</main.class>
-		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>
@@ -55,6 +54,10 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeSpelSupport>true</removeSpelSupport>
+					<removeYamlSupport>true</removeYamlSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

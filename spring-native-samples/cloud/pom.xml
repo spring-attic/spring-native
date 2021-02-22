@@ -13,9 +13,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<graalvm.version>21.0.0</graalvm.version>
 		<main.class>com.example.webflux.WebfluxApplication</main.class>
-		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>
@@ -63,6 +61,10 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeYamlSupport>true</removeYamlSupport>
+					<removeSpelSupport>true</removeSpelSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

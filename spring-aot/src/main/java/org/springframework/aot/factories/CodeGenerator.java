@@ -17,6 +17,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import org.springframework.nativex.AotOptions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -33,6 +34,20 @@ class CodeGenerator {
 	private final CodeBlock.Builder staticBlock = CodeBlock.builder();
 
 	private final Map<String, TypeSpec> staticFactoryClasses = new HashMap<>();
+
+
+
+	public CodeGenerator(AotOptions aotOptions) {
+		if (aotOptions.isRemoveYamlSupport()) {
+			staticBlock.addStatement("System.setProperty(\"spring.native.remove-yaml-support\", \"true\");");
+		}
+		if (aotOptions.isRemoveXmlSupport()) {
+			staticBlock.addStatement("System.setProperty(\"spring.xml.ignore\", \"true\");");
+		}
+		if (aotOptions.isRemoveSpelSupport()) {
+			staticBlock.addStatement("System.setProperty(\"spring.spel.ignore\", \"true\");");
+		}
+	}
 
 	public void writeToStaticBlock(Consumer<CodeBlock.Builder> consumer) {
 		consumer.accept(this.staticBlock);

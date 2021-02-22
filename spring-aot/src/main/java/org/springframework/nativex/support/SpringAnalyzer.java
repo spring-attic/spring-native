@@ -17,6 +17,8 @@ package org.springframework.nativex.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
@@ -30,6 +32,8 @@ public class SpringAnalyzer {
 
 	private final TypeSystem typeSystem;
 
+	private final AotOptions aotOptions;
+
 	private ConfigurationCollector collector;
 
 	private ReflectionHandler reflectionHandler;
@@ -40,18 +44,19 @@ public class SpringAnalyzer {
 
 	private InitializationHandler initializationHandler;
 
-	public SpringAnalyzer(TypeSystem typeSystem) {
+	public SpringAnalyzer(TypeSystem typeSystem, AotOptions aotOptions) {
 		this.typeSystem = typeSystem;
+		this.aotOptions = aotOptions;
 	}
 
 	public void analyze() {
 		logger.debug("Spring analysis running");
-		collector = new ConfigurationCollector();
+		collector = new ConfigurationCollector(aotOptions);
 
-		reflectionHandler = new ReflectionHandler(collector);
+		reflectionHandler = new ReflectionHandler(collector, aotOptions);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler(collector);
-		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler);
+		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler, aotOptions);
 
 		collector.setTypeSystem(typeSystem);
 		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
@@ -62,10 +67,9 @@ public class SpringAnalyzer {
 		resourcesHandler.setTypeSystem(typeSystem);
 		initializationHandler.setTypeSystem(typeSystem);
 
-		ConfigOptions.ensureModeInitialized(typeSystem);
-//		if (ConfigOptions.isAnnotationMode() || ConfigOptions.isAgentMode()) {
+		logger.info("Spring Native operating mode: " + aotOptions.toMode().toString());
+
 		reflectionHandler.register();
-//		}
 		resourcesHandler.register();
 	}
 

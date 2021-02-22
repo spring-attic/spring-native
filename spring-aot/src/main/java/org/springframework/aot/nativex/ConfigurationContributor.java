@@ -26,9 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.ResourceFile;
-import org.springframework.nativex.support.ConfigOptions;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.support.ConfigurationCollector;
-import org.springframework.nativex.support.Mode;
 import org.springframework.nativex.support.SpringAnalyzer;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -44,11 +43,9 @@ public class ConfigurationContributor implements BootstrapContributor {
 	private static Log logger = LogFactory.getLog(ConfigurationContributor.class);	
 	
 	@Override
-	public void contribute(BuildContext context) {
-		ConfigOptions.setMode(Mode.DEFAULT);
+	public void contribute(BuildContext context, AotOptions aotOptions) {
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
-		ConfigOptions.setBuildTimeTransformation(true);
-		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem);
+		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem, aotOptions);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();
 		context.describeReflection(reflect -> reflect.merge(configurationCollector.getReflectionDescriptor()));

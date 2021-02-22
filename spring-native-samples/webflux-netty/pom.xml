@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>1.8</java.version>
         <main.class>com.example.webflux.WebfluxApplication</main.class>
-        <build.args>-Dspring.xml.ignore=true -Dspring.spel.ignore=true</build.args>
 	</properties>
 
 	<dependencies>
@@ -42,6 +41,9 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeSpelSupport>true</removeSpelSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

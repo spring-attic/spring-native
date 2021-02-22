@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -45,8 +47,11 @@ public class ReflectionHandler extends Handler {
 
 	private ReflectionDescriptor constantReflectionDescriptor;
 
-	public ReflectionHandler(ConfigurationCollector collector) {
+	private final AotOptions aotOptions;
+
+	public ReflectionHandler(ConfigurationCollector collector, AotOptions aotOptions) {
 		super(collector);
+		this.aotOptions = aotOptions;
 	}
 
 	private void registerWebApplicationTypeClasses() {
@@ -63,7 +68,7 @@ public class ReflectionHandler extends Handler {
 
 	public void register() {
 		registerWebApplicationTypeClasses();
-		if (!ConfigOptions.shouldRemoveYamlSupport()) {
+		if (!aotOptions.isRemoveYamlSupport()) {
 			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		}
 	}

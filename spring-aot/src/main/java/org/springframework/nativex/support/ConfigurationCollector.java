@@ -30,6 +30,8 @@ import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
@@ -48,6 +50,8 @@ import org.springframework.nativex.type.TypeSystem;
  * @author Andy Clement
  */
 public class ConfigurationCollector {
+
+	private final AotOptions aotOptions;
 	
 	private static Log logger = LogFactory.getLog(ConfigurationCollector.class);
 
@@ -64,6 +68,10 @@ public class ConfigurationCollector {
 	private Map<String,byte[]> newResourceFiles = new HashMap<>();
 	
 	private TypeSystem ts;
+
+	public ConfigurationCollector(AotOptions aotOptions) {
+		this.aotOptions = aotOptions;
+	}
 
 	public ProxiesDescriptor getProxyDescriptors() {
 		return proxiesDescriptor;
@@ -218,7 +226,7 @@ public class ConfigurationCollector {
 		for (ClassDescriptor classDescriptor: classDescriptors) {
 			boolean verifyType = verifyType(classDescriptor);
 			if (!verifyType) {
-				if (ConfigOptions.debugVerification) {
+				if (aotOptions.isDebugVerify()) {
 					logger.debug("FAILED: filtering out "+classDescriptor.getName());
 				}
 				// Give up now
@@ -242,24 +250,24 @@ public class ConfigurationCollector {
 	private boolean verifyType(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t== null) {
-			if (ConfigOptions.debugVerification) {
+			if (aotOptions.isDebugVerify()) {
 				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
 			}
 			return false;
 		} else {
-			return t.verifyType();
+			return t.verifyType(aotOptions.isDebugVerify());
 		}
 	}
 
 	private boolean verifyMembers(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t== null) {
-			if (ConfigOptions.debugVerification) {
+			if (aotOptions.isDebugVerify()) {
 				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
 			}
 			return false;
 		} else {
-			return t.verifyMembers();
+			return t.verifyMembers(aotOptions.isDebugVerify());
 		}
 	}
 

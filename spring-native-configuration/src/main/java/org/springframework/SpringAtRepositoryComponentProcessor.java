@@ -24,7 +24,6 @@ import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
@@ -102,13 +101,8 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 
 	private static final String LOG_PREFIX = "SARCP: ";
 	
-	private static boolean ACTIVE = System.getProperty(ConfigOptions.ENABLE_AT_REPOSITORY_PROCESSING,"true").equalsIgnoreCase("true");
-	
 	@Override
 	public boolean handle(NativeContext imageContext, String key, List<String> values) {
-		if (!ACTIVE) {
-			return false;
-		}
 		Type resolvedKey = imageContext.getTypeSystem().resolveDotted(key);
 		if (resolvedKey.hasAnnotationInHierarchy("Lorg/springframework/stereotype/Repository;")) {
 			imageContext.log(LOG_PREFIX+"handling @Repository "+key);

@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.CodeGenerationException;
+import org.springframework.nativex.AotOptions;
 
 /**
  * @author Brian Clozel
@@ -18,15 +19,15 @@ class FactoriesCodeContributors {
 
 	private final List<FactoriesCodeContributor> contributors;
 
-	FactoriesCodeContributors() {
-		this.contributors = Arrays.asList(new AutoConfigurationFactoriesCodeContributor(),
+	FactoriesCodeContributors(AotOptions aotOptions) {
+		this.contributors = Arrays.asList(new AutoConfigurationFactoriesCodeContributor(aotOptions),
 				new NoArgConstructorFactoriesCodeContributor(),
 				new PrivateFactoriesCodeContributor(),
-				new DefaultFactoriesCodeContributor());
+				new DefaultFactoriesCodeContributor(aotOptions));
 	}
 
-	public CodeGenerator createCodeGenerator(List<SpringFactory> factories, BuildContext context) {
-		CodeGenerator codeGenerator = new CodeGenerator();
+	public CodeGenerator createCodeGenerator(List<SpringFactory> factories, BuildContext context, AotOptions aotOptions) {
+		CodeGenerator codeGenerator = new CodeGenerator(aotOptions);
 		for (SpringFactory factory : factories) {
 			FactoriesCodeContributor contributor = this.contributors.stream()
 					.filter(c -> c.canContribute(factory))

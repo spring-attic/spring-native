@@ -16,7 +16,6 @@
     <properties>
         <java.version>1.8</java.version>
         <main.class>com.example.webmvc.WebmvcApplication</main.class>
-        <build.args>-Dspring.spel.ignore=true -Dspring.native.mode=agent</build.args>
     </properties>
     <dependencies>
         <dependency>
@@ -55,6 +54,10 @@
             <plugin>
                 <groupId>org.springframework.experimental</groupId>
                 <artifactId>spring-aot-maven-plugin</artifactId>
+                <configuration>
+                    <mode>native-agent</mode>
+                    <removeSpelSupport>true</removeSpelSupport>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -19,7 +19,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
    		<main.class>com.example.data.neo4j.Neo4jApplication</main.class>
-		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
     </properties>
 
     <dependencies>
@@ -62,6 +61,10 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeSpelSupport>true</removeSpelSupport>
+					<removeYamlSupport>true</removeYamlSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

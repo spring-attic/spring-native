@@ -29,6 +29,7 @@ import org.springframework.aot.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 
 import com.squareup.javapoet.ClassName;
 
@@ -48,6 +49,12 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 
 	private final Log logger = LogFactory.getLog(AutoConfigurationFactoriesCodeContributor.class);
 
+	private final AotOptions aotOptions;
+
+	public AutoConfigurationFactoriesCodeContributor(AotOptions aotOptions) {
+		this.aotOptions = aotOptions;
+	}
+
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
@@ -66,7 +73,7 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 				passesAnyConditionalOnBean(typeSystem, factory) &&
 				passesIgnoreJmxConstraint(typeSystem, factory) &&
 				passesAnyConditionalOnWebApplication(typeSystem, factory) &&
-				passesAnyPropertyRelatedConditions(context.getClasspath(), typeSystem, factory, failedPropertyChecks);
+				passesAnyPropertyRelatedConditions(context.getClasspath(), typeSystem, factory, failedPropertyChecks, aotOptions);
 		if (!failedPropertyChecks.isEmpty()) {
 			logger.debug("Following property checks failed on "+factory.getFactory().getClassName()+": "+failedPropertyChecks);
 		}

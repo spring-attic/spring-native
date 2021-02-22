@@ -17,6 +17,7 @@
 package org.springframework.aot;
 
 import org.springframework.core.Ordered;
+import org.springframework.nativex.AotOptions;
 
 /**
  * A callback for contributing sources and resources to the Bootstrap source set.
@@ -27,6 +28,7 @@ import org.springframework.core.Ordered;
  * to customize this behaviour.
  * 
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 @FunctionalInterface
 public interface BootstrapContributor extends Ordered {
@@ -35,7 +37,7 @@ public interface BootstrapContributor extends Ordered {
 	 * Contribute additional sources and resources to the Bootstrap source set.
 	 * @param context the current build context
 	 */
-	void contribute(BuildContext context);
+	void contribute(BuildContext context, AotOptions aotOptions);
 
 	@Override
 	default int getOrder() {

@@ -15,7 +15,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <java.version>1.8</java.version>
-		<build.args>-Dspring.spel.ignore=true -Dspring.native.mode=agent</build.args>
 		<main.class>com.example.commandlinerunner.CommandlinerunnerApplication</main.class>
     </properties>
     <dependencies>
@@ -47,6 +46,10 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<mode>native-agent</mode>
+					<removeSpelSupport>true</removeSpelSupport>
+				</configuration>
 			</plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -56,7 +59,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>${build.args} -agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+					<argLine>-agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
 				</configuration>
 			</plugin>
         </plugins>

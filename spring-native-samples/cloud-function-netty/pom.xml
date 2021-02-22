@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<build.args> -Dspring.native.remove-yaml-support=true</build.args>
 		<main.class>com.example.demo.DemoApplication</main.class>
 	</properties>
 
@@ -48,6 +47,9 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeYamlSupport>true</removeYamlSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

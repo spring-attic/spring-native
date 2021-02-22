@@ -10,7 +10,7 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.aot.BuildContext;
-import org.springframework.nativex.support.ConfigOptions;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeUtils;
 
@@ -89,34 +89,34 @@ interface FactoriesCodeContributor {
 	 * @return true if checks pass, false if one fails and the type should be considered inactive, in which case failedPropertyChecks
 	 * includes information on what check failed
 	 */
-	default boolean passesAnyPropertyRelatedConditions(List<String> classpath, TypeSystem typeSystem, SpringFactory factory, List<String> failedPropertyChecks) {
+	default boolean passesAnyPropertyRelatedConditions(List<String> classpath, TypeSystem typeSystem, SpringFactory factory, List<String> failedPropertyChecks, AotOptions aotOptions) {
 		ClassDescriptor resolvedFactory = factory.getFactory();
 		String factoryName = resolvedFactory.getClassName();
 		// Problems observed discarding inner configurations due to eager property checks
 		// (configserver sample). Too aggressive, hence the $ check
-		if (ConfigOptions.isBuildTimePropertyChecking() && !factoryName.contains("$")) {
+		if (aotOptions.isBuildTimePropertyChecking() && !factoryName.contains("$")) {
 			org.springframework.nativex.type.TypeSystem legacyTypeSystem = org.springframework.nativex.type.TypeSystem.get(classpath);
 			Type legacyResolvedFactory = legacyTypeSystem.resolve(resolvedFactory);
-			String testResult = TypeUtils.testAnyConditionalOnProperty(legacyResolvedFactory);
+			String testResult = TypeUtils.testAnyConditionalOnProperty(legacyResolvedFactory, aotOptions);
 			if (testResult != null) {
 				String message = factoryName+" FAILED ConditionalOnProperty property check: "+testResult;
 				failedPropertyChecks.add(message);
 				return false;
 			}
 			// These are like a ConditionalOnProperty check but using a special condition to check the property
-			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(legacyResolvedFactory);
+			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(legacyResolvedFactory, aotOptions);
 			if (testResult != null) {
 				String message = factoryName+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
 				failedPropertyChecks.add(message);
 				return false;
 			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(legacyResolvedFactory);
+			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(legacyResolvedFactory, aotOptions);
 			if (testResult != null) {
 				String message = factoryName+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
 				failedPropertyChecks.add(message);
 				return false;
 			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(legacyResolvedFactory);
+			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(legacyResolvedFactory, aotOptions);
 			if (testResult != null) {
 				String message = factoryName+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
 				failedPropertyChecks.add(message);

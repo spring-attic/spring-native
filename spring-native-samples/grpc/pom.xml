@@ -22,7 +22,6 @@
 		<protobuf.version>3.7.1</protobuf.version>
 		<grpc.version>1.22.1</grpc.version>
 		<main.class>com.example.ProtoApplication</main.class>
-		<build.args>-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true</build.args>
 	</properties>
 
 	<dependencies>
@@ -69,6 +68,10 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
+				<configuration>
+					<removeSpelSupport>true</removeSpelSupport>
+					<removeYamlSupport>true</removeYamlSupport>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -7,9 +7,9 @@ import com.squareup.javapoet.CodeBlock;
 import org.springframework.aot.BuildContext;
 import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.nativex.support.ConfigOptions;
 
 /**
  * {@link FactoriesCodeContributor} that handles default, public constructors.
@@ -18,6 +18,12 @@ import org.springframework.nativex.support.ConfigOptions;
  * @author Sebasten Deleuze
  */
 class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
+
+	private final AotOptions aotOptions;
+
+	DefaultFactoriesCodeContributor(AotOptions aotOptions) {
+		this.aotOptions = aotOptions;
+	}
 
 	@Override
 	public boolean canContribute(SpringFactory springFactory) {
@@ -69,8 +75,7 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 			return false;
 		}
 		if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {
-			// to trigger this... mvn -Dspring.native.remove-yaml-support=true
-			return !ConfigOptions.shouldRemoveYamlSupport();
+			return !aotOptions.isRemoveYamlSupport();
 		}
 		return true;
 	}

@@ -17,7 +17,7 @@
 		<wavefront.version>2.1.0</wavefront.version>
 		<main.class>com.example.wavefront.WavefrontApplication</main.class>
 		<image-name>wavefront</image-name>
-		<build.args>--enable-https --enable-all-security-services</build.args>
+		<native.build.args>--enable-https --enable-all-security-services</native.build.args>
 	</properties>
 
 	<dependencies>

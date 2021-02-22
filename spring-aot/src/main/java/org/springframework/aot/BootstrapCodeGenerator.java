@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
@@ -44,6 +46,12 @@ public class BootstrapCodeGenerator {
 
 	private static Log logger = LogFactory.getLog(BootstrapCodeGenerator.class);
 
+	private AotOptions aotOptions;
+
+	public BootstrapCodeGenerator(AotOptions aotOptions) {
+		this.aotOptions = aotOptions;
+	}
+
 	/**
 	 * Generate bootstrap code for the application.
 	 *
@@ -58,7 +66,7 @@ public class BootstrapCodeGenerator {
 		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
 		for (BootstrapContributor contributor : contributors) {
 			logger.debug("Executing Contributor: " + contributor.getClass().getName());
-			contributor.contribute(buildContext);
+			contributor.contribute(buildContext, this.aotOptions);
 		}
 		
 		if (!resourceFolders.isEmpty()) {

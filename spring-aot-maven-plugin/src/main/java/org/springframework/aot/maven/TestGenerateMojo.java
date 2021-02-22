@@ -40,7 +40,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
 		try {
-			BootstrapCodeGenerator generator = new BootstrapCodeGenerator();
+			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
 			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getTestClasspathElements(), resourceFolders);
 		}
 		catch (Throwable exc) {

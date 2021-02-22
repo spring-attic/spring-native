@@ -7,7 +7,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.tree.AnnotationNode;
-import org.springframework.nativex.support.ConfigOptions;
+
+import org.springframework.nativex.AotOptions;
 
 public class TypeUtils {
 
@@ -25,7 +26,7 @@ public class TypeUtils {
 	 * 
 	 * @return the property name if it fails a check, otherwise null (meaning everything is OK)
 	 */
-	public static String testAnyConditionalOnProperty(Type type) {
+	public static String testAnyConditionalOnProperty(Type type, AotOptions aotOptions) {
 		// Examples:
 		//	found COP on org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 		//	copDescriptor: @COP(names=[spring.flyway.enabled],matchIfMissing=true)
@@ -33,9 +34,9 @@ public class TypeUtils {
 		//	copDescriptor @COP(names=[spring.h2.console.enabled],havingValue=true,matchIfMissing=false)
 		AnnotationNode annotation = type.getAnnotation(AtConditionalOnProperty);
 		if (annotation != null) {
-			ConditionalOnPropertyDescriptor copDescriptor = unpackConditionalOnPropertyAnnotation(annotation);
+			ConditionalOnPropertyDescriptor copDescriptor = unpackConditionalOnPropertyAnnotation(annotation, aotOptions);
 			Map<String,String> activeProperties = type.getTypeSystem().getActiveProperties();
-			return copDescriptor.test(activeProperties);
+			return copDescriptor.test(activeProperties, aotOptions);
 		}
 		return null;
 	}
@@ -106,9 +107,9 @@ public class TypeUtils {
 			this.metricsExporter = metricsExporter;
 		}
 
-		public String test(Map<String, String> properties) {
+		public String test(Map<String, String> properties, AotOptions aotOptions) {
 			String key = "management.metrics.export."+metricsExporter+".enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+			if (!aotOptions.buildTimeCheckableProperty(key)) {
 				return null;
 			}
 			String value = properties.get(key);
@@ -116,7 +117,7 @@ public class TypeUtils {
 				return null;
 			}
 			String defaultKey = "management.metrics.export.defaults.enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
+			if (!aotOptions.buildTimeCheckableProperty(defaultKey)) {
 				return null;
 			}
 			String defaultValue = properties.get(defaultKey);
@@ -133,7 +134,7 @@ public class TypeUtils {
 	}
 
 	
-	private static ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation) {
+	private static ConditionalOnPropertyDescriptor unpackConditionalOnPropertyAnnotation(AnnotationNode annotation, AotOptions aotOptions) {
 		List<Object> values = annotation.values;
 		List<String> names = new ArrayList<>();
 		String prefix = null;
@@ -161,18 +162,18 @@ public class TypeUtils {
 				names.set(i, prefix+names.get(i));
 			}
 		}
-		return new ConditionalOnPropertyDescriptor(names, havingValue, matchIfMissing);
+		return new ConditionalOnPropertyDescriptor(names, havingValue, matchIfMissing, aotOptions);
 	}
 	
 	
 	// Examples:
 	// @ConditionalOnEnabledMetricsExport("simple")
-	public static String testAnyConditionalOnEnabledMetricsExport(Type type) {
+	public static String testAnyConditionalOnEnabledMetricsExport(Type type, AotOptions aotOptions) {
 		AnnotationNode annotation = type.getAnnotation(AtConditionalOnEnabledMetricsExport);
 		if (annotation != null) {
 			ConditionalOnEnabledMetricsExportDescriptor coemedDescriptor = unpackConditionalOnEnabledMetricsExportDescriptor(annotation);
 			Map<String,String> activeProperties = type.getTypeSystem().getActiveProperties();
-			return coemedDescriptor.test(activeProperties);
+			return coemedDescriptor.test(activeProperties, aotOptions);
 		}
 		return null;
 	}
@@ -180,12 +181,12 @@ public class TypeUtils {
 	// Example:
 	// @ConditionalOnAvailableEndpoint(endpoint = FlywayEndpoint.class) public class FlywayEndpointAutoConfiguration {
 	// @Endpoint(id = "flyway") public class FlywayEndpoint {
-	public static String testAnyConditionalOnAvailableEndpoint(Type type) {
+	public static String testAnyConditionalOnAvailableEndpoint(Type type, AotOptions aotOptions) {
 		AnnotationNode annotation = type.getAnnotation(AtConditionalOnAvailableEndpoint);
 		if (annotation != null) {
 			ConditionalOnAvailableEndpointDescriptor coaeDescriptor = unpackConditionalOnAvailableEndpointAnnotation(type.getTypeSystem(), annotation);
 			Map<String,String> activeProperties = type.getTypeSystem().getActiveProperties();
-			return coaeDescriptor.test(activeProperties);
+			return coaeDescriptor.test(activeProperties, aotOptions);
 		}
 		return null;
 	}
@@ -195,12 +196,12 @@ public class TypeUtils {
 	// @AutoConfigureBefore(HealthContributorAutoConfiguration.class)
 	// @EnableConfigurationProperties(DiskSpaceHealthIndicatorProperties.class)
 	// public class DiskSpaceHealthContributorAutoConfiguration {
-	public static String testAnyConditionalOnEnabledHealthIndicator(Type type) {
+	public static String testAnyConditionalOnEnabledHealthIndicator(Type type, AotOptions aotOptions) {
 		AnnotationNode annotation = type.getAnnotation(AtConditionalOnEnabledHealthIndicator);
 		if (annotation != null) {
 			ConditionalOnEnabledHealthIndicatorDescriptor coehiDescriptor = unpackConditionalOnEnabledHealthIndicatorAnnotation(annotation);
 			Map<String,String> activeProperties = type.getTypeSystem().getActiveProperties();
-			return coehiDescriptor.test(activeProperties);
+			return coehiDescriptor.test(activeProperties, aotOptions);
 		}
 		return null;
 	}
@@ -210,7 +211,7 @@ public class TypeUtils {
 		/**
 		 * @return null if test is successful, otherwise a string explanation of why it failed
 		 */
-		String test(Map<String, String> properties);
+		String test(Map<String, String> properties, AotOptions aotOptions);
 	}
 
 	static class ConditionalOnEnabledHealthIndicatorDescriptor implements TestableDescriptor {
@@ -222,9 +223,9 @@ public class TypeUtils {
 		}
 
 		@Override
-		public String test(Map<String, String> properties) {
+		public String test(Map<String, String> properties, AotOptions aotOptions) {
 			String key = "management.health."+value+".enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+			if (!aotOptions.buildTimeCheckableProperty(key)) {
 				return null;
 			}
 			String value = properties.get(key);
@@ -234,7 +235,7 @@ public class TypeUtils {
 				return null;
 			}
 			String defaultKey = "management.health.defaults.enabled";
-			if (!ConfigOptions.buildTimeCheckableProperty(defaultKey)) {
+			if (!aotOptions.buildTimeCheckableProperty(defaultKey)) {
 				return null;
 			}
 			String defaultValue = properties.get(defaultKey);
@@ -260,9 +261,9 @@ public class TypeUtils {
 
 		// https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html
 		// Crude first pass - ignore JMX exposure and only consider web exposure include (not exclude)
-		public String test(Map<String, String> properties) {
+		public String test(Map<String, String> properties, AotOptions aotOptions) {
 			String key = "management.endpoints.web.exposure.include";
-			if (!ConfigOptions.buildTimeCheckableProperty(key)) {
+			if (!aotOptions.buildTimeCheckableProperty(key)) {
 				return null;
 			}
 			String webExposedEndpoints = properties.get(key);
@@ -292,16 +293,18 @@ public class TypeUtils {
 		private List<String> propertyNames;
 		private String havingValue;
 		private boolean matchIfMissing;
+		private AotOptions aotOptions;
 
-		public ConditionalOnPropertyDescriptor(List<String> names, String havingValue, boolean matchIfMissing) {
+		public ConditionalOnPropertyDescriptor(List<String> names, String havingValue, boolean matchIfMissing, AotOptions aotOptions) {
 			this.propertyNames = names;
 			this.havingValue = havingValue;
 			this.matchIfMissing = matchIfMissing;
+			this.aotOptions = aotOptions;
 		}
 		
-		public String test(Map<String, String> properties) {
+		public String test(Map<String, String> properties, AotOptions aotOptions) {
 			for (String name: propertyNames) {
-				if (!ConfigOptions.buildTimeCheckableProperty(name)) {
+				if (!aotOptions.buildTimeCheckableProperty(name)) {
 					return null;
 				}
 				String definedValue = properties.get(name);
@@ -309,7 +312,7 @@ public class TypeUtils {
 					(havingValue != null && definedValue!=null && definedValue.toLowerCase().equals(havingValue.toLowerCase()))) {
 					// all is well!
 				} else if (matchIfMissing && definedValue == null) {
-					if (ConfigOptions.shouldRespectMatchIfMissing()) {
+					if (aotOptions.isBuildTimePropertiesMatchIfMissing()) {
 						// all is well
 					} else {
 						return name+(havingValue==null?"":"="+havingValue)+" property check failed because configuration indicated matchIfMissing should be ignored";

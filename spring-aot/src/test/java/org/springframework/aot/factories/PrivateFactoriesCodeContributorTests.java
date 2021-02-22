@@ -9,6 +9,7 @@ import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.factories.fixtures.PublicFactory;
 import org.springframework.aot.factories.fixtures.TestFactory;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +38,7 @@ class PrivateFactoriesCodeContributorTests {
 
 	@Test
 	void shouldContributeStaticStatement(TypeSystem typeSystem) throws Exception {
-		CodeGenerator code = new CodeGenerator();
+		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(),
 				"org.springframework.aot.factories.fixtures.ProtectedFactory", typeSystem);
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));

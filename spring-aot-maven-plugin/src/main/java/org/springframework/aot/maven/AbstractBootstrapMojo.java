@@ -3,9 +3,6 @@ package org.springframework.aot.maven;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,17 +11,13 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.nativex.AotOptions;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
@@ -60,11 +53,62 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}")
 	protected File buildDir;
 
+	@Parameter
+	protected String mode;
+
+	@Parameter
+	private boolean debugVerify;
+
+	@Parameter
+	private boolean ignoreHintsOnExcludedConfig;
+
+	@Parameter
+	private boolean removeUnusedConfig = true;
+
+	@Parameter
+	private boolean verify;
+
+	@Parameter
+	private boolean removeYamlSupport;
+
+	@Parameter
+	private boolean removeJmxSupport = true;
+
+	@Parameter
+	private boolean removeXmlSupport = true;
+
+	@Parameter
+	private boolean removeSpelSupport;
+
+	@Parameter
+	private boolean buildTimePropertiesMatchIfMissing;
+
+	@Parameter
+	private String[] buildTimePropertiesChecks;
+
+
 	/**
 	 * The location of the generated bootstrap sources.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/")
 	protected File outputDirectory;
+
+	protected AotOptions getAotOptions() {
+		AotOptions aotOptions = new AotOptions();
+		aotOptions.setMode(mode);
+		aotOptions.setDebugVerify(debugVerify);
+		aotOptions.setIgnoreHintsOnExcludedConfig(ignoreHintsOnExcludedConfig);
+		aotOptions.setRemoveUnusedConfig(removeUnusedConfig);
+		aotOptions.setVerify(verify);
+		aotOptions.setRemoveYamlSupport(removeYamlSupport);
+		aotOptions.setRemoveJmxSupport(removeJmxSupport);
+		aotOptions.setRemoveXmlSupport(removeXmlSupport);
+		aotOptions.setRemoveXmlSupport(removeXmlSupport);
+		aotOptions.setRemoveSpelSupport(removeSpelSupport);
+		aotOptions.setBuildTimePropertiesMatchIfMissing(buildTimePropertiesMatchIfMissing);
+		aotOptions.setBuildTimePropertiesChecks(buildTimePropertiesChecks);
+		return aotOptions;
+	}
 
 
 	protected void compileGeneratedSources(Path generatedRootFolder) throws MojoExecutionException {

@@ -17,9 +17,6 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<main.class>com.example.actuator.ActuatorApplication</main.class>
-		<!--
-        <build.args>-Dspring.native.build-time-properties-checks=default-include-all -Dspring.native.build-time-properties-match-if-missing=false -Dspring.native.factories.no-actuator-metrics=true -Dspring.native.remove-yaml-support=true</build.args>
-		-->
 	</properties>
 
 	<dependencies>

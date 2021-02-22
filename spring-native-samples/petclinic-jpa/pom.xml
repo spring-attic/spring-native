@@ -30,7 +30,7 @@
         <spring-format.version>0.0.21</spring-format.version>
         
         <main.class>org.springframework.samples.petclinic.PetClinicApplication</main.class>
-        <build.args>-Dspring.native.remove-yaml-support=true --enable-all-security-services</build.args>
+        <native.build.args>--enable-all-security-services</native.build.args>
 
     </properties>
 
@@ -150,6 +150,9 @@
             <plugin>
                 <groupId>org.springframework.experimental</groupId>
                 <artifactId>spring-aot-maven-plugin</artifactId>
+                <configuration>
+                    <removeYamlSupport>true</removeYamlSupport>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

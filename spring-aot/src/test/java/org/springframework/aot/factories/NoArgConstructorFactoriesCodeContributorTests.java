@@ -10,6 +10,7 @@ import org.springframework.aot.factories.fixtures.MissingDefaultConstructorFacto
 import org.springframework.aot.factories.fixtures.PublicFactory;
 import org.springframework.aot.factories.fixtures.TestFactory;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +45,7 @@ class NoArgConstructorFactoriesCodeContributorTests {
 
 	@Test
 	void shouldContributeFactoryNames(TypeSystem typeSystem) {
-		CodeGenerator code = new CodeGenerator();
+		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), typeSystem);
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())

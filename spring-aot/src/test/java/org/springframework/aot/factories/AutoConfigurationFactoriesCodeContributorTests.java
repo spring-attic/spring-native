@@ -12,6 +12,7 @@ import org.springframework.aot.factories.fixtures.TestAutoConfigurationMissingTy
 import org.springframework.aot.factories.fixtures.TestFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.AotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TypeSystemExtension.class)
 class AutoConfigurationFactoriesCodeContributorTests {
 
-	FactoriesCodeContributor contributor = new AutoConfigurationFactoriesCodeContributor();
+	FactoriesCodeContributor contributor = new AutoConfigurationFactoriesCodeContributor(new AotOptions());
 
 	BuildContext buildContext = Mockito.mock(BuildContext.class);
 
@@ -41,7 +42,7 @@ class AutoConfigurationFactoriesCodeContributorTests {
 
 	@Test
 	void shouldContributeFactoryNames(TypeSystem typeSystem) {
-		CodeGenerator code = new CodeGenerator();
+		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(EnableAutoConfiguration.class.getName(), PublicFactory.class.getName(), typeSystem);
 		Mockito.when(buildContext.getTypeSystem()).thenReturn(typeSystem);
 		this.contributor.contribute(factory, code, this.buildContext);
@@ -51,7 +52,7 @@ class AutoConfigurationFactoriesCodeContributorTests {
 
 	@Test
 	void shouldContributeFactoryNamesWhenConditionMet(TypeSystem typeSystem) {
-		CodeGenerator code = new CodeGenerator();
+		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(EnableAutoConfiguration.class.getName(), TestAutoConfiguration.class.getName(), typeSystem);
 		Mockito.when(buildContext.getTypeSystem()).thenReturn(typeSystem);
 		this.contributor.contribute(factory, code, this.buildContext);
@@ -61,7 +62,7 @@ class AutoConfigurationFactoriesCodeContributorTests {
 
 	@Test
 	void shouldContributeFactoryNamesWhenConditionNotMet(TypeSystem typeSystem) {
-		CodeGenerator code = new CodeGenerator();
+		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(EnableAutoConfiguration.class.getName(), TestAutoConfigurationMissingType.class.getName(), typeSystem);
 		Mockito.when(buildContext.getTypeSystem()).thenReturn(typeSystem);
 		this.contributor.contribute(factory, code, this.buildContext);

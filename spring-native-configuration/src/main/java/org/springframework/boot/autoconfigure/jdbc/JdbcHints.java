@@ -17,26 +17,20 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.DatabaseMetaData;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.support.JdbcAccessor;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.MethodInfo;
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourcesInfo;
 import org.springframework.nativex.hint.TypeInfo;
-import org.springframework.nativex.support.ConfigOptions;
-import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.ResourcesDescriptor;
-import org.springframework.nativex.type.TypeSystem;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.support.JdbcAccessor;
+import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, typeInfos= {
 		@TypeInfo(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
@@ -53,16 +47,4 @@ import org.springframework.jdbc.support.JdbcAccessor;
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
 		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
 })
-public class JdbcHints implements NativeConfiguration {
-	@Override
-	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		if (!ConfigOptions.shouldRemoveXmlSupport()) {
-			HintDeclaration ch = new HintDeclaration();
-			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
-			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
-			ch.addResourcesDescriptor(sqlErrorCodes);
-			return Collections.singletonList(ch);
-		}
-		return Collections.emptyList();
-	}
-}
+public class JdbcHints implements NativeConfiguration { }

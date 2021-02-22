@@ -60,7 +60,6 @@ import org.springframework.nativex.hint.ResourcesInfo;
 import org.springframework.nativex.hint.ResourcesInfos;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.TypeInfos;
-import org.springframework.nativex.support.ConfigOptions;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -1328,11 +1327,7 @@ public class Type {
 			if (isImportSelector() && hints.size() == 0) {
 				// Failing early as this will likely result in a problem later - fix is
 				// typically (right now) to add a new Hint in the configuration module
-				if (ConfigOptions.areMissingSelectorHintsAnError()) {
-					throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
-				} else {
-					logger.debug("WARNING: No access hint found for import selector: " + getDottedName());
-				}
+				throw new IllegalStateException("No access hint found for import selector: " + getDottedName());
 			}
 		} catch (MissingTypeException mte) {
 			logger.debug("Unable to determine if type " + getName()
@@ -1399,33 +1394,34 @@ public class Type {
 			Type type = typeSystem.Lresolve(propertiesType, true);
 			if (type != null) {
 				boolean shouldWalk = true;
-				if (ConfigOptions.isBuildTimePropertyChecking()) {
-					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-						logger.debug("Build time property checking for "+type.getDottedName());
-					}
-					String prefix = type.getConfigurationPropertiesPrefix();
-					if (prefix!=null && ConfigOptions.buildTimeCheckableProperty(prefix)) {
-						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-							logger.debug("found "+prefix+" is checkable at build time");
-						}
-						boolean foundSomethingToBindInThatConfigProps = false;
-						Map<String, String> activeProperties = typeSystem.getActiveProperties();
-						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
-						}
-						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
-							if (activeProperty.getKey().startsWith(prefix)) {
-								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-									logger.debug("found something binding to that prefix in specified set of active properties");
-								}
-								foundSomethingToBindInThatConfigProps = true;
-							}
-						}
-						if (!foundSomethingToBindInThatConfigProps) {
-							shouldWalk=false;
-						}
-					}
-				}
+				// TODO Uncomment when we know how to pass AotConfiguration here
+//				if (ConfigOptions.isBuildTimePropertyChecking()) {
+//					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+//						logger.debug("Build time property checking for "+type.getDottedName());
+//					}
+//					String prefix = type.getConfigurationPropertiesPrefix();
+//					if (prefix!=null && ConfigOptions.buildTimeCheckableProperty(prefix)) {
+//						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+//							logger.debug("found "+prefix+" is checkable at build time");
+//						}
+//						boolean foundSomethingToBindInThatConfigProps = false;
+//						Map<String, String> activeProperties = typeSystem.getActiveProperties();
+//						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+//							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
+//						}
+//						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
+//							if (activeProperty.getKey().startsWith(prefix)) {
+//								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+//									logger.debug("found something binding to that prefix in specified set of active properties");
+//								}
+//								foundSomethingToBindInThatConfigProps = true;
+//							}
+//						}
+//						if (!foundSomethingToBindInThatConfigProps) {
+//							shouldWalk=false;
+//						}
+//					}
+//				}
 				if (shouldWalk) {
 					walkPropertyType(propertiesType, collector);
 				} else {
@@ -2896,7 +2892,7 @@ public class Type {
 	}
 
 	
-	public boolean verifyType() {
+	public boolean verifyType(boolean debugVerification) {
 		List<String> verificationProblems = new ArrayList<>();
 		// Type
 		Set<String> typesInSignature = getTypesInSignature();
@@ -2907,7 +2903,7 @@ public class Type {
 			}
 		}
 		if (verificationProblems.size()!=0) {
-			if (ConfigOptions.debugVerification) {
+			if (debugVerification) {
 				logger.debug("FAILED TYPE VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
 			}
 		}
@@ -2917,7 +2913,7 @@ public class Type {
 	 * Check all the type references from the types signature and the signatures of its members can be resolved.
 	 * @return true if verification is OK, false if there is a problem
 	 */
-	public boolean verifyMembers() {
+	public boolean verifyMembers(boolean debugVerification) {
 		List<String> verificationProblems = new ArrayList<>();
 		// Fields
 		Set<String> typesInSignature = null;
@@ -2951,7 +2947,7 @@ public class Type {
 			}
 		}
 		if (verificationProblems.size()!=0) {
-			if (ConfigOptions.debugVerification) {
+			if (debugVerification) {
 				logger.debug("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
 			}
 		}

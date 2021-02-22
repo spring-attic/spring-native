@@ -42,6 +42,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -73,30 +75,33 @@ public class ResourcesHandler extends Handler {
 
 	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
 
-	private ReflectionHandler reflectionHandler;
+	private final ReflectionHandler reflectionHandler;
 
-	private DynamicProxiesHandler dynamicProxiesHandler;
+	private final DynamicProxiesHandler dynamicProxiesHandler;
 
-	private InitializationHandler initializationHandler;
+	private final InitializationHandler initializationHandler;
 
-	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler) {
+	private final AotOptions aotOptions;
+
+	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler, AotOptions aotOptions) {
 		super(collector);
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 		this.initializationHandler = initializationHandler;
+		this.aotOptions = aotOptions;
 	}
 
 	/**
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
 	 */
 	public void register() {
-		if (ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode()) {
+		if (aotOptions.toMode() == Mode.NATIVE ||
+				aotOptions.toMode() == Mode.NATIVE_AGENT) {
 			processSpringFactories();
 		}
-		handleConstantHints(ConfigOptions.isInitMode());
-		if (ConfigOptions.isAnnotationMode() ||
-			ConfigOptions.isAgentMode()) {
+		handleConstantHints(aotOptions.toMode() == Mode.NATIVE_INIT);
+		if (aotOptions.toMode() == Mode.NATIVE ||
+				aotOptions.toMode() == Mode.NATIVE_AGENT) {
 			handleSpringComponents();
 		}
 	}
@@ -200,7 +205,7 @@ public class ResourcesHandler extends Handler {
 					throw new IllegalStateException("Unable to load spring.factories", e);
 				}
 //				loadSpringFactoryFile(springFactory, p);
-				if (ConfigOptions.isAgentMode()) {
+				if (aotOptions.toMode() == Mode.NATIVE_AGENT) {
 					processSpringComponentsAgent(p, context);
 				} else {
 					processSpringComponents(p, context, alreadyProcessed);
@@ -209,7 +214,7 @@ public class ResourcesHandler extends Handler {
 		} else {
 			logger.debug("Found no META-INF/spring.components -> synthesizing one...");
 			Properties p = synthesizeSpringComponents();
-			if (ConfigOptions.isAgentMode()) {
+			if (aotOptions.toMode() == Mode.NATIVE_AGENT) {
 				processSpringComponentsAgent(p, context);
 			} else {
 				processSpringComponents(p, context, alreadyProcessed);
@@ -403,7 +408,7 @@ public class ResourcesHandler extends Handler {
 				logger.debug("Problems with value " + tt);
 			}
 		}
-		if (isComponent && ConfigOptions.isVerifierOn()) {
+		if (isComponent && aotOptions.isVerify()) {
 			kType.verifyComponent();
 		}
 		for (Type type : kType.getNestedTypes()) {
@@ -705,7 +710,7 @@ public class ResourcesHandler extends Handler {
 		Enumeration<Object> factoryKeys = p.keys();
 		boolean modified = false;
 		
-		if (!ConfigOptions.isAgentMode()) {
+		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
 			Properties filteredProperties = new Properties();
 			for (Map.Entry<Object, Object> factoriesEntry : p.entrySet()) {
 				String key = (String) factoriesEntry.getKey();
@@ -714,7 +719,7 @@ public class ResourcesHandler extends Handler {
 				for (String value : valueString.split(",")) {
 					values.add(value);
 				}
-				if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+				if (aotOptions.isRemoveUnusedConfig()) {
 				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
 					int len = values.size();
 					if (springFactoriesProcessor.filter(key, values)) {
@@ -734,7 +739,7 @@ public class ResourcesHandler extends Handler {
 
 		factoryKeys = p.keys();
 		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
-		if (!ConfigOptions.isAgentMode()) {
+		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
 			while (factoryKeys.hasMoreElements()) {
 				String k = (String) factoryKeys.nextElement();
 				logger.debug("Adding all the classes for this key: " + k);
@@ -742,11 +747,10 @@ public class ResourcesHandler extends Handler {
 						&& !k.equals(propertySourceLoaderKey)
 						&& !k.equals(managementContextConfigurationKey) 
 						) {
-					if (ConfigOptions.isBuildTimeTransformation() && (
-						k.equals("org.springframework.boot.diagnostics.FailureAnalyzer") ||
+					if (k.equals("org.springframework.boot.diagnostics.FailureAnalyzer") ||
 						k.equals("org.springframework.context.ApplicationListener") ||
 						k.equals("org.springframework.context.ApplicationContextInitializer")
-						)) {
+						) {
 						// TODO really needs to register all those values without a no arg ctor (for now)
 						// something like this:
 						/*
@@ -764,12 +768,11 @@ public class ResourcesHandler extends Handler {
 						*/
 						continue;
 					}
-					if (ConfigOptions.isBuildTimeTransformation() && 
-						(k.equals("org.springframework.boot.env.EnvironmentPostProcessor")
+					if (k.equals("org.springframework.boot.env.EnvironmentPostProcessor")
 						|| k.equals("org.springframework.boot.context.config.ConfigDataLoader")
 						|| k.equals("org.springframework.boot.logging.LoggingSystemFactory")
 //						 || k.equals("org.springframework.boot.env.PropertySourceLoader")
-						)) {
+						) {
 						for (String v: p.getProperty(k).split(",")) {
 							Type t = ts.resolveDotted(v, true);
 							if (t != null) {
@@ -795,39 +798,19 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 
-		if (!ConfigOptions.isAgentMode()) {
+		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
 			// Handle PropertySourceLoader
 			String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
 			if (propertySourceLoaderValues != null) {
-				if (ConfigOptions.isBuildTimeTransformation()) {
-					for (String v: propertySourceLoaderValues.split(",")) {
-						Type t = ts.resolveDotted(v, true);
-						if (t != null) {
-							String name = t.getDottedName();
-							Method defaultConstructor = t.getDefaultConstructor();
-							if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
-								reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
-							}	
+				for (String v: propertySourceLoaderValues.split(",")) {
+					Type t = ts.resolveDotted(v, true);
+					if (t != null) {
+						String name = t.getDottedName();
+						Method defaultConstructor = t.getDefaultConstructor();
+						if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
+							reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
 						}
 					}
-				} else {
-					List<String> propertySourceLoaders = new ArrayList<>();
-					for (String s : propertySourceLoaderValues.split(",")) {
-						if (!s.equals("org.springframework.boot.env.YamlPropertySourceLoader")
-								|| !ConfigOptions.shouldRemoveYamlSupport()) {
-							registerTypeReferencedBySpringFactoriesKey(s);
-							propertySourceLoaders.add(s);
-						} else {
-						forRemoval.add(s);
-						}
-					}
-					logger.debug("Processing spring.factories - PropertySourceLoader lists #"
-											+ propertySourceLoaders.size() + " property source loaders");
-					logger.debug("These property source loaders are remaining in the PropertySourceLoader key value:");
-					for (int c = 0; c < propertySourceLoaders.size(); c++) {
-						logger.debug((c + 1) + ") " + propertySourceLoaders.get(c));
-					}
-					p.put(propertySourceLoaderKey, String.join(",", propertySourceLoaders));
 				}
 			}
 		}
@@ -846,14 +829,14 @@ public class ResourcesHandler extends Handler {
 					+ " configurations");
 			for (String config : configurations) {
 				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
-					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+					if (aotOptions.isRemoveUnusedConfig()) {
 						excludedAutoConfigCount++;
 						logger.debug("Excluding auto-configuration " + config);
 						forRemoval.add(config);
 					}
 				}
 			}
-			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (aotOptions.isRemoveUnusedConfig()) {
 				logger.debug(
 						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
 				configurations.removeAll(forRemoval);
@@ -918,13 +901,13 @@ public class ResourcesHandler extends Handler {
 			List<String> configurations = Stream.of(configurationsValue.split(",")).collect(Collectors.toList());
 			for (String configuration: configurations) {
 				if (!checkAndRegisterConfigurationType(configuration,ReachedBy.FromSpringFactoriesKey)) {
-					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+					if (aotOptions.isRemoveUnusedConfig()) {
 						logger.debug("Excluding auto-configuration (key="+configurationsKey+") =" +configuration);
 						inactiveConfigurations.add(configuration);
 					}
 				}
 			}
-			if (ConfigOptions.shouldRemoveUnusedAutoconfig() && inactiveConfigurations.size()>0) {
+			if (aotOptions.isRemoveUnusedConfig() && inactiveConfigurations.size()>0) {
 				int totalConfigurations = configurations.size();
 				configurations.removeAll(inactiveConfigurations);
 				p.put(configurationsKey, String.join(",", configurations));
@@ -1040,11 +1023,11 @@ public class ResourcesHandler extends Handler {
 	}
 	
 	private boolean checkJmxConstraint(Type type, ProcessingContext pc) {
-		if (ConfigOptions.shouldRemoveJmxSupport()) {
+		if (aotOptions.isRemoveJmxSupport()) {
 			if (type.getDottedName().toLowerCase().contains("jmx") && 
 					!(pc.peekReachedBy()==ReachedBy.Import || pc.peekReachedBy()==ReachedBy.NestedReference)) {
 				logger.debug(type.getDottedName()+" FAILED validation - it has 'jmx' in it - returning FALSE");
-				if (!ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+				if (!aotOptions.isRemoveUnusedConfig()) {
 //					resourcesRegistry.addResources(type.getDottedName().replace(".", "/")+".class");
 					collector.addResource(type.getDottedName().replace(".", "/")+".class", false);
 				}
@@ -1076,8 +1059,8 @@ public class ResourcesHandler extends Handler {
 	private boolean checkPropertyRelatedConditions(Type type) {
 		// Problems observed discarding inner configurations due to eager property checks
 		// (configserver sample). Too aggressive, hence the $ check
-		if (ConfigOptions.isBuildTimePropertyChecking() && !type.getName().contains("$")) {
-			String testResult = TypeUtils.testAnyConditionalOnProperty(type);
+		if (aotOptions.isBuildTimePropertyChecking() && !type.getName().contains("$")) {
+			String testResult = TypeUtils.testAnyConditionalOnProperty(type, aotOptions);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnProperty property check: "+testResult;
 				failedPropertyChecks.add(message);
@@ -1085,21 +1068,21 @@ public class ResourcesHandler extends Handler {
 				return false;
 			}
 			// These are like a ConditionalOnProperty check but using a special condition to check the property
-			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(type);
+			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(type, aotOptions);
 			if (testResult != null) {
 				String message =  type.getDottedName()+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
 				failedPropertyChecks.add(message);
 				logger.debug(message);
 				return false;
 			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(type);
+			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(type, aotOptions);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
 				failedPropertyChecks.add(message);
 				logger.debug(message);
 				return false;
 			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(type);
+			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(type, aotOptions);
 			if (testResult != null) {
 				String message = type.getDottedName()+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
 				failedPropertyChecks.add(message);
@@ -1117,7 +1100,7 @@ public class ResourcesHandler extends Handler {
 		Set<String> missingTypes = ts.findMissingTypesInHierarchyOfThisType(type);
 		if (!missingTypes.isEmpty()) {
 			logger.debug("for " + type.getName() + " missing types in hierarchy are " + missingTypes );
-			if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (aotOptions.isRemoveUnusedConfig()) {
 				return false;
 			}
 		}
@@ -1125,7 +1108,7 @@ public class ResourcesHandler extends Handler {
 	}
 
 	private boolean isIgnoredConfiguration(Type type) {
-		if (ConfigOptions.isIgnoreHintsOnExcludedConfig() && type.isAtConfiguration()) {
+		if (aotOptions.isIgnoreHintsOnExcludedConfig() && type.isAtConfiguration()) {
 			if (isIgnored(type)) {
 				logger.debug("skipping hint processing on "+type.getName()+" because it is explicitly excluded in this application");
 				return true;
@@ -1262,11 +1245,11 @@ public class ResourcesHandler extends Handler {
 		for (HintApplication hint : hints) {
 			logger.debug("processing hint " + hint);
 			passesTests = processExplicitTypeReferencesFromHint(pc, accessManager, hint, toFollow);
-			if (!passesTests && ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (!passesTests && aotOptions.isRemoveUnusedConfig()) {
 				break;
 			}
 			passesTests = processImplicitTypeReferencesFromHint(pc, accessManager, type, hint, toFollow);
-			if (!passesTests && ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+			if (!passesTests && aotOptions.isRemoveUnusedConfig()) {
 				break;
 			}
 			registerAnnotationChain(accessManager, hint.getAnnotationChain());
@@ -1283,14 +1266,14 @@ public class ResourcesHandler extends Handler {
 		}
 
 		pc.recordVisit(type.getName());
-		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+		if (passesTests || !aotOptions.isRemoveUnusedConfig()) {
 			processHierarchy(pc, accessManager, type);
 		}
 		
 		checkForImportedConfigurations(type, toFollow);
 
-		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
-			if (type.isAtComponent() && ConfigOptions.isVerifierOn()) {
+		if (passesTests || !aotOptions.isRemoveUnusedConfig()) {
+			if (type.isAtComponent() && aotOptions.isVerify()) {
 				type.verifyComponent();
 			}
 			if (type.isAtConfiguration()) {
@@ -1299,16 +1282,13 @@ public class ResourcesHandler extends Handler {
 				if (validMethodsSubset != null) {
 					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
 				}
-				if (!ConfigOptions.isBuildTimeTransformation()) {
-					configureMethodAccess(accessManager, type, validMethodsSubset,false);
-				}
 			}
 			processTypesToFollow(pc, accessManager, type, reachedBy, toFollow);
 			registerAllRequested(accessManager);
 		}
 
 		// If the outer type is failing a test, we don't need to go into nested types...
-		if (passesTests || !ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+		if (passesTests || !aotOptions.isRemoveUnusedConfig()) {
 			processNestedTypes(pc, type);
 		}
 		pc.pop();
@@ -1352,7 +1332,7 @@ public class ResourcesHandler extends Handler {
 		// Follow transitively included inferred types only if necessary:
 		for (Map.Entry<Type,ReachedBy> entry : toFollow.entrySet()) {
 			Type t = entry.getKey();
-			if (ConfigOptions.isAgentMode() && t.isAtConfiguration()) {
+			if (aotOptions.toMode() == Mode.NATIVE_AGENT && t.isAtConfiguration()) {
 				boolean existsInVisibleConfig = existingReflectionConfigContains(t.getDottedName()); // Only worth following if this config is active...
 				if (!existsInVisibleConfig) {
 					logger.debug("in agent mode not following "+t.getDottedName()+" from "+type.getName()+" - it is not mentioned in existing reflect configuration");
@@ -1486,7 +1466,7 @@ public class ResourcesHandler extends Handler {
 					// any types being processed that were reached by digging into nested types.
 					passesTests = false;
 					// Once failing, no need to process other hints
-					if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+					if (aotOptions.isRemoveUnusedConfig()) {
 						break;
 					}
 				}
@@ -1506,7 +1486,7 @@ public class ResourcesHandler extends Handler {
 				if (!registerSpecific(pc, specificTypeName, specificNameEntry.getValue(), accessRequestor)) {
 					if (hint.isSkipIfTypesMissing()) {
 						passesTests = false;
-						if (ConfigOptions.shouldRemoveUnusedAutoconfig()) {
+						if (aotOptions.isRemoveUnusedConfig()) {
 							break;
 						}
 					}
@@ -1662,55 +1642,54 @@ public class ResourcesHandler extends Handler {
 			//	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 			//		return new AuthenticationAuditListener();
 			//	}
-			if (!ConfigOptions.isSkipAtBeanHintProcessing()) {
-				List<HintApplication> methodHints = atBeanMethod.getHints();
-				logger.debug("@Bean method "+atBeanMethod + " hints: #"+methodHints.size());
-				for (int i=0;i<methodHints.size();i++) {
-					logger.debug((i+1)+") "+methodHints.get(i));
+			List<HintApplication> methodHints = atBeanMethod.getHints();
+			logger.debug("@Bean method "+atBeanMethod + " hints: #"+methodHints.size());
+			for (int i=0;i<methodHints.size();i++) {
+				logger.debug((i+1)+") "+methodHints.get(i));
+			}
+			for (int h=0;h<methodHints.size() && passesTests;h++) {
+				HintApplication hint = methodHints.get(h);
+				logger.debug("processing hint " + hint);
+
+				Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
+				if (specificNames.size() != 0) {
+					logger.debug("handling " + specificNames.size() + " specific types");
+					for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
+						registerSpecific(pc, specificNameEntry.getKey(),
+								specificNameEntry.getValue(), methodRCM);
+					}
 				}
-				for (int h=0;h<methodHints.size() && passesTests;h++) {
-					HintApplication hint = methodHints.get(h);
-					logger.debug("processing hint " + hint);
 
-					Map<String, AccessDescriptor> specificNames = hint.getSpecificTypes();
-					if (specificNames.size() != 0) {
-						logger.debug("handling " + specificNames.size() + " specific types");
-						for (Map.Entry<String, AccessDescriptor> specificNameEntry : specificNames.entrySet()) {
-							registerSpecific(pc, specificNameEntry.getKey(),
-									specificNameEntry.getValue(), methodRCM);
+				Map<String, Integer> inferredTypes = hint.getInferredTypes();
+				if (inferredTypes.size()!=0) {
+					logger.debug("handling " + inferredTypes.size() + " inferred types");
+					for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
+						String s = inferredType.getKey();
+						Type t = ts.resolveDotted(s, true);
+						boolean exists = (t != null);
+						if (!exists) {
+							logger.debug("inferred type " + s + " not found");
+						} else {
+							logger.debug("inferred type " + s + " found, will get accessibility " + AccessBits.toString(inferredType.getValue()));
+						}
+						if (exists) {
+							// TODO if already there, should we merge access required values?
+							methodRCM.requestTypeAccess(s, inferredType.getValue());
+							if (hint.isFollow()) {
+								additionalFollows.put(t,ReachedBy.Other);
+							}
+						} else if (hint.isSkipIfTypesMissing()) {
+							passesTests = false;
+							break;
 						}
 					}
-
-					Map<String, Integer> inferredTypes = hint.getInferredTypes();
-					if (inferredTypes.size()!=0) {
-						logger.debug("handling " + inferredTypes.size() + " inferred types");
-						for (Map.Entry<String, Integer> inferredType : inferredTypes.entrySet()) {
-							String s = inferredType.getKey();
-							Type t = ts.resolveDotted(s, true);
-							boolean exists = (t != null);
-							if (!exists) {
-								logger.debug("inferred type " + s + " not found");
-							} else {
-								logger.debug("inferred type " + s + " found, will get accessibility " + AccessBits.toString(inferredType.getValue()));
-							}
-							if (exists) {
-								// TODO if already there, should we merge access required values?
-								methodRCM.requestTypeAccess(s, inferredType.getValue());
-								if (hint.isFollow()) {
-									additionalFollows.put(t,ReachedBy.Other);
-								}
-							} else if (hint.isSkipIfTypesMissing()) {
-								passesTests = false;
-								break;
-							}
-						}
-					}
-					if (passesTests) {
-						List<Type> annotationChain = hint.getAnnotationChain();
-						registerAnnotationChain(methodRCM, annotationChain);
-					}
+				}
+				if (passesTests) {
+					List<Type> annotationChain = hint.getAnnotationChain();
+					registerAnnotationChain(methodRCM, annotationChain);
 				}
 			}
+
 
 			// Register other runtime visible annotations from the @Bean method. For example
 			// this ensures @Role is visible on:
@@ -1911,7 +1890,7 @@ public class ResourcesHandler extends Handler {
 		for (int i = 0; i < annotationChain.size(); i++) {
 			// i=0 is the annotated type, i>0 are all annotation types
 			Type t = annotationChain.get(i);
-			if (i==0 && ConfigOptions.isAgentMode()) {
+			if (i==0 && (aotOptions.toMode() == Mode.NATIVE_AGENT)) {
 				boolean beingReflectedUponInIncomingConfiguration = existingReflectionConfigContains(t.getDottedName());
 				if (!beingReflectedUponInIncomingConfiguration) {
 					logger.debug("In agent mode skipping "+t.getDottedName()+" because in already existing configuration");

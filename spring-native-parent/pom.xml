@@ -20,7 +20,7 @@
 
 	<properties>
 		<!-- Customize native-image arguments with this property -->
-		<build.args></build.args>
+		<native.build.args></native.build.args>
 
 		<!-- Specify main class to allow native-image-maven-plugin to find it -->
 		<main.class></main.class>
@@ -56,7 +56,7 @@
 							<builder>${builder}</builder>
 							<env>
 								<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-								<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${native.build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
 							</env>
 						</image>
 					</configuration>
@@ -89,7 +89,7 @@
 					<configuration>
 						<mainClass>${main.class}</mainClass>
 						<imageName>${project.artifactId}</imageName>
-						<buildArgs>${build.args}</buildArgs>
+						<buildArgs>${native.build.args}</buildArgs>
 					</configuration>
 					<executions>
 						<execution>
