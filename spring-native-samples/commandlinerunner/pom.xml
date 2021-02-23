@@ -47,7 +47,7 @@
                 <groupId>org.springframework.experimental</groupId>
                 <artifactId>spring-aot-maven-plugin</artifactId>
                 <configuration>
-                    <removeXmlSupport>true</removeXmlSupport>
+                    <removeYamlSupport>true</removeYamlSupport>
                     <removeSpelSupport>true</removeSpelSupport>
                 </configuration>
             </plugin>
