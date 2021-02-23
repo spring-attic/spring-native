@@ -25,9 +25,6 @@
         <!-- Specify main class to allow native-image-maven-plugin to find it -->
         <main.class></main.class>
 
-        <!-- native profile set it to false in order to allow to disable Spring Boot repackaging to avoid conflicts with native-image-maven-plugin -->
-        <repackage>true</repackage>
-
         <!-- Tiny builder allow small footprint and reduced surface attack, you can also use paketobuildpacks/builder:base to have more tool available in the image-->
         <builder>paketobuildpacks/builder:tiny</builder>
 
@@ -40,17 +37,6 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                        <id>repackage</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${repackage}</skip>
-                        </configuration>
-                        </execution>
-                    </executions>
                     <configuration>
                         <image>
                             <builder>${builder}</builder>
@@ -192,14 +178,16 @@
         <!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
         <profile>
             <id>native-image</id>
-            <properties>
-                <boot-repackage>false</boot-repackage>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
+                    </plugin>
+                    <!-- Make sure spring-boot-maven-plugin is specified after native-image-maven-plugin to avoid conflicts with Boot repackaging  -->
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
