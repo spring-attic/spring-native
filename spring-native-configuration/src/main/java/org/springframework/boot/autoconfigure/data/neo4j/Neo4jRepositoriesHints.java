@@ -15,7 +15,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class,
 		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class,
@@ -40,7 +40,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.data.neo4j.core.mapping.callback.OptimisticLockingSupport"
 		}
 	) },
-	proxyInfos = {
+	proxies = {
 		@ProxyInfo(typeNames = {
 			"org.springframework.data.annotation.Id",
 			"org.springframework.core.annotation.SynthesizedAnnotation"

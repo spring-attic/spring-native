@@ -21,7 +21,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint( typeInfos = {
+@NativeHint( types = {
 	@TypeInfo(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
 			  access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })

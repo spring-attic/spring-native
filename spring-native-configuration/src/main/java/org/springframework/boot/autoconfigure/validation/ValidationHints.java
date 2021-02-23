@@ -68,7 +68,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger=ValidationAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger=ValidationAutoConfiguration.class, types = {
 		@TypeInfo(types = {
 			ParameterMessageInterpolator.class,
 			HibernateValidatorConfiguration.class,
@@ -123,6 +123,6 @@ import org.springframework.nativex.hint.AccessBits;
 				Size.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
-@NativeHint(initializationInfos = @InitializationInfo(types = MessageInterpolatorFactory.class, initTime = InitializationTime.BUILD))
+@NativeHint(initialization = @InitializationInfo(types = MessageInterpolatorFactory.class, initTime = InitializationTime.BUILD))
 public class ValidationHints implements NativeConfiguration {
 }

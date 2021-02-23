@@ -4,7 +4,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(
-		initializationInfos = @InitializationInfo(types = {
+		initialization = @InitializationInfo(types = {
 				org.h2.util.Bits.class,
 				org.hibernate.EntityMode.class,
 				javax.persistence.FetchType.class,

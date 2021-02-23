@@ -25,7 +25,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = R2dbcRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = R2dbcRepositoriesAutoConfiguration.class, types = {
 		@TypeInfo(types = {
 				R2dbcRepositoryFactoryBean.class,
 				R2dbcRepositoryConfigurationExtension.class,

@@ -35,7 +35,7 @@ import org.springframework.nativex.hint.TypeInfo;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						JdbcRepositoryFactoryBean.class,
 						JdbcRepositoryConfigExtension.class,
@@ -50,7 +50,7 @@ import org.springframework.nativex.hint.TypeInfo;
 						RelationalAuditingCallback.class
 				})
 		},
-		proxyInfos = {
+		proxies = {
 				@ProxyInfo(typeNames = {
 						"org.springframework.data.jdbc.core.convert.RelationResolver", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
 				})

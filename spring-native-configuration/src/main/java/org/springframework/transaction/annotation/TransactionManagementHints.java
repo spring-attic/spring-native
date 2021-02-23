@@ -24,7 +24,7 @@ import org.springframework.transaction.aspectj.AspectJJtaTransactionManagementCo
 import org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration;
 
 // TODO really the 'skip if missing' can be different for each one here...
-@NativeHint(trigger=TransactionManagementConfigurationSelector.class, typeInfos = {
+@NativeHint(trigger=TransactionManagementConfigurationSelector.class, types = {
 	@TypeInfo(types= {
 			AutoProxyRegistrar.class,
 			ProxyTransactionManagementConfiguration.class,
@@ -32,7 +32,7 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 			AspectJTransactionManagementConfiguration.class
 	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1", access = AccessBits.LOAD_AND_CONSTRUCT)
 }, follow=true)
-@NativeHint(typeInfos= {
+@NativeHint(types = {
 		@TypeInfo(types= {
 				Transactional.class,
 				javax.transaction.Transactional.class

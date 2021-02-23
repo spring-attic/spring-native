@@ -7,7 +7,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
-@NativeHint(trigger = IndexedQueueSizeUtil.class, typeInfos = {
+@NativeHint(trigger = IndexedQueueSizeUtil.class, types = {
 		@TypeInfo(
 				typeNames = "io.rsocket.internal.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
 				fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true)),

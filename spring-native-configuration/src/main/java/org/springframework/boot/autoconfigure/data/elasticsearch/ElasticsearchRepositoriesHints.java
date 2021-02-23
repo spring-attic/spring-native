@@ -43,7 +43,7 @@ import org.springframework.nativex.hint.AccessBits;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						ElasticsearchRepositoryFactoryBean.class,
 						ElasticsearchRepositoryConfigExtension.class,
@@ -56,10 +56,10 @@ import org.springframework.nativex.hint.AccessBits;
 						org.elasticsearch.Version.class
 				}, access = AccessBits.ALL)
 		},
-		resourcesInfos = @ResourcesInfo(patterns = "versions.properties"))
+		resources = @ResourcesInfo(patterns = "versions.properties"))
 @NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
-		importInfos = SpringDataReactiveHints.class,
-		typeInfos = {
+		imports = SpringDataReactiveHints.class,
+		types = {
 				@TypeInfo(
 						types = {
 								ReactiveElasticsearchRepositoryFactoryBean.class,
@@ -93,14 +93,14 @@ import org.springframework.nativex.hint.AccessBits;
 						org.elasticsearch.Version.class
 				}, access = AccessBits.ALL),
 		},
-		proxyInfos = {
+		proxies = {
 				@ProxyInfo(types = {XContentParser.class})
 		}
 )
 
 // org.elasticsearch.client.RestClient - required logging configuration
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
 						org.apache.logging.log4j.message.ParameterizedMessageFactory.class,
@@ -149,7 +149,7 @@ import org.springframework.nativex.hint.AccessBits;
 						"reactor.netty.resources.PooledConnectionProvider",
 						"reactor.netty.transport.TransportConfig$TransportChannelInitializer"
 				})
-		}, initializationInfos = {
+		}, initialization = {
 			@InitializationInfo(typeNames = {
 					"org.apache.lucene.util.Constants",
 					"org.elasticsearch.common.unit.TimeValue",

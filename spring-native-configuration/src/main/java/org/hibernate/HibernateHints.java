@@ -9,7 +9,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import static org.springframework.nativex.hint.AccessBits.*;
 
 @NativeHint(trigger = org.hibernate.Session.class,
-		proxyInfos = {
+		proxies = {
 			@ProxyInfo(types = {
 					org.hibernate.Session.class,
 					org.springframework.orm.jpa.EntityManagerProxy.class
@@ -24,7 +24,7 @@ import static org.springframework.nativex.hint.AccessBits.*;
 			}),
 			@ProxyInfo(types = {Query.class, org.hibernate.query.spi.QueryImplementor.class,})
 		},
-		typeInfos = {
+		types = {
 			@TypeInfo(types = org.hibernate.query.spi.QueryImplementor.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS)
 		}
 )

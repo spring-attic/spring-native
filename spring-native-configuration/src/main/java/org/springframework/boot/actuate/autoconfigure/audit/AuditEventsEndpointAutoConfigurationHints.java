@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
 // Hitting /auditevents endpoint
-@NativeHint(trigger = AuditEventsEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = AuditEventsEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		AuditEventRepository.class, AuditEventsEndpoint.class,
 		// TODO likely incomplete, not fully tested

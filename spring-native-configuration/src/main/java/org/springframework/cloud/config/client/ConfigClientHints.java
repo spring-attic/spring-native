@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = ConfigClientAutoConfiguration.class, typeInfos = { @TypeInfo(types = {
+@NativeHint(trigger = ConfigClientAutoConfiguration.class, types = { @TypeInfo(types = {
         Environment.class, PropertySource.class }, access = AccessBits.ALL) })
 public class ConfigClientHints implements NativeConfiguration {
 

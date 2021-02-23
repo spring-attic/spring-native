@@ -39,7 +39,7 @@ import org.springframework.nativex.hint.TypeInfo;
 
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
-@NativeHint(trigger = EndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = EndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
 		DeleteOperation.class, Selector.class, Match.class, EndpointFilter.class,

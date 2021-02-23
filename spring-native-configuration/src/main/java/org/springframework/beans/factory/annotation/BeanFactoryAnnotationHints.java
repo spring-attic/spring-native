@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class }, 
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
 })

@@ -5,7 +5,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyInfo;
 
 @NativeHint(trigger = org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
-		proxyInfos = {
+		proxies = {
 		@ProxyInfo(types = {
 				org.springframework.boot.actuate.endpoint.annotation.Endpoint.class,
 				org.springframework.core.annotation.SynthesizedAnnotation.class

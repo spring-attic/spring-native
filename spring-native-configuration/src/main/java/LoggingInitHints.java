@@ -4,7 +4,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(
-		initializationInfos = @InitializationInfo(types = {
+		initialization = @InitializationInfo(types = {
 				org.slf4j.spi.LocationAwareLogger.class,
 				org.slf4j.Logger.class,
 				org.slf4j.event.SubstituteLoggingEvent.class,

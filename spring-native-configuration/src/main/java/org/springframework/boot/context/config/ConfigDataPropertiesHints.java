@@ -21,7 +21,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 	@TypeInfo(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),
 	@TypeInfo(types = ConfigDataLocation[].class,access=AccessBits.CLASS),
 	@TypeInfo(types = {

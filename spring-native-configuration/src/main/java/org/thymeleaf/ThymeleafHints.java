@@ -30,7 +30,7 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeHint(trigger= ISpringTemplateEngine.class, typeInfos= {
+@NativeHint(trigger= ISpringTemplateEngine.class, types = {
 		@TypeInfo( types = { 
 						AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class, SpringResourceTemplateResolver.class, 
 		}, access=AccessBits.LOAD_AND_CONSTRUCT),

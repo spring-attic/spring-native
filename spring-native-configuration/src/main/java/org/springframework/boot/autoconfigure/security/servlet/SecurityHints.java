@@ -49,7 +49,7 @@ import org.springframework.security.authentication.event.AuthenticationFailureSe
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
-@NativeHint(trigger=SecurityAutoConfiguration.class,typeInfos= {
+@NativeHint(trigger=SecurityAutoConfiguration.class, types = {
 		@TypeInfo(
 				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
 				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),

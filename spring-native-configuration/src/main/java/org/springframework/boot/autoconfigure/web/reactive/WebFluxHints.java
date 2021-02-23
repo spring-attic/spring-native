@@ -31,21 +31,21 @@ import reactor.core.publisher.Flux;
 import reactor.netty.DisposableServer;
 
 @NativeHint(trigger=WebFluxAutoConfiguration.class,
-	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
-	typeInfos = {
+	resources = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+	types = {
 	@TypeInfo(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
 	@TypeInfo(types = {Flux.class},access=AccessBits.CLASS),
 	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-@NativeHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
+@NativeHint(trigger=BeanPostProcessorsRegistrar.class, types = {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
-@NativeHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, types = {
 		@TypeInfo(
 				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
 				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
-@NativeHint(trigger=EmbeddedNetty.class, importInfos = CommonWebInfos.class)
+@NativeHint(trigger=EmbeddedNetty.class, imports = CommonWebInfos.class)
 public class WebFluxHints implements NativeConfiguration {
 }

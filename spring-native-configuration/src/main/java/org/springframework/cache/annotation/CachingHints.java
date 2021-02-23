@@ -23,11 +23,11 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = CachingConfigurationSelector.class, typeInfos =
+@NativeHint(trigger = CachingConfigurationSelector.class, types =
 		@TypeInfo(types = { AutoProxyRegistrar.class, ProxyCachingConfiguration.class }, typeNames= {
 				"org.springframework.cache.jcache.config.ProxyJCacheConfiguration",
 				"org.springframework.cache.aspectj.AspectJCachingConfiguration",
 				"org.springframework.cache.aspectj.AspectJJCacheConfiguration"
 		}, access = AccessBits.CONFIGURATION))
-@NativeHint(initializationInfos = @InitializationInfo(types = CachingConfigurationSelector.class, initTime = InitializationTime.BUILD))
+@NativeHint(initialization = @InitializationInfo(types = CachingConfigurationSelector.class, initTime = InitializationTime.BUILD))
 public class CachingHints implements NativeConfiguration { }

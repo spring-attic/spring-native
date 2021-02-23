@@ -38,7 +38,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						RepositoryFactoryBeanSupport.class,
 						RepositoryFragmentsFactoryBean.class,
@@ -51,12 +51,12 @@ import org.springframework.nativex.hint.AccessBits;
 				@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
 				@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
 		},
-		proxyInfos = @ProxyInfo(typeNames = {
+		proxies = @ProxyInfo(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",
 				"org.springframework.core.annotation.SynthesizedAnnotation" })
 )
-@NativeHint(initializationInfos = @InitializationInfo(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
-@NativeHint(typeInfos = @TypeInfo(types= {
+@NativeHint(initialization = @InitializationInfo(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
+@NativeHint(types = @TypeInfo(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
 }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS))
 public class SpringDataCommonsHints implements NativeConfiguration {

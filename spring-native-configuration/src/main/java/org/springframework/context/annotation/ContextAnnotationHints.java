@@ -36,14 +36,14 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = Import.class, follow = true) // TODO verify these flags...
 @NativeHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
-@NativeHint(typeInfos = { @TypeInfo(types = { ComponentScan.class,
+@NativeHint(types = { @TypeInfo(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO Check required access for enums like this FilterType
-@NativeHint(typeInfos = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
-@NativeHint(typeInfos = {
+@NativeHint(types = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
+@NativeHint(types = {
 	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
 	)})
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 		@TypeInfo(types = {
 				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,

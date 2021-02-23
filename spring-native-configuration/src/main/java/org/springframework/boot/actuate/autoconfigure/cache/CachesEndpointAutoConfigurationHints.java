@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /caches endpoint
-@NativeHint(trigger = CachesEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = CachesEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,

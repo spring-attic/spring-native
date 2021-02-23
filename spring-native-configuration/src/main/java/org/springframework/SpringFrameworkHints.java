@@ -8,7 +8,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 
 
 @NativeHint(
-		initializationInfos = @InitializationInfo(types = {
+		initialization = @InitializationInfo(types = {
 				org.springframework.aop.TargetSource.class,
 				org.springframework.aop.framework.Advised.class,
 				org.springframework.aop.Advisor.class,
@@ -74,7 +74,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 		}, packageNames = {
 				"org.springframework.core.env"
 		}, initTime = InitializationTime.BUILD),
-		proxyInfos = {
+		proxies = {
 				// TODO For a regular web app this one is auto added now. But the function-netty app doesn't include endpoints and yet
 				// needs this proxy - is there infrastructure that includes a mapping that we need to analyse (for auto synthannotation proxy
 				// generation?). Currently the analysis is only done for app components, not library infrastructure.

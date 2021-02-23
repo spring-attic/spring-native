@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
 // Hitting /mappings endpoint
-@NativeHint(trigger = MappingsEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = MappingsEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		org.springframework.boot.actuate.web.mappings.HandlerMethodDescription.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings.class,

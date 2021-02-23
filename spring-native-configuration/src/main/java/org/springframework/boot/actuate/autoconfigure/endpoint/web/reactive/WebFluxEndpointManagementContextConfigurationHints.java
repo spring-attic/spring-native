@@ -24,8 +24,8 @@ import org.springframework.nativex.type.TypeSystem;
 
 
 @NativeHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
-	importInfos = { CommonWebActuatorTypes.class},
-	typeInfos = {
+	imports = { CommonWebActuatorTypes.class},
+	types = {
 	@TypeInfo(
 //			types = {
 //		AbstractWebFluxEndpointHandlerMapping.class,

@@ -24,7 +24,7 @@ import org.springframework.nativex.hint.TypeInfo;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = RedisAutoConfiguration.class, //
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 
 						org.springframework.data.redis.connection.RedisConnection.class,
@@ -80,7 +80,7 @@ import org.springframework.nativex.hint.TypeInfo;
 						org.springframework.data.redis.core.StringRedisTemplate.class,
 				})
 		},
-		proxyInfos = {
+		proxies = {
 				@ProxyInfo(typeNames = {
 						"org.springframework.data.redis.connection.DefaultedRedisConnection"
 				}),
@@ -94,7 +94,7 @@ import org.springframework.nativex.hint.TypeInfo;
 )
 
 @NativeHint(trigger = RedisRepositoriesAutoConfiguration.class, //
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 
 						org.springframework.data.keyvalue.annotation.KeySpace.class,
@@ -125,7 +125,7 @@ import org.springframework.nativex.hint.TypeInfo;
 						org.springframework.data.redis.repository.query.RedisQueryCreator.class,
 				})
 		},
-		proxyInfos = {
+		proxies = {
 				@ProxyInfo(typeNames = {
 						"org.springframework.data.keyvalue.annotation.KeySpace", "org.springframework.core.annotation.SynthesizedAnnotation"
 				})

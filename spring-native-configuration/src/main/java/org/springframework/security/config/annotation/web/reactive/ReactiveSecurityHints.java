@@ -21,7 +21,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.security.config.annotation.web.reactive.ReactiveOAuth2ClientImportSelector.OAuth2ClientWebFluxSecurityConfiguration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
-@NativeHint(trigger=ReactiveOAuth2ClientImportSelector.class, follow = true, typeInfos= {
+@NativeHint(trigger=ReactiveOAuth2ClientImportSelector.class, follow = true, types = {
 		@TypeInfo(types= {ClientRegistration.class,OAuth2ClientWebFluxSecurityConfiguration.class})
 })
 public class ReactiveSecurityHints implements NativeConfiguration {

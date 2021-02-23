@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, typeInfos = {
+@NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, types = {
 		@TypeInfo(types = {
 				BoundConfigurationProperties.class,
 				ConfigurationPropertiesBindingPostProcessor.class			
@@ -38,9 +38,9 @@ import org.springframework.nativex.hint.AccessBits;
 			})
 })
 @NativeHint(trigger = EnableConfigurationProperties.class,
-	typeInfos={@TypeInfo(types= {ConstructorBinding.class})}
+	types ={@TypeInfo(types= {ConstructorBinding.class})}
 )
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 		@TypeInfo(types= {
 				ConfigurationPropertiesScan.class,
 				ConfigurationPropertiesScanRegistrar.class

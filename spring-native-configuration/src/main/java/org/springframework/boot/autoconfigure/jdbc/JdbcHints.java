@@ -32,19 +32,19 @@ import org.springframework.nativex.hint.ResourcesInfo;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, typeInfos= {
+@NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, types = {
 		@TypeInfo(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
 
-@NativeHint(trigger=EmbeddedDataSourceConfiguration.class, typeInfos= {
+@NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeInfo(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)})
 
-@NativeHint(trigger=Hikari.class, typeInfos= {
+@NativeHint(trigger=Hikari.class, types = {
 		@TypeInfo(types=DatabaseMetaData.class,methods= {@MethodInfo(name="getDatabaseProductName")}),
 		@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
 		@TypeInfo(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
 	@TypeInfo(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
-@NativeHint(trigger=DataSourceAutoConfiguration.class, resourcesInfos = {
+@NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
 		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
 })
 public class JdbcHints implements NativeConfiguration { }

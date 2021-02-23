@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-@NativeHint(trigger = WavefrontAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = WavefrontAutoConfiguration.class, types = {
 		@TypeInfo(types = {
 				AbstractFuture.class,
 				WavefrontJvmReporter.class,
@@ -93,6 +93,6 @@ import org.springframework.web.client.RestTemplate;
 				SimpleClientHttpRequestFactory.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 
-}, resourcesInfos = @ResourcesInfo(patterns = "build", isBundle = true))
+}, resources = @ResourcesInfo(patterns = "build", isBundle = true))
 public class WavefrontHints implements NativeConfiguration {
 }

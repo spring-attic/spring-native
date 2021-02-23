@@ -35,8 +35,8 @@ import org.springframework.web.servlet.view.InternalResourceView;
 
 
 @NativeHint(trigger=WebMvcAutoConfiguration.class,
-	resourcesInfos = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
-	typeInfos = {
+	resources = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+	types = {
 			@TypeInfo(types = {
 				AnnotationConfigServletWebServerApplicationContext.class,
 				ConfigurableWebApplicationContext.class,
@@ -59,7 +59,7 @@ import org.springframework.web.servlet.view.InternalResourceView;
 				access = AccessBits.LOAD_AND_CONSTRUCT)
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
-@NativeHint(trigger=BeanPostProcessorsRegistrar.class,typeInfos= {
+@NativeHint(trigger=BeanPostProcessorsRegistrar.class, types = {
 		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
 })
 public class WebMvcHints implements NativeConfiguration {

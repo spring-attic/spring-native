@@ -26,7 +26,7 @@ import org.springframework.util.MimeTypeUtils;
 
 
 @NativeHint(
-	initializationInfos = {
+	initialization = {
 		@InitializationInfo(initTime=InitializationTime.BUILD, types = {MimeTypeUtils.class,MediaTypes.class})
 	}
 )
@@ -38,7 +38,7 @@ proposedHints.put(WebStackImportSelector,
 			"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
 		}));
 		*/
-@NativeHint(trigger=WebStackImportSelector.class,typeInfos= {
+@NativeHint(trigger=WebStackImportSelector.class, types = {
 	@TypeInfo(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})	
 },follow=true)
 /*
@@ -49,7 +49,7 @@ public final static String HypermediaConfigurationImportSelector = "Lorg/springf
 					"org.springframework.hateoas.config.HypermediaConfigurationImportSelector"
 			}));
 			*/
-@NativeHint(trigger=HypermediaConfigurationImportSelector.class,typeInfos= {
+@NativeHint(trigger=HypermediaConfigurationImportSelector.class, types = {
 	@TypeInfo(types= {
 		HypermediaConfigurationImportSelector.class,
 		EnableHypermediaSupport.class, HypermediaType.class, HypermediaType[].class,

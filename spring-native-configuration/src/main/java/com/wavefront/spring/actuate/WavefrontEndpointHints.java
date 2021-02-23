@@ -7,7 +7,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = WavefrontEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = WavefrontEndpointAutoConfiguration.class, types = {
 		@TypeInfo(types = {
 				WavefrontController.class
 		}, typeNames = {

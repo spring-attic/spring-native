@@ -45,7 +45,7 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 
 @NativeHint(trigger=KafkaListenerConfigurationSelector.class,
-	typeInfos = {
+	types = {
 		@TypeInfo(types= {
 			PartitionOffset.class, TopicPartition.class,
 			ConsumerProperties.class,ContainerProperties.class,

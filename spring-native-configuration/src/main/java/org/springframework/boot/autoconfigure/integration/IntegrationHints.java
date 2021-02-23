@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourcesInfo;
 
 @NativeHint(trigger = IntegrationAutoConfiguration.class,
-	resourcesInfos = {
+	resources = {
 		@ResourcesInfo(patterns="META-INF/spring.integration.default.properties")
 	}
 )

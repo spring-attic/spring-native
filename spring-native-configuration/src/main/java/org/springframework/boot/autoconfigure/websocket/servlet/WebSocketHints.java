@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=WebSocketServletAutoConfiguration.class,typeInfos = {
+@NativeHint(trigger=WebSocketServletAutoConfiguration.class, types = {
 	@TypeInfo(types = { 
 		WsContextListener.class
 	})

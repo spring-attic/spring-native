@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
-@NativeHint(trigger=OnWebApplicationCondition.class, typeInfos = {
+@NativeHint(trigger=OnWebApplicationCondition.class, types = {
 	@TypeInfo(types= {
 			GenericWebApplicationContext.class,
 			WebApplicationObjectSupport.class,
@@ -31,7 +31,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 	access = AccessBits.LOAD_AND_CONSTRUCT)
 })
 @NativeHint(trigger=ConditionalOnWebApplication.class,
-	typeInfos= {
+	types = {
 		@TypeInfo(types=GenericWebApplicationContext.class,access=AccessBits.LOAD_AND_CONSTRUCT),
 		@TypeInfo(types= {
 				ConditionalOnWebApplication.Type.class}
@@ -44,7 +44,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 @NativeHint(
 		trigger = ConditionalOnMissingBean.class,
 		extractTypesFromAttributes = { "value", "name" },
-		typeInfos = @TypeInfo(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
+		types = @TypeInfo(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
 		abortIfTypesMissing = true)
 // TODO [0.9.0] get rid of all the extractTypesFromAttributes/abortIfMissing
 @NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)

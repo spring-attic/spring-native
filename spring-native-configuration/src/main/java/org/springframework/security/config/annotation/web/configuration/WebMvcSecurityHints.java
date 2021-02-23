@@ -39,7 +39,7 @@ proposedHints.put(SpringWebMvcImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
 		}));
 		*/
-@NativeHint(trigger=SpringWebMvcImportSelector.class,follow = true, typeInfos= {
+@NativeHint(trigger=SpringWebMvcImportSelector.class,follow = true, types = {
 		@TypeInfo(types= {DispatcherServlet.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {WebMvcSecurityConfiguration.class})
 })
@@ -52,13 +52,13 @@ proposedHints.put(OAuth2ImportSelector,
 			"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
 		}));
 */
-@NativeHint(trigger=OAuth2ImportSelector.class,follow = true, typeInfos= {
+@NativeHint(trigger=OAuth2ImportSelector.class,follow = true, types = {
 		@TypeInfo(types= {ClientRegistration.class},access=AccessBits.CLASS),
 		@TypeInfo(types= {OAuth2ClientConfiguration.class}),
 		@TypeInfo(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
 })
 // from gs-securing-web sample
-@NativeHint(trigger=OAuth2ClientWebMvcImportSelector.class, typeInfos = {
+@NativeHint(trigger=OAuth2ClientWebMvcImportSelector.class, types = {
 	@TypeInfo(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})	
 })
 public class WebMvcSecurityHints implements NativeConfiguration {

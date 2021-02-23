@@ -387,16 +387,16 @@ public class TypeTests {
 	static class TestClass1a {
 	}
 
-	@NativeHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(types = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1b {
 	}
 
-	@NativeHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class, Float.class }) })
+	@NativeHint(trigger = Integer.class, types = { @TypeInfo(types = { String.class, Float.class }) })
 	static class TestClass2 {
 	}
 
-	@NativeHint(trigger = Integer.class, typeInfos = { @TypeInfo(types = { String.class }) })
-	@NativeHint(trigger = String.class, typeInfos = { @TypeInfo(types = { Float.class }) })
+	@NativeHint(trigger = Integer.class, types = { @TypeInfo(types = { String.class }) })
+	@NativeHint(trigger = String.class, types = { @TypeInfo(types = { Float.class }) })
 	static class TestClass3 {
 	}
 
@@ -404,23 +404,23 @@ public class TypeTests {
 	static class TestClass4 {
 	}
 
-	@NativeHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, types = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass5 {
 	}
 
-	@NativeHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, types = {
 			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
 			@TypeInfo(types = { Integer.class }, access = AccessBits.RESOURCE) })
 	static class TestClass6 {
 	}
 
-	@NativeHint(trigger = String.class, typeInfos = {
+	@NativeHint(trigger = String.class, types = {
 			@TypeInfo(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass7 {
 	}
 
-	@NativeHint(typeInfos = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
+	@NativeHint(types = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
 			"org.springframework.nativex.TypeTests$TestClass7[]", }) })
 	static class TestClass8 {
 

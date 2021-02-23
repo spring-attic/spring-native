@@ -1829,15 +1829,15 @@ public class Type {
 				Object value = values.get(i + 1);
 				if (key.equals("trigger")) {
 					ch.setTriggerTypename(((org.objectweb.asm.Type) value).getClassName());
-				} else if (key.equals("typeInfos")) {
+				} else if (key.equals("types")) {
 					processTypeInfoList(ch, value);
-				} else if (key.equals("importInfos")) {
+				} else if (key.equals("imports")) {
 					processImportInfos(ch, value);
-				} else if (key.equals("proxyInfos")) {
+				} else if (key.equals("proxies")) {
 					processProxyInfo(ch, value);
-				} else if (key.equals("resourcesInfos")) {
+				} else if (key.equals("resources")) {
 					processResourcesInfos(ch, value);
-				} else if (key.equals("initializationInfos")) {
+				} else if (key.equals("initialization")) {
 					processInitializationInfos(ch, value);
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;

@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger=AopAutoConfiguration.class,
-	typeInfos = {
+	types = {
 		@TypeInfo(types= {
 			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
 			AbstractAdvisingBeanPostProcessor.class,

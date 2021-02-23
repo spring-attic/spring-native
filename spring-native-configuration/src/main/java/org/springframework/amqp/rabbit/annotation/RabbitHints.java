@@ -22,9 +22,9 @@ import org.springframework.nativex.hint.TypeInfo;
 
 // There is no Rabbit sample currently in the repo to confirm this is correct
 @NativeHint(trigger=RabbitListenerConfigurationSelector.class,
-	resourcesInfos = {
+	resources = {
 			@ResourcesInfo(patterns="rabbitmq-amqp-client.properties")
 	},
-	typeInfos = {
+	types = {
 		@TypeInfo(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true,follow=true)
 public class RabbitHints implements NativeConfiguration { }

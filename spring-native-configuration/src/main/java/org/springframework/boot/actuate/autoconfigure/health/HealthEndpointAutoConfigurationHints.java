@@ -37,7 +37,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /health endpoint
-@NativeHint(trigger = HealthEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = HealthEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,

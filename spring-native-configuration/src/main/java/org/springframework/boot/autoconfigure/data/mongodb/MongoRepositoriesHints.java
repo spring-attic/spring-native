@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
 
-@NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, types = {
 		@TypeInfo(types = {
 				MongoRepositoryFactoryBean.class,
 				MongoRepositoryConfigurationExtension.class,
@@ -36,8 +36,8 @@ import org.springframework.nativex.hint.TypeInfo;
 		})
 })
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
-		importInfos = SpringDataReactiveHints.class,
-		typeInfos = {
+		imports = SpringDataReactiveHints.class,
+		types = {
 				@TypeInfo(types = {
 						ReactiveMongoRepositoryFactoryBean.class,
 						ReactiveMongoRepositoryConfigurationExtension.class,

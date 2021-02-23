@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /env endpoint
-@NativeHint(trigger = EnvironmentEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = EnvironmentEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		EnvironmentEndpoint.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,

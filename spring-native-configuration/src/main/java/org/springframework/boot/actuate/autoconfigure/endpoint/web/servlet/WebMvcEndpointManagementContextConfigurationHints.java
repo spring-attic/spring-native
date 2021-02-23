@@ -40,8 +40,8 @@ import org.springframework.nativex.type.TypeSystem;
 // here - we don't have to use a standard auto config visible through EnableAutoConfiguration).
 // If we wanted to use a standard config, we'd trigger on WebEndpointAutoConfiguration
 @NativeHint(trigger=WebMvcEndpointManagementContextConfiguration.class,
-	importInfos = CommonWebActuatorTypes.class,
- 	typeInfos = {
+	imports = CommonWebActuatorTypes.class,
+ 	types = {
 		@TypeInfo(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
  		@TypeInfo(types = {
 		ControllerEndpointDiscoverer.class,

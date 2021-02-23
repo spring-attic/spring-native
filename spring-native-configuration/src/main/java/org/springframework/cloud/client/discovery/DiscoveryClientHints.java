@@ -20,7 +20,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
-@NativeHint(trigger = EnableDiscoveryClientImportSelector.class, typeInfos = {
+@NativeHint(trigger = EnableDiscoveryClientImportSelector.class, types = {
 	@TypeInfo(types = { 
 		AutoServiceRegistrationConfiguration.class 
 	})

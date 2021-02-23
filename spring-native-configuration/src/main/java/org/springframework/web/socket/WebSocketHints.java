@@ -21,7 +21,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 
-@NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, typeInfos = {
+@NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, types = {
 		@TypeInfo(types= {
 				DelegatingWebSocketMessageBrokerConfiguration.class,
 				WebSocketHandlerRegistry.class,
@@ -41,7 +41,7 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 		}, access = AccessBits.RESOURCE),
 		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
 })
-@NativeHint(trigger = DelegatingWebSocketConfiguration.class, typeInfos = {
+@NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
 		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
 })
 public class WebSocketHints implements NativeConfiguration {

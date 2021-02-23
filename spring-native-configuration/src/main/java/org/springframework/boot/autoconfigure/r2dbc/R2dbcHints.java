@@ -41,7 +41,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
-@NativeHint(trigger=R2dbcAutoConfiguration.class, typeInfos= {
+@NativeHint(trigger=R2dbcAutoConfiguration.class, types = {
 		@TypeInfo(types = {Statement.class,Statement[].class}),
 		@TypeInfo(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
@@ -54,10 +54,10 @@ import reactor.core.publisher.Mono;
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 		})
 @NativeHint(trigger=R2dbcAutoConfiguration.class,
-		resourcesInfos = {
+		resources = {
 				@ResourcesInfo(patterns="META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
 		},
-		typeInfos= {
+		types = {
 		@TypeInfo(typeNames = {
 				// TODO review org.springframework.data.r2dbc.dialect.DialectResolver - there is some 
 				// factory loading in there.

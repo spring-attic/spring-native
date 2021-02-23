@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /configprops endpoint
-@NativeHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 			io.micrometer.core.instrument.simple.CountingMode.class,
 			org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor.class,

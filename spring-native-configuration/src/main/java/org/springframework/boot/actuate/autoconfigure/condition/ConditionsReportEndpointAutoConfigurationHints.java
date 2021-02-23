@@ -27,7 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 // Hitting /conditions endpoint
-@NativeHint(trigger = ConditionsReportEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = ConditionsReportEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		ConditionsReportEndpoint.class,
 		ApplicationConditionEvaluation.class,

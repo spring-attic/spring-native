@@ -7,7 +7,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyInfo;
 
 @NativeHint(
-		initializationInfos = @InitializationInfo(types = {
+		initialization = @InitializationInfo(types = {
 				org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator.class,
 				org.hibernate.validator.internal.engine.ValidatorImpl.class,
 				org.hibernate.validator.internal.engine.ValidatorFactoryImpl.class,
@@ -45,7 +45,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 				"org.hibernate.validator.internal.metadata.raw",
 				"org.hibernate.validator.internal.util"
 		}, initTime = InitializationTime.BUILD),
-		proxyInfos = @ProxyInfo(types = {
+		proxies = @ProxyInfo(types = {
 				javax.validation.Validator.class,
 				org.springframework.aop.SpringProxy.class,
 				org.springframework.aop.framework.Advised.class,

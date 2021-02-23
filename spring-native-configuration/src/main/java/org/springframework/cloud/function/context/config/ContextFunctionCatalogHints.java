@@ -24,7 +24,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.messaging.MessageHeaders;
 
 @NativeHint(trigger=ContextFunctionCatalogAutoConfiguration.class,
-		typeInfos = {@TypeInfo(types= {MessageHeaders.class,Supplier.class},
+		types = {@TypeInfo(types= {MessageHeaders.class,Supplier.class},
 		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
 public class ContextFunctionCatalogHints implements NativeConfiguration {
 }

@@ -12,13 +12,13 @@ import static org.springframework.nativex.hint.AccessBits.PUBLIC_METHODS;
 
 @NativeHint(
 		trigger=kotlin.Unit.class,
-		resourcesInfos= {
+		resources = {
 				@ResourcesInfo(patterns= {
 						"META-INF/.*.kotlin_module$",
 						".*.kotlin_builtins",
 						"META-INF/services/.*"
 				})
-		}, typeInfos = {
+		}, types = {
 				@TypeInfo(types = kotlin.reflect.jvm.internal.ReflectionFactoryImpl.class, access = DECLARED_CONSTRUCTORS),
 				@TypeInfo(types = kotlin.KotlinVersion.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS),
 				@TypeInfo(typeNames = {

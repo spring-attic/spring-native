@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = Driver.class, typeInfos= {
+@NativeHint(trigger = Driver.class, types = {
 		@TypeInfo(types = Driver.class),
 		@TypeInfo(types = PGProperty.class, access = AccessBits.DECLARED_FIELDS)
 	})

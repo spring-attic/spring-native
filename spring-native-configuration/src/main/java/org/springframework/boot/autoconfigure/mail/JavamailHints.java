@@ -11,7 +11,7 @@ import org.springframework.nativex.hint.TypeInfo;
 
 @NativeHint(
         trigger = MailSenderPropertiesConfiguration.class,
-        typeInfos = {
+        types = {
                 @TypeInfo(types = SMTPProvider.class),
                 @TypeInfo(types = SMTPTransport.class),
                 @TypeInfo(types = multipart_mixed.class),
@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.TypeInfo;
                 @TypeInfo(types = text_xml.class),
                 @TypeInfo(types = message_rfc822.class)
         },
-        resourcesInfos = {
+        resources = {
                 @ResourcesInfo(patterns = {"org/springframework/mail/javamail/mime.types", "META-INF/mailcap", "META-INF/javamail.*"})
         }
 )

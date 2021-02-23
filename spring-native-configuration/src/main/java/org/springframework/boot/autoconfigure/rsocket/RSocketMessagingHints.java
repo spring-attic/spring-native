@@ -9,7 +9,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 // TODO Should be possible to guess that automatically
-@NativeHint(trigger = RSocketMessagingAutoConfiguration.class, typeInfos= {
+@NativeHint(trigger = RSocketMessagingAutoConfiguration.class, types = {
 		@TypeInfo(types = {Mono.class, Flux.class}, access = AccessBits.CLASS)
 })
 public class RSocketMessagingHints implements NativeConfiguration {

@@ -6,7 +6,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = MessageSourceAutoConfiguration.class,
-	typeInfos = 
+	types =
 		@TypeInfo(types= MessageSourceProperties.class, access = AccessBits.CLASS|AccessBits.DECLARED_METHODS))
 public class MessageSourceHints implements NativeConfiguration {
 }

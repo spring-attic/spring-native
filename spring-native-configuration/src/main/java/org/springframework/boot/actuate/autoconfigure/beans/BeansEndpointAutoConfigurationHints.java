@@ -27,7 +27,7 @@ import org.springframework.nativex.hint.AccessBits;
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
 // Hitting /beans endpoint
-@NativeHint(trigger = BeansEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = BeansEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class
 	})

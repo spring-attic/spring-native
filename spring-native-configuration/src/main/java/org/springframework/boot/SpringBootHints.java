@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.AccessBits;
 
 
 @NativeHint(
-	resourcesInfos = {
+	resources = {
 		@ResourcesInfo(patterns= {
 			"db/.*", // TODO should be conditional on database active?
 			"messages/.*",
@@ -55,14 +55,14 @@ import org.springframework.nativex.hint.AccessBits;
 			"messages/messages"	
 			},isBundle = true)
 	},
-	typeInfos = { 
+	types = {
 		@TypeInfo(types = {
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 	},
-	initializationInfos = @InitializationInfo(types = {
+	initialization = @InitializationInfo(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
 			org.springframework.boot.logging.LoggingSystem.class,
 			org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener.class,
@@ -74,7 +74,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory",
 			"org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory"
 	}, initTime = InitializationTime.BUILD),
-		proxyInfos = {
+		proxies = {
 			@ProxyInfo(types = {
 					org.springframework.boot.context.properties.ConfigurationProperties.class,
 					org.springframework.core.annotation.SynthesizedAnnotation.class
@@ -82,7 +82,7 @@ import org.springframework.nativex.hint.AccessBits;
 		}
 )
 @NativeHint(
-		typeInfos = {
+		types = {
 				@TypeInfo(types= SpringApplication.class, methods = {
 						@MethodInfo(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
 				},access=AccessBits.CLASS)

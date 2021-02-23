@@ -27,11 +27,11 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
-		resourcesInfos = {
+		resources = {
 				@ResourcesInfo(patterns = "META-INF/jpa-named-queries.properties"),
 				@ResourcesInfo(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
 		},
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						SharedEntityManagerCreator.class, // TODO is this one in the right place?
 						JpaRepositoryFactoryBean.class,
@@ -42,7 +42,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE)
 		},
-		proxyInfos = {
+		proxies = {
 				@ProxyInfo(typeNames = {
 						"org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
 				})

@@ -21,7 +21,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@NativeHint(trigger = TaskExecutionAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = TaskExecutionAutoConfiguration.class, types = {
 		@TypeInfo(types = { ThreadPoolTaskExecutor.class },
 			access = AccessBits.CLASS //| AccessBits.DECLARED_METHODS
 			| AccessBits.DECLARED_CONSTRUCTORS) }, abortIfTypesMissing = true)

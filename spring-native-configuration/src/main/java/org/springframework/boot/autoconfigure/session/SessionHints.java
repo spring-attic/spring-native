@@ -22,15 +22,15 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
-@NativeHint(trigger=ReactiveSessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=ReactiveSessionConfigurationImportSelector.class, types = {
 	@TypeInfo(types= {RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class, NoOpReactiveSessionConfiguration.class})	
 },abortIfTypesMissing = true,follow=true) // follow should be per entry and obvious as these are configurations
-@NativeHint(trigger=SessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=SessionConfigurationImportSelector.class, types = {
 	@TypeInfo(types= {RedisSessionConfiguration.class, RedisReactiveSessionConfiguration.class, MongoSessionConfiguration.class, MongoReactiveSessionConfiguration.class,
 		JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class,NoOpReactiveSessionConfiguration.class	
 	})
 },abortIfTypesMissing = true,follow = true)
-@NativeHint(trigger=ServletSessionConfigurationImportSelector.class, typeInfos= {
+@NativeHint(trigger=ServletSessionConfigurationImportSelector.class, types = {
 	@TypeInfo(types= {RedisSessionConfiguration.class,MongoSessionConfiguration.class,
 					  JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class	
 					})

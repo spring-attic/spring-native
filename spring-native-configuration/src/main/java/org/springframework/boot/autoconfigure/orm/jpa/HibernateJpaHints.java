@@ -65,14 +65,14 @@ import javax.persistence.*;
 import java.util.EventListener;
 
 @SuppressWarnings("deprecation")
-@NativeHint(trigger = HibernateJpaAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = HibernateJpaAutoConfiguration.class, types = {
 		@TypeInfo(types = {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
 })
 @NativeHint(trigger = HibernateJpaConfiguration.class,
-		resourcesInfos = {
+		resources = {
 				@ResourcesInfo(patterns = {"hibernate.properties", "org/hibernate/.*.xsd", "org/hibernate/.*.dtd"})
 		},
-		typeInfos = {
+		types = {
 				@TypeInfo(types = {
 						// petclinic
 						// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
@@ -233,8 +233,8 @@ import java.util.EventListener;
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		})
 // Dialects
-@NativeHint(trigger = org.h2.Driver.class, typeInfos = @TypeInfo(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, typeInfos = @TypeInfo(types = MySQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, typeInfos = @TypeInfo(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.h2.Driver.class, types = @TypeInfo(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeInfo(types = MySQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeInfo(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 public class HibernateJpaHints implements NativeConfiguration {
 }

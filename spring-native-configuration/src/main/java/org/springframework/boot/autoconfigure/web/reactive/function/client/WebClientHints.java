@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.AccessBits;
 
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 		@TypeInfo(types= {
 				NioSocketChannel.class
 		},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)

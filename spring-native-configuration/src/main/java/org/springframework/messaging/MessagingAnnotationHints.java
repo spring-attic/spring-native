@@ -6,7 +6,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(typeInfos = {
+@NativeHint(types = {
 		@TypeInfo(types= {
 				MessageMapping.class
 		},access= AccessBits.CLASS|AccessBits.DECLARED_METHODS)

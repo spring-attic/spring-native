@@ -22,10 +22,10 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint( typeInfos = {@TypeInfo(types= {
+@NativeHint( types = {@TypeInfo(types= {
 	Order.class, AliasFor.class,
 },access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
-@NativeHint( typeInfos = {@TypeInfo(types= {
+@NativeHint( types = {@TypeInfo(types= {
 	AnnotationAttributes.class,AnnotationAttributes[].class,
 	DecoratingProxy.class,PriorityOrdered.class,
 	TypeMappedAnnotation[].class

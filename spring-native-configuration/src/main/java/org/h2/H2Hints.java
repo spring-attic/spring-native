@@ -31,7 +31,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger= Driver.class, typeInfos= {
+@NativeHint(trigger= Driver.class, types = {
 		@TypeInfo( types = { 
 			FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, 
 			FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class,

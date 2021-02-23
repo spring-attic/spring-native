@@ -14,15 +14,15 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger= Tomcat.class, typeInfos = {
+@NativeHint(trigger= Tomcat.class, types = {
 		@TypeInfo(types = TomcatEmbeddedWebappClassLoader.class),
 		@TypeInfo(types = AbstractProtocol.class, methods = @MethodInfo(name = "getLocalPort"),access=AccessBits.CLASS),
 		@TypeInfo(types = Http11NioProtocol.class),
-}, initializationInfos = {
+}, initialization = {
 		@InitializationInfo(types = {
 				org.apache.catalina.servlets.DefaultServlet.class,
 				org.apache.catalina.Globals.class
 		}, initTime = InitializationTime.BUILD)
-}, importInfos = CommonWebInfos.class)
+}, imports = CommonWebInfos.class)
 public class TomcatHints implements NativeConfiguration {
 }

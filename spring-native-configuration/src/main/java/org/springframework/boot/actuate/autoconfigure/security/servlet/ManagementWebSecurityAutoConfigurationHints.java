@@ -5,7 +5,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger= ManagementWebSecurityAutoConfiguration.class,typeInfos= {
+@NativeHint(trigger= ManagementWebSecurityAutoConfiguration.class, types = {
 @TypeInfo(typeNames = {
 		"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 		"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",

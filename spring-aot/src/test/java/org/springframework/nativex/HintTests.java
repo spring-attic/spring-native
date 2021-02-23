@@ -68,7 +68,7 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 	}
 
-	@NativeHint(typeInfos = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(types = { @TypeInfo(types = { String[].class }) })
 	static class TestClass1 {
 	}
 	
@@ -85,7 +85,7 @@ public class HintTests {
 		assertEquals("java.lang.Integer",types[1]);
 	}
 
-	@NativeHint(proxyInfos = { @ProxyInfo(types = { String.class,Integer.class }) })
+	@NativeHint(proxies = { @ProxyInfo(types = { String.class,Integer.class }) })
 	static class TestClass2 {
 	}
 
@@ -106,7 +106,7 @@ public class HintTests {
 		assertTrue(resourcesDescriptors.get(1).isBundle());
 	}
 
-	@NativeHint(resourcesInfos = {
+	@NativeHint(resources = {
 			@ResourcesInfo(patterns = { "aaa","bbb" }),
 			@ResourcesInfo(patterns = { "ccc" }, isBundle = true)
 	})
@@ -157,7 +157,7 @@ public class HintTests {
 		}
 	}
 
-	@NativeHint(initializationInfos = {
+	@NativeHint(initialization = {
 			@InitializationInfo(
 					typeNames = { "aaa","bbb" }, 
 					types=String.class,
@@ -183,7 +183,7 @@ public class HintTests {
 		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
 	}
 
-	@NativeHint(typeInfos = {
+	@NativeHint(types = {
 		@TypeInfo(typeNames = "java.lang.String",
 				methods= @MethodInfo(name="foo",parameterTypes = String.class)
 		)
@@ -207,7 +207,7 @@ public class HintTests {
 		assertTrue(fd.isAllowUnsafeAccess());
 	}
 
-	@NativeHint(typeInfos = {
+	@NativeHint(types = {
 		@TypeInfo(typeNames = "java.lang.String",
 				fields= @FieldInfo(name="foo",allowUnsafeAccess = true)
 		)

@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeInfo;
 
 // Hitting /metrics endpoint - needs tests
-@NativeHint(trigger = MetricsEndpointAutoConfiguration.class, typeInfos = {
+@NativeHint(trigger = MetricsEndpointAutoConfiguration.class, types = {
 	@TypeInfo(types = {
 //		MetricsEndpoint.class,
 //		PropertiesMeterFilter.class,

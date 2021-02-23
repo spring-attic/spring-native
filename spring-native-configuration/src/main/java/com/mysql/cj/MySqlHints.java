@@ -48,7 +48,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourcesInfo;
 import org.springframework.nativex.hint.TypeInfo;
 
-@NativeHint(trigger= Driver.class, typeInfos= {
+@NativeHint(trigger= Driver.class, types = {
 		@TypeInfo(types = {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,
@@ -96,7 +96,7 @@ import org.springframework.nativex.hint.TypeInfo;
 				StandardLogger.class,
 				}
 		),
-}, resourcesInfos = {
+}, resources = {
 		@ResourcesInfo(patterns = "com/mysql/cj/TlsSettings.properties"),
 		@ResourcesInfo(isBundle = true, patterns = "com.mysql.cj.LocalizedErrorMessages")
 })

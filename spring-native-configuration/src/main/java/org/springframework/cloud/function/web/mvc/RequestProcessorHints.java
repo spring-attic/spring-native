@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.TypeInfo;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger=RequestProcessor.class,
-		typeInfos = {@TypeInfo(types= {java.util.function.Consumer.class},
+		types = {@TypeInfo(types= {java.util.function.Consumer.class},
 		access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)})
 public class RequestProcessorHints implements NativeConfiguration {
 }
