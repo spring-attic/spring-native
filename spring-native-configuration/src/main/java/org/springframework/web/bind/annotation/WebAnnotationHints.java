@@ -41,7 +41,7 @@ import org.springframework.http.HttpStatus;
 				RequestParam.class,
 				PathVariable.class,
 				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
-				ResponseStatus.class, HttpStatus.class
+				ResponseStatus.class,
 		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 	})
 public class WebAnnotationHints implements NativeConfiguration {

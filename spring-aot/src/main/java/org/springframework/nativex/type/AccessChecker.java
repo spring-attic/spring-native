@@ -15,8 +15,6 @@
  */
 package org.springframework.nativex.type;
 
-import org.springframework.nativex.type.TypeSystem;
-
 public interface AccessChecker {
 
 	/**

@@ -59,6 +59,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -105,6 +106,8 @@ public class TypeSystem {
 	// A map from the types whose clinits make isPresent checks to the types that they are checking the presence
 	// of (the parameters to the isPresent calls)
 	private Map<String,List<String>> typesMakingIsPresentChecksInStaticInitializers;
+	
+	public AotOptions aotOptions;
 
 	public static synchronized TypeSystem get(List<String> classpath) {
 		String classpathString = classpath.toString();
@@ -1306,6 +1309,18 @@ public class TypeSystem {
 
 	public Type resolve(ClassDescriptor classDescriptor) {
 		return resolveDotted(classDescriptor.getClassName());
+	}
+
+	public boolean isBuildTimePropertyChecking() {
+		return aotOptions.isBuildTimePropertyChecking();
+	}
+
+	public boolean buildTimeCheckableProperty(String prefix) {
+		return aotOptions.buildTimeCheckableProperty(prefix);
+	}
+
+	public void setAotOptions(AotOptions aotOptions) {
+		this.aotOptions = aotOptions;
 	}
 
 }

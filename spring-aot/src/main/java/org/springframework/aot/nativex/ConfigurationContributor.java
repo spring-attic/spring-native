@@ -45,6 +45,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
 		TypeSystem typeSystem = TypeSystem.get(context.getClasspath());
+		typeSystem.setAotOptions(aotOptions);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem, aotOptions);
 		springAnalyzer.analyze();
 		ConfigurationCollector configurationCollector = springAnalyzer.getConfigurationCollector();

@@ -1395,33 +1395,33 @@ public class Type {
 			if (type != null) {
 				boolean shouldWalk = true;
 				// TODO Uncomment when we know how to pass AotConfiguration here
-//				if (ConfigOptions.isBuildTimePropertyChecking()) {
-//					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-//						logger.debug("Build time property checking for "+type.getDottedName());
-//					}
-//					String prefix = type.getConfigurationPropertiesPrefix();
-//					if (prefix!=null && ConfigOptions.buildTimeCheckableProperty(prefix)) {
-//						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-//							logger.debug("found "+prefix+" is checkable at build time");
-//						}
-//						boolean foundSomethingToBindInThatConfigProps = false;
-//						Map<String, String> activeProperties = typeSystem.getActiveProperties();
-//						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-//							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
-//						}
-//						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
-//							if (activeProperty.getKey().startsWith(prefix)) {
-//								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-//									logger.debug("found something binding to that prefix in specified set of active properties");
-//								}
-//								foundSomethingToBindInThatConfigProps = true;
-//							}
-//						}
-//						if (!foundSomethingToBindInThatConfigProps) {
-//							shouldWalk=false;
-//						}
-//					}
-//				}
+				if (typeSystem.isBuildTimePropertyChecking()) {
+					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+						logger.debug("Build time property checking for "+type.getDottedName());
+					}
+					String prefix = type.getConfigurationPropertiesPrefix();
+					if (prefix!=null && typeSystem.buildTimeCheckableProperty(prefix)) {
+						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+							logger.debug("found "+prefix+" is checkable at build time");
+						}
+						boolean foundSomethingToBindInThatConfigProps = false;
+						Map<String, String> activeProperties = typeSystem.getActiveProperties();
+						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
+						}
+						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
+							if (activeProperty.getKey().startsWith(prefix)) {
+								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
+									logger.debug("found something binding to that prefix in specified set of active properties");
+								}
+								foundSomethingToBindInThatConfigProps = true;
+							}
+						}
+						if (!foundSomethingToBindInThatConfigProps) {
+							shouldWalk=false;
+						}
+					}
+				}
 				if (shouldWalk) {
 					walkPropertyType(propertiesType, collector);
 				} else {
@@ -1471,7 +1471,7 @@ public class Type {
 		}
 		if (!type.isAtConstructorBinding()) {
 			// If not constructor binding, need access to the setters (yes, this will currently give too much access as it will include getters)
-			access |= AccessBits.DECLARED_METHODS;
+			access |= AccessBits.PUBLIC_METHODS;//DECLARED_METHODS;
 		}
 		return access;
 	}

@@ -1281,6 +1281,20 @@ public class ResourcesHandler extends Handler {
 				String[][] validMethodsSubset = processTypeAtBeanMethods(pc, accessManager, toFollow, type);
 				if (validMethodsSubset != null) {
 					printMemberSummary("These are the valid @Bean methods",validMethodsSubset);
+					/*
+					 * Think about activating this code - it produces member level correctness configuration for configurations
+					 * but it doesn't really help the figures.
+					 */
+					/*
+					Integer access = accessManager.getTypeAccessRequestedFor(type.getDottedName());
+					System.out.println("Access was "+AccessBits.toString(access));
+					if ((access & AccessBits.DECLARED_METHODS)!=0) {
+						access-=AccessBits.DECLARED_METHODS;
+					System.out.println("Access reduced to "+AccessBits.toString(access));
+						accessManager.reduceTypeAccess(type.getDottedName(),access);
+					}
+					accessManager.addMethodDescriptors(type.getDottedName(), validMethodsSubset);
+					*/
 				}
 			}
 			processTypesToFollow(pc, accessManager, type, reachedBy, toFollow);

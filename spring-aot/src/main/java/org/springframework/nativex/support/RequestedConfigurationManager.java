@@ -27,6 +27,7 @@ import org.springframework.nativex.type.FieldDescriptor;
 import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
+import org.springframework.nativex.type.Type;
 
 /**
  * Collects up potential configuration that should be passed to native-image. By collecting it rather than
