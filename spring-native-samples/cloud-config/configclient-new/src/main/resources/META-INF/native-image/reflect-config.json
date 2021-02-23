@@ -1,25 +1,5 @@
 [
 {
-  "name":"org.apache.http.client.HttpClient"
-},
-{
-  "name":"org.apache.http.impl.client.HttpClientBuilder",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.apache.logging.log4j.spi.ExtendedLogger"
-},
-{
-  "name":"org.apache.logging.slf4j.SLF4JProvider"
-},
-{
-  "name":"org.slf4j.bridge.SLF4JBridgeHandler"
-},
-{
-  "name":"org.slf4j.spi.LocationAwareLogger"
-},
-{
   "name":"org.springframework.beans.ExtendedBeanInfoFactory",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
