@@ -32,6 +32,7 @@ public class SampleApplication {
 				if (!foo.isPresent()) {
 					entities.save(new Foo("Hello"));
 				}
+			entities.findWithBetween("a", "X");
 		};
 	}
 
