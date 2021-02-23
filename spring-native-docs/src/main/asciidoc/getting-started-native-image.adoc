@@ -1,32 +1,34 @@
 [[getting-started-native-image]]
 === Getting started with native image Maven plugin
 
-This section walks through how to build a Spring Boot native application with https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native image Maven plugin].
-This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section walks through how to build a Spring Boot native application with
+https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native image Maven plugin].
+This is a practical guide, so we perform this for real on the
+https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
 ==== Prerequisites
 
-Before installing the GraalVM `native-image` compiler, install https://www.graalvm.org/reference-manual/native-image/#prerequisites[the prerequisites]
-(pay attention to the Windows ones if you are using that platform) You need a local install of native image compiler.
+Before installing the GraalVM `native-image` compiler, install
+https://www.graalvm.org/reference-manual/native-image/#prerequisites[the prerequisites]
+(pay attention to the Windows ones if you are using that platform). You then need a local installation of
+the native image compiler.
 
-From GraalVM builds:
+On Mac or Linux, you can use https://sdkman.io/[SDKMAN] to easily install GraalVM and switch between JDKs:
+
+- https://sdkman.io/install[Install SDKMAN]
+- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
+- Make sure to use the newly installed JDK with `sdk use java {graalvm-version}.r8-grl` or `sdk use java {graalvm-version}.r11-grl`
+- Run `gu install native-image` to bring in the native-image extensions to the JDK.
+
+Alternatively or if you are on Windows, you can download and install manually GraalVM builds:
 
 - Install GraalVM {graalvm-version} from https://www.graalvm.org/downloads/[here].
 - Set `JAVA_HOME` and `PATH` appropriately for that GraalVM version.
 - Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
-On Mac or Linux, you can use https://sdkman.io/[SDKMAN] to easily switch between JDKs:
-
-- https://sdkman.io/install[Install SDKMAN]
-- Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11
-- Run `gu install native-image` to bring in the native-image extensions to the JDK.
-
-
 ==== Set up the sample project
 
-Like the instructions for using the feature, here we use the getting started REST service guide.
-This is the sample project we trace with the agent and then build into a native image.
-The following commands install the REST service guide:
+Here we use the getting started REST service guide, the following commands install it:
 
 ====
 [source,bash]
@@ -36,11 +38,9 @@ cd gs-rest-service/complete
 ----
 ====
 
-You may already be ready to go with your own project.
-
 ===== Update the `pom.xml` file
 
-IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if necessary.
+IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -54,17 +54,65 @@ IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if
 ----
 ====
 
-===== Add the Maven plugin
+===== `spring-native` dependency
 
-GraalVM provides a https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[Maven plugin].
-Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
+The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other
+mandatory classes required to run a Spring application on native image.
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<dependencies>
+    <!-- ... -->
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+----
+====
+
+===== Add the `spring-aot-maven-plugin`
+
+This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
+We do not put it in the `native-image` profile defined below because it is useful to benefits from those
+transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<build>
+    <plugins>
+        <!-- ... -->
+        <plugin>
+            <groupId>org.springframework.experimental</groupId>
+            <artifactId>spring-aot-maven-plugin</artifactId>
+                <configuration>
+                    <removeYamlSupport>true</removeYamlSupport>
+                    <removeSpelSupport>true</removeSpelSupport>
+                </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+====
+
+`<removeYamlSupport>true</removeYamlSupport>` and `<removeSpelSupport>true</removeSpelSupport>` are
+optional optimization flags designed to reduce the footprint.
+
+===== Add the native-image profile
+
+GraalVM provides https://www.graalvm.org/docs/reference-manual/native-image/#integration-with-maven[native-image-maven-plugin]
+which can invoke the native image compiler from Maven. Paste the following XML into the `pom.xml`
+file (we use it later to invoke the native image build):
 
 ====
 [source,xml,subs="attributes,verbatim"]
 ----
 <profiles>
   <profile>
-    <id>native</id>
+    <id>native-image</id>
     <build>
       <plugins>
         <plugin>
@@ -72,8 +120,8 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graalvm-version}</version>
           <configuration>
+            <!-- The native image build needs to know the entry point to your application -->
             <mainClass>com.example.restservice.RestServiceApplication</mainClass>
-            <buildArgs>-Dspring.native.remove-yaml-support=true -Dspring.spel.ignore=true</buildArgs>
           </configuration>
           <executions>
             <execution>
@@ -84,6 +132,7 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
             </execution>
           </executions>
         </plugin>
+        <!-- Make sure spring-boot-maven-plugin is specified after native-image-maven-plugin to avoid conflicts with Boot repackaging -->
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
@@ -94,13 +143,6 @@ Paste the following XML into the `pom.xml` file (we use it later to invoke the n
 </profiles>
 ----
 ====
-
-The native image build needs to know the entry point to your application hence the `<mainClass>` element.
-
-Even if declared outside of native image profile, `spring-boot-maven-plugin` need to be redeclared in the `native` Maven
-profile in order to work correctly with `native-image-maven-plugin`.
-
-`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flag to reduce the footprint.
 
 ===== Add the repositories
 
@@ -134,30 +176,13 @@ And for plugins:
 ----
 ====
 
-===== spring-native dependency
-
-With `native-image-maven-plugin`, the `spring-native` dependency should be specified explicitly:
-====
-[source,xml,subs="attributes,verbatim"]
-----
-<dependencies>
-    <!-- ... -->
-    <dependency>
-        <groupId>org.springframework.experimental</groupId>
-        <artifactId>spring-native</artifactId>
-        <version>{version}</version>
-    </dependency>
-</dependencies>
-----
-====
-
 ==== Build the native application
 
 Building the native application is as simple as running:
 ====
 [source,bash]
 ----
-mvn -Pnative clean package
+mvn -Pnative-image clean package
 ----
 ====
 
@@ -176,7 +201,7 @@ target/com.example.restservice.restserviceapplication
 ----
 ====
 
-The startup time is <100ms, compared ~1500ms when starting the fat jar.
+The startup time should be <100ms, compared to ~1500ms when starting the fat jar.
 
 Now that the service is up, visit http://localhost:8080/greeting, where you should see:
 
