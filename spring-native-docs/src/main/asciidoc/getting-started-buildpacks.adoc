@@ -1,25 +1,26 @@
 [[getting-started-buildpacks]]
 === Getting started with Buildpacks
 
-This section walks through how to build a Spring Boot native application with https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
-This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section walks through how to build a Spring Boot native application with
+https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
+This is a practical guide, so we perform this for real on the
+https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
 ==== Prerequisites
 
-You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
-Before proceeding further, verify you can run docker commands from the shell.
+You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up
+for your machine. Before proceeding further, verify you can run docker commands from the shell.
 
 On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add
 more CPUs as well) since `native-image` compiler is a heavy process.
-See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer]
+for more details.
 
 On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
 
 ==== Set up the sample project
 
-Like the instructions for using the feature, here we use the getting started REST service guide.
-This is the sample project we trace with the agent and then build into a native image.
-The following commands install the REST service guide:
+Here we use the getting started REST service guide, the following commands install it:
 
 ====
 [source,bash]
@@ -33,7 +34,7 @@ You may already be ready to go with your own project.
 
 ===== Update the build file
 
-IMPORTANT: Only Spring Boot {boot-version} is supported, upgrade your project if necessary.
+IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -62,10 +63,76 @@ plugins {
 ----
 ====
 
-===== Configure the plugin
+===== `spring-native` dependency
 
-https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
-To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
+The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other
+mandatory classes required to run a Spring application on native image.
+
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.experimental</groupId>
+        <artifactId>spring-native</artifactId>
+        <version>{version}</version>
+    </dependency>
+</dependencies>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+dependencies {
+    implementation 'org.springframework.experimental:spring-native:{version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+dependencies {
+    implementation("org.springframework.experimental:spring-native:{version}")
+}
+----
+====
+
+===== Add the Spring AOT plugin
+
+This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
+We do not put it in the `native-image` profile defined below because it is useful to benefits from those
+transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+
+====
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<build>
+    <plugins>
+        <!-- ... -->
+        <plugin>
+            <groupId>org.springframework.experimental</groupId>
+            <artifactId>spring-aot-maven-plugin</artifactId>
+                <configuration>
+                    <removeYamlSupport>true</removeYamlSupport>
+                    <removeSpelSupport>true</removeSpelSupport>
+                </configuration>
+        </plugin>
+    </plugins>
+</build>
+----
+====
+
+TODO: Add Gradle configuration
+
+`<removeYamlSupport>true</removeYamlSupport>` and `<removeSpelSupport>true</removeSpelSupport>` are
+optional optimization flags designed to reduce the footprint.
+
+===== Enable native image in Buildpacks plugin
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support]
+provides out of the box support for building Spring Boot native applications. To do so, we just have to set
+`BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
+
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
@@ -78,10 +145,6 @@ To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `tr
             <builder>paketobuildpacks/builder:tiny</builder>
             <env>
                 <BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                    -Dspring.native.remove-yaml-support=true
-                    -Dspring.spel.ignore=true
-                </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
             </env>
         </image>
     </configuration>
@@ -104,14 +167,16 @@ bootBuildImage {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_BOOT_NATIVE_IMAGE" to "1",
-            "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+            "BP_BOOT_NATIVE_IMAGE" to "1"
     )
 }
 ----
 ====
 
-`-Dspring.native.remove-yaml-support=true` and `-Dspring.spel.ignore=true` are optional optimization flags to reduce the footprint.
+It is possible to add additional `native-image` arguments with the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS`
+environment variable.
+
+TODO: Update to `BP_NATIVE_IMAGE` and `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` when Buildpacks have been updated.
 
 Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks,
 `paketobuildpacks/builder:base` being the default (also works but less optimized).
@@ -182,38 +247,6 @@ pluginManagement {
 ----
 ====
 
-===== spring-native dependency
-
-If not specified, the builder will automatically use the latest `spring-native` release available, but here to be
-sure of the version used we specify it explicitly:
-====
-[source,xml,subs="attributes,verbatim",role="primary"]
-.Maven
-----
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.experimental</groupId>
-        <artifactId>spring-native</artifactId>
-        <version>{version}</version>
-    </dependency>
-</dependencies>
-----
-[source,subs="attributes,verbatim",role="secondary"]
-.Gradle Groovy
-----
-dependencies {
-    implementation 'org.springframework.experimental:spring-native:{version}'
-}
-----
-[source,Kotlin,subs="attributes,verbatim",role="secondary"]
-.Gradle Kotlin
-----
-dependencies {
-    implementation("org.springframework.experimental:spring-native:{version}")
-}
-----
-====
-
 ==== Build the native application
 
 Building the native application is as simple as running:
@@ -256,6 +289,8 @@ version: '3.1'
 services:
   rest-service:
     image: rest-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
 ----
 ====
 
@@ -267,9 +302,7 @@ docker-compose up
 ----
 ====
 
-
-
-The startup time is <100ms, compared ~1500ms when starting the fat jar.
+The startup time should be <100ms, compared ~1500ms when starting the fat jar.
 
 Now that the service is up, visit http://localhost:8080/greeting, where you should see:
 
