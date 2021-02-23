@@ -103,15 +103,15 @@ The following listing shows a hint:
 
 To fully complete the picture, here is the full list of what can be specified in a hint:
 
-* `proxyInfos` which list proxies for which types are needed and should be built into the image.
+* `proxies` which list proxies for which types are needed and should be built into the image.
 
-* `typeInfos` which lists any reflective needs. It should use class references but string names for classes are allowed if visibility (private classes) prevents a class reference.
+* `types` which lists any reflective needs. It should use class references but string names for classes are allowed if visibility (private classes) prevents a class reference.
 
-* `resourcesInfos` which lists patterns that match resources (including .class files) that should be included in the image.
+* `resources` which lists patterns that match resources (including .class files) that should be included in the image.
 
-* `initializationInfos` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
+* `initialization` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
 
-* `importInfos` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeHint`.
+* `imports` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeHint`.
 
 
 === Codifying hint computation/validation

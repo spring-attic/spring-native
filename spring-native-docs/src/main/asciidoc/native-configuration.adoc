@@ -51,4 +51,17 @@ Spring AOP plugin. It is of course also possible to provide directly GraalVM nat
 to do so, but annotation based configuration is usually easier to write and to maintain thanks to autocompletion and
 compilation checks.
 
-For more dynamic way to provide native configuration, see <<how-to-contribute>> section.
+Here is the full list of what can be specified in a hint:
+
+* `proxies` which list proxies for which types are needed and should be built into the image.
+
+* `types` which lists any reflective needs. It should use class references but string names for classes are allowed if visibility (private classes) prevents a class reference.
+
+* `resources` which lists patterns that match resources (including .class files) that should be included in the image.
+
+* `initialization` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initializationInfos`.
+
+* `imports` can be useful if two hints share a number of typeInfos/proxyInfos/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `importInfos` can reference that type to pull them into a particular `NativeHint`.
+
+
+For details and more dynamic ways to provide native configuration, see <<how-to-contribute>> section.
