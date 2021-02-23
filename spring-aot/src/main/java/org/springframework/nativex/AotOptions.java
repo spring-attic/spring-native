@@ -38,6 +38,11 @@ public class AotOptions {
 	private boolean removeUnusedConfig = true;
 
 	/**
+	 * Switches the plugin from a hard error for missing hints to a warning when set to {@code false}. See the Troubleshooting section for more details on this.
+	 */
+	private boolean failOnMissingSelectorHint = true;
+
+	/**
 	 * Enable the verifications.
 	 */
 	private boolean verify = true;
@@ -168,6 +173,14 @@ public class AotOptions {
 
 	public void setRemoveSpelSupport(boolean removeSpelSupport) {
 		this.removeSpelSupport = removeSpelSupport;
+	}
+
+	public boolean isFailOnMissingSelectorHint() {
+		return failOnMissingSelectorHint;
+	}
+
+	public void setFailOnMissingSelectorHint(boolean failOnMissingSelectorHint) {
+		this.failOnMissingSelectorHint = failOnMissingSelectorHint;
 	}
 
 	public Mode toMode() {

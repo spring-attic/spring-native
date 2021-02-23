@@ -17,6 +17,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.DatabaseMetaData;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -30,7 +32,10 @@ import org.springframework.nativex.hint.MethodInfo;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourcesInfo;
 import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.ResourcesDescriptor;
+import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, types = {
 		@TypeInfo(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
@@ -47,4 +52,16 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
 		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
 })
-public class JdbcHints implements NativeConfiguration { }
+public class JdbcHints implements NativeConfiguration {
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+		if (!typeSystem.shouldRemoveXmlSupport()) {
+			HintDeclaration ch = new HintDeclaration();
+			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
+			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
+			ch.addResourcesDescriptor(sqlErrorCodes);
+			return Collections.singletonList(ch);
+		}
+		return Collections.emptyList();
+	}
+}

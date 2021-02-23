@@ -24,6 +24,8 @@ Spring Native options are configured at `spring-aop-maven-plugin` or `spring-aop
 
 * `removeUnusedConfig` disables removal of unused configurations  when set to `false`.
 
+* `failOnMissingSelectorHint` switches the plugin from a hard error for missing hints to a warning when set to `false`. See the Troubleshooting section for more details on this.
+
 * `buildTimePropertiesChecks` switches on build time evaluation of some configuration conditions related to properties. It must include at least an initial setting of `default-include-all` or `default-exclude-all` and that may be followed
 by a comma separated list of prefixes to explicitly include or exclude (for example `default-include-all,!spring.dont.include.these.,!or.these` or `default-exclude-all,spring.include.this.one.though.,and.this.one`). When considering a property the
 longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
