@@ -1,4 +1,4 @@
-[[agent]]
+[[tracing-agent]]
 == Tracing agent
 
 When using the agent to compute configuration for native-image, there are a couple of approaches:

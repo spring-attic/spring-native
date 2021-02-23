@@ -8,7 +8,7 @@ https://www.graalvm.org/reference-manual/native-image/Reflection/[reflect-config
 https://www.graalvm.org/reference-manual/native-image/DynamicProxy/[proxy-config.json] or
 https://www.graalvm.org/reference-manual/native-image/Resources/[resource-config.json] for example.
 
-=== Automatic generation with Spring AOP build plugin
+=== Automatic generation with Spring AOT build plugin
 
 Doing such manual configuration for a typical Spring application is tedious, that why Spring Native does its best
 to contribute the native configuration required to run a Spring application automatically via
@@ -47,7 +47,7 @@ you can https://github.com/spring-projects-experimental/spring-native/tree/maste
 in order to see some concrete example of hints.
 
 Those hints will be taken in account during the compilation and transformed to generated native configuration by the
-Spring AOP plugin. It is of course also possible to provide directly GraalVM native configuration files if you prefer
+Spring AOT plugin. It is of course also possible to provide directly GraalVM native configuration files if you prefer
 to do so, but annotation based configuration is usually easier to write and to maintain thanks to autocompletion and
 compilation checks.
 
