@@ -16,10 +16,15 @@
 package app.main.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * @author Dave Syer
  *
  */
 public interface FooRepository extends JpaRepository<Foo, Long> {
+	@Query("select f from Foo f where f.value between :min and :max")
+	List<Foo> findWithBetween(String min, String max);
 }
