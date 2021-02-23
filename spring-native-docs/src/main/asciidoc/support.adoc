@@ -102,10 +102,8 @@ Group ID is `org.springframework.cloud`.
 
 === Limitations
 
-In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
-This is similar to the behavior you get with the so called https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-java-basic-concepts[lite mode] or with https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
-It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false` and use method parameters to inject bean dependencies.
-Libraries are encouraged to use `@Configuration(proxyBeanMethods=false)` (most of Spring portfolio currently uses this variant) since it is generally a good idea to avoid CGLIB proxies if not needed and to provide native compatibility.
-This behavior could potentially become the default in a future Spring Framework version.
+CGLIB proxies are not supported, only JDK dynamic proxies on interfaces are supported for now.
 
-Only proxies on interfaces are supported for now.
+It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false`
+and use method parameters to inject bean dependencies, this is handled by Spring Native to not require
+a CGLIB proxy.

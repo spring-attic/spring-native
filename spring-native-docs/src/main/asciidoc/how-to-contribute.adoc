@@ -3,6 +3,63 @@
 
 This section describes how to extend Spring Native. You can then https://github.com/spring-projects-experimental/spring-native/pulls[submit pull requests] in order to add support for a specific part of Spring ecosystem.
 
+=== Designing native-friendly Spring libraries
+
+Native support is mostly about making an application and its libraries possible to analyze at build-time to configure
+what's required or not at runtime. The goal is to do that in an optimal way to have a minimal footprint.
+
+Spring applications are dynamic, hence the use for example of reflection in various places. Spring Native and its
+Spring AOT build plugins performs AOT transformations, in the context of a specific application classpath and configuration
+in order to generate the optimal native configuration, but also programmatic versions of `spring.factories` or auto-configurations
+that reduce the amount of reflection required. Each reflection entry (per constructor/method/field) leads to the creation
+of a proxy class by `native-image`, so from a footprint point of view, those AOT transformation allow to increase
+Spring native application efficiency.
+
+The documentation above provides native best practices useful for Spring libraries contributor.
+
+=== Use `proxyBeanMethods=false` in `@Configuration` classes provided by a library
+
+In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB
+proxy created at runtime. This is similar to the behavior you get with the so called
+https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-java-basic-concepts[lite mode] or
+with https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
+
+It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false`
+and use method parameters to inject bean dependencies, this is handled by Spring Native to not require
+a CGLIB proxy.
+
+Libraries are encouraged to use `@Configuration(proxyBeanMethods=false)`
+(most of Spring portfolio currently uses this variant) since it is generally a good idea to avoid CGLIB proxies if
+not needed and to provide native compatibility.
+This behavior could potentially become the default in a future Spring Framework version.
+
+==== Use NativeDetector for native conditional code paths
+
+Spring related code should use `NativeDetector.inNativeImage()` (provided by `spring-core` dependency) to detect
+native-specific code paths. Spring Framework or Spring Data takes advantage of this utility method to disable CGLIB
+proxies since they are not support on native images for example.
+
+==== Do classpath checks in static block/fields and configure build-time initialization
+
+In order to reduce the footprint of the native image, a useful optimization consist in:
+
+* Make sure that the classpath check is done in static block/fields
+* Configure the class to be initialized at build-time using `@NativeHint`
+
+As a result, the classpath check will be done during the native image build, and the optional classes will be bundled
+in the native image only if required. Limit the number of classes initialized at build-time since that could quickly
+become viral and can trigger compatibility issues, hence the runtime default.
+
+==== Try to favor functional approaches or move reflection at build-time
+
+For code ran at runtime, try to favor functional approaches like lambdas and method references instead of reflection
+when possible, since they  are automatically understood by the native image compiler.
+
+It is perflectly fine to use reflection in native world but at build-time:
+
+* In the static block/fields of a class initialized at build-time
+* In an AOT transformation ran by Spring AOT build plugin
+
 === Contributing new hints
 
 The typical approach is:
