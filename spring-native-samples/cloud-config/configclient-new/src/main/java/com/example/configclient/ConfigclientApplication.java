@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication
@@ -17,16 +18,9 @@ public class ConfigclientApplication {
 		} catch (Exception e) {
 		}
 	}
-}
 
-@Configuration
-class CLR implements CommandLineRunner {
-
-	@Value("${my.prop}") String injected;
-
-	@Override
-	public void run(String... args) throws Exception {
-		System.out.println(":" + injected);
+	@Bean
+	CommandLineRunner commandLineRunner(@Value("${my.prop}") String injected) {
+		return args -> System.out.println(":" + injected);
 	}
-
 }
