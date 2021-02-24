@@ -7,11 +7,11 @@ echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Start
 for i in commandlinerunner webflux-netty webmvc-tomcat webflux-thymeleaf grpc jdbc-tx
 do
 
-  if ! (cd spring-native-samples/$i && ./build.sh); then
+  if ! (cd samples/$i && ./build.sh); then
     RC=1
   fi
-  if [ -f "spring-native-samples/$i/target/native-image/summary.csv" ]; then
-    cat spring-native-samples/$i/target/native-image/summary.csv >> samples-summary.csv
+  if [ -f "samples/$i/target/native-image/summary.csv" ]; then
+    cat samples/$i/target/native-image/summary.csv >> samples-summary.csv
   else
     echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
   fi

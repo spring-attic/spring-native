@@ -10,17 +10,17 @@ else
 fi
 
 echo "Testing buildpacks-based builds"
-if ! (cd "spring-native-samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
+if ! (cd "samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
   RC=1
 fi
 # TODO Bring back when Spring Native Gradle plugin is available
-#if ! (cd "spring-native-samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
+#if ! (cd "samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
 #  RC=1
 #fi
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for d in $(find spring-native-samples -maxdepth $MAX_DEPTH -type d)
+for d in $(find samples -maxdepth $MAX_DEPTH -type d)
 do
   if [[ -f "$d/build.sh" && ! -f "$d/.ignore" ]]; then
     if ! (cd "$d" && ./build.sh); then

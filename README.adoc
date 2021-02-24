@@ -20,12 +20,11 @@ It is mainly composed of:
 
 - `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
 - `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-native-samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
-- `spring-native-parent`: Maven parent pom with preconfigured dependency and plugin management.
 - `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
 - `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
+- `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 
 == Scope and status
 
@@ -50,7 +49,7 @@ The latest {version} release supports GraalVM {graalvm-version} and Spring Boot 
 === Play with the samples
 
 - Download and extract https://github.com/spring-projects-experimental/spring-native/archive/{version}.zip[sources from the latest release].
-- Go into the samples folder and pick one (e.g. `cd spring-native-samples/commandlinerunner`)
+- Go into the samples folder and pick one (e.g. `cd samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
 `build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[samples documentation].
