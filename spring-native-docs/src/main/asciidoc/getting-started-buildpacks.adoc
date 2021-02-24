@@ -173,8 +173,7 @@ provides out of the box support for building Spring Boot native applications. To
 bootBuildImage {
     builder = "paketobuildpacks/builder:tiny"
     environment = [
-        "BP_BOOT_NATIVE_IMAGE" : "1",
-        "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS": "-Dspring.spel.ignore=true -Dspring.native.remove-yaml-support=true"
+        "BP_BOOT_NATIVE_IMAGE" : "true"
     ]
 }
 ----
@@ -184,7 +183,7 @@ bootBuildImage {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_BOOT_NATIVE_IMAGE" to "1"
+            "BP_BOOT_NATIVE_IMAGE" to "true"
     )
 }
 ----
