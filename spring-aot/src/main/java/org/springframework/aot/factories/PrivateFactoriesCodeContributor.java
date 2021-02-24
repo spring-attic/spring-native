@@ -31,7 +31,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK = 
-				passesAnyConditionalOnClass(typeSystem, factory);
+				passesAnyConditionalOnClass(typeSystem, factory) && passesFilterCheck(typeSystem, factory) ;
 		if (factoryOK) {
 			String packageName = factory.getFactory().getPackageName();
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
@@ -50,6 +50,19 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 				generateReflectionMetadata(factory.getFactory().getClassName(), context);
 			}
 		}
+	}
+
+	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
+		String factoryName = factory.getFactory().getClassName();
+		// TODO shame no ConditionalOnClass on these providers
+		if (factoryName.equals("org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer")) {
+			return typeSystem.resolveClass("javax.validation.ValidationException") != null;
+		} else if (factoryName.equals("org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer")) {
+			return typeSystem.resolveClass("liquibase.exception.ChangeLogParseException") != null;
+		} else if (factoryName.equals("org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer")) {
+			return typeSystem.resolveClass("org.springframework.jdbc.CannotGetJdbcConnectionException") != null;
+		}
+		return true;
 	}
 
 	private String generateMethodName(ClassDescriptor factory) {

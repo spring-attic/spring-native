@@ -46,7 +46,6 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 		catch (Throwable exc) {
 			logger.error(exc);
 			logger.error(Arrays.toString(exc.getStackTrace()));
-			throw new MojoExecutionException("Could not generate source files", exc);
 		}
 
 		compileGeneratedSources(this.outputDirectory.toPath());

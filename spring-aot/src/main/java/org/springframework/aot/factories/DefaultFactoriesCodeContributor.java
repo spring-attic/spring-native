@@ -52,29 +52,22 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 						factory.getFactory().getCanonicalClassName());
 	}
 
-	// See the SpringBootFactories code in the substitutions module for more of these we need to factor in/support some how.
 	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
 		String factoryName = factory.getFactory().getClassName();
 		// TODO shame no ConditionalOnClass on these providers
 		if (factoryName.endsWith("FreeMarkerTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("freemarker.template.Configuration") != null;
-		}
-		if (factoryName.endsWith("MustacheTemplateAvailabilityProvider")) {
+		} else if (factoryName.endsWith("MustacheTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("com.samskivert.mustache.Mustache") != null;
-		}
-		if (factoryName.endsWith("GroovyTemplateAvailabilityProvider")) {
+		} else if (factoryName.endsWith("GroovyTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("groovy.text.TemplateEngine") != null;
-		}
-		if (factoryName.endsWith("ThymeleafTemplateAvailabilityProvider")) {
+		} else if (factoryName.endsWith("ThymeleafTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("org.thymeleaf.spring5.SpringTemplateEngine") != null;
-		}
-		if (factoryName.endsWith("JspTemplateAvailabilityProvider")) {
+		} else if (factoryName.endsWith("JspTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("org.apache.jasper.compiler.JspConfig") != null;
-		}
-		if (factoryName.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
+		} else if (factoryName.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
 			return false;
-		}
-		if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {
+		} else if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {
 			return !aotOptions.isRemoveYamlSupport();
 		}
 		return true;
