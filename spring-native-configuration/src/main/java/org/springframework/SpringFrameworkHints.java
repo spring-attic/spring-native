@@ -59,7 +59,8 @@ import org.springframework.nativex.hint.ProxyInfo;
 				org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService.class,
 				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
 				org.springframework.core.ReactiveAdapterRegistry.class,
-				org.springframework.core.NativeDetector.class
+				org.springframework.core.NativeDetector.class,
+				org.springframework.core.KotlinDetector.class
 		}, typeNames = {
 				"org.springframework.aot.StaticSpringFactories",
 				"org.springframework.aop.Advisor$1",
