@@ -112,10 +112,27 @@ transformations on JVM as well in order to be able to test/debug them with a sho
         <plugin>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-aot-maven-plugin</artifactId>
-                <configuration>
-                    <removeYamlSupport>true</removeYamlSupport>
-                    <removeSpelSupport>true</removeSpelSupport>
-                </configuration>
+            <version>{version}</version>
+            <executions>
+                <execution>
+                    <id>test-generate</id>
+                    <phase>process-test-classes</phase>
+                    <goals>
+                        <goal>test-generate</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>generate</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>generate</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <removeYamlSupport>true</removeYamlSupport>
+                <removeSpelSupport>true</removeSpelSupport>
+            </configuration>
         </plugin>
     </plugins>
 </build>
