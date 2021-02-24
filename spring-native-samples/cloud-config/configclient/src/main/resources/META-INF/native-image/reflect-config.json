@@ -16,10 +16,6 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.bootstrap.BootstrapApplicationListener",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"org.springframework.cloud.bootstrap.BootstrapApplicationListener$BootstrapMarkerConfiguration",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -27,12 +23,6 @@
 },
 {
   "name":"org.springframework.cloud.bootstrap.BootstrapImportSelector",
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
