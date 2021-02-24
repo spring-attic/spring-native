@@ -6,21 +6,5 @@
 {
   "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver",
   "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.util.ConditionalOnBootstrapDisabled",
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.util.ConditionalOnBootstrapDisabled$OnBootstrapDisabledCondition",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.util.ConditionalOnBootstrapEnabled",
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.util.ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]
