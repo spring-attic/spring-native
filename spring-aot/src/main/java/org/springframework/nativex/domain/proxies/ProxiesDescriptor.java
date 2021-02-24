@@ -42,7 +42,15 @@ public class ProxiesDescriptor {
 	}
 
 	public void add(ProxyDescriptor proxyDescriptor) {
-		this.proxyDescriptors.add(proxyDescriptor);
+		boolean alreadyExists = false;
+		for (ProxyDescriptor pd: proxyDescriptors) {
+			if (pd.equals(proxyDescriptor)) {
+				alreadyExists = true;
+			}
+		}
+		if (!alreadyExists) {
+			this.proxyDescriptors.add(proxyDescriptor);
+		}
 	}
 
 	@Override
