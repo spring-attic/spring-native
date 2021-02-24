@@ -10,60 +10,6 @@
   ]
 },
 {
-  "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.ApacheHttpClientConnectionManagerFactory",
-  "allPublicMethods":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.ApacheHttpClientFactory",
-  "allPublicMethods":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientConnectionManagerFactory",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientFactory",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.HttpClientConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.commons.httpclient.HttpClientConfiguration$ApacheHttpClientConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
   "name":"org.springframework.cloud.commons.util.InetUtils",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
