@@ -2219,7 +2219,7 @@ public class Type {
 			}
 			return access;
 		} else if (t.isCondition()) {
-			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
+			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE;
 		} else if (t.isComponent() || t.isApplicationListener()) {
 			return AccessBits.ALL;
 		} else if (t.isEnvironmentPostProcessor()) {

@@ -1391,19 +1391,12 @@ public class ResourcesHandler extends Handler {
 			isConfiguration = resolve.isAtConfiguration();
 		}
 
-		if (type.isImportSelector()) {
-			accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type)|AccessBits.RESOURCE);
-		} else {
-			if (type.isCondition()) {
-				accessManager.requestTypeAccess(typename, AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE);
-			} else {
-				accessManager.requestTypeAccess(typename, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS|AccessBits.RESOURCE);
-			}
-		}
+		accessManager.requestTypeAccess(typename, Type.inferAccessRequired(type));
 		// TODO need this guard? if (isConfiguration(configType)) {
 		registerHierarchy(pc, type, accessManager);
 
 		recursivelyCallProcessTypeForHierarchyOfType(pc, type);
+		logger.debug("<processHierarchy "+type.getShortName());
 	}
 
 	private void processNestedTypes(ProcessingContext pc, Type type) {
