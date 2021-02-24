@@ -1,9 +1,0 @@
-{
-  "resources":{
-  "includes":[
-    {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigClientWatchConfiguration.class\\E"},
-    {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigServerHealthIndicatorConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration.class\\E"}
-  ]},
-  "bundles":[]
-}
