@@ -1,51 +1,11 @@
 [
 {
-  "name":"org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true,
-  "methods":[
-    {"name":"afterSingletonsInstantiated","parameterTypes":[] }, 
-    {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-  ]
-},
-{
-  "name":"org.springframework.cloud.commons.util.InetUtils",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
-},
-{
-  "name":"org.springframework.cloud.commons.util.InetUtilsProperties",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.commons.util.UtilAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.config.client.ConfigClientProperties",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
   "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLoader",
   "allDeclaredConstructors":true
 },
 {
   "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver",
   "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.context.environment.EnvironmentManager",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "methods":[{"name":"setApplicationEventPublisher","parameterTypes":["org.springframework.context.ApplicationEventPublisher"] }]
 },
 {
   "name":"org.springframework.cloud.util.ConditionalOnBootstrapDisabled",
@@ -61,14 +21,6 @@
 },
 {
   "name":"org.springframework.cloud.util.ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]
