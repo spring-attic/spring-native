@@ -5,9 +5,9 @@
 
     <parent>
         <groupId>org.springframework.experimental</groupId>
-        <artifactId>spring-native-parent</artifactId>
+        <artifactId>spring-native-sample-parent</artifactId>
         <version>0.9.0-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath>../../maven-parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.demo</groupId>
