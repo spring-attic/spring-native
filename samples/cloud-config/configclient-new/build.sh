@@ -8,7 +8,6 @@ cd ../configserver
 ./build.sh
 cd ../configclient-new
 
-printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
 
 #java -jar ../configserver/target/configserver-0.0.1-SNAPSHOT.jar &
