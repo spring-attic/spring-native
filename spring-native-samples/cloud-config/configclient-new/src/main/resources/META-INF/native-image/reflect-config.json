@@ -42,86 +42,10 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.configuration.CompatibilityVerifier",
-  "allPublicMethods":true
-},
-{
-  "name":"org.springframework.cloud.configuration.CompatibilityVerifierAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.configuration.CompatibilityVerifierProperties",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.configuration.CompositeCompatibilityVerifier",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.configuration.SpringBootVersionVerifier",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
   "name":"org.springframework.cloud.context.environment.EnvironmentManager",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
   "methods":[{"name":"setApplicationEventPublisher","parameterTypes":["org.springframework.context.ApplicationEventPublisher"] }]
-},
-{
-  "name":"org.springframework.cloud.context.properties.ConfigurationPropertiesBeans",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "methods":[
-    {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
-    {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }, 
-    {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-  ]
-},
-{
-  "name":"org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "methods":[
-    {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }, 
-    {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-  ]
-},
-{
-  "name":"org.springframework.cloud.context.refresh.ConfigDataContextRefresher",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.context.refresh.ContextRefresher",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "methods":[
-    {"name":"refresh","parameterTypes":[] }, 
-    {"name":"refreshEnvironment","parameterTypes":[] }
-  ]
-},
-{
-  "name":"org.springframework.cloud.context.restart.RestartListener",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.cloud.context.scope.refresh.RefreshScope"
-},
-{
-  "name":"org.springframework.cloud.endpoint.event.RefreshEventListener",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
-{
-  "name":"org.springframework.cloud.logging.LoggingRebinder",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true
 },
 {
   "name":"org.springframework.cloud.util.ConditionalOnBootstrapDisabled",
