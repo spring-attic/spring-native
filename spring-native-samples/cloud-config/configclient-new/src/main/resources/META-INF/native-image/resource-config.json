@@ -3,15 +3,7 @@
   "includes":[
     {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigClientWatchConfiguration.class\\E"},
     {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration$ConfigServerHealthIndicatorConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapDisabled$OnBootstrapDisabledCondition$OnBootstrapEnabled.class\\E"},
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapDisabled$OnBootstrapDisabledCondition$OnBootstrapMarkerClassPresent.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapDisabled$OnBootstrapDisabledCondition$OnUseLegacyProcessingEnabled.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapDisabled$OnBootstrapDisabledCondition.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition$OnBootstrapEnabled.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition$OnBootstrapMarkerClassPresent.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition$OnUseLegacyProcessingEnabled.class\\E"}, 
-    {"pattern":"\\Qorg/springframework/cloud/util/ConditionalOnBootstrapEnabled$OnBootstrapEnabledCondition.class\\E"}
+    {"pattern":"\\Qorg/springframework/cloud/config/client/ConfigClientAutoConfiguration.class\\E"}
   ]},
   "bundles":[]
 }
