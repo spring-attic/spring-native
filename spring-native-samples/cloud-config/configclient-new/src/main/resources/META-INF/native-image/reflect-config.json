@@ -28,12 +28,6 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"org.springframework.cloud.config.client.ConfigClientAutoConfiguration",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
   "name":"org.springframework.cloud.config.client.ConfigClientProperties",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
@@ -45,18 +39,6 @@
 },
 {
   "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver",
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.config.environment.Environment",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"org.springframework.cloud.config.environment.PropertySource",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
   "allDeclaredConstructors":true
 },
 {
