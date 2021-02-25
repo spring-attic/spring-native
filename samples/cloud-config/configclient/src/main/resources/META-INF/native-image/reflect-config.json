@@ -1,31 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true,
-    "methods":[
-      {"name":"afterSingletonsInstantiated","parameterTypes":[] },
-      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-    ]
-  },
-  {
-    "name":"org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.BootstrapApplicationListener$BootstrapMarkerConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.BootstrapImportSelector",
-    "allDeclaredConstructors":true
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.LoggingSystemShutdownListener",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   },
