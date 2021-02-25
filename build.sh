@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-mvn -ntp clean install
+./mvnw -ntp clean install

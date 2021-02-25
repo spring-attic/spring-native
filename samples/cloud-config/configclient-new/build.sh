@@ -10,8 +10,7 @@ cd ../configclient-new
 
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
 
-#java -jar ../configserver/target/configserver-0.0.1-SNAPSHOT.jar &
-../configserver/target/configserver &
+../configserver/target/configserver 2>&1 > target/native-image/server-output.txt &
 SERVERPID=$!
 sleep 10 
 

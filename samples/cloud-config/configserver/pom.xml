@@ -23,7 +23,6 @@
         <java.version>1.8</java.version>
         <docker.image.prefix>springcloud</docker.image.prefix>
         <main.class>demo.ConfigServerApplication</main.class>
-        <native.build.args>--enable-all-security-services</native.build.args>
     </properties>
 
     <dependencies>
