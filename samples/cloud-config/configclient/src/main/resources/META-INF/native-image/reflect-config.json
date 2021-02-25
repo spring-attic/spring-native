@@ -1,10 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.bootstrap.encrypt.EnvironmentDecryptApplicationInitializer",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.encrypt.KeyProperties",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
