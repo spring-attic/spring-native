@@ -70,7 +70,7 @@ include::getting-started-buildpacks.adoc[]
 
 include::getting-started-native-image.adoc[]
 
-include::ide-integration.adoc[]
+include::spring-aot-build-plugins.adoc[]
 
 include::native-configuration.adoc[]
 
