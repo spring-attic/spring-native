@@ -19,21 +19,23 @@ import java.util.Properties;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.ClassUtils;
 
+/**
+ * @author Sebastien Deleuze
+ */
 public class NativeListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
+	private static String GENERATED_CLASS = "org.springframework.aot.StaticSpringFactories";
+
+	private static boolean generatedClassPresent = ClassUtils.isPresent(GENERATED_CLASS, null);
+
 	static {
-		String imagecode = "org.graalvm.nativeimage.imagecode";
-		if (System.getProperty(imagecode) == null) {
-			if (!ClassUtils.isPresent("org.springframework.aot.StaticSpringFactories", null)) {
-				throw new IllegalStateException("Mandatory generated class org.springframework.aot.StaticSpringFactories not found, " +
-						"please make sure spring-aot-maven-plugin or spring-aot-gradle-plugin are configured properly, " +
-						"and that code generation has been properly performed.");
-			}
-			System.setProperty(imagecode, "runtime");
+		if (!NativeDetector.inNativeImage()) {
+			System.setProperty("org.graalvm.nativeimage.imagecode", "runtime");
 		}
 		if (ClassUtils.isPresent("org.hibernate.Session", null)) {
 			System.setProperty("hibernate.bytecode.provider", "none");
@@ -41,6 +43,10 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 	}
 
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+		// TODO Check why the test does not work on native even after adding the class reflection entry on GENERATED_CLASS
+		if (!NativeDetector.inNativeImage() && !generatedClassPresent) {
+			throw new NativeException("Mandatory generated class " + GENERATED_CLASS + " not found");
+		}
 		ConfigurableEnvironment environment = event.getEnvironment();
 		Properties props = new Properties();
 		props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
