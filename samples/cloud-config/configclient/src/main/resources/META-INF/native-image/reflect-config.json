@@ -1,8 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.bootstrap.marker.Marker"
-  },
-  {
     "name":"org.springframework.cloud.client.CommonsClientAutoConfiguration",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
