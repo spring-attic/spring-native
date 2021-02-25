@@ -29,8 +29,8 @@ The following starters are supported, the group ID is `org.springframework.boot`
 * `spring-boot-starter-data-jdbc`
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-jpa`
-** You need to configure https://docs.jboss.org/hibernate/orm/5.4/topical/html_single/bytecode/BytecodeEnhancement.html#_build_time_enhancement[Hibernate build-time bytecode enhancement] (https://github.com/spring-projects-experimental/spring-native/blob/f4a9128bd7fb64f6901f84325862f58ac7dcac50/samples/jpa/pom.xml#L106-L126[Maven example])
-** `src/main/resources/hibernate.properties` should define `hibernate.bytecode.provider=none` (https://github.com/spring-projects-experimental/spring-native/blob/f4a9128bd7fb64f6901f84325862f58ac7dcac50/samples/jpa/src/main/resources/hibernate.properties[example])
+** You need to configure https://docs.jboss.org/hibernate/orm/5.4/topical/html_single/bytecode/BytecodeEnhancement.html#_build_time_enhancement[Hibernate build-time bytecode enhancement]
+** `hibernate.bytecode.provider=none` is automatically set
 ** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-mongodb`
 * `spring-boot-starter-data-neo4j`

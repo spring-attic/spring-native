@@ -35,6 +35,9 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 			}
 			System.setProperty(imagecode, "runtime");
 		}
+		if (ClassUtils.isPresent("org.hibernate.Session", null)) {
+			System.setProperty("hibernate.bytecode.provider", "none");
+		}
 	}
 
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
