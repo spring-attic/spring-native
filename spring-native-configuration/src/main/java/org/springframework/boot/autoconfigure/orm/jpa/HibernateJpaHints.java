@@ -55,6 +55,7 @@ import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -69,6 +70,7 @@ import java.util.EventListener;
 		@TypeHint(types = {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
 })
 @NativeHint(trigger = HibernateJpaConfiguration.class,
+		proxies = @ProxyHint(types = org.hibernate.query.spi.QueryImplementor.class),
 		resources = {
 				@ResourceHint(patterns = {"hibernate.properties", "org/hibernate/.*.xsd", "org/hibernate/.*.dtd"})
 		},
