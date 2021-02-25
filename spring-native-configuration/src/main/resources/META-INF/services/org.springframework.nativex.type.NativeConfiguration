@@ -89,6 +89,7 @@ org.springframework.scheduling.annotation.SchedulingHints
 org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityHints
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints
 org.springframework.security.config.annotation.web.reactive.ReactiveSecurityHints
+org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
 org.springframework.stereotype.ComponentHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
