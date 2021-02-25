@@ -1,15 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration$KeyCondition",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.encrypt.EnvironmentDecryptApplicationInitializer",
     "allDeclaredFields":true,
     "allDeclaredMethods":true
