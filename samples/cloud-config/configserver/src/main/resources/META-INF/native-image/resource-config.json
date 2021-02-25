@@ -1,6 +1,7 @@
 {
   "resources":{
   "includes":[
+    {"pattern":"\\QMETA-INF/MANIFEST.MF\\E"}, 
     {"pattern":"\\QMETA-INF/services/javax.validation.spi.ValidationProvider\\E"}, 
     {"pattern":"\\QMETA-INF/services/org.apache.logging.log4j.spi.Provider\\E"}, 
     {"pattern":"\\QMETA-INF/services/org.apache.logging.log4j.util.PropertySource\\E"}, 
