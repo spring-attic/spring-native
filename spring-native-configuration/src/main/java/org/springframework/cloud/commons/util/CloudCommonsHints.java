@@ -15,9 +15,10 @@
  */
 package org.springframework.cloud.commons.util;
 
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
-@NativeHint(trigger = SpringFactoryImportSelector.class, types = { })
+@NativeHint(trigger = SpringFactoryImportSelector.class, resources = @ResourceHint(patterns = "META-INF/MANIFEST.MF"))
 public class CloudCommonsHints implements NativeConfiguration {
 }
