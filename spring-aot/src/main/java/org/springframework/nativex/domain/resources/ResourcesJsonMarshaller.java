@@ -40,7 +40,10 @@ public class ResourcesJsonMarshaller {
 		try {
 			ResourcesJsonConverter converter = new ResourcesJsonConverter();
 			JSONObject jsonObject = converter.toJsonArray(metadata);
-			outputStream.write(jsonObject.toString(2).replace("\\/","/").getBytes(StandardCharsets.UTF_8));
+			outputStream.write(jsonObject.toString(2)
+					.replace("\\/","/")
+					.replace("\\","/")
+					.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
 			if (ex instanceof IOException) {
@@ -52,7 +55,7 @@ public class ResourcesJsonMarshaller {
 			throw new IllegalStateException(ex);
 		}
 	}
-	
+
 	public static ResourcesDescriptor read(String input) throws Exception {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8))) {
 			return read(bais);
@@ -73,7 +76,7 @@ public class ResourcesJsonMarshaller {
 			throw new IllegalStateException("Unable to read ResourcesDescriptor from inputstream", e);
 		}
 	}
-	
+
 	private static ResourcesDescriptor toResourcesDescriptor(JSONObject object) throws Exception {
 		ResourcesDescriptor rd = new ResourcesDescriptor();
 		JSONArray array = null;
@@ -96,7 +99,7 @@ public class ResourcesJsonMarshaller {
 		}
 		return rd;
 	}
-	
+
 //	private static FieldDescriptor toFieldDescriptor(JSONObject object) throws Exception {
 //		String name = object.getString("name");
 //		boolean allowWrite = object.optBoolean("allowWrite");
