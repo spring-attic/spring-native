@@ -1,11 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.bootstrap.encrypt.KeyProperties",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.marker.Marker"
   },
   {
@@ -286,10 +280,6 @@
   },
   {
     "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]
