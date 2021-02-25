@@ -1,29 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.bootstrap.LoggingSystemShutdownListener",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true,
-    "methods":[
-      {"name":"getOrder","parameterTypes":[] },
-      {"name":"initialize","parameterTypes":["org.springframework.context.ConfigurableApplicationContext"] }
-    ]
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.bootstrap.config.PropertySourceLocator",
-    "allPublicMethods":true
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
