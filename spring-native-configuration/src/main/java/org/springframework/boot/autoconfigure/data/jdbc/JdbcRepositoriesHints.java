@@ -28,15 +28,15 @@ import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback
 import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 
 /**
  * @author Christoph Strobl
  */
 @NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						JdbcRepositoryFactoryBean.class,
 						JdbcRepositoryConfigExtension.class,
 						SimpleJdbcRepository.class,
@@ -51,7 +51,7 @@ import org.springframework.nativex.hint.TypeInfo;
 				})
 		},
 		proxies = {
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.jdbc.core.convert.RelationResolver", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
 				})
 		}

@@ -18,12 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.env;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /env endpoint
 @NativeHint(trigger = EnvironmentEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		EnvironmentEndpoint.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,

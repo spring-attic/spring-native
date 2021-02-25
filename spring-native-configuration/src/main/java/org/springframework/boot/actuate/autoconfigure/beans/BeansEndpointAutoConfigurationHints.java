@@ -21,18 +21,18 @@ import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
 // Hitting /beans endpoint
 @NativeHint(trigger = BeansEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class
 	})
 	// TODO infer this
-	,@TypeInfo(types = BeansEndpoint.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	,@TypeHint(types = BeansEndpoint.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class BeansEndpointAutoConfigurationHints implements NativeConfiguration {
 }

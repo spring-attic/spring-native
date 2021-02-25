@@ -17,11 +17,11 @@ package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import org.apache.tomcat.websocket.server.WsContextListener;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=WebSocketServletAutoConfiguration.class, types = {
-	@TypeInfo(types = { 
+	@TypeHint(types = {
 		WsContextListener.class
 	})
 })

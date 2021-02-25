@@ -22,57 +22,57 @@ import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=BatchConfigurationSelector.class,
 		resources = {
-			@ResourcesInfo(patterns = { 
+			@ResourceHint(patterns = {
 				"org/springframework/batch/core/schema-h2.sql"
 			}),
 		},
 		types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 			AbstractDataSourceInitializer.class,
 		}, access=AccessBits.LOAD_AND_CONSTRUCT| AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = {
+		@TypeHint(types = {
 			BasicBatchConfigurer.class,
 			JobLauncherApplicationRunner.class,
 			DataSourcePoolMetadataProvider.class,
 			InfrastructureAdvisorAutoProxyCreator.class
 		}, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
-		@TypeInfo(types= {ModularBatchConfiguration.class,
+		@TypeHint(types= {ModularBatchConfiguration.class,
 				SimpleBatchConfiguration.class,
 				ScopeConfiguration.class})},
 		proxies = {
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"org.springframework.batch.core.repository.JobRepository",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"org.springframework.batch.core.launch.JobLauncher",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"org.springframework.batch.core.configuration.JobRegistry",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"org.springframework.batch.core.explore.JobExplorer",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"org.springframework.transaction.PlatformTransactionManager",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 				"java.util.concurrent.ConcurrentMap", 
 				"java.io.Serializable",
 				"java.util.Map",

@@ -17,12 +17,12 @@ package org.springframework.boot.autoconfigure.task;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @NativeHint(trigger = TaskExecutionAutoConfiguration.class, types = {
-		@TypeInfo(types = { ThreadPoolTaskExecutor.class },
+		@TypeHint(types = { ThreadPoolTaskExecutor.class },
 			access = AccessBits.CLASS //| AccessBits.DECLARED_METHODS
 			| AccessBits.DECLARED_CONSTRUCTORS) }, abortIfTypesMissing = true)
 public class TaskHints implements NativeConfiguration {

@@ -18,11 +18,11 @@ package org.springframework.beans.factory.config;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint( types = {
-	@TypeInfo(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
+	@TypeHint(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
 			  access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 public class PropertiesHints implements NativeConfiguration {

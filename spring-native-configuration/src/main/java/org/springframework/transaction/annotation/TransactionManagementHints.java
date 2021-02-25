@@ -18,14 +18,14 @@ package org.springframework.transaction.annotation;
 import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.transaction.aspectj.AspectJJtaTransactionManagementConfiguration;
 import org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration;
 
 // TODO really the 'skip if missing' can be different for each one here...
 @NativeHint(trigger=TransactionManagementConfigurationSelector.class, types = {
-	@TypeInfo(types= {
+	@TypeHint(types= {
 			AutoProxyRegistrar.class,
 			ProxyTransactionManagementConfiguration.class,
 			AspectJJtaTransactionManagementConfiguration.class,
@@ -33,11 +33,11 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1", access = AccessBits.LOAD_AND_CONSTRUCT)
 }, follow=true)
 @NativeHint(types = {
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				Transactional.class,
 				javax.transaction.Transactional.class
 		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types= Propagation.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
+		@TypeHint(types= Propagation.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
 public class TransactionManagementHints implements NativeConfiguration {
 }

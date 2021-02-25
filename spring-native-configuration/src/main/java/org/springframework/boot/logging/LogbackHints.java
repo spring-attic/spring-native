@@ -15,12 +15,12 @@ import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxy
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 // TODO Initialize ch.qos.logback.classic.PatternLayout at build time?
 @NativeHint(types = {
-	@TypeInfo(types= {
+	@TypeHint(types= {
 			DateConverter.class,
 			LevelConverter.class,
 			LoggerConverter.class,

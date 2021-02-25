@@ -19,15 +19,15 @@ import java.util.ArrayList;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				BoundConfigurationProperties.class,
 				ConfigurationPropertiesBindingPostProcessor.class			
 		},access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeInfo(types= {
+	@TypeHint(types= {
 //			ConfigurationPropertiesBinder.Factory.class,
 //			ConfigurationPropertiesBinder.class,
 			DeprecatedConfigurationProperty.class,
@@ -38,10 +38,10 @@ import org.springframework.nativex.hint.AccessBits;
 			})
 })
 @NativeHint(trigger = EnableConfigurationProperties.class,
-	types ={@TypeInfo(types= {ConstructorBinding.class})}
+	types ={@TypeHint(types= {ConstructorBinding.class})}
 )
 @NativeHint(types = {
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				ConfigurationPropertiesScan.class,
 				ConfigurationPropertiesScanRegistrar.class
 		},
@@ -49,7 +49,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"java.io.Serializable[]",
 			"java.lang.Comparable[]"
 		}),
-		@TypeInfo(types= ArrayList.class)
+		@TypeHint(types= ArrayList.class)
 })
 public class ConfigurationPropertiesHints implements NativeConfiguration {
 }

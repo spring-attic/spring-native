@@ -19,10 +19,10 @@ import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.environment.PropertySource;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = ConfigClientAutoConfiguration.class, types = { @TypeInfo(types = {
+@NativeHint(trigger = ConfigClientAutoConfiguration.class, types = { @TypeHint(types = {
         Environment.class, PropertySource.class }, access = AccessBits.ALL) })
 public class ConfigClientHints implements NativeConfiguration {
 

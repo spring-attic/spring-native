@@ -17,7 +17,7 @@ package org.springframework.web.bind.annotation;
 
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.stereotype.Controller;
 
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Controller;
 // if they are on the classpath - why would you have the web jar on the classpath if not using these?
 @NativeHint(types = {
 		// TODO What about some way to say "all annotations in this package"
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				ExceptionHandler.class,
 				RequestMethod[].class,
 				ModelAttribute.class,

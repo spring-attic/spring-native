@@ -61,15 +61,15 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
 import org.springframework.boot.validation.MessageInterpolatorFactory;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger=ValidationAutoConfiguration.class, types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 			ParameterMessageInterpolator.class,
 			HibernateValidatorConfiguration.class,
 			AbstractMessageInterpolator.class,
@@ -96,7 +96,7 @@ import org.springframework.nativex.hint.AccessBits;
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 		}),
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				ValidatorFactory.class,
 				Pattern.class,
 				AssertFalse.class,
@@ -123,6 +123,6 @@ import org.springframework.nativex.hint.AccessBits;
 				Size.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 })
-@NativeHint(initialization = @InitializationInfo(types = MessageInterpolatorFactory.class, initTime = InitializationTime.BUILD))
+@NativeHint(initialization = @InitializationHint(types = MessageInterpolatorFactory.class, initTime = InitializationTime.BUILD))
 public class ValidationHints implements NativeConfiguration {
 }

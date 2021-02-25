@@ -18,20 +18,20 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.hint.MethodInfo;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 
 @NativeHint(
 	resources = {
-		@ResourcesInfo(patterns= {
+		@ResourceHint(patterns= {
 			"db/.*", // TODO should be conditional on database active?
 			"messages/.*",
 			"banner.txt",
@@ -51,18 +51,18 @@ import org.springframework.nativex.hint.AccessBits;
 		    "logging.properties",
 		    "org/springframework/boot/logging/java/logging.properties"
 			}),
-		@ResourcesInfo(patterns = {
+		@ResourceHint(patterns = {
 			"messages/messages"	
 			},isBundle = true)
 	},
 	types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 	},
-	initialization = @InitializationInfo(types = {
+	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
 			org.springframework.boot.logging.LoggingSystem.class,
 			org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener.class,
@@ -75,7 +75,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory"
 	}, initTime = InitializationTime.BUILD),
 		proxies = {
-			@ProxyInfo(types = {
+			@ProxyHint(types = {
 					org.springframework.boot.context.properties.ConfigurationProperties.class,
 					org.springframework.core.annotation.SynthesizedAnnotation.class
 			})
@@ -83,8 +83,8 @@ import org.springframework.nativex.hint.AccessBits;
 )
 @NativeHint(
 		types = {
-				@TypeInfo(types= SpringApplication.class, methods = {
-						@MethodInfo(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
+				@TypeHint(types= SpringApplication.class, methods = {
+						@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
 				},access=AccessBits.CLASS)
 		})
 public class SpringBootHints implements NativeConfiguration {

@@ -35,14 +35,14 @@ import io.micrometer.core.instrument.push.PushRegistryConfig;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @NativeHint(trigger = WavefrontAutoConfiguration.class, types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				AbstractFuture.class,
 				WavefrontJvmReporter.class,
 				BufferFlusher.class,
@@ -84,15 +84,15 @@ import org.springframework.web.client.RestTemplate;
 				TomcatMetrics.class,
 				CompositeMeterRegistry.class
 		}),
-		@TypeInfo(
+		@TypeHint(
 			typeNames = "com.wavefront.spring.autoconfigure.WavefrontMetricsConfiguration$MicrometerConfiguration",
 			access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS
 		),
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				Timed.class,
 				SimpleClientHttpRequestFactory.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
 
-}, resources = @ResourcesInfo(patterns = "build", isBundle = true))
+}, resources = @ResourceHint(patterns = "build", isBundle = true))
 public class WavefrontHints implements NativeConfiguration {
 }

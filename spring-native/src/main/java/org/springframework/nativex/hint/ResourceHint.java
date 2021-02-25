@@ -28,9 +28,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
-@Repeatable(ResourcesInfos.class)
+@Repeatable(ResourcesHints.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResourcesInfo {
+public @interface ResourceHint {
 
 	/**
 	 * Resource patterns specified with Java regexp for regular resources, and with the bundle name (regexp not supported) if {@link #isBundle()} is set to true.

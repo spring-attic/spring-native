@@ -18,10 +18,10 @@ package org.springframework.cloud.client.discovery;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = EnableDiscoveryClientImportSelector.class, types = {
-	@TypeInfo(types = { 
+	@TypeHint(types = {
 		AutoServiceRegistrationConfiguration.class 
 	})
 })

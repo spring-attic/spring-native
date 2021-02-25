@@ -28,29 +28,29 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikar
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.MethodInfo;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, types = {
-		@TypeInfo(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
+		@TypeHint(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
 
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
-		@TypeInfo(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
+		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)})
 
 @NativeHint(trigger=Hikari.class, types = {
-		@TypeInfo(types=DatabaseMetaData.class,methods= {@MethodInfo(name="getDatabaseProductName")}),
-		@TypeInfo(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
-		@TypeInfo(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeInfo(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
+		@TypeHint(types=DatabaseMetaData.class,methods= {@MethodHint(name="getDatabaseProductName")}),
+		@TypeHint(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
+		@TypeHint(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
+	@TypeHint(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
-		@ResourcesInfo(patterns = {"schema.sql","data.sql"})
+		@ResourceHint(patterns = {"schema.sql","data.sql"})
 })
 public class JdbcHints implements NativeConfiguration {
 	@Override

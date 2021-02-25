@@ -1,10 +1,10 @@
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(
-		initialization = @InitializationInfo(types = {
+		initialization = @InitializationHint(types = {
 				org.slf4j.spi.LocationAwareLogger.class,
 				org.slf4j.Logger.class,
 				org.slf4j.event.SubstituteLoggingEvent.class,

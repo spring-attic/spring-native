@@ -20,11 +20,11 @@ import org.springframework.data.mongodb.repository.support.SimpleMongoRepository
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 
 @NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				MongoRepositoryFactoryBean.class,
 				MongoRepositoryConfigurationExtension.class,
 				MongoConfigurationSupport.class,
@@ -38,7 +38,7 @@ import org.springframework.nativex.hint.TypeInfo;
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
 		imports = SpringDataReactiveHints.class,
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						ReactiveMongoRepositoryFactoryBean.class,
 						ReactiveMongoRepositoryConfigurationExtension.class,
 						MongoConfigurationSupport.class,

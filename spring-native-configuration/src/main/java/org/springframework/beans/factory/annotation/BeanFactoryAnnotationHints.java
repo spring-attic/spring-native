@@ -19,11 +19,11 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(types = {
-	@TypeInfo(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class }, 
+	@TypeHint(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class },
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
 })
 public class BeanFactoryAnnotationHints implements NativeConfiguration {

@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web.configuration;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
@@ -40,8 +40,8 @@ proposedHints.put(SpringWebMvcImportSelector,
 		}));
 		*/
 @NativeHint(trigger=SpringWebMvcImportSelector.class,follow = true, types = {
-		@TypeInfo(types= {DispatcherServlet.class},access=AccessBits.CLASS),
-		@TypeInfo(types= {WebMvcSecurityConfiguration.class})
+		@TypeHint(types= {DispatcherServlet.class},access=AccessBits.CLASS),
+		@TypeHint(types= {WebMvcSecurityConfiguration.class})
 })
 /*
 		// TODO this one is actually incomplete, finish it
@@ -53,13 +53,13 @@ proposedHints.put(OAuth2ImportSelector,
 		}));
 */
 @NativeHint(trigger=OAuth2ImportSelector.class,follow = true, types = {
-		@TypeInfo(types= {ClientRegistration.class},access=AccessBits.CLASS),
-		@TypeInfo(types= {OAuth2ClientConfiguration.class}),
-		@TypeInfo(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
+		@TypeHint(types= {ClientRegistration.class},access=AccessBits.CLASS),
+		@TypeHint(types= {OAuth2ClientConfiguration.class}),
+		@TypeHint(types = {JwtConfigurer.class,OAuth2ResourceServerConfigurer.class,AbstractHttpConfigurer.class,HttpSecurityBuilder.class,SecurityConfigurerAdapter.class,SecurityConfigurer.class,SecurityBuilder.class,DefaultSecurityFilterChain.class})
 })
 // from gs-securing-web sample
 @NativeHint(trigger=OAuth2ClientWebMvcImportSelector.class, types = {
-	@TypeInfo(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})	
+	@TypeHint(types= {OAuth2ClientWebMvcSecurityConfiguration.class,DispatcherServlet.class})
 })
 public class WebMvcSecurityHints implements NativeConfiguration {
 }

@@ -1,14 +1,14 @@
 package io.lettuce;
 
-import org.springframework.nativex.hint.FieldInfo;
+import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = io.lettuce.core.RedisClient.class,
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						io.lettuce.core.AbstractRedisAsyncCommands.class,
 						io.lettuce.core.RedisAsyncCommandsImpl.class,
 						io.lettuce.core.RedisClient.class,
@@ -42,34 +42,34 @@ import org.springframework.nativex.hint.TypeInfo;
 						io.netty.handler.codec.MessageToByteEncoder.class,
 						io.netty.util.ReferenceCountUtil.class
 				}),
-				@TypeInfo(typeNames = {
+				@TypeHint(typeNames = {
 						"io.lettuce.core.ChannelGroupListener",
 						"io.lettuce.core.ConnectionEventTrigger",
 						"io.lettuce.core.PlainChannelInitializer$1",
 						"io.netty.channel.DefaultChannelPipeline$HeadContext",
 						"io.netty.channel.DefaultChannelPipeline$TailContext"
 				}),
-				@TypeInfo(
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
-						fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true)),
-				@TypeInfo(
+						fields = @FieldHint(name = "producerLimit", allowUnsafeAccess = true)),
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
-						fields = @FieldInfo(name = "consumerIndex", allowUnsafeAccess = true)),
-				@TypeInfo(
+						fields = @FieldHint(name = "consumerIndex", allowUnsafeAccess = true)),
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
-						fields = @FieldInfo(name = "producerIndex", allowUnsafeAccess = true)),
-				@TypeInfo(
+						fields = @FieldHint(name = "producerIndex", allowUnsafeAccess = true)),
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueConsumerIndexField",
-						fields = @FieldInfo(name = "consumerIndex", allowUnsafeAccess = true)),
-				@TypeInfo(
+						fields = @FieldHint(name = "consumerIndex", allowUnsafeAccess = true)),
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerIndexField",
-						fields = @FieldInfo(name = "producerIndex", allowUnsafeAccess = true)),
-				@TypeInfo(
+						fields = @FieldHint(name = "producerIndex", allowUnsafeAccess = true)),
+				@TypeHint(
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerLimitField",
-						fields = @FieldInfo(name = "producerLimit", allowUnsafeAccess = true))
+						fields = @FieldHint(name = "producerLimit", allowUnsafeAccess = true))
 		},
 		proxies = {
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"io.lettuce.core.api.sync.RedisCommands", "io.lettuce.core.cluster.api.sync.RedisClusterCommands"
 				})
 		}

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -50,10 +50,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
 @NativeHint(trigger=SecurityAutoConfiguration.class, types = {
-		@TypeInfo(
+		@TypeHint(
 				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
 				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				// From DefaultAuthenticationEventPublisher
 				BadCredentialsException.class,AuthenticationFailureBadCredentialsEvent.class,
 				UsernameNotFoundException.class,
@@ -73,12 +73,12 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				}
 		),
 		// TODO interesting that gs-securing-web causes these to be needed although it is in thymeleaf (due to SpEL expressions I think)
-		@TypeInfo(
+		@TypeHint(
 			typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
 			types= { HttpServletRequestWrapper.class,ServletRequestWrapper.class,ServletRequest.class},
 			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS),
 
-		@TypeInfo(typeNames = {
+		@TypeHint(typeNames = {
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",

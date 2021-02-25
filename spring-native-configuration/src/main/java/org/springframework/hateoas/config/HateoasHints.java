@@ -15,11 +15,11 @@
  */
 package org.springframework.hateoas.config;
 
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.util.MimeTypeUtils;
@@ -27,7 +27,7 @@ import org.springframework.util.MimeTypeUtils;
 
 @NativeHint(
 	initialization = {
-		@InitializationInfo(initTime=InitializationTime.BUILD, types = {MimeTypeUtils.class,MediaTypes.class})
+		@InitializationHint(initTime=InitializationTime.BUILD, types = {MimeTypeUtils.class,MediaTypes.class})
 	}
 )
 /*
@@ -39,7 +39,7 @@ proposedHints.put(WebStackImportSelector,
 		}));
 		*/
 @NativeHint(trigger=WebStackImportSelector.class, types = {
-	@TypeInfo(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})	
+	@TypeHint(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})
 },follow=true)
 /*
 public final static String HypermediaConfigurationImportSelector = "Lorg/springframework/hateoas/config/HypermediaConfigurationImportSelector;";
@@ -50,7 +50,7 @@ public final static String HypermediaConfigurationImportSelector = "Lorg/springf
 			}));
 			*/
 @NativeHint(trigger=HypermediaConfigurationImportSelector.class, types = {
-	@TypeInfo(types= {
+	@TypeHint(types= {
 		HypermediaConfigurationImportSelector.class,
 		EnableHypermediaSupport.class, HypermediaType.class, HypermediaType[].class,
 		MediaTypeConfigurationProvider.class

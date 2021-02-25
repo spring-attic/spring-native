@@ -27,35 +27,35 @@ import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoCo
 import org.springframework.core.io.support.PropertiesLoaderSupport;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = CassandraReactiveRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = CassandraRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = CouchbaseReactiveRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = CouchbaseRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, types = {
-		@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+		@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class, types = {
-	@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+	@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
-	@TypeInfo(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
+	@TypeHint(types= {ConditionalOnRepositoryType.class, OnRepositoryTypeCondition.class,RepositoryType.class})
 })
 @NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, types = {
 	// TODO who else needs PropertiesFactoryBean? It can't just be data related things can it...
 	// TODO I've made PFB globally accessible as vanilla-jpa sample needed it and wasn't seeing it through this AbstractRepo config
-	@TypeInfo(types = {PropertiesFactoryBean.class, PropertiesLoaderSupport.class /* super of PropertiesFactoryBean*/}) })
+	@TypeHint(types = {PropertiesFactoryBean.class, PropertiesLoaderSupport.class /* super of PropertiesFactoryBean*/}) })
 public class RepositoriesHints implements NativeConfiguration {
 }

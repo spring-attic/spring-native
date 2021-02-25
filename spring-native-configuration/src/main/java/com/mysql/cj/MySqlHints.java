@@ -45,11 +45,11 @@ import com.mysql.cj.protocol.StandardSocketFactory;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger= Driver.class, types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,
 				LoadBalanceConnectionUrl.class,
@@ -86,7 +86,7 @@ import org.springframework.nativex.hint.TypeInfo;
 				SocksProxySocketFactory.class,
 				StandardSocketFactory.class 
 		}),
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				DeadlockTimeoutRollbackMarker.class,
 				NumberOutOfRange.class,
 				StreamingNotifiable.class,
@@ -97,8 +97,8 @@ import org.springframework.nativex.hint.TypeInfo;
 				}
 		),
 }, resources = {
-		@ResourcesInfo(patterns = "com/mysql/cj/TlsSettings.properties"),
-		@ResourcesInfo(isBundle = true, patterns = "com.mysql.cj.LocalizedErrorMessages")
+		@ResourceHint(patterns = "com/mysql/cj/TlsSettings.properties"),
+		@ResourceHint(isBundle = true, patterns = "com.mysql.cj.LocalizedErrorMessages")
 })
 public class MySqlHints implements NativeConfiguration {
 }

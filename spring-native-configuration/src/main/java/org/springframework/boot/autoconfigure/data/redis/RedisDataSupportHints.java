@@ -17,15 +17,15 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 
 /**
  * @author Christoph Strobl
  */
 @NativeHint(trigger = RedisAutoConfiguration.class, //
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 
 						org.springframework.data.redis.connection.RedisConnection.class,
 						org.springframework.data.redis.connection.StringRedisConnection.class,
@@ -81,13 +81,13 @@ import org.springframework.nativex.hint.TypeInfo;
 				})
 		},
 		proxies = {
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.redis.connection.DefaultedRedisConnection"
 				}),
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.redis.connection.ReactiveRedisConnection"
 				}),
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.redis.connection.StringRedisConnection", "org.springframework.data.redis.connection.DecoratedRedisConnection"
 				})
 		}
@@ -95,7 +95,7 @@ import org.springframework.nativex.hint.TypeInfo;
 
 @NativeHint(trigger = RedisRepositoriesAutoConfiguration.class, //
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 
 						org.springframework.data.keyvalue.annotation.KeySpace.class,
 						org.springframework.data.keyvalue.core.AbstractKeyValueAdapter.class,
@@ -126,7 +126,7 @@ import org.springframework.nativex.hint.TypeInfo;
 				})
 		},
 		proxies = {
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.keyvalue.annotation.KeySpace", "org.springframework.core.annotation.SynthesizedAnnotation"
 				})
 		}

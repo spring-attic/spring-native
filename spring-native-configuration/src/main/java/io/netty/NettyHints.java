@@ -25,13 +25,13 @@ import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
 
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(initialization = {
-		@InitializationInfo(initTime=InitializationTime.RUN,
+		@InitializationHint(initTime=InitializationTime.RUN,
 		packageNames = "io.netty.channel.epoll",
 		types = {
 				DefaultChannelId.class,

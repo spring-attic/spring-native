@@ -24,10 +24,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.DefaultEventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.nativex.hint.MethodInfo;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
@@ -36,15 +36,15 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = Import.class, follow = true) // TODO verify these flags...
 @NativeHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
 // These don't specify a triggering value target so are always exposed
-@NativeHint(types = { @TypeInfo(types = { ComponentScan.class,
+@NativeHint(types = { @TypeHint(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO Check required access for enums like this FilterType
-@NativeHint(types = { @TypeInfo(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
+@NativeHint(types = { @TypeHint(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
 @NativeHint(types = {
-	@TypeInfo(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
+	@TypeHint(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
 	)})
 @NativeHint(types = {
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
 				EmbeddedValueResolverAware.class,EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,
@@ -55,13 +55,13 @@ import org.springframework.nativex.hint.AccessBits;
 				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
 				}),
-		@TypeInfo(types= ComponentScan.Filter.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = { ConfigurationClassPostProcessor.class },
+		@TypeHint(types= ComponentScan.Filter.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+		@TypeHint(types = { ConfigurationClassPostProcessor.class },
 		methods = {
-				@MethodInfo(name="setMetadataReaderFactory",parameterTypes=MetadataReaderFactory.class)
+				@MethodHint(name="setMetadataReaderFactory",parameterTypes=MetadataReaderFactory.class)
 		}
 		),
-		@TypeInfo(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE)
+		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE)
 })
 public class ContextAnnotationHints implements NativeConfiguration {
 }

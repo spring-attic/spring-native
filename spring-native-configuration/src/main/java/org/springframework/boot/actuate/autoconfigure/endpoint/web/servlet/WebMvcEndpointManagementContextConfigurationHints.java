@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -42,8 +42,8 @@ import org.springframework.nativex.type.TypeSystem;
 @NativeHint(trigger=WebMvcEndpointManagementContextConfiguration.class,
 	imports = CommonWebActuatorTypes.class,
  	types = {
-		@TypeInfo(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
- 		@TypeInfo(types = {
+		@TypeHint(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
+ 		@TypeHint(types = {
 		ControllerEndpointDiscoverer.class,
 		ControllerEndpointsSupplier.class,
 		ManagementContextType.class,

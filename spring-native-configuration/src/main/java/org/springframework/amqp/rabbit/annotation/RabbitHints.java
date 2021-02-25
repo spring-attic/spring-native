@@ -17,14 +17,14 @@ package org.springframework.amqp.rabbit.annotation;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 
 // There is no Rabbit sample currently in the repo to confirm this is correct
 @NativeHint(trigger=RabbitListenerConfigurationSelector.class,
 	resources = {
-			@ResourcesInfo(patterns="rabbitmq-amqp-client.properties")
+			@ResourceHint(patterns="rabbitmq-amqp-client.properties")
 	},
 	types = {
-		@TypeInfo(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true,follow=true)
+		@TypeHint(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true,follow=true)
 public class RabbitHints implements NativeConfiguration { }

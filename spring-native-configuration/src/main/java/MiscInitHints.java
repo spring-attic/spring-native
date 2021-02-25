@@ -1,10 +1,10 @@
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
 @NativeHint(
-		initialization = @InitializationInfo(types = {
+		initialization = @InitializationHint(types = {
 				org.h2.util.Bits.class,
 				org.hibernate.EntityMode.class,
 				javax.persistence.FetchType.class,

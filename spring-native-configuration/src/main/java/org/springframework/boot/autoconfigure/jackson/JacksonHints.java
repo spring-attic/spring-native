@@ -22,10 +22,10 @@ import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,8 +33,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 @NativeHint(trigger = JacksonAutoConfiguration.class, types = {
-		@TypeInfo(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = JsonGenerator.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS) },
-		initialization = @InitializationInfo(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
+		@TypeHint(types = {JsonIgnore.class, JsonInclude.class,JsonInclude.Include.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+		@TypeHint(types = JsonGenerator.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS) },
+		initialization = @InitializationHint(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
 public class JacksonHints implements NativeConfiguration {
 }

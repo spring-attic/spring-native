@@ -21,20 +21,20 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport.QuerydslAc
 import org.springframework.data.web.config.EnableSpringDataWebSupport.SpringDataWebConfigurationImportSelector;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // TODO there are others in spring.factories
 @NativeHint(trigger = SpringDataWebConfigurationImportSelector.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 			HateoasAwareSpringDataWebConfiguration.class,
 			SpringDataWebConfiguration.class,
 			ProjectingArgumentResolverRegistrar.class,
 			SpringDataJacksonConfiguration.class
 	})}, abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = QuerydslActivator.class, types = {
-	@TypeInfo(types= QuerydslWebConfiguration.class) }, abortIfTypesMissing = true, follow = true)
+	@TypeHint(types= QuerydslWebConfiguration.class) }, abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = SpringDataWebAutoConfiguration.class, types =
-	@TypeInfo(types = GeoJsonConfiguration.class, access = AccessBits.CONFIGURATION))
+	@TypeHint(types = GeoJsonConfiguration.class, access = AccessBits.CONFIGURATION))
 public class SpringDataWebHints implements NativeConfiguration {
 }

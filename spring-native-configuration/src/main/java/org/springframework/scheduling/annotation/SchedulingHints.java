@@ -17,14 +17,14 @@ package org.springframework.scheduling.annotation;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.scheduling.aspectj.AspectJAsyncConfiguration;
 
 @NativeHint(trigger=AsyncConfigurationSelector.class, types = {
-	@TypeInfo(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.CONFIGURATION),
+	@TypeHint(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.CONFIGURATION),
 })
 @NativeHint(trigger=SchedulingConfiguration.class, types = {
-	@TypeInfo(types = Schedules.class, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+	@TypeHint(types = Schedules.class, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 })
 public class SchedulingHints implements NativeConfiguration { }

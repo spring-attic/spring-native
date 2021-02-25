@@ -72,7 +72,7 @@ Usually, we do a few searches for references to the type that is missing, and th
 
 . If there is already a `@NativeConfiguration` implementation for that configuration, augment it with the extra type info.
 If there is not, create one, attach a `@NativeHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeConfiguration` .
-You may also need to set the accessibility in the annotation (in the `@TypeInfo`).
+You may also need to set the accessibility in the annotation (in the `TypeHint`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.
 

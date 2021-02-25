@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 /**
@@ -36,7 +36,7 @@ import org.springframework.nativex.hint.AccessBits;
  * 
  * @author Andy Clement
  */
-@TypeInfo(types = {
+@TypeHint(types = {
 		ServletEndpointRegistrar.class,
 		HttpTraceRepository.class,
 		ManagementContextType.class,

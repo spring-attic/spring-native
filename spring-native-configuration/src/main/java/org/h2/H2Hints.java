@@ -28,11 +28,11 @@ import org.h2.store.fs.FilePathZip;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger= Driver.class, types = {
-		@TypeInfo( types = { 
+		@TypeHint( types = {
 			FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, 
 			FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class,
 			MVTableEngine.class, 

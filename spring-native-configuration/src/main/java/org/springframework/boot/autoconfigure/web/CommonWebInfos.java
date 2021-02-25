@@ -15,10 +15,10 @@
  */
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.ResourceHint;
 
 // Accessed from org.apache.catalina.startup.Tomcat
-@ResourcesInfo(patterns= {
+@ResourceHint(patterns= {
 	"org/springframework/http/mime.types",
 	"org/apache/catalina/startup/MimeTypeMappings.properties",
 	"^static/.*",
@@ -26,7 +26,7 @@ import org.springframework.nativex.hint.ResourcesInfo;
 	"^META-INF/resources/webjars/.*"
 })
 //TODO deletable once confirmed tomcat version will contain these from now on (also see WebFluxHints)
-@ResourcesInfo(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
+@ResourceHint(patterns= {"javax.servlet.LocalStrings","javax.servlet.http.LocalStrings"},isBundle=true)
 public class CommonWebInfos {
 
 }

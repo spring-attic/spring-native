@@ -25,7 +25,7 @@ import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -46,26 +46,26 @@ import org.springframework.kafka.support.ProducerListener;
 
 @NativeHint(trigger=KafkaListenerConfigurationSelector.class,
 	types = {
-		@TypeInfo(types= {
+		@TypeHint(types= {
 			PartitionOffset.class, TopicPartition.class,
 			ConsumerProperties.class,ContainerProperties.class,
 			ProducerListener.class,KafkaListener.class,
 			EnableKafka.class
 		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types= {
+		@TypeHint(types= {
 			org.apache.kafka.common.protocol.Message.class,
 			org.apache.kafka.common.utils.ImplicitLinkedHashCollection.Element.class,
 			KafkaListener.class,org.springframework.messaging.handler.annotation.MessageMapping.class,KafkaListeners.class,
 		},access=AccessBits.ALL),
-		@TypeInfo(types= {
+		@TypeHint(types= {
 			KafkaListenerAnnotationBeanPostProcessor.class,
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
-		@TypeInfo(types= {
+		@TypeHint(types= {
 			KafkaBootstrapConfiguration.class,
 			CreatableTopic.class,
 			KafkaListenerEndpointRegistry.class
 		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE),
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				NewTopic.class,
 				AbstractKafkaListenerContainerFactory.class,ConcurrentKafkaListenerContainerFactory.class,
 				KafkaListenerContainerFactory.class, KafkaListenerEndpointRegistry.class,
@@ -74,7 +74,7 @@ import org.springframework.kafka.support.ProducerListener;
 				KafkaTemplate.class,ProducerFactory.class, KafkaOperations.class,ConsumerFactory.class,
 				LoggingProducerListener.class
 			}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(types = {
+		@TypeHint(types = {
 				AppInfo.class,
 				RangeAssignor.class,DefaultPartitioner.class,StringDeserializer.class,StringSerializer.class
 			}, typeNames = "java.util.zip.CRC32C")

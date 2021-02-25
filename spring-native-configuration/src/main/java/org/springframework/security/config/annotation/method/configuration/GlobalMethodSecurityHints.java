@@ -18,24 +18,24 @@ package org.springframework.security.config.annotation.method.configuration;
 import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
 
 @NativeHint(trigger=GlobalMethodSecuritySelector.class, types = {
-		@TypeInfo(types= {EnableGlobalMethodSecurity.class,GlobalMethodSecurityConfiguration.class,
+		@TypeHint(types= {EnableGlobalMethodSecurity.class,GlobalMethodSecurityConfiguration.class,
 				AutoProxyRegistrar.class,GlobalMethodSecurityAspectJAutoProxyRegistrar.class,
 				MethodSecurityMetadataSourceAdvisorRegistrar.class,Jsr250MetadataSourceConfiguration.class,
 				}),
-		@TypeInfo(types= MethodSecurityMetadataSourceAdvisor.class, access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
-		@TypeInfo(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access=AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(types= MethodSecurityMetadataSourceAdvisor.class, access=AccessBits.CLASS|AccessBits.PUBLIC_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access=AccessBits.DECLARED_CONSTRUCTORS),
 
 })
 @NativeHint(trigger=ReactiveMethodSecuritySelector.class, types = {
-		@TypeInfo(types= {AutoProxyRegistrar.class,ReactiveMethodSecurityConfiguration.class})})
+		@TypeHint(types= {AutoProxyRegistrar.class,ReactiveMethodSecurityConfiguration.class})})
 @NativeHint(proxies = {
-		@ProxyInfo(types = {
+		@ProxyHint(types = {
 				org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,
 				org.springframework.core.annotation.SynthesizedAnnotation.class
 		})

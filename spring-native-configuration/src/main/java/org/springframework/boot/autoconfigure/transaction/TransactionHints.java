@@ -17,7 +17,7 @@ package org.springframework.boot.autoconfigure.transaction;
 
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
@@ -25,8 +25,8 @@ import org.springframework.transaction.annotation.AbstractTransactionManagementC
 import org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration;
 
 @NativeHint(trigger=TransactionAutoConfiguration.class, types = {
-		@TypeInfo(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
-		@TypeInfo(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
+		@TypeHint(types= {TransactionManager.class,ProxyTransactionManagementConfiguration.class,AbstractTransactionManagementConfiguration.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(types= {TransactionDefinition.class},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
 },abortIfTypesMissing = true)
 public class TransactionHints implements NativeConfiguration {
 }

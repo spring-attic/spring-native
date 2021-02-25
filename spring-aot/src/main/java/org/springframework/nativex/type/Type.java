@@ -49,17 +49,17 @@ import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.InitializationInfo;
-import org.springframework.nativex.hint.InitializationInfos;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationHints;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.NativeHints;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ProxyInfos;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.ResourcesInfos;
-import org.springframework.nativex.hint.TypeInfo;
-import org.springframework.nativex.hint.TypeInfos;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ProxyHints;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.ResourcesHints;
+import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.hint.TypeHints;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -1834,15 +1834,15 @@ public class Type {
 				if (key.equals("trigger")) {
 					ch.setTriggerTypename(((org.objectweb.asm.Type) value).getClassName());
 				} else if (key.equals("types")) {
-					processTypeInfoList(ch, value);
+					processTypeHintList(ch, value);
 				} else if (key.equals("imports")) {
-					processImportInfos(ch, value);
+					processImportHints(ch, value);
 				} else if (key.equals("proxies")) {
-					processProxyInfo(ch, value);
+					processProxyHint(ch, value);
 				} else if (key.equals("resources")) {
-					processResourcesInfos(ch, value);
+					processResourceHints(ch, value);
 				} else if (key.equals("initialization")) {
-					processInitializationInfos(ch, value);
+					processInitializationHints(ch, value);
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1862,21 +1862,21 @@ public class Type {
 		return ch;
 	}
 
-	private void processResourcesInfos(HintDeclaration ch, Object value) {
+	private void processResourceHints(HintDeclaration ch, Object value) {
 		List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode resourcesInfo : resourcesInfos) {
 			unpackResourcesInfo(resourcesInfo, ch);
 		}
 	}
 
-	private void processInitializationInfos(HintDeclaration ch, Object value) {
+	private void processInitializationHints(HintDeclaration ch, Object value) {
 		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode initializationInfo : initializationInfos) {
 			unpackInitializationInfo(initializationInfo, ch);
 		}
 	}
 
-	private void processTypeInfoList(HintDeclaration ch, Object value) {
+	private void processTypeHintList(HintDeclaration ch, Object value) {
 		List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode typeInfo : typeInfos) {
 			unpackTypeInfo(typeInfo, ch);
@@ -1901,14 +1901,14 @@ public class Type {
 		return (List<T>) value;
 	}
 
-	private void processProxyInfo(HintDeclaration ch, Object value) {
+	private void processProxyHint(HintDeclaration ch, Object value) {
 		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
 		for (AnnotationNode proxyInfo : proxyInfos) {
 			unpackProxyInfo(proxyInfo, ch);
 		}
 	}
 
-	private void processImportInfos(HintDeclaration ch, Object value) {
+	private void processImportHints(HintDeclaration ch, Object value) {
 		List<org.objectweb.asm.Type> importInfos = (ArrayList<org.objectweb.asm.Type>) value;
 		for (org.objectweb.asm.Type importInfo : importInfos) {
 			String className = importInfo.getClassName();
@@ -1920,21 +1920,21 @@ public class Type {
 			if (node.visibleAnnotations != null) {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					String annotationClassname = fromLdescriptorToDotted(an.desc);
-					if (annotationClassname.equals(TypeInfo.class.getName())) {
+					if (annotationClassname.equals(TypeHint.class.getName())) {
 						unpackTypeInfo(an, ch);
-					} else if (annotationClassname.equals(TypeInfos.class.getName())) {
+					} else if (annotationClassname.equals(TypeHints.class.getName())) {
 						processTypeInfosList(ch, an);
-					} else if (annotationClassname.equals(ResourcesInfo.class.getName())) {
+					} else if (annotationClassname.equals(ResourceHint.class.getName())) {
 						unpackResourcesInfo(an, ch);
-					} else if (annotationClassname.equals(ResourcesInfos.class.getName())) {
+					} else if (annotationClassname.equals(ResourcesHints.class.getName())) {
 						processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno, ch));
-					} else if (annotationClassname.equals(ProxyInfo.class.getName())) {
+					} else if (annotationClassname.equals(ProxyHint.class.getName())) {
 						unpackProxyInfo(an, ch);
-					} else if (annotationClassname.equals(ProxyInfos.class.getName())) {
+					} else if (annotationClassname.equals(ProxyHints.class.getName())) {
 						processRepeatableInfosList(an, anno -> unpackProxyInfo(anno, ch));
-					} else if (annotationClassname.equals(InitializationInfo.class.getName())) {
+					} else if (annotationClassname.equals(InitializationHint.class.getName())) {
 						unpackInitializationInfo(an, ch);
-					} else if (annotationClassname.equals(InitializationInfos.class.getName())) {
+					} else if (annotationClassname.equals(InitializationHints.class.getName())) {
 						processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, ch));
 					}
 				}

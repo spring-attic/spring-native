@@ -21,14 +21,14 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndConditions;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 // Hitting /conditions endpoint
 @NativeHint(trigger = ConditionsReportEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		ConditionsReportEndpoint.class,
 		ApplicationConditionEvaluation.class,
 		ContextConditionEvaluation.class,

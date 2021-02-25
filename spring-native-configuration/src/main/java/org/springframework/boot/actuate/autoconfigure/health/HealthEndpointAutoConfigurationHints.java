@@ -33,23 +33,23 @@ import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /health endpoint
 @NativeHint(trigger = HealthEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,
 		HealthEndpointWebExtension.class,
 	},access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		StatusAggregator.class,
 		SimpleStatusAggregator.class,
 		HttpCodeStatusMapper.class,
 		SimpleHttpCodeStatusMapper.class,
 	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
-	@TypeInfo(types = {
+	@TypeHint(types = {
 //		PingHealthIndicator.class,
 		Status.class,
 		SystemHealth.class,
@@ -83,10 +83,10 @@ import org.springframework.nativex.hint.AccessBits;
 //		DefaultReactiveHealthContributorRegistry.class,
 //		ContributorRegistry.class, ReactiveHealthContributorRegistry.class,
 //		},access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeInfo(
+	@TypeHint(
 		types = HealthEndpoint.class,
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
 		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
-,@TypeInfo(types=Health.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
+,@TypeHint(types=Health.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
 public class HealthEndpointAutoConfigurationHints implements NativeConfiguration {
 }

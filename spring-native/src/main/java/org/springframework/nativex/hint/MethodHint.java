@@ -19,11 +19,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeatable annotation container for {@link TypeInfo} annotations.
- * 
+ * Configure reflection for a given method.
+ *
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TypeInfos {
-	TypeInfo[] value();
+public @interface MethodHint {
+
+	/**
+	 * Name of the method.
+	 * @return the name
+	 */
+	String name();
+
+	/**
+	 * Parameter types of the method.
+	 * @return the parameter types
+	 */
+	Class<?>[] parameterTypes() default {};
+
 }

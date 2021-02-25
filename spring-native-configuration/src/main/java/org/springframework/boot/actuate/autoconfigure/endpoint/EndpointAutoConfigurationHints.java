@@ -35,12 +35,12 @@ import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
 @NativeHint(trigger = EndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		Endpoint.class, EndpointExtension.class, ReadOperation.class, WriteOperation.class,
 		DeleteOperation.class, Selector.class, Match.class, EndpointFilter.class,
 		Link.class, BeanSerializer.class, ApiVersion.class,

@@ -30,13 +30,13 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
 import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
 import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 /**
@@ -44,7 +44,7 @@ import org.springframework.nativex.hint.AccessBits;
  */
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						ElasticsearchRepositoryFactoryBean.class,
 						ElasticsearchRepositoryConfigExtension.class,
 						SimpleElasticsearchRepository.class,
@@ -52,15 +52,15 @@ import org.springframework.nativex.hint.AccessBits;
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
 				}),
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						org.elasticsearch.Version.class
 				}, access = AccessBits.ALL)
 		},
-		resources = @ResourcesInfo(patterns = "versions.properties"))
+		resources = @ResourceHint(patterns = "versions.properties"))
 @NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
 		imports = SpringDataReactiveHints.class,
 		types = {
-				@TypeInfo(
+				@TypeHint(
 						types = {
 								ReactiveElasticsearchRepositoryFactoryBean.class,
 								ReactiveElasticsearchRepositoryConfigurationExtension.class,
@@ -89,24 +89,24 @@ import org.springframework.nativex.hint.AccessBits;
 								"org.elasticsearch.action.search.MultiSearchResponse",
 								"org.elasticsearch.action.search.ClearScrollResponse",
 						}),
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						org.elasticsearch.Version.class
 				}, access = AccessBits.ALL),
 		},
 		proxies = {
-				@ProxyInfo(types = {XContentParser.class})
+				@ProxyHint(types = {XContentParser.class})
 		}
 )
 
 // org.elasticsearch.client.RestClient - required logging configuration
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
 						org.apache.logging.log4j.message.ParameterizedMessageFactory.class,
 						org.apache.logging.log4j.message.ReusableMessageFactory.class
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-				@TypeInfo(typeNames = {
+				@TypeHint(typeNames = {
 						// those cause a lot of erros and warnings in logs if not present
 						"io.netty.buffer.AbstractByteBufAllocator",
 						"io.netty.buffer.PooledByteBufAllocator",
@@ -150,7 +150,7 @@ import org.springframework.nativex.hint.AccessBits;
 						"reactor.netty.transport.TransportConfig$TransportChannelInitializer"
 				})
 		}, initialization = {
-			@InitializationInfo(typeNames = {
+			@InitializationHint(typeNames = {
 					"org.apache.lucene.util.Constants",
 					"org.elasticsearch.common.unit.TimeValue",
 					"org.apache.lucene.util.RamUsageEstimator"

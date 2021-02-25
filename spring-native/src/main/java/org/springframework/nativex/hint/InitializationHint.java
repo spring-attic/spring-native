@@ -26,9 +26,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
-@Repeatable(InitializationInfos.class)
+@Repeatable(InitializationHints.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InitializationInfo {
+public @interface InitializationHint {
 
 	/**
 	 * Preferred way to configure initialization.

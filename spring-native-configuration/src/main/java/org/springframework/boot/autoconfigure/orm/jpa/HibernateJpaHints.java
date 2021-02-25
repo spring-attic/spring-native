@@ -55,8 +55,8 @@ import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Repository;
@@ -66,24 +66,24 @@ import java.util.EventListener;
 
 @SuppressWarnings("deprecation")
 @NativeHint(trigger = HibernateJpaAutoConfiguration.class, types = {
-		@TypeInfo(types = {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
+		@TypeHint(types = {DefaultFlowMessageFactory.class, ConcurrentBag.IConcurrentBagEntry[].class, ConcurrentBag.IConcurrentBagEntry.class})
 })
 @NativeHint(trigger = HibernateJpaConfiguration.class,
 		resources = {
-				@ResourcesInfo(patterns = {"hibernate.properties", "org/hibernate/.*.xsd", "org/hibernate/.*.dtd"})
+				@ResourceHint(patterns = {"hibernate.properties", "org/hibernate/.*.xsd", "org/hibernate/.*.dtd"})
 		},
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						// petclinic
 						// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
 						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						// petclinic
 						Repository.class,
 						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, JoinColumn.class, Table.class, Transient.class
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						SessionImpl.class,
 						EventType.class,
 
@@ -117,20 +117,20 @@ import java.util.EventListener;
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
 						"org.hibernate.annotations.common.util.impl.Log",
 				}),
-				@TypeInfo(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
-				@TypeInfo(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
+				@TypeHint(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
+				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory
 						Tuplizer.class, EntityTuplizer.class, AbstractEntityTuplizer.class, PojoEntityTuplizer.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				// Persisters
-				@TypeInfo(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
+				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						OneToManyPersister.class, JoinedSubclassEntityPersister.class, SingleTableEntityPersister.class, UnionSubclassEntityPersister.class,
 						BasicCollectionPersister.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 
 				// AST nodes from the org.hibernate.hql.internal.ast.tree package
 				// These are necessary when HQL/JPQL queries are used.
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						AbstractMapComponentNode.class,
 						AbstractNullnessCheckNode.class,
 						AbstractRestrictableStatement.class,
@@ -209,7 +209,7 @@ import java.util.EventListener;
 						HqlToken.class
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				// EventListener
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						ReplicateEventListener[].class,
 						PostInsertEventListener[].class, PostLoadEventListener[].class, PostUpdateEventListener[].class,
 						PreCollectionRecreateEventListener[].class, PreCollectionRemoveEventListener[].class, PreCollectionUpdateEventListener[].class,
@@ -223,7 +223,7 @@ import java.util.EventListener;
 
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				// Id Generators
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						IdentityGenerator.class, SequenceStyleGenerator.class,
 						SequenceIdentityGenerator.class,
 						UUIDGenerator.class, GUIDGenerator.class, UUIDHexGenerator.class, Assigned.class,
@@ -233,8 +233,8 @@ import java.util.EventListener;
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		})
 // Dialects
-@NativeHint(trigger = org.h2.Driver.class, types = @TypeInfo(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeInfo(types = MySQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeInfo(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.h2.Driver.class, types = @TypeHint(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = MySQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeHint(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 public class HibernateJpaHints implements NativeConfiguration {
 }

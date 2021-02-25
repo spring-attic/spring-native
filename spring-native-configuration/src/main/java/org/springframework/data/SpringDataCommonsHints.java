@@ -29,17 +29,17 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						RepositoryFactoryBeanSupport.class,
 						RepositoryFragmentsFactoryBean.class,
 						TransactionalRepositoryFactoryBeanSupport.class,
@@ -48,15 +48,15 @@ import org.springframework.nativex.hint.AccessBits;
 						RepositoryMetadata.class,
 						PropertiesBasedNamedQueries.class
 				}),
-				@TypeInfo(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
-				@TypeInfo(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
+				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
+				@TypeHint(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
 		},
-		proxies = @ProxyInfo(typeNames = {
+		proxies = @ProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",
 				"org.springframework.core.annotation.SynthesizedAnnotation" })
 )
-@NativeHint(initialization = @InitializationInfo(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
-@NativeHint(types = @TypeInfo(types= {
+@NativeHint(initialization = @InitializationHint(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
+@NativeHint(types = @TypeHint(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
 }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS))
 public class SpringDataCommonsHints implements NativeConfiguration {

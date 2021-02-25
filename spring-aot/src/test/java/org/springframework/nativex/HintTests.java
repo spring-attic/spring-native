@@ -31,14 +31,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.FieldInfo;
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.hint.MethodInfo;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintApplication;
 import org.springframework.nativex.type.ProxyDescriptor;
@@ -68,7 +68,7 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 	}
 
-	@NativeHint(types = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(types = { @TypeHint(types = { String[].class }) })
 	static class TestClass1 {
 	}
 	
@@ -85,7 +85,7 @@ public class HintTests {
 		assertEquals("java.lang.Integer",types[1]);
 	}
 
-	@NativeHint(proxies = { @ProxyInfo(types = { String.class,Integer.class }) })
+	@NativeHint(proxies = { @ProxyHint(types = { String.class,Integer.class }) })
 	static class TestClass2 {
 	}
 
@@ -107,8 +107,8 @@ public class HintTests {
 	}
 
 	@NativeHint(resources = {
-			@ResourcesInfo(patterns = { "aaa","bbb" }),
-			@ResourcesInfo(patterns = { "ccc" }, isBundle = true)
+			@ResourceHint(patterns = { "aaa","bbb" }),
+			@ResourceHint(patterns = { "ccc" }, isBundle = true)
 	})
 	static class TestClass3 {
 	}
@@ -158,11 +158,11 @@ public class HintTests {
 	}
 
 	@NativeHint(initialization = {
-			@InitializationInfo(
+			@InitializationHint(
 					typeNames = { "aaa","bbb" }, 
 					types=String.class,
 					initTime = InitializationTime.RUN),
-			@InitializationInfo(
+			@InitializationHint(
 					packageNames = { "ccc" },
 					initTime = InitializationTime.BUILD)
 	})
@@ -184,8 +184,8 @@ public class HintTests {
 	}
 
 	@NativeHint(types = {
-		@TypeInfo(typeNames = "java.lang.String",
-				methods= @MethodInfo(name="foo",parameterTypes = String.class)
+		@TypeHint(typeNames = "java.lang.String",
+				methods= @MethodHint(name="foo",parameterTypes = String.class)
 		)
 	})
 	static class TestClass6 {
@@ -208,8 +208,8 @@ public class HintTests {
 	}
 
 	@NativeHint(types = {
-		@TypeInfo(typeNames = "java.lang.String",
-				fields= @FieldInfo(name="foo",allowUnsafeAccess = true)
+		@TypeHint(typeNames = "java.lang.String",
+				fields= @FieldHint(name="foo",allowUnsafeAccess = true)
 		)
 	})
 	static class TestClass7 {

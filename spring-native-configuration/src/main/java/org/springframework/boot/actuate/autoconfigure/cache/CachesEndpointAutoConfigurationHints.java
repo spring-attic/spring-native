@@ -19,12 +19,12 @@ import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /caches endpoint
 @NativeHint(trigger = CachesEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,
 		// TODO likely incomplete, not tested

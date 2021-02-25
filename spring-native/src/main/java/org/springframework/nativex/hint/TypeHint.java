@@ -29,9 +29,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
-@Repeatable(TypeInfos.class)
+@Repeatable(TypeHints.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TypeInfo {
+public @interface TypeHint {
 
 	/**
 	 * Preferred (because typesafe) way to specify class references.
@@ -58,12 +58,12 @@ public @interface TypeInfo {
 	 * Specific method information, useful to reduce the footprint impact of the generated configuration.
 	 * @return the methods information
 	 */
-	MethodInfo[] methods() default {};
+	MethodHint[] methods() default {};
 
 	/**
 	 * Specific fields information, useful to reduce the footprint impact of the generated configuration or to specify
 	 * unsafe access.
 	 * @return the fields information
 	 */
-	FieldInfo[] fields() default {};
+	FieldHint[] fields() default {};
 }

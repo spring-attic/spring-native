@@ -51,30 +51,30 @@ public @interface NativeHint {
 	 * resources) if the trigger is active.
 	 * @return the type information
 	 */
-	TypeInfo[] types() default {};
+	TypeHint[] types() default {};
 
 	/**
 	 * A set of proxy information which indicate which sets of types need a proxy if the trigger is active.
 	 * @return the proxy information
 	 */
-	ProxyInfo[] proxies() default {};
+	ProxyHint[] proxies() default {};
 	
 	/**
 	 * A set of resource information which specify which resources need including if the trigger is active.
 	 * @return the resource information
 	 */
-	ResourcesInfo[] resources() default {};
+	ResourceHint[] resources() default {};
 	
 	/**
 	 * A set of initialization information which specify which classes/packages should be initialized
 	 * explicitly at runtime/build-time (runtime being GraalVM native image default).
 	 * @return the initialization information
 	 */
-	InitializationInfo[] initialization() default {};
+	InitializationHint[] initialization() default {};
 
 	/**
-	 * A set of types that have @TypeInfo/@ProxyInfo/etc. annotations on them that should be pulled in as type information for this hint.
-	 * Using this mechanism a set of TypeInfos can be shared by two hints without duplication (e.g. webflux and webmvc).
+	 * A set of types that have @TypeHint/@ProxyHint/etc. annotations on them that should be pulled in as type hints for this one.
+	 * Using this mechanism a set of TypeHints can be shared by two hints without duplication (e.g. webflux and webmvc).
 	 * @return the types to import
 	 */
 	Class<?>[] imports() default {};

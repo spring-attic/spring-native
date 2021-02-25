@@ -19,11 +19,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeatable annotation container for {@link ProxyInfo} annotations.
+ * Repeatable annotation container for {@link TypeHint} annotations.
  * 
  * @author Andy Clement
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProxyInfos {
-	ProxyInfo[] value();
+public @interface TypeHints {
+	TypeHint[] value();
 }

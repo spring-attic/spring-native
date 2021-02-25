@@ -17,23 +17,23 @@ package org.springframework.boot.autoconfigure;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 
 @NativeHint(trigger=ImportAutoConfigurationImportSelector.class, types ={
-		@TypeInfo(types= { 
+		@TypeHint(types= {
 				ImportAutoConfiguration.class }, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration" 
 			})}
 )
 @NativeHint(trigger=AutoConfigurationImportSelector.class)
 @NativeHint(types = {
-	@TypeInfo(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
+	@TypeHint(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
 			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeHint(types = {
-	@TypeInfo(types = { 
+	@TypeHint(types = {
 		AutoConfigurationImportSelector.class,
 		AutoConfigurationPackages.class, AutoConfigurationPackages.Registrar.class,
 		AutoConfigurationPackages.BasePackages.class,
@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
 })
 @NativeHint(types = {
-	@TypeInfo(typeNames = {
+	@TypeHint(typeNames = {
 		"org.springframework.boot.autoconfigure.AutoConfigurationImportSelector$AutoConfigurationGroup" 
 	},access=AccessBits.LOAD_AND_CONSTRUCT)
 })

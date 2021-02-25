@@ -20,19 +20,19 @@ import org.springframework.data.jpa.repository.support.JpaEvaluationContextExten
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
 		resources = {
-				@ResourcesInfo(patterns = "META-INF/jpa-named-queries.properties"),
-				@ResourcesInfo(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
+				@ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
+				@ResourceHint(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
 		},
 		types = {
-				@TypeInfo(types = {
+				@TypeHint(types = {
 						SharedEntityManagerCreator.class, // TODO is this one in the right place?
 						JpaRepositoryFactoryBean.class,
 						JpaEvaluationContextExtension.class,
@@ -43,7 +43,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE)
 		},
 		proxies = {
-				@ProxyInfo(typeNames = {
+				@ProxyHint(typeNames = {
 						"org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
 				})
 		}

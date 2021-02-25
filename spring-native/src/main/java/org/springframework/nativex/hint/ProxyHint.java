@@ -30,9 +30,9 @@ import java.lang.annotation.RetentionPolicy;
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
-@Repeatable(ProxyInfos.class)
+@Repeatable(ProxyHints.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProxyInfo {
+public @interface ProxyHint {
 
 	/**
 	 * Preferred way to configure interfaces for a given JDK dynamic proxy.

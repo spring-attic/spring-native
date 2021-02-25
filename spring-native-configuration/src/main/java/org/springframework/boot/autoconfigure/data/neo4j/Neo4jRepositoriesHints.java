@@ -11,16 +11,16 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
 import org.springframework.data.neo4j.repository.support.SimpleNeo4jRepository;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class,
 		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class,
 	}, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		Neo4jRepositoryFactoryBean.class,
 		Neo4jRepositoryConfigurationExtension.class,
 		AbstractNeo4jConfig.class,
@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 		}
 	) },
 	proxies = {
-		@ProxyInfo(typeNames = {
+		@ProxyHint(typeNames = {
 			"org.springframework.data.annotation.Id",
 			"org.springframework.core.annotation.SynthesizedAnnotation"
 		})

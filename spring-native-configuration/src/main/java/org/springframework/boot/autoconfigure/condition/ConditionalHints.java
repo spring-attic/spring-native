@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.condition;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 @NativeHint(trigger=OnWebApplicationCondition.class, types = {
-	@TypeInfo(types= {
+	@TypeHint(types= {
 			GenericWebApplicationContext.class,
 			WebApplicationObjectSupport.class,
 			ApplicationObjectSupport.class},
@@ -32,8 +32,8 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 })
 @NativeHint(trigger=ConditionalOnWebApplication.class,
 	types = {
-		@TypeInfo(types=GenericWebApplicationContext.class,access=AccessBits.LOAD_AND_CONSTRUCT),
-		@TypeInfo(types= {
+		@TypeHint(types=GenericWebApplicationContext.class,access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeHint(types= {
 				ConditionalOnWebApplication.Type.class}
 		)},
 		abortIfTypesMissing = true)
@@ -44,7 +44,7 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 @NativeHint(
 		trigger = ConditionalOnMissingBean.class,
 		extractTypesFromAttributes = { "value", "name" },
-		types = @TypeInfo(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
+		types = @TypeHint(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
 		abortIfTypesMissing = true)
 // TODO [0.9.0] get rid of all the extractTypesFromAttributes/abortIfMissing
 @NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)

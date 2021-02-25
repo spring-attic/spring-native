@@ -17,11 +17,11 @@ package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 
 // Hitting /mappings endpoint
 @NativeHint(trigger = MappingsEndpointAutoConfiguration.class, types = {
-	@TypeInfo(types = {
+	@TypeHint(types = {
 		org.springframework.boot.actuate.web.mappings.HandlerMethodDescription.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappings.class,

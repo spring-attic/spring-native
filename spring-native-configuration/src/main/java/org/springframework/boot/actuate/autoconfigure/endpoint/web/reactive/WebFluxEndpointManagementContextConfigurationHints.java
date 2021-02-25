@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CommonWebActuatorTypes;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -26,7 +26,7 @@ import org.springframework.nativex.type.TypeSystem;
 @NativeHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
 	imports = { CommonWebActuatorTypes.class},
 	types = {
-	@TypeInfo(
+	@TypeHint(
 //			types = {
 //		AbstractWebFluxEndpointHandlerMapping.class,
 //		ControllerEndpointHandlerMapping.class,

@@ -19,25 +19,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Configure reflection for a given method.
- *
- * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
+ * Repeatable annotation container for {@link ProxyHint} annotations.
+ * 
  * @author Andy Clement
- * @author Sebastien Deleuze
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MethodInfo {
-
-	/**
-	 * Name of the method.
-	 * @return the name
-	 */
-	String name();
-
-	/**
-	 * Parameter types of the method.
-	 * @return the parameter types
-	 */
-	Class<?>[] parameterTypes() default {};
-
+public @interface ProxyHints {
+	ProxyHint[] value();
 }

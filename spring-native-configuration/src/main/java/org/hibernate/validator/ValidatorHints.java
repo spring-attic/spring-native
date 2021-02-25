@@ -1,13 +1,13 @@
 package org.hibernate.validator;
 
-import org.springframework.nativex.hint.InitializationInfo;
+import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyInfo;
+import org.springframework.nativex.hint.ProxyHint;
 
 @NativeHint(
-		initialization = @InitializationInfo(types = {
+		initialization = @InitializationHint(types = {
 				org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator.class,
 				org.hibernate.validator.internal.engine.ValidatorImpl.class,
 				org.hibernate.validator.internal.engine.ValidatorFactoryImpl.class,
@@ -45,7 +45,7 @@ import org.springframework.nativex.hint.ProxyInfo;
 				"org.hibernate.validator.internal.metadata.raw",
 				"org.hibernate.validator.internal.util"
 		}, initTime = InitializationTime.BUILD),
-		proxies = @ProxyInfo(types = {
+		proxies = @ProxyHint(types = {
 				javax.validation.Validator.class,
 				org.springframework.aop.SpringProxy.class,
 				org.springframework.aop.framework.Advised.class,

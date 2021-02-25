@@ -17,11 +17,11 @@ package org.springframework.boot.autoconfigure.integration;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
+import org.springframework.nativex.hint.ResourceHint;
 
 @NativeHint(trigger = IntegrationAutoConfiguration.class,
 	resources = {
-		@ResourcesInfo(patterns="META-INF/spring.integration.default.properties")
+		@ResourceHint(patterns="META-INF/spring.integration.default.properties")
 	}
 )
 public class IntegrationHints implements NativeConfiguration {

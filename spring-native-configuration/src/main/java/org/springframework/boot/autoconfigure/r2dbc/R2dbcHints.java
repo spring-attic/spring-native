@@ -31,8 +31,8 @@ import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
@@ -42,11 +42,11 @@ import reactor.core.publisher.Mono;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
 @NativeHint(trigger=R2dbcAutoConfiguration.class, types = {
-		@TypeInfo(types = {Statement.class,Statement[].class}),
-		@TypeInfo(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
+		@TypeHint(types = {Statement.class,Statement[].class}),
+		@TypeHint(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-		@TypeInfo(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION),
-		@TypeInfo(types = {
+		@TypeHint(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION),
+		@TypeHint(types = {
 				R2dbcConverter.class, FluentR2dbcOperations.class, R2dbcEntityOperations.class,
 				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
 				ReactiveSelectOperation.class, ReactiveUpdateOperation.class, AfterConvertCallback.class,
@@ -55,10 +55,10 @@ import reactor.core.publisher.Mono;
 		})
 @NativeHint(trigger=R2dbcAutoConfiguration.class,
 		resources = {
-				@ResourcesInfo(patterns="META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
+				@ResourceHint(patterns="META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
 		},
 		types = {
-		@TypeInfo(typeNames = {
+		@TypeHint(typeNames = {
 				// TODO review org.springframework.data.r2dbc.dialect.DialectResolver - there is some 
 				// factory loading in there.
 				"org.springframework.data.r2dbc.dialect.DialectResolver$BuiltInDialectProvider"
@@ -68,7 +68,7 @@ import reactor.core.publisher.Mono;
 				Flux.class
 		}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		// Enables 'dispose' method to be found
-		@TypeInfo(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)
+		@TypeHint(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)
 })
 public class R2dbcHints implements NativeConfiguration {
 }

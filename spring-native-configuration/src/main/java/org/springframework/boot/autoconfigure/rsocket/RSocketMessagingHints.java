@@ -5,12 +5,12 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // TODO Should be possible to guess that automatically
 @NativeHint(trigger = RSocketMessagingAutoConfiguration.class, types = {
-		@TypeInfo(types = {Mono.class, Flux.class}, access = AccessBits.CLASS)
+		@TypeHint(types = {Mono.class, Flux.class}, access = AccessBits.CLASS)
 })
 public class RSocketMessagingHints implements NativeConfiguration {
 }

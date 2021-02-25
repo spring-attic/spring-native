@@ -17,11 +17,11 @@ package org.springframework.boot.autoconfigure.data;
 
 import org.springframework.data.repository.core.support.ReactiveRepositoryFactorySupport;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@TypeInfo(types = {
+@TypeHint(types = {
 		ReactiveRepositoryFactorySupport.class,
 		ReactiveQueryByExampleExecutor.class,
 		Flux.class,

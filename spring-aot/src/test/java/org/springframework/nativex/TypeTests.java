@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.Field;
@@ -387,16 +387,16 @@ public class TypeTests {
 	static class TestClass1a {
 	}
 
-	@NativeHint(types = { @TypeInfo(types = { String[].class }) })
+	@NativeHint(types = { @TypeHint(types = { String[].class }) })
 	static class TestClass1b {
 	}
 
-	@NativeHint(trigger = Integer.class, types = { @TypeInfo(types = { String.class, Float.class }) })
+	@NativeHint(trigger = Integer.class, types = { @TypeHint(types = { String.class, Float.class }) })
 	static class TestClass2 {
 	}
 
-	@NativeHint(trigger = Integer.class, types = { @TypeInfo(types = { String.class }) })
-	@NativeHint(trigger = String.class, types = { @TypeInfo(types = { Float.class }) })
+	@NativeHint(trigger = Integer.class, types = { @TypeHint(types = { String.class }) })
+	@NativeHint(trigger = String.class, types = { @TypeHint(types = { Float.class }) })
 	static class TestClass3 {
 	}
 
@@ -405,22 +405,22 @@ public class TypeTests {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS) })
+			@TypeHint(types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass5 {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeInfo(types = { Float.class }, access = AccessBits.CLASS),
-			@TypeInfo(types = { Integer.class }, access = AccessBits.RESOURCE) })
+			@TypeHint(types = { Float.class }, access = AccessBits.CLASS),
+			@TypeHint(types = { Integer.class }, access = AccessBits.RESOURCE) })
 	static class TestClass6 {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeInfo(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
+			@TypeHint(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
 	static class TestClass7 {
 	}
 
-	@NativeHint(types = { @TypeInfo(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
+	@NativeHint(types = { @TypeHint(types = {String[].class},typeNames = { "org.springframework.nativex.TypeTests$TestClass6",
 			"org.springframework.nativex.TypeTests$TestClass7[]", }) })
 	static class TestClass8 {
 

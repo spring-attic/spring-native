@@ -13,7 +13,7 @@ import org.springframework.messaging.simp.user.UserDestinationResolver;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketConfiguration;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
@@ -22,7 +22,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 
 @NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, types = {
-		@TypeInfo(types= {
+		@TypeHint(types= {
 				DelegatingWebSocketMessageBrokerConfiguration.class,
 				WebSocketHandlerRegistry.class,
 				AbstractSubscribableChannel.class,
@@ -39,10 +39,10 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 				MessageHandler.class,
 				SimpUserRegistry.class
 		}, access = AccessBits.RESOURCE),
-		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
+		@TypeHint(types= TomcatRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
-		@TypeInfo(types= TomcatRequestUpgradeStrategy.class)
+		@TypeHint(types= TomcatRequestUpgradeStrategy.class)
 })
 public class WebSocketHints implements NativeConfiguration {
 }

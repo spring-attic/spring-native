@@ -19,11 +19,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeatable annotation container for {@link ResourcesInfo} annotations.
+ * Repeatable annotation container for {@link InitializationHint} annotations.
  * 
  * @author Andy Clement
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ResourcesInfos {
-	ResourcesInfo[] value();
+public @interface InitializationHints {
+	InitializationHint[] value();
 }

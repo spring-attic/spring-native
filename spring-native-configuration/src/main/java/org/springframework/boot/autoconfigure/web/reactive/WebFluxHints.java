@@ -22,8 +22,8 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourcesInfo;
-import org.springframework.nativex.hint.TypeInfo;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.reactive.HandlerResult;
 
@@ -31,18 +31,18 @@ import reactor.core.publisher.Flux;
 import reactor.netty.DisposableServer;
 
 @NativeHint(trigger=WebFluxAutoConfiguration.class,
-	resources = { @ResourcesInfo(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+	resources = { @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
 	types = {
-	@TypeInfo(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
-	@TypeInfo(types = {Flux.class},access=AccessBits.CLASS),
-	@TypeInfo(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
+	@TypeHint(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
+	@TypeHint(types = {Flux.class},access=AccessBits.CLASS),
+	@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
 @NativeHint(trigger=BeanPostProcessorsRegistrar.class, types = {
-		@TypeInfo(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
+		@TypeHint(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 @NativeHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, types = {
-		@TypeInfo(
+		@TypeHint(
 				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
 				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
 })
