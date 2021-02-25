@@ -39,13 +39,13 @@ class CodeGenerator {
 
 	public CodeGenerator(AotOptions aotOptions) {
 		if (aotOptions.isRemoveYamlSupport()) {
-			staticBlock.addStatement("System.setProperty(\"spring.native.remove-yaml-support\", \"true\");");
+			staticBlock.addStatement("System.setProperty(\"spring.native.remove-yaml-support\", \"true\")");
 		}
 		if (aotOptions.isRemoveXmlSupport()) {
-			staticBlock.addStatement("System.setProperty(\"spring.xml.ignore\", \"true\");");
+			staticBlock.addStatement("System.setProperty(\"spring.xml.ignore\", \"true\")");
 		}
 		if (aotOptions.isRemoveSpelSupport()) {
-			staticBlock.addStatement("System.setProperty(\"spring.spel.ignore\", \"true\");");
+			staticBlock.addStatement("System.setProperty(\"spring.spel.ignore\", \"true\")");
 		}
 	}
 
