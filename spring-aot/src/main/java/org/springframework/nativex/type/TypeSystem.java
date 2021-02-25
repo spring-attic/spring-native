@@ -379,13 +379,14 @@ public class TypeSystem {
 		try {
 			Files.walk(root).filter(f -> f.toString().endsWith(".class")).map(f -> {
 				String name = f.toString().substring(root.toString().length() + 1);
-				int lastSlash = name.lastIndexOf("/");
+				int lastSlash = name.lastIndexOf(File.separatorChar);
 				if (lastSlash != -1 && name.endsWith(".class")) {
 					return name.substring(0, lastSlash);
 				}
 				return null;
 			}).forEach(n -> {
 				if (n != null) {
+					n = n.replace("\\", "/");
 					List<File> dirs = appPackages.get(n);
 					if (dirs == null) {
 						dirs = new ArrayList<>();
