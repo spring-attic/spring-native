@@ -286,7 +286,7 @@ gradle bootBuildImage
 This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally
 the related container image.
 
-==== Run the application
+==== Run the native application
 
 To run your application, you need to run the previously created container image:
 
