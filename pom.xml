@@ -23,10 +23,10 @@
     <modules>
         <module>spring-native-configuration</module>
         <module>spring-native-tools</module>
-        <module>spring-native-docs</module>
         <module>spring-native</module>
         <module>spring-aot</module>
         <module>spring-aot-maven-plugin</module>
+        <module>spring-native-docs</module>
     </modules>
 
     <dependencyManagement>

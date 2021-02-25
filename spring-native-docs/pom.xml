@@ -159,6 +159,7 @@
                                 <configuration>
                                     <tasks>
                                         <zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
+                                            <zipfileset src="${project.basedir}/../spring-native/target/spring-native-${project.version}-javadoc.jar" prefix="api" />
                                             <zipfileset dir="${project.build.directory}/generated-docs" prefix="reference" />
                                         </zip>
                                     </tasks>
@@ -180,7 +181,7 @@
                                     <artifacts>
                                         <artifact>
                                             <file>${project.build.directory}/${project.artifactId}-${project.version}.zip</file>
-                                            <type>zip</type>
+                                            <type>zip;zip.type=docs;zip.deployed=false</type>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
