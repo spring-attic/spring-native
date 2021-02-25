@@ -70,6 +70,8 @@ include::getting-started-buildpacks.adoc[]
 
 include::getting-started-native-image.adoc[]
 
+include::ide-integration.adoc[]
+
 include::native-configuration.adoc[]
 
 include::samples.adoc[]

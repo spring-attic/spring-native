@@ -29,7 +29,9 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 		String imagecode = "org.graalvm.nativeimage.imagecode";
 		if (System.getProperty(imagecode) == null) {
 			if (!ClassUtils.isPresent("org.springframework.aot.StaticSpringFactories", null)) {
-				throw new IllegalStateException("Mandatory generated class org.springframework.aot.StaticSpringFactories not found, please make sure spring-aot-maven-plugin or spring-aot-gradle-plugin are configured properly.");
+				throw new IllegalStateException("Mandatory generated class org.springframework.aot.StaticSpringFactories not found, " +
+						"please make sure spring-aot-maven-plugin or spring-aot-gradle-plugin are configured properly, " +
+						"and that code generation has been properly performed.");
 			}
 			System.setProperty(imagecode, "runtime");
 		}

@@ -207,7 +207,7 @@ IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recomm
 
 This will create a native executable containing your Spring Boot application.
 
-==== Run the application
+==== Run the native application
 
 To run your application, you need to run the previously created container image:
 
@@ -228,5 +228,8 @@ Now that the service is up, visit http://localhost:8080/greeting, where you shou
 {"id":1,"content":"Hello, World!"}
 ----
 ====
+
+See <<ide-integration> for additional steps to configure properly the plugin in your IDE.
+
 
 
