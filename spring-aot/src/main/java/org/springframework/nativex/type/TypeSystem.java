@@ -1280,6 +1280,31 @@ public class TypeSystem {
 		}
 		return data.toByteArray();
 	}
+	
+
+	public Collection<String> getBundles(String prefix) {
+		long t = System.currentTimeMillis();
+		Map<String, byte[]> resources = new HashMap<>();
+		String filePathPrefix = prefix.replace(".", "/");
+		for (String s: classpath) {
+			File f = new File(s);
+			if (f.isDirectory()) {
+				searchDir(f, filepath -> { 
+					return filepath.startsWith(filePathPrefix) && filepath.endsWith(".properties");
+				}, 
+				this::readInputStream, // InputStream to a byte array?
+				resources);
+			} else if (f.isFile() && f.toString().endsWith(".jar")) {
+				searchJar(f, filepath -> { 
+					return filepath.startsWith(filePathPrefix) && filepath.endsWith(".properties");
+				}, 
+				this::readInputStream,
+				resources);
+			}
+		}
+		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms "+resources.size()+" resource bundles (name: "+prefix+")");
+		return resources.keySet();
+	}
 
 	public Collection<byte[]> getResources(String resource) {
 		long t = System.currentTimeMillis();

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class ConfigurationCollector {
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
-	private Connector graalVMConnector;
+	private Connector connector;
 	
 	private Map<String,byte[]> newResourceFiles = new HashMap<>();
 	
@@ -94,7 +95,7 @@ public class ConfigurationCollector {
 	}
 
 	public void setGraalConnector(Connector graalConnector) {
-		this.graalVMConnector = graalConnector;
+		this.connector = graalConnector;
 	}
 	
 	public void setTypeSystem(TypeSystem ts) {
@@ -118,8 +119,8 @@ public class ConfigurationCollector {
 				return false;
 			}
 		}
-		if (graalVMConnector!=null) {
-			graalVMConnector.addProxy(interfaceNames);
+		if (connector!=null) {
+			connector.addProxy(interfaceNames);
 		}
 		proxiesDescriptor.add(ProxyDescriptor.of(interfaceNames));
 		return true;
@@ -190,16 +191,16 @@ public class ConfigurationCollector {
 
 	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
 		this.resourcesDescriptor.merge(resourcesDescriptor);
-		if (graalVMConnector != null) {
-			graalVMConnector.addResourcesDescriptor(resourcesDescriptor);
+		if (connector != null) {
+			connector.addResourcesDescriptor(resourcesDescriptor);
 		}
 	}
 
 	public ReflectionDescriptor addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
 		ReflectionDescriptor filteredReflectionDescriptor = filterVerified(reflectionDescriptor);
 		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
-		if (graalVMConnector != null) {
-			graalVMConnector.addReflectionDescriptor(filteredReflectionDescriptor);
+		if (connector != null) {
+			connector.addReflectionDescriptor(filteredReflectionDescriptor);
 		}
 		return filteredReflectionDescriptor;
 	}
@@ -249,10 +250,8 @@ public class ConfigurationCollector {
 
 	private boolean verifyType(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
-		if (t== null) {
-			if (aotOptions.isDebugVerify()) {
-				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
-			}
+		if (t == null) {
+			logger.warn("Failed verification check: this type was requested to be added to configuration but is not resolvable: "+classDescriptor.getName()+" it will be skipped");
 			return false;
 		} else {
 			return t.verifyType(aotOptions.isDebugVerify());
@@ -261,10 +260,8 @@ public class ConfigurationCollector {
 
 	private boolean verifyMembers(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
-		if (t== null) {
-			if (aotOptions.isDebugVerify()) {
-				logger.debug("FAILED VERIFICATION type missing "+classDescriptor.getName());
-			}
+		if (t == null) {
+			logger.warn("Failed verification check: this type was requested to be added to configuration but is not resolvable "+classDescriptor.getName()+" it will be skipped");
 			return false;
 		} else {
 			return t.verifyMembers(aotOptions.isDebugVerify());
@@ -272,9 +269,7 @@ public class ConfigurationCollector {
 	}
 
 	public void addClassDescriptor(ClassDescriptor classDescriptor) {
-		boolean verifyType = verifyType(classDescriptor);
-		if (!verifyType) {
-			// Give up now
+		if (!verifyType(classDescriptor)) {
 			return;
 		}
 		if (areMembersSpecified(classDescriptor)) {
@@ -286,27 +281,37 @@ public class ConfigurationCollector {
 		}
 		reflectionDescriptor.merge(classDescriptor);
 		// add it to existing refl desc stuff...
-		if (graalVMConnector != null) {
-			graalVMConnector.addClassDescriptor(classDescriptor);
+		if (connector != null) {
+			connector.addClassDescriptor(classDescriptor);
 		}
 	}
 
 	public void registerResource(String resourceName, byte[] bytes) {
 		resourcesDescriptor.add(resourceName);
 		newResourceFiles.put(resourceName, bytes);
-		if (graalVMConnector != null) {
-			graalVMConnector.registerResource(resourceName, new ByteArrayInputStream(bytes));
+		if (connector != null) {
+			connector.registerResource(resourceName, new ByteArrayInputStream(bytes));
 		}
+	}
+	
+	private boolean verifyBundle(String pattern) {
+		Collection<String> bundles = ts.getBundles(pattern);
+		if (bundles.size()==0) {
+			logger.warn("Failed verification check: Invalid attempt to add bundle to configuration, no bundles found for this pattern: "+pattern);
+		}
+		return bundles.size()!=0;
 	}
 	
 	public void addResource(String pattern, boolean isBundle) {
 		if (isBundle) {
-			resourcesDescriptor.addBundle(pattern);
+			if (verifyBundle(pattern)) {
+				resourcesDescriptor.addBundle(pattern);
+			}
 		} else {
 			resourcesDescriptor.add(pattern);
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.addResource(pattern, isBundle);
+		if (connector != null) {
+			connector.addResource(pattern, isBundle);
 		}
 	}
 
@@ -322,8 +327,8 @@ public class ConfigurationCollector {
 		for (Type type: types) {
 			initializationDescriptor.addRuntimeClass(type.getDottedName());
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtRunTime(types);
+		if (connector != null) {
+			connector.initializeAtRunTime(types);
 		}
 	}
 
@@ -340,8 +345,8 @@ public class ConfigurationCollector {
 		for (String typename: typenames) {
 			initializationDescriptor.addRuntimeClass(typename);
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtRunTime(typenames);
+		if (connector != null) {
+			connector.initializeAtRunTime(typenames);
 		}
 	}
 
@@ -349,8 +354,8 @@ public class ConfigurationCollector {
 		for (String typename: typenames) {
 			initializationDescriptor.addBuildtimeClass(typename);
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtBuildTime(typenames);
+		if (connector != null) {
+			connector.initializeAtBuildTime(typenames);
 		}
 	}
 
@@ -358,8 +363,8 @@ public class ConfigurationCollector {
 		for (String packageName: packageNames) {
 			initializationDescriptor.addBuildtimePackage(packageName);
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtBuildTimePackages(packageNames);
+		if (connector != null) {
+			connector.initializeAtBuildTimePackages(packageNames);
 		}
 	}
 
@@ -367,8 +372,8 @@ public class ConfigurationCollector {
 		for (String packageName: packageNames) {
 			initializationDescriptor.addRuntimePackage(packageName);
 		}
-		if (graalVMConnector != null) {
-			graalVMConnector.initializeAtRunTimePackages(packageNames);
+		if (connector != null) {
+			connector.initializeAtRunTimePackages(packageNames);
 		}
 	}
 

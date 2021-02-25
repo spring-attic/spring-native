@@ -16,6 +16,8 @@
 
 package org.springframework.nativex.domain.resources;
 
+import java.util.Set;
+
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
@@ -31,64 +33,33 @@ class ResourcesJsonConverter {
 		JSONArray jsonArray = new JSONArray();
 		if (metadata.getPatterns() != null) {
 			for (String p : metadata.getPatterns()) {
-				jsonArray.put(toJsonObject(p));
+				jsonArray.put(toPatternJsonObject(p));
 			}
 		}
 		JSONObject includes = new JSONObject();
 		includes.put("includes", jsonArray);
 		object.put("resources", includes);
+		JSONArray bundleArray = null;
+		if (metadata.getBundles() != null) {
+			bundleArray = new JSONArray();
+			for (String b: metadata.getBundles()) {
+				bundleArray.put(toBundleJsonObject(b));
+			}
+			object.put("bundles", bundleArray);
+		}
 		return object;
 	}
+	
+	public JSONObject toBundleJsonObject(String bundle) throws Exception {
+		JSONObject bundleObject = new JSONObject();
+		bundleObject.put("name", bundle);
+		return bundleObject;
+	}
 
-	public JSONObject toJsonObject(String pattern) throws Exception {
+	public JSONObject toPatternJsonObject(String pattern) throws Exception {
 		JSONObject object = new JSONObject();
 		object.put("pattern", pattern);
 		return object;
-//		JSONObject jsonObject = new JSONObject();
-//		jsonObject.put("name", cd.getName());
-//		Set<Flag> flags = cd.getFlags();
-//		if (flags != null) {
-//			for (Flag flag: Flag.values()) {
-//				if (flags.contains(flag)) {
-//					putTrueFlag(jsonObject,flag.name());
-//				}
-//			}
-//		}
-//		List<FieldDescriptor> fds = cd.getFields();
-//		if (fds != null) {
-//			JSONArray fieldJsonArray = new JSONArray();
-//			for (FieldDescriptor fd: fds) {
-//				JSONObject fieldjo = new JSONObject();
-//				fieldjo.put("name", fd.getName());
-//				if (fd.isAllowWrite()) {
-//					fieldjo.put("allowWrite", "true");
-//				}
-//				fieldJsonArray.put(fieldjo);
-//			}
-//			jsonObject.put("fields", fieldJsonArray);
-//		}
-//		List<MethodDescriptor> mds = cd.getMethods();
-//		if (mds != null) {
-//			JSONArray methodsJsonArray = new JSONArray();
-//			for (MethodDescriptor md: mds) {
-//				JSONObject methodJsonObject = new JSONObject();
-//				methodJsonObject.put("name", md.getName());
-//				List<String> parameterTypes = md.getParameterTypes();
-//					JSONArray parameterArray = new JSONArray();
-//				if (parameterTypes != null) {
-//					for (String pt: parameterTypes) {
-//						parameterArray.put(pt);
-//					}
-//				}
-//					methodJsonObject.put("parameterTypes",parameterArray);
-//				methodsJsonArray.put(methodJsonObject);
-//			}
-//			jsonObject.put("methods", methodsJsonArray);
-//		}
-//		return jsonObject;
 	}
 
-//	private void putTrueFlag(JSONObject jsonObject, String name) throws Exception {
-//		jsonObject.put(name, true);
-//	}
 }

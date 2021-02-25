@@ -2952,7 +2952,7 @@ public class Type {
 		}
 		if (verificationProblems.size()!=0) {
 			if (debugVerification) {
-				logger.debug("FAILED MEMBER VERIFICATION OF "+getDottedName()+"\n"+verificationProblems);
+				logger.warn("Failed verification check: problems with members of "+getDottedName()+"\n"+verificationProblems);
 			}
 		}
 		return verificationProblems.isEmpty();

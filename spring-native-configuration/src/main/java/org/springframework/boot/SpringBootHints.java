@@ -32,6 +32,7 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(
 	resources = {
 		@ResourceHint(patterns= {
+			"META-INF/MANIFEST.MF",
 			"db/.*", // TODO should be conditional on database active?
 			"messages/.*",
 			"banner.txt",
@@ -50,10 +51,7 @@ import org.springframework.nativex.hint.AccessBits;
 		    "org/springframework/boot/logging/.*.xml",
 		    "logging.properties",
 		    "org/springframework/boot/logging/java/logging.properties"
-			}),
-		@ResourceHint(patterns = {
-			"messages/messages"	
-			},isBundle = true)
+			})
 	},
 	types = {
 		@TypeHint(types = {
