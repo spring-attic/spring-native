@@ -6,31 +6,6 @@
     "methods":[{"name":"locateCollection","parameterTypes":["org.springframework.core.env.Environment"] }]
   },
   {
-    "name":"org.springframework.cloud.context.environment.EnvironmentManager",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "methods":[{"name":"setApplicationEventPublisher","parameterTypes":["org.springframework.context.ApplicationEventPublisher"] }]
-  },
-  {
-    "name":"org.springframework.cloud.context.properties.ConfigurationPropertiesBeans",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "methods":[
-      {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] },
-      {"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] },
-      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-    ]
-  },
-  {
-    "name":"org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "methods":[
-      {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] },
-      {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
-    ]
-  },
-  {
     "name":"org.springframework.cloud.context.refresh.ContextRefresher"
   },
   {
