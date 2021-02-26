@@ -127,22 +127,17 @@ transformations on JVM as well in order to be able to test/debug them with a sho
                     </goals>
                 </execution>
             </executions>
-            <configuration>
-                <removeYamlSupport>true</removeYamlSupport>
-                <removeSpelSupport>true</removeSpelSupport>
-            </configuration>
         </plugin>
     </plugins>
 </build>
 ----
 ====
 
+See <<configuring-spring-aot>> for more details about the configuration.
+
 TODO: Add Gradle configuration
 
-`<removeYamlSupport>true</removeYamlSupport>` and `<removeSpelSupport>true</removeSpelSupport>` are
-optional optimization flags designed to reduce the footprint.
-
-===== Enable native image in Buildpacks plugin
+===== Enable native image in Buildpacks support
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support]
 provides out of the box support for building Spring Boot native applications. To do so, we just have to set

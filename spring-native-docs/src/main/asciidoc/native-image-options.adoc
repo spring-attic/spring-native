@@ -1,0 +1,56 @@
+[[native-image-options]]
+== Native image options
+
+GraalVM `native-image` options are documented https://www.graalvm.org/reference-manual/native-image/Options/[here].
+Spring Native is enabling automatically some of those, and some others especially useful are documented here as well.
+
+They can be specified using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable in Spring Boot plugin
+if you are using https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support]
+or using the `<buildArgs></buildArgs>` configuration element if you are using `native-image-maven-plugin`.
+
+=== Options enabled by default
+
+These options are enabled by default when using Spring Native, since they are mandatory to make a Spring application work when compiled as GraalVM native images.
+
+* `--allow-incomplete-classpath` allows image building with an incomplete class path and reports type resolution errors at run time when they are accessed the first time, instead of during image building.
+
+* `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
+
+* `--no-fallback` enforces native image only runtime and disable fallback on regular JVM.
+
+* `--no-server` means do not use the image-build server which can be sometimes unreliable, see https://github.com/oracle/graal/issues/1952[graal#1952] for more details.
+
+* `--install-exit-handlers` allows to react to a shutdown request from Docker.
+
+* `-H:+InlineBeforeAnalysis` enables inlining before analysis in order to allow utility methods returning a constant to be taken in account for code removal for example.
+
+Notice that XML and JMX support is disable by default, see options bellow to enable them if needed.
+
+=== Useful options
+
+* `--verbose` makes image building output more verbose.
+
+* `-H:+ReportExceptionStackTraces` provides more detail should something go wrong.
+
+* `--initialize-at-build-time` initializes classes by default at build time without any class or package being specified.
+This option is currently (hopefully, temporarily) required for Netty-based applications but is not recommended for other applications, since it can trigger compatibility issues, especially regarding logging and static fields.
+See {project-home}/issues/8[this issue] for more details.
+You can use it with specific classes or package specified if needed.
+
+* `-H:+PrintAnalysisCallTree` helps to find what classes, methods, and fields are used and why.
+You can find more details in GraalVM https://github.com/oracle/graal/blob/master/substratevm/Reports.md[reports documentation].
+
+* `-H:ReportAnalysisForbiddenType=com.example.Foo` helps to find why the specified class is included in the native image.
+
+* `-H:+TraceClassInitialization` provides useful information to debug class initialization issues.
+
+* `--enable-all-security-services` required for crypto and some security services.
+
+* `--enable-http` enables HTTP support.
+
+* `--enable-https` enables HTTPS support.
+
+=== Unsupported options
+
+* `--initialize-at-build-time` without class or package specified is not supported since Spring Native for GraalVM is designed to work with runtime class initialization by default (a selected set of classes are enabled at buildtime).
+

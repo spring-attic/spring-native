@@ -9,7 +9,7 @@
 :boot-version: 2.4.3
 :cloud-version: 2020.0.1
 :graalvm-version: 21.0.0
-= Spring Native for GraalVM documentation
+= Spring Native documentation
 Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
 
 == Overview
@@ -42,7 +42,7 @@ The key differences between the regular JVM and this native image platform are:
 
 The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, in order to provide
 a native deployment option designed to be packaged in lightweight containers. In practice, the target is
-to support your Spring application (typically Spring Boot ones), unmodified, on this new platform.
+to support your Spring application (typically Spring Boot ones), almost unmodified, on this new platform.
 Beware that we are not here yet, see the <<support>> documentation for more details.
 
 === Modules
@@ -70,13 +70,13 @@ include::getting-started-buildpacks.adoc[]
 
 include::getting-started-native-image.adoc[]
 
-include::spring-aot-build-plugins.adoc[]
+include::spring-aot.adoc[]
 
-include::native-configuration.adoc[]
+include::native-hints.adoc[]
 
 include::samples.adoc[]
 
-include::options.adoc[]
+include::native-image-options.adoc[]
 
 include::tracing-agent.adoc[]
 
@@ -86,8 +86,11 @@ include::how-to-contribute.adoc[]
 
 == Contact us
 
-We would love to hear about your successes and failures (with minimal repro projects) through the https://github.com/spring-projects-experimental/spring-native/issues[project issue tracker].
-Before raising an issue, please check the <<troubleshooting,troubleshooting guide>>, which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
+We would love to hear about your successes and failures (with minimal repro projects) through the
+https://github.com/spring-projects-experimental/spring-native/issues[project issue tracker].
+Before raising an issue, please check the <<troubleshooting,troubleshooting guide>>,
+which is full of information on pitfalls, common problems, and how to deal with them (through fixes and workarounds).
 
 If you want to make a contribution here, see the <<how-to-contribute,how to contribute guide>>.
-Please be aware this project is still incubating and, as such, some of these options and extension APIs are still evolving and may change before it is finally considered done.
+Please be aware this project is still incubating and, as such, some of these options and extension APIs
+are still evolving and may change before it is finally considered done.

@@ -1,5 +1,5 @@
-[[native-configuration]]
-== Native configuration
+[[native-hints]]
+== Native hints
 
 GraalVM native image provides out-of-the-box configuration with static files that can be discovered when located
 in `META-INF/native-image` in your application classpath. Those files can be
@@ -8,9 +8,8 @@ https://www.graalvm.org/reference-manual/native-image/Reflection/[reflect-config
 https://www.graalvm.org/reference-manual/native-image/DynamicProxy/[proxy-config.json] or
 https://www.graalvm.org/reference-manual/native-image/Resources/[resource-config.json] for example.
 
-=== Native configuration with `@NativeHint` ===
-
-There are cases when specifying native configuration is required:
+Spring Native is generating automatically such configuration automatically via its Spring AOT build plugin,
+but there are cases where specifying native configuration is required:
 - When reflection-based serialization is used in a programmatic API like `WebClient` with Jackson
 - When you try to use a feature or library not yet supported by Spring Native
 - When you are want to specify native configuration related to your own application.
@@ -52,6 +51,5 @@ Here is the full list of what can be specified in a hint:
 * `initialization` which lists classes/packages that should be explicitly initialized at either build-time or run-time. There should not really be a trigger specified on hints included `initialization`.
 
 * `imports` can be useful if two hints share a number of @TypeHint/@ProxyHint/etc in common. For example reactive-web and webmvc may expose a lot of common infrastructure. Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `NativeHint`.
-
 
 For details and more dynamic ways to provide native configuration, see <<how-to-contribute>> section.
