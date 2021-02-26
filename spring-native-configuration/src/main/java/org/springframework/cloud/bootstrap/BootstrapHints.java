@@ -16,6 +16,5 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {BootstrapImportSelectorConfiguration.class, EnvironmentDecryptApplicationInitializer.class, DecryptEnvironmentPostProcessor.class, Marker.class}, access = AccessBits.ALL)}, follow = true)
 @NativeHint(trigger = BootstrapImportSelector.class, types =
 		{@TypeHint(types = {PropertySourceBootstrapConfiguration.class, PropertySourceLocator.class, EncryptionBootstrapConfiguration.class})}, follow = true)
-
 public class BootstrapHints implements NativeConfiguration {
 }
