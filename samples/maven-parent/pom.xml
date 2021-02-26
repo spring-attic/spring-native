@@ -38,6 +38,7 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
+                        <classifier>exec</classifier>
                         <image>
                             <builder>${builder}</builder>
                             <env>
@@ -181,11 +182,6 @@
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
-                    </plugin>
-                    <!-- Make sure spring-boot-maven-plugin is specified after native-image-maven-plugin to avoid conflicts with Boot repackaging  -->
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

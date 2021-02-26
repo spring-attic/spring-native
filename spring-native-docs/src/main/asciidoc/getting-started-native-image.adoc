@@ -147,15 +147,29 @@ file (we use it later to invoke the native image build):
             </execution>
           </executions>
         </plugin>
-        <!-- Make sure spring-boot-maven-plugin is specified after native-image-maven-plugin to avoid conflicts with Boot repackaging -->
-        <plugin>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
       </plugins>
     </build>
   </profile>
 </profiles>
+----
+====
+
+In order to avoid a clash between Spring Boot repackaging and `native-image-maven-plugin` you need to specify
+a classifier on Spring Boot plugin.
+
+====
+[source,xml,subs="attributes,verbatim"]
+----
+<plugins>
+    <!-- ... -->
+    <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+            <classifier>app</classifier>
+        </configuration>
+    </plugin>
+</plugins>
 ----
 ====
 
