@@ -32,6 +32,7 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.type.Type.TypeCollector;
 
 public class Method {
@@ -475,5 +476,48 @@ public class Method {
 		}
 	}
 
+	public MethodDescriptor getMethodDescriptor() {
+		String[] paramStrings = new String[0];
+		org.objectweb.asm.Type[] parameterTypes = resolveInternalParameterTypes();
+		if (parameterTypes != null) {
+			paramStrings = new String[parameterTypes.length];
+			for (int p=0;p<parameterTypes.length;p++) {
+				org.objectweb.asm.Type t = parameterTypes[p];
+				String n = t.getInternalName();
+				int dims = 0;
+				while (n.charAt(dims)=='[') { dims++; }
+				if (dims > 0) {
+					n = n.substring(dims);
+					if (n.charAt(0)=='L') {
+						n = n.substring(1,n.length()-1);
+					}
+				}
+				StringBuilder pstring = new StringBuilder();
+				if (n.length()==1) {
+					switch (n) {
+					case "I": pstring.append("int"); break;
+					case "Z": pstring.append("boolean"); break;
+					case "J": pstring.append("long"); break;
+					case "B": pstring.append("byte"); break;
+					case "C": pstring.append("char"); break;
+					case "S": pstring.append("short"); break;
+					case "F": pstring.append("float"); break;
+					case "D": pstring.append("double"); break;
+					default: throw new IllegalStateException(n);
+					}
+				} else {
+					// n is java/lang/String 
+					pstring.append(n.replace("/", "."));
+				}
+				while (dims>0) {
+					pstring.append("[]");
+					dims--;
+				}
+				paramStrings[p] = pstring.toString();
+			}
+		}
+		MethodDescriptor md = MethodDescriptor.of(mn.name, paramStrings);
+		return md;
+	}
 
 }

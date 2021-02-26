@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -335,6 +335,29 @@ public class TypeTests {
 		public int foo(String s1, String[] s2, List<String> s3) { return 0; }
 		public int bar(String s1, List[] s2, float f) { return 0; }
 		public String boo() { return ""; }
+	}
+	
+	@Test
+	public void testMethodsToDescriptors() {
+		Type t = typeSystem.resolveName(TestMethodsDescriptors.class.getName());
+		MethodDescriptor descriptor = t.getMethod("aaa").get(0).getMethodDescriptor();
+		assertEquals("aaa",descriptor.getName());
+		List<String> parameterTypes = descriptor.getParameterTypes();
+		assertEquals(0,parameterTypes.size());
+		descriptor = t.getMethod("bbb").get(0).getMethodDescriptor();
+		assertEquals("bbb",descriptor.getName());
+		parameterTypes = descriptor.getParameterTypes();
+		assertEquals(4,parameterTypes.size());
+		assertEquals("java.lang.String",parameterTypes.get(0));
+		assertEquals("int",parameterTypes.get(1));
+		assertEquals("long[]",parameterTypes.get(2));
+		assertEquals("java.lang.String[]",parameterTypes.get(3));
+	}
+	
+	static class TestMethodsDescriptors {
+		public void aaa() {}
+		public void bbb(String s, int i, long[] ls, String[] ss) {}
+		
 	}
 	
 	@SuppressWarnings("serial")
