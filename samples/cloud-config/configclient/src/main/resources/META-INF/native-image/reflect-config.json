@@ -6,16 +6,6 @@
     "methods":[{"name":"locateCollection","parameterTypes":["org.springframework.core.env.Environment"] }]
   },
   {
-    "name":"org.springframework.cloud.context.refresh.ContextRefresher"
-  },
-  {
-    "name":"org.springframework.cloud.context.restart.RestartListener",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-    "name":"org.springframework.cloud.context.scope.refresh.RefreshScope"
-  },
-  {
     "name":"org.springframework.cloud.util.ConditionalOnBootstrapDisabled",
     "allDeclaredMethods":true
   },
