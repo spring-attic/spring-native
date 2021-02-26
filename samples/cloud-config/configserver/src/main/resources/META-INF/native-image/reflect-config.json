@@ -1,11 +1,4 @@
 [
-{"name":"org.eclipse.jgit.api.MergeCommand$FastForwardMode$Merge","methods":[{"name":"values","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.internal.JGitText","allPublicFields":true,"methods":[{"name":"<init>","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.lib.CoreConfig$AutoCRLF","methods":[{"name":"values","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.lib.CoreConfig$CheckStat","methods":[{"name":"values","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.lib.CoreConfig$EOL","methods":[{"name":"values","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.lib.CoreConfig$HideDotFiles","methods":[{"name":"values","parameterTypes":[]}]},
-{"name":"org.eclipse.jgit.lib.CoreConfig$SymLinks","methods":[{"name":"values","parameterTypes":[]}]},
 {"name":"org.springframework.boot.context.event.EventPublishingRunListener","methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.SpringApplication","java.lang.String[]"]}]},
 {"name":"org.springframework.boot.origin.OriginProvider[]"},
 {"name":"org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor","allDeclaredFields":true,"allDeclaredMethods":true,"methods":[{"name":"afterPropertiesSet","parameterTypes":[]}]},

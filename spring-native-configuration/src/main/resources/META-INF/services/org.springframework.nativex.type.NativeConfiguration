@@ -77,6 +77,7 @@ org.springframework.cloud.client.FeaturesEndpointHints
 org.springframework.cloud.client.discovery.DiscoveryClientHints
 org.springframework.cloud.commons.util.CloudCommonsHints
 org.springframework.cloud.config.client.ConfigClientHints
+org.springframework.cloud.config.server.ConfigServerHints
 org.springframework.cloud.function.FunctionHints
 org.springframework.cloud.function.context.config.ContextFunctionCatalogHints
 org.springframework.cloud.function.web.mvc.RequestProcessorHints
