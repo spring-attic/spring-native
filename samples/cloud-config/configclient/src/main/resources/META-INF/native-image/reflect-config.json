@@ -1,19 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLoader",
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver",
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.config.client.ConfigServiceBootstrapConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
     "name":"org.springframework.cloud.config.client.ConfigServicePropertySourceLocator",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
