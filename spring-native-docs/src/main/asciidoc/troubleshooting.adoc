@@ -1,21 +1,18 @@
 [[troubleshooting]]
 == Troubleshooting
 
-While trying to build native images, various things can go wrong, either at image-build time or at runtime when you
-try to launch the built image. Usually, the problem is a lack of native configuration, so be sure to check
-<<native-configuration>> first thing. Reading
-https://www.graalvm.org/reference-manual/native-image/[Native image reference documentation] could also probably
-helps.
+While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
+Usually, the problem is a lack of native configuration, so be sure to check <<native-hints>> first thing.
+Reading {graalvm-native-docs}/[Native image reference documentation] could also probably help.
 
 This section explores some of the errors that can be encountered and possible fixes or workarounds.
 
-Make sure to check https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[GraalVM native image known issues related to Spring]
-as well as https://github.com/spring-projects-experimental/spring-native/issues[Spring Native open issues] before creating
-a new one.
+Make sure to check https://github.com/oracle/graal/projects/2?card_filter_query=label%3Aspring[GraalVM native image known issues related to Spring] as well as https://github.com/spring-projects-experimental/spring-native/issues[Spring Native open issues] before creating a new one.
 
 === `native-image` is failing
 
-The image can fail for a number of reasons. We have described the most common causes and their solutions here.
+The image can fail for a number of reasons.
+We have described the most common causes and their solutions here.
 
 ==== DataSize was unintentionally initialized at build time
 
@@ -29,17 +26,15 @@ Error: Classes that should be initialized at run time got initialized during ima
 ----
 ====
 
-You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and
-Spring AOT plugin. See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
+You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and Spring AOT plugin.
+See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
 
 ==== Out of memory error when building the native image
 
 `native-image` consumes a lot of RAM, we recommend a machine with at least 16G of RAM.
 
-if you are using containers, on Mac, it is recommended to increase the memory allocated to
-Docker to at least 8G (and potentially to add more CPUs as well) since `native-image` compiler is a heavy process.
-See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer]
-for more details.
+If you are using containers, on Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since `native-image` compiler is a heavy process.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
 
 On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
 
@@ -62,12 +57,12 @@ Caused by: java.util.MissingResourceException:
 ----
 ====
 
-You should add resource configuration using <<native-configuration>>.
+You should add resource configuration using <<native-hints>>.
 
 ==== Missing configuration
 
 The Spring AOT plugin will do the best it can to catch everything but it doesn't understand every bit of code out there.
-In these situations you can write native configuration yourself, see <<native-configuration>> and <<how-to-contribute>>.
+In these situations you can write native configuration yourself, see <<native-hints>> and <<how-to-contribute>>.
 
 ===== Run with the agent
 
@@ -89,7 +84,7 @@ Typically, the error you get can when there is a missing hint can be very crypti
 If the selector is doing a "`if this type is around, return this configuration to include`", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration.
 For this reason, the feature fails early and fast, indicating that it does not know what a particular selector is doing.
 To fix it, take a look in the selector in question and craft a quick hint for it.
-See {project-home}/commit/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for a Spring Security ({project-home}/issues/60[issue]).
+See {github-commits}/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for a Spring Security ({github-issues}/60[issue]).
 
 you can temporarily turn this hard error into a warning.
 It is possible that, in your case, you do not need what the selector is doing.
@@ -98,7 +93,8 @@ Note that using warnings rather than errors can cause serious problems for your 
 
 === Working with snapshots
 
-Snapshots are regularly published and obviously ahead of releases and milestones. If you wish to use the snapshot versions you should use the following repository:
+Snapshots are regularly published and obviously ahead of releases and milestones.
+If you wish to use the snapshot versions you should use the following repository:
 
 ====
 [source,xml,subs="attributes,verbatim"]

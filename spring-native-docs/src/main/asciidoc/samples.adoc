@@ -1,7 +1,7 @@
 [[samples]]
 == Samples
 
-There are numerous samples in the {project-home}/tree/master/samples[`samples`] subfolder of the root project.
+There are numerous samples in the {github-tree}/samples[`samples`] subfolder of the root project.
 These show the feature in use with different technologies.
 
 Most of them use Spring Boot Buildpacks support (Maven for most of the sample except the `webmvc-kotlin` one which is using Gradle).

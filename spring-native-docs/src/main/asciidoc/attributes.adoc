@@ -1,0 +1,29 @@
+:toc: left
+:toclevels: 4
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:version: 0.9.0-SNAPSHOT
+:repository: milestone
+
+
+:github-tag: master
+:github-repo: spring-projects-experimental/spring-native
+:github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
+:github-tree: https://github.com/{github-repo}/tree/{github-tag}
+:github-commits: https://github.com/{github-repo}/commit
+:github-issues: https://github.com/{github-repo}/issues
+:github-prs: https://github.com/{github-repo}/pulls
+
+:graalvm-version: 21.0.0
+:graalvm-docs: https://www.graalvm.org/reference-manual
+:graalvm-native-docs: {graalvm-docs}/native-image
+
+:spring-boot-version: 2.4.3
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
+
+:spring-cloud-version: 2020.0.1
+
+:spring-framework-version: current
+:spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api
+:spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference

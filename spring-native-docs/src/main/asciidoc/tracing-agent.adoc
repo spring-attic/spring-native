@@ -6,11 +6,9 @@ When using the agent to compute configuration for native-image, there are a coup
 * launch the app directly and exercise it
 * run application tests to exercise the application
 
-The first option is certainly quick but rather manual/tedious. The second option sounds much more
-appealing for a robust/repeatable setup but by default the generated configuration will include
-anything required by the test infrastructure, which is unnecessary when the application runs for real.
-To address this problem the agent supports an access-filter file that will cause certain data to
-be excluded from the generated output.
+The first option is certainly quick but rather manual/tedious.
+The second option sounds much more appealing for a robust/repeatable setup but by default the generated configuration will include anything required by the test infrastructure, which is unnecessary when the application runs for real.
+To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
 
 === Testing with the agent to compute configuration
 
@@ -35,8 +33,7 @@ This is a simple `access-filter.json` file.
 ----
 ====
 
-Most of these lines would apply to any Spring application, except for the last one which is application
-specific and will need tweaking to match the package of a specific applications tests.
+Most of these lines would apply to any Spring application, except for the last one which is application specific and will need tweaking to match the package of a specific applications tests.
 
 
 ==== Using the access-filter file
@@ -49,9 +46,8 @@ The access-filter.json file is specified with the `access-filter-file` option as
 
 Let's look at how to pull the ideas here together and apply them to a project.
 
-Since Spring takes an eager approach when building the application context, a very basic test that
-starts the application context will exercise a lot of the Spring infrastructure that needs to
-produce native-image configuration. This test would suffice for that and could be placed in `src/test/java`:
+Since Spring takes an eager approach when building the application context, a very basic test that starts the application context will exercise a lot of the Spring infrastructure that needs to produce native-image configuration.
+This test would suffice for that and could be placed in `src/test/java`:
 
 ====
 [source,java]
@@ -127,6 +123,5 @@ Also update the `spring-aot` build plugin to enable the agent mode:
 ----
 ====
 
-That's it, build your native image, it should generate the native configuration during the tests and run with the `native-agent`
-mode design to just add the missing bits. If that's not enough, you can add additional native configuration using `@NativeHint`
-annotations.
+That's it, build your native image, it should generate the native configuration during the tests and run with the `native-agent` mode design to just add the missing bits.
+If that's not enough, you can add additional native configuration using `@NativeHint` annotations.
