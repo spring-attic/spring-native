@@ -18,6 +18,7 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.boot.origin.OriginProvider;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
@@ -84,7 +85,8 @@ import org.springframework.nativex.hint.AccessBits;
 		types = {
 				@TypeHint(types= SpringApplication.class, methods = {
 						@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
-				},access=AccessBits.CLASS)
+				},access=AccessBits.CLASS),
+				@TypeHint(types = OriginProvider[].class)
 		})
 public class SpringBootHints implements NativeConfiguration {
 }
