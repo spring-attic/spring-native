@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = ConfigClientAutoConfiguration.class, options = { "--enable-http", "--enable-all-security-services" }, types = {
-		@TypeHint(types = {Environment.class, PropertySource.class }, access = AccessBits.ALL)
+		@TypeHint(types = {Environment.class, PropertySource.class, ConfigClientProperties.class }, access = AccessBits.ALL)
 })
 public class ConfigClientHints implements NativeConfiguration {
 

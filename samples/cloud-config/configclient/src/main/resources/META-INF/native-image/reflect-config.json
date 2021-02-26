@@ -1,18 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.config.client.ConfigClientAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.config.client.ConfigClientProperties",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allPublicMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
     "name":"org.springframework.cloud.config.client.ConfigServerConfigDataLoader",
     "allDeclaredConstructors":true
   },
