@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
 
-@NativeHint(trigger=GlobalMethodSecuritySelector.class, types = {
+@NativeHint(trigger=GlobalMethodSecuritySelector.class, options = "--enable-all-security-services", types = {
 		@TypeHint(types= {EnableGlobalMethodSecurity.class,GlobalMethodSecurityConfiguration.class,
 				AutoProxyRegistrar.class,GlobalMethodSecurityAspectJAutoProxyRegistrar.class,
 				MethodSecurityMetadataSourceAdvisorRegistrar.class,Jsr250MetadataSourceConfiguration.class,
