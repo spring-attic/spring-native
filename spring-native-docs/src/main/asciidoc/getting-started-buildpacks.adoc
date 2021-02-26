@@ -322,4 +322,4 @@ Now that the service is up, visit http://localhost:8080/greeting, where you shou
 ----
 ====
 
-See <<ide-integration> for additional steps to configure properly the plugin in your IDE.
+See <<spring-aot>> for additional steps to configure properly the plugin in your IDE.
