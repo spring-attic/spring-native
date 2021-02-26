@@ -15,7 +15,6 @@
     <properties>
         <java.version>1.8</java.version>
         <main.class>com.example.webflux.SecurityWebfluxApplication</main.class>
-        <native.build.args>--enable-all-security-services</native.build.args>
     </properties>
     <dependencies>
         <dependency>

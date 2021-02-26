@@ -185,6 +185,10 @@ public class ConfigurationCollector {
 				i++;
 			}
 		}
+		for (String option : ts.findOptions()) {
+			s.append(" \\\n");
+			s.append(option);
+		}
 		s.append("\n");
 		return s.toString();
 	}

@@ -684,6 +684,17 @@ public class TypeSystem {
 	public List<String> findTypesAnnotationAtConfiguration(boolean metaAnnotated) {
 		return findTypesAnnotated(SPRING_AT_CONFIGURATION, metaAnnotated);
 	}
+
+	public Set<String> findOptions() {
+		HashSet<String> options = new LinkedHashSet<>();
+		Collection<List<HintDeclaration>> proposedhints = SpringConfiguration.getProposedhints().values();
+		for (List<HintDeclaration> hintDeclarations : proposedhints) {
+			for (HintDeclaration hintDeclaration: hintDeclarations) {
+				options.addAll(hintDeclaration.getOptions());
+			}
+		}
+		return options;
+	}
 	
 	public List<HintDeclaration> findActiveDefaultHints() {
 		List<HintDeclaration> activeDefaultHints = new ArrayList<>();

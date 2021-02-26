@@ -17,18 +17,23 @@ package org.springframework.nativex.type;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 
 /**
  * 
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public class HintDeclaration {
 
 	private String triggerTypename;
+
+	private Set<String> options = new LinkedHashSet<>();
 
 	private Map<String, AccessDescriptor> specificTypes = new LinkedHashMap<>();
 
@@ -53,6 +58,10 @@ public class HintDeclaration {
 		if (triggerTypename != null) {
 			sb.append(" for ").append(triggerTypename);
 		}
+		if (options != null && !options.isEmpty()) {
+			sb.append(":options=");
+			sb.append(options);
+		}
 		sb.append(":");
 		sb.append(specificTypes);
 		if (resourceDescriptors!=null && !resourceDescriptors.isEmpty()) {
@@ -73,6 +82,10 @@ public class HintDeclaration {
 
 	public String getTriggerTypename() {
 		return triggerTypename;
+	}
+
+	public void addOption(String option) {
+		options.add(option);
 	}
 	
 	public Map<String, AccessDescriptor> getDependantTypes() {
@@ -127,4 +140,7 @@ public class HintDeclaration {
 		return extractAttributeNames;
 	}
 
+	public Set<String> getOptions() {
+		return options;
+	}
 }

@@ -13,6 +13,8 @@ Be aware that Java 11 native images are currently impacted by a transient footpr
 
 Kotlin Coroutines are supported but require additional reflection entries due to how Coroutines generates bytecode with an `Object` return type, see https://github.com/spring-projects/spring-framework/issues/21546[this related issue] for a potential future fix.
 
+Some features like HTTPS may require some additional flags, check <<native-image-options>> for more details.
+
 === Spring Boot
 
 IMPORTANT: `spring-native` {version} is designed to be used with Spring Boot {spring-boot-version}.
@@ -21,22 +23,16 @@ The following starters are supported, the group ID is `org.springframework.boot`
 
 * `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure.
 Beware that actuators significantly increase the footprint, this will be optimized in a future release.
-** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-data-elasticsearch`
-** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-data-jdbc`
-** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-jpa`
 ** You need to configure https://docs.jboss.org/hibernate/orm/5.4/topical/html_single/bytecode/BytecodeEnhancement.html#_build_time_enhancement[Hibernate build-time bytecode enhancement]
 ** `hibernate.bytecode.provider=none` is automatically set
-** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-data-mongodb`
 * `spring-boot-starter-data-neo4j`
-** `--enable-https --enable-all-security-services` are required to use any secure bolt connection (everything bolt+s(sc) or neo4j+s(sc).
 * `spring-boot-starter-data-r2dbc`
 * `spring-boot-starter-data-redis`
 * `spring-boot-starter-jdbc`
-** `--enable-all-security-services` and `-H:+AddAllCharsets` may be required depending on your JDBC driver.
 * `spring-boot-starter-logging`
 * `spring-boot-starter-mail`
 * `spring-boot-starter-thymeleaf`
@@ -44,13 +40,9 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 * `spring-boot-starter-validation`
 * `spring-boot-starter-security`: WebMvc and WebFlux form login, HTTP basic authentication and OAuth 2.0 are supported.
 RSocket security is also supported.
-** `--enable-all-security-services` flag is required.
 * `spring-boot-starter-oauth2-resource-server`: WebMvc and WebFlux are supported.
-** `--enable-all-security-services` flag is required.
 * `spring-boot-starter-oauth2-client`: WebMvc and WebFlux are supported.
-** `--enable-all-security-services` flag is required.
 * `spring-boot-starter-webflux`: only Netty is supported for now.
-** `--enable-https` flag is required for HTTPS support.
 * `spring-boot-starter-web`:
 ** Only Tomcat is supported for now.
 ** `tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint. If you are using `spring-boot-starter-web` and Maven, you should use the following `pom.xml` configuration:

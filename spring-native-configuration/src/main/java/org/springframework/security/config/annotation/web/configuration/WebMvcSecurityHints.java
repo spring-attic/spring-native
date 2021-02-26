@@ -32,26 +32,10 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.web.servlet.DispatcherServlet;
 
-/*
-proposedHints.put(SpringWebMvcImportSelector,
-		new CompilationHint(false, true, new String[] {
-			"org.springframework.web.servlet.DispatcherServlet:EXISTENCE_CHECK",
-			"org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration"
-		}));
-		*/
-@NativeHint(trigger=SpringWebMvcImportSelector.class,follow = true, types = {
+@NativeHint(trigger=SpringWebMvcImportSelector.class, options = "--enable-all-security-services", follow = true, types = {
 		@TypeHint(types= {DispatcherServlet.class},access=AccessBits.CLASS),
 		@TypeHint(types= {WebMvcSecurityConfiguration.class})
 })
-/*
-		// TODO this one is actually incomplete, finish it
-public final static String OAuth2ImportSelector = "Lorg/springframework/security/config/annotation/web/configuration/OAuth2ImportSelector;";
-proposedHints.put(OAuth2ImportSelector,
-		new CompilationHint(false, true, new String[] {
-			"org.springframework.security.oauth2.client.registration.ClientRegistration:EXISTENCE_CHECK",
-			"org.springframework.security.config.annotation.web.configuration.OAuth2ClientConfiguration"
-		}));
-*/
 @NativeHint(trigger=OAuth2ImportSelector.class,follow = true, types = {
 		@TypeHint(types= {ClientRegistration.class},access=AccessBits.CLASS),
 		@TypeHint(types= {OAuth2ClientConfiguration.class}),

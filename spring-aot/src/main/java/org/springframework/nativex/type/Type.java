@@ -1833,6 +1833,10 @@ public class Type {
 				Object value = values.get(i + 1);
 				if (key.equals("trigger")) {
 					ch.setTriggerTypename(((org.objectweb.asm.Type) value).getClassName());
+				} else if (key.equals("options")) {
+					for (String option : (List<String>) value) {
+						ch.addOption(option);
+					}
 				} else if (key.equals("types")) {
 					processTypeHintList(ch, value);
 				} else if (key.equals("imports")) {

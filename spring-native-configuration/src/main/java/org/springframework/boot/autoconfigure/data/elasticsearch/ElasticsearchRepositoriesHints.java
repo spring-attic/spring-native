@@ -43,6 +43,7 @@ import org.springframework.nativex.hint.AccessBits;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
+		options = "--enable-all-security-services",
 		types = {
 				@TypeHint(types = {
 						ElasticsearchRepositoryFactoryBean.class,

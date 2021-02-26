@@ -48,7 +48,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger= Driver.class, types = {
+@NativeHint(trigger= Driver.class, options = { "--enable-all-security-services" }, types = {
 		@TypeHint(types = {
 				FailoverConnectionUrl.class,
 				FailoverDnsSrvConnectionUrl.class,
