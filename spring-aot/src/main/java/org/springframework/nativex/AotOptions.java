@@ -1,89 +1,36 @@
 package org.springframework.nativex;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.support.Mode;
 
 /**
  * Options for Spring Native.
- * TODO Manage XML removal (enabled by default)
- * TODO Manage SpEL removal
- * TODO Manage JMX removal (enabled by default)
  *
  * @author Sebastien Deleuze
  */
 public class AotOptions {
 
-	private static Log logger = LogFactory.getLog(AotOptions.class);
+	private String mode = Mode.NATIVE.toString();
 
-	/**
-	 * Defines how much native configuration is actually provided to the native-image compiler, can be {@code native}, {@code native-agent} or {@code native-init}.
-	 */
-	private String mode = "native";
-
-	/**
-	 * Verification debug.
-	 */
 	private boolean debugVerify;
 
-	/**
-	 * Ignore hints on class listed in {@code spring.autoconfigure.exclude}.
-	 */
 	private boolean ignoreHintsOnExcludedConfig = true;
 
-	/**
-	 * Enable the removal of unused configurations.
-	 */
 	private boolean removeUnusedConfig = true;
 
-	/**
-	 * Switches the plugin from a hard error for missing hints to a warning when set to {@code false}. See the Troubleshooting section for more details on this.
-	 */
 	private boolean failOnMissingSelectorHint = true;
 
-	/**
-	 * Enable the verifications.
-	 */
 	private boolean verify = true;
 
-	/**
-	 * Remove Spring Boot Yaml support to optimize the footprint.
-	 */
 	private boolean removeYamlSupport;
 
-	/**
-	 * Remove Spring Boot JMX support to optimize the footprint.
-	 */
 	private boolean removeJmxSupport = true;
 
-	/**
-	 * Remove Spring XML support to optimize the footprint.
-	 */
 	private boolean removeXmlSupport = true;
 
-	/**
-	 * Remove Spring SpEL support to optimize the footprint.
-	 */
 	private boolean removeSpelSupport;
 
-	/**
-	 * Experimental.
-	 * <p>Set to {@code false} means for any properties specifying {@code matchIfMissing=true} that will be overridden and not respected.
-	 * For any properties specifying {@code true} that will be overridden and not respected.
-	 * This does flip the application into a mode where it needs to be much more explicit
-	 * about specifying properties that activate configurations.
-	 */
-	private boolean buildTimePropertiesMatchIfMissing;
+	private boolean buildTimePropertiesMatchIfMissing = true;
 
-	/**
-	 * Experimental.
-	 * <p>Switches on build time evaluation of some configuration conditions related to properties. It must include at least
-	 * an initial setting of default-include-all or default-exclude-all and that may be followed by a comma separated
-	 * list of prefixes to explicitly include or exclude (for example =default-include-all,!spring.dont.include.these.,!or.these
-	 * or =default-exclude-all,spring.include.this.one.though.,and.this.one).
-	 * When considering a property the longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
-	 */
 	private String[] buildTimePropertiesChecks;
 
 
