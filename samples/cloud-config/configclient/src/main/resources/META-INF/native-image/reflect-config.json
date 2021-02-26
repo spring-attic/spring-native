@@ -6,44 +6,6 @@
     "methods":[{"name":"locateCollection","parameterTypes":["org.springframework.core.env.Environment"] }]
   },
   {
-    "name":"org.springframework.cloud.config.environment.Environment",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.config.environment.PropertySource",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.configuration.CompatibilityVerifier",
-    "allPublicMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.configuration.CompatibilityVerifierAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.configuration.CompatibilityVerifierProperties",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.configuration.CompositeCompatibilityVerifier",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.configuration.SpringBootVersionVerifier",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true
-  },
-  {
     "name":"org.springframework.cloud.context.environment.EnvironmentManager",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
