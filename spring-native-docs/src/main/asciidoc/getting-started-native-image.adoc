@@ -1,17 +1,13 @@
 [[getting-started-native-image]]
 === Getting started with native image Maven plugin
 
-This section walks through how to build a Spring Boot native application with
-https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native image Maven plugin].
-This is a practical guide, so we perform this for real on the
-https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section walks through how to build a Spring Boot native application with {graalvm-native-docs}/NativeImageMavenPlugin/[native image Maven plugin].
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
 ==== Prerequisites
 
-Before installing the GraalVM `native-image` compiler, install
-https://www.graalvm.org/reference-manual/native-image/#prerequisites[the prerequisites]
-(pay attention to the Windows ones if you are using that platform). You then need a local installation of
-the native image compiler.
+Before installing the GraalVM `native-image` compiler, install {graalvm-native-docs}/#prerequisites[the prerequisites] (pay attention to the Windows ones if you are using that platform).
+You then need a local installation of the native image compiler.
 
 On Mac or Linux, you can use https://sdkman.io/[SDKMAN] to easily install GraalVM and switch between JDKs:
 
@@ -40,7 +36,7 @@ cd gs-rest-service/complete
 
 ===== Update the `pom.xml` file
 
-IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version if necessary.
+IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -48,7 +44,7 @@ IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version i
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>{boot-version}</version>
+    <version>{spring-boot-version}</version>
     <relativePath/> <!-- lookup parent from repository -->
 </parent>
 ----
@@ -56,8 +52,7 @@ IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version i
 
 ===== `spring-native` dependency
 
-The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other
-mandatory classes required to run a Spring application on native image.
+The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application on native image.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -76,8 +71,7 @@ mandatory classes required to run a Spring application on native image.
 ===== Add the `spring-aot-maven-plugin`
 
 This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
-We do not put it in the `native-image` profile defined below because it is useful to benefits from those
-transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+We do not put it in the `native-image` profile defined below because it is useful to benefits from those transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -113,9 +107,8 @@ See <<configuring-spring-aot>> for more details about the configuration.
 
 ===== Add the native-image profile
 
-GraalVM provides https://www.graalvm.org/reference-manual/native-image/NativeImageMavenPlugin/[native-image-maven-plugin]
-which can invoke the native image compiler from Maven. Paste the following XML into the `pom.xml`
-file (we use it later to invoke the native image build):
+GraalVM provides {graalvm-native-docs}/NativeImageMavenPlugin/[native-image-maven-plugin] which can invoke the native image compiler from Maven.
+Paste the following XML into the `pom.xml` file (we use it later to invoke the native image build):
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -149,8 +142,7 @@ file (we use it later to invoke the native image build):
 ----
 ====
 
-In order to avoid a clash between Spring Boot repackaging and `native-image-maven-plugin` you need to specify
-a classifier on Spring Boot plugin.
+In order to avoid a clash between Spring Boot repackaging and `native-image-maven-plugin` you need to specify a classifier on Spring Boot plugin.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -210,7 +202,7 @@ mvn -Pnative-image clean package
 ----
 ====
 
-IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in https://www.graalvm.org/reference-manual/native-image/#prerequisites[GraalVM native-image prerequisites].
+IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in {graalvm-native-docs}/#prerequisites[GraalVM native-image prerequisites].
 
 This will create a native executable containing your Spring Boot application.
 

@@ -1,43 +1,34 @@
 [[how-to-contribute]]
 == How to Contribute
 
-This section describes how to extend Spring Native. You can then https://github.com/spring-projects-experimental/spring-native/pulls[submit pull requests] in order to add support for a specific part of Spring ecosystem.
+This section describes how to extend Spring Native.
+You can then {github-prs}[submit pull requests] in order to add support for a specific part of Spring ecosystem.
 
 === Designing native-friendly Spring libraries
 
-Native support is mostly about making an application and its libraries possible to analyze at build-time to configure
-what's required or not at runtime. The goal is to do that in an optimal way to have a minimal footprint.
+Native support is mostly about making an application and its libraries possible to analyze at build-time to configure what's required or not at runtime.
+The goal is to do that in an optimal way to have a minimal footprint.
 
-Spring applications are dynamic, hence the use for example of reflection in various places. Spring Native and its
-Spring AOT build plugins performs AOT transformations, in the context of a specific application classpath and configuration
-in order to generate the optimal native configuration, but also programmatic versions of `spring.factories` or auto-configurations
-that reduce the amount of reflection required. Each reflection entry (per constructor/method/field) leads to the creation
-of a proxy class by `native-image`, so from a footprint point of view, those AOT transformation allow to increase
-Spring native application efficiency.
+Spring applications are dynamic, hence the use for example of reflection in various places.
+Spring Native and its Spring AOT build plugins performs AOT transformations, in the context of a specific application classpath and configuration in order to generate the optimal native configuration, but also programmatic versions of `spring.factories` or auto-configurations that reduce the amount of reflection required.
+Each reflection entry (per constructor/method/field) leads to the creation of a proxy class by `native-image`, so from a footprint point of view, those AOT transformation allow to increase Spring native application efficiency.
 
 The documentation above provides native best practices useful for Spring libraries contributor.
 
 === Use `proxyBeanMethods=false` in `@Configuration` classes provided by a library
 
-In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB
-proxy created at runtime. This is similar to the behavior you get with the so called
-https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-java-basic-concepts[lite mode] or
-with https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
+In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
+This is similar to the behavior you get with the so called {spring-framework-docs}/html/core.html#beans-java-basic-concepts[lite mode] or with {spring-framework-api}/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
 
-It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false`
-and use method parameters to inject bean dependencies, this is handled by Spring Native to not require
-a CGLIB proxy.
+It is fine for applications to just use `@Configuration` without setting `proxyBeanMethods=false` and use method parameters to inject bean dependencies, this is handled by Spring Native to not require a CGLIB proxy.
 
-Libraries are encouraged to use `@Configuration(proxyBeanMethods=false)`
-(most of Spring portfolio currently uses this variant) since it is generally a good idea to avoid CGLIB proxies if
-not needed and to provide native compatibility.
+Libraries are encouraged to use `@Configuration(proxyBeanMethods=false)` (most of Spring portfolio currently uses this variant) since it is generally a good idea to avoid CGLIB proxies if not needed and to provide native compatibility.
 This behavior could potentially become the default in a future Spring Framework version.
 
 ==== Use NativeDetector for native conditional code paths
 
-Spring related code should use `NativeDetector.inNativeImage()` (provided by `spring-core` dependency) to detect
-native-specific code paths. Spring Framework or Spring Data takes advantage of this utility method to disable CGLIB
-proxies since they are not support on native images for example.
+Spring related code should use `NativeDetector.inNativeImage()` (provided by `spring-core` dependency) to detect native-specific code paths.
+Spring Framework or Spring Data takes advantage of this utility method to disable CGLIB proxies since they are not support on native images for example.
 
 ==== Do classpath checks in static block/fields and configure build-time initialization
 
@@ -46,14 +37,12 @@ In order to reduce the footprint of the native image, a useful optimization cons
 * Make sure that the classpath check is done in static block/fields
 * Configure the class to be initialized at build-time using `@NativeHint`
 
-As a result, the classpath check will be done during the native image build, and the optional classes will be bundled
-in the native image only if required. Limit the number of classes initialized at build-time since that could quickly
-become viral and can trigger compatibility issues, hence the runtime default.
+As a result, the classpath check will be done during the native image build, and the optional classes will be bundled in the native image only if required.
+Limit the number of classes initialized at build-time since that could quickly become viral and can trigger compatibility issues, hence the runtime default.
 
 ==== Try to favor functional approaches or move reflection at build-time
 
-For code ran at runtime, try to favor functional approaches like lambdas and method references instead of reflection
-when possible, since they  are automatically understood by the native image compiler.
+For code ran at runtime, try to favor functional approaches like lambdas and method references instead of reflection when possible, since they  are automatically understood by the native image compiler.
 
 It is perflectly fine to use reflection in native world but at build-time:
 
@@ -71,71 +60,64 @@ If you are using a piece of Spring we don't have a sample for, this is likely to
 Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.
 
 . If there is already a `@NativeConfiguration` implementation for that configuration, augment it with the extra type info.
-If there is not, create one, attach a `@NativeHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeConfiguration` .
+If there is not, create one, attach a `@NativeHint` to it to identify the triggering configuration and the classes that need to be exposed, and add it to the `META-INF/services/org.springframework.nativex.extension.NativeConfiguration`.
 You may also need to set the accessibility in the annotation (in the `TypeHint`).
 It is possible that more dependencies may need to be added to the configuration project to allow the direct class references.
 That is OK, so long as you ensure that they are provided scope.
 
-See <<native-configuration>> for basic hint documentation. These `@NativeHint` can be hosted in one of two places:
+See <<native-hints>> for basic hint documentation. These `@NativeHint` can be hosted in one of two places:
 
-* In the `spring-native-configuration` module, you can see that they are hosted on types that implement the
-`org.springframework.nativex.extension.NativeConfiguration` interface. Implementations of this interface
-should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.type.NativeConfiguration` file,
-which the feature loads through regular Java service loading.
-* On Spring configuration classes. That's useful for project-specific hints or while crafting hints on a sample
-before moving it to the `spring-native-configuration` module (shorter feedback loop).
+* In the `spring-native-configuration` module, you can see that they are hosted on types that implement the `org.springframework.nativex.extension.NativeConfiguration` interface.
+Implementations of this interface should be listed in a `src/main/resources/META-INF/services/org.springframework.nativex.type.NativeConfiguration` file, which the feature loads through regular Java service loading.
+* On Spring configuration classes. That's useful for project-specific hints or while crafting hints on a sample before moving it to the `spring-native-configuration` module (shorter feedback loop).
 
 An `attribute` trigger can be specified on the `@NativeHint` annotation.
 
 * If the hint is on a `@NativeConfiguration` class, then it is assumed this configuration should *always* apply. This is useful for common configuration necessary for all applications.
 * If the hint is on something other than a `@NativeConfiguration` class (e.g. on a Spring auto-configuration class) then that type is considered to be the trigger, and if the Spring AOT plugin determines that is 'active', the hint applies.
 
-The `trigger` attribute might be a piece of Spring infrastructure (autoconfiguration, import selector) or just a regular
-class. If the Spring AOT plugin determines that Spring infrastructure may be active when the application runs, or
-(for a regular class trigger) that the named class is on the classpath, it will activate the associated hints,
-informing the native-image build process what is needed.
+The `trigger` attribute might be a piece of Spring infrastructure (autoconfiguration, import selector) or just a regular class.
+If the Spring AOT plugin determines that Spring infrastructure may be active when the application runs, or (for a regular class trigger) that the named class is on the classpath, it will activate the associated hints, informing the native-image build process what is needed.
 
-It is best practice to use the hints in a sample (existing or new one) in order to have automated testing of it. Once
-you are happy with the hints you crafted, you can
-https://github.com/spring-projects-experimental/spring-native/pulls[submit a pull request].
+It is best practice to use the hints in a sample (existing or new one) in order to have automated testing of it.
+Once you are happy with the hints you crafted, you can {github-prs}[submit a pull request].
 
-Using the <<tracing-agent>> can also be useful an approximation of the required native configuration without having
-to run too much native builds.
+Using the <<tracing-agent>> can also be useful an approximation of the required native configuration without having to run too much native builds.
 
 === Dynamic native configuration
 
 ==== Implementing `NativeConfiguration`
 
 Sometimes the necessary configuration is hard to statically declare and needs a more dynamic approach.
-For example, the interfaces involved in a proxy hint might need something to be checked beyond the simple
-presence of a class. In this case the method `computeHints` can be implemented which allows computation of hints
-in a more dynamic way, which are then combined with those statically declared via annotations.
+For example, the interfaces involved in a proxy hint might need something to be checked beyond the simple presence of a class.
+In this case the method `computeHints` can be implemented which allows computation of hints in a more dynamic way, which are then combined with those statically declared via annotations.
 
 The `NativeConfiguration` interface contains a couple of default methods that can be implemented for more control.
-For example whether the hints on a `NativeConfiguration` should activate may be a more subtle condition that simply
-whether a configuration is active. It is possible to implement the `isValid` method in a `NativeConfiguration`
-implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
+For example whether the hints on a `NativeConfiguration` should activate may be a more subtle condition that simply whether a configuration is active.
+It is possible to implement the `isValid` method in a `NativeConfiguration` implementation and perform a more detailed test, returning false from this method will deactivate the associated hints.
 
 ==== Taking more control via processors
 
-Within a Spring application there are going to be a number of active components (the main application, configurations,
-controllers, etc). There may be much more sophisticated analysis to be done for these components in order to compute
-the necessary configuration for the `native-image` invocation.
+Within a Spring application there are going to be a number of active components (the main application, configurations, controllers, etc).
+There may be much more sophisticated analysis to be done for these components in order to compute the necessary configuration for the `native-image` invocation.
 It is possible to implement a couple of interfaces to participate in the process the feature is going through:
 
-* `ComponentProcessor` implementations are given the chance to process components and possibly register new configuration. For example this is used by spring-data (via `SpringDataComponentProcessor`) to do deeper analysis of repositories and the types used in generic signatures to compute reflection/proxy/resource hints.
-* `SpringFactoriesProcessor` implementations are given a chance to process the keys and values loaded from `spring.factories` files. Currently they are allowed to do filtering but this is likely to be expanded in the future. By filtering it means they may programmatically compute that for some spring.factories key one of the values makes no sense (by analysing classpath contents, for example). In this case they can filter out that value and the `spring.factories` subsequently added to the native-image will have it removed.
+* `ComponentProcessor` implementations are given the chance to process components and possibly register new configuration.
+For example this is used by spring-data (via `SpringDataComponentProcessor`) to do deeper analysis of repositories and the types used in generic signatures to compute reflection/proxy/resource hints.
+* `SpringFactoriesProcessor` implementations are given a chance to process the keys and values loaded from `spring.factories` files.
+Currently they are allowed to do filtering but this is likely to be expanded in the future.
+By filtering it means they may programmatically compute that for some spring.factories key one of the values makes no sense (by analysing classpath contents, for example).
+In this case they can filter out that value and the `spring.factories` subsequently added to the native-image will have it removed.
 
-These need to be implemented in `spring-aot`. For debugging them using the Maven plugin, you can use `mvnDebug` instead
-of `mvn` and connect with a JVM remote debugger from you IDE.
+These need to be implemented in `spring-aot`. For debugging them using the Maven plugin, you can use `mvnDebug` instead of `mvn` and connect with a JVM remote debugger from you IDE.
 
 === Using container-based build environment
 
 In order to allow easily reproducible builds of `spring-native`, dedicated interactive Docker images are available for local development (tested on Linux and Mac) and are also used in the CI:
 
-- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.graalvm-ce[`graalvm-ce`]: base image with Ubuntu bionic + GraalVM native, built daily by the CI and available from https://hub.docker.com/r/springci/graalvm-ce/tags[Docker hub] or locally via `docker/build-graalvm-ce-images.sh`.
-- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.spring-native[`spring-native`]: base image with `graalvm-ce` + utilities required to build the project, available from https://hub.docker.com/r/springci/spring-native/tags[Docker hub] or locally via `docker/build-spring-native-images.sh`.
-- https://github.com/spring-projects-experimental/spring-native/blob/master/docker/Dockerfile.spring-native-dev[`spring-native-dev`]: local image built via `docker/build-dev-images.sh` designed to share the same user between the host and the container
+- {github-raw}/docker/Dockerfile.graalvm-ce[`graalvm-ce`]: base image with Ubuntu bionic + GraalVM native, built daily by the CI and available from https://hub.docker.com/r/springci/graalvm-ce/tags[Docker hub] or locally via `docker/build-graalvm-ce-images.sh`.
+- {github-raw}/docker/Dockerfile.spring-native[`spring-native`]: base image with `graalvm-ce` + utilities required to build the project, available from https://hub.docker.com/r/springci/spring-native/tags[Docker hub] or locally via `docker/build-spring-native-images.sh`.
+- {github-raw}/docker/Dockerfile.spring-native-dev[`spring-native-dev`]: local image built via `docker/build-dev-images.sh` designed to share the same user between the host and the container.
 
 To use it:
 
@@ -174,9 +156,11 @@ To test the various samples You can also run the root `build.sh` then `build-key
 
 === Scripts
 
-The `native-image` command supports a number of flags for producing information about what is in an image. However, what
-can sometimes be really useful is comparing two images. What is in one that isn't in the other? Sometimes sifting through
-the ton of output is tricky. The scripts folder provides some tools to help with this.
+The `native-image` command supports a number of flags for producing information about what is in an image.
+However, what can sometimes be really useful is comparing two images.
+What is in one that isn't in the other?
+Sometimes sifting through the ton of output is tricky.
+The scripts folder provides some tools to help with this.
 
 ==== Comparing images
 
@@ -187,19 +171,19 @@ Compiling FieldPosition[] java.text.DecimalFormat.getNegativeSuffixFieldPosition
 Compiling FieldPosition[] java.text.DecimalFormat.getPositiveSuffixFieldPositions()  [Direct call from StringBuffer DecimalFormat.subformat(StringBuffer, Format$FieldDelegate, boolean, boolean, int, int, int, int)]
 ----
 
-Thousands and thousands of lines typically. Typically we turn on that option for `native-image` in the `pom.xml` or in the `compile.sh`
-(depending on the sample). The output is produced to stdout which our samples capture in `target/native-image/output.txt`. With two
-builds done, we can use a script from this folder to produce a tree diff:
+Thousands and thousands of lines typically.
+Typically we turn on that option for `native-image` in the `pom.xml` or in the `compile.sh` (depending on the sample).
+The output is produced to stdout which our samples capture in `target/native-image/output.txt`.
+With two builds done, we can use a script from this folder to produce a tree diff:
 
 ----
 compilationDiff.sh java8build/target/native-image/output.txt java11build/target/native-image/output.txt 8-11.html
 ----
 
-The inputs are the two collected PrintAOTCompilation outputs to compare and the name for an HTML
-file that should be generated (this will contain the navigable tree). Then simply open the HTML file.
+The inputs are the two collected PrintAOTCompilation outputs to compare and the name for an HTML file that should be generated (this will contain the navigable tree).
+Then simply open the HTML file.
 
 image::CompilationDiffTreeView.png[]
 
-One of the key entries to look at in the diff is under the path `com/oracle/svm/reflect` as that shows
-the entries included due to reflection.
+One of the key entries to look at in the diff is under the path `com/oracle/svm/reflect` as that shows the entries included due to reflection.
 

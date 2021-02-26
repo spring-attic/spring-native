@@ -1,20 +1,16 @@
 [[getting-started-buildpacks]]
 === Getting started with Buildpacks
 
-This section walks through how to build a Spring Boot native application with
-https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
-This is a practical guide, so we perform this for real on the
-https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section walks through how to build a Spring Boot native application with {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
+This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
 
 ==== Prerequisites
 
-You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up
-for your machine. Before proceeding further, verify you can run docker commands from the shell.
+You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
+Before proceeding further, verify you can run docker commands from the shell.
 
-On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add
-more CPUs as well) since `native-image` compiler is a heavy process.
-See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer]
-for more details.
+On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since `native-image` compiler is a heavy process.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
 
 On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
 
@@ -34,7 +30,7 @@ You may already be ready to go with your own project.
 
 ===== Update the build file
 
-IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version if necessary.
+IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -43,7 +39,7 @@ IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version i
 <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>{boot-version}</version>
+    <version>{spring-boot-version}</version>
     <relativePath/> <!-- lookup parent from repository -->
 </parent>
 ----
@@ -51,22 +47,21 @@ IMPORTANT: Only Spring Boot {boot-version} is supported, so change the version i
 .Gradle Groovy
 ----
 plugins {
-    id 'org.springframework.boot' version '{boot-version}'
+    id 'org.springframework.boot' version '{spring-boot-version}'
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
 plugins {
-    id("org.springframework.boot") version "{boot-version}"
+    id("org.springframework.boot") version "{spring-boot-version}"
 }
 ----
 ====
 
 ===== `spring-native` dependency
 
-The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other
-mandatory classes required to run a Spring application on native image.
+The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application on native image.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -99,8 +94,7 @@ dependencies {
 ===== Add the Spring AOT plugin
 
 This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
-We do not put it in the `native-image` profile defined below because it is useful to benefits from those
-transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+We do not put it in the `native-image` profile defined below because it is useful to benefits from those transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -139,9 +133,8 @@ TODO: Add Gradle configuration
 
 ===== Enable native image in Buildpacks support
 
-https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support]
-provides out of the box support for building Spring Boot native applications. To do so, we just have to set
-`BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
+{spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
+To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -182,13 +175,11 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 ----
 ====
 
-It is possible to add additional `native-image` arguments with the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS`
-environment variable.
+It is possible to add additional `native-image` arguments with the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
 TODO: Update to `BP_NATIVE_IMAGE` and `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` when Buildpacks have been updated.
 
-Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks,
-`paketobuildpacks/builder:base` being the default (also works but less optimized).
+Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks, `paketobuildpacks/builder:base` being the default (also works but less optimized).
 The `paketobuildpacks/builder:full` variant can be used in order to have more tools during the development.
 
 ===== Add the repositories
@@ -276,8 +267,7 @@ gradle bootBuildImage
 gradle bootBuildImage
 ----
 ====
-This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally
-the related container image.
+This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally the related container image.
 
 ==== Run the native application
 
