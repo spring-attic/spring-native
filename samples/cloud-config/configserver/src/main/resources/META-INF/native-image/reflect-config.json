@@ -1,6 +1,4 @@
 [
-{"name":"org.springframework.boot.context.event.EventPublishingRunListener","methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.SpringApplication","java.lang.String[]"]}]},
-{"name":"org.springframework.boot.origin.OriginProvider[]"},
 {"name":"org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor","allDeclaredFields":true,"allDeclaredMethods":true,"methods":[{"name":"afterPropertiesSet","parameterTypes":[]}]},
 {"name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter","allPublicMethods":true},
 {"name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda$366\/0x0000000840381840","allDeclaredFields":true,"allDeclaredMethods":true},
