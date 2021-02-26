@@ -1,41 +1,5 @@
 [
   {
-    "name":"org.springframework.cloud.client.CommonsClientAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled",
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.client.ConditionalOnDiscoveryEnabled",
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.client.ConditionalOnDiscoveryHealthIndicatorEnabled",
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled",
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"org.springframework.cloud.client.HostInfoEnvironmentPostProcessor",
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.client.ReactiveCommonsClientAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"org.springframework.cloud.client.discovery.DiscoveryClient",
-    "allPublicMethods":true
-  },
-  {
     "name":"org.springframework.cloud.client.discovery.EnableDiscoveryClient",
     "allDeclaredMethods":true
   },
