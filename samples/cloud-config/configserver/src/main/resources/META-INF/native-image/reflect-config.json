@@ -1,13 +1,4 @@
 [
-{"name":"org.springframework.cloud.bootstrap.encrypt.KeyProperties","allDeclaredFields":true},
-{"name":"org.springframework.cloud.client.HostInfoEnvironmentPostProcessor","allDeclaredConstructors":true},
-{"name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties","allDeclaredFields":true},
-{"name":"org.springframework.cloud.commons.httpclient.ApacheHttpClientConnectionManagerFactory","allPublicMethods":true},
-{"name":"org.springframework.cloud.commons.httpclient.ApacheHttpClientFactory","allPublicMethods":true},
-{"name":"org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientConnectionManagerFactory","allDeclaredFields":true,"allDeclaredMethods":true},
-{"name":"org.springframework.cloud.commons.httpclient.DefaultApacheHttpClientFactory","allDeclaredFields":true,"allDeclaredMethods":true},
-{"name":"org.springframework.cloud.commons.util.InetUtils","allDeclaredFields":true,"allDeclaredMethods":true,"allPublicMethods":true},
-{"name":"org.springframework.cloud.commons.util.InetUtilsProperties","allDeclaredFields":true,"allDeclaredMethods":true},
 {"name":"org.springframework.cloud.config.client.ConfigClientHealthProperties","allDeclaredFields":true,"allDeclaredMethods":true},
 {"name":"org.springframework.cloud.config.client.ConfigClientProperties","allDeclaredFields":true,"allDeclaredMethods":true},
 {"name":"org.springframework.cloud.config.client.ConfigServerHealthIndicator","allDeclaredFields":true,"allDeclaredMethods":true},
