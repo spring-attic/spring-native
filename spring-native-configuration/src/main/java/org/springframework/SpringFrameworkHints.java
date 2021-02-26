@@ -62,7 +62,6 @@ import org.springframework.nativex.hint.ProxyHint;
 				org.springframework.core.NativeDetector.class,
 				org.springframework.core.KotlinDetector.class
 		}, typeNames = {
-				"org.springframework.aot.StaticSpringFactories",
 				"org.springframework.aop.Advisor$1",
 				"org.springframework.core.annotation.AnnotationFilter$1",
 				"org.springframework.core.annotation.AnnotationFilter$2",
