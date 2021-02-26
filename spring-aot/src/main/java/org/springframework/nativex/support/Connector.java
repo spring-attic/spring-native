@@ -32,4 +32,6 @@ public interface Connector {
 
 	void addClassDescriptor(ClassDescriptor classDescriptor);
 
+	void addOption(String option);
+
 }

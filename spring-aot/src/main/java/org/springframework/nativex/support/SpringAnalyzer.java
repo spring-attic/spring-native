@@ -44,6 +44,8 @@ public class SpringAnalyzer {
 
 	private InitializationHandler initializationHandler;
 
+	private OptionHandler optionHandler;
+
 	public SpringAnalyzer(TypeSystem typeSystem, AotOptions aotOptions) {
 		this.typeSystem = typeSystem;
 		this.aotOptions = aotOptions;
@@ -56,7 +58,8 @@ public class SpringAnalyzer {
 		reflectionHandler = new ReflectionHandler(collector, aotOptions);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler(collector);
-		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler, aotOptions);
+		optionHandler = new OptionHandler(collector);
+		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler, optionHandler, aotOptions);
 
 		collector.setTypeSystem(typeSystem);
 		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.

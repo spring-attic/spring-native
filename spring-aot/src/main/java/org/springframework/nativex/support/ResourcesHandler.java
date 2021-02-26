@@ -80,14 +80,17 @@ public class ResourcesHandler extends Handler {
 	private final DynamicProxiesHandler dynamicProxiesHandler;
 
 	private final InitializationHandler initializationHandler;
+	
+	private final OptionHandler optionHandler;
 
 	private final AotOptions aotOptions;
 
-	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler, AotOptions aotOptions) {
+	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler, OptionHandler optionHandler, AotOptions aotOptions) {
 		super(collector);
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 		this.initializationHandler = initializationHandler;
+		this.optionHandler = optionHandler;
 		this.aotOptions = aotOptions;
 	}
 
@@ -170,6 +173,10 @@ public class ResourcesHandler extends Handler {
 			for (InitializationDescriptor initializationDescriptor : ch.getInitializationDescriptors()) {
 				logger.debug("Registering initialization descriptor: " + initializationDescriptor);
 				initializationHandler.registerInitializationDescriptor(initializationDescriptor);
+			}
+			if (!ch.getOptions().isEmpty()) {
+				logger.debug("Registering options: "+ch.getOptions());
+				optionHandler.addOptions(ch.getOptions());
 			}
 		}
 		logger.debug("< Registering fixed hints");
@@ -1257,6 +1264,7 @@ public class ResourcesHandler extends Handler {
 			accessManager.requestProxyDescriptors(hint.getProxyDescriptors());
 			accessManager.requestResourcesDescriptors(hint.getResourceDescriptors());
 			accessManager.requestInitializationDescriptors(hint.getInitializationDescriptors());
+			accessManager.requestOptions(hint.getOptions());
 		}
 
 		// TODO think about pulling out into extension mechanism for condition evaluators
@@ -1768,6 +1776,7 @@ public class ResourcesHandler extends Handler {
 		for (InitializationDescriptor initializationDescriptor : accessRequestor.getRequestedInitializations()) {
 			initializationHandler.registerInitializationDescriptor(initializationDescriptor);
 		}
+		optionHandler.addOptions(accessRequestor.getRequestedOptions());
 		for (ProxyDescriptor proxyDescriptor : accessRequestor.getRequestedProxies()) {
 			dynamicProxiesHandler.addProxy(proxyDescriptor);
 		}

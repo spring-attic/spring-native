@@ -17,6 +17,7 @@ package org.springframework.nativex.type;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
@@ -168,6 +169,10 @@ public class HintApplication {
 
 	public List<InitializationDescriptor> getInitializationDescriptors() {
 		return hintDeclaration.getInitializationDescriptors();
+	}
+	
+	public Set<String> getOptions() {
+		return hintDeclaration.getOptions();
 	}
 
 }

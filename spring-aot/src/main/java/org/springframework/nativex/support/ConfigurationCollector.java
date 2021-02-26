@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,8 @@ public class ConfigurationCollector {
 	private ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
+	
+	private Set<String> options = new HashSet<>();
 
 	private Connector connector;
 	
@@ -185,7 +188,7 @@ public class ConfigurationCollector {
 				i++;
 			}
 		}
-		for (String option : ts.findOptions()) {
+		for (String option : options) {
 			s.append(" \\\n");
 			s.append(option);
 		}
@@ -383,6 +386,13 @@ public class ConfigurationCollector {
 
 	public InputStream getNativeImagePropertiesInputStream() {
 		return new ByteArrayInputStream(getNativeImagePropertiesContent().getBytes());
+	}
+
+	public void addOption(String option) {
+		options.add(option);
+		if (connector != null) {
+			connector.addOption(option);
+		}
 	}
 
 }

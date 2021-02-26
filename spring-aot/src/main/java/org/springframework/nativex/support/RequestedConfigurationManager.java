@@ -17,6 +17,7 @@ package org.springframework.nativex.support;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +28,6 @@ import org.springframework.nativex.type.FieldDescriptor;
 import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
-import org.springframework.nativex.type.Type;
 
 /**
  * Collects up potential configuration that should be passed to native-image. By collecting it rather than
@@ -47,6 +47,8 @@ public class RequestedConfigurationManager {
 	private List<ResourcesDescriptor> requestedResources = new ArrayList<>();
 
 	private List<InitializationDescriptor> requestedInitializations = new ArrayList<>();
+
+	private Set<String> requestedOptions = new HashSet<>();
 	
 	public void requestTypeAccess(String type, Integer accessRequired) {
 		requestTypeAccess(type, accessRequired, null, null);
@@ -120,6 +122,10 @@ public class RequestedConfigurationManager {
 			requestedInitializations.add(id);
 		}
 	}
+	
+	public void requestOptions(Set<String> options) {
+		requestedOptions.addAll(options);
+	}
 
 	public void requestInitializationDescriptors(InitializationDescriptor initializationDescriptor) {
 		requestedInitializations.add(initializationDescriptor);
@@ -140,6 +146,10 @@ public class RequestedConfigurationManager {
 	public List<InitializationDescriptor> getRequestedInitializations() {
 		return requestedInitializations;
 	}
+	
+	public Set<String> getRequestedOptions() {
+		return requestedOptions;
+	}
 
 	public void mergeIn(RequestedConfigurationManager incomingRCM) {
 		for (Entry<String, Integer> entry : incomingRCM.getRequestedTypeAccesses()) {
@@ -148,6 +158,7 @@ public class RequestedConfigurationManager {
 		requestInitializationDescriptors(incomingRCM.getRequestedInitializations());
 		requestProxyDescriptors(incomingRCM.getRequestedProxies());
 		requestResourcesDescriptors(incomingRCM.getRequestedResources());
+		requestOptions(incomingRCM.getRequestedOptions());
 	}
 
 	public void addMethodDescriptors(String type, String[][] methods) {
