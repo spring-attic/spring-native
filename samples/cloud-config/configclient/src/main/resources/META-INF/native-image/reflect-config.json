@@ -6,12 +6,6 @@
     "methods":[{"name":"locateCollection","parameterTypes":["org.springframework.core.env.Environment"] }]
   },
   {
-    "name":"org.springframework.cloud.util.random.CachedRandomPropertySourceAutoConfiguration",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
     "name":"org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   }
