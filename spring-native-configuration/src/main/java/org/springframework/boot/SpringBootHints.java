@@ -71,7 +71,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.boot.logging.java.JavaLoggingSystem$Factory",
 			"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory",
 			"org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory",
-			"org.springframework.boot.BuildtimeSpringBootVersion"
+			"org.springframework.nativex.substitutions.boot.NativeSpringBootVersion"
 	}, initTime = InitializationTime.BUILD),
 		proxies = {
 			@ProxyHint(types = {

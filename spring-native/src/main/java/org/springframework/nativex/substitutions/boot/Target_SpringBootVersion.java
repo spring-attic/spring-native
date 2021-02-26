@@ -10,7 +10,7 @@ final class Target_SpringBootVersion {
 
 	@Substitute
 	public static String getVersion() {
-		return BuildtimeSpringBootVersion.getVersion();
+		return NativeSpringBootVersion.getVersion();
 	}
 
 }

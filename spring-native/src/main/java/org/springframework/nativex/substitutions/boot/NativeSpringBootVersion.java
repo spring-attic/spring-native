@@ -9,12 +9,14 @@ import java.security.CodeSource;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
-// TODO Work with Boot team on build time invocation of determineSpringBootVersion()
-final class BuildtimeSpringBootVersion {
+import org.springframework.boot.origin.Origin;
+
+// TODO Work with Boot team on build time invocation of determineSpringBootVersion() and avoid generated code in org.springframework.boot package
+final class NativeSpringBootVersion {
 
 	private static String VERSION = determineSpringBootVersion();
 
-	private BuildtimeSpringBootVersion() {
+	private NativeSpringBootVersion() {
 	}
 
 	public static String getVersion() {
@@ -22,11 +24,13 @@ final class BuildtimeSpringBootVersion {
 	}
 
 	private static String determineSpringBootVersion() {
-		String implementationVersion = BuildtimeSpringBootVersion.class.getPackage().getImplementationVersion();
+		// Use Origin to avoid potential conflict with generated code in org.springframework.boot package
+		String implementationVersion = Origin.class.getPackage().getImplementationVersion();
 		if (implementationVersion != null) {
 			return implementationVersion;
 		}
-		CodeSource codeSource = BuildtimeSpringBootVersion.class.getProtectionDomain().getCodeSource();
+		// Use Origin to avoid potential conflict with generated code in org.springframework.boot package
+		CodeSource codeSource = Origin.class.getProtectionDomain().getCodeSource();
 		if (codeSource == null) {
 			return null;
 		}
