@@ -1,7 +1,4 @@
 [
-{"name":"org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor","allDeclaredFields":true,"allDeclaredMethods":true,"methods":[{"name":"afterPropertiesSet","parameterTypes":[]}]},
-{"name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter","allPublicMethods":true},
-{"name":"org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter$$Lambda$366\/0x0000000840381840","allDeclaredFields":true,"allDeclaredMethods":true},
 {"name":"org.springframework.cloud.bootstrap.encrypt.KeyProperties","allDeclaredFields":true},
 {"name":"org.springframework.cloud.client.HostInfoEnvironmentPostProcessor","allDeclaredConstructors":true},
 {"name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties","allDeclaredFields":true},
