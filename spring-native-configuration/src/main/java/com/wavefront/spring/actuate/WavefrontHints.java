@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-@NativeHint(trigger = WavefrontAutoConfiguration.class, types = {
+@NativeHint(trigger = WavefrontAutoConfiguration.class, options = {"--enable-https", "--enable-all-security-services"}, types = {
 		@TypeHint(types = {
 				AbstractFuture.class,
 				WavefrontJvmReporter.class,
