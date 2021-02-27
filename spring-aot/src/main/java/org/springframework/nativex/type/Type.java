@@ -1297,7 +1297,7 @@ public class Type {
 	 * annotations on this type.
 	 * @return the hints
 	 */
-	public List<HintApplication> getHints() {
+	public List<HintApplication> getApplicableHints() {
 		if (dimensions > 0) {
 			return Collections.emptyList();
 		}
@@ -1793,14 +1793,16 @@ public class Type {
 	}
 
 	/**
-	 * Find the {@link NativeHint} annotations on this type (may be more than one)
-	 * and from them build CompilationHints, taking care to convert class references
-	 * to strings because they may not be resolvable.
+	 * Look for Hint related annotations (for example {@link NativeHint} or {@link TypeHint})
+	 * on this type and unpack them, building a series of HintDeclarations. The Hint related
+	 * annotations are repeatable and this code handles that.
+	 * 
 	 * @return the hint declarations
 	 */
-	public List<HintDeclaration> unpackConfigurationHints() {
-		if (dimensions > 0)
+	public List<HintDeclaration> unpackHints() {
+		if (dimensions > 0) {
 			return Collections.emptyList();
+		}
 		List<HintDeclaration> hints = new ArrayList<>();
 		HintDeclaration defaultHintDeclaration = new HintDeclaration();
 		defaultHintDeclaration.setTriggerTypename("java.lang.Object");
@@ -1809,39 +1811,39 @@ public class Type {
 			for (AnnotationNode an : node.visibleAnnotations) {
 				String name = fromLdescriptorToDotted(an.desc);
 				if (name.equals(NativeHint.class.getName())) {
-					hints.add(fromConfigurationHintToHintDeclaration(an));
+					hints.add(unpackNativeHint(an));
 				} else if (name.equals(NativeHints.class.getName())) {
-					hints.addAll(fromConfigurationHintsToCompilationHints(an));
+					hints.addAll(unpackNativeHints(an));
 				} else if (name.equals(TypeHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackTypeInfo(an, defaultHintDeclaration);
+					unpackTypeHint(an, defaultHintDeclaration);
 				} else if (name.equals(TypeHints.class.getName())) {
 					defaultHintPopulated=true;
-					processTypeInfosList(defaultHintDeclaration, an);
+					processRepeatableAnnotationList(an, anno -> unpackTypeHint(anno, defaultHintDeclaration));
 				} else if (name.equals(ProxyHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackProxyInfo(an, defaultHintDeclaration);
+					unpackProxyHint(an, defaultHintDeclaration);
 				} else if (name.equals(ProxyHints.class.getName())) {
 					defaultHintPopulated=true;
-					processRepeatableInfosList(an, anno -> unpackProxyInfo(anno, defaultHintDeclaration));
+					processRepeatableAnnotationList(an, anno -> unpackProxyHint(anno, defaultHintDeclaration));
 				} else if (name.equals(ResourceHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackResourcesInfo(an, defaultHintDeclaration);
+					unpackResourceHint(an, defaultHintDeclaration);
 				} else if (name.equals(ResourcesHints.class.getName())) {
 					defaultHintPopulated=true;
-					processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno, defaultHintDeclaration));
+					processRepeatableAnnotationList(an, anno -> unpackResourceHint(anno, defaultHintDeclaration));
 				} else if (name.equals(InitializationHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackInitializationInfo(an, defaultHintDeclaration);
+					unpackInitializationHint(an, defaultHintDeclaration);
 				} else if (name.equals(InitializationHints.class.getName())) {
 					defaultHintPopulated=true;
-					processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, defaultHintDeclaration));
+					processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, defaultHintDeclaration));
 				} else if (name.equals(InitializationHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackInitializationInfo(an, defaultHintDeclaration);
+					unpackInitializationHint(an, defaultHintDeclaration);
 				} else if (name.equals(InitializationHints.class.getName())) {
 					defaultHintPopulated=true;
-					processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, defaultHintDeclaration));
+					processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, defaultHintDeclaration));
 				}
 			}
 		}
@@ -1851,7 +1853,7 @@ public class Type {
 		return hints.isEmpty() ? Collections.emptyList() : hints;
 	}
 
-	private HintDeclaration fromConfigurationHintToHintDeclaration(AnnotationNode an) {
+	private HintDeclaration unpackNativeHint(AnnotationNode an) {
 		HintDeclaration ch = new HintDeclaration();
 		List<Object> values = an.values;
 		if (values != null) {
@@ -1865,15 +1867,15 @@ public class Type {
 						ch.addOption(option);
 					}
 				} else if (key.equals("types")) {
-					processTypeHintList(ch, value);
+					processHintList(value, anno -> unpackTypeHint(anno,ch));
 				} else if (key.equals("imports")) {
 					processImportHints(ch, value);
 				} else if (key.equals("proxies")) {
-					processProxyHint(ch, value);
+					processHintList(value, anno -> unpackProxyHint(anno,ch));
 				} else if (key.equals("resources")) {
-					processResourceHints(ch, value);
+					processHintList(value, anno -> unpackResourceHint(anno,ch));
 				} else if (key.equals("initialization")) {
-					processInitializationHints(ch, value);
+					processHintList(value, anno -> unpackInitializationHint(anno,ch));
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1893,50 +1895,14 @@ public class Type {
 		return ch;
 	}
 
-	private void processResourceHints(HintDeclaration ch, Object value) {
-		List<AnnotationNode> resourcesInfos = (List<AnnotationNode>) value;
-		for (AnnotationNode resourcesInfo : resourcesInfos) {
-			unpackResourcesInfo(resourcesInfo, ch);
-		}
-	}
-
-	private void processInitializationHints(HintDeclaration ch, Object value) {
-		List<AnnotationNode> initializationInfos = (List<AnnotationNode>) value;
-		for (AnnotationNode initializationInfo : initializationInfos) {
-			unpackInitializationInfo(initializationInfo, ch);
-		}
-	}
-
-	private void processTypeHintList(HintDeclaration ch, Object value) {
-		List<AnnotationNode> typeInfos = (List<AnnotationNode>) value;
-		for (AnnotationNode typeInfo : typeInfos) {
-			unpackTypeInfo(typeInfo, ch);
-		}
-	}
-
-	private void processFieldInfoList(List<FieldDescriptor> fds, Object value) {
-		List<AnnotationNode> fieldInfos = (List<AnnotationNode>) value;
-		for (AnnotationNode fieldInfo : fieldInfos) {
-			unpackFieldInfo(fieldInfo, fds);
-		}
-	}
-
-	private void processMethodInfoList(List<MethodDescriptor> mds, Object value) {
-		List<AnnotationNode> methodInfos = asList(value, AnnotationNode.class);// (List<AnnotationNode>) value;
-		for (AnnotationNode methodInfo : methodInfos) {
-			unpackMethodInfo(methodInfo, mds);
+	private void processHintList(Object value, Consumer<AnnotationNode> consumer) {
+		for (AnnotationNode hint : asList(value, AnnotationNode.class)) {
+			consumer.accept(hint);
 		}
 	}
 
 	private <T> List<T> asList(Object value, Class<T> type) {
 		return (List<T>) value;
-	}
-
-	private void processProxyHint(HintDeclaration ch, Object value) {
-		List<AnnotationNode> proxyInfos = (List<AnnotationNode>) value;
-		for (AnnotationNode proxyInfo : proxyInfos) {
-			unpackProxyInfo(proxyInfo, ch);
-		}
 	}
 
 	private void processImportHints(HintDeclaration ch, Object value) {
@@ -1952,21 +1918,21 @@ public class Type {
 				for (AnnotationNode an : node.visibleAnnotations) {
 					String annotationClassname = fromLdescriptorToDotted(an.desc);
 					if (annotationClassname.equals(TypeHint.class.getName())) {
-						unpackTypeInfo(an, ch);
+						unpackTypeHint(an, ch);
 					} else if (annotationClassname.equals(TypeHints.class.getName())) {
-						processTypeInfosList(ch, an);
+						processRepeatableAnnotationList(an, anno -> unpackTypeHint(anno, ch));
 					} else if (annotationClassname.equals(ResourceHint.class.getName())) {
-						unpackResourcesInfo(an, ch);
+						unpackResourceHint(an, ch);
 					} else if (annotationClassname.equals(ResourcesHints.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno, ch));
+						processRepeatableAnnotationList(an, anno -> unpackResourceHint(anno, ch));
 					} else if (annotationClassname.equals(ProxyHint.class.getName())) {
-						unpackProxyInfo(an, ch);
+						unpackProxyHint(an, ch);
 					} else if (annotationClassname.equals(ProxyHints.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackProxyInfo(anno, ch));
+						processRepeatableAnnotationList(an, anno -> unpackProxyHint(anno, ch));
 					} else if (annotationClassname.equals(InitializationHint.class.getName())) {
-						unpackInitializationInfo(an, ch);
+						unpackInitializationHint(an, ch);
 					} else if (annotationClassname.equals(InitializationHints.class.getName())) {
-						processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, ch));
+						processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, ch));
 					}
 				}
 			}
@@ -1978,7 +1944,7 @@ public class Type {
 		return node;
 	}
 
-	private void unpackTypeInfo(AnnotationNode typeInfo, HintDeclaration ch) {
+	private void unpackTypeHint(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
@@ -1995,9 +1961,9 @@ public class Type {
 			} else if (key.equals("typeNames")) {
 				typeNames = (ArrayList<String>) value;
 			} else if (key.equals("methods")) {
-				processMethodInfoList(mds, value);
+				processHintList(value, anno -> unpackMethodInfo(anno, mds));
 			} else if (key.equals("fields")) {
-				processFieldInfoList(fds, value);
+				processHintList(value, anno -> unpackFieldInfo(anno, fds));
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
@@ -2114,7 +2080,7 @@ public class Type {
 		}
 	}
 
-	private void unpackProxyInfo(AnnotationNode typeInfo, HintDeclaration ch) {
+	private void unpackProxyHint(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
@@ -2152,7 +2118,7 @@ public class Type {
 		}
 	}
 
-	private void unpackResourcesInfo(AnnotationNode typeInfo, HintDeclaration ch) {
+	private void unpackResourceHint(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<String> patterns = null;
 		Boolean isBundle = null;
@@ -2169,7 +2135,7 @@ public class Type {
 				new ResourcesDescriptor(patterns.toArray(new String[0]), isBundle == null ? false : isBundle));
 	}
 
-	private void unpackInitializationInfo(AnnotationNode typeInfo, HintDeclaration ch) {
+	private void unpackInitializationHint(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
@@ -2260,7 +2226,7 @@ public class Type {
 		}
 	}
 
-	private List<HintDeclaration> fromConfigurationHintsToCompilationHints(AnnotationNode an) {
+	private List<HintDeclaration> unpackNativeHints(AnnotationNode an) {
 		List<HintDeclaration> chs = new ArrayList<>();
 		List<Object> values = an.values;
 		for (int i = 0; i < values.size(); i += 2) {
@@ -2271,30 +2237,14 @@ public class Type {
 				// org.objectweb.asm.tree.AnnotationNode@68fb2c38]
 				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
 				for (int j = 0; j < annotationNodes.size(); j++) {
-					chs.add(fromConfigurationHintToHintDeclaration(annotationNodes.get(j)));
+					chs.add(unpackNativeHint(annotationNodes.get(j)));
 				}
 			}
 		}
 		return chs;
 	}
 
-	private void processTypeInfosList(HintDeclaration ch, AnnotationNode an) {
-		List<Object> values = an.values;
-		for (int i = 0; i < values.size(); i += 2) {
-			String key = (String) values.get(i);
-			Object value = values.get(i + 1);
-			if (key.equals("value")) {
-				// value=[org.objectweb.asm.tree.AnnotationNode@63e31ee,
-				// org.objectweb.asm.tree.AnnotationNode@68fb2c38]
-				List<AnnotationNode> annotationNodes = (List<AnnotationNode>) value;
-				for (int j = 0; j < annotationNodes.size(); j++) {
-					unpackTypeInfo(annotationNodes.get(j), ch);
-				}
-			}
-		}
-	}
-
-	private void processRepeatableInfosList(AnnotationNode an, Consumer<AnnotationNode> c) {
+	private void processRepeatableAnnotationList(AnnotationNode an, Consumer<AnnotationNode> c) {
 		List<Object> values = an.values;
 		for (int i = 0; i < values.size(); i += 2) {
 			String key = (String) values.get(i);
@@ -2313,7 +2263,7 @@ public class Type {
 	public List<HintDeclaration> getCompilationHints() {
 		if (dimensions > 0)
 			return Collections.emptyList();
-		return unpackConfigurationHints();
+		return unpackHints();
 	}
 
 	public int getDimensions() {

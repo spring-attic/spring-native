@@ -1246,7 +1246,7 @@ public class ResourcesHandler extends Handler {
 
 		boolean passesTests = true;
 		RequestedConfigurationManager accessManager = new RequestedConfigurationManager();
-		List<HintApplication> hints = type.getHints();
+		List<HintApplication> hints = type.getApplicableHints();
 		printHintSummary(type, hints);
 		Map<Type,ReachedBy> toFollow = new HashMap<>();
 		for (HintApplication hint : hints) {

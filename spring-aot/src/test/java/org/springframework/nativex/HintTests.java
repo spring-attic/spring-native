@@ -41,6 +41,7 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintApplication;
+import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.Type;
@@ -60,7 +61,7 @@ public class HintTests {
 	@Test
 	public void hints() {
 		Type testClass = typeSystem.resolveName(TestClass1.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		Map<String, AccessDescriptor> specificTypes = hints.get(0).getSpecificTypes();
 		System.out.println(specificTypes);
@@ -68,14 +69,39 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 	}
 
+	@Test
+	public void directHints() {
+		Type t = typeSystem.resolveName(TH1.class.getName());
+		List<HintDeclaration> hints = t.getCompilationHints();
+		assertEquals(1,hints.size());
+		HintDeclaration hd = hints.get(0);
+		assertEquals("java.lang.Object",hd.getTriggerTypename());
+		assertTrue(hd.getDependantTypes().containsKey("java.lang.String"));
+
+		t = typeSystem.resolveName(TH2.class.getName());
+		hd = t.getCompilationHints().get(0);
+		assertEquals("java.lang.Object",hd.getTriggerTypename());
+		assertTrue(hd.getDependantTypes().containsKey("java.lang.String"));
+		assertTrue(hd.getDependantTypes().containsKey("java.lang.Integer"));
+	}
+
 	@NativeHint(types = { @TypeHint(types = { String[].class }) })
 	static class TestClass1 {
+	}
+	
+	@TypeHint(types=String.class)
+	static class TH1 {
+	}
+
+	@TypeHint(types=String.class)
+	@TypeHint(types=Integer.class)
+	static class TH2 {
 	}
 	
 	@Test
 	public void proxies() {
 		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
 		List<ProxyDescriptor> proxies= hint.getProxyDescriptors();
@@ -92,7 +118,7 @@ public class HintTests {
 	@Test
 	public void resources() {
 		Type testClass = typeSystem.resolveName(TestClass3.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
 		List<ResourcesDescriptor> resourcesDescriptors = hint.getResourceDescriptors();
@@ -116,7 +142,7 @@ public class HintTests {
 	@Test
 	public void initializations() {
 		Type testClass = typeSystem.resolveName(TestClass5.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
 		List<InitializationDescriptor> initializationDescriptors = hint.getInitializationDescriptors();
@@ -172,7 +198,7 @@ public class HintTests {
 	@Test
 	public void methods() {
 		Type testClass = typeSystem.resolveName(TestClass6.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
@@ -194,7 +220,7 @@ public class HintTests {
 	@Test
 	public void fields() {
 		Type testClass = typeSystem.resolveName(TestClass7.class.getName());
-		List<HintApplication> hints = testClass.getHints();
+		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
