@@ -28,7 +28,6 @@
 		<jacoco.version>0.10.0-SNAPSHOT</jacoco.version>
 		<spring-format.version>0.0.21</spring-format.version>
 
-		<main.class>org.springframework.samples.petclinic.PetClinicApplication</main.class>
 	</properties>
 
 	<dependencies>

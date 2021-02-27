@@ -16,7 +16,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<mainClass>com.example.commandlinerunner.CommandlinerunnerApplication</mainClass>
 	</properties>
 
 	<dependencies>

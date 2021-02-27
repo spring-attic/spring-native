@@ -21,7 +21,6 @@
 		<protobuf.plugin.version>0.6.1</protobuf.plugin.version>
 		<protobuf.version>3.7.1</protobuf.version>
 		<grpc.version>1.22.1</grpc.version>
-		<main.class>com.example.ProtoApplication</main.class>
 	</properties>
 
 	<dependencies>
