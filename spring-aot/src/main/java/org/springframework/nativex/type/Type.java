@@ -1793,35 +1793,62 @@ public class Type {
 	}
 
 	/**
-	 * Find the @ConfigurationHint annotations on this type (may be more than one)
+	 * Find the {@link NativeHint} annotations on this type (may be more than one)
 	 * and from them build CompilationHints, taking care to convert class references
 	 * to strings because they may not be resolvable.
-	 * TODO ok to discard those that aren't resolvable at this point?
 	 * @return the hint declarations
 	 */
 	public List<HintDeclaration> unpackConfigurationHints() {
 		if (dimensions > 0)
 			return Collections.emptyList();
-		List<HintDeclaration> hints = null;
+		List<HintDeclaration> hints = new ArrayList<>();
+		HintDeclaration defaultHintDeclaration = new HintDeclaration();
+		defaultHintDeclaration.setTriggerTypename("java.lang.Object");
+		boolean defaultHintPopulated = false;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {
-				if (fromLdescriptorToDotted(an.desc).equals(NativeHint.class.getName())) {
-					HintDeclaration hint = fromConfigurationHintToHintDeclaration(an);
-					if (hints == null) {
-						hints = new ArrayList<>();
-					}
-					hints.add(hint);
-				} else if (fromLdescriptorToDotted(an.desc).equals(NativeHints.class.getName())) {
-					List<HintDeclaration> chints = fromConfigurationHintsToCompilationHints(an);
-					if (hints == null) {
-						hints = new ArrayList<>();
-					}
-					hints.addAll(chints);
+				String name = fromLdescriptorToDotted(an.desc);
+				if (name.equals(NativeHint.class.getName())) {
+					hints.add(fromConfigurationHintToHintDeclaration(an));
+				} else if (name.equals(NativeHints.class.getName())) {
+					hints.addAll(fromConfigurationHintsToCompilationHints(an));
+				} else if (name.equals(TypeHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackTypeInfo(an, defaultHintDeclaration);
+				} else if (name.equals(TypeHints.class.getName())) {
+					defaultHintPopulated=true;
+					processTypeInfosList(defaultHintDeclaration, an);
+				} else if (name.equals(ProxyHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackProxyInfo(an, defaultHintDeclaration);
+				} else if (name.equals(ProxyHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableInfosList(an, anno -> unpackProxyInfo(anno, defaultHintDeclaration));
+				} else if (name.equals(ResourceHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackResourcesInfo(an, defaultHintDeclaration);
+				} else if (name.equals(ResourcesHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableInfosList(an, anno -> unpackResourcesInfo(anno, defaultHintDeclaration));
+				} else if (name.equals(InitializationHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackInitializationInfo(an, defaultHintDeclaration);
+				} else if (name.equals(InitializationHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, defaultHintDeclaration));
+				} else if (name.equals(InitializationHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackInitializationInfo(an, defaultHintDeclaration);
+				} else if (name.equals(InitializationHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableInfosList(an, anno -> unpackInitializationInfo(anno, defaultHintDeclaration));
 				}
 			}
 		}
-		// TODO support repeatable version
-		return hints == null ? Collections.emptyList() : hints;
+		if (defaultHintPopulated) {
+			hints.add(defaultHintDeclaration);
+		}
+		return hints.isEmpty() ? Collections.emptyList() : hints;
 	}
 
 	private HintDeclaration fromConfigurationHintToHintDeclaration(AnnotationNode an) {

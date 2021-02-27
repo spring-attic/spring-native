@@ -56,9 +56,9 @@ import org.springframework.nativex.hint.AccessBits;
 				"org.springframework.core.annotation.SynthesizedAnnotation" })
 )
 @NativeHint(initialization = @InitializationHint(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
-@NativeHint(types = @TypeHint(types= {
+@TypeHint(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
-}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS))
+}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS)
 public class SpringDataCommonsHints implements NativeConfiguration {
 
 }

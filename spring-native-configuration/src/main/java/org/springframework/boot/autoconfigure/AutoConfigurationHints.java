@@ -28,9 +28,8 @@ import org.springframework.nativex.hint.AccessBits;
 			})}
 )
 @NativeHint(trigger=AutoConfigurationImportSelector.class)
-@NativeHint(types = {
-	@TypeHint(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
-			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
+@TypeHint(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },
+  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
 // TODO why isn't this one pulled in via @EnableAutoConfiguration handling?
 @NativeHint(types = {
 	@TypeHint(types = {

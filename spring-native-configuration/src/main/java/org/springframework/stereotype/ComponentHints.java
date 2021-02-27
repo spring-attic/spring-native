@@ -18,13 +18,10 @@ package org.springframework.stereotype;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(types = {
-	@TypeHint(types= {Component.class,PostConstruct.class, Resource.class},access= AccessBits.CLASS|AccessBits.DECLARED_METHODS)
-})
+@TypeHint(types= {Component.class,PostConstruct.class, Resource.class},access= AccessBits.CLASS|AccessBits.DECLARED_METHODS)
 public class ComponentHints implements NativeConfiguration {
 }
