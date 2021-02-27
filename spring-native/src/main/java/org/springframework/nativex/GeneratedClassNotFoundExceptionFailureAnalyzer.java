@@ -1,16 +1,25 @@
 package org.springframework.nativex;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 /**
+ * Failure analyzer for {@link GeneratedClassNotFoundException}.
+ *
  * @author Sebastien Deleuze
  */
 public class GeneratedClassNotFoundExceptionFailureAnalyzer extends AbstractFailureAnalyzer<GeneratedClassNotFoundException> {
 
+	private static final String ACTION = String.format(
+			"Review your local configuration and make sure that the Spring AOT plugin is configured properly.%n"
+					+ "See https://docs.spring.io/spring-native/docs/current/reference/#spring-aot for more details.");
+
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, GeneratedClassNotFoundException cause) {
-		return new FailureAnalysis(cause.getMessage(),  "See https://github.com/spring-projects-experimental/spring-native/blob/master/spring-native-docs/src/main/asciidoc/spring-aot-build-plugins.adoc " +
-				"for more details.", cause);
+	protected FailureAnalysis analyze(Throwable rootFailure, GeneratedClassNotFoundException ex) {
+		return new FailureAnalysis(ex.getMessage(), ACTION, ex);
 	}
+
 }
