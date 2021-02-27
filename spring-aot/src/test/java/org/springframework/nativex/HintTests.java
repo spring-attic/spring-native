@@ -75,12 +75,12 @@ public class HintTests {
 		List<HintDeclaration> hints = t.getCompilationHints();
 		assertEquals(1,hints.size());
 		HintDeclaration hd = hints.get(0);
-		assertEquals("java.lang.Object",hd.getTriggerTypename());
+		assertEquals(TH1.class.getName(),hd.getTriggerTypename());
 		assertTrue(hd.getDependantTypes().containsKey("java.lang.String"));
 
 		t = typeSystem.resolveName(TH2.class.getName());
 		hd = t.getCompilationHints().get(0);
-		assertEquals("java.lang.Object",hd.getTriggerTypename());
+		assertEquals(TH2.class.getName(),hd.getTriggerTypename());
 		assertTrue(hd.getDependantTypes().containsKey("java.lang.String"));
 		assertTrue(hd.getDependantTypes().containsKey("java.lang.Integer"));
 	}
