@@ -1805,7 +1805,13 @@ public class Type {
 		}
 		List<HintDeclaration> hints = new ArrayList<>();
 		HintDeclaration defaultHintDeclaration = new HintDeclaration();
-		defaultHintDeclaration.setTriggerTypename("java.lang.Object");
+		if (implementsInterface("org/springframework/nativex/type/NativeConfiguration")) {
+			// It is an 'always on' hint
+			defaultHintDeclaration.setTriggerTypename("java.lang.Object");
+		} else {
+			// the trigger is the annotation host
+			defaultHintDeclaration.setTriggerTypename(getDottedName());
+		}
 		boolean defaultHintPopulated = false;
 		if (node.visibleAnnotations != null) {
 			for (AnnotationNode an : node.visibleAnnotations) {

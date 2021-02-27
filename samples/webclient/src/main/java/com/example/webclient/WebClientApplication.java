@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(types = @TypeHint(types = Data.class, typeNames = "com.example.webclient.Data$SuperHero"))
+@TypeHint(types = Data.class, typeNames = "com.example.webclient.Data$SuperHero")
 @SpringBootApplication
 public class WebClientApplication {
 
