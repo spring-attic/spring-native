@@ -1,8 +1,5 @@
 package org.springframework.nativex;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
