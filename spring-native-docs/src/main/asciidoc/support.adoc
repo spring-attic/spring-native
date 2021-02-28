@@ -45,7 +45,7 @@ RSocket security is also supported.
 * `spring-boot-starter-webflux`: only Netty is supported for now.
 * `spring-boot-starter-web`:
 ** Only Tomcat is supported for now.
-** `tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint. If you are using `spring-boot-starter-web` and Maven, you should use the following `pom.xml` configuration:
+** `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint. If you are using `spring-boot-starter-web` and Maven, you should use the following `pom.xml` configuration:
 ====
 [source,xml]
 ----
@@ -76,6 +76,9 @@ RSocket security is also supported.
 * `com.wavefront:wavefront-spring-boot-starter`
 ** `--enable-https` flag is required.
 
+IMPORTANT: Devtools is not supported yet, you can follow
+https://github.com/spring-projects-experimental/spring-native/issues/532[spring-native#532] to be aware when it will.
+
 === Spring Cloud
 
 IMPORTANT: `spring-native` {version} is designed to be used with Spring Cloud {spring-cloud-version}.
@@ -97,6 +100,9 @@ Group ID is `org.springframework.cloud`.
 
 - Spring Kafka
 - https://grpc.io/[GRPC]
+- H2 database
+- Mysql JDBC driver
+- PostgreSQL JDBC driver
 
 === Limitations
 
