@@ -19,6 +19,9 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
+        <classifier></classifier>
+
         <!-- Customize native-image arguments with this property -->
         <native.build.args></native.build.args>
 
@@ -38,7 +41,7 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
-                        <classifier>exec</classifier>
+                        <classifier>${classifier}</classifier>
                         <image>
                             <builder>${builder}</builder>
                             <env>
@@ -177,6 +180,10 @@
         <!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
         <profile>
             <id>native-image</id>
+            <properties>
+                <!-- Avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
+                <classifier>exec</classifier>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

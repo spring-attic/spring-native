@@ -153,7 +153,7 @@ In order to avoid a clash between Spring Boot repackaging and `native-image-mave
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-            <classifier>app</classifier>
+            <classifier>exec</classifier>
         </configuration>
     </plugin>
 </plugins>
