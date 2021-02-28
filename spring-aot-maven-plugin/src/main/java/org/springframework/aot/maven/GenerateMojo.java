@@ -46,6 +46,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 		catch (Throwable exc) {
 			logger.error(exc);
 			logger.error(Arrays.toString(exc.getStackTrace()));
+			throw new MojoFailureException("Build failed during Spring AOT code generation", exc);
 		}
 
 		compileGeneratedSources(this.outputDirectory.toPath());
