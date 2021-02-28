@@ -17,6 +17,9 @@ package org.springframework.nativex;
 
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
@@ -33,6 +36,8 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 
 	private static final boolean generatedClassPresent = ClassUtils.isPresent(GENERATED_CLASS, null);
 
+	private static final Log logger = LogFactory.getLog(NativeListener.class);
+
 	static {
 		if (!NativeDetector.inNativeImage()) {
 			System.setProperty("org.graalvm.nativeimage.imagecode", "runtime");
@@ -47,6 +52,7 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 		if (!NativeDetector.inNativeImage() && !generatedClassPresent) {
 			throw new GeneratedClassNotFoundException(GENERATED_CLASS);
 		}
+		logger.info("This application is bootstrapped with code generated with Spring AOT");
 		ConfigurableEnvironment environment = event.getEnvironment();
 		Properties props = new Properties();
 		props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images

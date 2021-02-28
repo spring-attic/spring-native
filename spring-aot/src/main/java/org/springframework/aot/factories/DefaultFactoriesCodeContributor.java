@@ -3,8 +3,6 @@ package org.springframework.aot.factories;
 import java.util.function.Consumer;
 
 import com.squareup.javapoet.CodeBlock;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.BuildContext;
 import org.springframework.core.type.classreading.MethodDescriptor;
@@ -22,8 +20,6 @@ import org.springframework.nativex.hint.Flag;
 class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private final AotOptions aotOptions;
-
-	private static final Log logger = LogFactory.getLog(DefaultFactoriesCodeContributor.class);
 
 	DefaultFactoriesCodeContributor(AotOptions aotOptions) {
 		this.aotOptions = aotOptions;
