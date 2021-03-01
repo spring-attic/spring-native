@@ -4,6 +4,7 @@
 === GraalVM
 
 GraalVM version {graalvm-version} is supported, see related https://www.graalvm.org/release-notes/[release notes].
+GraalVM issues impacting Spring are identified on their bugtracker https://github.com/oracle/graal/labels/spring[by the `spring` label].
 
 === Language
 
