@@ -83,15 +83,16 @@ public class BootstrapCodeGenerator {
 				if (Files.exists(resourceFolder)) {
 					Files.walk(resourceFolder).filter(p -> !p.toFile().isDirectory()).forEach(p -> {
 						String resourcePattern = p.toString().substring(resourceFolderLen);
-						if (!resourcePattern.startsWith("META-INF/native-image")) {
+						String platformNormalisedResourcePattern = resourcePattern.replace("\\", "/");
+						if (!platformNormalisedResourcePattern.startsWith("META-INF/native-image")) {
 
-							if (matchesPatternInCache(resourcePattern))
+							if (matchesPatternInCache(platformNormalisedResourcePattern))
 								return;
 
-							logger.debug("Resource pattern: " + resourcePattern);
+							logger.debug("Resource pattern: " + platformNormalisedResourcePattern);
 							// TODO recognize resource bundles?
 							// TODO escape the patterns (add leading trailing Q and E sequences...)
-							buildContext.describeResources(crd -> crd.add(resourcePattern));
+							buildContext.describeResources(crd -> crd.add(platformNormalisedResourcePattern));
 						}
 					});
 				}
