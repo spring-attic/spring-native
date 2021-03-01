@@ -1,5 +1,4 @@
 [
-{"name":"org.springframework.cloud.config.environment.PropertyValueDescriptor","allDeclaredFields":true,"allDeclaredConstructors":true,"allDeclaredMethods":true},
 {"name":"org.springframework.cloud.config.server.EnableConfigServer"},
 {"name":"org.springframework.cloud.config.server.composite.ConditionalOnMissingSearchPathLocator"},
 {"name":"org.springframework.cloud.config.server.composite.ConditionalOnSearchPathLocator"},
