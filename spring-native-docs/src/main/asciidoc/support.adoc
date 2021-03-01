@@ -15,6 +15,7 @@ Be aware that Java 11 native images are currently impacted by a transient footpr
 Kotlin Coroutines are supported but require additional reflection entries due to how Coroutines generates bytecode with an `Object` return type, see https://github.com/spring-projects/spring-framework/issues/21546[this related issue] for a potential future fix.
 
 Some features like HTTPS may require some additional flags, check <<native-image-options>> for more details.
+When it recognizes certain usage scenarios, Spring Native will try to set the required flags automatically.
 
 === Spring Boot
 

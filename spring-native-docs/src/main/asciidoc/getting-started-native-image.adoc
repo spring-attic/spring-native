@@ -52,7 +52,7 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
 
 ===== `spring-native` dependency
 
-The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application on native image.
+The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
 
 ====
 [source,xml,subs="attributes,verbatim"]
@@ -71,7 +71,7 @@ The `spring-native` dependency provides native configuration APIs like `@NativeH
 ===== Add the `spring-aot-maven-plugin`
 
 This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
-We do not put it in the `native-image` profile defined below because it is useful to benefits from those transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+We do not put it in the `native-image` profile defined below because these transformations also benefit application run on a JVM.
 
 ====
 [source,xml,subs="attributes,verbatim"]

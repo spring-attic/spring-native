@@ -9,10 +9,10 @@ This is a practical guide, so we perform this for real on the https://spring.io/
 You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
 Before proceeding further, verify you can run docker commands from the shell.
 
-On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since `native-image` compiler is a heavy process.
+On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since the `native-image` compiler is a heavy process.
 See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
 
-On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
+On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performance.
 
 ==== Set up the sample project
 
@@ -94,7 +94,7 @@ dependencies {
 ===== Add the Spring AOT plugin
 
 This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
-We do not put it in the `native-image` profile defined below because it is useful to benefits from those transformations on JVM as well in order to be able to test/debug them with a short feedback loop.
+We do not put it in the `native-image` profile defined below because the transformations also benefits applications simply run on the JVM.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -134,7 +134,7 @@ TODO: Add Gradle configuration
 ===== Enable native image in Buildpacks support
 
 {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
-To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and provide optionally additional build arguments.
+To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and optionally provide additional build arguments.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -179,7 +179,7 @@ It is possible to add additional `native-image` arguments with the `BP_BOOT_NATI
 
 TODO: Update to `BP_NATIVE_IMAGE` and `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` when Buildpacks have been updated.
 
-Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks, `paketobuildpacks/builder:base` being the default (also works but less optimized).
+Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks, `paketobuildpacks/builder:base` being the default (which also works but less optimized).
 The `paketobuildpacks/builder:full` variant can be used in order to have more tools during the development.
 
 ===== Add the repositories
@@ -312,4 +312,4 @@ Now that the service is up, visit http://localhost:8080/greeting, where you shou
 ----
 ====
 
-See <<spring-aot>> for additional steps to configure properly the plugin in your IDE.
+See <<spring-aot>> for additional steps to configure the plugin properly in your IDE.

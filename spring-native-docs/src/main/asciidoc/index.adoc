@@ -4,29 +4,31 @@ Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Es
 
 == Overview
 
-Spring Native provides support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] {graalvm-native-docs}/[native-image] compiler.
+Spring Native provides support for compiling Spring applications to native executables using the https://www.graalvm.org[GraalVM] {graalvm-native-docs}/[native-image] compiler.
 
-Compared to the Java Virtual Machine, native images offers advantages like the following, enabling cheaper and more sustainable hosting for certain kinds of workloads (microservices, functions) well suited for containers and https://kubernetes.io/[Kubernetes]:
+Compared to the Java Virtual Machine, native images can enable cheaper and more sustainable hosting for many types of workload, for example microservices  and function workloads, well suited to containers and https://kubernetes.io/[Kubernetes].
+
+Some key advantages of native images include:
 
 - Instant startup
 - Instant peak performance
 - Reduced memory consumption
 
-But also a few drawbacks that could be reduced in the future as GraalVM native evolves:
+There are also some drawbacks/trade-offs that the GraalVM native project expect to improve on over time:
 
 - Slower and heavy build
-- Less runtime optimizations after warmup
+- Fewer runtime optimizations after warmup
 - Less mature than the JVM with some different behaviors
 
-The key differences between the regular JVM and this native image platform are:
+The key differences between a regular JVM and this native image platform are:
 
 - A static analysis of your application from the main entry point is performed at build time.
 - The unused parts are removed at build time.
 - Configuration is required for reflection, resources, and dynamic proxies.
-- Classpath fixed at build time.
+- Classpath is fixed at build time.
 - No class lazy loading: everything shipped in the executables will be loaded in memory at startup.
 - Some code will run at build time!
-- There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations].
+- There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations] around some aspects of Java applications that are not fully supported.
 
 The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, in order to provide a native deployment option designed to be packaged in lightweight containers.
 In practice, the target is to support your Spring application (typically Spring Boot ones), almost unmodified, on this new platform.
@@ -42,13 +44,14 @@ The Spring Native for GraalVM project is composed of the following modules:
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
 - `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
 - `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
+- `spring-aot-gradle-plugin`: this module contains the Gradle plugin that invokes AOT transformations.
 - `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 
 include::support.adoc[]
 
 == Getting Started
 
-There are two main ways to build Spring Boot native application:
+There are two main ways to build a Spring Boot native application:
 
 - Using <<getting-started-buildpacks, Spring Boot Maven or Gradle Buildpacks support>> to generate a lightweight container containing a native executable
 - Using <<getting-started-native-image, GraalVM native image Maven plugin support>> to generate a native executable

@@ -74,20 +74,18 @@ When the next native-image run happens it should automatically additionally incl
 
 ==== No access hint found for import selector: XXX
 
-The feature chases down configuration references to other configurations (`@Import` usages).
+Spring Native chases down configuration references to other configurations (`@Import` usages).
 However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
-The feature does not do that level of analysis (it could get very complicated).
+Spring Native does not do that level of analysis (it could get very complicated).
 This means that, although the feature can tell it has encountered a selector, it does not know what types that selector needs reflective access to or what further configurations it references.
-Now, the feature could continue.
-Maybe it would work, and maybe it would crash at runtime.
-Typically, the error you get can when there is a missing hint can be very cryptic.
+Now, Spring Native could simply continue and maybe it would work, maybe it would crash at runtime.
+Typically, the error produced when things go wrong due to this missing information is very cryptic.
 If the selector is doing a "`if this type is around, return this configuration to include`", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration.
-For this reason, the feature fails early and fast, indicating that it does not know what a particular selector is doing.
+For this reason, Spring Native analysis fails early and fast, indicating that it does not know what a particular selector is doing.
 To fix it, take a look in the selector in question and craft a quick hint for it.
 See {github-commits}/1251a274f81a3087b456d2178d2ae6405676d23b[this commit] that was fixing this kind of problem for a Spring Security ({github-issues}/60[issue]).
 
-you can temporarily turn this hard error into a warning.
-It is possible that, in your case, you do not need what the selector is doing.
+you can temporarily turn this hard error into a warning since it is possible that, in your case, you do not need what the selector is doing.
 To do so, specify the `failOnMissingSelectorHint` option to `false` to cause log messages about the problem but not a hard fail.
 Note that using warnings rather than errors can cause serious problems for your application.
 

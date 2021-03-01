@@ -1,16 +1,17 @@
 [[native-hints]]
 == Native hints
 
-GraalVM native image provides out-of-the-box configuration with static files that can be discovered when located in `META-INF/native-image` in your application classpath.
+GraalVM native image supports configuration via static files that are automatically discovered when located in the `META-INF/native-image` folder in your application classpath.
 Those files can be {graalvm-native-docs}/BuildConfiguration/#configuration-file-format[native-image.properties], {graalvm-native-docs}/Reflection/[reflect-config.json], {graalvm-native-docs}/DynamicProxy/[proxy-config.json] or {graalvm-native-docs}/Resources/[resource-config.json] for example.
 
-Spring Native is generating automatically such configuration automatically via its Spring AOT build plugin, but there are cases where specifying native configuration is required:
+Spring Native is automatically generating configuration files like these (that would sit alongside any user provided ones) via the Spring AOT build plugin. 
+However, there are situations where specifying additional native configuration is required:
 
 - When reflection-based serialization is used in a programmatic API like `WebClient` with Jackson
 - When you try to use a feature or library not yet supported by Spring Native
 - When you are want to specify native configuration related to your own application.
 
-For those, you can annotate classes already annotated with `@Configuration` or `@SpringBootApplication` with `@NativeHint`.
+For those, you can annotate classes already annotated with `@Configuration` or `@SpringBootApplication` with `@NativeHint`, or in the case of quite simple configuration a `@TypeHint` directly (a `@NativeHin` is a container for many kinds of configuration including `@TypeHint`s).
 
 For example, an application using `WebClient` to deserialize a `Data` class with a `SuperHero` nested class should be configured as below (see the Javadoc for more details):
 
@@ -28,7 +29,7 @@ public class WebClientApplication {
 In fact, Spring Native itself is configuring most of your application with such annotations provided out of the box, you can {github-tree}/spring-native-configuration/src/main/java[browse them] in order to see some concrete example of hints.
 
 Those hints will be taken in account during the compilation and transformed to generated native configuration by the Spring AOT plugin.
-It is of course also possible to provide directly GraalVM native configuration files if you prefer to do so, but annotation based configuration is usually easier to write and to maintain thanks to autocompletion and compilation checks.
+It is of course also possible to provide directly GraalVM native configuration files if you prefer to do so, but annotation based configuration is usually easier to write and to maintain thanks to autocompletion and compilation type checks.
 
 Here is the full list of what can be specified in a hint:
 
@@ -40,6 +41,6 @@ It should use class references but string names for classes are allowed if visib
 There should not really be a trigger specified on hints included `initialization`.
 * `imports` can be useful if two hints share a number of @TypeHint/@ProxyHint/etc in common.
 For example reactive-web and webmvc may expose a lot of common infrastructure.
-Rather than duplicate those in two places, those info annotations (TypeInfo/ProxyInfo/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `NativeHint`.
+Rather than duplicate those in two places, those info annotations (TypeHint/ProxyHint/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `@NativeHint`.
 
 For details and more dynamic ways to provide native configuration, see <<how-to-contribute>> section.

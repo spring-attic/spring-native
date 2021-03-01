@@ -80,7 +80,7 @@ TODO
 
 === Gradle
 
-You can configure the Gradle Spring AOT plugin by declaring first the rplugin repositories in your settings:
+You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings:
 
 [source,groovy,subs="attributes,verbatim"]
 .settings.gradle
@@ -133,12 +133,12 @@ Sources are generated in `build/generated/sources/aot/*,build/generated/resource
 
 * `verify` is set to `true` by default and perform some automated verification to ensure your application is native compliant, setting it to `false` switches off the verifications.
 
-* `removeUnusedConfig` is set to`tue` by default, setting it to `false` disables the removal of unused configurations.
+* `removeUnusedConfig` is set to `true` by default, setting it to `false` disables the removal of unused configurations.
 
 * `failOnMissingSelectorHint` is set to `true` by default and throw an error if no hint is provided for an active selector, setting it to `false` switches the plugin from a hard error to a warning. See the Troubleshooting section for more details on this.
 
 * [Experimental] `buildTimePropertiesMatchIfMissing` is set to `true` by default. Setting it to `false` means for any properties specifying `matchIfMissing=true` that will be overridden and not respected. This does flip the application into a mode where it needs to be much more explicit
-about specifying properties that activate configurations. (This is a work in dev option really for experimenting with image size vs explicit property trade offs).
+about specifying properties that activate configurations. (This is a work-in-progress option really for experimenting with image size vs explicit property trade offs).
 
 * [Experimental] `buildTimePropertiesChecks` (experimental) switches on build time evaluation of some configuration conditions related to properties. It must include at least an initial setting of `default-include-all` or `default-exclude-all` and that may be followed
 by a comma separated list of prefixes to explicitly include or exclude (for example `default-include-all,!spring.dont.include.these.,!or.these` or `default-exclude-all,spring.include.this.one.though.,and.this.one`). When considering a property the
