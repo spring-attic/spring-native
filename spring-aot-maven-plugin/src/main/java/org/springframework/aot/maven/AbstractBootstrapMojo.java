@@ -103,7 +103,6 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		aotOptions.setRemoveYamlSupport(removeYamlSupport);
 		aotOptions.setRemoveJmxSupport(removeJmxSupport);
 		aotOptions.setRemoveXmlSupport(removeXmlSupport);
-		aotOptions.setRemoveXmlSupport(removeXmlSupport);
 		aotOptions.setRemoveSpelSupport(removeSpelSupport);
 		aotOptions.setBuildTimePropertiesMatchIfMissing(buildTimePropertiesMatchIfMissing);
 		aotOptions.setBuildTimePropertiesChecks(buildTimePropertiesChecks);
