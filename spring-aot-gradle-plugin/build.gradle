@@ -1,0 +1,38 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+
+	testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
+}
+
+gradlePlugin {
+    plugins {
+		springAot {
+            id = 'org.springframework.experimental.aot'
+            implementationClass = 'org.springframework.aot.gradle.SpringAotGradlePlugin'
+        }
+    }
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+task sourcesJar(type: Jar) {
+	archiveClassifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives sourcesJar
+}

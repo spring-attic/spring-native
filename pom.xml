@@ -15,6 +15,7 @@
     <properties>
         <graalvm.version>21.0.0</graalvm.version>
         <docs.resources.version>0.2.1.RELEASE</docs.resources.version>
+        <spring.boot.version>2.4.3</spring.boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -26,6 +27,8 @@
         <module>spring-native</module>
         <module>spring-aot</module>
         <module>spring-aot-maven-plugin</module>
+        <module>spring-aot-gradle-plugin</module>
+		<module>org.springframework.experimental.aot.gradle.plugin</module>
         <module>spring-native-docs</module>
     </modules>
 
@@ -34,7 +37,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.4.3</version>
+                <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

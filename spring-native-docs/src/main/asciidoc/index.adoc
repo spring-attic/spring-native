@@ -1,6 +1,6 @@
 include::attributes.adoc[]
 = Spring Native documentation
-Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant
+Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant; Brian Clozel
 
 == Overview
 

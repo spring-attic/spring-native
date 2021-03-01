@@ -80,7 +80,38 @@ TODO
 
 === Gradle
 
-TODO
+You can configure the Gradle Spring AOT plugin by declaring first the rplugin repositories in your settings:
+
+[source,groovy,subs="attributes,verbatim"]
+.settings.gradle
+----
+pluginManagement {
+	repositories {
+		// add the spring milestone repository
+		maven { url 'https://repo.spring.io/milestone' }
+		...
+		gradlePluginPortal()
+	}
+}
+----
+
+[source,groovy,subs="attributes,verbatim"]
+.build.gradle
+----
+plugins {
+	id 'org.springframework.boot' version '2.4.3'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	// add the plugin declaration in your plugins section
+	id 'org.springframework.experimental.aot' version '0.9.0'
+	id 'java'
+}
+----
+
+The plugin creates two `SourceSets` for testing and running the application: "aot" and "aotTest".
+The resulting classes and resources are automatically added to the runtime classpath of the application when running the `test`, `bootRun` and `bootJar` tasks.
+
+Sources are generated in `build/generated/sources/aot/*,build/generated/resources/aot/*` and test sources in `build/generated/sources/aotTest/*,build/generated/resources/aotTest/*`.
+
 
 [[configuring-spring-aot]]
 === Configuring Spring AOT
