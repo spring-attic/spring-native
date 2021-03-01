@@ -13,10 +13,9 @@ echo "Testing buildpacks-based builds"
 if ! (cd "samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
   RC=1
 fi
-# TODO Bring back when Spring Native Gradle plugin is available
-#if ! (cd "samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
-#  RC=1
-#fi
+if ! (cd "samples/commandlinerunner-gradle" && ./gradlew bootBuildImage); then
+  RC=1
+fi
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
