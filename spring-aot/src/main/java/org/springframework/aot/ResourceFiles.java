@@ -34,14 +34,14 @@ public abstract class ResourceFiles {
 	 * @return the resource file
 	 */
 	public static ResourceFile fromStaticFile(Path sourcePath, Path relativeTo) {
-		return rootPath -> {
-			Path resourcePath = rootPath.resolve(ResourceFile.MAIN_RESOURCES_PATH);
+		return resourcePath -> {
+			Path currentResourcePath = resourcePath;
 			if (relativeTo != null) {
-				resourcePath = resourcePath.resolve(relativeTo);
+				currentResourcePath = currentResourcePath.resolve(relativeTo);
 			}
-			Files.createDirectories(resourcePath);
-			resourcePath = resourcePath.resolve(sourcePath.getFileName());
-			Files.copy(sourcePath, resourcePath, StandardCopyOption.REPLACE_EXISTING);
+			Files.createDirectories(currentResourcePath);
+			currentResourcePath = currentResourcePath.resolve(sourcePath.getFileName());
+			Files.copy(sourcePath, currentResourcePath, StandardCopyOption.REPLACE_EXISTING);
 		};
 	}
 

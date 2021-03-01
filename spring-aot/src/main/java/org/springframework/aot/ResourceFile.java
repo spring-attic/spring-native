@@ -24,12 +24,10 @@ import java.nio.file.Paths;
  */
 public interface ResourceFile extends GeneratedFile {
 
-	Path MAIN_RESOURCES_PATH = Paths.get("src", "main", "resources");
-
-	Path NATIVE_IMAGE_PATH = MAIN_RESOURCES_PATH.resolve(Paths.get("META-INF", "native-image"));
+	Path NATIVE_IMAGE_PATH = Paths.get("META-INF", "native-image");
 
 	Path NATIVE_CONFIG_PATH = NATIVE_IMAGE_PATH.resolve(Paths.get("org.springframework.aot", "spring-aot"));
 	
-	Path SPRING_COMPONENTS_PATH = MAIN_RESOURCES_PATH.resolve(Paths.get("META-INF", "spring.components"));
+	Path SPRING_COMPONENTS_PATH = Paths.get("META-INF", "spring.components");
 
 }

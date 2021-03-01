@@ -39,9 +39,11 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
+		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "java"));
+		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getTestClasspathElements(), resourceFolders);
+			generator.generate(sourcesPath, resourcesPath, this.project.getTestClasspathElements(), resourceFolders);
 		}
 		catch (Throwable exc) {
 			logger.error(exc);
@@ -49,10 +51,8 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			throw new MojoFailureException("Build failed during Spring AOT test code generation", exc);
 		}
 
-		compileGeneratedTestSources(this.outputDirectory.toPath());
-
-		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
-		processGeneratedTestResources(resourcePath, Paths.get(project.getBuild().getOutputDirectory()));
+		compileGeneratedTestSources(sourcesPath);
+		processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));
 
 		this.buildContext.refresh(this.buildDir);
 	}

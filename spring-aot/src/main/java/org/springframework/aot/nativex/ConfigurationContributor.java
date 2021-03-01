@@ -57,12 +57,11 @@ public class ConfigurationContributor implements BootstrapContributor {
 			logger.debug("Storing synthesized META-INF/spring.components");
 			context.addResources(new ResourceFile() {
 				@Override
-				public void writeTo(Path rootPath) throws IOException {
-					Path srcMainResourcesFolder = rootPath.resolve(ResourceFile.MAIN_RESOURCES_PATH);
-					Path metaInfFolder = srcMainResourcesFolder.resolve(Paths.get("META-INF"));
+				public void writeTo(Path resourcesPath) throws IOException {
+					Path metaInfFolder = resourcesPath.resolve(Paths.get("META-INF"));
 					Files.createDirectories(metaInfFolder);
-					Path springComponentsFile = rootPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH);
-					try (FileOutputStream fos = new FileOutputStream(rootPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
+					Path springComponentsFile = resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH);
+					try (FileOutputStream fos = new FileOutputStream(resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
 						fos.write(springComponentsFileContents);
 					}
 				}

@@ -39,21 +39,19 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
+		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "java"));
+		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
 		try {
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-			generator.generate(Paths.get(this.outputDirectory.toURI()), this.project.getRuntimeClasspathElements(), resourceFolders);
+			generator.generate(sourcesPath, resourcesPath, this.project.getRuntimeClasspathElements(), resourceFolders);
 		}
 		catch (Throwable exc) {
 			logger.error(exc);
 			logger.error(Arrays.toString(exc.getStackTrace()));
 			throw new MojoFailureException("Build failed during Spring AOT code generation", exc);
 		}
-
-		compileGeneratedSources(this.outputDirectory.toPath());
-
-		Path resourcePath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
-		processGeneratedResources(resourcePath, Paths.get(project.getBuild().getOutputDirectory()));
-
+		compileGeneratedSources(sourcesPath);
+		processGeneratedResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));
 		this.buildContext.refresh(this.buildDir);
 	}
 

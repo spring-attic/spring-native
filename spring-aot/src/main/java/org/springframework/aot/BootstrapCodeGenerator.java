@@ -55,12 +55,13 @@ public class BootstrapCodeGenerator {
 	/**
 	 * Generate bootstrap code for the application.
 	 *
-	 * @param path the root path generated files should be written to
+	 * @param sourcesPath the root path generated source files should be written to
+	 * @param resourcesPath the root path generated resource files should be written to
 	 * @param classpath the "compile+runtime" classpath of the application
 	 * @param resourceFolders paths to folders containing project main resources
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
-	public void generate(Path path, List<String> classpath, Set<Path> resourceFolders) throws IOException {
+	public void generate(Path sourcesPath, Path resourcesPath, List<String> classpath, Set<Path> resourceFolders) throws IOException {
 		logger.debug("Starting code generation with classpath: " + classpath);
 		DefaultBuildContext buildContext = new DefaultBuildContext(classpath);
 		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
@@ -87,15 +88,15 @@ public class BootstrapCodeGenerator {
 			}
 		}
 		
-		logger.debug("Writing generated sources to: " + path);
+		logger.debug("Writing generated sources to: " + sourcesPath);
 		for (SourceFile sourceFile : buildContext.getSourceFiles()) {
-			sourceFile.writeTo(path);
+			sourceFile.writeTo(sourcesPath);
 		}
 		for (ResourceFile resourceFile : buildContext.getResourceFiles()) {
-			resourceFile.writeTo(path);
+			resourceFile.writeTo(resourcesPath);
 		}
 
-		Path graalVMConfigPath = path.resolve(ResourceFile.NATIVE_CONFIG_PATH);
+		Path graalVMConfigPath = resourcesPath.resolve(ResourceFile.NATIVE_CONFIG_PATH);
 		Files.createDirectories(graalVMConfigPath);
 		// reflect-config.json
 		ReflectionDescriptor reflectionDescriptor = buildContext.getReflectionDescriptor();

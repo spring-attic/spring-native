@@ -38,7 +38,7 @@ public abstract class SourceFiles {
 	 * @return the source file
 	 */
 	public static SourceFile fromJavaFile(JavaFile javaFile) {
-		return rootPath -> javaFile.writeTo(rootPath.resolve(SourceFile.MAIN_SRC_PATH));
+		return rootPath -> javaFile.writeTo(rootPath);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public abstract class SourceFiles {
 	 */
 	public static SourceFile fromStaticFile(String packageName, String className, InputStream staticFile) {
 		return rootPath -> {
-			Path packagePath = rootPath.resolve(SourceFile.MAIN_SRC_PATH);
+			Path packagePath = rootPath;
 			for (String segment : packageName.split(("\\."))) {
 				packagePath = packagePath.resolve(segment);
 			}

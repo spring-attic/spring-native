@@ -110,21 +110,19 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	}
 
 
-	protected void compileGeneratedSources(Path generatedRootFolder) throws MojoExecutionException {
+	protected void compileGeneratedSources(Path sourcesPath) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
-		Path sourcePath = generatedRootFolder.resolve(Paths.get("src", "main", "java"));
-		project.addCompileSourceRoot(sourcePath.toString());
-		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcePath.toString())));
+		project.addCompileSourceRoot(sourcesPath.toString());
+		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())));
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
 				goal("compile"), compilerConfig, executionEnvironment(this.project, this.session, this.pluginManager));
 	}
 
-	protected void compileGeneratedTestSources(Path generatedRootFolder) throws MojoExecutionException {
+	protected void compileGeneratedTestSources(Path sourcesPath) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
-		Path sourcePath = generatedRootFolder.resolve(Paths.get("src", "main", "java"));
-		project.addTestCompileSourceRoot(sourcePath.toString());
-		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcePath.toString())));
+		project.addTestCompileSourceRoot(sourcesPath.toString());
+		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())));
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
 				goal("testCompile"), compilerConfig, executionEnvironment(this.project, this.session, this.pluginManager));
