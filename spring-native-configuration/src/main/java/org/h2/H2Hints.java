@@ -26,19 +26,20 @@ import org.h2.store.fs.FilePathRetryOnInterrupt;
 import org.h2.store.fs.FilePathSplit;
 import org.h2.store.fs.FilePathZip;
 
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger= Driver.class, types = {
+@NativeHint(trigger= Driver.class, types =
 		@TypeHint( types = {
 			FilePathDisk.class, FilePathMem.class, FilePathNioMem.class, 
 			FilePathSplit.class, FilePathNio.class, FilePathNioMapped.class, FilePathAsync.class, FilePathZip.class, FilePathRetryOnInterrupt.class,
-			MVTableEngine.class, 
-			},
-			typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"},
-			access=AccessBits.LOAD_AND_CONSTRUCT)}
+			MVTableEngine.class},
+			typeNames= {"org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF"}),
+		initialization = @InitializationHint(types = org.h2.util.Bits.class, initTime = InitializationTime.BUILD)
 		)
 public class H2Hints implements NativeConfiguration {
 }

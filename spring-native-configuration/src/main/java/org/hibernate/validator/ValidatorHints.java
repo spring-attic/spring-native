@@ -1,12 +1,14 @@
 package org.hibernate.validator;
 
+import org.hibernate.validator.internal.engine.ValidatorImpl;
+
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
 
-@NativeHint(
+@NativeHint(trigger = ValidatorImpl.class,
 		initialization = @InitializationHint(types = {
 				org.hibernate.validator.internal.engine.groups.ValidationOrderGenerator.class,
 				org.hibernate.validator.internal.engine.ValidatorImpl.class,

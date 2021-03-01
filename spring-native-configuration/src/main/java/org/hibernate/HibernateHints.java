@@ -1,6 +1,9 @@
 package org.hibernate;
 
 import org.hibernate.query.Query;
+
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
@@ -26,7 +29,13 @@ import static org.springframework.nativex.hint.AccessBits.*;
 		},
 		types = {
 			@TypeHint(types = org.hibernate.query.spi.QueryImplementor.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS)
-		}
+		},
+		initialization = @InitializationHint(types = {
+				org.hibernate.EntityMode.class,
+				javax.persistence.FetchType.class,
+				javax.persistence.PersistenceContextType.class,
+				javax.persistence.SynchronizationType.class
+		}, initTime = InitializationTime.BUILD)
 )
 public class HibernateHints implements NativeConfiguration {
 }

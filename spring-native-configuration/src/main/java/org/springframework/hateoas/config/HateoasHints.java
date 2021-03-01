@@ -15,40 +15,15 @@
  */
 package org.springframework.hateoas.config;
 
-import org.springframework.nativex.hint.InitializationHint;
-import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.util.MimeTypeUtils;
+import org.springframework.nativex.type.NativeConfiguration;
 
 
-@NativeHint(
-	initialization = {
-		@InitializationHint(initTime=InitializationTime.BUILD, types = {MimeTypeUtils.class,MediaTypes.class})
-	}
-)
-/*
-proposedHints.put(WebStackImportSelector,
-		new CompilationHint(false, true, new String[] {
-			//"org.springframework.hateoas.config.WebStackImportSelector" - why was this here???
-			"org.springframework.hateoas.config.WebMvcHateoasConfiguration",
-			"org.springframework.hateoas.config.WebFluxHateoasConfiguration"
-		}));
-		*/
 @NativeHint(trigger=WebStackImportSelector.class, types = {
 	@TypeHint(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})
 },follow=true)
-/*
-public final static String HypermediaConfigurationImportSelector = "Lorg/springframework/hateoas/config/HypermediaConfigurationImportSelector;";
-	// TODO I am not sure the specific entry here is right, but given that the selector references entries loaded via factories - aren't those already handled? 
-	proposedHints.put(HypermediaConfigurationImportSelector,
-			new CompilationHint(false, true, new String[] {
-					"org.springframework.hateoas.config.HypermediaConfigurationImportSelector"
-			}));
-			*/
 @NativeHint(trigger=HypermediaConfigurationImportSelector.class, types = {
 	@TypeHint(types= {
 		HypermediaConfigurationImportSelector.class,

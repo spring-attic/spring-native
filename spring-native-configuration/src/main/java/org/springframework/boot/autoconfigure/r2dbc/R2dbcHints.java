@@ -29,6 +29,8 @@ import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.AfterSaveCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -68,7 +70,7 @@ import reactor.core.publisher.Mono;
 				Flux.class
 		}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		// Enables 'dispose' method to be found
-		@TypeHint(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)
-})
+		@TypeHint(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)},
+		initialization = @InitializationHint(packageNames = { "org.springframework.data.r2dbc.connectionfactory", "io.r2dbc.spi" }, initTime = InitializationTime.BUILD))
 public class R2dbcHints implements NativeConfiguration {
 }

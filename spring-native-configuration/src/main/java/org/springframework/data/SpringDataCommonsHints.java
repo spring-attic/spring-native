@@ -53,9 +53,10 @@ import org.springframework.nativex.hint.AccessBits;
 		},
 		proxies = @ProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",
-				"org.springframework.core.annotation.SynthesizedAnnotation" })
+				"org.springframework.core.annotation.SynthesizedAnnotation" }
+		),
+		initialization = @InitializationHint(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD)
 )
-@NativeHint(initialization = @InitializationHint(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD))
 @TypeHint(types= {
 		EntityManagerBeanDefinitionRegistrarPostProcessor.class
 }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS)

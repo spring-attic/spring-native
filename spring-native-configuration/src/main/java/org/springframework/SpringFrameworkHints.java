@@ -60,7 +60,8 @@ import org.springframework.nativex.hint.ProxyHint;
 				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
 				org.springframework.core.ReactiveAdapterRegistry.class,
 				org.springframework.core.NativeDetector.class,
-				org.springframework.core.KotlinDetector.class
+				org.springframework.core.KotlinDetector.class,
+				org.aopalliance.aop.Advice.class
 		}, typeNames = {
 				"org.springframework.aop.Advisor$1",
 				"org.springframework.core.annotation.AnnotationFilter$1",

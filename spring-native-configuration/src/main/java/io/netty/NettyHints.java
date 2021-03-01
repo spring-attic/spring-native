@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 
-@NativeHint(initialization = {
+@NativeHint(trigger = DefaultChannelId.class, initialization = {
 		@InitializationHint(initTime=InitializationTime.RUN,
 		packageNames = "io.netty.channel.epoll",
 		types = {

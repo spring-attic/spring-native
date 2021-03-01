@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.data.redis;
 
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
@@ -129,7 +131,8 @@ import org.springframework.nativex.hint.TypeHint;
 				@ProxyHint(typeNames = {
 						"org.springframework.data.keyvalue.annotation.KeySpace", "org.springframework.core.annotation.SynthesizedAnnotation"
 				})
-		}
+		},
+		initialization = @InitializationHint(types = com.rabbitmq.client.SocketChannelConfigurator.class, initTime = InitializationTime.BUILD)
 )
 public class RedisDataSupportHints implements NativeConfiguration {
 
