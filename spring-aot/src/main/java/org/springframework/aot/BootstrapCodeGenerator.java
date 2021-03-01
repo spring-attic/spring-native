@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +50,8 @@ public class BootstrapCodeGenerator {
 
 	private AotOptions aotOptions;
 
+	private final Set<Pattern> resourcePatternCache = new HashSet<>();
+
 	public BootstrapCodeGenerator(AotOptions aotOptions) {
 		this.aotOptions = aotOptions;
 	}
@@ -69,7 +73,9 @@ public class BootstrapCodeGenerator {
 			logger.debug("Executing Contributor: " + contributor.getClass().getName());
 			contributor.contribute(buildContext, this.aotOptions);
 		}
-		
+
+		buildResourcePatternCache(buildContext.getResourcesDescriptor());
+
 		if (!resourceFolders.isEmpty()) {
 			logger.debug("Processing resource folders: " + resourceFolders);
 			for (Path resourceFolder : resourceFolders) {
@@ -78,6 +84,10 @@ public class BootstrapCodeGenerator {
 					Files.walk(resourceFolder).filter(p -> !p.toFile().isDirectory()).forEach(p -> {
 						String resourcePattern = p.toString().substring(resourceFolderLen);
 						if (!resourcePattern.startsWith("META-INF/native-image")) {
+
+							if (matchesPatternInCache(resourcePattern))
+								return;
+
 							logger.debug("Resource pattern: " + resourcePattern);
 							// TODO recognize resource bundles?
 							// TODO escape the patterns (add leading trailing Q and E sequences...)
@@ -87,7 +97,7 @@ public class BootstrapCodeGenerator {
 				}
 			}
 		}
-		
+
 		logger.debug("Writing generated sources to: " + sourcesPath);
 		for (SourceFile sourceFile : buildContext.getSourceFiles()) {
 			sourceFile.writeTo(sourcesPath);
@@ -119,5 +129,31 @@ public class BootstrapCodeGenerator {
 			resourcesMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
 		}
 	}
+
+
+	/**
+	 * Quick optimisation to help us avoid adding entries which are likely already included
+	 * e.g. via CommonWebInfos @ResourceHint for "^templates/.*". If a pattern looks like
+	 * it's a simple regex to include all contents in a folder, compile and add to a cache
+	 * so we can test against it later
+	 *
+	 * @param resourcesDescriptor the descriptor of resource patterns to potentially cache
+	 */
+	private void buildResourcePatternCache(ResourcesDescriptor resourcesDescriptor) {
+		for (String patt : resourcesDescriptor.getPatterns()) {
+			if (patt.startsWith("^") && patt.endsWith(".*")) {
+				this.resourcePatternCache.add(Pattern.compile(patt));
+			}
+		}
+	}
+
+	private boolean matchesPatternInCache(String resourcePattern) {
+		for (Pattern patt : this.resourcePatternCache) {
+			if (patt.matcher(resourcePattern).matches())
+				return true;
+		}
+		return false;
+	}
+
 
 }
