@@ -1,8 +1,24 @@
+/*
+ * Copyright 2002-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.aot.maven;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +32,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.nativex.AotOptions;
 
@@ -110,19 +127,27 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	}
 
 
-	protected void compileGeneratedSources(Path sourcesPath) throws MojoExecutionException {
+	protected void compileGeneratedSources(Path sourcesPath, List<String> runtimeClasspathElements) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
 		project.addCompileSourceRoot(sourcesPath.toString());
-		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())));
+		Xpp3Dom compilerConfig = configuration(
+				element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())),
+				element("compilePath", runtimeClasspathElements.stream()
+						.map(classpathElement -> element("compilePath", classpathElement)).toArray(MojoExecutor.Element[]::new))
+		);
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
 				goal("compile"), compilerConfig, executionEnvironment(this.project, this.session, this.pluginManager));
 	}
 
-	protected void compileGeneratedTestSources(Path sourcesPath) throws MojoExecutionException {
+	protected void compileGeneratedTestSources(Path sourcesPath, List<String> testClasspathElements) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
 		project.addTestCompileSourceRoot(sourcesPath.toString());
-		Xpp3Dom compilerConfig = configuration(element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())));
+		Xpp3Dom compilerConfig = configuration(
+				element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())),
+				element("compilePath", testClasspathElements.stream()
+						.map(classpathElement -> element("compilePath", classpathElement)).toArray(MojoExecutor.Element[]::new))
+		);
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
 				goal("testCompile"), compilerConfig, executionEnvironment(this.project, this.session, this.pluginManager));
