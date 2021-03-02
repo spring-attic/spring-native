@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>spring-native-configuration</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Spring Native configuration</name>
