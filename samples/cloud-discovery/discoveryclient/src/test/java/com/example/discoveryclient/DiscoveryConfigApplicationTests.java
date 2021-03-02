@@ -1,10 +1,10 @@
-//package com.example.configclient;
+//package com.example.discoveryclient;
 //
 //import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
 //
 //@SpringBootTest
-//class ConfigclientApplicationTests {
+//class DiscoveryClientApplicationTests {
 //
 //	@Test
 //	void contextLoads() {

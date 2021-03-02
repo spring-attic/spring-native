@@ -15,6 +15,7 @@
  */
 package org.springframework.cloud.client.discovery;
 
+import org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration;
 import org.springframework.nativex.hint.NativeHint;
@@ -23,9 +24,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = EnableDiscoveryClientImportSelector.class, types = {
 	@TypeHint(types = {
-		AutoServiceRegistrationConfiguration.class
+		AutoServiceRegistrationConfiguration.class, ConditionalOnReactiveDiscoveryEnabled.class
 	})
 })
-@NativeHint(trigger = SimpleDiscoveryClientAutoConfiguration.class, types = {@TypeHint(types = {DiscoveryClient.class})})
+@NativeHint(trigger = SimpleDiscoveryClientAutoConfiguration.class, types = @TypeHint(types = DiscoveryClient.class))
 public class DiscoveryClientHints implements NativeConfiguration {
 }

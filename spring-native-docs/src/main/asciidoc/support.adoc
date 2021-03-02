@@ -75,6 +75,8 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-starter-bootstrap`
 * `spring-cloud-starter-config`
 * `spring-cloud-config-client`
+* `spring-cloud-config-server`
+* `spring-cloud-starter-netflix-eureka-client` (Java 11 only)
 * `spring-cloud-function-web`
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-cloud-function-adapter-aws`

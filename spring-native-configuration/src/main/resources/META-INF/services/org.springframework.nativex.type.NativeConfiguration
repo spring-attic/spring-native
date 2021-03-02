@@ -82,6 +82,8 @@ org.springframework.cloud.function.FunctionHints
 org.springframework.cloud.function.context.config.ContextFunctionCatalogHints
 org.springframework.cloud.function.web.mvc.RequestProcessorHints
 org.springframework.cloud.gateway.config.GatewayHints
+org.springframework.cloud.loadbalancer.LoadBalancerHints
+org.springframework.cloud.netflix.eureka.EurekaClientHints
 org.springframework.context.annotation.ContextAnnotationHints
 org.springframework.core.annotation.CoreAnnotationHints
 org.springframework.data.web.config.SpringDataWebHints
