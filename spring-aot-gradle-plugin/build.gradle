@@ -2,8 +2,9 @@ plugins {
     id 'java-gradle-plugin'
 }
 
-repositories {
-	mavenCentral()
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -31,6 +32,10 @@ test {
 task sourcesJar(type: Jar) {
 	archiveClassifier = 'sources'
 	from sourceSets.main.allSource
+}
+
+repositories {
+	mavenCentral()
 }
 
 artifacts {
