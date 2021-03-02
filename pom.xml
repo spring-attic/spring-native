@@ -34,6 +34,31 @@
 
     <dependencyManagement>
         <dependencies>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot-gradle-plugin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native-configuration</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
