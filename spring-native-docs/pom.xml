@@ -128,12 +128,12 @@
                                 </configuration>
                             </execution>
                         </executions>
-
                         <configuration>
                             <sourceDirectory>${project.build.directory}/refdocs/</sourceDirectory>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
                             <doctype>book</doctype>
                             <attributes>
+                                <spring-native-repo>${spring-native-repo}</spring-native-repo>
                                 <version>${project.version}</version>
                                 <projectName>${project.name}</projectName>
                                 <projectVersion>${project.version}</projectVersion>
@@ -147,7 +147,54 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>ant-contrib</groupId>
+                                <artifactId>ant-contrib</artifactId>
+                                <version>1.0b3</version>
+                                <exclusions>
+                                    <exclusion>
+                                        <groupId>ant</groupId>
+                                        <artifactId>ant</artifactId>
+                                    </exclusion>
+                                </exclusions>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-nodeps</artifactId>
+                                <version>1.8.1</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.tigris.antelope</groupId>
+                                <artifactId>antelopetasks</artifactId>
+                                <version>3.2.10</version>
+                            </dependency>
+                        </dependencies>
                         <executions>
+                            <execution>
+                                <id>setup-maven-properties</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <exportAntProperties>true</exportAntProperties>
+                                    <target>
+                                        <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                                        <taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+                                        <var name="version-type" value="RELEASE" />
+                                        <propertyregex property="version-type" override="true"
+                                                       input="${project.version}" regexp=".*-M\d+" replace="MILESTONE" />
+                                        <propertyregex property="version-type" override="true"
+                                                       input="${project.version}" regexp=".*-RC\d+" replace="MILESTONE" />
+                                        <propertyregex property="version-type" override="true"
+                                                       input="${project.version}" regexp=".*-SNAPSHOT" replace="SNAPSHOT" />
+                                        <stringutil string="${version-type}" property="spring-native-repo">
+                                            <lowercase />
+                                        </stringutil>
+                                    </target>
+                                </configuration>
+                            </execution>
                             <execution>
                                 <id>package-and-attach-docs-zip</id>
                                 <goals>

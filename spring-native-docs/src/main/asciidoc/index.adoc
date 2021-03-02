@@ -6,46 +6,43 @@ Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Es
 
 Spring Native provides support for compiling Spring applications to native executables using the https://www.graalvm.org[GraalVM] {graalvm-native-docs}/[native-image] compiler.
 
-Compared to the Java Virtual Machine, native images can enable cheaper and more sustainable hosting for many types of workload, for example microservices  and function workloads, well suited to containers and https://kubernetes.io/[Kubernetes].
+Compared to the Java Virtual Machine, native images can enable cheaper and more sustainable hosting for many types of workload.
+These include microservices, function workloads, well suited to containers, and https://kubernetes.io/[Kubernetes]
 
-Some key advantages of native images include:
+Using native image have key advantages, such as instant startup, instant peak performance, and reduced memory consumption.
 
-- Instant startup
-- Instant peak performance
-- Reduced memory consumption
-
-There are also some drawbacks/trade-offs that the GraalVM native project expect to improve on over time:
-
-- Slower and heavy build
-- Fewer runtime optimizations after warmup
-- Less mature than the JVM with some different behaviors
+There are also some drawbacks and trade-offs that the GraalVM native project expect to improve on over time.
+Building a native image is a heavy process that is slower than a regular application.
+A native image has fewer runtime optimizations after warmup.
+Finally, it is less mature than the JVM with some different behaviors.
 
 The key differences between a regular JVM and this native image platform are:
 
-- A static analysis of your application from the main entry point is performed at build time.
-- The unused parts are removed at build time.
-- Configuration is required for reflection, resources, and dynamic proxies.
-- Classpath is fixed at build time.
-- No class lazy loading: everything shipped in the executables will be loaded in memory at startup.
-- Some code will run at build time!
-- There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations] around some aspects of Java applications that are not fully supported.
+* A static analysis of your application from the main entry point is performed at build time.
+* The unused parts are removed at build time.
+* Configuration is required for reflection, resources, and dynamic proxies.
+* Classpath is fixed at build time.
+* No class lazy loading: everything shipped in the executables will be loaded in memory on startup.
+* Some code will run at build time.
+* There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations] around some aspects of Java applications that are not fully supported.
 
-The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, in order to provide a native deployment option designed to be packaged in lightweight containers.
-In practice, the target is to support your Spring application (typically Spring Boot ones), almost unmodified, on this new platform.
-Beware that we are not here yet, see the <<support>> documentation for more details.
+The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, and provide a native deployment option designed to be packaged in lightweight containers.
+In practice, the target is to support your Spring applications, almost unmodified, on this new platform.
+
+NOTE: This is work in progress, see the list of <<support,supported features>> for more details.
 
 === Modules
 
-The Spring Native for GraalVM project is composed of the following modules:
+Spring Native is composed of the following modules:
 
-- `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
-- `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-native-docs`: contains the asciidoc documentation sources.
-- `spring-native-tools`: tools used for reviewing image building configuration and output.
-- `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
-- `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
-- `spring-aot-gradle-plugin`: this module contains the Gradle plugin that invokes AOT transformations.
-- `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+* `spring-native`: runtime dependency required for running Spring native, such as substitutions.
+* `spring-native-configuration`: configuration hints for Spring classes, including various Spring Boot auto-configurations.
+* `spring-native-docs`: reference guide, in asciidoc format.
+* `spring-native-tools`: tools used for reviewing image building configuration and output.
+* `spring-aot`: AOT transformation infrastructure common to Maven and Gradle plugins.
+* `spring-aot-maven-plugin`: Maven plugin that invokes AOT transformations.
+* `spring-aot-gradle-plugin`: Gradle plugin that invokes AOT transformations.
+* `samples`: contains various samples that demonstrate features usage and are used as integration tests.
 
 include::support.adoc[]
 
@@ -53,8 +50,11 @@ include::support.adoc[]
 
 There are two main ways to build a Spring Boot native application:
 
-- Using <<getting-started-buildpacks, Spring Boot Maven or Gradle Buildpacks support>> to generate a lightweight container containing a native executable
-- Using <<getting-started-native-image, GraalVM native image Maven plugin support>> to generate a native executable
+* Using <<getting-started-buildpacks, Spring Boot Buildpacks support>> to generate a lightweight container containing a native executable.
+* Using <<getting-started-native-image, the GraalVM native image Maven plugin support>> to generate a native executable.
+
+NOTE: To use Spring Native from your IDE, additional steps are required.
+Check the <<spring-aot,dedicated section>> for more details.
 
 include::getting-started-buildpacks.adoc[]
 
