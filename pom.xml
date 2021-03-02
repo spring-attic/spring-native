@@ -1,40 +1,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.springframework.experimental</groupId>
+	<artifactId>spring-native-build</artifactId>
+	<version>0.9.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Spring Native build</name>
+	<url>https://github.com/spring-projects-experimental/spring-native/</url>
 
-    <groupId>org.springframework.experimental</groupId>
-    <artifactId>spring-native-build</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
-    <name>Spring Native build</name>
-
-    <url>https://github.com/spring-projects-experimental/spring-native/</url>
-
-    <properties>
-        <graalvm.version>21.0.0</graalvm.version>
-        <docs.resources.version>0.2.1.RELEASE</docs.resources.version>
-        <spring.boot.version>2.4.3</spring.boot.version>
+	<properties>
+		<graalvm.version>21.0.0</graalvm.version>
+		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
+		<spring.boot.version>2.4.3</spring.boot.version>
 		<spring.cloud.version>2020.0.1</spring.cloud.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 
-    <modules>
-        <module>spring-native-configuration</module>
-        <module>spring-native-tools</module>
-        <module>spring-native</module>
-        <module>spring-aot</module>
-        <module>spring-aot-maven-plugin</module>
-        <module>spring-aot-gradle-plugin</module>
+	<modules>
+		<module>spring-native-configuration</module>
+		<module>spring-native-tools</module>
+		<module>spring-native</module>
+		<module>spring-aot</module>
+		<module>spring-aot-maven-plugin</module>
+		<module>spring-aot-gradle-plugin</module>
 		<module>org.springframework.experimental.aot.gradle.plugin</module>
-        <module>spring-native-docs</module>
-    </modules>
+		<module>spring-native-docs</module>
+	</modules>
 
-    <dependencyManagement>
-        <dependencies>
+	<dependencyManagement>
+		<dependencies>
 			<dependency>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot</artifactId>
@@ -60,13 +57,13 @@
 				<artifactId>spring-native-tools</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-gradle-plugin</artifactId>
@@ -129,18 +126,18 @@
 				<artifactId>mojo-executor</artifactId>
 				<version>2.3.1</version>
 			</dependency>
-        </dependencies>
-    </dependencyManagement>
+		</dependencies>
+	</dependencyManagement>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
@@ -172,59 +169,59 @@
 					</execution>
 				</executions>
 			</plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-invoker-plugin</artifactId>
-                    <version>3.2.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.0</version>
-                </plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.22.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-invoker-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-plugin-plugin</artifactId>
+					<version>3.6.0</version>
+				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
@@ -240,104 +237,104 @@
 					<artifactId>flatten-maven-plugin</artifactId>
 					<version>1.2.2</version>
 				</plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-    <profiles>
-        <profile>
-            <id>artifactory</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.jfrog.buildinfo</groupId>
-                            <artifactId>artifactory-maven-plugin</artifactId>
-                            <version>2.7.0</version>
-                            <executions>
-                                <execution>
-                                    <id>build-info</id>
-                                    <goals>
-                                        <goal>publish</goal>
-                                    </goals>
-                                    <configuration>
-                                        <publisher>
-                                            <contextUrl>https://repo.spring.io</contextUrl>
-                                            <username>${artifactory.username}</username>
-                                            <password>${artifactory.password}</password>
-                                            <repoKey>libs-milestone-local</repoKey>
-                                            <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                            <excludePatterns>*/spring-native-docs-*.pom</excludePatterns>
-                                        </publisher>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+	<profiles>
+		<profile>
+			<id>artifactory</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.jfrog.buildinfo</groupId>
+							<artifactId>artifactory-maven-plugin</artifactId>
+							<version>2.7.0</version>
+							<executions>
+								<execution>
+									<id>build-info</id>
+									<goals>
+										<goal>publish</goal>
+									</goals>
+									<configuration>
+										<publisher>
+											<contextUrl>https://repo.spring.io</contextUrl>
+											<username>${artifactory.username}</username>
+											<password>${artifactory.password}</password>
+											<repoKey>libs-milestone-local</repoKey>
+											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+											<excludePatterns>*/spring-native-docs-*.pom</excludePatterns>
+										</publisher>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 
-                <plugins>
-                    <plugin>
-                        <groupId>org.jfrog.buildinfo</groupId>
-                        <artifactId>artifactory-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
+				<plugins>
+					<plugin>
+						<groupId>org.jfrog.buildinfo</groupId>
+						<artifactId>artifactory-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
 
-            </build>
-        </profile>
-    </profiles>
+			</build>
+		</profile>
+	</profiles>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-release</id>
-            <name>Spring release</name>
-            <url>https://repo.spring.io/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshot</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestone</id>
-            <name>Spring Milestone</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-release</id>
+			<name>Spring release</name>
+			<url>https://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshot</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring Milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>release</id>
-            <url>https://repo.spring.io/release</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>bintray</id>
-            <url>https://jcenter.bintray.com</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>plugins-release-local</id>
-            <url>https://repo.spring.io/plugins-release-local</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>plugins-milestone-local</id>
-            <url>https://repo.spring.io/plugins-milestone-local</url>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>release</id>
+			<url>https://repo.spring.io/release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>bintray</id>
+			<url>https://jcenter.bintray.com</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>plugins-release-local</id>
+			<url>https://repo.spring.io/plugins-release-local</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>plugins-milestone-local</id>
+			<url>https://repo.spring.io/plugins-milestone-local</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
