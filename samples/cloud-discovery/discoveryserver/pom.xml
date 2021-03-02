@@ -21,7 +21,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<docker.image.prefix>springcloud</docker.image.prefix>
-		<main.class>demo.ConfigServerApplication</main.class>
+		<main.class>demo.DiscoveryServerApplication</main.class>
 		<native.build.args>--enable-all-security-services</native.build.args>
 	</properties>
 
