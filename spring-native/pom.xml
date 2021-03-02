@@ -92,7 +92,6 @@
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>
             <artifactId>graal-hotspot-library</artifactId>
-            <version>${graalvm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

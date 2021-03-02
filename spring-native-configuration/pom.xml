@@ -34,24 +34,10 @@
         </plugins>
     </build>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2020.0.1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
-
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>
             <artifactId>graal-hotspot-library</artifactId>
-            <version>${graalvm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -132,7 +118,6 @@
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-aot</artifactId>
-            <version>0.9.0-SNAPSHOT</version>
         </dependency>
         <!-- these are only here to support the substrate substitution -->
         <dependency>
@@ -288,7 +273,6 @@
         <dependency>
             <groupId>com.wavefront</groupId>
             <artifactId>wavefront-spring-boot</artifactId>
-            <version>2.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -325,7 +309,6 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.7.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -357,13 +340,11 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>1.22.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml</groupId>
             <artifactId>aalto-xml</artifactId>
-            <version>1.2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
