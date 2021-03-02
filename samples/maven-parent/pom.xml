@@ -1,197 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.3</version>
-        <relativePath/>
-    </parent>
-    <groupId>org.springframework.experimental</groupId>
+		xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.3</version>
+		<relativePath/>
+	</parent>
+	<groupId>org.springframework.experimental</groupId>
+	<artifactId>spring-native-sample-parent</artifactId>
+	<name>Spring Native sample parent</name>
+	<version>0.9.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <artifactId>spring-native-sample-parent</artifactId>
-    <name>Spring Native sample parent</name>
+	<properties>
+		<!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
+		<classifier/>
 
-    <version>0.9.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+		<!-- Customize native-image arguments with this property -->
+		<native.build.args/>
 
-    <properties>
-        <!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
-        <classifier></classifier>
+		<!-- Specify main class to allow native-image-maven-plugin to find it -->
+		<main.class/>
 
-        <!-- Customize native-image arguments with this property -->
-        <native.build.args></native.build.args>
+		<!-- Tiny builder allow small footprint and reduced surface attack, you can also use paketobuildpacks/builder:full to have more tool available in the image for debugging -->
+		<builder>paketobuildpacks/builder:tiny</builder>
 
-        <!-- Specify main class to allow native-image-maven-plugin to find it -->
-        <main.class></main.class>
+		<spring-cloud.version>2020.0.1</spring-cloud.version>
+	</properties>
 
-        <!-- Tiny builder allow small footprint and reduced surface attack, you can also use paketobuildpacks/builder:full to have more tool available in the image for debugging -->
-        <builder>paketobuildpacks/builder:tiny</builder>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<classifier>${classifier}</classifier>
+						<image>
+							<builder>${builder}</builder>
+							<env>
+								<BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
+								<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${native.build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+							</env>
+						</image>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.experimental</groupId>
+					<artifactId>spring-aot-maven-plugin</artifactId>
+					<version>0.9.0-SNAPSHOT</version>
+					<executions>
+						<execution>
+							<id>test-generate</id>
+							<goals>
+								<goal>test-generate</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>generate</id>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.graalvm.nativeimage</groupId>
+					<artifactId>native-image-maven-plugin</artifactId>
+					<version>21.0.0</version>
+					<configuration>
+						<mainClass>${main.class}</mainClass>
+						<imageName>${project.artifactId}</imageName>
+						<buildArgs>${native.build.args}</buildArgs>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>native-image</goal>
+							</goals>
+							<phase>package</phase>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-        <spring-cloud.version>2020.0.1</spring-cloud.version>
-    </properties>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-release</id>
+			<name>Spring release</name>
+			<url>https://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-snapshot</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestone</id>
+			<name>Spring Milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-release</id>
+			<name>Spring release</name>
+			<url>https://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshot</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring Milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <configuration>
-                        <classifier>${classifier}</classifier>
-                        <image>
-                            <builder>${builder}</builder>
-                            <env>
-                                <BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
-                                <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>${native.build.args}</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
-                            </env>
-                        </image>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.experimental</groupId>
-                    <artifactId>spring-aot-maven-plugin</artifactId>
-                    <version>0.9.0-SNAPSHOT</version>
-                    <executions>
-                        <execution>
-                            <id>test-generate</id>
-                            <goals>
-                                <goal>test-generate</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>generate</id>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.graalvm.nativeimage</groupId>
-                    <artifactId>native-image-maven-plugin</artifactId>
-                    <version>21.0.0</version>
-                    <configuration>
-                        <mainClass>${main.class}</mainClass>
-                        <imageName>${project.artifactId}</imageName>
-                        <buildArgs>${native.build.args}</buildArgs>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>native-image</goal>
-                            </goals>
-                            <phase>package</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-native</artifactId>
+				<version>0.9.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-release</id>
-            <name>Spring release</name>
-            <url>https://repo.spring.io/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-snapshot</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-milestone</id>
-            <name>Spring Milestone</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-release</id>
-            <name>Spring release</name>
-            <url>https://repo.spring.io/release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshot</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestone</id>
-            <name>Spring Milestone</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+	<profiles>
+		<!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
+		<profile>
+			<id>native-image</id>
+			<properties>
+				<!-- Avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
+				<classifier>exec</classifier>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.graalvm.nativeimage</groupId>
+						<artifactId>native-image-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.experimental</groupId>
-                <artifactId>spring-native</artifactId>
-                <version>0.9.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <profiles>
-        <!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
-        <profile>
-            <id>native-image</id>
-            <properties>
-                <!-- Avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
-                <classifier>exec</classifier>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.nativeimage</groupId>
-                        <artifactId>native-image-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
