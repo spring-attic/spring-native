@@ -16,6 +16,7 @@
         <graalvm.version>21.0.0</graalvm.version>
         <docs.resources.version>0.2.1.RELEASE</docs.resources.version>
         <spring.boot.version>2.4.3</spring.boot.version>
+		<spring.cloud.version>2020.0.1</spring.cloud.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -66,6 +67,68 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-gradle-plugin</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring.cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml</groupId>
+				<artifactId>aalto-xml</artifactId>
+				<version>1.2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>3.7.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup</groupId>
+				<artifactId>javapoet</artifactId>
+				<version>1.13.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin.external.google</groupId>
+				<artifactId>android-json</artifactId>
+				<version>0.0.20131108.vaadin1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.wavefront</groupId>
+				<artifactId>wavefront-spring-boot</artifactId>
+				<version>2.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-protobuf</artifactId>
+				<version>1.22.1</version>
+			</dependency>
+			<dependency>
+				<groupId>io.spring.gradle</groupId>
+				<artifactId>dependency-management-plugin</artifactId>
+				<version>1.0.11.RELEASE</version>
+			</dependency>
+			<dependency>
+				<groupId>org.graalvm.nativeimage</groupId>
+				<artifactId>graal-hotspot-library</artifactId>
+				<version>${graalvm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-tree</artifactId>
+				<version>9.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.twdata.maven</groupId>
+				<artifactId>mojo-executor</artifactId>
+				<version>2.3.1</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
