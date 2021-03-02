@@ -4,8 +4,6 @@
 :icons: font
 :hide-uri-scheme:
 :version: 0.9.0-SNAPSHOT
-:repository: milestone
-
 
 :github-tag: master
 :github-repo: spring-projects-experimental/spring-native
@@ -27,3 +25,5 @@
 :spring-framework-version: current
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference
+
+:spring-native-repo: snapshot

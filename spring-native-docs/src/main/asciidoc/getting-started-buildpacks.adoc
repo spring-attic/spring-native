@@ -1,22 +1,21 @@
 [[getting-started-buildpacks]]
 === Getting started with Buildpacks
 
-This section walks through how to build a Spring Boot native application with {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support].
-This is a practical guide, so we perform this for real on the https://spring.io/guides/gs/rest-service/[REST service getting started guide].
+This section gives you a practical overview of building a Spring Boot native application using {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks].
+This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
 
-==== Prerequisites
+==== System Requirements
 
-You will need Docker, see https://docs.docker.com/installation/#installation for details on setting Docker up for your machine.
-Before proceeding further, verify you can run docker commands from the shell.
+Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details.
+Before proceeding further, make sure you can use `docker` from the shell.
 
-On Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since the `native-image` compiler is a heavy process.
+TIP: On MacOS, it is recommended to increase the memory allocated to Docker to at least `8GB`, and potentially add more CPUs as well.
 See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
+On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performance.
 
-On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performance.
+==== Sample Project Setup
 
-==== Set up the sample project
-
-Here we use the getting started REST service guide, the following commands install it:
+The completed "RESTful Web Service" guide can be retrieved using the following commands:
 
 ====
 [source,bash]
@@ -26,9 +25,7 @@ cd gs-rest-service/complete
 ----
 ====
 
-You may already be ready to go with your own project.
-
-===== Update the build file
+===== Validate Spring Boot version
 
 IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
 
@@ -40,7 +37,7 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>{spring-boot-version}</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <relativePath/>
 </parent>
 ----
 [source,subs="attributes,verbatim",role="secondary"]
@@ -59,9 +56,9 @@ plugins {
 ----
 ====
 
-===== `spring-native` dependency
+===== Add Spring Native
 
-The `spring-native` dependency provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application on native image.
+`org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -93,8 +90,9 @@ dependencies {
 
 ===== Add the Spring AOT plugin
 
-This plugin will perform ahead-of-time transformations in order to improve native image compatibility and footprint.
-We do not put it in the `native-image` profile defined below because the transformations also benefits applications simply run on the JVM.
+The Spring AOT plugin performs ahead-of-time transformations required to improve native image compatibility and footprint.
+
+TIP: The transformations also apply to the JVM so this can be applied regardless.
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -127,14 +125,14 @@ We do not put it in the `native-image` profile defined below because the transfo
 ----
 ====
 
-See <<configuring-spring-aot>> for more details about the configuration.
+The plugin provides a number of options to customize the transformations, see <<configuring-spring-aot>> for more details.
 
 TODO: Add Gradle configuration
 
-===== Enable native image in Buildpacks support
+===== Enable native image support
 
-{spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Spring Boot Buildpacks support] provides out of the box support for building Spring Boot native applications.
-To do so, we just have to set `BP_BOOT_NATIVE_IMAGE` environment variable to `true` and optionally provide additional build arguments.
+Spring Boot's {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks support] lets you build a container for your Spring Boot application.
+The https://github.com/paketo-buildpacks/spring-boot-native-image[Packeto implementation] has an option to build a native image that can be enabled as follows:
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -175,16 +173,16 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 ----
 ====
 
-It is possible to add additional `native-image` arguments with the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
+NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `paketobuildpacks/builder:base` being the default, but less optimized.
+
+TIP: Additional `native-image` arguments can be added using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
 TODO: Update to `BP_NATIVE_IMAGE` and `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` when Buildpacks have been updated.
 
-Notice we are using the `paketobuildpacks/builder:tiny` variant of Paketo Buildpacks, `paketobuildpacks/builder:base` being the default (which also works but less optimized).
-The `paketobuildpacks/builder:full` variant can be used in order to have more tools during the development.
+ifeval::["{spring-native-repo}" != "release"]
+===== Maven Repository
 
-===== Add the repositories
-
-If necessary, add the repository for the `spring-native` dependency, as follows:
+Configure your build to include the required repository for the `spring-native` dependency, as follows:
 
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -192,9 +190,9 @@ If necessary, add the repository for the `spring-native` dependency, as follows:
 ----
 <repositories>
     <repository>
-        <id>spring-{repository}</id>
-        <name>Spring {repository}</name>
-        <url>https://repo.spring.io/{repository}</url>
+        <id>spring-{spring-native-repo}</id>
+        <name>Spring {spring-native-repo}</name>
+        <url>https://repo.spring.io/{spring-native-repo}</url>
     </repository>
 </repositories>
 ----
@@ -202,28 +200,28 @@ If necessary, add the repository for the `spring-native` dependency, as follows:
 .Gradle Groovy
 ----
 repositories {
-    maven { url 'https://repo.spring.io/{repository}' }
+    maven { url 'https://repo.spring.io/{spring-native-repo}' }
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
 repositories {
-    maven { url = uri("https://repo.spring.io/{repository}") }
+    maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
 }
 ----
 ====
 
-And for plugins:
+The Spring AOT plugin also requires a dedicated plugin repository:
 ====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
 <pluginRepositories>
     <pluginRepository>
-        <id>spring-{repository}</id>
-        <name>Spring {repository}</name>
-        <url>https://repo.spring.io/{repository}</url>
+        <id>spring-{spring-native-repo}</id>
+        <name>Spring {spring-native-repo}</name>
+        <url>https://repo.spring.io/{spring-native-repo}</url>
     </pluginRepository>
 </pluginRepositories>
 ----
@@ -232,7 +230,7 @@ And for plugins:
 ----
 pluginManagement {
     repositories {
-        maven { url 'https://repo.spring.io/{repository}' }
+        maven { url 'https://repo.spring.io/{spring-native-repo}' }
     }
 }
 ----
@@ -241,46 +239,49 @@ pluginManagement {
 ----
 pluginManagement {
     repositories {
-        maven { url = uri("https://repo.spring.io/{repository}") }
+        maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
     }
 }
 ----
 ====
+endif::[]
 
 ==== Build the native application
 
-Building the native application is as simple as running:
+The native application can be built as follows:
 ====
 [source,bash,role="primary"]
 .Maven
 ----
-mvn spring-boot:build-image
+$ mvn spring-boot:build-image
 ----
 [source,bash,role="secondary"]
 .Gradle Groovy
 ----
-gradle bootBuildImage
+$ gradle bootBuildImage
 ----
 [source,bash,role="secondary"]
 .Gradle Kotlin
 ----
-gradle bootBuildImage
+$ gradle bootBuildImage
 ----
 ====
-This will create a Linux container to build the native application using GraalVM native image compiler and deploy locally the related container image.
+
+This creates a Linux container to build the native application using the GraalVM native image compiler.
+By default, the container image is installed locally.
 
 ==== Run the native application
 
-To run your application, you need to run the previously created container image:
+To run the application, you can use `docker` the usual way as shown in the following example:
 
 ====
 [source,bash]
 ----
-docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
+$ docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
 ----
 ====
 
-As an alternative, you can also write a `docker-compose.yml` at the root of the project with the following content:
+If you prefer `docker-compose`, you can write a `docker-compose.yml` at the root of the project with the following content:
 ====
 [source,yaml]
 ----
@@ -297,13 +298,13 @@ And then run
 ====
 [source,bash]
 ----
-docker-compose up
+$ docker-compose up
 ----
 ====
 
-The startup time should be <100ms, compared ~1500ms when starting the fat jar.
+The startup time should be less than `100ms`, compared to the roughly `1500ms` when starting the application on the JVM.
 
-Now that the service is up, visit http://localhost:8080/greeting, where you should see:
+Now that the service is up, visit `http://localhost:8080/greeting`, where you should see:
 
 ====
 [source,json]
@@ -312,4 +313,3 @@ Now that the service is up, visit http://localhost:8080/greeting, where you shou
 ----
 ====
 
-See <<spring-aot>> for additional steps to configure the plugin properly in your IDE.
