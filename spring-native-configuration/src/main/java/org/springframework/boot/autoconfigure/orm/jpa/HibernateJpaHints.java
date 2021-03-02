@@ -22,9 +22,7 @@ import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
-import org.hibernate.dialect.H2Dialect;
-import org.hibernate.dialect.HSQLDialect;
-import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.*;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.event.spi.*;
 import org.hibernate.hql.internal.antlr.HqlTokenTypes;
@@ -235,8 +233,16 @@ import java.util.EventListener;
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		})
 // Dialects
+// In memory
 @NativeHint(trigger = org.h2.Driver.class, types = @TypeHint(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = MySQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 @NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeHint(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+// Open Source
+@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = MySQL8Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.mariadb.jdbc.Driver.class, types = @TypeHint(types = MariaDB103Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.postgresql.Driver.class, types = @TypeHint(types = {PostgreSQL10Dialect.class, PostgresPlusDialect.class}, access = AccessBits.DECLARED_CONSTRUCTORS))
+// Commercial
+@NativeHint(trigger = com.microsoft.sqlserver.jdbc.SQLServerDriver.class, types = @TypeHint(types = SQLServer2012Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = oracle.jdbc.OracleDriver.class, types = @TypeHint(types = Oracle12cDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.ibm.db2.jcc.DB2Driver.class, types = @TypeHint(types = {DB297Dialect.class, DB2390V8Dialect.class, DB2400V7R3Dialect.class}, access = AccessBits.DECLARED_CONSTRUCTORS))
 public class HibernateJpaHints implements NativeConfiguration {
 }
