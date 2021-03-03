@@ -2433,52 +2433,5 @@
   },
   {
     "name":"reactor.core.publisher.Flux"
-  },
-  {
-    "name":"short[]"
-  },
-  {
-    "name":"sun.management.ClassLoadingImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.CompilationImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.ManagementFactoryHelper$1",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.ManagementFactoryHelper$PlatformLoggingImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.MemoryImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.MemoryManagerImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.MemoryPoolImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.management.RuntimeImpl",
-    "allPublicConstructors":true
-  },
-  {
-    "name":"sun.misc.Unsafe",
-    "fields":[{"name":"theUnsafe"}]
-  },
-  {
-    "name":"sun.security.provider.NativePRNG",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-    "name":"sun.security.provider.SHA",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]
