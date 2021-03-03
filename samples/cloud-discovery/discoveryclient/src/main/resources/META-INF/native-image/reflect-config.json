@@ -6,19 +6,6 @@
     "allDeclaredMethods":true
   },
   {
-    "name":"com.google.gson.GsonBuilder",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"com.google.inject.ImplementedBy",
-    "allDeclaredMethods":true
-  },
-  {
-    "name":"com.google.inject.Inject",
-    "allDeclaredMethods":true
-  },
-  {
     "name":"com.netflix.appinfo.ApplicationInfoManager",
     "allDeclaredFields":true,
     "allDeclaredMethods":true
