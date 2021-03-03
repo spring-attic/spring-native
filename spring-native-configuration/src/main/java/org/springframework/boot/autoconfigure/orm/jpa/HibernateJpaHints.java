@@ -237,7 +237,7 @@ import java.util.EventListener;
 @NativeHint(trigger = org.h2.Driver.class, types = @TypeHint(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 @NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeHint(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 // Open Source
-@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = MySQL8Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = { MySQL8Dialect.class, MySQLDialect.class }, access = AccessBits.DECLARED_CONSTRUCTORS))
 @NativeHint(trigger = org.mariadb.jdbc.Driver.class, types = @TypeHint(types = MariaDB103Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
 @NativeHint(trigger = org.postgresql.Driver.class, types = @TypeHint(types = {PostgreSQL10Dialect.class, PostgresPlusDialect.class}, access = AccessBits.DECLARED_CONSTRUCTORS))
 // Commercial
