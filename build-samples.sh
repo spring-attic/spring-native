@@ -2,20 +2,21 @@
 
 RC=0
 
-# To skip agent builds on Java 8 due to https://github.com/oracle/graal/issues/3010
-if java -version 2>&1 | grep "openjdk version \"1.8.0"; then
-    MAX_DEPTH=1
-else
-    MAX_DEPTH=2
-fi
-
 echo "Testing buildpacks-based builds"
 if ! (cd "samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
   RC=1
 fi
+docker run commandlinerunner:0.0.1-SNAPSHOT&
+PID=$!
+sleep 3
+kill ${PID} > /dev/null 2>&1
 if ! (cd "samples/commandlinerunner-gradle" && ./gradlew bootBuildImage); then
   RC=1
 fi
+docker run commandlinerunner-gradle:0.0.1-SNAPSHOT&
+PID=$!
+sleep 3
+kill ${PID} > /dev/null 2>&1
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
