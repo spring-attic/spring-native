@@ -14,6 +14,9 @@
 	<profiles>
 		<profile>
 			<id>docs</id>
+			<properties>
+				<refdocs.build.directory>${project.build.directory}/refdocs/</refdocs.build.directory>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework.experimental</groupId>
@@ -36,7 +39,7 @@
 								<configuration>
 									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${docs.resources.version}/spring-doc-resources-${docs.resources.version}.zip</url>
 									<unpack>true</unpack>
-									<outputDirectory>${project.build.directory}/refdocs/</outputDirectory>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
@@ -53,7 +56,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${project.build.directory}/refdocs/</outputDirectory>
+									<outputDirectory>${refdocs.build.directory}</outputDirectory>
 									<resources>
 										<resource>
 											<directory>src/main/asciidoc</directory>
@@ -119,7 +122,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<sourceDirectory>${project.build.directory}/refdocs/</sourceDirectory>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<doctype>book</doctype>
 							<attributes>
