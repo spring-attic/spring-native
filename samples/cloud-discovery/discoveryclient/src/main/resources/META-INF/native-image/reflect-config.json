@@ -2423,15 +2423,5 @@
     "name":"org.springframework.web.util.UrlPathHelper",
     "allDeclaredFields":true,
     "allDeclaredMethods":true
-  },
-  {
-    "name":"reactor.adapter.JdkFlowAdapter",
-    "methods":[
-      {"name":"flowPublisherToFlux","parameterTypes":["java.util.concurrent.Flow$Publisher"] },
-      {"name":"publisherToFlowPublisher","parameterTypes":["org.reactivestreams.Publisher"] }
-    ]
-  },
-  {
-    "name":"reactor.core.publisher.Flux"
   }
 ]
