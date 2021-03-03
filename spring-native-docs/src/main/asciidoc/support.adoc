@@ -101,11 +101,11 @@ Group ID is `org.springframework.cloud`.
 
 === Others
 
-- Spring Kafka
-- https://grpc.io/[GRPC]
-- H2 database
-- Mysql JDBC driver
-- PostgreSQL JDBC driver
+* Spring Kafka
+* https://grpc.io/[GRPC]
+* H2 database
+* Mysql JDBC driver
+* PostgreSQL JDBC driver
 
 === Limitations
 
