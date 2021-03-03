@@ -29,37 +29,6 @@
   { "name":"com.netflix.servo.annotations.Monitor", "allDeclaredMethods":true },
   { "name":"com.stoyanr.evictor.ConcurrentMapWithTimedEviction" },
   {
-    "name":"org.graalvm.nativeimage.ImageInfo",
-    "methods":[{"name":"inImageCode","parameterTypes":[] }]
-  },
-  {
-    "name":"org.hibernate.validator.internal.engine.AbstractConfigurationImpl",
-    "methods":[{"name":"externalClassLoader","parameterTypes":["java.lang.ClassLoader"] }]
-  },
-  {
-    "name":"org.hibernate.validator.internal.engine.ConfigurationImpl"
-  },
-  {
-    "name":"org.hibernate.validator.internal.util.logging.Log_$logger",
-    "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-  },
-  {
-    "name":"org.hibernate.validator.internal.util.logging.Messages_$bundle",
-    "fields":[{"name":"INSTANCE"}]
-  },
-  {
-    "name":"org.joda.time.ReadableInstant"
-  },
-  {
-    "name":"org.joda.time.YearMonth"
-  },
-  {
-    "name":"org.slf4j.bridge.SLF4JBridgeHandler"
-  },
-  {
-    "name":"org.slf4j.spi.LocationAwareLogger"
-  },
-  {
     "name":"org.springframework.aop.SpringProxy",
     "allDeclaredMethods":true
   },
