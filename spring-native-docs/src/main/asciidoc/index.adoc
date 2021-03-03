@@ -54,11 +54,11 @@ There are two main ways to build a Spring Boot native application:
 NOTE: To use Spring Native from your IDE, additional steps are required.
 Check the <<spring-aot,dedicated section>> for more details.
 
-include::support.adoc[]
-
 include::getting-started-buildpacks.adoc[]
 
 include::getting-started-native-image.adoc[]
+
+include::support.adoc[]
 
 include::spring-aot.adoc[]
 
