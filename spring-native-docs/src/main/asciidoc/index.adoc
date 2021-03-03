@@ -40,8 +40,8 @@ Spring Native is composed of the following modules:
 * `spring-native-docs`: reference guide, in asciidoc format.
 * `spring-native-tools`: tools used for reviewing image building configuration and output.
 * `spring-aot`: AOT transformation infrastructure common to Maven and Gradle plugins.
-* `spring-aot-maven-plugin`: Maven plugin that invokes AOT transformations.
 * `spring-aot-gradle-plugin`: Gradle plugin that invokes AOT transformations.
+* `spring-aot-maven-plugin`: Maven plugin that invokes AOT transformations.
 * `samples`: contains various samples that demonstrate features usage and are used as integration tests.
 
 == Getting Started

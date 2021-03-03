@@ -23,6 +23,7 @@ It is mainly composed of:
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
 - `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
+- `spring-aot-gradle-plugin`: this module contains the Gradle plugin that invokes AOT transformations.
 - `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
 - `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 
