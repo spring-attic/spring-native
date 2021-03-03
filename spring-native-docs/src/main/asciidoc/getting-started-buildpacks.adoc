@@ -123,11 +123,25 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
     </plugins>
 </build>
 ----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+plugins {
+id 'org.springframework.experimental.aot' version '{version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+plugins {
+id("org.springframework.experimental.aot") version "{version}"
+}
+----
 ====
+
 
 The plugin provides a number of options to customize the transformations, see <<configuring-spring-aot>> for more details.
 
-TODO: Add Gradle configuration
 
 ===== Enable native image support
 
@@ -176,8 +190,6 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `paketobuildpacks/builder:base` being the default, but less optimized.
 
 TIP: Additional `native-image` arguments can be added using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
-
-TODO: Update to `BP_NATIVE_IMAGE` and `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` when Buildpacks have been updated.
 
 ifeval::["{spring-native-repo}" != "release"]
 ===== Maven Repository
