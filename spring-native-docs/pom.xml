@@ -20,32 +20,22 @@
 					<artifactId>spring-native</artifactId>
 					<optional>true</optional>
 				</dependency>
-				<dependency>
-					<groupId>io.spring.docresources</groupId>
-					<artifactId>spring-doc-resources</artifactId>
-					<version>${docs.resources.version}</version>
-					<type>zip</type>
-					<optional>true</optional>
-				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
 						<executions>
 							<execution>
 								<id>unpack-doc-resources</id>
-								<goals>
-									<goal>unpack-dependencies</goal>
-								</goals>
 								<phase>generate-resources</phase>
-								<inherited>false</inherited>
+								<goals>
+									<goal>wget</goal>
+								</goals>
 								<configuration>
-									<includeGroupIds>io.spring.docresources</includeGroupIds>
-									<includeArtifactIds>spring-doc-resources</includeArtifactIds>
-									<includeTypes>zip</includeTypes>
-									<excludeTransitive>true</excludeTransitive>
+									<url>https://repo.spring.io/release/io/spring/docresources/spring-doc-resources/${docs.resources.version}/spring-doc-resources-${docs.resources.version}.zip</url>
+									<unpack>true</unpack>
 									<outputDirectory>${project.build.directory}/refdocs/</outputDirectory>
 								</configuration>
 							</execution>
