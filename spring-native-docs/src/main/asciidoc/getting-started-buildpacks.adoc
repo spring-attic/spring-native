@@ -191,7 +191,6 @@ NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `pa
 
 TIP: Additional `native-image` arguments can be added using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
-ifeval::["{spring-native-repo}" != "release"]
 ===== Maven Repository
 
 Configure your build to include the required repository for the `spring-native` dependency, as follows:
@@ -256,7 +255,6 @@ pluginManagement {
 }
 ----
 ====
-endif::[]
 
 ==== Build the native application
 
