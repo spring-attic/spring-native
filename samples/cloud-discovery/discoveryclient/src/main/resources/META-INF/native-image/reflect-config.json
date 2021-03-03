@@ -41,13 +41,6 @@
   { "name":"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClient", "allDeclaredFields":true, "allDeclaredMethods":true, "methods":[{"name":"getOrder","parameterTypes":[] }] },
   { "name":"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration", "allDeclaredFields":true, "allDeclaredMethods":true, "allPublicMethods":true, "allDeclaredConstructors":true },
   { "name":"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistration", "allPublicMethods":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationConfiguration", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.Registration", "allPublicMethods":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.ServiceRegistry", "allPublicMethods":true },
-  { "name":"org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
   { "name":"org.springframework.cloud.netflix.eureka.CloudEurekaClient", "allDeclaredFields":true, "allDeclaredMethods":true, "methods":[{"name":"getApplicationInfoManager","parameterTypes":[] }] },
   { "name":"org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig", "allPublicMethods":true },
   { "name":"org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration", "allDeclaredFields":true, "allDeclaredMethods":true, "allDeclaredConstructors":true },
@@ -67,8 +60,5 @@
   { "name":"org.springframework.cloud.netflix.eureka.http.EurekaClientHttpRequestFactorySupplier", "allPublicMethods":true },
   { "name":"org.springframework.cloud.netflix.eureka.http.RestTemplateDiscoveryClientOptionalArgs", "allDeclaredFields":true, "allDeclaredMethods":true },
   { "name":"org.springframework.cloud.netflix.eureka.metadata.DefaultManagementMetadataProvider", "allDeclaredFields":true, "allDeclaredMethods":true },
-  { "name":"org.springframework.cloud.netflix.eureka.metadata.ManagementMetadataProvider", "allPublicMethods":true },
-  { "name":"org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration", "allDeclaredFields":true, "allDeclaredMethods":true, "methods":[ {"name":"getOrder","parameterTypes":[] }, {"name":"getPhase","parameterTypes":[] }, {"name":"isAutoStartup","parameterTypes":[] }, {"name":"stop","parameterTypes":["java.lang.Runnable"] } ] },
-  { "name":"org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration", "allDeclaredFields":true, "allDeclaredMethods":true, "methods":[{"name":"getInstanceId","parameterTypes":[] }] },
-  { "name":"org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry", "allDeclaredFields":true, "allDeclaredMethods":true, "allPublicMethods":true }
+  { "name":"org.springframework.cloud.netflix.eureka.metadata.ManagementMetadataProvider", "allPublicMethods":true }
 ]
