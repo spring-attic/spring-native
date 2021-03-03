@@ -3,4 +3,4 @@
 set -e
 
 cd spring-native
-./mvnw -ntp javadoc:jar deploy -P artifactory,docs -Dartifactory.username=$ARTIFACTORY_USERNAME -Dartifactory.password=$ARTIFACTORY_PASSWORD
+./mvnw -ntp deploy -P artifactory,docs -Dartifactory.username=$ARTIFACTORY_USERNAME -Dartifactory.password=$ARTIFACTORY_PASSWORD

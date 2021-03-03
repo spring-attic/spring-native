@@ -115,16 +115,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<skip>false</skip>
-					<sourceFileIncludes>
-						<sourceFileInclude>org/springframework/nativex/hint/*.java</sourceFileInclude>
-					</sourceFileIncludes>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 

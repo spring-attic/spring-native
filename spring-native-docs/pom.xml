@@ -9,13 +9,17 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>spring-native-docs</artifactId>
-	<packaging>pom</packaging>
 	<name>Spring Native documentation</name>
 
 	<profiles>
 		<profile>
 			<id>docs</id>
 			<dependencies>
+				<dependency>
+					<groupId>org.springframework.experimental</groupId>
+					<artifactId>spring-native</artifactId>
+					<optional>true</optional>
+				</dependency>
 				<dependency>
 					<groupId>io.spring.docresources</groupId>
 					<artifactId>spring-doc-resources</artifactId>
@@ -142,6 +146,35 @@
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<phase>prepare-package</phase>
+								<configuration>
+									<source>${java.version}</source>
+									<doctitle>Spring Native ${project.version} API</doctitle>
+									<includeDependencySources>true</includeDependencySources>
+									<dependencySourceIncludes>
+										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
+									</dependencySourceIncludes>
+									<sourceFileIncludes>org/springframework/nativex/hint/*.java</sourceFileIncludes>
+									<detectOfflineLinks>false</detectOfflineLinks>
+									<attach>false</attach>
+									<quiet>true</quiet>
+									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
+									<links>
+										<link>https://docs.oracle.com/javase/8/docs/api</link>
+									</links>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<dependencies>
 							<dependency>
@@ -209,12 +242,11 @@
 									<goal>run</goal>
 								</goals>
 								<phase>package</phase>
-								<inherited>false</inherited>
 								<configuration>
 									<tasks>
 										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
 											<zipfileset
-													src="${project.basedir}/../spring-native/target/spring-native-${project.version}-javadoc.jar"
+													src="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"
 													prefix="api"/>
 											<zipfileset
 													dir="${project.build.directory}/generated-docs"
