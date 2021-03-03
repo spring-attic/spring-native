@@ -50,32 +50,7 @@ RSocket security is also supported.
 * `spring-boot-starter-web`:
 ** Only Tomcat is supported for now.
 ** `--enable-https` flag is required for HTTPS support.
-** `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint. If you are using `spring-boot-starter-web` and Maven, you should use the following `pom.xml` configuration:
-====
-[source,xml]
-----
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-    <exclusions>
-        <exclusion>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-websocket</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-
-<dependency>
-    <groupId>org.apache.tomcat.experimental</groupId>
-    <artifactId>tomcat-embed-programmatic</artifactId>
-    <version>${tomcat.version}</version>
-</dependency>
-----
-====
+** `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint.
 * `spring-boot-starter-websocket`
 * `com.wavefront:wavefront-spring-boot-starter`
 
