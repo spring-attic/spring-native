@@ -1,6 +1,8 @@
 [[support]]
 == Support
 
+This section defines the GraalVM version, languages and dependencies that have been validated against Spring Native {version}.
+
 === GraalVM
 
 GraalVM version {graalvm-version} is supported, see the related https://www.graalvm.org/release-notes/[release notes].

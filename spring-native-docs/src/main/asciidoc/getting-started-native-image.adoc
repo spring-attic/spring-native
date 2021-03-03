@@ -144,7 +144,7 @@ The following example adds a `native-image` profile that triggers the plugin dur
 ====
 
 In a default Spring Boot setup, the `spring-boot-maven-plugin` also runs during the `package` phase and replaces the regular jar by the repackaged, executable jar.
-To avoid a clash between the two plugins, make sure to specify a classifier for the executable jar, as shown in the following example:
+To avoid a clash between the two plugins, make sure to specify a classifier like `exec` below for the executable jar, as shown in the following example:
 
 ====
 [source,xml,subs="attributes,verbatim"]
