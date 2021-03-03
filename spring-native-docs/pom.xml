@@ -243,7 +243,7 @@
 								</goals>
 								<phase>package</phase>
 								<configuration>
-									<tasks>
+									<target>
 										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
 											<zipfileset
 													src="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"
@@ -252,7 +252,7 @@
 													dir="${project.build.directory}/generated-docs"
 													prefix="reference"/>
 										</zip>
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
