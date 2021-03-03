@@ -287,21 +287,6 @@
 
 	<repositories>
 		<repository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring release</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
 			<id>spring-snapshot</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
@@ -321,20 +306,12 @@
 
 	<pluginRepositories>
 		<pluginRepository>
+			<name>Spring Release</name>
 			<id>release</id>
 			<url>https://repo.spring.io/release</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>bintray</id>
-			<url>https://jcenter.bintray.com</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>plugins-release-local</id>
-			<url>https://repo.spring.io/plugins-release-local</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>plugins-milestone-local</id>
-			<url>https://repo.spring.io/plugins-milestone-local</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
 
