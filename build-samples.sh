@@ -20,7 +20,7 @@ kill ${PID} > /dev/null 2>&1
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for d in $(find samples -maxdepth $MAX_DEPTH -type d)
+for d in $(find samples -maxdepth 2 -type d)
 do
   if [[ -f "$d/build.sh" && ! -f "$d/.ignore" ]]; then
     if ! (cd "$d" && ./build.sh); then
