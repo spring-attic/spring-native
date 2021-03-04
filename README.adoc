@@ -4,7 +4,7 @@
 :graalvm-version: 20.3.0
 :graalvm-dev-version: 20.1.0
 :boot-dev-version: 2.4.3
-:documentation-url: docs.spring.io/spring-native/docs/current-SNAPSHOT/reference/htmlsingle
+:documentation-url: https://docs.spring.io/spring-native/docs/current-SNAPSHOT/reference/htmlsingle
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
@@ -55,7 +55,8 @@ The latest {version} release supports GraalVM {graalvm-version} and Spring Boot 
 
 == Contributing
 
-This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
+This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (please refer to the {documentation-url}/index.html#how-to-contribute[how to contribute] section).
+However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
 
 === Baseline
 
