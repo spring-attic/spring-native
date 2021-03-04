@@ -83,11 +83,25 @@
 								<version>0.5.0</version>
 							</dependency>
 						</dependencies>
+						<configuration>
+							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
+							<sourceDocumentName>index.adoc</sourceDocumentName>
+							<doctype>book</doctype>
+							<attributes>
+								<spring-native-repo>${spring-native-repo}</spring-native-repo>
+								<version>${project.version}</version>
+								<projectName>${project.name}</projectName>
+								<projectVersion>${project.version}</projectVersion>
+								<allow-uri-read>true</allow-uri-read>
+								<toclevels>4</toclevels>
+								<numbered>true</numbered>
+								<baseDir>${project.basedir}</baseDir>
+							</attributes>
+						</configuration>
 						<executions>
 							<execution>
 								<id>html</id>
 								<phase>generate-resources</phase>
-								<inherited>false</inherited>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
@@ -108,11 +122,9 @@
 									</attributes>
 								</configuration>
 							</execution>
-
 							<execution>
 								<id>pdf</id>
 								<phase>generate-resources</phase>
-								<inherited>false</inherited>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
@@ -134,21 +146,6 @@
 								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<sourceDirectory>${refdocs.build.directory}</sourceDirectory>
-							<sourceDocumentName>index.adoc</sourceDocumentName>
-							<doctype>book</doctype>
-							<attributes>
-								<spring-native-repo>${spring-native-repo}</spring-native-repo>
-								<version>${project.version}</version>
-								<projectName>${project.name}</projectName>
-								<projectVersion>${project.version}</projectVersion>
-								<allow-uri-read>true</allow-uri-read>
-								<toclevels>4</toclevels>
-								<numbered>true</numbered>
-								<baseDir>${project.basedir}</baseDir>
-							</attributes>
-						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
