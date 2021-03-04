@@ -313,6 +313,11 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
+		<pluginRepository>
+			<name>Bintray</name>
+			<id>bintray</id>
+			<url>https://jcenter.bintray.com</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 </project>
