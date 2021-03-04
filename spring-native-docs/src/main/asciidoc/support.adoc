@@ -65,11 +65,12 @@ IMPORTANT: `spring-native` {version} is designed to be used with Spring Cloud {s
 
 Group ID is `org.springframework.cloud`.
 
+NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false` for compatibility and footprint reasons. `spring.sleuth.async.enabled` is also set to `false` since this feature leads to too much proxies created for a reasonable footprint.
+
 * `spring-cloud-starter-bootstrap`
 * `spring-cloud-starter-config`
+* `spring-cloud-config-client`
 * `spring-cloud-config-server`
-* `spring-cloud-starter-netflix-eureka-client`
-* `spring-cloud-starter-netflix-eureka-server`
 * `spring-cloud-function-web`
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-cloud-function-adapter-aws`
@@ -86,6 +87,6 @@ Group ID is `org.springframework.cloud`.
 
 === Limitations
 
-CGLIB proxies are not supported, only JDK dynamic proxies on interfaces are supported for now.
+CGLIB proxies are not supported, only JDK dynamic proxies on interfaces are supported for now. As a consequence `spring.aop.proxy-target-class` is set to `false` when using Spring Native.
 
 NOTE: If you are using `@Configuration` without setting `proxyBeanMethods=false` and use only method parameters to inject bean dependencies, Spring Native handles that scenario so that a CGLIB proxy is not required.
