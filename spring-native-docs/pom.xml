@@ -92,6 +92,7 @@
 									<goal>process-asciidoc</goal>
 								</goals>
 								<configuration>
+									<outputDirectory>${project.build.directory}/generated-docs/reference/htmlsingle</outputDirectory>
 									<backend>html5</backend>
 									<sourceHighlighter>highlight.js</sourceHighlighter>
 									<attributes>
@@ -118,6 +119,18 @@
 								<configuration>
 									<backend>pdf</backend>
 									<sourceHighlighter>coderay</sourceHighlighter>
+									<sourceDocumentExtensions>
+										<sourceDocumentExtension>pdfadoc</sourceDocumentExtension>
+									</sourceDocumentExtensions>
+									<outputFile>${project.build.directory}/generated-docs/reference/pdf/spring-native-reference.pdf</outputFile>
+									<resources>
+										<resource>
+											<directory>${refdocs.build.directory}</directory>
+											<excludes>
+												<exclude>**/*</exclude>
+											</excludes>
+										</resource>
+									</resources>
 								</configuration>
 							</execution>
 						</executions>
