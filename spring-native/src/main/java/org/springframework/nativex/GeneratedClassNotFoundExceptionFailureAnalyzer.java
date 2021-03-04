@@ -12,7 +12,7 @@ public class GeneratedClassNotFoundExceptionFailureAnalyzer extends AbstractFail
 
 	private static final String ACTION = String.format(
 			"Review your local configuration and make sure that the Spring AOT plugin is configured properly.%n"
-					+ "See https://docs.spring.io/spring-native/docs/current/reference/#spring-aot for more details.");
+					+ "See https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#spring-aot for more details.");
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, GeneratedClassNotFoundException ex) {
