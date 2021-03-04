@@ -2,10 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.4.2"
+    id("org.springframework.boot") version "2.4.3"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    kotlin("jvm") version "1.4.10"
-    kotlin("plugin.spring") version "1.4.10"
+    id("org.springframework.experimental.aot") version "0.9.0-SNAPSHOT"
+    kotlin("jvm") version "1.4.31"
+    kotlin("plugin.spring") version "1.4.31"
 }
 
 group = "com.example"
@@ -48,6 +49,8 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
             """.trimIndent()
     )
 }
+
+// TODO Remove SpEL and Yaml when supported with Gradle
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {

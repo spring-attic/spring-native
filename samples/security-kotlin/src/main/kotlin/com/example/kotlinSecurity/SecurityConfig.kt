@@ -25,6 +25,7 @@ class SecurityConfig {
         return http.build()
     }
 
+    @Suppress("DEPRECATION")
     @Bean
     fun userDetailsService(): UserDetailsService {
         val user = User.withDefaultPasswordEncoder()
