@@ -16,7 +16,7 @@ To address this problem the agent supports an access-filter file that will cause
 
 This is a simple `access-filter.json` file. 
 
-====
+
 [source,json,subs="attributes,verbatim"]
 ----
 { "rules": [
@@ -31,7 +31,7 @@ This is a simple `access-filter.json` file.
   ]
 }
 ----
-====
+
 
 Most of these lines would apply to any Spring application, except for the last one which is application specific and will need tweaking to match the package of a specific applications tests.
 
@@ -49,7 +49,7 @@ Let's look at how to pull the ideas here together and apply them to a project.
 Since Spring takes an eager approach when building the application context, a very basic test that starts the application context will exercise a lot of the Spring infrastructure that needs to produce native-image configuration.
 This test would suffice for that and could be placed in `src/test/java`:
 
-====
+
 [source,java]
 ----
 package com.example.demo.test;
@@ -67,13 +67,13 @@ public class AppContextStartupTest {
 	}
 }
 ----
-====
+
 
 Now take the `access-filter.json` file from above and place it in `src/test/resources` folder.
 
 This following snippet would go into the maven pom:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <plugins>
@@ -104,13 +104,13 @@ This following snippet would go into the maven pom:
     </plugin>
 </plugins>
 ----
-====
+
 
 Notice the `maven-antrun-plugin` declaration to create the native image config directory before Surefire execution.
 
 Also update the `spring-aot` build plugin to enable the agent mode:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <plugin>
@@ -121,7 +121,7 @@ Also update the `spring-aot` build plugin to enable the agent mode:
     </configuration>
 </plugin>
 ----
-====
+
 
 That's it, build your native image, it should generate the native configuration during the tests and run with the `native-agent` mode design to just add the missing bits.
 If that's not enough, you can add additional native configuration using `@NativeHint` annotations.

@@ -8,7 +8,6 @@ It is invoked before running your application and tests, and may potentially req
 
 The plugin should be declared as following:
 
-====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -37,22 +36,19 @@ The plugin should be declared as following:
     </plugins>
 </build>
 ----
-====
 
 Maven goals `spring-aot:generate` (`process-test-classes` phase) and `spring-aot:test-generate` (`prepare-package` phase) should be invoked automatically in the Maven lifecycle when using the `mvn` command.
 
-Sources are generated in `target/generated-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot` and test sources in `target/generated-test-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot`.
+Sources are generated in `target/generated-sources/spring-aot/` and test sources in `target/generated-test-sources/spring-aot/`.
 
 Configuration can be performed if needed within the `<configuration>` element, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
 
-====
 [source,xml,subs="attributes,verbatim"]
 ----
 <configuration>
     <removeSpelSupport>true</removeSpelSupport>
 </configuration>
 ----
-====
 
 See <<configuring-spring-aot>> for a list of the configuration options available.
 
@@ -79,7 +75,7 @@ VSCode uses the same build tooling as Eclipse, so it should work the same.
 
 You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings.gradle(.kts) file:
 
-[source,subs="attributes,verbatim",role="primary"]
+[source,groovy,subs="attributes,verbatim",role="primary"]
 .Gradle Groovy
 ----
 pluginManagement {
@@ -98,7 +94,7 @@ pluginManagement {
 }
 ----
 
-[source,subs="attributes,verbatim",role="primary"]
+[source,groovy,subs="attributes,verbatim",role="primary"]
 .Gradle Groovy
 ----
 plugins {
@@ -116,11 +112,11 @@ plugins {
 The plugin creates two `SourceSets` for testing and running the application: "aot" and "aotTest".
 The resulting classes and resources are automatically added to the runtime classpath of the application when running the `test`, `bootRun` and `bootJar` tasks.
 
-Sources are generated in `build/generated/sources/aot/*,build/generated/resources/aot/*` and test sources in `build/generated/sources/aotTest/*,build/generated/resources/aotTest/*`.
+Sources are generated in `build/generated/sources/aot/*,build/generated/resources/aot/` and test sources in `build/generated/sources/aotTest/*,build/generated/resources/aotTest/`.
 
 Configuration can be performed if needed using the `springAot` DSL extension, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
 
-[source,subs="attributes,verbatim",role="primary"]
+[source,groovy,subs="attributes,verbatim",role="primary"]
 .Gradle Groovy
 ----
 springAot {
@@ -137,7 +133,7 @@ springAot {
 
 Here is a complete code sample showing all the default values and how to set them:
 
-[source,subs="attributes,verbatim",role="primary"]
+[source,groovy,subs="attributes,verbatim",role="primary"]
 .Gradle Groovy
 ----
 import org.springframework.aot.gradle.dsl.AotMode

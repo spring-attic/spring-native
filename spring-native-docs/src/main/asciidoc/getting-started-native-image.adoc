@@ -26,19 +26,19 @@ Alternatively or if you are on Microsoft Windows, you can manually install Graal
 
 The completed "RESTful Web Service" guide can be retrieved using the following commands:
 
-====
+
 [source,bash]
 ----
 git clone https://github.com/spring-guides/gs-rest-service
 cd gs-rest-service/complete
 ----
-====
+
 
 ===== Validate Spring Boot version
 
 IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <parent>
@@ -48,13 +48,13 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
     <relativePath/>
 </parent>
 ----
-====
+
 
 ===== Add Spring Native
 
 `org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <dependencies>
@@ -66,7 +66,7 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
     </dependency>
 </dependencies>
 ----
-====
+
 
 ===== Add the Spring AOT plugin
 
@@ -74,7 +74,7 @@ The Spring AOT plugin performs ahead-of-time transformations required to improve
 
 TIP: The transformations also apply to the JVM so this can be applied regardless.
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <build>
@@ -102,7 +102,7 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
     </plugins>
 </build>
 ----
-====
+
 
 The plugin provides a number of options to customize the transformations, see <<configuring-spring-aot>> for more details.
 
@@ -111,7 +111,7 @@ The plugin provides a number of options to customize the transformations, see <<
 GraalVM provides a {graalvm-native-docs}/NativeImageMavenPlugin/[Maven Plugin] to invoke the native image compiler from your Maven build.
 The following example adds a `native-image` profile that triggers the plugin during the `package` phase:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <profiles>
@@ -141,12 +141,12 @@ The following example adds a `native-image` profile that triggers the plugin dur
   </profile>
 </profiles>
 ----
-====
+
 
 In a default Spring Boot setup, the `spring-boot-maven-plugin` also runs during the `package` phase and replaces the regular jar by the repackaged, executable jar.
 To avoid a clash between the two plugins, make sure to specify a classifier like `exec` below for the executable jar, as shown in the following example:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <plugins>
@@ -160,13 +160,13 @@ To avoid a clash between the two plugins, make sure to specify a classifier like
     </plugin>
 </plugins>
 ----
-====
+
 
 ===== Maven Repository
 
 Configure your build to include the required repository for the `spring-native` dependency, as follows:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <repositories>
@@ -178,11 +178,11 @@ Configure your build to include the required repository for the `spring-native` 
     </repository>
 </repositories>
 ----
-====
+
 
 The Spring AOT plugin also requires a dedicated plugin repository:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <pluginRepositories>
@@ -193,17 +193,17 @@ The Spring AOT plugin also requires a dedicated plugin repository:
     </pluginRepository>
 </pluginRepositories>
 ----
-====
+
 
 ==== Build the native application
 
 The native application can be built as follows:
-====
+
 [source,bash]
 ----
 $ mvn -Pnative-image package
 ----
-====
+
 
 IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in the {graalvm-native-docs}/#prerequisites[GraalVM native-image prerequisites].
 
@@ -213,23 +213,23 @@ This command creates a native executable containing your Spring Boot application
 
 To run your application, invoke the following:
 
-====
+
 [source,bash]
 ----
 $ target/com.example.restservice.restserviceapplication
 ----
-====
+
 
 The startup time should be less than `100ms`, compared to the roughly `1500ms` when starting the application on the JVM.
 
 Now that the service is up, visit `http://localhost:8080/greeting`, where you should see:
 
-====
+
 [source,json]
 ----
 {"id":1,"content":"Hello, World!"}
 ----
-====
+
 
 
 

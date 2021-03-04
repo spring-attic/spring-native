@@ -18,13 +18,13 @@ We have described the most common causes and their solutions here.
 
 If you see an error like:
 
-====
+
 [source,bash]
 ----
 Error: Classes that should be initialized at run time got initialized during image building:
  org.springframework.util.unit.DataSize was unintentionally initialized at build time. To see why org.springframework.util.unit.DataSize got initialized use -H:+TraceClassInitialization
 ----
-====
+
 
 You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and Spring AOT plugin.
 See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
@@ -47,7 +47,7 @@ This section describes those possible fixes.
 
 In some cases, when there is a problem, the error message tries to tell you exactly what to do, as follows:
 
-====
+
 [source,bash]
 ----
 Caused by: java.util.MissingResourceException:
@@ -55,7 +55,7 @@ Caused by: java.util.MissingResourceException:
   Register the resource bundle using the option
     -H:IncludeResourceBundles=javax.servlet.http.LocalStrings.
 ----
-====
+
 
 You should add resource configuration using <<native-hints>>.
 
@@ -94,7 +94,7 @@ Note that using warnings rather than errors can cause serious problems for your 
 Snapshots are regularly published and obviously ahead of releases and milestones.
 If you wish to use the snapshot versions you should use the following repository:
 
-====
+
 [source,xml,subs="attributes,verbatim"]
 ----
 <repositories>
@@ -106,4 +106,4 @@ If you wish to use the snapshot versions you should use the following repository
     </repository>
 </repositories>
 ----
-====
+

@@ -17,19 +17,17 @@ On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for
 
 The completed "RESTful Web Service" guide can be retrieved using the following commands:
 
-====
 [source,bash]
 ----
 git clone https://github.com/spring-guides/gs-rest-service
 cd gs-rest-service/complete
 ----
-====
+
 
 ===== Validate Spring Boot version
 
 IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
 
-====
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -54,13 +52,13 @@ plugins {
     id("org.springframework.boot") version "{spring-boot-version}"
 }
 ----
-====
+
 
 ===== Add Spring Native
 
 `org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
 
-====
+
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -86,7 +84,7 @@ dependencies {
     implementation("org.springframework.experimental:spring-native:{version}")
 }
 ----
-====
+
 
 ===== Add the Spring AOT plugin
 
@@ -94,7 +92,7 @@ The Spring AOT plugin performs ahead-of-time transformations required to improve
 
 TIP: The transformations also apply to the JVM so this can be applied regardless.
 
-====
+
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -137,7 +135,7 @@ plugins {
     id("org.springframework.experimental.aot") version "{version}"
 }
 ----
-====
+
 
 
 The plugin provides a number of options to customize the transformations, see <<configuring-spring-aot>> for more details.
@@ -148,7 +146,7 @@ The plugin provides a number of options to customize the transformations, see <<
 Spring Boot's {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks support] lets you build a container for your Spring Boot application.
 The https://github.com/paketo-buildpacks/spring-boot-native-image[Packeto implementation] has an option to build a native image that can be enabled as follows:
 
-====
+
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -185,7 +183,7 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
     )
 }
 ----
-====
+
 
 NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `paketobuildpacks/builder:base` being the default, but less optimized.
 
@@ -195,7 +193,7 @@ TIP: Additional `native-image` arguments can be added using the `BP_BOOT_NATIVE_
 
 Configure your build to include the required repository for the `spring-native` dependency, as follows:
 
-====
+
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -221,10 +219,10 @@ repositories {
     maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
 }
 ----
-====
+
 
 The Spring AOT plugin also requires a dedicated plugin repository:
-====
+
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -254,12 +252,13 @@ pluginManagement {
     }
 }
 ----
-====
+
 
 ==== Build the native application
 
 The native application can be built as follows:
-====
+
+
 [source,bash,role="primary"]
 .Maven
 ----
@@ -275,7 +274,7 @@ $ gradle bootBuildImage
 ----
 $ gradle bootBuildImage
 ----
-====
+
 
 This creates a Linux container to build the native application using the GraalVM native image compiler.
 By default, the container image is installed locally.
@@ -284,15 +283,15 @@ By default, the container image is installed locally.
 
 To run the application, you can use `docker` the usual way as shown in the following example:
 
-====
+
 [source,bash]
 ----
 $ docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
 ----
-====
+
 
 If you prefer `docker-compose`, you can write a `docker-compose.yml` at the root of the project with the following content:
-====
+
 [source,yaml]
 ----
 version: '3.1'
@@ -302,24 +301,24 @@ services:
     ports:
       - "8080:8080"
 ----
-====
+
 
 And then run
-====
+
 [source,bash]
 ----
 $ docker-compose up
 ----
-====
+
 
 The startup time should be less than `100ms`, compared to the roughly `1500ms` when starting the application on the JVM.
 
 Now that the service is up, visit `http://localhost:8080/greeting`, where you should see:
 
-====
+
 [source,json]
 ----
 {"id":1,"content":"Hello, World!"}
 ----
-====
+
 

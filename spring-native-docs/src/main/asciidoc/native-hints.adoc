@@ -15,7 +15,7 @@ For those, you can annotate classes already annotated with `@Configuration` or `
 
 For example, an application using `WebClient` to deserialize a `Data` class with a `SuperHero` nested class should be configured as below (see the Javadoc for more details):
 
-====
+
 [source,java,subs="attributes,verbatim"]
 ----
 @NativeHint(types = @TypeHint(types = Data.class, typeNames = "com.example.webclient.Data$SuperHero"))
@@ -24,7 +24,7 @@ public class WebClientApplication {
  // ...
 }
 ----
-====
+
 
 In fact, Spring Native itself is configuring most of your application with such annotations provided out of the box, you can {github-tree}/spring-native-configuration/src/main/java[browse them] in order to see some concrete example of hints.
 
