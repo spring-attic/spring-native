@@ -4,9 +4,9 @@
 :graalvm-version: 20.3.0
 :graalvm-dev-version: 20.1.0
 :boot-dev-version: 2.4.3
-:documentation-url: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native-docs/{version}/spring-graalvm-native-docs-{version}.zip!
+:documentation-url: docs.spring.io/spring-native/docs/current-SNAPSHOT/reference/htmlsingle
 
-image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}/reference/index.html"]
+image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
 Spring Native provides an incubating support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] 
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
@@ -36,7 +36,7 @@ Some changes incubated here are moved directly to https://github.com/spring-proj
 
 == Quick start
 
-For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}/reference/index.html[documentation].
+For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}[documentation].
 
 === Artifacts
 
@@ -51,11 +51,11 @@ The latest {version} release supports GraalVM {graalvm-version} and Spring Boot 
 - Go into the samples folder and pick one (e.g. `cd samples/commandlinerunner`)
 - Run `./build.sh` which will run a maven build, then a native image compile, then test the result.
 
-`build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/reference/index.html#samples[samples documentation].
+`build.sh` runs the `compile.sh` script and in that compile script you can see the invocation of the `native-image` command. The other samples follow a similar model. For more details on the samples see the {documentation-url}/index.html#samples[samples documentation].
 
 == Contributing
 
-This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/reference/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
+This project is in the `spring-projects-experimental` org indicating it is not as mature as other Spring projects. Contributions are welcome (maybe read the {documentation-url}/index.html#extension_guide[extension guide] if thinking about extending it to support your project). However, please recognize we aren't at the polishing javadoc stage and whilst pre 1.0 there may be heavy evolution of APIs.
 
 === Baseline
 
