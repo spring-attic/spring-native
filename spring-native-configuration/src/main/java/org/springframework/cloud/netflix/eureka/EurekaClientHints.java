@@ -6,6 +6,7 @@ import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.MyDataCenterInfo;
 import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.converters.jackson.DataCenterTypeInfoResolver;
 import com.netflix.discovery.converters.jackson.builder.ApplicationsJacksonBuilder;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
@@ -27,7 +28,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {
 				ApplicationInfoManager.class, EurekaInstanceConfig.class, DiscoveryClient.class,
 				EurekaApplications.class, Applications.class, Application.class, ApplicationsJacksonBuilder.class,
-				DataCenterInfo.class, DataCenterInfo.Name.class, MyDataCenterInfo.class, InstanceInfo.class
+				DataCenterInfo.class, DataCenterInfo.Name.class, MyDataCenterInfo.class, InstanceInfo.class,
+				DataCenterTypeInfoResolver.class
 		}, typeNames = "com.netflix.discovery.DiscoveryClient$EurekaTransport", access = AccessBits.ALL)
 })
 public class EurekaClientHints implements NativeConfiguration {
