@@ -77,30 +77,39 @@ VSCode uses the same build tooling as Eclipse, so it should work the same.
 
 === Gradle
 
-You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings:
+You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings.gradle(.kts) file:
 
-[source,groovy,subs="attributes,verbatim"]
-.settings.gradle
+[source,subs="attributes,verbatim",role="primary"]
+.Gradle Groovy
 ----
 pluginManagement {
-	repositories {
-		// add the spring milestone repository
-		maven { url 'https://repo.spring.io/milestone' }
-		...
-		gradlePluginPortal()
-	}
+    repositories {
+        maven { url 'https://repo.spring.io/{spring-native-repo}' }
+    }
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
+    }
 }
 ----
 
-[source,groovy,subs="attributes,verbatim"]
-.build.gradle
+[source,subs="attributes,verbatim",role="primary"]
+.Gradle Groovy
 ----
 plugins {
-	id 'org.springframework.boot' version '2.4.3'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	// add the plugin declaration in your plugins section
-	id 'org.springframework.experimental.aot' version '0.9.0'
-	id 'java'
+    id 'org.springframework.experimental.aot' version '{version}'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+plugins {
+    id("org.springframework.experimental.aot") version "{version}"
 }
 ----
 

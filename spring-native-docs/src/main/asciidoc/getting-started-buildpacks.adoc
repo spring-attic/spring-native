@@ -127,14 +127,14 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
 .Gradle Groovy
 ----
 plugins {
-id 'org.springframework.experimental.aot' version '{version}'
+    id 'org.springframework.experimental.aot' version '{version}'
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
 plugins {
-id("org.springframework.experimental.aot") version "{version}"
+    id("org.springframework.experimental.aot") version "{version}"
 }
 ----
 ====
