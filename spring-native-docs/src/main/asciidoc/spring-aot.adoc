@@ -118,6 +118,69 @@ The resulting classes and resources are automatically added to the runtime class
 
 Sources are generated in `build/generated/sources/aot/*,build/generated/resources/aot/*` and test sources in `build/generated/sources/aotTest/*,build/generated/resources/aotTest/*`.
 
+Configuration can be performed if needed using the `springAot` DSL extension, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
+
+[source,subs="attributes,verbatim",role="primary"]
+.Gradle Groovy
+----
+springAot {
+	removeSpelSupport = true
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+springAot {
+	removeSpelSupport.set(true)
+}
+----
+
+Here is a complete code sample showing all the default values and how to set them:
+
+[source,subs="attributes,verbatim",role="primary"]
+.Gradle Groovy
+----
+import org.springframework.aot.gradle.dsl.AotMode
+
+// ...
+
+springAot {
+	mode = AotMode.NATIVE
+	debugVerify = false
+	removeXmlSupport = true
+	removeSpelSupport = false
+	removeYamlSupport = false
+	removeJmxSupport = true
+	verify = true
+	removeUnusedConfig = true
+	failOnMissingSelectorHint = true
+	buildTimePropertiesMatchIfMissing = true
+	buildTimePropertiesChecks = ["default-include-all","!spring.dont.include.these.","!or.these"]
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+import org.springframework.aot.gradle.dsl.AotMode
+
+// ...
+
+springAot {
+	mode.set(AotMode.NATIVE)
+	debugVerify.set(false)
+	removeXmlSupport.set(true)
+	removeSpelSupport.set(false)
+	removeYamlSupport.set(false)
+	removeJmxSupport.set(true)
+	verify.set(true)
+	removeUnusedConfig.set(true)
+	failOnMissingSelectorHint.set(true)
+	buildTimePropertiesMatchIfMissing.set(true)
+	buildTimePropertiesChecks.set(arrayOf("default-include-all","!spring.dont.include.these.","!or.these"))
+}
+----
+
+See <<configuring-spring-aot>> for more details on the configuration options.
 
 [[configuring-spring-aot]]
 === Configuring Spring AOT

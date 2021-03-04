@@ -26,6 +26,7 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.gradle.tasks.GenerateAotSources;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 
@@ -37,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringAotGradlePluginTest {
 
 	@Test
-	public void pluginRegistersAotSourceSet() {
+	void pluginRegistersAotSourceSet() {
 		Project project = createTestProject();
 
 		JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -55,7 +56,7 @@ public class SpringAotGradlePluginTest {
 	}
 
 	@Test
-	public void pluginRegistersAotTasks() {
+	void pluginRegistersAotTasks() {
 		Project project = createTestProject();
 
 		JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -71,7 +72,7 @@ public class SpringAotGradlePluginTest {
 
 
 	@Test
-	public void pluginRegistersAotTestSourceSet() {
+	void pluginRegistersAotTestSourceSet() {
 		Project project = createTestProject();
 
 		JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -87,7 +88,7 @@ public class SpringAotGradlePluginTest {
 	}
 
 	@Test
-	public void pluginRegistersAotTestTasks() {
+	void pluginRegistersAotTestTasks() {
 		Project project = createTestProject();
 
 		JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -108,6 +109,14 @@ public class SpringAotGradlePluginTest {
 		assertThat(test.getClasspath().getFiles())
 				.containsAll(aotTestSourceSet.getOutput().getClassesDirs().getFiles())
 				.doesNotContainAnyElementsOf(aotSourceSet.getOutput().getClassesDirs().getFiles());
+	}
+
+	@Test
+	void registerDslExtension() {
+		Project project = createTestProject();
+
+		assertThat(project.getExtensions().findByType(SpringAotExtension.class)).isNotNull();
+		assertThat(project.getExtensions().findByName(SpringAotGradlePlugin.EXTENSION_NAME)).isNotNull();
 	}
 
 

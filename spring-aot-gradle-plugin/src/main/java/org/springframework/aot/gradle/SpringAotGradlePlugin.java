@@ -31,6 +31,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.gradle.tasks.GenerateAotSources;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -43,6 +44,8 @@ import org.springframework.boot.gradle.tasks.run.BootRun;
  * @author Andy Wilkinson
  */
 public class SpringAotGradlePlugin implements Plugin<Project> {
+
+	public static final String EXTENSION_NAME = "springAot";
 
 	public static final String AOT_SOURCE_SET_NAME = "aot";
 
@@ -57,6 +60,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 	public void apply(Project project) {
 
 		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+			project.getExtensions().create(EXTENSION_NAME, SpringAotExtension.class, project.getObjects());
 
 			String buildPath = project.getBuildDir().getAbsolutePath();
 			Path generatedSourcesPath = Paths.get(buildPath, "generated", "sources");

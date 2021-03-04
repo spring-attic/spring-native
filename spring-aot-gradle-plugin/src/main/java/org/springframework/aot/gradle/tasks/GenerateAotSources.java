@@ -28,12 +28,13 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 
 import org.springframework.aot.BootstrapCodeGenerator;
-import org.springframework.nativex.AotOptions;
+import org.springframework.aot.gradle.dsl.SpringAotExtension;
 
 /**
  * {@link org.gradle.api.Task} that generates AOT sources using the {@link BootstrapCodeGenerator}.
@@ -51,9 +52,12 @@ public class GenerateAotSources extends DefaultTask {
 
 	private final DirectoryProperty resourcesOutputDirectory;
 
+	private final GenerateAotOptions aotOptions;
+
 	public GenerateAotSources() {
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
+		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
 	}
 
 	@InputFiles
@@ -84,13 +88,17 @@ public class GenerateAotSources extends DefaultTask {
 		return this.resourcesOutputDirectory;
 	}
 
+	@Nested
+	public GenerateAotOptions getAotOptions() {
+		return this.aotOptions;
+	}
+
 	@TaskAction
 	public void generateSources() {
 		List<String> classpathElements = this.classpath.getFiles().stream()
 				.map(File::getAbsolutePath).collect(Collectors.toList());
 		Set<Path> resourcesElements = this.resourceDirectories.getSrcDirs().stream().map(File::toPath).collect(Collectors.toSet());
-		AotOptions options = new AotOptions();
-		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(options);
+		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(this.aotOptions.toAotOptions());
 		try {
 			generator.generate(this.sourcesOutputDirectory.getAsFile().map(File::toPath).get(),
 					this.resourcesOutputDirectory.getAsFile().map(File::toPath).get(),
@@ -100,4 +108,5 @@ public class GenerateAotSources extends DefaultTask {
 			throw new TaskExecutionException(this, exc);
 		}
 	}
+
 }
