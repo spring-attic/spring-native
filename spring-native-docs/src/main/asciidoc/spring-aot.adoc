@@ -54,7 +54,7 @@ Configuration can be performed if needed within the `<configuration>` element, f
 ----
 ====
 
-See <<configuring-spring-aot>> for a list of the
+See <<configuring-spring-aot>> for a list of the configuration options available.
 
 ==== Intellij IDEA
 
