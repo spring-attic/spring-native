@@ -1,12 +1,14 @@
 package org.springframework.aot;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,8 @@ import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Default implementation for the {@link BuildContext}
@@ -102,7 +106,14 @@ class DefaultBuildContext implements BuildContext {
 			for (URI uri : uris) {
 				urls.add(uri.toURL());
 			}
-			return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader().getParent());
+			ClassLoader parentClassLoader =  getClass().getClassLoader().getParent();
+			// If we're on JDK9+, we need to use the PlatformClassLoader
+			// or we'll miss JDK classes that aren't in the base module.
+			if (ClassUtils.hasMethod(Optional.class, "stream", new Class[0])) {
+				Method getPlatformClassLoader = ReflectionUtils.findMethod(ClassLoader.class, "getPlatformClassLoader");
+				parentClassLoader = (ClassLoader) ReflectionUtils.invokeMethod(getPlatformClassLoader, null);
+			}
+			return new URLClassLoader(urls.toArray(new URL[0]), parentClassLoader);
 		}
 		catch (Exception ex) {
 			throw new CodeGenerationException("Unable to build classpath", ex);
