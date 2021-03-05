@@ -31,11 +31,13 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.gradle.tasks.GenerateAotSources;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.nativex.utils.VersionExtractor;
 
 /**
  * {@link Plugin} that generates AOT sources using {@code spring-native-aot} and compiles them.
@@ -62,6 +64,8 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
 			project.getExtensions().create(EXTENSION_NAME, SpringAotExtension.class, project.getObjects());
 
+			addSpringNativeDependency(project);
+
 			String buildPath = project.getBuildDir().getAbsolutePath();
 			Path generatedSourcesPath = Paths.get(buildPath, "generated", "sources");
 			Path generatedResourcesPath = Paths.get(buildPath, "generated", "resources");
@@ -79,6 +83,14 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			GenerateAotSources generateAotTestSources = createGenerateAotTestSourcesTask(project.getTasks(), sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
 			configureAotTestTasks(project.getTasks(), sourceSets, aotSourceSet, aotTestSourceSet, generateAotTestSources);
 		});
+	}
+
+	private void addSpringNativeDependency(Project project) {
+		String springNativeVersion = VersionExtractor.forClass(BootstrapCodeGenerator.class);
+		if (springNativeVersion != null) {
+			project.getDependencies().add(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME,
+					"org.springframework.experimental:spring-native:" + springNativeVersion);
+		}
 	}
 
 	private SourceSet createAotSourceSet(SourceSetContainer sourceSets, File aotSourcesDirectory, File aotResourcesDirectory) {

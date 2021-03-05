@@ -16,9 +16,13 @@
 
 package org.springframework.aot.gradle;
 
+import java.util.Optional;
+
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -117,6 +121,20 @@ public class SpringAotGradlePluginTest {
 
 		assertThat(project.getExtensions().findByType(SpringAotExtension.class)).isNotNull();
 		assertThat(project.getExtensions().findByName(SpringAotGradlePlugin.EXTENSION_NAME)).isNotNull();
+	}
+
+	@Test
+	void nativeDependencyIsRegistered() {
+		Project project = createTestProject();
+
+		Configuration apiConfiguration = project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME);
+
+		Optional<Dependency> springNativeDependency = apiConfiguration.getDependencies().stream()
+				.filter(dep -> dep.getGroup().equals("org.springframework.experimental"))
+				.filter(dep -> dep.getName().equals("spring-native"))
+				.findAny();
+
+		assertThat(springNativeDependency).isPresent();
 	}
 
 
