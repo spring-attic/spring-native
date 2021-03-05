@@ -42,7 +42,6 @@ public class ResourcesJsonMarshaller {
 			JSONObject jsonObject = converter.toJsonArray(metadata);
 			outputStream.write(jsonObject.toString(2)
 					.replace("\\/","/")
-					.replace("\\\\","/")
 					.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
