@@ -36,6 +36,7 @@ public @interface ResourceHint {
 	 * Resource patterns specified with Java regexp for regular resources, and with the bundle name (regexp not supported) if {@link #isBundle()} is set to true.
 	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Resources/">Accessing resources in native images</a>
 	 * return the patterns
+	 * @return the patterns of the resources to include
 	 */
 	String[] patterns() default {};
 
