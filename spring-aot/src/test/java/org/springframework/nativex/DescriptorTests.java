@@ -20,6 +20,9 @@ import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 public class DescriptorTests {
 
 	@Test
@@ -28,33 +31,20 @@ public class DescriptorTests {
 		ClassDescriptor two = ClassDescriptor.of("two");
 		ReflectionDescriptor a = new ReflectionDescriptor();
 		a.add(one);
-		System.out.println(a);
-		System.out.println("---");
 		ReflectionDescriptor b = new ReflectionDescriptor();
 		b.add(two);
-		System.out.println(b);
-		System.out.println("---");
-		System.out.println(" merging...");
 		a.merge(b);
-		System.out.println(a);
+		assertThat(a.getClassDescriptors()).containsExactly(one, two);
 	}
-	
 
 	@Test
 	public void mergeResourceDescriptors() {
 		ResourcesDescriptor a = new ResourcesDescriptor();
 		a.add("foo/one.json");
-		System.out.println(a);
-		System.out.println("---");
 		ResourcesDescriptor b = new ResourcesDescriptor();
 		b.add("bar/two.json");
-		System.out.println(b);
-		System.out.println("---");
-		System.out.println(" merging...");
 		a.merge(b);
-		System.out.println(a);
+		assertThat(a.getPatterns()).containsExactlyInAnyOrder("foo/one.json", "bar/two.json");
 	}
-	
-
 
 }
