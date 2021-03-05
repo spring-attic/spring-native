@@ -11,7 +11,7 @@ However, there are situations where specifying additional native configuration i
 - When you try to use a feature or library not yet supported by Spring Native
 - When you are want to specify native configuration related to your own application.
 
-For those, you can annotate classes already annotated with `@Configuration` or `@SpringBootApplication` with `@NativeHint`, or in the case of quite simple configuration a `@TypeHint` directly (a `@NativeHin` is a container for many kinds of configuration including `@TypeHint`s).
+For those, you can annotate classes already annotated with `@Configuration` or `@SpringBootApplication` with `@NativeHint`, or in the case of quite simple configuration a `@TypeHint` directly (a `@NativeHint` is a container for many kinds of configuration including `@TypeHint` s).
 
 For example, an application using `WebClient` to deserialize a `Data` class with a `SuperHero` nested class should be configured as below (see the Javadoc for more details):
 
@@ -39,7 +39,7 @@ It should use class references but string names for classes are allowed if visib
 * `resources` which lists patterns that match resources (including .class files) that should be included in the image.
 * `initialization` which lists classes/packages that should be explicitly initialized at either build-time or run-time.
 There should not really be a trigger specified on hints included `initialization`.
-* `imports` can be useful if two hints share a number of @TypeHint/@ProxyHint/etc in common.
+* `imports` can be useful if two hints share a number of `@TypeHint`/`@ProxyHint`/etc in common.
 For example reactive-web and webmvc may expose a lot of common infrastructure.
 Rather than duplicate those in two places, those info annotations (TypeHint/ProxyHint/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `@NativeHint`.
 
