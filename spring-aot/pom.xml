@@ -113,9 +113,14 @@
 				<configuration>
 					<filters>
 						<filter>
-							<artifact>*:*</artifact>
+							<artifact>*:asm*</artifact>
 							<excludes>
 								<exclude>META-INF/MANIFEST.MF</exclude>
+							</excludes>
+						</filter>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
 								<exclude>module-info.class</exclude>
 							</excludes>
 						</filter>
