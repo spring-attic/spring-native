@@ -2,10 +2,5 @@
   { "name":"jdk.vm.ci.meta.JavaKind$FormatWithToString[]" },
   { "name":"java.lang.reflect.AnnotatedElement[]" },
   { "name":"java.lang.reflect.GenericDeclaration[]" },
-  { "name":"org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled", "allDeclaredMethods":true },
-  { "name":"com.netflix.discovery.shared.resolver.AsyncResolver", "allDeclaredFields":true, "allDeclaredMethods":true },
-  { "name":"com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator", "allDeclaredFields":true, "allDeclaredMethods":true },
-  { "name":"com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient", "allDeclaredFields":true, "allDeclaredMethods":true },
-  { "name":"com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient", "allDeclaredFields":true, "allDeclaredMethods":true },
-  { "name":"com.netflix.servo.annotations.Monitor", "allDeclaredMethods":true }
+  { "name":"org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled", "allDeclaredMethods":true }
 ]
