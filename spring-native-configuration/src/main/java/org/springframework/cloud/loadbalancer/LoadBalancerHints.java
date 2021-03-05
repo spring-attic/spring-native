@@ -10,7 +10,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = LoadBalancerAutoConfiguration.class, types = {
 		@TypeHint(types = {
 				LoadBalancerClientSpecification.class
-		}, access = AccessBits.ALL)
+		}, typeNames = {"jdk.vm.ci.meta.JavaKind$FormatWithToString[]"}, access = AccessBits.ALL)
 })
 public class LoadBalancerHints implements NativeConfiguration {
 }
