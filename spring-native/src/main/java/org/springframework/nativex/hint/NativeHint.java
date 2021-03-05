@@ -79,7 +79,10 @@ public @interface NativeHint {
 	 */
 	Class<?>[] imports() default {};
 
-	/** GraalVM native options to configure automatically when the hint is active **/
+	/**
+	 * GraalVM native options to configure automatically when the hint is active
+	 * @return the native options to configure
+	 */
 	String[] options() default {};
 	
 	// TODO sort out these 3 members:

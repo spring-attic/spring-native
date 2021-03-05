@@ -37,6 +37,18 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/MANIFEST.MF</exclude>
+								<exclude>META-INF/license.txt</exclude>
+								<exclude>META-INF/notice.txt</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
