@@ -1,10 +1,10 @@
 :version: 0.8.5
 :repository: milestone
-:boot-version: 2.4.1
+:spring-boot-version: 2.4.1
 :graalvm-version: 20.3.0
 :graalvm-dev-version: 20.1.0
-:boot-dev-version: 2.4.3
-:documentation-url: https://docs.spring.io/spring-native/docs/current-SNAPSHOT/reference/htmlsingle
+:spring-boot-dev-version: 2.4.3
+:documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
@@ -40,12 +40,14 @@ For detailed information and walkthroughs of applying the techniques to your pro
 
 === Artifacts
 
-The latest {version} release supports GraalVM {graalvm-version} and Spring Boot {boot-version}.
+The latest {version} release supports GraalVM {graalvm-version} and Spring Boot {spring-boot-version}.
 
 - Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native/{version}/spring-graalvm-native-{version}.jar[`org.springframework.experimental:spring-graalvm-native:{version}`]
 - Repository: https://repo.spring.io/{repository}[`https://repo.spring.io/{repository}`]
 
 === Play with the samples
+
+NOTE: You need to install the GraalVM `native-image` compiler, check {documentation-url}/#getting-started-native-image[the documentation] for more details.
 
 - Download and extract https://github.com/spring-projects-experimental/spring-native/archive/{version}.zip[sources from the latest release].
 - Go into the samples folder and pick one (e.g. `cd samples/commandlinerunner`)
@@ -60,7 +62,7 @@ However, please recognize we aren't at the polishing javadoc stage and whilst pr
 
 === Baseline
 
-The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {boot-dev-version}.
+The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {spring-boot-dev-version}.
 Mac, Linux and Windows are supported.
 
 == License
