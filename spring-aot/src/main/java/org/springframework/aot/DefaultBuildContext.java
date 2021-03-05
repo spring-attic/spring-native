@@ -102,7 +102,7 @@ class DefaultBuildContext implements BuildContext {
 			for (URI uri : uris) {
 				urls.add(uri.toURL());
 			}
-			return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+			return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader().getParent());
 		}
 		catch (Exception ex) {
 			throw new CodeGenerationException("Unable to build classpath", ex);

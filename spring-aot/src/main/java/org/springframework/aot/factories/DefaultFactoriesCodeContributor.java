@@ -1,7 +1,5 @@
 package org.springframework.aot.factories;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import com.squareup.javapoet.CodeBlock;
@@ -22,8 +20,6 @@ import org.springframework.nativex.hint.Flag;
 class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private final AotOptions aotOptions;
-
-	private Set<String> factoryAlreadyAdded = new HashSet<>();
 
 	DefaultFactoriesCodeContributor(AotOptions aotOptions) {
 		this.aotOptions = aotOptions;
@@ -58,10 +54,8 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
 		String factoryName = factory.getFactory().getClassName();
-		if (factoryAlreadyAdded.contains(factoryName)) {
-			return false;
 		// TODO shame no ConditionalOnClass on these providers
-		} else if (factoryName.endsWith("FreeMarkerTemplateAvailabilityProvider")) {
+		if (factoryName.endsWith("FreeMarkerTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("freemarker.template.Configuration") != null;
 		} else if (factoryName.endsWith("MustacheTemplateAvailabilityProvider")) {
 			return typeSystem.resolveClass("com.samskivert.mustache.Mustache") != null;
@@ -78,7 +72,6 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 		} else if (factoryName.startsWith("org.springframework.boot.devtools")) {
 			throw new IllegalStateException("Devtools is not supported yet, please remove the related dependency for now.");
 		}
-		factoryAlreadyAdded.add(factoryName);
 		return true;
 	}
 
