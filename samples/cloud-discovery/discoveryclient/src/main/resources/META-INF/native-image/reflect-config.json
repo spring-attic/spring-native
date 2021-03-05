@@ -1,5 +1,3 @@
 [
-  { "name":"java.lang.reflect.AnnotatedElement[]" },
-  { "name":"java.lang.reflect.GenericDeclaration[]" },
   { "name":"org.springframework.cloud.client.ConditionalOnReactiveDiscoveryEnabled", "allDeclaredMethods":true }
 ]
