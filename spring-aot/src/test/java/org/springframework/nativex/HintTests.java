@@ -15,6 +15,7 @@
  */
 package org.springframework.nativex;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -54,7 +55,6 @@ public class HintTests {
 	@BeforeAll
 	public static void setup() throws Exception {
 		File file = new File("./target/classes");
-		// System.out.println(file.getCanonicalPath());
 		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
 	}
 
@@ -64,9 +64,9 @@ public class HintTests {
 		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		Map<String, AccessDescriptor> specificTypes = hints.get(0).getSpecificTypes();
-		System.out.println(specificTypes);
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String[]");
-		assertNotNull(accessDescriptor);
+		assertThat(accessDescriptor).isNotNull();
+		assertThat(accessDescriptor.getAccessBits()).isEqualTo(AccessBits.CLASS);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class HintTests {
 	@NativeHint(types = { @TypeHint(types = { String[].class }) })
 	static class TestClass1 {
 	}
-	
+
 	@TypeHint(types=String.class)
 	static class TH1 {
 	}
@@ -97,7 +97,7 @@ public class HintTests {
 	@TypeHint(types=Integer.class)
 	static class TH2 {
 	}
-	
+
 	@Test
 	public void proxies() {
 		Type testClass = typeSystem.resolveName(TestClass2.class.getName());
@@ -185,7 +185,7 @@ public class HintTests {
 
 	@NativeHint(initialization = {
 			@InitializationHint(
-					typeNames = { "aaa","bbb" }, 
+					typeNames = { "aaa","bbb" },
 					types=String.class,
 					initTime = InitializationTime.RUN),
 			@InitializationHint(
