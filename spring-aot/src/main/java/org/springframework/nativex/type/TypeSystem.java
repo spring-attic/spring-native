@@ -1129,7 +1129,12 @@ public class TypeSystem {
 			File f = new File(classpathEntry);
 			if (f.isDirectory()) {
 				result.add(Paths.get(f.toURI()));
-			} else if (f.isFile() && f.getName().endsWith(".jar") && f.getParent().endsWith(File.separator+"target")) {
+			} else if (f.isFile() &&
+					   f.getName().endsWith(".jar") && 
+					   (f.getParent().endsWith(File.separator+"target") ||
+					    // This pattern recognizes libs/foo.jar which occurs with gradle multi module setups
+					    f.getParent().endsWith(File.separator+"libs"))
+					   ) {
 				result.add(Paths.get(f.toURI()));
 			}
 		}
