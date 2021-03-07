@@ -271,7 +271,7 @@
 											<contextUrl>https://repo.spring.io</contextUrl>
 											<username>${artifactory.username}</username>
 											<password>${artifactory.password}</password>
-											<repoKey>libs-milestone-local</repoKey>
+											<repoKey>libs-release-local</repoKey>
 											<snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
 											<excludePatterns>*/spring-native-docs-*.jar</excludePatterns>
 										</publisher>
@@ -303,9 +303,9 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>spring-milestone</id>
-			<name>Spring Milestone</name>
-			<url>https://repo.spring.io/milestone</url>
+			<id>spring-release</id>
+			<name>Spring release</name>
+			<url>https://repo.spring.io/release</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -314,7 +314,7 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<name>Spring Release</name>
+			<name>Spring release</name>
 			<id>release</id>
 			<url>https://repo.spring.io/release</url>
 			<snapshots>
