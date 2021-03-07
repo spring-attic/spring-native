@@ -3,11 +3,13 @@
 
 This section defines the GraalVM version, languages and dependencies that have been validated against Spring Native {version}.
 
+[[support-graalvm]]
 === GraalVM
 
 GraalVM version {graalvm-version} is supported, see the related https://www.graalvm.org/release-notes/[release notes].
 GraalVM issues impacting the Spring ecosystem are identified on their issue tracker using https://github.com/oracle/graal/labels/spring[the `spring` label].
 
+[[support-language]]
 === Language
 
 Java 8, Java 11, and Kotlin 1.3+ are supported.
@@ -16,11 +18,13 @@ NOTE: Java 11 native images are currently impacted by a transient footprint issu
 
 Kotlin Coroutines are supported but require additional reflection entries due to how Coroutines generates bytecode with an `Object` return type, see https://github.com/spring-projects/spring-framework/issues/21546[this related issue] for a potential future fix.
 
+[[support-feature-flags]]
 === Feature flags
 
 Some features like HTTPS may require some additional flags, check <<native-image-options>> for more details.
 When it recognizes certain usage scenarios, Spring Native tries to set required flags automatically.
 
+[[support-spring-boot]]
 === Spring Boot
 
 IMPORTANT: `spring-native` {version} is designed to be used with Spring Boot {spring-boot-version}.
@@ -59,6 +63,7 @@ RSocket security is also supported.
 IMPORTANT: Devtools is not supported yet, you can follow
 https://github.com/spring-projects-experimental/spring-native/issues/532[spring-native#532] to be aware when it will.
 
+[[support-spring-cloud]]
 === Spring Cloud
 
 IMPORTANT: `spring-native` {version} is designed to be used with Spring Cloud {spring-cloud-version}.
@@ -76,6 +81,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-starter-function-webflux`
 ** `--enable-https` flag is required for HTTPS support.
 
+[[support-others]]
 === Others
 
 * Spring Kafka
@@ -84,6 +90,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * Mysql JDBC driver
 * PostgreSQL JDBC driver
 
+[[support-limitations]]
 === Limitations
 
 CGLIB proxies are not supported, only JDK dynamic proxies on interfaces are supported for now. As a consequence `spring.aop.proxy-target-class` is set to `false` when using Spring Native.

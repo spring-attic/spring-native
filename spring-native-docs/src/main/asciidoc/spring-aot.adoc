@@ -4,6 +4,7 @@
 Spring AOT build plugins are designed to generate and compile sources by taking advantage of the context of your application (classpath, configuration) in order to improve native image compatibility and footprint.
 It is invoked before running your application and tests, and may potentially require additional IDE configuration.
 
+[[spring-aot-maven]]
 === Maven
 
 The plugin should be declared as following:
@@ -50,7 +51,7 @@ Configuration can be performed if needed within the `<configuration>` element, f
 </configuration>
 ----
 
-See <<configuring-spring-aot>> for a list of the configuration options available.
+See <<spring-aot-configuration>> for a list of the configuration options available.
 
 ==== Intellij IDEA
 
@@ -71,6 +72,7 @@ But Eclipse does not support having the same classes in main and test generated 
 
 VSCode uses the same build tooling as Eclipse, so it should work the same.
 
+[[spring-aot-gradle]]
 === Gradle
 
 You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings.gradle(.kts) file:
@@ -176,9 +178,9 @@ springAot {
 }
 ----
 
-See <<configuring-spring-aot>> for more details on the configuration options.
+See <<spring-aot-configuration>> for more details on the configuration options.
 
-[[configuring-spring-aot]]
+[[spring-aot-configuration]]
 === Configuring Spring AOT
 
 * `mode` switches how much configuration the feature actually provides to the native image compiler:
