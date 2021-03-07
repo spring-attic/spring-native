@@ -6,6 +6,7 @@ Spring Native is enabling automatically some of those, and some others especiall
 
 They can be specified using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable in Spring Boot plugin if you are using {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support] or using the `<buildArgs></buildArgs>` configuration element if you are using `native-image-maven-plugin`.
 
+[[native-image-options-default]]
 === Options enabled by default
 
 These options are enabled by default when using Spring Native, since they are mandatory to make a Spring application work when compiled as GraalVM native images.
@@ -19,6 +20,7 @@ These options are enabled by default when using Spring Native, since they are ma
 
 Notice that XML and JMX support is disable by default, see options bellow to enable them if needed.
 
+[[native-image-options-useful]]
 === Useful options
 
 * `--verbose` makes image building output more verbose.
@@ -35,6 +37,7 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 * `--enable-http` enables HTTP support.
 * `--enable-https` enables HTTPS support.
 
+[[native-image-options-unsupported]]
 === Unsupported options
 
 * `--initialize-at-build-time` without class or package specified is not supported since Spring Native for GraalVM is designed to work with runtime class initialization by default (a selected set of classes are enabled at buildtime).

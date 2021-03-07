@@ -10,6 +10,7 @@ The first option is certainly quick but rather manual/tedious.
 The second option sounds much more appealing for a robust/repeatable setup but by default the generated configuration will include anything required by the test infrastructure, which is unnecessary when the application runs for real.
 To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
 
+[[tracing-agent-testing]]
 === Testing with the agent to compute configuration
 
 ==== A basic access-filter file

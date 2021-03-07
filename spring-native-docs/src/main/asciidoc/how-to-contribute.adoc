@@ -4,6 +4,7 @@
 This section describes how to extend Spring Native.
 You can then {github-prs}[submit pull requests] in order to add support for a specific part of the Spring ecosystem.
 
+[[how-to-contribute-design]]
 === Designing native-friendly Spring libraries
 
 Native support is mostly about making an application and its libraries possible to analyze at build-time to configure what's required or not at runtime.
@@ -17,6 +18,7 @@ Each reflection entry (per constructor/method/field) leads to the creation of a 
 
 The documentation below describes best practices to keep in mind when trying to make Spring code more compatible with native-images.
 
+[[how-to-contribute-configuration-class]]
 === Use `proxyBeanMethods=false` or method parameter injection in `@Configuration` classes
 
 In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
@@ -59,6 +61,7 @@ It is perfectly fine to use reflection in a native world but it is most optimal 
 * In the static block/fields of a class initialized at build-time
 * In an AOT transformation run as a Spring AOT build plugin
 
+[[how-to-contribute-new-hints]]
 === Contributing new hints
 
 For most cases Spring Native understands how Spring applications operate - how configurations refer to each other, how beans are going to be instantiated, etc.
@@ -99,6 +102,7 @@ Once you are happy with the hints you crafted, you can {github-prs}[submit a pul
 
 Using the <<tracing-agent>> can also be useful an approximation of the required native configuration without having to run too many native builds.
 
+[[how-to-contribute-dynamic-native-configuration]]
 === Dynamic native configuration
 
 ==== Implementing `NativeConfiguration`
@@ -125,6 +129,7 @@ By filtering it means they may programmatically compute that for some spring.fac
 
 These need to be implemented in `spring-aot`. For debugging them using the Maven plugin, you can use `mvnDebug` instead of `mvn` and connect with a JVM remote debugger from your IDE.
 
+[[how-to-contribute-using-container-build-env]]
 === Using container-based build environment
 
 In order to allow easily reproducible builds of `spring-native`, dedicated interactive Docker images are available for local development (tested on Linux and Mac) and are also used in the CI:
@@ -168,6 +173,7 @@ options:
 
 To test the various samples You can also run the root `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples) from the container.
 
+[[how-to-contribute-scripts]]
 === Scripts
 
 The `native-image` command supports a number of flags for producing information about what is in an image.
