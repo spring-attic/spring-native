@@ -25,13 +25,11 @@ import org.h2.store.fs.FilePathNioMem;
 import org.h2.store.fs.FilePathRetryOnInterrupt;
 import org.h2.store.fs.FilePathSplit;
 import org.h2.store.fs.FilePathZip;
-
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger= Driver.class, types =
 		@TypeHint( types = {

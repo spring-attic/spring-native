@@ -39,7 +39,6 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @NativeHint(trigger = ConfigServerAutoConfiguration.class, options = { "--enable-all-security-services",
 		"--enable-https", "--enable-http"

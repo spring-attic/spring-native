@@ -25,14 +25,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.springframework.nativex.type.ComponentProcessor;
-import org.springframework.nativex.type.NativeContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.nativex.support.ResourcesHandler;
+import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Method;
+import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
