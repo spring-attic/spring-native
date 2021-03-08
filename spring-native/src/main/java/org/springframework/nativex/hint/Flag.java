@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The various types of access that can be requested.
+ * The various types of access that can be requested. The names of these match
+ * the names that go into the json configuration for native-image.
  * 
  * @author Andy Clement
  */
@@ -37,15 +38,6 @@ public enum Flag {
 	public static String toString(Flag[] flags) {
 		List<Flag> asList = Arrays.asList(flags);
 		Collections.sort(asList);
-		StringBuilder s = new StringBuilder();
-		s.append("[");
-		for (int i=0;i<asList.size();i++) {
-			if (i>0) {
-				s.append(",");
-			}
-			s.append(asList.get(i));
-		}
-		s.append("]");
-		return s.toString();
+		return asList.toString();
 	}
 }

@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Specifies the reflective access desired for a type and whether it needs to be accessible as
- * a resource in the image (i.e. the {@code .class} resource to read as a byte array).
+ * a resource in the image (i.e. the {@code .class} resource to be readable as a byte array).
  *
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
@@ -59,9 +59,17 @@ public class AccessBits {
 	public static final int DECLARED_FIELDS       = 0x0010;
 
 	/**
-	 * Public methods access.
+	 * Public methods access: public methods of the class including inherited ones.
+	 * Consider whether you need this or @link {@link #DECLARED_METHODS}.
+	 * @see Class#getMethods()
 	 */
 	public static final int PUBLIC_METHODS        = 0x0020;
+
+	/**
+	 * Public constructors.
+	 * @see Class#getConstructors()
+	 */
+	public static final int PUBLIC_CONSTRUCTORS   = 0x0040;
 
 	/**
 	 * No access.
@@ -112,30 +120,7 @@ public class AccessBits {
 	}
 
 	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("Acs(");
-		if ((value & RESOURCE) != 0) {
-			s.append("RES ");
-		}
-		if ((value & CLASS) != 0) {
-			s.append("CLS ");
-		}
-		if ((value & DECLARED_CONSTRUCTORS) != 0) {
-			s.append("CONS ");
-		}
-		if ((value & DECLARED_METHODS) != 0) {
-			s.append("DMETHS ");
-		}
-		if ((value & PUBLIC_METHODS) != 0) {
-			s.append("PMETHS ");
-		}
-		if ((value & DECLARED_FIELDS) != 0) {
-			s.append("FLDS ");
-		}
-		if (value == 0) {
-			s.append("NONE");
-		}
-		return s.toString().trim() + ")";
+		return toString(value);
 	}
 
 	public static Flag[] getFlags(int value) {
@@ -145,6 +130,9 @@ public class AccessBits {
 		}
 		if ((value & DECLARED_CONSTRUCTORS) != 0) {
 			flags.add(Flag.allDeclaredConstructors);
+		}
+		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
+			flags.add(Flag.allPublicConstructors);
 		}
 		if ((value & DECLARED_METHODS) != 0) {
 			flags.add(Flag.allDeclaredMethods);
@@ -197,7 +185,10 @@ public class AccessBits {
 			s.append("CLS ");
 		}
 		if ((value & DECLARED_CONSTRUCTORS) != 0) {
-			s.append("CONS ");
+			s.append("DCONS ");
+		}
+		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
+			s.append("PCONS ");
 		}
 		if ((value & DECLARED_METHODS) != 0) {
 			s.append("DMETHS ");
@@ -239,6 +230,9 @@ public class AccessBits {
 		}
 		if ((currentAccess&DECLARED_CONSTRUCTORS)==0 && (newAccess&DECLARED_CONSTRUCTORS)!=0) {
 			result = result|DECLARED_CONSTRUCTORS;
+		}
+		if ((currentAccess&PUBLIC_CONSTRUCTORS)==0 && (newAccess&PUBLIC_CONSTRUCTORS)!=0) {
+			result = result|PUBLIC_CONSTRUCTORS;
 		}
 		if ((currentAccess&DECLARED_METHODS)==0 && (newAccess&DECLARED_METHODS)!=0) {
 			result = result|DECLARED_METHODS;

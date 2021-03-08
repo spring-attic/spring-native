@@ -40,5 +40,7 @@ public @interface FieldHint {
 	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#unsafe-accesses">Unsafe accesses</a>
 	 */
 	boolean allowUnsafeAccess() default false;
+	
+	// TODO support allowWrite option when a use case requires it
 
 }
