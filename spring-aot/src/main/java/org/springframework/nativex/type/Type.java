@@ -2002,13 +2002,13 @@ public class Type {
 			if (resolvedType != null) {
 				AccessDescriptor ad = null;
 				if (accessRequired == -1) {
-					ad = new AccessDescriptor(inferAccessRequired(resolvedType), mds, fds, true);
+					ad = new AccessDescriptor(inferAccessRequired(resolvedType), mds, fds);
 				} else {
 					if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
 							AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
 						throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
 					}
-					ad = new AccessDescriptor(accessRequired, mds, fds, false);
+					ad = new AccessDescriptor(accessRequired, mds, fds);
 				}
 				ch.addDependantType(typeName, ad);
 			}
