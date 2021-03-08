@@ -31,11 +31,8 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
-// TODO can be {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
-// @Imports has @CompilationHint(skipIfTypesMissing=false?, follow=true)
-@NativeHint(trigger = Import.class, follow = true) // TODO verify these flags...
+@NativeHint(trigger = Import.class, follow = true) // Whatever is @Imported should be followed
 @NativeHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
-// These don't specify a triggering value target so are always exposed
 @NativeHint(types = { @TypeHint(types = { ComponentScan.class,
 		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
 // TODO Check required access for enums like this FilterType

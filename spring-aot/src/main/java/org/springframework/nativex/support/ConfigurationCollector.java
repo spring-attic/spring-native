@@ -47,7 +47,7 @@ import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
- * Centralized collector of all computed configuration, can be used to produce JSON files, can optionally forward that info to GraalVM.
+ * Centralized collector of all computed configuration, can be used to produce JSON files.
  * 
  * @author Andy Clement
  */
@@ -67,8 +67,6 @@ public class ConfigurationCollector {
 	
 	private Set<String> options = new HashSet<>();
 
-	private Connector connector;
-	
 	private Map<String,byte[]> newResourceFiles = new HashMap<>();
 	
 	private TypeSystem ts;
@@ -96,10 +94,6 @@ public class ConfigurationCollector {
 	public InitializationDescriptor getInitializationDescriptor() {
 		return initializationDescriptor;
 	}
-
-	public void setGraalConnector(Connector graalConnector) {
-		this.connector = graalConnector;
-	}
 	
 	public void setTypeSystem(TypeSystem ts) {
 		this.ts = ts;
@@ -121,9 +115,6 @@ public class ConfigurationCollector {
 			if (!checkTypes(interfaceNames, t -> t!=null && t.isInterface())) {
 				return false;
 			}
-		}
-		if (connector!=null) {
-			connector.addProxy(interfaceNames);
 		}
 		proxiesDescriptor.add(ProxyDescriptor.of(interfaceNames));
 		return true;
@@ -198,17 +189,11 @@ public class ConfigurationCollector {
 
 	public void addResourcesDescriptor(ResourcesDescriptor resourcesDescriptor) {
 		this.resourcesDescriptor.merge(resourcesDescriptor);
-		if (connector != null) {
-			connector.addResourcesDescriptor(resourcesDescriptor);
-		}
 	}
 
 	public ReflectionDescriptor addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
 		ReflectionDescriptor filteredReflectionDescriptor = filterVerified(reflectionDescriptor);
 		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
-		if (connector != null) {
-			connector.addReflectionDescriptor(filteredReflectionDescriptor);
-		}
 		return filteredReflectionDescriptor;
 	}
 	
@@ -246,7 +231,7 @@ public class ConfigurationCollector {
 					logger.debug("Stripped down to a base class descriptor for "+classDescriptor.getName());
 					Set<Flag> existingFlags = classDescriptor.getFlags();
 					classDescriptor = ClassDescriptor.of(classDescriptor.getName());
-//					classDescriptor.setFlags(Flags.
+					// TODO should set some flags here?
 					anyFailed=true;
 				}
 			}
@@ -283,22 +268,15 @@ public class ConfigurationCollector {
 			if (!verifyMembers(classDescriptor)) {
 				Set<Flag> existingFlags = classDescriptor.getFlags();
 				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
-//				classDescriptor.setFlags(existingFlags);
+				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
 			}
 		}
 		reflectionDescriptor.merge(classDescriptor);
-		// add it to existing refl desc stuff...
-		if (connector != null) {
-			connector.addClassDescriptor(classDescriptor);
-		}
 	}
 
 	public void registerResource(String resourceName, byte[] bytes) {
 		resourcesDescriptor.add(resourceName);
 		newResourceFiles.put(resourceName, bytes);
-		if (connector != null) {
-			connector.registerResource(resourceName, new ByteArrayInputStream(bytes));
-		}
 	}
 	
 	private boolean verifyBundle(String pattern) {
@@ -317,9 +295,6 @@ public class ConfigurationCollector {
 		} else {
 			resourcesDescriptor.add(pattern);
 		}
-		if (connector != null) {
-			connector.addResource(pattern, isBundle);
-		}
 	}
 
 	public void initializeAtBuildTime(Type type) {
@@ -333,9 +308,6 @@ public class ConfigurationCollector {
 	public void initializeAtRunTime(List<Type> types) {
 		for (Type type: types) {
 			initializationDescriptor.addRuntimeClass(type.getDottedName());
-		}
-		if (connector != null) {
-			connector.initializeAtRunTime(types);
 		}
 	}
 
@@ -352,17 +324,11 @@ public class ConfigurationCollector {
 		for (String typename: typenames) {
 			initializationDescriptor.addRuntimeClass(typename);
 		}
-		if (connector != null) {
-			connector.initializeAtRunTime(typenames);
-		}
 	}
 
 	public void initializeAtBuildTime(String... typenames) {
 		for (String typename: typenames) {
 			initializationDescriptor.addBuildtimeClass(typename);
-		}
-		if (connector != null) {
-			connector.initializeAtBuildTime(typenames);
 		}
 	}
 
@@ -370,17 +336,11 @@ public class ConfigurationCollector {
 		for (String packageName: packageNames) {
 			initializationDescriptor.addBuildtimePackage(packageName);
 		}
-		if (connector != null) {
-			connector.initializeAtBuildTimePackages(packageNames);
-		}
 	}
 
 	public void initializeAtRunTimePackages(String... packageNames) {
 		for (String packageName: packageNames) {
 			initializationDescriptor.addRuntimePackage(packageName);
-		}
-		if (connector != null) {
-			connector.initializeAtRunTimePackages(packageNames);
 		}
 	}
 
@@ -390,9 +350,6 @@ public class ConfigurationCollector {
 
 	public void addOption(String option) {
 		options.add(option);
-		if (connector != null) {
-			connector.addOption(option);
-		}
 	}
 
 }

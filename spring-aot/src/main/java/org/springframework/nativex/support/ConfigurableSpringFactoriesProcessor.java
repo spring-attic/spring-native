@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.type.SpringFactoriesProcessor;
-import org.springframework.nativex.type.TypeUtils;
 
 /**
  * A {@link SpringFactoriesProcessor} that is configurable by an option:

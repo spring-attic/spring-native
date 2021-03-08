@@ -60,7 +60,7 @@ public class RequestedConfigurationManager {
 		}
 		Integer existsAlready = requestedTypeAccesses.get(type);
 		if (existsAlready != null) {
-			requestedTypeAccesses.put(type, existsAlready | accessRequired);//existsAlready.with(accessRequired));
+			requestedTypeAccesses.put(type, existsAlready | accessRequired);
 		} else {
 			requestedTypeAccesses.put(type, accessRequired);
 		}

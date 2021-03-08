@@ -19,6 +19,8 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+
 /**
  * {@link NativeHint} annotations should be placed either on Spring configuration/registrar/import-selectors or on some
  * implementation of {@code NativeConfiguration} that the system will discover via a service factory load.
@@ -40,8 +42,10 @@ public @interface NativeHint {
 	/**
 	 * The class specified here could be a configuration/registrar/import-selectors which will trigger this hint only when
 	 * active, or any other class, in that case the hint will be active only if the class is present in the classpath.
-	 * If no value is specified it is considered to be a hint about the type upon which the hint annotation is specified.
-	 * The trigger is ignore for initialization configuration.
+	 * If no value is specified it is considered to be a hint about the type upon which the hint annotation is specified, unless
+	 * the hosting type is an implementation of NativeConfiguration, in which case the hint with no trigger is considered to
+	 * encapsulate hints that should always be active.
+	 * The trigger is ignored for initialization configuration.
 	 * @return the class that acts as a trigger
 	 */
 	Class<?> trigger() default Object.class;
@@ -85,17 +89,29 @@ public @interface NativeHint {
 	 */
 	String[] options() default {};
 	
-	// TODO sort out these 3 members:
-
 	/**
-	 * Names of the annotation attributes on the target type which contain type names (as class references or strings).
-	 * The types referenced will be exposed for reflection.
-	 * @return the types to extract
+	 * Names of the annotation attributes on the target type which contain type names (as class references or strings)
+	 * other than 'value'. For example in {@link ConditionalOnBean} both value and type can include a type name. This
+	 * information is used when determining what must be exposed for reflective access.
+	 * @return the attribute names from which types names should be extracted (e.g. name or type )
 	 */
 	String[] extractTypesFromAttributes() default {};
 
-	boolean abortIfTypesMissing() default false;
-
-	// TODO get rid of this, infer from types involved (means moving to per type follow setting)
+	/**
+	 * Determine if types inferred or specified directly in {@link TypeHint}s should be followed to find further hints.
+	 * Some types must obviously be followed such as @Configuration classes but in cases where it is not obvious
+	 * follow can be set to true to force it, other types that are automatically followed include selectors and registrars
+	 * (full list in Type.shouldFollow()).
+	 * @return true if types related to a hint should be followed to discover further hints
+	 */
 	boolean follow() default false;
+
+	/**
+	 * Determine if analysis should stop if the inferred and/or specific types for this hint cannot be found. For example
+	 * if an @ConditionalOnClass is used, the conditional class will be inferred. Using this abort option will avoid
+	 * analysing deeper into the class if that inferred class is missing. Without this the system will assume the existence
+	 * is optional and proceed with deeper analysis.
+	 * @return true if analysis should stop when an inferred and/or specific type for this hint cannot be found.
+	 */
+	boolean abortIfTypesMissing() default false;
 }

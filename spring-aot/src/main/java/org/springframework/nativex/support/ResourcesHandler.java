@@ -1453,7 +1453,7 @@ public class ResourcesHandler extends Handler {
 					accessRequestor.requestTypeAccess(s, inferredType.getValue());
 					//}
 					
-					if (hint.isFollow()) {
+					if (hint.isFollow() || t.shouldFollow()) {
 						logger.debug("will follow " + t);
 						ReachedBy reason = isImportHint(hint)?ReachedBy.Import:ReachedBy.Inferred;
 						toFollow.put(t,reason);
@@ -1506,9 +1506,8 @@ public class ResourcesHandler extends Handler {
 						}
 					}
 				} else {
-					if (hint.isFollow()) {
-						// TODO I suspect only certain things need following, specific types lists could
-						// specify that in a suffix (like access required)
+					Type type = ts.resolveDotted(specificTypeName,true);
+					if (hint.isFollow() || (type!=null && type.shouldFollow())) {					
 						logger.debug( "will follow specific type reference " + specificTypeName);
 						toFollow.put(ts.resolveDotted(specificTypeName),ReachedBy.Specific);
 					}
@@ -1690,7 +1689,7 @@ public class ResourcesHandler extends Handler {
 						if (exists) {
 							// TODO if already there, should we merge access required values?
 							methodRCM.requestTypeAccess(s, inferredType.getValue());
-							if (hint.isFollow()) {
+							if (hint.isFollow() || t.shouldFollow()) {
 								additionalFollows.put(t,ReachedBy.Other);
 							}
 						} else if (hint.isSkipIfTypesMissing()) {

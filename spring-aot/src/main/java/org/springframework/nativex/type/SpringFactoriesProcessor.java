@@ -18,7 +18,9 @@ package org.springframework.nativex.type;
 import java.util.List;
 
 /**
- * Implementors of this  
+ * Implementors of this have the ability to filter down the entries in a spring.factories file that should
+ * go through full processing.
+ * 
  * @author Andy Clement
  */
 public interface SpringFactoriesProcessor {

@@ -24,7 +24,7 @@ import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger=ReactiveSessionConfigurationImportSelector.class, types = {
 	@TypeHint(types= {RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class, NoOpReactiveSessionConfiguration.class})
-},abortIfTypesMissing = true,follow=true) // follow should be per entry and obvious as these are configurations
+},abortIfTypesMissing = true)
 @NativeHint(trigger=SessionConfigurationImportSelector.class, types = {
 	@TypeHint(types= {RedisSessionConfiguration.class, RedisReactiveSessionConfiguration.class, MongoSessionConfiguration.class, MongoReactiveSessionConfiguration.class,
 		JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class,NoOpReactiveSessionConfiguration.class	
@@ -34,6 +34,6 @@ import org.springframework.nativex.hint.TypeHint;
 	@TypeHint(types= {RedisSessionConfiguration.class,MongoSessionConfiguration.class,
 					  JdbcSessionConfiguration.class,HazelcastSessionConfiguration.class,NoOpSessionConfiguration.class	
 					})
-},abortIfTypesMissing=true,follow=true)
+},abortIfTypesMissing=true)
 public class SessionHints implements NativeConfiguration {
 }

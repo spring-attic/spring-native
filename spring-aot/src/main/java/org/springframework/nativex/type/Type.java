@@ -796,7 +796,17 @@ public class Type {
 		if (dimensions > 0) {
 			return false;
 		}
-		return isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
+		boolean b = isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
+		if (b) {
+			return b;
+		}
+		// Allow for classes that have @Bean methods but no outer @Configuration indicator
+		// More examples: WebMvcSecurityConfiguration, SpringDataJacksonConfiguration
+		return hasMethodsWithAtBean();
+	}
+
+	public boolean hasMethodsWithAtBean() {
+		return !getMethodsWithAtBean().isEmpty();
 	}
 	
 	public boolean isAtComponent() {
@@ -1340,8 +1350,6 @@ public class Type {
 		return hints.size() == 0 ? Collections.emptyList() : hints;
 	}
 
-	// TODO handle repeatable annotations everywhere!
-
 	void collectHints(AnnotationNode an, List<HintApplication> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
 		if (!visited.add(an)) {
 			return;
@@ -1586,36 +1594,40 @@ public class Type {
 	}
 	*/
 
+	@SuppressWarnings("rawtypes")
 	private List<String> collectTypeReferencesInAnnotation(AnnotationNode an, List<String> extractAttributeNames) {
 		List<Object> values = an.values;
 		List<String> importedReferences = new ArrayList<>();
 		if (values != null) {
 			for (int i = 0; i < values.size(); i += 2) {
-				if (values.get(i).equals("value")) {
+				String attributeName = (String)values.get(i);
+				if (attributeName.equals("value") || 
+						extractAttributeNames.contains(attributeName)
+					) {
 					// For some annotations it is a list, for some a single class (e.g.
 					// @ConditionalOnSingleCandidate)
 					Object object = values.get(i + 1);
 					if (object instanceof List) {
-						List<String> toAdd = ((List<org.objectweb.asm.Type>) object).stream()
-								.map(t -> t.getDescriptor()).collect(Collectors.toList());
-						importedReferences.addAll(toAdd);
-					} else {
-						importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
-					}
-				} else if (
-				// TODO 'other things to dig type names out of' should be driven by the hint
-				// annotation members
-				// For now we hard code this to pull conditional types out of
-				// ConditionalOnClass.name
-				an.desc.equals("Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;")
-						&& values.get(i).equals("name")) {
-					Object object = values.get(i + 1);
-					if (object instanceof List) {
-						for (String s : (List<String>) object) {
-							importedReferences.add("L" + s.replace(".", "/") + ";");
+						// Adapt to whatever is in the list
+						List listValue = (List)object;
+						if (listValue.size()>0) {
+							Object listEntry = listValue.get(0);
+							if (listEntry instanceof org.objectweb.asm.Type) {
+								List<String> toAdd = ((List<org.objectweb.asm.Type>) object).stream()
+										.map(t -> t.getDescriptor()).collect(Collectors.toList());
+								importedReferences.addAll(toAdd);
+							} else if (listEntry instanceof String) {
+								for (Object o: listValue) {
+									importedReferences.add("L"+((String)o).replace(".", "/")+";");
+								}
+							}
 						}
 					} else {
-						importedReferences.add("L" + ((String) object).replace(".", "/") + ";");
+						if (object instanceof org.objectweb.asm.Type) {
+							importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
+						} else if (object instanceof String) {
+							importedReferences.add("L" + ((String) object).replace(".", "/") + ";");
+						}
 					}
 				}
 			}
@@ -1975,13 +1987,13 @@ public class Type {
 		for (org.objectweb.asm.Type type : types) {
 			AccessDescriptor ad = null;
 			if (accessRequired == -1) {
-				ad = new AccessDescriptor(inferAccessRequired(type, mds, fds), mds, fds, true);
+				ad = new AccessDescriptor(inferAccessRequired(type, mds, fds), mds, fds);
 			} else {
 				if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
 						AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
 					throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
 				}
-				ad = new AccessDescriptor(accessRequired, mds, fds, false);
+				ad = new AccessDescriptor(accessRequired, mds, fds);
 			}
 			ch.addDependantType(type.getClassName(), ad);
 		}
@@ -2943,5 +2955,10 @@ public class Type {
 			}
 		}
 		return verificationProblems.isEmpty();
+	}
+
+	public boolean shouldFollow() {
+		// Example: For isApplicationListener(): DataSourceInitializerInvoker imported from DataSourceInitializationConfiguration
+		return isAtConfiguration() || isImportSelector() || isImportRegistrar() || isBeanFactoryPostProcessor() || isApplicationListener();
 	}
 }

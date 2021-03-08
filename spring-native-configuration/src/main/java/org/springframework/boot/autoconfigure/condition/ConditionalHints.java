@@ -43,10 +43,8 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 // TODO Feels like all conditions should just get this 'for free'
 @NativeHint(
 		trigger = ConditionalOnMissingBean.class,
-		extractTypesFromAttributes = { "value", "name" },
 		types = @TypeHint(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
 		abortIfTypesMissing = true)
-// TODO [0.9.0] get rid of all the extractTypesFromAttributes/abortIfMissing
-@NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value","name"},abortIfTypesMissing = true)
+@NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value", "type"},abortIfTypesMissing = true)
 public class ConditionalHints implements NativeConfiguration {
 }

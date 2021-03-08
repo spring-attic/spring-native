@@ -31,7 +31,7 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 			AspectJJtaTransactionManagementConfiguration.class,
 			AspectJTransactionManagementConfiguration.class
 	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1", access = AccessBits.LOAD_AND_CONSTRUCT)
-}, follow=true)
+})
 @NativeHint(types = {
 		@TypeHint(types= {
 				Transactional.class,

@@ -23,7 +23,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=WebStackImportSelector.class, types = {
 	@TypeHint(types= {WebMvcHateoasConfiguration.class,WebFluxHateoasConfiguration.class})
-},follow=true)
+})
 @NativeHint(trigger=HypermediaConfigurationImportSelector.class, types = {
 	@TypeHint(types= {
 		HypermediaConfigurationImportSelector.class,

@@ -26,5 +26,5 @@ import org.springframework.nativex.hint.TypeHint;
 			@ResourceHint(patterns="rabbitmq-amqp-client.properties")
 	},
 	types = {
-		@TypeHint(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true,follow=true)
+		@TypeHint(types= {RabbitBootstrapConfiguration.class})},abortIfTypesMissing = true)
 public class RabbitHints implements NativeConfiguration { }

@@ -68,6 +68,8 @@ import org.springframework.nativex.support.Utils;
 
 /**
  * Simple type system with some rudimentary caching.
+ * 
+ * @author Andy Clement
  */
 public class TypeSystem {
 	

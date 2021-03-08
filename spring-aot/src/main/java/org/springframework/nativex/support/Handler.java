@@ -17,6 +17,10 @@ package org.springframework.nativex.support;
 
 import org.springframework.nativex.type.TypeSystem;
 
+/**
+ * 
+ * @author Andy Clement
+ */
 public class Handler {
 
 	protected ConfigurationCollector collector;

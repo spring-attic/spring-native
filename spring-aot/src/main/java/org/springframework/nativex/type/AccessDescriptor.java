@@ -25,17 +25,15 @@ public class AccessDescriptor {
 	private Integer accessBits;
 	private List<MethodDescriptor> methodDescriptors;
 	private List<FieldDescriptor> fieldDescriptors;
-	private boolean inferredAccessBits;
 	
 	public AccessDescriptor(Integer accessBits) {
-		this(accessBits, Collections.emptyList(), Collections.emptyList(), false);
+		this(accessBits, Collections.emptyList(), Collections.emptyList());
 	}
 
-	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds, boolean inferredAccessBits) {
+	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
 		this.accessBits = accessBits;
 		this.methodDescriptors = mds;
 		this.fieldDescriptors = fds;
-		this.inferredAccessBits = inferredAccessBits;
 	}
 
 	public Integer getAccessBits() {
