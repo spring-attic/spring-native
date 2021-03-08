@@ -23,7 +23,7 @@ import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
 /**
- * Converter to change reflection descriptor objects into JSON objects
+ * Converter to change {@link ReflectionDescriptor} objects into JSON objects
  *
  * @author Andy Clement
  */

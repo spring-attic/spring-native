@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.nativex.domain.resources;
-
-import java.util.Set;
 
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
 /**
- * Converter to change resource descriptor objects into JSON objects
+ * Converter to change {@link ResourcesDescriptor} objects into JSON objects.
  *
  * @author Andy Clement
  */

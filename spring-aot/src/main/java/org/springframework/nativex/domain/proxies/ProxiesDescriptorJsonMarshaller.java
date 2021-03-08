@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.nativex.domain.proxies;
 
 import java.io.ByteArrayInputStream;
@@ -90,46 +89,9 @@ public class ProxiesDescriptorJsonMarshaller {
 			interfaces.add(array.getString(i));
 		}
 		pd.setInterfaces(interfaces);
-//		cd.setName(object.getString("name"));
-//		for (Flag f: Flag.values()) {
-//			if (object.optBoolean(f.name())) {
-//				cd.setFlag(f);
-//			}
-//		}
-//		JSONArray fields = object.optJSONArray("fields");
-//		if (fields != null) {
-//			for (int i=0;i<fields.length();i++) {
-//				cd.addFieldDescriptor(toFieldDescriptor(fields.getJSONObject(i)));
-//			}
-//		}
-//		JSONArray methods = object.optJSONArray("methods");
-//		if (methods != null) {
-//			for (int i=0;i<methods.length();i++) {
-//				cd.addMethodDescriptor(toMethodDescriptor(methods.getJSONObject(i)));
-//			}
-//		}
 		return pd;
 	}
 	
-//	private static FieldDescriptor toFieldDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		boolean allowWrite = object.optBoolean("allowWrite");
-//		return new FieldDescriptor(name,allowWrite);
-//	}
-//
-//	private static MethodDescriptor toMethodDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		JSONArray parameterTypes = object.optJSONArray("parameterTypes");
-//		List<String> listOfParameterTypes = null;
-//		if (parameterTypes != null) {
-//			listOfParameterTypes = new ArrayList<>();
-//			for (int i=0;i<parameterTypes.length();i++) {
-//				listOfParameterTypes.add(parameterTypes.getString(i));
-//			}
-//		}
-//		return new MethodDescriptor(name, listOfParameterTypes);
-//	}
-
 	private static String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();
 		InputStreamReader reader = new InputStreamReader(inputStream,

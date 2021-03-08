@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.nativex.domain.reflect;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.List;
 /**
  *
  * @author Andy Clement
- * @see ReflectionDescriptor
  */
 public final class MethodDescriptor extends MemberDescriptor implements Comparable<MethodDescriptor> {
 

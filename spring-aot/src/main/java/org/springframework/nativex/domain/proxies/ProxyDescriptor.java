@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.nativex.domain.proxies;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.List;
  * Reflection information about a single class.
  *
  * @author Andy Clement
- * @see org.springframework.nativex.domain.reflect.ReflectionDescriptor
  */
 public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 

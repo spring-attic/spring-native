@@ -99,25 +99,6 @@ public class InitializationJsonMarshaller {
 		}
 		return rd;
 	}
-	
-//	private static FieldDescriptor toFieldDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		boolean allowWrite = object.optBoolean("allowWrite");
-//		return new FieldDescriptor(name,allowWrite);
-//	}
-//
-//	private static MethodDescriptor toMethodDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		JSONArray parameterTypes = object.optJSONArray("parameterTypes");
-//		List<String> listOfParameterTypes = null;
-//		if (parameterTypes != null) {
-//			listOfParameterTypes = new ArrayList<>();
-//			for (int i=0;i<parameterTypes.length();i++) {
-//				listOfParameterTypes.add(parameterTypes.getString(i));
-//			}
-//		}
-//		return new MethodDescriptor(name, listOfParameterTypes);
-//	}
 
 	private static String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();

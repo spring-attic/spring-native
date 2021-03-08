@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.nativex.domain.proxies;
 
 import java.util.List;
@@ -42,51 +41,5 @@ class ProxiesDescriptorJsonConverter {
 			jsonArray.put(intface);
 		}
 		return jsonArray;
-//		JSONObject jsonObject = new JSONObject();
-//		jsonObject.put("name", cd.getName());
-//		Set<Flag> flags = cd.getFlags();
-//		if (flags != null) {
-//			for (Flag flag: Flag.values()) {
-//				if (flags.contains(flag)) {
-//					putTrueFlag(jsonObject,flag.name());
-//				}
-//			}
-//		}
-//		List<FieldDescriptor> fds = cd.getFields();
-//		if (fds != null) {
-//			JSONArray fieldJsonArray = new JSONArray();
-//			for (FieldDescriptor fd: fds) {
-//				JSONObject fieldjo = new JSONObject();
-//				fieldjo.put("name", fd.getName());
-//				if (fd.isAllowWrite()) {
-//					fieldjo.put("allowWrite", "true");
-//				}
-//				fieldJsonArray.put(fieldjo);
-//			}
-//			jsonObject.put("fields", fieldJsonArray);
-//		}
-//		List<MethodDescriptor> mds = cd.getMethods();
-//		if (mds != null) {
-//			JSONArray methodsJsonArray = new JSONArray();
-//			for (MethodDescriptor md: mds) {
-//				JSONObject methodJsonObject = new JSONObject();
-//				methodJsonObject.put("name", md.getName());
-//				List<String> parameterTypes = md.getParameterTypes();
-//					JSONArray parameterArray = new JSONArray();
-//				if (parameterTypes != null) {
-//					for (String pt: parameterTypes) {
-//						parameterArray.put(pt);
-//					}
-//				}
-//					methodJsonObject.put("parameterTypes",parameterArray);
-//				methodsJsonArray.put(methodJsonObject);
-//			}
-//			jsonObject.put("methods", methodsJsonArray);
-//		}
-//		return jsonObject;
 	}
-
-//	private void putTrueFlag(JSONObject jsonObject, String name) throws Exception {
-//		jsonObject.put(name, true);
-//	}
 }
