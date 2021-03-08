@@ -28,6 +28,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
@@ -135,6 +136,19 @@ public class SpringAotGradlePluginTest {
 				.findAny();
 
 		assertThat(springNativeDependency).isPresent();
+	}
+
+	@Test
+	void configureKotlinTasksDependencies() {
+		Project project = createTestProject();
+		project.getPlugins().apply(KotlinPlatformJvmPlugin.class);
+
+		TaskProvider<Task> compileAotKotlin = project.getTasks().named("compileAotKotlin");
+		assertThat(compileAotKotlin.get().getDependsOn()).extracting("name")
+				.contains(SpringAotGradlePlugin.GENERATE_TASK_NAME);
+		TaskProvider<Task> compileAotTestKotlin = project.getTasks().named("compileAotTestKotlin");
+		assertThat(compileAotTestKotlin.get().getDependsOn()).extracting("name")
+				.contains(SpringAotGradlePlugin.GENERATE_TEST_TASK_NAME);
 	}
 
 

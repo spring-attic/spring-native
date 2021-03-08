@@ -38,6 +38,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-gradle-plugin</artifactId>
+			<version>1.4.31</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
@@ -65,6 +71,18 @@
 						<configuration>
 							<includeScope>compile</includeScope>
 							<outputDirectory>${project.build.directory}/dependencies/compile</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-provided-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<includeScope>provided</includeScope>
+							<outputDirectory>${project.build.directory}/dependencies/provided</outputDirectory>
 						</configuration>
 					</execution>
 					<execution>

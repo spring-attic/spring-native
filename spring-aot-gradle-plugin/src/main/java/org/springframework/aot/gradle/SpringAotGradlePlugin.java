@@ -82,6 +82,13 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			SourceSet aotTestSourceSet = createAotTestSourceSet(sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
 			GenerateAotSources generateAotTestSources = createGenerateAotTestSourcesTask(project.getTasks(), sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
 			configureAotTestTasks(project.getTasks(), sourceSets, aotSourceSet, aotTestSourceSet, generateAotTestSources);
+			
+			project.getPlugins().withId("org.jetbrains.kotlin.jvm", kotlinPlugin -> {
+				project.getTasks().named("compileAotKotlin")
+						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TASK_NAME)));
+				project.getTasks().named("compileAotTestKotlin")
+						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TEST_TASK_NAME)));
+			});
 		});
 	}
 

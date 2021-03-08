@@ -9,6 +9,7 @@ java {
 
 dependencies {
 	implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+	compileOnly fileTree(dir: 'target/dependencies/provided', include: '*.jar')
 
 	testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
 }
