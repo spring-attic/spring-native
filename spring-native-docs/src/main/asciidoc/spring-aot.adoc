@@ -178,6 +178,8 @@ springAot {
 }
 ----
 
+NOTE: The non-idomatic `property.set(...)` syntax in the Gradle Kotlin DSL is due to https://github.com/gradle/gradle/issues/9268[gradle#9268], feel free to vote for this issue.
+
 See <<spring-aot-configuration>> for more details on the configuration options.
 
 [[spring-aot-configuration]]
