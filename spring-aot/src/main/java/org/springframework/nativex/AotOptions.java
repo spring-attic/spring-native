@@ -1,7 +1,5 @@
 package org.springframework.nativex;
 
-import java.beans.beancontext.BeanContext;
-
 import org.springframework.nativex.support.Mode;
 
 /**
