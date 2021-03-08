@@ -43,4 +43,4 @@ There should not really be a trigger specified on hints included `initialization
 For example reactive-web and webmvc may expose a lot of common infrastructure.
 Rather than duplicate those in two places, those info annotations (TypeHint/ProxyHint/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `@NativeHint`.
 
-For details and more dynamic ways to provide native configuration, see <<how-to-contribute>> section.
+You can check {spring-native-api}[the Javadoc] for more details, see also more dynamic ways to provide native configuration in the <<how-to-contribute>> section.

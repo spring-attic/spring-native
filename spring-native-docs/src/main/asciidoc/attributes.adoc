@@ -27,3 +27,4 @@
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference
 
 :spring-native-repo: snapshot
+:spring-native-api: https://docs.spring.io/spring-native/docs/{version}/api/
