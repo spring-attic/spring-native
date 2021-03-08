@@ -15,6 +15,10 @@
  */
 package org.springframework.nativex.type;
 
+/**
+ * 
+ * @author Andy Clement
+ */
 public class MissingTypeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	private String typename;

@@ -32,8 +32,6 @@ public class SpringConfiguration {
 
 	private static Log logger = LogFactory.getLog(SpringConfiguration.class);
 
-	private TypeSystem typeSystem;
-
 	private final static Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
 	
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
@@ -45,7 +43,6 @@ public class SpringConfiguration {
 	private final static List<SpringFactoriesProcessor> springFactoriesProcessors = new ArrayList<>();
 	
 	public SpringConfiguration(TypeSystem typeSystem) {
-		this.typeSystem = typeSystem;
 		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
 		for (NativeConfiguration hintProvider: hintProviders) {

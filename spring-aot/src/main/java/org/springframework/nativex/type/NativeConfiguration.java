@@ -18,9 +18,12 @@ package org.springframework.nativex.type;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 
+ * @author Andy Clement
+ */
 public interface NativeConfiguration {
 	
-	// TODO using typeSystem here is a little basic but a good starting point (doesn't enable us to ask 'springy' questions)
 	default List<HintDeclaration> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
 	
 	/**

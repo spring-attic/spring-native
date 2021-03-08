@@ -32,15 +32,20 @@ import org.springframework.nativex.hint.AccessBits;
  */
 public class HintApplication {
 	
-	// This is the annotation 'chain' from the type that got asked about to the thing with @CompilationHint
-	// This chain may be short (e.g. if an autoconfig has @ConditionalOnClass on it which itself
-	// is meta annotated with @CompilationHint): chain will be [ConditionalOnClass]
-	// or it may be long: (e.g. if the autoconfig has an @EnableFoo on it which itself is marked
-	// with @ConditionalOnClass which in turn has CompilationHint) chain will be [EnableFoo, ConditionalOnClass]
+	/* 
+	 * This is the annotation 'chain' from the type that got asked about to the entity that actually
+	 * has the @NativeHint against it.
+	 * This chain may be short: for example if a configuration class has @ConditionalOnClass on it which itself
+	 * has a @NativeHint applicable to it: the chain will be [ConditionalOnClass]
+	 * or it may be long: for example if a configuration has an @EnableFoo on it which itself is marked
+	 * with @ConditionalOnClass which in turn has a @NativeHint applicable to it: the chain will be
+	 * [EnableFoo, ConditionalOnClass]
+	 */
 	private List<Type> annotationChain;
 	
 	// These are pulled from the particular application of the hint (e.g. @ConditionalOnClass has a hint and when
-	// @COC seen, these are the types pulled from the @COC)
+	// @ConditionalOnClass is seen, these are the types pulled from the @ConditionalOnClass - i.e. the types
+	// upon which it is being conditional)
 	private Map<String, Integer> inferredTypes;
 	
 	private HintDeclaration hintDeclaration;

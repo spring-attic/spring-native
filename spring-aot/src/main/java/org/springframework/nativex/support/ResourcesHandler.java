@@ -372,12 +372,6 @@ public class ResourcesHandler extends Handler {
 				t.printStackTrace();
 			}
 		}
-		/*
-		if (kType != null && kType.isAtRepository()) { // See JpaVisitRepositoryImpl in petclinic sample
-		    // TODO [0.9.0] is this all handled by SpringDataComponentProcessor now?
-			processRepository2(kType);
-		}
-		*/
 		if (kType != null && kType.isAtResponseBody()) {
 			// TODO [0.9.0] move into WebComponentProcessor?
 			processResponseBodyComponent(kType);
@@ -1443,29 +1437,13 @@ public class ResourcesHandler extends Handler {
 					logger.debug("inferred type " + s + " not found");
 				}
 				if (exists) {
-					// TODO
-					// Inferred types are how we follow configuration classes, we don't need to add these - 
-					// we could rely on the existing config (from the surefire run) to tell us whether to follow some
-					// things here..
-					// Do we not follow if it is @Configuration and missing from the existing other file? 
-					
-					//if (!ConfigOptions.isFunctionalMode()) {
 					accessRequestor.requestTypeAccess(s, inferredType.getValue());
-					//}
 					
 					if (hint.isFollow() || t.shouldFollow()) {
 						logger.debug("will follow " + t);
 						ReachedBy reason = isImportHint(hint)?ReachedBy.Import:ReachedBy.Inferred;
 						toFollow.put(t,reason);
 					}
-					// 'reachedBy==ReachedBySpecific' - trying to do the right thing for (in this example) EhCacheCacheConfiguration.
-					// It is a specific reference in the hint on the cache selector - but what does this rule break?
-					// The problem is 'conditions' - spring will break with this kind of thing:
-					// org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition
-//							org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration]; nested exception is java.lang.IllegalArgumentException: Could not find class [org.springframework.boot.autoconfigure.cache.EhCacheCacheConfiguration$ConfigAvailableCondition]
-//									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:610) ~[na:na]
-//									at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:583) ~[na:na]
-//									at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:311) ~[na:na]
 				} else if (hint.isSkipIfTypesMissing() && (pc.depth() == 1 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || pc.peekReachedBy()==ReachedBy.Import)) {
 					if (pc.depth()>1) {
 						logger.debug("inferred type missing: "+s+" (processing type: "+type.getDottedName()+" reached by "+pc.peekReachedBy()+") - discarding "+type.getDottedName());
