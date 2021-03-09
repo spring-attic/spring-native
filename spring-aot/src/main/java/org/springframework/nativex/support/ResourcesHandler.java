@@ -464,7 +464,7 @@ public class ResourcesHandler extends Handler {
 
 		@Override
 		public boolean hasReflectionConfigFor(String typename) {
-			return reflectiveFlags.containsKey(key);
+			return reflectiveFlags.containsKey(typename);
 			// return collector.getClassDescriptorFor(typename)!=null;
 		}
 

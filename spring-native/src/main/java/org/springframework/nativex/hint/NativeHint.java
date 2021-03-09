@@ -89,7 +89,7 @@ public @interface NativeHint {
 	
 	/**
 	 * Names of the annotation attributes on the target type which contain type names (as class references or strings)
-	 * other than 'value'. For example in {@link ConditionalOnBean} both value and type can include a type name. This
+	 * other than 'value'. For example in {@code @ConditionalOnBean} both value and type can include a type name. This
 	 * information is used when determining what must be exposed for reflective access.
 	 * @return the attribute names from which types names should be extracted (e.g. name or type )
 	 */
