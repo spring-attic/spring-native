@@ -30,6 +30,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {
 				ApplicationInfoManager.class,
 				EurekaInstanceConfig.class,
+				EurekaClientConfigBean.class, 
 				DiscoveryClient.class,
 				EurekaApplications.class,
 				Applications.class,
