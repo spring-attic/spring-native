@@ -22,6 +22,10 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@TypeHint(types= {Component.class,PostConstruct.class, Resource.class},access= AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+@TypeHint(types = {
+		Component.class,
+		PostConstruct.class,
+		Resource.class
+}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
 public class ComponentHints implements NativeConfiguration {
 }

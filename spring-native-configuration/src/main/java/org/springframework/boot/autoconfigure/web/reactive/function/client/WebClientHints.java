@@ -21,8 +21,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-@TypeHint(types= { 
-	NioSocketChannel.class
-},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+@TypeHint(types = NioSocketChannel.class, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 public class WebClientHints implements NativeConfiguration {
 }

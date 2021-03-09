@@ -91,7 +91,7 @@ import org.springframework.util.StringUtils;
  */ 
 public class SpringDataComponentProcessor implements ComponentProcessor {
 	
-	private static Log logger = LogFactory.getLog(SpringDataComponentProcessor.class);	
+	private static Log logger = LogFactory.getLog(SpringDataComponentProcessor.class);
 
 	private static final String LOG_PREFIX = "SDCP: ";
 	private static final String SPRING_DATA_NAMESPACE = "org.springframework.data";

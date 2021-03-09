@@ -31,25 +31,22 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProcessor;
 
 @NativeHint(trigger = AuthorizeAttrProcessor.class,
-        types = {
-        @TypeHint(typeNames= {"org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility"},
-                access=AccessBits.DECLARED_CONSTRUCTORS),
-        @TypeHint(types = {
-                UsernamePasswordAuthenticationToken.class,
-                AbstractAuthenticationToken.class,
-                OAuth2AuthenticationToken.class,
-                OAuth2LoginAuthenticationToken.class,
-                OAuth2AuthorizationCodeAuthenticationToken.class,
-                UserDetails.class,
-                AuthenticatedPrincipal.class,
-                DefaultOAuth2User.class,
-                DefaultOidcUser.class
-        },
-                typeNames= {
-                "org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
-                "org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken"
-        },
-                access=AccessBits.FULL_REFLECTION)}
+		types = {
+		@TypeHint(typeNames = "org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility", access = AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(types = {
+				UsernamePasswordAuthenticationToken.class,
+				AbstractAuthenticationToken.class,
+				OAuth2AuthenticationToken.class,
+				OAuth2LoginAuthenticationToken.class,
+				OAuth2AuthorizationCodeAuthenticationToken.class,
+				UserDetails.class,
+				AuthenticatedPrincipal.class,
+				DefaultOAuth2User.class,
+				DefaultOidcUser.class
+		}, typeNames = {
+				"org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
+				"org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken"
+		}, access = AccessBits.FULL_REFLECTION)}
 )
 public class ThymeleafSpringSecurity5Hints implements NativeConfiguration {
 }

@@ -20,11 +20,6 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=WebSocketServletAutoConfiguration.class, types = {
-	@TypeHint(types = {
-		WsContextListener.class
-	})
-})
+@NativeHint(trigger = WebSocketServletAutoConfiguration.class, types = @TypeHint(types = WsContextListener.class))
 public class WebSocketHints implements NativeConfiguration {
-    
 }

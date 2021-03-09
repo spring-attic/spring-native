@@ -6,10 +6,6 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 import static org.springframework.nativex.hint.AccessBits.*;
-import static org.springframework.nativex.hint.AccessBits.DECLARED_CONSTRUCTORS;
-import static org.springframework.nativex.hint.AccessBits.DECLARED_FIELDS;
-import static org.springframework.nativex.hint.AccessBits.DECLARED_METHODS;
-import static org.springframework.nativex.hint.AccessBits.PUBLIC_METHODS;
 
 @NativeHint(trigger = kotlin.Unit.class,
 		resources = {

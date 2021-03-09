@@ -22,14 +22,17 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(types = {
-	@TypeHint(types = ConfigDataLocation.class,access=AccessBits.DECLARED_METHODS),
-	@TypeHint(types = ConfigDataLocation[].class,access=AccessBits.CLASS),
+	@TypeHint(types = ConfigDataLocation.class, access = AccessBits.DECLARED_METHODS),
+	@TypeHint(types = ConfigDataLocation[].class, access=AccessBits.CLASS),
 	@TypeHint(types = {
-		ConfigDataEnvironmentPostProcessor.class,ConfigTreeConfigDataLoader.class,
-		ConfigTreeConfigDataLocationResolver.class, DelegatingApplicationContextInitializer.class,
-		DelegatingApplicationListener.class, StandardConfigDataLoader.class,
-		StandardConfigDataLocationResolver.class
-	},access=AccessBits.DECLARED_CONSTRUCTORS),
+			ConfigDataEnvironmentPostProcessor.class,
+			ConfigTreeConfigDataLoader.class,
+			ConfigTreeConfigDataLocationResolver.class,
+			DelegatingApplicationContextInitializer.class,
+			DelegatingApplicationListener.class,
+			StandardConfigDataLoader.class,
+			StandardConfigDataLocationResolver.class
+	}, access = AccessBits.DECLARED_CONSTRUCTORS),
 	@TypeHint(types= {
 		ConfigDataProperties.class,
 		ConfigDataProperties.Activate.class,

@@ -23,6 +23,6 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = Driver.class, types = {
 		@TypeHint(types = Driver.class),
 		@TypeHint(types = PGProperty.class, access = AccessBits.DECLARED_FIELDS)
-	})
+})
 public class PostgresqlHints implements NativeConfiguration {
 }

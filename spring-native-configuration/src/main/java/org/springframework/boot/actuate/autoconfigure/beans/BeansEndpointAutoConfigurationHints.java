@@ -29,7 +29,10 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 // Hitting /beans endpoint
 @NativeHint(trigger = BeansEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
-		ClassSerializer.class, ApplicationBeans.class, BeanDescriptor.class, ContextBeans.class
+			ClassSerializer.class,
+			ApplicationBeans.class,
+			BeanDescriptor.class,
+			ContextBeans.class
 	})
 	// TODO infer this
 	,@TypeHint(types = BeansEndpoint.class, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)

@@ -27,16 +27,14 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 	@TypeHint(types= {
 			GenericWebApplicationContext.class,
 			WebApplicationObjectSupport.class,
-			ApplicationObjectSupport.class},
-	access = AccessBits.LOAD_AND_CONSTRUCT)
+			ApplicationObjectSupport.class}
+	)
 })
 @NativeHint(trigger=ConditionalOnWebApplication.class,
 	types = {
-		@TypeHint(types=GenericWebApplicationContext.class,access=AccessBits.LOAD_AND_CONSTRUCT),
-		@TypeHint(types= {
-				ConditionalOnWebApplication.Type.class}
-		)},
-		abortIfTypesMissing = true)
+		@TypeHint(types = GenericWebApplicationContext.class),
+		@TypeHint(types= ConditionalOnWebApplication.Type.class)
+	}, abortIfTypesMissing = true)
 @NativeHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
 @NativeHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
 // Here exposing SearchStrategy as it is the type of a field within the annotation. 

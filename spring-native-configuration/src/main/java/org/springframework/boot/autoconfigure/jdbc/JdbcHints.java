@@ -42,15 +42,15 @@ import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
-				access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)})
+				access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)})
 
 @NativeHint(trigger=Hikari.class, types = {
-		@TypeHint(types=DatabaseMetaData.class,methods= {@MethodHint(name="getDatabaseProductName")}),
+		@TypeHint(types=DatabaseMetaData.class, methods= @MethodHint(name="getDatabaseProductName")),
 		@TypeHint(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
-		@TypeHint(types = {HikariDataSource.class}, access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeHint(types = {HikariDataSource.class}),
 	@TypeHint(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
-		@ResourceHint(patterns = {"schema.sql","data.sql"})
+		@ResourceHint(patterns = { "schema.sql","data.sql" })
 })
 public class JdbcHints implements NativeConfiguration {
 	@Override

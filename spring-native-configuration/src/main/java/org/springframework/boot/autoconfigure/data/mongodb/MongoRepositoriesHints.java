@@ -37,18 +37,17 @@ import org.springframework.nativex.hint.TypeHint;
 })
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
 		imports = SpringDataReactiveHints.class,
-		types = {
-				@TypeHint(types = {
-						ReactiveMongoRepositoryFactoryBean.class,
-						ReactiveMongoRepositoryConfigurationExtension.class,
-						MongoConfigurationSupport.class,
-						SimpleReactiveMongoRepository.class,
-						ReactiveBeforeConvertCallback.class,
-						ReactiveBeforeSaveCallback.class,
-						ReactiveAfterSaveCallback.class,
-						ReactiveAfterConvertCallback.class
-				})
+		types = @TypeHint(types = {
+				ReactiveMongoRepositoryFactoryBean.class,
+				ReactiveMongoRepositoryConfigurationExtension.class,
+				MongoConfigurationSupport.class,
+				SimpleReactiveMongoRepository.class,
+				ReactiveBeforeConvertCallback.class,
+				ReactiveBeforeSaveCallback.class,
+				ReactiveAfterSaveCallback.class,
+				ReactiveAfterConvertCallback.class
 		})
+)
 public class MongoRepositoriesHints implements NativeConfiguration {
 
 }

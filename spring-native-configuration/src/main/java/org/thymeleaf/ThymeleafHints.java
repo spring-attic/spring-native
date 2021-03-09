@@ -30,20 +30,23 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-@NativeHint(trigger= ISpringTemplateEngine.class, types = {
+@NativeHint(trigger = ISpringTemplateEngine.class, types = {
 		@TypeHint( types = {
-						AbstractConfigurableTemplateResolver.class,ITemplateResolver.class,AbstractTemplateResolver.class, SpringResourceTemplateResolver.class, 
-		}, access=AccessBits.LOAD_AND_CONSTRUCT),
+				AbstractConfigurableTemplateResolver.class,
+				ITemplateResolver.class,
+				AbstractTemplateResolver.class,
+				SpringResourceTemplateResolver.class,
+		}),
 		@TypeHint(
 				types= {
-				ThymeleafView.class,
-				ThymeleafReactiveView.class
+						ThymeleafView.class,
+						ThymeleafReactiveView.class
 				}, typeNames= {
 						"org.thymeleaf.spring5.expression.Mvc$Spring41MvcUriComponentsBuilderDelegate",
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				}
 		),
-		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 })
 public class ThymeleafHints implements NativeConfiguration {
 }

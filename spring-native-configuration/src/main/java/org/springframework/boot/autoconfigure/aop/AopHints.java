@@ -29,13 +29,18 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger=AopAutoConfiguration.class,
+@NativeHint(trigger = AopAutoConfiguration.class,
 	types = {
 		@TypeHint(types= {
-			ProxyProcessorSupport.class, ProxyConfig.class, InfrastructureAdvisorAutoProxyCreator.class,
-			AbstractAdvisingBeanPostProcessor.class,
-			AbstractAutoProxyCreator.class, AbstractAdvisorAutoProxyCreator.class,
-			AnnotationAwareAspectJAutoProxyCreator.class, AspectJAwareAdvisorAutoProxyCreator.class,
-			Around.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.PUBLIC_METHODS),
+				ProxyProcessorSupport.class,
+				ProxyConfig.class,
+				InfrastructureAdvisorAutoProxyCreator.class,
+				AbstractAdvisingBeanPostProcessor.class,
+				AbstractAutoProxyCreator.class,
+				AbstractAdvisorAutoProxyCreator.class,
+				AnnotationAwareAspectJAutoProxyCreator.class,
+				AspectJAwareAdvisorAutoProxyCreator.class,
+				Around.class},
+				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
 })
 public class AopHints implements NativeConfiguration { }

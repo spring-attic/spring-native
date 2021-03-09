@@ -29,7 +29,7 @@ import org.springframework.nativex.hint.AccessBits;
 			org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode.class,
 			org.springframework.boot.actuate.metrics.AutoTimer.class,
 	}),
-	@TypeHint(types= ConfigurationPropertiesReportEndpoint.class,access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	@TypeHint(types= ConfigurationPropertiesReportEndpoint.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class ConfigurationPropertiesReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

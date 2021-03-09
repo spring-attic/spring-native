@@ -60,5 +60,4 @@ public class ActuatorMetricsEliminator implements SpringFactoriesProcessor {
 		}
 		return false;
 	}
-
 }

@@ -39,26 +39,22 @@ import org.springframework.nativex.hint.AccessBits;
 // Hitting /health endpoint
 @NativeHint(trigger = HealthEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
-		// TODO [0.9.0] these two should be more conditional? surely it is one or the other
 		ReactiveHealthEndpointWebExtension.class,
 		HealthEndpointWebExtension.class,
-	},access=AccessBits.LOAD_AND_CONSTRUCT),
+	}),
 	@TypeHint(types = {
 		StatusAggregator.class,
 		SimpleStatusAggregator.class,
 		HttpCodeStatusMapper.class,
 		SimpleHttpCodeStatusMapper.class,
-	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
+	},access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
 	@TypeHint(types = {
-//		PingHealthIndicator.class,
 		Status.class,
 		SystemHealth.class,
 		CompositeHealth.class,
 		HealthIndicator.class,
 		NamedContributors.class,
-		HealthComponent.class,	
-//		HealthContributorAutoConfiguration.class,
-//		HealthEndpointProperties.class,
+		HealthComponent.class,
 		HealthProperties.class,
 		HealthContributor.class,
 		HealthComponent.class,
@@ -68,25 +64,14 @@ import org.springframework.nativex.hint.AccessBits;
 	},typeNames = {
 		"org.springframework.boot.actuate.health.HealthEndpointGroups$1",
 		"org.springframework.boot.actuate.health.HealthEndpointSupport",
-//		"org.springframework.boot.actuate.health.DefaultContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.health.ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter",
-//		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthContributorRegistry",
-//		"org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredReactiveHealthContributorRegistry",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
-	},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS),
-//	@TypeInfo(types = {
-//		HealthContributorRegistry.class, DefaultHealthContributorRegistry.class,
-//		AutoConfiguredHealthContributorRegistry.class,
-//		ReactiveHealthIndicatorRegistry.class,
-//		AutoConfiguredReactiveHealthContributorRegistry.class,
-//		DefaultReactiveHealthContributorRegistry.class,
-//		ContributorRegistry.class, ReactiveHealthContributorRegistry.class,
-//		},access=AccessBits.LOAD_AND_CONSTRUCT),
+	},access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
 	@TypeHint(
 		types = HealthEndpoint.class,
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
-		access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
-,@TypeHint(types=Health.class,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS)})
+		access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+,@TypeHint(types = Health.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS)})
 public class HealthEndpointAutoConfigurationHints implements NativeConfiguration {
 }

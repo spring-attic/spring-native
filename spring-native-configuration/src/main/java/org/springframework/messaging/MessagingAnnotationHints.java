@@ -6,10 +6,6 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(types = {
-		@TypeHint(types= {
-				MessageMapping.class
-		},access= AccessBits.CLASS|AccessBits.DECLARED_METHODS)
-})
+@TypeHint(types = MessageMapping.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
 public class MessagingAnnotationHints implements NativeConfiguration {
 }

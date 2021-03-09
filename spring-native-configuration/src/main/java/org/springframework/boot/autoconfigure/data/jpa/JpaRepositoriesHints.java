@@ -29,27 +29,25 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 @NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
 		resources = {
 				@ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
-				@ResourceHint(patterns="org.hibernate.validator.ValidationMessages",isBundle = true)
+				@ResourceHint(patterns="org.hibernate.validator.ValidationMessages", isBundle = true)
 		},
-		types = {
-				@TypeHint(types = {
-						SharedEntityManagerCreator.class, // TODO is this one in the right place?
-						JpaRepositoryFactoryBean.class,
-						JpaEvaluationContextExtension.class,
-						JpaQueryMethodFactory.class
-				}, typeNames = {
+		types = @TypeHint(types = {
+				SharedEntityManagerCreator.class, // TODO is this one in the right place?
+				JpaRepositoryFactoryBean.class,
+				JpaEvaluationContextExtension.class,
+				JpaQueryMethodFactory.class
+		} , typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE)
-		},
-		proxies = {
-				@ProxyHint(typeNames = {
-						"org.springframework.data.jpa.repository.support.CrudMethodMetadata", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
-				})
-		}
+		,
+		proxies = @ProxyHint(typeNames = {
+				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"
+		})
 )
-// TODO Why can't I make this conditional on JpaReposAutoConfig above? The vanilla-orm sample needs this but JpaRepositoriesAutoConfiguration is not active in that sample
-//@ConfigurationHint(typeInfos= {@TypeInfo(types= {PersistenceAnnotationBeanPostProcessor.class})}) // temporarily moved this to be HibernateJpaConfiguration dependant
 public class JpaRepositoriesHints implements NativeConfiguration {
 
 }

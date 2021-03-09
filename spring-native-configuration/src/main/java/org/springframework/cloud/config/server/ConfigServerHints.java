@@ -40,20 +40,47 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@NativeHint(trigger = ConfigServerAutoConfiguration.class, options = { "--enable-all-security-services",
-		"--enable-https", "--enable-http"
-}, types = {
-		@TypeHint(types = {MergeCommand.FastForwardMode.Merge.class, JGitText.class, CoreConfig.class,
-				CoreConfig.AutoCRLF.class, CoreConfig.CheckStat.class, CoreConfig.EOL.class,
-				CoreConfig.HideDotFiles.class, CoreConfig.SymLinks.class, PropertyValueDescriptor.class,
-				TextResourceOrigin.class, OriginLookup.class}, access = AccessBits.ALL)
-}, initialization = {
-		@InitializationHint(types = { AttributesHandler.class, DiffEntry.class, DiffFormatter.class,
-				RenameDetector.class, Strings.class, PackWriter.class, Constants.class, ObjectId.class,
-				RepositoryState.class, HttpTransport.class, SshTransport.class, TcpTransport.class,
-				TransferConfig.class, Transport.class, TransportGitSsh.class, TransportHttp.class,
-				WorkingTreeIterator.class, RawParseUtils.class, MapELResolver.class, ListELResolver.class
-		}, typeNames = {"org.eclipse.jgit.transport.HttpAuthMethod$Type", "org.eclipse.jgit.transport.TransportBundleFile"}, initTime = InitializationTime.BUILD)
+@NativeHint(trigger = ConfigServerAutoConfiguration.class,
+		options = { "--enable-all-security-services", "--enable-https", "--enable-http"}, types =
+		@TypeHint(types = {
+				MergeCommand.FastForwardMode.Merge.class,
+				JGitText.class,
+				CoreConfig.class,
+				CoreConfig.AutoCRLF.class,
+				CoreConfig.CheckStat.class,
+				CoreConfig.EOL.class,
+				CoreConfig.HideDotFiles.class,
+				CoreConfig.SymLinks.class,
+				PropertyValueDescriptor.class,
+				TextResourceOrigin.class,
+				OriginLookup.class
+		}, access = AccessBits.ALL)
+, initialization = {
+		@InitializationHint(types = {
+				AttributesHandler.class,
+				DiffEntry.class,
+				DiffFormatter.class,
+				RenameDetector.class,
+				Strings.class,
+				PackWriter.class,
+				Constants.class,
+				ObjectId.class,
+				RepositoryState.class,
+				HttpTransport.class,
+				SshTransport.class,
+				TcpTransport.class,
+				TransferConfig.class,
+				Transport.class,
+				TransportGitSsh.class,
+				TransportHttp.class,
+				WorkingTreeIterator.class,
+				RawParseUtils.class,
+				MapELResolver.class,
+				ListELResolver.class
+		}, typeNames = {
+				"org.eclipse.jgit.transport.HttpAuthMethod$Type",
+				"org.eclipse.jgit.transport.TransportBundleFile"
+		}, initTime = InitializationTime.BUILD)
 }, resources = {
 		@ResourceHint(patterns = "org.eclipse.jgit.internal.JGitText", isBundle = true)
 }, proxies = {

@@ -35,26 +35,24 @@ import org.springframework.nativex.hint.TypeHint;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
-		types = {
-				@TypeHint(types = {
-						JdbcRepositoryFactoryBean.class,
-						JdbcRepositoryConfigExtension.class,
-						SimpleJdbcRepository.class,
-						RelationResolver.class,
-						AfterDeleteCallback.class,
-						AfterLoadCallback.class,
-						AfterSaveCallback.class,
-						BeforeConvertCallback.class,
-						BeforeDeleteCallback.class,
-						BeforeSaveCallback.class,
-						RelationalAuditingCallback.class
-				})
-		},
-		proxies = {
-				@ProxyHint(typeNames = {
-						"org.springframework.data.jdbc.core.convert.RelationResolver", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"
-				})
-		}
+		types = @TypeHint(types = {
+				JdbcRepositoryFactoryBean.class,
+				JdbcRepositoryConfigExtension.class,
+				SimpleJdbcRepository.class,
+				RelationResolver.class,
+				AfterDeleteCallback.class,
+				AfterLoadCallback.class,
+				AfterSaveCallback.class,
+				BeforeConvertCallback.class,
+				BeforeDeleteCallback.class,
+				BeforeSaveCallback.class,
+				RelationalAuditingCallback.class
+		}), proxies = @ProxyHint(typeNames = {
+				"org.springframework.data.jdbc.core.convert.RelationResolver",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"
+		})
 )
 public class JdbcRepositoriesHints implements NativeConfiguration {
 

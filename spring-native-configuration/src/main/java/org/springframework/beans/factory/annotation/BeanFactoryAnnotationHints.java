@@ -22,9 +22,12 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(types = {
-	@TypeHint(types = { Value.class, Autowired.class, Qualifier.class, ObjectFactory.class, ObjectProvider.class },
-			  access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) 
-})
+@NativeHint(types = @TypeHint(types = {
+		Value.class,
+		Autowired.class,
+		Qualifier.class,
+		ObjectFactory.class,
+		ObjectProvider.class
+}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
 public class BeanFactoryAnnotationHints implements NativeConfiguration {
 }

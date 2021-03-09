@@ -47,37 +47,54 @@ import org.springframework.kafka.support.ProducerListener;
 @NativeHint(trigger=KafkaListenerConfigurationSelector.class,
 	types = {
 		@TypeHint(types= {
-			PartitionOffset.class, TopicPartition.class,
-			ConsumerProperties.class,ContainerProperties.class,
-			ProducerListener.class,KafkaListener.class,
-			EnableKafka.class
-		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+				PartitionOffset.class,
+				TopicPartition.class,
+				ConsumerProperties.class,
+				ContainerProperties.class,
+				ProducerListener.class,
+				KafkaListener.class,
+				EnableKafka.class
+		}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
 		@TypeHint(types= {
-			org.apache.kafka.common.protocol.Message.class,
-			org.apache.kafka.common.utils.ImplicitLinkedHashCollection.Element.class,
-			KafkaListener.class,org.springframework.messaging.handler.annotation.MessageMapping.class,KafkaListeners.class,
-		},access=AccessBits.ALL),
+				org.apache.kafka.common.protocol.Message.class,
+				org.apache.kafka.common.utils.ImplicitLinkedHashCollection.Element.class,
+				KafkaListener.class,
+				org.springframework.messaging.handler.annotation.MessageMapping.class,
+				KafkaListeners.class,
+		}, access = AccessBits.ALL),
 		@TypeHint(types= {
 			KafkaListenerAnnotationBeanPostProcessor.class,
-		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
+		},access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS),
 		@TypeHint(types= {
 			KafkaBootstrapConfiguration.class,
 			CreatableTopic.class,
 			KafkaListenerEndpointRegistry.class
-		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE),
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE),
 		@TypeHint(types = {
 				NewTopic.class,
-				AbstractKafkaListenerContainerFactory.class,ConcurrentKafkaListenerContainerFactory.class,
-				KafkaListenerContainerFactory.class, KafkaListenerEndpointRegistry.class,
-				DefaultKafkaConsumerFactory.class,DefaultKafkaProducerFactory.class,
-				KafkaAdmin.class,KafkaOperations.class, KafkaResourceFactory.class,
-				KafkaTemplate.class,ProducerFactory.class, KafkaOperations.class,ConsumerFactory.class,
+				AbstractKafkaListenerContainerFactory.class,
+				ConcurrentKafkaListenerContainerFactory.class,
+				KafkaListenerContainerFactory.class,
+				KafkaListenerEndpointRegistry.class,
+				DefaultKafkaConsumerFactory.class,
+				DefaultKafkaProducerFactory.class,
+				KafkaAdmin.class,
+				KafkaOperations.class,
+				KafkaResourceFactory.class,
+				KafkaTemplate.class,
+				ProducerFactory.class,
+				KafkaOperations.class,
+				ConsumerFactory.class,
 				LoggingProducerListener.class
-			}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS),
+			}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = {
 				AppInfo.class,
-				RangeAssignor.class,DefaultPartitioner.class,StringDeserializer.class,StringSerializer.class
+				RangeAssignor.class,
+				DefaultPartitioner.class,
+				StringDeserializer.class,
+				StringSerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
 	}
 )
-public class KafkaHints implements NativeConfiguration { }
+public class KafkaHints implements NativeConfiguration {
+}

@@ -25,8 +25,7 @@ import org.springframework.nativex.hint.NativeHint;
 				"org.apache.commons.logging.LogAdapter$1",
 				"org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog",
 				"org.apache.commons.logging.LogAdapter$Log4jLog"
-		},
-				packageNames = {
+		}, packageNames = {
 				"ch.qos.logback.core",
 				"ch.qos.logback.classic",
 				"ch.qos.logback.classic.util",

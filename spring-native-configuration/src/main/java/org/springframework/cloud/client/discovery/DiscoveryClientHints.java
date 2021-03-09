@@ -24,7 +24,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = EnableDiscoveryClientImportSelector.class, types = {
 	@TypeHint(types = {
-		AutoServiceRegistrationConfiguration.class, ConditionalOnReactiveDiscoveryEnabled.class
+			AutoServiceRegistrationConfiguration.class,
+			ConditionalOnReactiveDiscoveryEnabled.class
 	})
 })
 @NativeHint(trigger = SimpleDiscoveryClientAutoConfiguration.class, types = @TypeHint(types = DiscoveryClient.class))

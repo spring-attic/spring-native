@@ -19,21 +19,19 @@ import org.springframework.nativex.hint.TypeHint;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 // TODO Initialize ch.qos.logback.classic.PatternLayout at build time?
-@NativeHint(types = {
-	@TypeHint(types= {
-			DateConverter.class,
-			LevelConverter.class,
-			LoggerConverter.class,
-			MessageConverter.class,
-			LineSeparatorConverter.class,
-			ThreadConverter.class,
-			MDCConverter.class,
-			ColorConverter.class,
-			WhitespaceThrowableProxyConverter.class,
-			ExtendedWhitespaceThrowableProxyConverter.class,
-			IntegerTokenConverter.class,
-			DateTokenConverter.class
-	})
-})
+@NativeHint(types = @TypeHint(types= {
+		DateConverter.class,
+		LevelConverter.class,
+		LoggerConverter.class,
+		MessageConverter.class,
+		LineSeparatorConverter.class,
+		ThreadConverter.class,
+		MDCConverter.class,
+		ColorConverter.class,
+		WhitespaceThrowableProxyConverter.class,
+		ExtendedWhitespaceThrowableProxyConverter.class,
+		IntegerTokenConverter.class,
+		DateTokenConverter.class
+}))
 public class LogbackHints implements NativeConfiguration {
 }

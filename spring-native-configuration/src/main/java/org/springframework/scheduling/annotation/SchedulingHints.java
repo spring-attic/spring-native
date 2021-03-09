@@ -21,10 +21,10 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.scheduling.aspectj.AspectJAsyncConfiguration;
 
-@NativeHint(trigger=AsyncConfigurationSelector.class, types = {
-	@TypeHint(types= {ProxyAsyncConfiguration.class,AspectJAsyncConfiguration.class},access=AccessBits.ALL),
+@NativeHint(trigger = AsyncConfigurationSelector.class, types = {
+	@TypeHint(types = { ProxyAsyncConfiguration.class, AspectJAsyncConfiguration.class }, access = AccessBits.ALL),
 })
 @NativeHint(trigger=SchedulingConfiguration.class, types = {
-	@TypeHint(types = Schedules.class, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+	@TypeHint(types = Schedules.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
 })
 public class SchedulingHints implements NativeConfiguration { }

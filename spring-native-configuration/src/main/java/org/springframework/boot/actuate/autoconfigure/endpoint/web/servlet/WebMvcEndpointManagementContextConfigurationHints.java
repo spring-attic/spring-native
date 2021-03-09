@@ -39,31 +39,29 @@ import org.springframework.nativex.type.TypeSystem;
 // key that will handle hints against these (so we can use a ...ContextConfiguration trigger class
 // here - we don't have to use a standard auto config visible through EnableAutoConfiguration).
 // If we wanted to use a standard config, we'd trigger on WebEndpointAutoConfiguration
-@NativeHint(trigger=WebMvcEndpointManagementContextConfiguration.class,
+@NativeHint(trigger = WebMvcEndpointManagementContextConfiguration.class,
 	imports = CommonWebActuatorTypes.class,
  	types = {
-		@TypeHint(types = { PathMappedEndpoints.class }, access=AccessBits.LOAD_AND_CONSTRUCT),
+		@TypeHint(types = PathMappedEndpoints.class),
  		@TypeHint(types = {
-		ControllerEndpointDiscoverer.class,
-		ControllerEndpointsSupplier.class,
-		ManagementContextType.class,
-		EndpointMediaTypes.class,
-		WebEndpointsSupplier.class,
-		EndpointWebExtension.class,
-		WebEndpoint.class,
-		// web package
-		ManagementContextConfiguration.class,
-		ManagementContextFactory.class,
-		ManagementContextType.class,
-		PathMapper.class,
-		ManagementPortType.class,
-	}, typeNames = {
-//		"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration",
-//		"org.springframework.boot.actuate.autoconfigure.web.servlet.WebMvcEndpointChildContextConfiguration",
-		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
-		"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
-		"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
-	})//,access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
+ 				ControllerEndpointDiscoverer.class,
+				ControllerEndpointsSupplier.class,
+				ManagementContextType.class,
+				EndpointMediaTypes.class,
+				WebEndpointsSupplier.class,
+				EndpointWebExtension.class,
+				WebEndpoint.class,
+				// web package
+				ManagementContextConfiguration.class,
+				ManagementContextFactory.class,
+				ManagementContextType.class,
+				PathMapper.class,
+				ManagementPortType.class,
+		}, typeNames = {
+			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
+			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
+			"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
+	})
 })
 public class WebMvcEndpointManagementContextConfigurationHints implements NativeConfiguration {
 

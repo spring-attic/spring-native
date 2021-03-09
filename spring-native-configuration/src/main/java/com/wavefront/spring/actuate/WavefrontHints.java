@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-@NativeHint(trigger = WavefrontAutoConfiguration.class, options = {"--enable-https", "--enable-all-security-services"}, types = {
+@NativeHint(trigger = WavefrontAutoConfiguration.class, options = { "--enable-https", "--enable-all-security-services" }, types = {
 		@TypeHint(types = {
 				AbstractFuture.class,
 				WavefrontJvmReporter.class,
@@ -86,12 +86,12 @@ import org.springframework.web.client.RestTemplate;
 		}),
 		@TypeHint(
 			typeNames = "com.wavefront.spring.autoconfigure.WavefrontMetricsConfiguration$MicrometerConfiguration",
-			access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS
+			access=AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS
 		),
 		@TypeHint(types = {
 				Timed.class,
 				SimpleClientHttpRequestFactory.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 
 }, resources = @ResourceHint(patterns = "build", isBundle = true))
 public class WavefrontHints implements NativeConfiguration {

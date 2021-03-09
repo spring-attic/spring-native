@@ -21,9 +21,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint( types = {
-	@TypeHint(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
-			  access = AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
-})
+@NativeHint(types = @TypeHint(types= {PropertiesFactoryBean.class,PropertiesLoaderSupport.class },
+			  access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
+)
 public class PropertiesHints implements NativeConfiguration {
 }

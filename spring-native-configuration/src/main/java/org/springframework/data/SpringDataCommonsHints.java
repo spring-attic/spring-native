@@ -37,7 +37,7 @@ import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class, //
+@NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class,
 		types = {
 				@TypeHint(types = {
 						RepositoryFactoryBeanSupport.class,

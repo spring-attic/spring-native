@@ -28,9 +28,17 @@ import org.springframework.nativex.type.NativeConfiguration;
 })
 @NativeHint(trigger = EurekaClientAutoConfiguration.class, types = {
 		@TypeHint(types = {
-				ApplicationInfoManager.class, EurekaInstanceConfig.class, DiscoveryClient.class,
-				EurekaApplications.class, Applications.class, Application.class, ApplicationsJacksonBuilder.class,
-				DataCenterInfo.class, DataCenterInfo.Name.class, MyDataCenterInfo.class, InstanceInfo.class,
+				ApplicationInfoManager.class,
+				EurekaInstanceConfig.class,
+				DiscoveryClient.class,
+				EurekaApplications.class,
+				Applications.class,
+				Application.class,
+				ApplicationsJacksonBuilder.class,
+				DataCenterInfo.class,
+				DataCenterInfo.Name.class,
+				MyDataCenterInfo.class,
+				InstanceInfo.class,
 				DataCenterTypeInfoResolver.class
 		}, typeNames = "com.netflix.discovery.DiscoveryClient$EurekaTransport", access = AccessBits.ALL)
 })

@@ -25,15 +25,15 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 // TODO there are others in spring.factories
-@NativeHint(trigger = SpringDataWebConfigurationImportSelector.class, types = {
+@NativeHint(trigger = SpringDataWebConfigurationImportSelector.class, types =
 	@TypeHint(types = {
 			HateoasAwareSpringDataWebConfiguration.class,
 			SpringDataWebConfiguration.class,
 			ProjectingArgumentResolverRegistrar.class,
 			SpringDataJacksonConfiguration.class
-	})}, abortIfTypesMissing = true, follow = true)
-@NativeHint(trigger = QuerydslActivator.class, types = {
-	@TypeHint(types= QuerydslWebConfiguration.class) }, abortIfTypesMissing = true, follow = true)
+	}), abortIfTypesMissing = true, follow = true)
+@NativeHint(trigger = QuerydslActivator.class, types =
+	@TypeHint(types= QuerydslWebConfiguration.class), abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = SpringDataWebAutoConfiguration.class, types =
 	@TypeHint(types = GeoJsonConfiguration.class, access = AccessBits.ALL))
 public class SpringDataWebHints implements NativeConfiguration {

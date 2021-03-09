@@ -64,9 +64,7 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				AuthenticationServiceException.class,AuthenticationFailureServiceExceptionEvent.class,
 				CredentialsExpiredException.class,AuthenticationFailureCredentialsExpiredEvent.class,
 				AuthenticationFailureProxyUntrustedEvent.class,
-				
 				// See comment below about RestrictedRequestWrapper
-
 				},
 				typeNames= {
 						"org.springframework.security.authentication.cas.ProxyUntrustedException",

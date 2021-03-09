@@ -28,5 +28,4 @@ import reactor.core.publisher.Mono;
 		Mono.class
 })
 public class SpringDataReactiveHints {
-
 }

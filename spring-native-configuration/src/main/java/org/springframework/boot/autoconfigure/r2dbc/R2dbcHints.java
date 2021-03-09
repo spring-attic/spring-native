@@ -43,21 +43,21 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 // TODO there is duplication across this hint and JDBCHints - refactor
-@NativeHint(trigger=R2dbcAutoConfiguration.class, types = {
-		@TypeHint(types = {Statement.class,Statement[].class}),
-		@TypeHint(types= EmbeddedDatabase.class,typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
-				access= AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS),
-		@TypeHint(typeNames= "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor",access=AccessBits.FULL_REFLECTION),
+@NativeHint(trigger = R2dbcAutoConfiguration.class, types = {
+		@TypeHint(types = { Statement.class, Statement[].class }),
+		@TypeHint(types = EmbeddedDatabase.class, typeNames = "org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
+				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS),
+		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor", access = AccessBits.FULL_REFLECTION),
 		@TypeHint(types = {
 				R2dbcConverter.class, FluentR2dbcOperations.class, R2dbcEntityOperations.class,
 				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
 				ReactiveSelectOperation.class, ReactiveUpdateOperation.class, AfterConvertCallback.class,
 				AfterSaveCallback.class, BeforeConvertCallback.class, BeforeSaveCallback.class
-		},access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 		})
 @NativeHint(trigger=R2dbcAutoConfiguration.class,
 		resources = {
-				@ResourceHint(patterns="META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
+				@ResourceHint(patterns = "META-INF/services/io.r2dbc.spi.ConnectionFactoryProvider"),
 		},
 		types = {
 		@TypeHint(typeNames = {
@@ -70,7 +70,7 @@ import reactor.core.publisher.Mono;
 				Flux.class
 		}, access = AccessBits.DECLARED_CONSTRUCTORS),
 		// Enables 'dispose' method to be found
-		@TypeHint(types= ConnectionPool.class,access=AccessBits.DECLARED_METHODS)},
+		@TypeHint(types= ConnectionPool.class, access = AccessBits.DECLARED_METHODS)},
 		initialization = @InitializationHint(packageNames = { "org.springframework.data.r2dbc.connectionfactory", "io.r2dbc.spi" }, initTime = InitializationTime.BUILD))
 public class R2dbcHints implements NativeConfiguration {
 }

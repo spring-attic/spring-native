@@ -30,22 +30,22 @@ import org.springframework.web.reactive.HandlerResult;
 import reactor.core.publisher.Flux;
 import reactor.netty.DisposableServer;
 
-@NativeHint(trigger=WebFluxAutoConfiguration.class,
-	resources = { @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+@NativeHint(trigger = WebFluxAutoConfiguration.class,
+	resources = @ResourceHint(patterns = "org/springframework/web/util/HtmlCharacterEntityReferences.properties"),
 	types = {
-	@TypeHint(types= { HandlerResult.class}, access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
-	@TypeHint(types = {Flux.class},access=AccessBits.CLASS),
-	@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
-	access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+		@TypeHint(types= HandlerResult.class),
+		@TypeHint(types = Flux.class, access = AccessBits.CLASS),
+		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
+				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 })
-@NativeHint(trigger=BeanPostProcessorsRegistrar.class, types = {
-		@TypeHint(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
-})
-@NativeHint(trigger=ReactiveWebServerFactoryAutoConfiguration.class, types = {
+@NativeHint(trigger = BeanPostProcessorsRegistrar.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
+@NativeHint(trigger = ReactiveWebServerFactoryAutoConfiguration.class, types = {
 		@TypeHint(
-				types= {AnnotationConfigReactiveWebServerApplicationContext.class,DisposableServer.class
-				},access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS)
+				types= {
+						AnnotationConfigReactiveWebServerApplicationContext.class,
+						DisposableServer.class
+				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 })
-@NativeHint(trigger=EmbeddedNetty.class, imports = CommonWebInfos.class)
+@NativeHint(trigger = EmbeddedNetty.class, imports = CommonWebInfos.class)
 public class WebFluxHints implements NativeConfiguration {
 }

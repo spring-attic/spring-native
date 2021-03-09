@@ -26,9 +26,7 @@ import org.springframework.nativex.hint.TypeHint;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = RedisAutoConfiguration.class, //
-		types = {
-				@TypeHint(types = {
-
+		types = @TypeHint(types = {
 						org.springframework.data.redis.connection.RedisConnection.class,
 						org.springframework.data.redis.connection.StringRedisConnection.class,
 						org.springframework.data.redis.connection.DefaultedRedisConnection.class,
@@ -81,24 +79,19 @@ import org.springframework.nativex.hint.TypeHint;
 						org.springframework.data.redis.core.RedisTemplate.class,
 						org.springframework.data.redis.core.StringRedisTemplate.class,
 				})
-		},
+		,
 		proxies = {
+				@ProxyHint(typeNames = "org.springframework.data.redis.connection.DefaultedRedisConnection"),
+				@ProxyHint(typeNames = "org.springframework.data.redis.connection.ReactiveRedisConnection"),
 				@ProxyHint(typeNames = {
-						"org.springframework.data.redis.connection.DefaultedRedisConnection"
-				}),
-				@ProxyHint(typeNames = {
-						"org.springframework.data.redis.connection.ReactiveRedisConnection"
-				}),
-				@ProxyHint(typeNames = {
-						"org.springframework.data.redis.connection.StringRedisConnection", "org.springframework.data.redis.connection.DecoratedRedisConnection"
+						"org.springframework.data.redis.connection.StringRedisConnection",
+						"org.springframework.data.redis.connection.DecoratedRedisConnection"
 				})
 		}
 )
-
-@NativeHint(trigger = RedisRepositoriesAutoConfiguration.class, //
+@NativeHint(trigger = RedisRepositoriesAutoConfiguration.class,
 		types = {
 				@TypeHint(types = {
-
 						org.springframework.data.keyvalue.annotation.KeySpace.class,
 						org.springframework.data.keyvalue.core.AbstractKeyValueAdapter.class,
 						org.springframework.data.keyvalue.core.KeyValueAdapter.class,
@@ -129,11 +122,11 @@ import org.springframework.nativex.hint.TypeHint;
 		},
 		proxies = {
 				@ProxyHint(typeNames = {
-						"org.springframework.data.keyvalue.annotation.KeySpace", "org.springframework.core.annotation.SynthesizedAnnotation"
+						"org.springframework.data.keyvalue.annotation.KeySpace",
+						"org.springframework.core.annotation.SynthesizedAnnotation"
 				})
 		},
 		initialization = @InitializationHint(types = com.rabbitmq.client.SocketChannelConfigurator.class, initTime = InitializationTime.BUILD)
 )
 public class RedisDataSupportHints implements NativeConfiguration {
-
 }

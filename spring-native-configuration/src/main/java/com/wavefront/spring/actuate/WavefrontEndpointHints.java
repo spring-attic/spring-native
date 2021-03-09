@@ -17,7 +17,7 @@ import org.springframework.nativex.hint.AccessBits;
 		@TypeHint(types = {
 				ConditionalOnAvailableEndpoint.class,
 				ControllerEndpoint.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 })
 public class WavefrontEndpointHints implements NativeConfiguration {
 }

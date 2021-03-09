@@ -34,14 +34,14 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 
 
-@NativeHint(trigger=WebMvcAutoConfiguration.class,
-	resources = { @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties")},
+@NativeHint(trigger = WebMvcAutoConfiguration.class,
+	resources = @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties"),
 	types = {
 			@TypeHint(types = {
 				AnnotationConfigServletWebServerApplicationContext.class,
 				ConfigurableWebApplicationContext.class,
 				WebApplicationContext.class,
-			},access=AccessBits.LOAD_AND_CONSTRUCT),
+			}),
 		@TypeHint(types= {
 				ErrorPage.class,
 				DefaultErrorViewResolver.class,
@@ -50,17 +50,13 @@ import org.springframework.web.servlet.view.InternalResourceView;
 		),
 		@TypeHint(
 				typeNames = "org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$EmptyHandler",
-				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
+				access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
 		@TypeHint(
 				types = Callable.class,
-				access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
-		@TypeHint(
-				types = InternalResourceView.class,
-				access = AccessBits.LOAD_AND_CONSTRUCT)
+				access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
+		@TypeHint(types = InternalResourceView.class)
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
-@NativeHint(trigger=BeanPostProcessorsRegistrar.class, types = {
-		@TypeHint(types= {WebServerFactoryCustomizerBeanPostProcessor.class},access=AccessBits.LOAD_AND_CONSTRUCT)
-})
+@NativeHint(trigger = BeanPostProcessorsRegistrar.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
 public class WebMvcHints implements NativeConfiguration {
 }

@@ -22,32 +22,17 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.TypeSystem;
 
-
 @NativeHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
-	imports = { CommonWebActuatorTypes.class},
-	types = {
-	@TypeHint(
-//			types = {
-//		AbstractWebFluxEndpointHandlerMapping.class,
-//		ControllerEndpointHandlerMapping.class,
-//		DefaultWebClientExchangeTagsProvider.class,
-//		WebClientExchangeTagsProvider.class,
-//		MetricsWebFilter.class,
-//		DefaultWebFluxTagsProvider.class,
-//		WebFluxTagsProvider.class,
-//		MetricsWebClientCustomizer.class
-//	}, 
-			typeNames = {
-//		"org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping",
-//		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping",
+	imports = CommonWebActuatorTypes.class,
+	types = @TypeHint(typeNames = {
 		"org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping$WebFluxLinksHandler",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
-	}, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS)
-})
+	}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
+)
 public class WebFluxEndpointManagementContextConfigurationHints implements NativeConfiguration {
 
 	@Override

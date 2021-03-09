@@ -25,20 +25,18 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, types = {
 		@TypeHint(types = {
 				BoundConfigurationProperties.class,
-				ConfigurationPropertiesBindingPostProcessor.class			
-		},access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeHint(types= {
-//			ConfigurationPropertiesBinder.Factory.class,
-//			ConfigurationPropertiesBinder.class,
-			DeprecatedConfigurationProperty.class,
-			NestedConfigurationProperty.class
-			}, typeNames = {
-			"java.lang.CharSequence[]",
-			"java.lang.String[]"
-			})
+				ConfigurationPropertiesBindingPostProcessor.class
+		}),
+		@TypeHint(types = {
+				DeprecatedConfigurationProperty.class,
+				NestedConfigurationProperty.class
+				}, typeNames = {
+				"java.lang.CharSequence[]",
+				"java.lang.String[]"
+				})
 })
 @NativeHint(trigger = EnableConfigurationProperties.class,
-	types ={@TypeHint(types= {ConstructorBinding.class})}
+	types = @TypeHint(types= ConstructorBinding.class)
 )
 @NativeHint(types = {
 		@TypeHint(types= {
@@ -46,8 +44,8 @@ import org.springframework.nativex.hint.AccessBits;
 				ConfigurationPropertiesScanRegistrar.class
 		},
 		typeNames= {
-			"java.io.Serializable[]",
-			"java.lang.Comparable[]"
+				"java.io.Serializable[]",
+				"java.lang.Comparable[]"
 		}),
 		@TypeHint(types= ArrayList.class)
 })

@@ -22,11 +22,12 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
 // Hitting /auditevents endpoint
-@NativeHint(trigger = AuditEventsEndpointAutoConfiguration.class, types = {
+// TODO likely incomplete, not fully tested
+@NativeHint(trigger = AuditEventsEndpointAutoConfiguration.class, types =
 	@TypeHint(types = {
-		AuditEventRepository.class, AuditEventsEndpoint.class,
-		// TODO likely incomplete, not fully tested
+			AuditEventRepository.class,
+			AuditEventsEndpoint.class
 	})
-})
+)
 public class AuditEventsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

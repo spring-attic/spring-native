@@ -35,9 +35,13 @@ import org.springframework.nativex.hint.NativeHint;
 		packageNames = "io.netty.channel.epoll",
 		types = {
 				DefaultChannelId.class,
-				Socket.class,Errors.class,Limits.class,IovArray.class,
-				Http2ServerUpgradeCodec.class, CleartextHttp2ServerUpgradeHandler.class,
-				Http2ConnectionHandler.class, HostsFileEntriesResolver.class
+				Socket.class,
+				Errors.class,
+				Limits.class,IovArray.class,
+				Http2ServerUpgradeCodec.class,
+				CleartextHttp2ServerUpgradeHandler.class,
+				Http2ConnectionHandler.class,
+				HostsFileEntriesResolver.class
 		}, typeNames = {
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
 		})

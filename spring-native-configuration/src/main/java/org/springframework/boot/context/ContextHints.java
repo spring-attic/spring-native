@@ -19,6 +19,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(types = {@TypeHint(types= TypeExcludeFilter.class)})
+@NativeHint(types = @TypeHint(types= TypeExcludeFilter.class))
 public class ContextHints implements NativeConfiguration {
 }

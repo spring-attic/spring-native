@@ -41,7 +41,7 @@ import org.springframework.stereotype.Controller;
 				PathVariable.class,
 				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
 				ResponseStatus.class,
-		},access=AccessBits.CLASS|AccessBits.DECLARED_METHODS)
+		}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
 	})
 public class WebAnnotationHints implements NativeConfiguration {
 }

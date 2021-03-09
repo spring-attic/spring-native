@@ -22,12 +22,17 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint( types = {@TypeHint(types= {
-	Order.class, AliasFor.class,
-},access = AccessBits.CLASS|AccessBits.DECLARED_METHODS)})
-@NativeHint( types = {@TypeHint(types= {
-	AnnotationAttributes.class,AnnotationAttributes[].class,
-	DecoratingProxy.class,PriorityOrdered.class,
-	TypeMappedAnnotation[].class
-},access = AccessBits.CLASS)})
-public class CoreAnnotationHints implements NativeConfiguration { }
+@NativeHint( types =
+@TypeHint(types= {
+		Order.class,
+		AliasFor.class
+}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
+@NativeHint(types = @TypeHint(types= {
+		AnnotationAttributes.class,
+		AnnotationAttributes[].class,
+		DecoratingProxy.class,
+		PriorityOrdered.class,
+		TypeMappedAnnotation[].class
+}, access = AccessBits.CLASS))
+public class CoreAnnotationHints implements NativeConfiguration {
+}

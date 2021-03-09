@@ -22,27 +22,13 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
 // Hitting /metrics endpoint - needs tests
+// TODO likely incomplete, not tested
 @NativeHint(trigger = MetricsEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
-//		MetricsEndpoint.class,
-//		PropertiesMeterFilter.class,
 		PropertiesConfigAdapter.class,
 		SimplePropertiesConfigAdapter.class,
 		org.springframework.boot.actuate.metrics.MetricsEndpoint.ListNamesResponse.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.AutoTimeProperties.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Distribution.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.ClientRequest.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.class,
-//		org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server.ServerRequest.class,
 		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary[].class,
-		// TODO likely incomplete, not tested
-	},typeNames = {
-//		"org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryConfiguration",
-//		"org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryPostProcessor",
-//		"org.springframework.boot.actuate.autoconfigure.metrics.NoOpMeterRegistryConfiguration",
-//		"org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration"
 	})
 })
 public class MetricsEndpointAutoConfigurationHints implements NativeConfiguration {

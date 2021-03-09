@@ -10,19 +10,23 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(
-        trigger = MailSenderPropertiesConfiguration.class,
-        types = {
-                @TypeHint(types = SMTPProvider.class),
-                @TypeHint(types = SMTPTransport.class),
-                @TypeHint(types = multipart_mixed.class),
-                @TypeHint(types = text_plain.class),
-                @TypeHint(types = text_html.class),
-                @TypeHint(types = text_xml.class),
-                @TypeHint(types = message_rfc822.class)
-        },
-        resources = {
-                @ResourceHint(patterns = {"org/springframework/mail/javamail/mime.types", "META-INF/mailcap", "META-INF/javamail.*"})
-        }
+		trigger = MailSenderPropertiesConfiguration.class,
+		types = @TypeHint(types = {
+				SMTPProvider.class,
+				SMTPTransport.class,
+				multipart_mixed.class,
+				text_plain.class,
+				text_html.class,
+				text_xml.class,
+				message_rfc822.class
+		}),
+		resources = {
+				@ResourceHint(patterns = {
+						"org/springframework/mail/javamail/mime.types",
+						"META-INF/mailcap",
+						"META-INF/javamail.*"
+				})
+		}
 )
 public class JavamailHints implements NativeConfiguration {
 }

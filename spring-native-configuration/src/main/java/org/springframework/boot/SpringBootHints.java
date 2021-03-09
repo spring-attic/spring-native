@@ -32,7 +32,7 @@ import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(
 	resources = {
-		@ResourceHint(patterns= {
+		@ResourceHint(patterns = {
 			"META-INF/MANIFEST.MF",
 			"db/.*", // TODO should be conditional on database active?
 			"messages/.*",
@@ -42,16 +42,16 @@ import org.springframework.nativex.hint.AccessBits;
 			"application.*.yaml",
 			"^git.properties",
 			"^META-INF/build-info.properties",
-		    "^META-INF/spring-configuration-metadata.json",
-		    "^META-INF/additional-spring-configuration-metadata.json",
+			"^META-INF/spring-configuration-metadata.json",
+			"^META-INF/additional-spring-configuration-metadata.json",
 			"application.*.properties",
 			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
 			"META-INF/services/.*",
-		    // Do these two catch the logging/<eachDirectory>/*.properties?
-		    "org/springframework/boot/logging/.*.properties",
-		    "org/springframework/boot/logging/.*.xml",
-		    "logging.properties",
-		    "org/springframework/boot/logging/java/logging.properties"
+			// Do these two catch the logging/<eachDirectory>/*.properties?
+			"org/springframework/boot/logging/.*.properties",
+			"org/springframework/boot/logging/.*.xml",
+			"logging.properties",
+			"org/springframework/boot/logging/java/logging.properties"
 			})
 	},
 	types = {
@@ -59,7 +59,7 @@ import org.springframework.nativex.hint.AccessBits;
 			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.PUBLIC_METHODS)
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
 	},
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,

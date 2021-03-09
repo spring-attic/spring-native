@@ -28,25 +28,20 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=BatchConfigurationSelector.class,
-		resources = {
-			@ResourceHint(patterns = {
-				"org/springframework/batch/core/schema-h2.sql"
-			}),
-		},
+		resources = @ResourceHint(patterns = "org/springframework/batch/core/schema-h2.sql"),
 		types = {
-		@TypeHint(types = {
-			AbstractDataSourceInitializer.class,
-		}, access=AccessBits.LOAD_AND_CONSTRUCT| AccessBits.DECLARED_METHODS),
+		@TypeHint(types = AbstractDataSourceInitializer.class , access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = {
 			BasicBatchConfigurer.class,
 			JobLauncherApplicationRunner.class,
 			DataSourcePoolMetadataProvider.class,
 			InfrastructureAdvisorAutoProxyCreator.class
-		}, access=AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
-		@TypeHint(types= {ModularBatchConfiguration.class,
+		}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+		@TypeHint(types= {
+				ModularBatchConfiguration.class,
 				SimpleBatchConfiguration.class,
-				ScopeConfiguration.class})},
-		proxies = {
+				ScopeConfiguration.class
+		})}, proxies = {
 		@ProxyHint(typeNames = {
 				"org.springframework.batch.core.repository.JobRepository",
 				"org.springframework.aop.SpringProxy",

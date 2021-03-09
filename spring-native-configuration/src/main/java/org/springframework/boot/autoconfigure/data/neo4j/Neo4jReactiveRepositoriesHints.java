@@ -31,8 +31,7 @@ import org.springframework.nativex.hint.AccessBits;
 		ReactiveAuditingBeforeBindCallback.class,
 		UUIDStringGenerator.class,
 		Neo4jEvaluationContextExtension.class
-	},
-		typeNames = {
+	}, typeNames = {
 			"org.springframework.data.neo4j.repository.query.SimpleQueryByExampleExecutor",
 			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
 			"org.springframework.data.neo4j.core.schema.GeneratedValue$InternalIdGenerator",
@@ -40,7 +39,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveIdGeneratingBeforeBindCallback",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveOptimisticLockingBeforeBindCallback"
 		}
-	) },
+	)},
 	proxies = {
 		@ProxyHint(typeNames = {
 			"org.springframework.data.annotation.Id",

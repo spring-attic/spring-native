@@ -13,8 +13,17 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = RefreshAutoConfiguration.class, types = {
-		@TypeHint(types = {BootstrapImportSelectorConfiguration.class, EnvironmentDecryptApplicationInitializer.class, DecryptEnvironmentPostProcessor.class, Marker.class}, access = AccessBits.ALL)}, follow = true)
+		@TypeHint(types = {
+				BootstrapImportSelectorConfiguration.class,
+				EnvironmentDecryptApplicationInitializer.class,
+				DecryptEnvironmentPostProcessor.class,
+				Marker.class
+		}, access = AccessBits.ALL)}, follow = true)
 @NativeHint(trigger = BootstrapImportSelector.class, types =
-		{@TypeHint(types = {PropertySourceBootstrapConfiguration.class, PropertySourceLocator.class, EncryptionBootstrapConfiguration.class})}, follow = true)
+		@TypeHint(types = {
+				PropertySourceBootstrapConfiguration.class,
+				PropertySourceLocator.class,
+				EncryptionBootstrapConfiguration.class
+		}), follow = true)
 public class BootstrapHints implements NativeConfiguration {
 }

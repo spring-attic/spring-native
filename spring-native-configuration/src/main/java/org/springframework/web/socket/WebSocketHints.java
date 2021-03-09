@@ -39,10 +39,10 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 				MessageHandler.class,
 				SimpUserRegistry.class
 		}, access = AccessBits.RESOURCE),
-		@TypeHint(types= TomcatRequestUpgradeStrategy.class)
+		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
-		@TypeHint(types= TomcatRequestUpgradeStrategy.class)
+		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
 public class WebSocketHints implements NativeConfiguration {
 }

@@ -108,7 +108,7 @@ import org.springframework.nativex.hint.AccessBits;
 						org.apache.logging.log4j.message.ReusableMessageFactory.class
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				@TypeHint(typeNames = {
-						// those cause a lot of erros and warnings in logs if not present
+						// those cause a lot of errors and warnings in logs if not present
 						"io.netty.buffer.AbstractByteBufAllocator",
 						"io.netty.buffer.PooledByteBufAllocator",
 						"io.netty.channel.ChannelDuplexHandler",

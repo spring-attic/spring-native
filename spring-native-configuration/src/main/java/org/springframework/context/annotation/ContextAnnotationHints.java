@@ -32,18 +32,18 @@ import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = Import.class, follow = true) // Whatever is @Imported should be followed
-@NativeHint(trigger = Conditional.class, extractTypesFromAttributes = { "value" }) // TODO need extract?
-@NativeHint(types = { @TypeHint(types = { ComponentScan.class,
-		Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS) })
+@NativeHint(trigger = Conditional.class, extractTypesFromAttributes = "value" ) // TODO need extract?
+@NativeHint(types = @TypeHint(types = { ComponentScan.class, Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
 // TODO Check required access for enums like this FilterType
-@NativeHint(types = { @TypeHint(types = { FilterType.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
-@NativeHint(types = {
+@NativeHint(types = { @TypeHint(types = FilterType.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
+@NativeHint(types =
 	@TypeHint(typeNames = "org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup"
-	)})
+	))
 @NativeHint(types = {
 		@TypeHint(types = {
 				AutowireCapableBeanFactory.class, // security sample shows errors on startup without this
-				EmbeddedValueResolverAware.class,EnvironmentAware.class,
+				EmbeddedValueResolverAware.class,
+				EnvironmentAware.class,
 				AnnotationConfigApplicationContext.class,
 				CommonAnnotationBeanPostProcessor.class,
 				AnnotationScopeMetadataResolver.class,
@@ -52,13 +52,11 @@ import org.springframework.nativex.hint.AccessBits;
 				DefaultEventListenerFactory.class,
 				AutowiredAnnotationBeanPostProcessor.class
 				}),
-		@TypeHint(types= ComponentScan.Filter.class,access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
+		@TypeHint(types= ComponentScan.Filter.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = { ConfigurationClassPostProcessor.class },
-		methods = {
-				@MethodHint(name="setMetadataReaderFactory",parameterTypes=MetadataReaderFactory.class)
-		}
+				methods = @MethodHint(name="setMetadataReaderFactory", parameterTypes = MetadataReaderFactory.class)
 		),
-		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.RESOURCE)
+		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE)
 })
 public class ContextAnnotationHints implements NativeConfiguration {
 }
