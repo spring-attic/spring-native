@@ -84,6 +84,8 @@ public class ResourcesHandler extends Handler {
 	private final OptionHandler optionHandler;
 
 	private final AotOptions aotOptions;
+	
+	private final Set<String> followed = new HashSet<>();
 
 	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler, OptionHandler optionHandler, AotOptions aotOptions) {
 		super(collector);
@@ -461,8 +463,9 @@ public class ResourcesHandler extends Handler {
 		}
 
 		@Override
-		public boolean hasReflectionConfigFor(String key) {
+		public boolean hasReflectionConfigFor(String typename) {
 			return reflectiveFlags.containsKey(key);
+			// return collector.getClassDescriptorFor(typename)!=null;
 		}
 
 		@Override
@@ -1278,6 +1281,22 @@ public class ResourcesHandler extends Handler {
 			if (type.isAtComponent() && aotOptions.isVerify()) {
 				type.verifyComponent();
 			}
+//			if (type.isComponent()) {
+//				List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
+//				Entry<Type, List<Type>> relevantStereotypes = type.getRelevantStereotypes();
+//				if (relevantStereotypes != null) {
+//					List<String> classifiers = relevantStereotypes.getValue().stream().map(t -> t.getDottedName())
+//							.collect(Collectors.toList());
+//					NativeContext context = new NativeContextImpl();
+//					logger.debug("> running component processors on "+type.getDottedName()+" with classifiers "+classifiers);
+//					for (ComponentProcessor componentProcessor: componentProcessors) {
+//						if (componentProcessor.handle(context, type.getDottedName(), classifiers)) {
+//							componentProcessor.process(context, type.getDottedName(), classifiers);
+//						}
+//					}	
+//				}
+//				logger.debug("< running component processors on "+type.getDottedName());
+//			}
 			if (type.isAtConfiguration()) {
 				checkForAutoConfigureBeforeOrAfter(type, accessManager);
 				String[][] validMethodsSubset = processTypeAtBeanMethods(pc, accessManager, toFollow, type);
@@ -1354,6 +1373,10 @@ public class ResourcesHandler extends Handler {
 					logger.debug("in agent mode not following "+t.getDottedName()+" from "+type.getName()+" - it is not mentioned in existing reflect configuration");
 					continue;
 				}
+			}
+			if (!followed.add(t.getDottedName())) {
+				logger.debug("already followed "+t.getDottedName());
+				continue;
 			}
 			try {
 				boolean b = processType(pc, t, entry.getValue());
