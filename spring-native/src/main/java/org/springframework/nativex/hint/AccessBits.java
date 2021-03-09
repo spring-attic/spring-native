@@ -87,11 +87,6 @@ public class AccessBits {
 	public static final int ALL = (RESOURCE | CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
 
 	/**
-	 * Predefined set of access suitable for {@code @Configuration}.
-	 */
-	public static final int CONFIGURATION = (RESOURCE | CLASS | DECLARED_METHODS | DECLARED_CONSTRUCTORS | DECLARED_FIELDS);
-
-	/**
 	 * Predefined set of access suitable for annotations.
 	 */
 	public static final int ANNOTATION = (RESOURCE | CLASS | DECLARED_METHODS);

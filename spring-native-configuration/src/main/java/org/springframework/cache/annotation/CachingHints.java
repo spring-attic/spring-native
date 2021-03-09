@@ -28,6 +28,6 @@ import org.springframework.nativex.hint.AccessBits;
 				"org.springframework.cache.jcache.config.ProxyJCacheConfiguration",
 				"org.springframework.cache.aspectj.AspectJCachingConfiguration",
 				"org.springframework.cache.aspectj.AspectJJCacheConfiguration"
-		}, access = AccessBits.CONFIGURATION),
+		}, access = AccessBits.ALL),
 		initialization = @InitializationHint(types = CachingConfigurationSelector.class, initTime = InitializationTime.BUILD))
 public class CachingHints implements NativeConfiguration { }

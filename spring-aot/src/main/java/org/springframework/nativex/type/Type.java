@@ -2019,7 +2019,7 @@ public class Type {
 			return AccessBits.FULL_REFLECTION;
 		}
 		if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
-			return AccessBits.CONFIGURATION;
+			return AccessBits.ALL;
 		} else if (t.isImportSelector()) {
 			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE;
 		} else if (t.isImportRegistrar()) {

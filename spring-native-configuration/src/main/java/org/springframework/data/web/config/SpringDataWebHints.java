@@ -35,6 +35,6 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = QuerydslActivator.class, types = {
 	@TypeHint(types= QuerydslWebConfiguration.class) }, abortIfTypesMissing = true, follow = true)
 @NativeHint(trigger = SpringDataWebAutoConfiguration.class, types =
-	@TypeHint(types = GeoJsonConfiguration.class, access = AccessBits.CONFIGURATION))
+	@TypeHint(types = GeoJsonConfiguration.class, access = AccessBits.ALL))
 public class SpringDataWebHints implements NativeConfiguration {
 }
