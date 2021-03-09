@@ -1,7 +1,12 @@
 [[support]]
 == Support
 
-This section defines the GraalVM version, languages and dependencies that have been validated against Spring Native {version}.
+This section defines the GraalVM version, languages and dependencies that have been validated against Spring Native {version},
+which provides beta support on the scope defined in this section. You can try it on your projects if they are using those
+supported dependencies, and https://github.com/spring-projects-experimental/spring-native/issues[raise bugs] or
+https://github.com/spring-projects-experimental/spring-native/pulls[contribute pull requests] if something goes wrong.
+
+Beta support also means that breaking changes will happen, but a migration path will be provided and documented.
 
 [[support-graalvm]]
 === GraalVM
