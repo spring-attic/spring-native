@@ -19,8 +19,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-
 /**
  * {@link NativeHint} annotations should be placed either on Spring configuration/registrar/import-selectors or on some
  * implementation of {@code NativeConfiguration} that the system will discover via a service factory load.
