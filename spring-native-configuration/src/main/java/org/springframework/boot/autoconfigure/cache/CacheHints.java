@@ -15,10 +15,39 @@
  */
 package org.springframework.boot.autoconfigure.cache;
 
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
-import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.NativeHint;
+import javax.cache.Caching;
 
-// TODO Import dynamically the required caching configuration as described in https://github.com/spring-projects-experimental/spring-native/issues/465
-@NativeHint(trigger=CacheConfigurationImportSelector.class)
+import com.couchbase.client.java.Cluster;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.hazelcast.core.HazelcastInstance;
+import org.ehcache.impl.serialization.PlainJavaSerializer;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
+
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
+
+@NativeHint(trigger = CacheConfigurationImportSelector.class, follow = true,
+		types = {
+				@TypeHint(types = { GenericCacheConfiguration.class, SimpleCacheConfiguration.class, NoOpCacheConfiguration.class }, access = AccessBits.CONFIGURATION),
+				@TypeHint(types = { EhCacheCacheConfiguration.class, HazelcastCacheConfiguration.class, InfinispanCacheConfiguration.class, JCacheCacheConfiguration.class, RedisCacheConfiguration.class, CaffeineCacheConfiguration.class }, typeNames = "org.springframework.boot.autoconfigure.cache.CouchbaseCacheConfiguration", access = AccessBits.RESOURCE),
+				@TypeHint(types = CacheType.class, access = AccessBits.FULL_REFLECTION)
+		},
+		initialization = @InitializationHint(typeNames = "org.springframework.boot.autoconfigure.cache.CacheConfigurations", initTime = InitializationTime.BUILD))
+@NativeHint(trigger = net.sf.ehcache.Cache.class, types = @TypeHint(types = EhCacheCacheConfiguration.class, access = AccessBits.FULL_REFLECTION), resources = @ResourceHint(patterns = "ehcache.xml"))
+@NativeHint(trigger = org.ehcache.Cache.class, types = {
+		@TypeHint(types = PlainJavaSerializer.class)
+}, resources = @ResourceHint(patterns = "ehcache.xml"))
+@NativeHint(trigger = HazelcastInstance.class, types = @TypeHint(types = HazelcastCacheConfiguration.class, access = AccessBits.FULL_REFLECTION))
+@NativeHint(trigger = SpringEmbeddedCacheManager.class, types = @TypeHint(types = InfinispanCacheConfiguration.class, access = AccessBits.FULL_REFLECTION))
+@NativeHint(trigger = Caching.class, follow = true, types = @TypeHint(types = JCacheCacheConfiguration.class, access = AccessBits.FULL_REFLECTION))
+@NativeHint(trigger = Cluster.class, types = @TypeHint(typeNames = "org.springframework.boot.autoconfigure.cache.CouchbaseCacheConfiguration", access = AccessBits.FULL_REFLECTION))
+@NativeHint(trigger = RedisConnectionFactory.class, types = @TypeHint(types = RedisCacheConfiguration.class, access = AccessBits.FULL_REFLECTION))
+@NativeHint(trigger = Caffeine.class, types = @TypeHint(types = CaffeineCacheConfiguration.class, access = AccessBits.FULL_REFLECTION))
 public class CacheHints implements NativeConfiguration { }

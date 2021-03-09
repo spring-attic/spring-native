@@ -68,7 +68,6 @@ import org.springframework.nativex.hint.AccessBits;
 			org.springframework.boot.logging.logback.LogbackLoggingSystem.class
 	},
 	typeNames = {
-			"org.springframework.boot.autoconfigure.cache.CacheConfigurations",
 			"org.springframework.boot.logging.java.JavaLoggingSystem$Factory",
 			"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory",
 			"org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory",

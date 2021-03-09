@@ -28,7 +28,7 @@ import org.springframework.nativex.hint.AccessBits;
 		CachesEndpoint.class,
 		CachingOperationInvokerAdvisor.class,
 		// TODO likely incomplete, not tested
-	},access=AccessBits.LOAD_AND_CONSTRUCT)
+	})
 })
 public class CachesEndpointAutoConfigurationHints implements NativeConfiguration {
 }
