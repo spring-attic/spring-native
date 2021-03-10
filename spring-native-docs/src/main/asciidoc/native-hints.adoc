@@ -18,10 +18,10 @@ For example, an application using `WebClient` to deserialize a `Data` class with
 
 [source,java,subs="attributes,verbatim"]
 ----
-@NativeHint(types = @TypeHint(types = Data.class, typeNames = "com.example.webclient.Data$SuperHero"))
+@TypeHint(types = Data.class, typeNames = "com.example.webclient.Data$SuperHero")
 @SpringBootApplication
 public class WebClientApplication {
- // ...
+	// ...
 }
 ----
 
