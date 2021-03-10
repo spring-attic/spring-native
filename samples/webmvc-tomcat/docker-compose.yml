@@ -3,4 +3,4 @@ services:
   webmvc-tomcat:
     image: webmvc-tomcat:0.0.1-SNAPSHOT
     ports:
-      - "8081:8081"
+      - "8080:8080"
