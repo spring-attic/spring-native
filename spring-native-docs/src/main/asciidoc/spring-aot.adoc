@@ -75,13 +75,14 @@ VSCode uses the same build tooling as Eclipse, so it should work the same.
 [[spring-aot-gradle]]
 === Gradle
 
-You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your settings.gradle(.kts) file:
+You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your `settings.gradle(.kts)` file:
 
 [source,groovy,subs="attributes,verbatim",role="primary"]
 .Gradle Groovy
 ----
 pluginManagement {
     repositories {
+        // ...
         maven { url 'https://repo.spring.io/{spring-native-repo}' }
     }
 }
@@ -91,6 +92,7 @@ pluginManagement {
 ----
 pluginManagement {
     repositories {
+        // ...
         maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
     }
 }
@@ -100,6 +102,7 @@ pluginManagement {
 .Gradle Groovy
 ----
 plugins {
+    // ...
     id 'org.springframework.experimental.aot' version '{version}'
 }
 ----
@@ -107,6 +110,7 @@ plugins {
 .Gradle Kotlin
 ----
 plugins {
+    // ...
     id("org.springframework.experimental.aot") version "{version}"
 }
 ----

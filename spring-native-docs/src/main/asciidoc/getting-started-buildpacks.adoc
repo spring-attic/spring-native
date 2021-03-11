@@ -42,6 +42,7 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
 .Gradle Groovy
 ----
 plugins {
+    // ...
     id 'org.springframework.boot' version '{spring-boot-version}'
 }
 ----
@@ -49,6 +50,7 @@ plugins {
 .Gradle Kotlin
 ----
 plugins {
+    // ...
     id("org.springframework.boot") version "{spring-boot-version}"
 }
 ----
@@ -63,6 +65,7 @@ plugins {
 .Maven
 ----
 <dependencies>
+    <!-- ... -->
     <dependency>
         <groupId>org.springframework.experimental</groupId>
         <artifactId>spring-native</artifactId>
@@ -74,6 +77,7 @@ plugins {
 .Gradle Groovy
 ----
 dependencies {
+    // ...
     implementation 'org.springframework.experimental:spring-native:{version}'
 }
 ----
@@ -81,6 +85,7 @@ dependencies {
 .Gradle Kotlin
 ----
 dependencies {
+    // ...
     implementation("org.springframework.experimental:spring-native:{version}")
 }
 ----
@@ -125,6 +130,7 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
 .Gradle Groovy
 ----
 plugins {
+    // ...
     id 'org.springframework.experimental.aot' version '{version}'
 }
 ----
@@ -132,6 +138,7 @@ plugins {
 .Gradle Kotlin
 ----
 plugins {
+    // ...
     id("org.springframework.experimental.aot") version "{version}"
 }
 ----
@@ -198,6 +205,7 @@ Configure your build to include the required repository for the `spring-native` 
 .Maven
 ----
 <repositories>
+    <!-- ... -->
     <repository>
         <id>spring-{spring-native-repo}</id>
         <name>Spring {spring-native-repo}</name>
@@ -209,6 +217,7 @@ Configure your build to include the required repository for the `spring-native` 
 .Gradle Groovy
 ----
 repositories {
+    // ...
     maven { url 'https://repo.spring.io/{spring-native-repo}' }
 }
 ----
@@ -216,17 +225,19 @@ repositories {
 .Gradle Kotlin
 ----
 repositories {
+    // ...
     maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
 }
 ----
 
 
-The Spring AOT plugin also requires a dedicated plugin repository:
+The Spring AOT plugin also requires a dedicated plugin repository in the `pom.xml` file for Maven and in the in the `settings.gradle(.kts)` for Gradle.
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
 <pluginRepositories>
+    <!-- ... -->
     <pluginRepository>
         <id>spring-{spring-native-repo}</id>
         <name>Spring {spring-native-repo}</name>
@@ -239,6 +250,7 @@ The Spring AOT plugin also requires a dedicated plugin repository:
 ----
 pluginManagement {
     repositories {
+        // ...
         maven { url 'https://repo.spring.io/{spring-native-repo}' }
     }
 }
@@ -248,6 +260,7 @@ pluginManagement {
 ----
 pluginManagement {
     repositories {
+        // ...
         maven { url = uri("https://repo.spring.io/{spring-native-repo}") }
     }
 }

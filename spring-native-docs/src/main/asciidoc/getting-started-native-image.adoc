@@ -186,6 +186,7 @@ The Spring AOT plugin also requires a dedicated plugin repository:
 [source,xml,subs="attributes,verbatim"]
 ----
 <pluginRepositories>
+    <!-- ... -->
     <pluginRepository>
         <id>spring-{spring-native-repo}</id>
         <name>Spring {spring-native-repo}</name>
