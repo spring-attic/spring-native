@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.4.3"
+    id("org.springframework.boot") version "2.4.4-SNAPSHOT"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     id("org.springframework.experimental.aot") version "0.9.1-SNAPSHOT"
     kotlin("jvm") version "1.4.31"
