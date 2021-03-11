@@ -14,6 +14,8 @@ services:
       - ./src/main/resources/db/mysql/data.sql:/docker-entrypoint-initdb.d/2-data.sql
   petclinic-jpa:
     image: petclinic-jpa:0.0.1-SNAPSHOT
+    environment:
+      - DB_HOST=mysql-server
     ports:
       - "8080:8080"
     depends_on:
