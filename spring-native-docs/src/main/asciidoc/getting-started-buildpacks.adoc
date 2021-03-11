@@ -151,7 +151,7 @@ The plugin provides a number of options to customize the transformations, see <<
 ===== Enable native image support
 
 Spring Boot's {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks support] lets you build a container for your Spring Boot application.
-The https://github.com/paketo-buildpacks/spring-boot-native-image[Packeto implementation] has an option to build a native image that can be enabled as follows:
+The https://github.com/paketo-buildpacks/native-image[native image buildpack] can be enabled using the `BP_NATIVE_IMAGE` environment variable as follows:
 
 
 [source,xml,subs="attributes,verbatim",role="primary"]
