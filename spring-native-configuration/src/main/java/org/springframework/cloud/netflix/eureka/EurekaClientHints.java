@@ -20,6 +20,7 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
+import com.netflix.appinfo.LeaseInfo;
 import com.netflix.appinfo.MyDataCenterInfo;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.converters.jackson.DataCenterTypeInfoResolver;
@@ -36,6 +37,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
+// TODO Not sure AccessBits.ALL is needed on these, to be checked
 @NativeHint(trigger = LoadBalancerEurekaAutoConfiguration.class, types = {
 		@TypeHint(types = {
 				EurekaLoadBalancerClientConfiguration.class,
@@ -56,8 +58,12 @@ import org.springframework.nativex.type.NativeConfiguration;
 				DataCenterInfo.Name.class,
 				MyDataCenterInfo.class,
 				InstanceInfo.class,
-				DataCenterTypeInfoResolver.class
-		}, typeNames = "com.netflix.discovery.DiscoveryClient$EurekaTransport", access = AccessBits.ALL)
+				DataCenterTypeInfoResolver.class,
+				LeaseInfo.class
+		}, typeNames = {
+				"com.netflix.discovery.DiscoveryClient$EurekaTransport",
+				"com.netflix.appinfo.InstanceInfo$PortWrapper"
+		}, access = AccessBits.ALL)
 })
 public class EurekaClientHints implements NativeConfiguration {
 }
