@@ -32,7 +32,7 @@ When it recognizes certain usage scenarios, Spring Native tries to set required 
 [[support-spring-boot]]
 === Spring Boot
 
-IMPORTANT: `spring-native` {version} is designed to be used with Spring Boot {spring-boot-version}.
+IMPORTANT: `spring-native` {version} is designed to be used with Spring Boot {spring-boot-version}. A new release of Spring Native will happen for each patch release of the latest Spring Boot 2.x minor version in order to ensure support and compatibility.
 
 The following starters are supported, the group ID is `org.springframework.boot` unless specified otherwise.
 
