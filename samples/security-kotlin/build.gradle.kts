@@ -4,7 +4,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     id("org.springframework.boot") version "2.4.3"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    id("org.springframework.experimental.aot") version "0.9.0-SNAPSHOT"
+    id("org.springframework.experimental.aot") version "0.9.0"
     kotlin("jvm") version "1.4.31"
     kotlin("plugin.spring") version "1.4.31"
 }
@@ -22,7 +22,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.experimental:spring-native:0.9.0-SNAPSHOT")
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")

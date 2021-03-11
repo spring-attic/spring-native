@@ -1,20 +1,17 @@
-:version: 0.8.5
-:repository: milestone
-:spring-boot-version: 2.4.1
-:graalvm-version: 20.3.0
+:version: 0.9.0
+:repository: release
+:spring-boot-version: 2.4.3
+:graalvm-version: 20.1.0
 :graalvm-dev-version: 20.1.0
 :spring-boot-dev-version: 2.4.3
 :documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
 
-image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="https://repo.spring.io/milestone/org/springframework/experimental/spring-graalvm-native-docs/0.8.5/spring-graalvm-native-docs-0.8.5.zip!/reference/index.html"]
+image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
 Spring Native provides an incubating support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] 
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
-option designed to be packaged in lightweight containers. In practice, the target is to support your Spring application
-(typically a Spring Boot one), unmodified, on this new platform.
-
-Watch https://www.youtube.com/watch?v=Um9djPTtPe0[The Path Towards Spring Boot Native Applications] SpringOne 2020 talk recording for more details:
-image:https://img.youtube.com/vi/Um9djPTtPe0/maxresdefault.jpg["The Path Towards Spring Boot Native Applications",align="center", width=640px, link="https://www.youtube.com/watch?v=Um9djPTtPe0"]
+option typically designed to be packaged in lightweight containers. In practice, the target is to support your Spring Boot application
+, almost unmodified, on this new platform.
 
 It is mainly composed of:
 
@@ -27,23 +24,9 @@ It is mainly composed of:
 - `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
 - `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
 
-== Scope and status
-
-This project status is alpha, which means that we are currently mainly working on the software design and on supporting the features of the current samples (work in progress).
-Supporting a wider range of Spring Boot applications, as well as optimizing efficiency (image size, memory consumption) and performances will happen as a second step.
-
-Some changes incubated here are moved directly to https://github.com/spring-projects/spring-framework/labels/type%3A%20native[Spring Framework] and https://github.com/spring-projects/spring-boot/labels/theme%3A%20native[Spring Boot] projects.
-
 == Quick start
 
 For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}[documentation].
-
-=== Artifacts
-
-The latest {version} release supports GraalVM {graalvm-version} and Spring Boot {spring-boot-version}.
-
-- Artifact: https://repo.spring.io/{repository}/org/springframework/experimental/spring-graalvm-native/{version}/spring-graalvm-native-{version}.jar[`org.springframework.experimental:spring-graalvm-native:{version}`]
-- Repository: https://repo.spring.io/{repository}[`https://repo.spring.io/{repository}`]
 
 === Play with the samples
 
