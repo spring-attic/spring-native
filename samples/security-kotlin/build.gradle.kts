@@ -44,7 +44,7 @@ tasks.withType<Test> {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_BOOT_NATIVE_IMAGE" to "true"
+            "BP_NATIVE_IMAGE" to "true"
     )
 }
 

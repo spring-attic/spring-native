@@ -27,7 +27,8 @@ test {
 }
 
 bootBuildImage {
+	builder = "paketobuildpacks/builder:tiny"
 	environment = [
-			"BP_BOOT_NATIVE_IMAGE" : "true"
+			"BP_NATIVE_IMAGE" : "true"
 	]
 }

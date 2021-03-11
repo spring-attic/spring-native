@@ -164,7 +164,7 @@ The https://github.com/paketo-buildpacks/spring-boot-native-image[Packeto implem
         <image>
             <builder>paketobuildpacks/builder:tiny</builder>
             <env>
-                <BP_BOOT_NATIVE_IMAGE>true</BP_BOOT_NATIVE_IMAGE>
+                <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
             </env>
         </image>
     </configuration>
@@ -176,7 +176,7 @@ The https://github.com/paketo-buildpacks/spring-boot-native-image[Packeto implem
 bootBuildImage {
     builder = "paketobuildpacks/builder:tiny"
     environment = [
-        "BP_BOOT_NATIVE_IMAGE" : "true"
+        "BP_NATIVE_IMAGE" : "true"
     ]
 }
 ----
@@ -186,7 +186,7 @@ bootBuildImage {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_BOOT_NATIVE_IMAGE" to "true"
+            "BP_NATIVE_IMAGE" to "true"
     )
 }
 ----
@@ -194,7 +194,7 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 
 NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `paketobuildpacks/builder:base` being the default, but less optimized.
 
-TIP: Additional `native-image` arguments can be added using the `BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
+TIP: Additional `native-image` arguments can be added using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
 ===== Maven Repository
 

@@ -43,8 +43,8 @@ tasks.withType<Test> {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_BOOT_NATIVE_IMAGE" to "1",
-            "BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS" to """
+            "BP_NATIVE_IMAGE" to "1",
+            "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to """
                 -Dspring.spel.ignore=true                
                 -Dspring.native.remove-yaml-support=true
             """.trimIndent()
