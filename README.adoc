@@ -4,7 +4,7 @@
 :graalvm-version: 20.1.0
 :graalvm-dev-version: 20.1.0
 :spring-boot-dev-version: 2.4.3
-:documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
+:documentation-url: https://docs.spring.io/spring-native/docs/{version}/reference/htmlsingle
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
