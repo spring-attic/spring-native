@@ -3,7 +3,7 @@
 :numbered:
 :icons: font
 :hide-uri-scheme:
-:version: 0.9.0
+:version: 0.9.1-SNAPSHOT
 
 :github-tag: master
 :github-repo: spring-projects-experimental/spring-native
@@ -26,5 +26,5 @@
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference
 
-:spring-native-repo: release
+:spring-native-repo: snapshot
 :spring-native-api: https://docs.spring.io/spring-native/docs/{version}/api/
