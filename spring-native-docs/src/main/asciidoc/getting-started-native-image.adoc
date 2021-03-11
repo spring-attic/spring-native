@@ -104,7 +104,7 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
 ----
 
 
-The plugin provides a number of options to customize the transformations, see <<configuring-spring-aot>> for more details.
+The plugin provides a number of options to customize the transformations, see <<spring-aot-configuration>> for more details.
 
 ===== Enable native image support
 
