@@ -13,20 +13,12 @@ https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, i
 option typically designed to be packaged in lightweight containers. In practice, the target is to support your Spring Boot application
 , almost unmodified, on this new platform.
 
-It is mainly composed of:
-
-- `spring-native`: this module contains the runtime dependency required for running Spring Native.
-- `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
-- `spring-native-docs`: contains the asciidoc documentation sources.
-- `spring-native-tools`: tools used for reviewing image building configuration and output.
-- `spring-aot`: this module contains the AOT transformation infrastructure common to Maven and Gradle plugins.
-- `spring-aot-gradle-plugin`: this module contains the Gradle plugin that invokes AOT transformations.
-- `spring-aot-maven-plugin`: this module contains the Maven plugin that invokes AOT transformations.
-- `samples`: contains various samples that demonstrate the feature usage and are used as integration tests.
+Watch the https://www.youtube.com/watch?v=96n_YpGx-JU[video] and read the https://spring.io/blog/2021/03/11/announcing-spring-native-beta[blog post] of Spring Native Beta announcement to learn more.
+image:https://static.spring.io/blog/sdeleuze/20210311/announcing-spring-native-beta.png["Announcing Spring Native Beta!",align="center", width=640px, link="https://www.youtube.com/watch?v=96n_YpGx-JU"]
 
 == Quick start
 
-For detailed information and walkthroughs of applying the techniques to your project, please see the {documentation-url}[documentation].
+The easiest way to start with Spring Native is probably to go to https://start.spring.io/[start.spring.io], add the Spring Native dependency, and read the {documentation-url}[reference documentation]. Make sure to configure properly the https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#spring-aot[Spring AOT Maven and Gradle plugins] that are mandatory to get proper native support for your Spring application.
 
 === Play with the samples
 
