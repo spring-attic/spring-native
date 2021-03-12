@@ -8,7 +8,7 @@
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
 
-Spring Native provides an incubating support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM] 
+Spring Native provides beta support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM]
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
 option typically designed to be packaged in lightweight containers. In practice, the target is to support your Spring Boot application
 , almost unmodified, on this new platform.
