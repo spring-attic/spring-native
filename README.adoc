@@ -15,7 +15,7 @@ option typically designed to be packaged in lightweight containers. In practice,
 
 It is mainly composed of:
 
-- `spring-native`: this module contains the runtime dependency required for running Spring native like the substitutions.
+- `spring-native`: this module contains the runtime dependency required for running Spring Native.
 - `spring-native-configuration`: this module contains configuration hints for Spring classes, including various Spring Boot auto-configurations.
 - `spring-native-docs`: contains the asciidoc documentation sources.
 - `spring-native-tools`: tools used for reviewing image building configuration and output.
