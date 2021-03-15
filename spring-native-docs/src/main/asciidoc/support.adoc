@@ -87,6 +87,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-function-adapter-aws`
 * `spring-cloud-starter-function-webflux`
 ** `--enable-https` flag is required for HTTPS support.
+* `spring-cloud-starter-sleuth`
 
 [[support-others]]
 === Others
