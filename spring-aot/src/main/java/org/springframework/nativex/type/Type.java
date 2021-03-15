@@ -1223,6 +1223,15 @@ public class Type {
 	
 	private final static boolean DEBUG_CONFIGURATION_PROPERTY_ANALYSIS = false;
 	
+	/**
+	 * Treat this type as a configuration properties, and based on the needs
+	 * of that behaviour compute a map for all the types (including this one)
+	 * that will need reflective access (creating a map of type names to AccessBits).
+	 */
+	public Map<String,Integer> processAsConfigurationProperties() {
+		return processConfigurationProperties(Collections.singletonList(this.getDescriptor()));
+	}
+	
 	private Map<String,Integer> processConfigurationProperties(List<String> propertiesTypes) {
 		Map<String,Integer> collector = new HashMap<>();
 		for (String propertiesType: propertiesTypes) {
@@ -2584,14 +2593,14 @@ public class Type {
 				|| isAnnotatedInHierarchy(AtPreAuthorize) || isAnnotatedInHierarchy(AtPreFilter);
 	}
 
-	public void collectAnnotations(List<Type> collector, Predicate<Type> filter) {
+	public void collectAnnotations(Set<Type> collector, Predicate<Type> filter) {
 		if (!this.isAnnotation()) {
 			throw new IllegalStateException(this.getDottedName() + " is not an annotation");
 		}
 		walkAnnotation(collector, filter, new HashSet<>());
 	}
 
-	private void walkAnnotation(List<Type> collector, Predicate<Type> filter, Set<Type> seen) {
+	private void walkAnnotation(Set<Type> collector, Predicate<Type> filter, Set<Type> seen) {
 		if (!seen.add(this)) {
 			return;
 		}

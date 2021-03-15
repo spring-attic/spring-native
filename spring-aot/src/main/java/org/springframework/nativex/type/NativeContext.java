@@ -48,7 +48,7 @@ public interface NativeContext {
 
 	Set<String> addReflectiveAccessHierarchy(String type, int accessBits);
 
-	boolean hasReflectionConfigFor(String key);
+	boolean hasReflectionConfigFor(String typename);
 
 	void initializeAtBuildTime(Type type);
 

@@ -59,12 +59,9 @@ public class SynthesizerComputationComponentProcessor implements ComponentProces
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		
-		Predicate<Type> isSpringAnnotation =  anno->anno.getDottedName().startsWith("org.springframework");
+		Predicate<Type> isSpringAnnotation =  anno -> anno.getDottedName().startsWith("org.springframework");
 
-		// TODO better as a Set?
-		List<Type> collector = new ArrayList<>();
-		
+		Set<Type> collector = new HashSet<>();
 		for (Type annotationType: type.getAnnotations()) {
 			annotationType.collectAnnotations(collector, isSpringAnnotation);
 		}

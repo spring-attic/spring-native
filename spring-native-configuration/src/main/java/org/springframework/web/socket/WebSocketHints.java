@@ -39,7 +39,6 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 
 @NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, types = {
 		@TypeHint(types= {
-				DelegatingWebSocketMessageBrokerConfiguration.class,
 				WebSocketHandlerRegistry.class,
 				AbstractSubscribableChannel.class,
 				SimpMessagingTemplate.class,

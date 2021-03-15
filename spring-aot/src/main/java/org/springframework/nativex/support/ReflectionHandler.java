@@ -179,5 +179,9 @@ public class ReflectionHandler extends Handler {
 		}
 		collector.addClassDescriptor(cd);
 	}
+	
+	public ClassDescriptor getClassDescriptor(String typename) {
+		return collector.getClassDescriptorFor(typename);
+	}
 
 }

@@ -353,4 +353,8 @@ public class ConfigurationCollector {
 		options.add(option);
 	}
 
+	public ClassDescriptor getClassDescriptorFor(String typename) {
+		return reflectionDescriptor.getClassDescriptor(typename);
+	}
+
 }

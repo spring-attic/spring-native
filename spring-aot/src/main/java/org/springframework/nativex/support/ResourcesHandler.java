@@ -435,8 +435,6 @@ public class ResourcesHandler extends Handler {
 	 */
 	class NativeContextImpl implements NativeContext {
 
-		private final HashMap<String, Flag[]> reflectiveFlags = new LinkedHashMap<>();
-
 		@Override
 		public boolean addProxy(List<String> interfaces) {
 			dynamicProxiesHandler.addProxy(interfaces);
@@ -459,14 +457,11 @@ public class ResourcesHandler extends Handler {
 		@Override
 		public void addReflectiveAccess(String key, Flag... flags) {
 			reflectionHandler.addAccess(key, flags);
-			// TODO: is there a way to ask the ReflectionRegistry? If not may keep track of flag changes.
-			reflectiveFlags.put(key, flags);
 		}
 
 		@Override
 		public boolean hasReflectionConfigFor(String typename) {
-			return reflectiveFlags.containsKey(typename);
-			// return collector.getClassDescriptorFor(typename)!=null;
+			return collector.getClassDescriptorFor(typename)!=null;
 		}
 
 		@Override
@@ -1648,7 +1643,18 @@ public class ResourcesHandler extends Handler {
 				// null means that type is not on the classpath so skip further analysis of this method...
 				continue;
 			} else {
-				methodRCM.requestTypeAccess(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+				if (returnType.isConfigurationProperties()) {
+					Map<String, Integer> propertyTypesForAccess = returnType.processAsConfigurationProperties();
+					Map<String,Integer> newMap = new HashMap<>();
+					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
+						methodRCM.requestTypeAccess(Type.fromLdescriptorToDotted(entry.getKey()),entry.getValue());
+						newMap.put(Type.fromLdescriptorToDotted(entry.getKey()),entry.getValue());
+					}
+//					logger.debug("ConfigurationPropertyAnalysis: whilst looking at type "+returnType.getDottedName()+" making these accessible:"+
+//							newMap.entrySet().stream().map(e -> "  ::"+e.getKey()+"="+AccessBits.toString(e.getValue())).collect(Collectors.toList()));
+				} else {
+					methodRCM.requestTypeAccess(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+				}
 			}
 
 			// Example method being handled here:
