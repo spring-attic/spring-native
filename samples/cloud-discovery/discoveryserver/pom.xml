@@ -5,10 +5,10 @@
 		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.4-SNAPSHOT</version>
-		<relativePath/>
+		<groupId>org.springframework.experimental</groupId>
+		<artifactId>spring-native-sample-parent</artifactId>
+		<version>0.9.1-SNAPSHOT</version>
+		<relativePath>../../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.demo</groupId>
 	<artifactId>discoveryserver</artifactId>
