@@ -29,7 +29,7 @@
 		<!-- Tiny builder allow small footprint and reduced surface attack, you can also use paketobuildpacks/builder:full to have more tool available in the image for debugging -->
 		<builder>paketobuildpacks/builder:tiny</builder>
 
-		<spring-cloud.version>2020.0.1</spring-cloud.version>
+		<spring-cloud.version>2020.0.2-SNAPSHOT</spring-cloud.version>
 	</properties>
 
 	<build>
