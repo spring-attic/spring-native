@@ -23,9 +23,8 @@ If you see an error like:
 [source,bash]
 ----
 Error: Classes that should be initialized at run time got initialized during image building:
- org.springframework.util.unit.DataSize was unintentionally initialized at build time. To see why org.springframework.util.unit.DataSize got initialized use -H:+TraceClassInitialization
+ org.springframework.util.unit.DataSize was unintentionally initialized at build time. To see why org.springframework.util.unit.DataSize got initialized use --trace-class-initialization
 ----
-
 
 You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and Spring AOT plugin.
 See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
