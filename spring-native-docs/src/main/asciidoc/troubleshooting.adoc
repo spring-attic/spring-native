@@ -90,6 +90,13 @@ you can temporarily turn this hard error into a warning since it is possible tha
 To do so, specify the `failOnMissingSelectorHint` option to `false` to cause log messages about the problem but not a hard fail.
 Note that using warnings rather than errors can cause serious problems for your application.
 
+[[troubleshooting-working-with-multi-modules]]
+=== Working with Multi-Modules projects
+
+The Spring Boot and AOT plugins should only be applied to the module that contains the main application class.
+We've shared https://github.com/spring-projects-experimental/spring-native/tree/master/samples/multi-modules/[a sample application showing how to set up multi-modules projects with Gradle and Maven].
+
+
 [[troubleshooting-working-with-snapshots]]
 === Working with snapshots
 
