@@ -1,0 +1,15 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'org.springframework.experimental.aot'
+}
+
+dependencies {
+	//
+	api project(':core')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+bootBuildImage {
+	builder = 'paketobuildpacks/builder:tiny'
+	environment = ['BP_NATIVE_IMAGE': 'true']
+}
