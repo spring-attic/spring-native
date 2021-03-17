@@ -31,6 +31,8 @@ See related <<getting-started-native-image>> and <<getting-started-buildpacks>> 
 
 ==== Out of memory error when building the native image
 
+Out of memory error can materialize with error messages like `Error: Image build request failed with exit status 137`.
+
 `native-image` consumes a lot of RAM, we recommend a machine with at least 16G of RAM.
 
 If you are using containers, on Mac, it is recommended to increase the memory allocated to Docker to at least 8G (and potentially to add more CPUs as well) since `native-image` compiler is a heavy process.
