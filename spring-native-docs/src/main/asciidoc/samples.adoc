@@ -2,14 +2,13 @@
 == Samples
 
 There are numerous samples in the {github-tree}/samples[`samples`] subfolder of the root project.
-These show the feature in use with different technologies.
 
-Most of them use Spring Boot Buildpacks support (Maven for most of the sample except the `webmvc-kotlin` one which is using Gradle).
-There are also `build.sh` and other related Bash scripts used for development and CI.
+Maven projects can be built and tested using a local `native-image` installation using the `build.sh` script file present at the root of each sample.
+Maven or Gradle projects can be built using Buildpack support using `mvn spring-boot:build-image` or `gradle bootBuildImage` commands which require Docker to be installed.
 
 Beware that native image compilation can takes a long time and uses a lot of RAM.
 
 The samples show the wide variety of tech that is working fine: Spring MVC with Tomcat, Spring WebFlux with Netty, Thymeleaf, JPA, and others.
 The Petclinic samples brings multiple technologies together in one application.
 
-If you are starting to build your first Spring Boot application, we recommend you follow one of the getting started guides.
+If you are starting to build your first Spring Boot application, we recommend you follow one of the <<getting-started>> guides.
