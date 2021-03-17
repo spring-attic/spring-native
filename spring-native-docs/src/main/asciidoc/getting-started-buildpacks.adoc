@@ -192,7 +192,7 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 ----
 
 
-NOTE: The builder is also customized to use `paketobuildpacks/builder:tiny`, `paketobuildpacks/builder:base` being the default, but less optimized.
+NOTE: `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tools available in the image for an improved developer experience.
 
 TIP: Additional `native-image` arguments can be added using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
