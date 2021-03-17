@@ -4,6 +4,8 @@
 This section gives you a practical overview of building a Spring Boot native application using {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks].
 This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
 
+TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io, add the "Spring Native" dependency and generate the project.
+
 ==== System Requirements
 
 Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details.
