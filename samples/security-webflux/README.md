@@ -6,12 +6,6 @@ mvn spring-boot:build-image
 docker-compose up
 ```
 
-To do it with `hybrid` mode:
-```
-mvn -P hybrid spring-boot:build-image
-docker-compose up
-```
-
 And then go to [http://localhost:8080/](http://localhost:8080/).
 
 As an alternative, you can use `build.sh` (with a local GraalVM installation or combined with
