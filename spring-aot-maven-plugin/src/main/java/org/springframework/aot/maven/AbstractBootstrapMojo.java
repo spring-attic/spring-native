@@ -17,7 +17,10 @@
 package org.springframework.aot.maven;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +30,7 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -35,6 +39,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.nativex.AotOptions;
+import org.springframework.util.FileSystemUtils;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
@@ -104,12 +109,6 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	private String[] buildTimePropertiesChecks;
 
 
-	/**
-	 * The location of the generated bootstrap sources.
-	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot/")
-	protected File outputDirectory;
-
 	protected AotOptions getAotOptions() {
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode(mode);
@@ -126,6 +125,15 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		return aotOptions;
 	}
 
+	protected void recreateGeneratedSourcesFolder(File generatedSourcesFolder) throws MojoFailureException {
+		try {
+			FileSystemUtils.deleteRecursively(generatedSourcesFolder);
+			Files.createDirectories(generatedSourcesFolder.toPath());
+		}
+		catch (IOException exc) {
+			throw new MojoFailureException("Build failed during Spring AOT code generation", exc);
+		}
+	}
 
 	protected void compileGeneratedSources(Path sourcesPath, List<String> runtimeClasspathElements) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);

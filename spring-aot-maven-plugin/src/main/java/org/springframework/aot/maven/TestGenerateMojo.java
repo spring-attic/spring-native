@@ -56,6 +56,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
+		recreateGeneratedSourcesFolder(this.outputDirectory);
 		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "java"));
 		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
 		try {

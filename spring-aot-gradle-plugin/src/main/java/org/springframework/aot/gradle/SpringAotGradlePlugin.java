@@ -17,10 +17,13 @@
 package org.springframework.aot.gradle;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -38,6 +41,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
 import org.springframework.nativex.utils.VersionExtractor;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * {@link Plugin} that generates AOT sources using {@code spring-native-aot} and compiles them.
@@ -71,6 +75,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			Path generatedResourcesPath = Paths.get(buildPath, "generated", "resources");
 			SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 
+			recreateGeneratedSourcesFolder(Paths.get(buildPath, "generated"));
 			File aotSourcesDirectory = generatedSourcesPath.resolve(AOT_SOURCE_SET_NAME).toFile();
 			File aotResourcesDirectory = generatedResourcesPath.resolve(AOT_SOURCE_SET_NAME).toFile();
 			SourceSet aotSourceSet = createAotSourceSet(sourceSets, aotSourcesDirectory, aotResourcesDirectory);
@@ -90,6 +95,16 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TEST_TASK_NAME)));
 			});
 		});
+	}
+
+	private void recreateGeneratedSourcesFolder(Path generatedSourcesFolder) {
+		try {
+			FileSystemUtils.deleteRecursively(generatedSourcesFolder);
+			Files.createDirectories(generatedSourcesFolder);
+		}
+		catch (IOException exc) {
+			throw new GradleException("Failed to recreate folder '" + generatedSourcesFolder.toAbsolutePath() + "'", exc);
+		}
 	}
 
 	private void addSpringNativeDependency(Project project) {

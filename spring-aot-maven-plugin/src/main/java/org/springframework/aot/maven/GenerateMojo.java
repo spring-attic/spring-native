@@ -17,6 +17,7 @@
 package org.springframework.aot.maven;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * @author Brian Clozel
@@ -56,6 +58,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
+		recreateGeneratedSourcesFolder(this.outputDirectory);
 		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "java"));
 		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
 		try {
