@@ -40,6 +40,10 @@ See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-
 
 On Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performances.
 
+==== Builder lifecycle 'creator' failed with status code 145
+
+This is a generic error triggered by Docker and forwarded by Spring Boot Buildpacks support. `native-image` command has likely failed, so check the error messages in the output. If you can't find anything, check if that's not an out of memory error as described above.
+
 [[troubleshooting-image-does-not-run]]
 === The built image does not run
 
