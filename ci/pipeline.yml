@@ -67,6 +67,14 @@ resources:
       username: ((artifactory-username))
       password: ((artifactory-password))
       build_name: ((build-name))
+  - name: github-release
+    type: github-release
+    icon: briefcase-download
+    source:
+      owner: spring-io
+      repository: initializr
+      access_token: ((github-ci-release-token))
+      pre_release: false
   - name: slack-alert
     type: slack-notification
     icon: slack
@@ -234,6 +242,64 @@ jobs:
       - put: artifactory-repo
         params:
           <<: *artifactory-repo-put-params
+  - name: stage-release
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - task: stage
+        image: ci-image
+        file: git-repo/ci/tasks/stage.yml
+        params:
+          RELEASE_TYPE: RELEASE
+      - put: artifactory-repo
+        params:
+          <<: *artifactory-repo-put-params
+          repo: libs-staging-local
+      - put: git-repo
+        params:
+          repository: stage-git-repo
+  - name: promote-release
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - get: artifactory-repo
+        trigger: false
+        passed: [ stage-release ]
+        params:
+          download_artifacts: true
+          save_build_info: true
+      - task: promote
+        image: ci-image
+        file: git-repo/ci/tasks/promote.yml
+        params:
+          RELEASE_TYPE: RELEASE
+          <<: *artifactory-task-params
+  - name: create-github-release
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+      - get: artifactory-repo
+        trigger: true
+        passed: [ promote-release ]
+        params:
+          download_artifacts: false
+          save_build_info: true
+      - task: generate-changelog
+        file: git-repo/ci/tasks/generate-changelog.yml
+        params:
+          RELEASE_TYPE: RELEASE
+          GITHUB_USERNAME: ((github-username))
+          GITHUB_TOKEN: ((github-ci-release-token))
+      - put: github-release
+        params:
+          name: generated-changelog/tag
+          tag: generated-changelog/tag
+          body: generated-changelog/changelog.md
 groups:
   - name: "each-commit-builds"
     jobs: [
@@ -246,5 +312,7 @@ groups:
       "build-21.0-dev-java11-samples",
       "build-master-java8-samples",
       "build-master-java11-samples"]
+  - name: "releases"
+    jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
     jobs: ["build-ci-image"]
