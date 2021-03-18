@@ -46,6 +46,8 @@ import org.hibernate.persister.spi.PersisterCreationContext;
 import org.hibernate.query.QueryProducer;
 import org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorBuilderImpl;
 import org.hibernate.sql.ordering.antlr.GeneratedOrderByFragmentRendererTokenTypes;
+import org.hibernate.tuple.component.DynamicMapComponentTuplizer;
+import org.hibernate.tuple.component.PojoComponentTuplizer;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
@@ -100,6 +102,10 @@ import java.util.EventListener;
 						// TODO expose package contents again?
 						ParameterizedMessageFactory.class,
 						PersistenceAnnotationBeanPostProcessor.class,
+
+						// ComponentTuplizerFactory
+						PojoComponentTuplizer.class,
+						DynamicMapComponentTuplizer.class,
 
 						SingleTableEntityPersister.class, CollectionDataAccess.class, PersistentClass.class,
 						PersisterCreationContext.class,
