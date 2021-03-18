@@ -122,7 +122,7 @@ class DefaultBuildContext implements BuildContext {
 			for (URI uri : uris) {
 				urls.add(uri.toURL());
 			}
-			ClassLoader parentClassLoader =  getClass().getClassLoader().getParent();
+			ClassLoader parentClassLoader =  null;
 			// If we're on JDK9+, we need to use the PlatformClassLoader
 			// or we'll miss JDK classes that aren't in the base module.
 			if (ClassUtils.hasMethod(Optional.class, "stream", new Class[0])) {
