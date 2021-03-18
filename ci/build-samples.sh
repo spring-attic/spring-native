@@ -6,7 +6,7 @@ native-image --version
 if [[ -n $DOCKER_HUB_USERNAME ]]; then
   echo "$DOCKER_HUB_PASSWORD" | docker login -u $DOCKER_HUB_USERNAME --password-stdin
 fi
-cd spring-native
+cd git-repo
 if ! (./build.sh); then
     RC=1
 fi

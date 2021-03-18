@@ -1,0 +1,9 @@
+github-repo: "https://github.com/spring-projects-experimental/spring-native.git"
+github-repo-name: "spring-projects-experimental/spring-native"
+docker-hub-organization: "springci"
+artifactory-server: "https://repo.spring.io"
+branch: "master"
+milestone: "0.9.x"
+build-name: "spring-native"
+concourse-url: "https://ci.spring.io"
+task-timeout: 30m

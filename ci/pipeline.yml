@@ -1,7 +1,29 @@
 anchors:
+  artifactory-repo-put-params: &artifactory-repo-put-params
+    repo: libs-snapshot-local
+    folder: distribution-repository
+    build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+    build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+    disable_checksum_uploads: true
+    exclude:
+      - "**/*.effective-pom"
+      - "*/spring-native-docs-*.jar"
+    artifactory-task-params: &artifactory-task-params
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
   docker-hub-task-params: &docker-hub-task-params
     DOCKER_HUB_USERNAME: ((docker-hub-username))
     DOCKER_HUB_PASSWORD: ((docker-hub-password))
+  git-repo-resource-source: &git-repo-resource-source
+    uri: ((github-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: ((branch))
+  registry-image-resource-source: &registry-image-resource-source
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((milestone))
   slack-fail-params: &slack-fail-params
     text: >
       :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
@@ -9,17 +31,42 @@ anchors:
     icon_emoji: ":concourse:"
     username: concourse-ci
 resource_types:
+  - name: artifactory-resource
+    type: registry-image
+    source:
+      repository: springio/artifactory-resource
+      tag: 0.0.14
   - name: slack-notification
     type: docker-image
     source:
       repository: cfcommunity/slack-notification-resource
       tag: latest
 resources:
-  - name: spring-native
+  - name: git-repo
     type: git
+    icon: github
     source:
-      uri: https://github.com/spring-projects-experimental/spring-native
-      branch: master
+      <<: *git-repo-resource-source
+  - name: ci-images-git-repo
+    type: git
+    icon: github
+    source:
+      <<: *git-repo-resource-source
+      paths: ["ci/images/*"]
+  - name: ci-image
+    type: docker-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/spring-native-ci
+  - name: artifactory-repo
+    type: artifactory-resource
+    icon: package-variant
+    source:
+      uri: ((artifactory-server))
+      username: ((artifactory-username))
+      password: ((artifactory-password))
+      build_name: ((build-name))
   - name: slack-alert
     type: slack-notification
     icon: slack
@@ -29,10 +76,19 @@ resources:
     type: time
     source: {interval: 24h}
 jobs:
+  - name: build-ci-image
+    plan:
+      - get: ci-images-git-repo
+        trigger: true
+      - in_parallel:
+          - put: ci-image
+            params:
+              build: ci-images-git-repo/ci/images
+              dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
   - name: build-java8-key-samples
     public: true
     plan:
-    - get: spring-native
+    - get: git-repo
       trigger: true
     - task: build
       privileged: true
@@ -46,13 +102,13 @@ jobs:
             repository: springci/spring-native
             tag: 21.0-dev-java8
         inputs:
-          - name: spring-native
+          - name: git-repo
         run:
-          path: spring-native/ci/build-key-samples.sh
+          path: git-repo/ci/build-key-samples.sh
   - name: build-java11-key-samples
     public: true
     plan:
-      - get: spring-native
+      - get: git-repo
         trigger: true
       - task: build
         privileged: true
@@ -66,14 +122,14 @@ jobs:
               repository: springci/spring-native
               tag: 21.0-dev-java11
           inputs:
-            - name: spring-native
+            - name: git-repo
           run:
-            path: spring-native/ci/build-key-samples.sh
+            path: git-repo/ci/build-key-samples.sh
   - name: build-21.0-dev-java8-samples
     old_name: build-20.3-dev-java8-samples
     public: true
     plan:
-      - get: spring-native
+      - get: git-repo
       - get: every-day
         trigger: true
       - task: build
@@ -88,14 +144,14 @@ jobs:
               repository: springci/spring-native
               tag: 21.0-dev-java8
           inputs:
-            - name: spring-native
+            - name: git-repo
           run:
-            path: spring-native/ci/build-samples.sh
+            path: git-repo/ci/build-samples.sh
   - name: build-21.0-dev-java11-samples
     old_name: build-20.3-dev-java11-samples
     public: true
     plan:
-      - get: spring-native
+      - get: git-repo
       - get: every-day
         trigger: true
       - do:
@@ -111,9 +167,9 @@ jobs:
                 repository: springci/spring-native
                 tag: 21.0-dev-java11
             inputs:
-              - name: spring-native
+              - name: git-repo
             run:
-              path: spring-native/ci/build-samples.sh
+              path: git-repo/ci/build-samples.sh
         on_failure:
           do:
             - put: slack-alert
@@ -122,7 +178,7 @@ jobs:
   - name: build-master-java8-samples
     public: true
     plan:
-      - get: spring-native
+      - get: git-repo
       - get: every-day
         trigger: true
       - task: build
@@ -137,13 +193,13 @@ jobs:
               repository: springci/spring-native
               tag: master-java8
           inputs:
-            - name: spring-native
+            - name: git-repo
           run:
-            path: spring-native/ci/build-samples.sh
+            path: git-repo/ci/build-samples.sh
   - name: build-master-java11-samples
     public: true
     plan:
-      - get: spring-native
+      - get: git-repo
       - get: every-day
         trigger: true
       - task: build
@@ -158,32 +214,26 @@ jobs:
               repository: springci/spring-native
               tag: master-java11
           inputs:
-            - name: spring-native
+            - name: git-repo
           run:
-            path: spring-native/ci/build-samples.sh
+            path: git-repo/ci/build-samples.sh
   - name: deploy
     public: true
     plan:
-      - get: spring-native
+      - get: ci-image
+      - get: git-repo
         passed:
           - build-java8-key-samples
           - build-java11-key-samples
         trigger: true
-      - task: deploy
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: openjdk
-              tag: 11-jdk
-          inputs:
-            - name: spring-native
-          run:
-            path: spring-native/ci/deploy.sh
+      - task: build-project
+        image: ci-image
+        privileged: true
+        timeout: ((task-timeout))
+        file: git-repo/ci/tasks/build-project.yml
+      - put: artifactory-repo
         params:
-          ARTIFACTORY_USERNAME: ((artifactory-username))
-          ARTIFACTORY_PASSWORD: ((artifactory-password))
+          <<: *artifactory-repo-put-params
 groups:
   - name: "each-commit-builds"
     jobs: [
@@ -196,3 +246,5 @@ groups:
       "build-21.0-dev-java11-samples",
       "build-master-java8-samples",
       "build-master-java11-samples"]
+  - name: "ci-images"
+    jobs: ["build-ci-image"]
