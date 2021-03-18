@@ -330,6 +330,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
             <scope>provided</scope>
