@@ -25,10 +25,13 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.messaging.MessageHeaders;
 
 @NativeHint(trigger=ContextFunctionCatalogAutoConfiguration.class,
-		types = @TypeHint(types= {
-				MessageHeaders.class,
-				Supplier.class
-		}, access = AccessBits.CLASS |AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS))
+		types = {
+		@TypeHint(types= {
+						MessageHeaders.class,
+						Supplier.class
+				}, access = AccessBits.CLASS |AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS)
+		, @TypeHint(types = { java.util.function.Function.class, java.util.function.Consumer.class })} // For Spring Cloud Function + Kotlin
+)
 public class ContextFunctionCatalogHints implements NativeConfiguration {
 }
 
