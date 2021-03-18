@@ -20,7 +20,7 @@
 :spring-boot-version: 2.4.4-SNAPSHOT
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
 
-:spring-cloud-version: 2020.0.2-SNAPSHOT
+:spring-cloud-version: 2020.0.2
 
 :spring-framework-version: current
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api
