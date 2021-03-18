@@ -57,7 +57,9 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 RSocket security is also supported.
 * `spring-boot-starter-oauth2-resource-server`: WebMvc and WebFlux are supported.
 * `spring-boot-starter-oauth2-client`: WebMvc and WebFlux are supported.
-* `spring-boot-starter-webflux`: only Netty is supported for now.
+* `spring-boot-starter-webflux`:
+** For Web support, only Reactor Netty is supported for now.
+** For WebSocket support, Tomcat, Jetty 9, Undertow and Reactor Netty are supported. Jetty 10 is not supported.
 * `spring-boot-starter-web`:
 ** Only Tomcat is supported for now.
 ** `--enable-https` flag is required for HTTPS support.
