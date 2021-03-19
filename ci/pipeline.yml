@@ -112,7 +112,7 @@ jobs:
         inputs:
           - name: git-repo
         run:
-          path: git-repo/ci/build-key-samples.sh
+          path: git-repo/ci/scripts/build-key-samples.sh
   - name: build-java11-key-samples
     public: true
     plan:
@@ -132,7 +132,7 @@ jobs:
           inputs:
             - name: git-repo
           run:
-            path: git-repo/ci/build-key-samples.sh
+            path: git-repo/ci/scripts/build-key-samples.sh
   - name: build-21.0-dev-java8-samples
     old_name: build-20.3-dev-java8-samples
     public: true
@@ -154,7 +154,7 @@ jobs:
           inputs:
             - name: git-repo
           run:
-            path: git-repo/ci/build-samples.sh
+            path: git-repo/ci/scripts/build-samples.sh
   - name: build-21.0-dev-java11-samples
     old_name: build-20.3-dev-java11-samples
     public: true
@@ -177,7 +177,7 @@ jobs:
             inputs:
               - name: git-repo
             run:
-              path: git-repo/ci/build-samples.sh
+              path: git-repo/ci/scripts/build-samples.sh
         on_failure:
           do:
             - put: slack-alert
@@ -203,7 +203,7 @@ jobs:
           inputs:
             - name: git-repo
           run:
-            path: git-repo/ci/build-samples.sh
+            path: git-repo/ci/scripts/build-samples.sh
   - name: build-master-java11-samples
     public: true
     plan:
@@ -224,7 +224,7 @@ jobs:
           inputs:
             - name: git-repo
           run:
-            path: git-repo/ci/build-samples.sh
+            path: git-repo/ci/scripts/build-samples.sh
   - name: deploy
     public: true
     plan:
