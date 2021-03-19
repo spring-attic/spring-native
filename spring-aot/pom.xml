@@ -6,8 +6,7 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-build</artifactId>
-		<version>0.9.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-aot</artifactId>
 	<name>Spring AOT</name>

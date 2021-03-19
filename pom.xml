@@ -4,12 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-native-build</artifactId>
-	<version>0.9.1-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<name>Spring Native build</name>
 	<url>https://github.com/spring-projects-experimental/spring-native/</url>
 
 	<properties>
+		<revision>0.9.1-SNAPSHOT</revision>
 		<graalvm.version>21.0.0</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
 		<spring.boot.version>2.4.4</spring.boot.version>
