@@ -9,4 +9,4 @@ java -jar /github-changelog-generator.jar \
   ${version} generated-changelog/changelog.md
 
 echo ${version} > generated-changelog/version
-echo v${version} > generated-changelog/tag
+echo ${version} > generated-changelog/tag
