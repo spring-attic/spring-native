@@ -5,6 +5,9 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 
+/**
+	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+	*/
 @NativeHint(
 	trigger = Log4j2.class,
 	types = @TypeHint(types = {
