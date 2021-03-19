@@ -100,8 +100,8 @@ public class GenerateAotSources extends DefaultTask {
 		Set<Path> resourcesElements = this.resourceDirectories.getSrcDirs().stream().map(File::toPath).collect(Collectors.toSet());
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(this.aotOptions.toAotOptions());
 		try {
-			generator.generate(this.sourcesOutputDirectory.getAsFile().map(File::toPath).get(),
-					this.resourcesOutputDirectory.getAsFile().map(File::toPath).get(),
+			generator.generate(this.sourcesOutputDirectory.get().getAsFile().toPath(),
+					this.resourcesOutputDirectory.get().getAsFile().toPath(),
 					classpathElements, resourcesElements);
 		}
 		catch (IOException exc) {

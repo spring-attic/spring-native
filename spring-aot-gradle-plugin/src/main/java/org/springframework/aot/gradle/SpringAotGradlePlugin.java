@@ -26,6 +26,7 @@ import java.util.Collections;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.Copy;
@@ -140,6 +141,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		});
 		project.getTasks().named(aotSourceSet.getProcessResourcesTaskName(), Copy.class, (aotProcessResources) -> {
 			aotProcessResources.from(generateAotSources.getResourcesOutputDirectory());
+			aotProcessResources.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
 		});
 
 		project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) ->
