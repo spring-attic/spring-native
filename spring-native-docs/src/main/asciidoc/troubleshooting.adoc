@@ -29,6 +29,10 @@ Error: Classes that should be initialized at run time got initialized during ima
 You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and Spring AOT plugin.
 See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
 
+==== WARNING: Could not register reflection metadata
+
+Those warnings are expected for now, and should be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[this comment] for more details.
+
 ==== Out of memory error when building the native image
 
 Out of memory error can materialize with error messages like `Error: Image build request failed with exit status 137`.
