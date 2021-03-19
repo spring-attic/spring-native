@@ -28,6 +28,7 @@ public class GeneratedClassNotFoundExceptionFailureAnalyzer extends AbstractFail
 
 	private static final String ACTION = String.format(
 			"Review your local configuration and make sure that the Spring AOT plugin is configured properly.%n"
+					+ "If you're trying to run your application with 'mvn spring-boot:run', please use 'mvn package spring-boot:run' instead.%n"
 					+ "See https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#spring-aot for more details.");
 
 	@Override

@@ -38,9 +38,12 @@ The plugin should be declared as following:
 </build>
 ----
 
-Maven goals `spring-aot:generate` (`process-test-classes` phase) and `spring-aot:test-generate` (`prepare-package` phase) should be invoked automatically in the Maven lifecycle when using the `mvn` command.
-
+Maven goals `spring-aot:generate` (`process-test-classes` phase) and `spring-aot:test-generate` (`prepare-package` phase) are automatically invoked in the Maven lifecycle when using the `mvn verify` or `mvn package` commands.
+The `spring-aot:*` goals are not meant to be called by themselves since they rely on other parts of the lifecycle.
 Sources are generated in `target/generated-sources/spring-aot/` and test sources in `target/generated-test-sources/spring-aot/`.
+
+NOTE: Because of a limitation of the AOT plugin, developers need to trigger the `package` phase if they wish to run the application with the Spring Boot Maven plugin:
+please use `mvn package spring-boot:run`.
 
 Configuration can be performed if needed within the `<configuration>` element, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
 
