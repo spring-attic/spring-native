@@ -94,6 +94,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 							<relocations>
 								<relocation>
 									<pattern>org.objectweb.asm</pattern>
