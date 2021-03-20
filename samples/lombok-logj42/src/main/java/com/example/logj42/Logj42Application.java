@@ -18,8 +18,6 @@ public class Logj42Application {
 
 	@Bean
 	ApplicationRunner runner() {
-		return event -> {
-			log.info("hello, world!");
-		};
+		return event -> log.info("hello, world!");
 	}
 }
