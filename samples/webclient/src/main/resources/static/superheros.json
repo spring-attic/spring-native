@@ -1,0 +1,29 @@
+{
+  "superheros": [
+    {
+      "name": "Flash",
+      "power": "Speed Run : His connection to the Speed Force gives him plenty of abilities, making him one of the most interesting, and dangerous heroes in the DC Universe",
+      "url":"https://m.media-amazon.com/images/M/MV5BNTM4YThiMzktMDRlNi00NzAyLWI1YmQtNTdkMTNiN2Q0NzU1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"
+    },
+    {
+      "name": "Super Man",
+      "power": "the powers of flight, superhuman strength, x-ray vision, heat vision, cold breath, super-speed, enhanced hearing, and nigh-invulnerability. While Superman is immensely strong both in terms of muscle power and ability to take physical punishment, he is not all-powerful.",
+      "url":"https://upload.wikimedia.org/wikipedia/en/3/35/Supermanflying.png"
+    },
+    {
+      "name": "Thor",
+      "power": "Superhuman strength, speed, endurance & resistance to injury.",
+      "url":"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTQbuKL7NfxTMy1wUymb2tu25NONgb7TU_NE-KOzWF9UfMU5rRz"
+    },
+    {
+      "name":"Hulk",
+      "power":"Incredible superhuman strength, durability, and healing factor.Becomes more powerful as anger increases",
+      "url":"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSmp1rFpGLbPnfH6P_IlBcZyXa72_IIMeunYiZ8UEfvAkD0t-sa"
+    },
+    {
+      "name":"Vemon",
+      "power":"Venom also has super strength — which Brock's impressive build partly contributes to — the ability to heal its host, shape-shifting powers, the ability to create weapons literally out of nothing, heightened-sensory perception, and the ability to reproduce itself",
+      "url":"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTiaZnJMuT6wI28t4yRE_rTyjKqAC3Lvg0eXF7WThdhivAf5fJQ"
+    }
+  ]
+}
