@@ -89,6 +89,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Clement
  * @author Christoph Strobl
+ * @author Jens Schauder
  */ 
 public class SpringDataComponentProcessor implements ComponentProcessor {
 	
@@ -163,10 +164,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	@Override
 	public boolean handle(NativeContext imageContext, String key, List<String> values) {
-		if (repositoryName != null && values.contains(repositoryName)) {
-			return !keysSeen.contains(key);
-		}
-		return false;
+		return repositoryName != null && values.contains(repositoryName);
 	}
 
 	@Override
