@@ -20,7 +20,6 @@ NOTE: You need to install the GraalVM `native-image` compiler, check {documentat
 
 - Download https://github.com/spring-projects-experimental/spring-native/tags[the latest release] of this repository.
 - Go into the samples folder and pick one (e.g. `cd samples/commandlinerunner`)
-- Make sure `native-image` is in the `PATH` (usually done by switching to a GraalVM installation with https://sdkman.io/install[SDKMAN]).
 - Run `./build.sh` which will run the regular JVM build, then a native image compilation, then test the result.
 
 For more details on the samples see the {documentation-url}/index.html#samples[samples documentation].
