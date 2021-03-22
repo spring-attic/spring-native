@@ -70,6 +70,11 @@ Caused by: java.util.MissingResourceException:
 
 You should add resource configuration using <<native-hints>>.
 
+==== Application failed to start when running `mvn spring-boot:run`
+
+Because of a temporary limitation of the AOT plugin, developers need to trigger the `package` phase if they wish to run the application with the Spring Boot Maven plugin:
+please use `mvn package spring-boot:run`.
+
 ==== Missing configuration
 
 The Spring AOT plugin will do the best it can to catch everything but it doesn't understand every bit of code out there.
