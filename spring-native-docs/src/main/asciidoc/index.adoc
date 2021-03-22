@@ -7,10 +7,10 @@ Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Es
 
 Spring Native provides support for compiling Spring applications to native executables using the https://www.graalvm.org[GraalVM] {graalvm-native-docs}/[native-image] compiler.
 
-Compared to the Java Virtual Machine, native images can enable cheaper and more sustainable hosting for many types of workload.
+Compared to the Java Virtual Machine, native images can enable cheaper and more sustainable hosting for many types of workloads.
 These include microservices, function workloads, well suited to containers, and https://kubernetes.io/[Kubernetes]
 
-Using native image have key advantages, such as instant startup, instant peak performance, and reduced memory consumption.
+Using native image provides key advantages, such as instant startup, instant peak performance, and reduced memory consumption.
 
 There are also some drawbacks and trade-offs that the GraalVM native project expect to improve on over time.
 Building a native image is a heavy process that is slower than a regular application.
@@ -37,8 +37,8 @@ NOTE: This is work in progress, see the list of <<support,supported features>> f
 
 Spring Native is composed of the following modules:
 
-* `spring-native`: runtime dependency required for running Spring Native.
-* `spring-native-configuration`: configuration hints for Spring classes, including various Spring Boot auto-configurations.
+* `spring-native`: runtime dependency required for running Spring Native, provides also <<native-hints>> API.
+* `spring-native-configuration`: configuration hints for Spring classes used by Spring AOT plugins, including various Spring Boot auto-configurations.
 * `spring-native-docs`: reference guide, in asciidoc format.
 * `spring-native-tools`: tools used for reviewing image building configuration and output.
 * `spring-aot`: AOT transformation infrastructure common to Maven and Gradle plugins.

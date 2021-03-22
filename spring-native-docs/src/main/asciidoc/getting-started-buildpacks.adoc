@@ -8,7 +8,7 @@ TIP: The easiest way to start a new native Spring Boot project is to go to https
 
 ==== System Requirements
 
-Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details.
+Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details. https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
 
 NOTE: You can run `docker run hello-world` (without `sudo`) to check the Docker daemon is reachable as expected, see related https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/htmlsingle/#build-image-docker-daemon[Maven] or https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/#build-image-docker-daemon[Gradle] Spring Boot plugin documentation.
 
@@ -29,7 +29,7 @@ cd gs-rest-service/complete
 
 ===== Validate Spring Boot version
 
-IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
+IMPORTANT: Spring Native {version} only supports Spring Boot {spring-boot-version}, so change the version if necessary.
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
@@ -59,9 +59,9 @@ plugins {
 ----
 
 
-===== Add Spring Native
+===== Add the Spring Native dependency
 
-`org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
+`org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image. You need to specify it explicitly only with Maven.
 
 
 [source,xml,subs="attributes,verbatim",role="primary"]
@@ -79,18 +79,12 @@ plugins {
 [source,subs="attributes,verbatim",role="secondary"]
 .Gradle Groovy
 ----
-dependencies {
-    // ...
-    implementation 'org.springframework.experimental:spring-native:{version}'
-}
+// No need to add the spring-native dependency explicitly with Gradle, the Spring AOT plugin will add it automatically.
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
-dependencies {
-    // ...
-    implementation("org.springframework.experimental:spring-native:{version}")
-}
+// No need to add the spring-native dependency explicitly with Gradle, the Spring AOT plugin will add it automatically.
 ----
 
 
@@ -303,7 +297,7 @@ To run the application, you can use `docker` the usual way as shown in the follo
 
 [source,bash]
 ----
-$ docker run -p 8080:8080 docker.io/library/rest-service:0.0.1-SNAPSHOT
+$ docker run --rm -p 8080:8080 rest-service:0.0.1-SNAPSHOT
 ----
 
 

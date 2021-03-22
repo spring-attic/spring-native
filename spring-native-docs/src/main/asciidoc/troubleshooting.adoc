@@ -1,7 +1,7 @@
 [[troubleshooting]]
 == Troubleshooting
 
-While trying to build native images, various things can go wrong, either at image-build time or at runtime when you try to launch the built image.
+While trying to build native images, various things can go wrong, either at image build time or at runtime when you try to launch the built image.
 Usually, the problem is a lack of native configuration, so be sure to check <<native-hints>> first thing.
 Reading {graalvm-native-docs}/[Native image reference documentation] could also probably help.
 
@@ -78,15 +78,7 @@ please use `mvn package spring-boot:run`.
 ==== Missing configuration
 
 The Spring AOT plugin will do the best it can to catch everything but it doesn't understand every bit of code out there.
-In these situations you can write native configuration yourself, see <<native-hints>> and <<how-to-contribute>>.
-
-===== Run with the agent
-
-Now simply run the application, with the following addition to the Java command to collect configuration in that folder:
-
-`-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image`
-
-When the next native-image run happens it should automatically additionally include this collected configuration.
+In these situations you can write native configuration yourself, see <<native-hints>>, <<tracing-agent>> and <<how-to-contribute>>.
 
 ==== No access hint found for import selector: XXX
 

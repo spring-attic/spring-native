@@ -167,8 +167,8 @@ options:
 
 - Import the root project in your IDE.
 - Eventually import the sample you are working on as a distinct project in your IDE.
-- Run `run-dev-container.sh` to run the Docker container with an interactive shell.
 - Run the root project `build.sh` (from the host or the container) if you have made modification to the feature, substitutions or configuration modules.
+- Make sure `native-image` is in the `PATH` (usually done by switching on a GraalVM installation with https://sdkman.io/install[SDKMAN]).
 - Run `build.sh` of the sample you are working on from the container.
 
 To test the various samples You can also run the root `build.sh` then `build-key-samples.sh` (test only key samples) or `build-samples.sh` (test all samples) from the container.

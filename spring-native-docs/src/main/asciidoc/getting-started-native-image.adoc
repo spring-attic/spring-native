@@ -38,8 +38,7 @@ cd gs-rest-service/complete
 
 ===== Validate Spring Boot version
 
-IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the version if necessary.
-
+IMPORTANT: Spring Native {version} only supports Spring Boot {spring-boot-version}, so change the version if necessary.
 
 [source,xml,subs="attributes,verbatim"]
 ----
@@ -52,7 +51,7 @@ IMPORTANT: Only Spring Boot {spring-boot-version} is supported, so change the ve
 ----
 
 
-===== Add Spring Native
+===== Add the Spring Native dependency
 
 `org.springframework.experimental:spring-native` provides native configuration APIs like `@NativeHint` as well as other mandatory classes required to run a Spring application as a native image.
 
@@ -146,7 +145,7 @@ The following example adds a `native-image` profile that triggers the plugin dur
 
 
 In a default Spring Boot setup, the `spring-boot-maven-plugin` also runs during the `package` phase and replaces the regular jar by the repackaged, executable jar.
-To avoid a clash between the two plugins, make sure to specify a classifier like `exec` below for the executable jar, as shown in the following example:
+To avoid a clash between the two plugins, make sure to specify a classifier like `exec` below for the executable jar:
 
 
 [source,xml,subs="attributes,verbatim"]
@@ -211,7 +210,7 @@ NOTE: During the native compilation, you will see a lot of `WARNING: Could not r
 
 IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in the {graalvm-native-docs}/#prerequisites[GraalVM native-image prerequisites].
 
-This command creates a native executable containing your Spring Boot application in the `target`directory.
+This command creates a native executable containing your Spring Boot application in the `target` directory.
 
 ==== Run the native application
 
