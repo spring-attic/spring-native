@@ -31,7 +31,7 @@ See related <<getting-started-native-image>> and <<getting-started-buildpacks>> 
 
 ==== WARNING: Could not register reflection metadata
 
-Those warnings are expected for now, and should be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[this comment] for more details.
+Those warnings are expected for now, and should be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[#502] for more details.
 
 ==== Out of memory error when building the native image
 

@@ -291,6 +291,7 @@ $ gradle bootBuildImage
 $ gradle bootBuildImage
 ----
 
+NOTE: During the native compilation, you will see a lot of `WARNING: Could not register reflection metadata` messages. They are expected and will be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[#502] for more details.
 
 This creates a Linux container to build the native application using the GraalVM native image compiler.
 By default, the container image is installed locally.
