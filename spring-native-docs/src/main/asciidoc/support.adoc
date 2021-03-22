@@ -70,7 +70,7 @@ RSocket security is also supported.
 * `com.wavefront:wavefront-spring-boot-starter`
 
 IMPORTANT: Devtools is not supported yet, you can follow
-https://github.com/spring-projects-experimental/spring-native/issues/532[spring-native#532] to be aware when it will.
+https://github.com/spring-projects-experimental/spring-native/issues/532[#532] to be aware when it will.
 
 [[support-spring-cloud]]
 === Spring Cloud
@@ -106,6 +106,6 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 [[support-limitations]]
 === Limitations
 
-CGLIB proxies on classes are not supported, only JDK dynamic proxies on interfaces are for now. As a consequence `spring.aop.proxy-target-class` is set to `false` when using Spring Native. You can subscribe and vote for https://github.com/spring-projects-experimental/spring-native/issues/356[#356] if you are interested about proxy support on classes.
+CGLIB proxies on classes are not supported, only JDK dynamic proxies on interfaces are for now. As a consequence `spring.aop.proxy-target-class` is set to `false` when using Spring Native. You can subscribe to and vote for https://github.com/spring-projects-experimental/spring-native/issues/356[#356] if you are interested about proxy support on classes.
 
 NOTE: If you are using `@Configuration` without setting `proxyBeanMethods=false` and use only method parameters to inject bean dependencies, Spring Native handles that scenario so that a CGLIB proxy is not required.
