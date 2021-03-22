@@ -49,6 +49,7 @@ import reactor.core.publisher.Mono;
 		@TypeHint(types = EmbeddedDatabase.class, typeNames = "org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS),
 		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor", access = AccessBits.FULL_REFLECTION),
+		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryConfigurations$PooledConnectionFactoryCondition"),
 		@TypeHint(types = {
 				R2dbcConverter.class, FluentR2dbcOperations.class, R2dbcEntityOperations.class,
 				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
