@@ -96,6 +96,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 [[support-others]]
 === Others
 
+* Lombok
 * Spring Kafka
 * https://grpc.io/[GRPC]
 * H2 database
