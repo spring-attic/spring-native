@@ -61,7 +61,6 @@ public class ConfigurationContributor implements BootstrapContributor {
 				public void writeTo(Path resourcesPath) throws IOException {
 					Path metaInfFolder = resourcesPath.resolve(Paths.get("META-INF"));
 					Files.createDirectories(metaInfFolder);
-					Path springComponentsFile = resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH);
 					try (FileOutputStream fos = new FileOutputStream(resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
 						fos.write(springComponentsFileContents);
 					}
