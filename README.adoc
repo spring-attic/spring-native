@@ -1,12 +1,6 @@
-:version: 0.9.0
-:repository: release
-:spring-boot-version: 2.4.3
-:graalvm-version: 20.1.0
-:graalvm-dev-version: 20.1.0
-:spring-boot-dev-version: 2.4.4
 :documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
 
-image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/{version}-documentation-blue.svg["{version} documentation", link="{documentation-url}"]
+image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native"] image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
 
 Spring Native provides beta support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM]
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
@@ -24,8 +18,9 @@ The easiest way to start with Spring Native is probably to go to https://start.s
 
 NOTE: You need to install the GraalVM `native-image` compiler, check {documentation-url}/#getting-started-native-image[the documentation] for more details.
 
-- Download and extract https://github.com/spring-projects-experimental/spring-native/archive/{version}.zip[sources from the latest release].
+- Download https://github.com/spring-projects-experimental/spring-native/tags[the latest release] of this repository.
 - Go into the samples folder and pick one (e.g. `cd samples/commandlinerunner`)
+- Make sure `native-image` is in the `PATH` (usually done by switching on a GraalVM installation with https://sdkman.io/install[SDKMAN]).
 - Run `./build.sh` which will run the regular JVM build, then a native image compilation, then test the result.
 
 For more details on the samples see the {documentation-url}/index.html#samples[samples documentation].
@@ -35,11 +30,6 @@ For more details on the samples see the {documentation-url}/index.html#samples[s
 If you have not previously done so, please sign the https://cla.pivotal.io/sign/spring[Contributor License Agreement]. You will be reminded automatically when you submit the pull request.
 
 Contributions are welcome, especially for adding support via pull requests for libraries widely used in the Spring ecosystem not yet support. Please refer to the {documentation-url}#how-to-contribute[how to contribute] section for more details.
-
-=== Baseline
-
-The development version on `master` is currently based on GraalVM {graalvm-dev-version} and Spring Boot {spring-boot-dev-version}.
-Mac, Linux and Windows are supported.
 
 == License
 
