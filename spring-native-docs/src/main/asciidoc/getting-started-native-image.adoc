@@ -4,6 +4,8 @@
 This section gives you a practical overview of building a Spring Boot native application using the {graalvm-native-docs}/NativeImageMavenPlugin/[native image Maven plugin].
 This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
 
+NOTE: There is not yet an official native image Gradle plugin, that's why this section is only about Maven. You can vote and subscribe to https://github.com/oracle/graal/issues/3302[graal/issue3302] if you are interested about building native images with Gradle without <<getting-started-buildpacks, using Buildpacks>>.
+
 ==== System Requirements
 
 A number of {graalvm-native-docs}/#prerequisites[prerequisites] are required before installing the GraalVM `native-image` compiler.
