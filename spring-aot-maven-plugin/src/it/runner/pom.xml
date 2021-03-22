@@ -103,9 +103,9 @@
 			<id>spring-snapshot</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
@@ -121,9 +121,9 @@
 			<id>spring-snapshot</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 

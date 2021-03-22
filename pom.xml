@@ -256,9 +256,9 @@
 			<id>spring-snapshot</id>
 			<name>Spring Snapshots</name>
 			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 		<repository>
 			<id>spring-release</id>
@@ -276,13 +276,8 @@
 			<id>release</id>
 			<url>https://repo.spring.io/release</url>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<name>Bintray</name>
-			<id>bintray</id>
-			<url>https://jcenter.bintray.com</url>
 		</pluginRepository>
 	</pluginRepositories>
 
