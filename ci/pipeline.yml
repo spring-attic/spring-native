@@ -71,8 +71,8 @@ resources:
     type: github-release
     icon: briefcase-download
     source:
-      owner: spring-io
-      repository: initializr
+      owner: spring-projects-experimental
+      repository: spring-native
       access_token: ((github-ci-release-token))
       pre_release: false
   - name: slack-alert
