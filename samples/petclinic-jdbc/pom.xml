@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.9.1-SNAPSHOT</version>
+		<version>0.9.2-SNAPSHOT</version>
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.springframework.samples</groupId>
@@ -25,7 +25,7 @@
 		<webjars-jquery.version>2.2.4</webjars-jquery.version>
 		<wro4j.version>1.8.0</wro4j.version>
 
-		<jacoco.version>0.9.1-SNAPSHOT</jacoco.version>
+		<jacoco.version>0.9.2-SNAPSHOT</jacoco.version>
 
 		<main.class>org.springframework.samples.petclinic.PetClinicApplication</main.class>
 	</properties>
