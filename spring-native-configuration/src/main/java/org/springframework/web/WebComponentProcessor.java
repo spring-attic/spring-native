@@ -52,7 +52,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 		for (Method mapping: mappings) {
 			List<Type> toProcess = new ArrayList<>();
 			toProcess.addAll(mapping.getParameterTypes());
-			toProcess.add(mapping.getReturnType());
+			toProcess.addAll(mapping.getSignatureTypes(true));
 			for (Type type: toProcess) {
 				if (type == null) {
 					continue;
