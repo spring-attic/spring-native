@@ -18,8 +18,7 @@ Each reflection entry (per constructor/method/field) leads to the creation of a 
 
 The documentation below describes best practices to keep in mind when trying to make Spring code more compatible with native-images.
 
-[[how-to-contribute-configuration-class]]
-=== Use `proxyBeanMethods=false` or method parameter injection in `@Configuration` classes
+==== Use `proxyBeanMethods=false` or method parameter injection in `@Configuration` classes
 
 In native applications, `@Bean` annotated methods do not support cross `@Bean` invocations since they require a CGLIB proxy created at runtime.
 This is similar to the behavior you get with the so called {spring-framework-docs}/html/core.html#beans-java-basic-concepts[lite mode] or with {spring-framework-api}/org/springframework/context/annotation/Configuration.html#proxyBeanMethods--[`@Configuration(proxyBeanMethods=false)`].
