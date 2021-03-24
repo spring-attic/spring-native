@@ -20,9 +20,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -70,6 +72,13 @@ public class CLR implements CommandLineRunner {
 					.keywords(Arrays.asList("java", "spring")).location(new GeoPoint(50.0646501D, 19.9449799)).build());
 
 			System.out.println("repository.count(): " + repository.count());
+		}
+
+		{
+			System.out.println("\n--- CUSTOM REPOSITORY ---");
+
+			SearchPage<Conference> searchPage = repository.findBySomeCustomImplementation("eXchange", PageRequest.of(0, 10));
+			System.out.println("custom implementation finder.size(): " + searchPage.getSearchHits().getTotalHits());
 		}
 
 		String expectedDate = "2014-10-29";
