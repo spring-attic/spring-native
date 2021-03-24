@@ -27,6 +27,7 @@ import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.PropertiesBasedNamedQueries;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
+import org.springframework.data.repository.core.support.RepositoryFragment;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
@@ -43,6 +44,7 @@ import org.springframework.nativex.hint.AccessBits;
 				@TypeHint(types = {
 						RepositoryFactoryBeanSupport.class,
 						RepositoryFragmentsFactoryBean.class,
+						RepositoryFragment.class,
 						TransactionalRepositoryFactoryBeanSupport.class,
 						QueryByExampleExecutor.class,
 						MappingContext.class,

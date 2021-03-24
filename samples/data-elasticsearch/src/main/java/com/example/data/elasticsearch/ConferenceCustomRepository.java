@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  */
 package com.example.data.elasticsearch;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.SearchPage;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+public interface ConferenceCustomRepository {
 
-interface ConferenceRepository extends ElasticsearchRepository<Conference, String>, ConferenceCustomRepository {
-
-	List<Conference> findByKeywordsContaining(String keyword);
+	SearchPage<Conference> findBySomeCustomImplementation(String name, Pageable page);
 }
