@@ -108,6 +108,9 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter
 	private String[] buildTimePropertiesChecks;
 
+	@Parameter
+	private boolean failOnMissingSelectorHint;
+
 
 	protected AotOptions getAotOptions() {
 		AotOptions aotOptions = new AotOptions();
@@ -122,6 +125,7 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		aotOptions.setRemoveSpelSupport(removeSpelSupport);
 		aotOptions.setBuildTimePropertiesMatchIfMissing(buildTimePropertiesMatchIfMissing);
 		aotOptions.setBuildTimePropertiesChecks(buildTimePropertiesChecks);
+		aotOptions.setFailOnMissingSelectorHint(failOnMissingSelectorHint);
 		return aotOptions;
 	}
 
