@@ -84,7 +84,8 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(
 		types = {
 				@TypeHint(types= SpringApplication.class, methods = {
-						@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class) // Enables property control of banner mode
+						@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class), // Enables property control of banner mode
+						@MethodHint(name="setWebApplicationType",parameterTypes = WebApplicationType.class)
 				},access=AccessBits.CLASS),
 				@TypeHint(types = OriginProvider[].class)
 		})
