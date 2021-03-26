@@ -20,6 +20,6 @@ docker build \
   -t springci/graalvm-ce:master-java8 -f $DIR/Dockerfile.graalvm-ce $DIR
 
 docker build \
-  --build-arg JVMCI_URL=https://github.com/graalvm/graal-jvmci-8/releases/download/jvmci-21.1-b02/openjdk-8u292+05-jvmci-21.1-b02-linux-amd64.tar.gz \
+  --build-arg JVMCI_URL=https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.1-b02/labsjdk-ce-11.0.11+5-jvmci-21.1-b02-linux-amd64.tar.gz \
   --build-arg GRAALVM_BRANCH=master \
   -t springci/graalvm-ce:master-java11 -f $DIR/Dockerfile.graalvm-ce $DIR
