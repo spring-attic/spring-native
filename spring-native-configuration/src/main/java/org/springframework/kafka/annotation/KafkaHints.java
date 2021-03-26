@@ -23,11 +23,6 @@ import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
-
-import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -44,6 +39,11 @@ import org.springframework.kafka.listener.ConsumerProperties;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
+import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=KafkaListenerConfigurationSelector.class,
 	types = {
@@ -93,7 +93,8 @@ import org.springframework.kafka.support.ProducerListener;
 				RangeAssignor.class,
 				DefaultPartitioner.class,
 				StringDeserializer.class,
-				StringSerializer.class
+				StringSerializer.class,
+				JsonSerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
 	}
 )
