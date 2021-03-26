@@ -53,12 +53,38 @@ resources:
     source:
       <<: *git-repo-resource-source
       paths: ["ci/images/*"]
+  - name: graalvm-stable-git-repo
+    type: git
+    icon: github
+    source:
+      uri: ((graalvm-repo))
+      branch: ((graalvm-stable-branch))
+  - name: graalvm-dev-git-repo
+    type: git
+    icon: github
+    source:
+      uri: ((graalvm-repo))
+      branch: ((graalvm-dev-branch))
   - name: ci-image
     type: docker-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native-ci
+  - name: graalvm-ce-stable-java11-image
+    type: docker-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/graalvm-ce
+      tag: stable-java11-((milestone))
+  - name: graalvm-ce-dev-java11-image
+    type: docker-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/graalvm-ce
+      tag: dev-java11-((milestone))
   - name: artifactory-repo
     type: artifactory-resource
     icon: package-variant
@@ -93,6 +119,56 @@ jobs:
             params:
               build: ci-images-git-repo/ci/images
               dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
+  - name: check-graalvm-ce-stable-change
+    plan:
+      - get: graalvm-stable-git-repo
+        trigger: true
+  - name: check-graalvm-ce-stable-every-day
+    plan:
+      - get: graalvm-stable-git-repo
+        passed: [check-graalvm-ce-stable-change]
+      - get: every-day
+        trigger: true
+  - name: build-graalvm-ce-stable-image
+    plan:
+      - get: ci-images-git-repo
+      - get: graalvm-stable-git-repo
+        passed: [check-graalvm-ce-stable-every-day]
+        trigger: true
+      - get: every-day
+        passed: [check-graalvm-ce-stable-every-day]
+      - put: graalvm-ce-stable-java11-image
+        params:
+          build: ci-images-git-repo/ci/images
+          dockerfile: ci-images-git-repo/ci/images/graalvm-ce-image/Dockerfile
+          build_args:
+            JVMCI_URL: ((jvmci-stable-java11))
+            GRAALVM_BRANCH: ((graalvm-stable-branch))
+  - name: check-graalvm-ce-dev-change
+    plan:
+      - get: graalvm-dev-git-repo
+        trigger: true
+  - name: check-graalvm-ce-dev-every-day
+    plan:
+      - get: graalvm-dev-git-repo
+        passed: [check-graalvm-ce-dev-change]
+      - get: every-day
+        trigger: true
+  - name: build-graalvm-ce-dev-image
+    plan:
+      - get: ci-images-git-repo
+      - get: graalvm-dev-git-repo
+        passed: [check-graalvm-ce-dev-every-day]
+        trigger: true
+      - get: every-day
+        passed: [check-graalvm-ce-dev-every-day]
+      - put: graalvm-ce-dev-java11-image
+        params:
+          build: ci-images-git-repo/ci/images
+          dockerfile: ci-images-git-repo/ci/images/graalvm-ce-image/Dockerfile
+          build_args:
+            JVMCI_URL: ((jvmci-dev-java11))
+            GRAALVM_BRANCH: ((graalvm-stable-branch))
   - name: build-java11-key-samples
     public: true
     plan:
@@ -244,4 +320,4 @@ groups:
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
-    jobs: ["build-ci-image"]
+    jobs: ["build-ci-image", "check-graalvm-ce-stable-change", "check-graalvm-ce-stable-every-day", "build-graalvm-ce-stable-image", "check-graalvm-ce-dev-change", "check-graalvm-ce-dev-every-day", "build-graalvm-ce-dev-image"]
