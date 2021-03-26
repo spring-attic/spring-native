@@ -128,11 +128,10 @@ jobs:
     plan:
       - get: ci-images-git-repo
         trigger: true
-      - in_parallel:
-          - put: ci-image
-            params:
-              build: ci-images-git-repo/ci/images
-              dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
+      - put: ci-image
+        params:
+          build: ci-images-git-repo/ci/images
+          dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
   - name: check-graalvm-ce-stable-change
     plan:
       - get: graalvm-stable-git-repo
