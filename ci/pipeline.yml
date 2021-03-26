@@ -93,26 +93,6 @@ jobs:
             params:
               build: ci-images-git-repo/ci/images
               dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
-  - name: build-java8-key-samples
-    public: true
-    plan:
-    - get: git-repo
-      trigger: true
-    - task: build
-      privileged: true
-      params:
-        <<: *docker-hub-task-params
-      config:
-        platform: linux
-        image_resource:
-          type: registry-image
-          source:
-            repository: springci/spring-native
-            tag: 21.0-dev-java8
-        inputs:
-          - name: git-repo
-        run:
-          path: git-repo/ci/scripts/build-key-samples.sh
   - name: build-java11-key-samples
     public: true
     plan:
@@ -133,28 +113,6 @@ jobs:
             - name: git-repo
           run:
             path: git-repo/ci/scripts/build-key-samples.sh
-  - name: build-21.0-dev-java8-samples
-    old_name: build-20.3-dev-java8-samples
-    public: true
-    plan:
-      - get: git-repo
-      - get: every-day
-        trigger: true
-      - task: build
-        params:
-          <<: *docker-hub-task-params
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: springci/spring-native
-              tag: 21.0-dev-java8
-          inputs:
-            - name: git-repo
-          run:
-            path: git-repo/ci/scripts/build-samples.sh
   - name: build-21.0-dev-java11-samples
     old_name: build-20.3-dev-java11-samples
     public: true
@@ -183,27 +141,6 @@ jobs:
             - put: slack-alert
               params:
                 <<: *slack-fail-params
-  - name: build-master-java8-samples
-    public: true
-    plan:
-      - get: git-repo
-      - get: every-day
-        trigger: true
-      - task: build
-        privileged: true
-        params:
-          <<: *docker-hub-task-params
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: springci/spring-native
-              tag: master-java8
-          inputs:
-            - name: git-repo
-          run:
-            path: git-repo/ci/scripts/build-samples.sh
   - name: build-master-java11-samples
     public: true
     plan:
@@ -231,7 +168,6 @@ jobs:
       - get: ci-image
       - get: git-repo
         passed:
-          - build-java8-key-samples
           - build-java11-key-samples
         trigger: true
       - task: build-project
@@ -302,9 +238,9 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "each-commit-builds"
-    jobs: [ "build-java8-key-samples", "build-java11-key-samples", "deploy"]
+    jobs: [ "build-java11-key-samples", "deploy"]
   - name: "daily-builds"
-    jobs: [ "build-21.0-dev-java8-samples", "build-21.0-dev-java11-samples", "build-master-java8-samples", "build-master-java11-samples"]
+    jobs: [ "build-21.0-dev-java11-samples", "build-master-java11-samples"]
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
