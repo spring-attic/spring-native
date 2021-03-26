@@ -1,0 +1,10 @@
+---
+platform: linux
+inputs:
+  - name: git-repo
+outputs:
+  - name: git-repo
+caches:
+  - path: maven
+run:
+  path: git-repo/ci/scripts/build-key-samples.sh

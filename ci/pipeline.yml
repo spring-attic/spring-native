@@ -207,26 +207,18 @@ jobs:
           dockerfile: ci-images-git-repo/ci/images/spring-native-image/Dockerfile
           build_args:
             BASE_IMAGE: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
-  - name: build-java11-key-samples
+  - name: build-key-samples-java11
     public: true
     plan:
+      - get: spring-native-stable-java11-image
       - get: git-repo
         trigger: true
       - task: build
         privileged: true
+        image: spring-native-stable-java11-image
+        file: git-repo/ci/tasks/build-key-samples.yml
         params:
           <<: *docker-hub-task-params
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: springci/spring-native
-              tag: 21.0-dev-java11
-          inputs:
-            - name: git-repo
-          run:
-            path: git-repo/ci/scripts/build-key-samples.sh
   - name: build-21.0-dev-java11-samples
     old_name: build-20.3-dev-java11-samples
     public: true
@@ -282,7 +274,7 @@ jobs:
       - get: ci-image
       - get: git-repo
         passed:
-          - build-java11-key-samples
+          - build-key-samples-java11
         trigger: true
       - task: build-project
         image: ci-image
@@ -352,7 +344,7 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "each-commit-builds"
-    jobs: [ "build-java11-key-samples", "deploy"]
+    jobs: [ "build-key-samples-java11", "deploy"]
   - name: "daily-builds"
     jobs: [ "build-21.0-dev-java11-samples", "build-master-java11-samples"]
   - name: "releases"
