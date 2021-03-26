@@ -1,6 +1,0 @@
-Does not work with Java 8 for now where we have this error (jdk.vm.ci.meta.JavaKind is a Java 11 class)
-
-Class jdk.vm.ci.meta.JavaKind$FormatWithToString[] is instantiated reflectively but was never registered. Register the class by using org.graalvm.nativeimage.hosted.RuntimeReflection
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:768) ~[na:na]
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229) ~[na:na]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354)
