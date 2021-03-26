@@ -33,6 +33,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security.experimental</groupId>
+            <artifactId>spring-security-oauth2-authorization-server</artifactId>
+  			<version>0.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-actuator-autoconfigure</artifactId>
             <scope>provided</scope>

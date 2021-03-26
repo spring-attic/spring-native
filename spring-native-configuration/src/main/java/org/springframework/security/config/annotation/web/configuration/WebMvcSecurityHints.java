@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.security.config.annotation.web.configuration;
 
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -30,9 +30,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer.JwtConfigurer;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
+import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.web.servlet.DispatcherServlet;
 
+@NativeHint(trigger = OAuth2AuthorizationServerConfiguration.class, types = 
+	@TypeHint(types = OAuth2AuthorizationCodeAuthenticationProvider.class,
+		methods = @MethodHint(name="setProviderSettings",parameterTypes=ProviderSettings.class)))
 @NativeHint(trigger = SpringWebMvcImportSelector.class, options = "--enable-all-security-services", follow = true, types = {
 		@TypeHint(types= DispatcherServlet.class, access = AccessBits.CLASS),
 		@TypeHint(types = WebMvcSecurityConfiguration.class)
