@@ -219,55 +219,40 @@ jobs:
         file: git-repo/ci/tasks/build-key-samples.yml
         params:
           <<: *docker-hub-task-params
-  - name: build-21.0-dev-java11-samples
-    old_name: build-20.3-dev-java11-samples
+  - name: build-samples-stable-java11
+    old_name: build-21.0-dev-java11-samples
     public: true
     plan:
+      - get: spring-native-stable-java11-image
       - get: git-repo
       - get: every-day
         trigger: true
       - do:
         - task: build
           privileged: true
+          image: spring-native-stable-java11-image
+          file: git-repo/ci/tasks/build-samples.yml
           params:
             <<: *docker-hub-task-params
-          config:
-            platform: linux
-            image_resource:
-              type: registry-image
-              source:
-                repository: springci/spring-native
-                tag: 21.0-dev-java11
-            inputs:
-              - name: git-repo
-            run:
-              path: git-repo/ci/scripts/build-samples.sh
         on_failure:
           do:
             - put: slack-alert
               params:
                 <<: *slack-fail-params
-  - name: build-master-java11-samples
+  - name: build-samples-dev-java11
+    old_name: build-master-java11-samples
     public: true
     plan:
+      - get: spring-native-dev-java11-image
       - get: git-repo
       - get: every-day
         trigger: true
       - task: build
         privileged: true
+        image: spring-native-dev-java11-image
+        file: git-repo/ci/tasks/build-samples.yml
         params:
           <<: *docker-hub-task-params
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: springci/spring-native
-              tag: master-java11
-          inputs:
-            - name: git-repo
-          run:
-            path: git-repo/ci/scripts/build-samples.sh
   - name: deploy
     public: true
     plan:
@@ -346,7 +331,7 @@ groups:
   - name: "each-commit-builds"
     jobs: [ "build-key-samples-java11", "deploy"]
   - name: "daily-builds"
-    jobs: [ "build-21.0-dev-java11-samples", "build-master-java11-samples"]
+    jobs: [ "build-samples-stable-java11", "build-samples-dev-java11"]
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
