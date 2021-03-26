@@ -2,19 +2,43 @@
 
 These images are used by CI to run the actual builds.
 
+=== Building
+
 To build the image locally run the following from this directory:
 
 ----
 $ docker build --no-cache -f <image-folder>/Dockerfile .
 ----
 
-For example
+NOTE: Some image requires build arguments.
+
+To build the CI image that is used for releases and deployment, invoke the following:
 
 ----
 $ docker build --no-cache -f ci-image/Dockerfile .
 ----
 
-To test run:
+To build the image that has the required GraalVM installation, you need two build
+arguments:
+
+* `JVMCI_URL`: The URL to the JVM to use
+* `GRAALVM_BRANCH` the `branch` of the https://github.com/oracle/graal[GraalVM GithHub repository] to build.
+
+----
+$ docker build --no-cache --build-arg JVMCI_URL=... \
+    --build-arg GRAALVM_BRANCH=master -f graalvm-ce-image/Dockerfile .
+----
+
+To build the Spring Native image used namely by the samples, you need to provide the image
+with the target GraalVM installation, using the `BASE_IMAGE` argument:
+
+----
+$ docker build --no-cache --build-arg BASE_IMAGE=springci/graalvm-ce:dev-java11-0.9.x -f spring-native-image/Dockerfile .
+----
+
+=== Testing
+
+To test an image, keep its SHA and run:
 
 ----
 $ docker run -it --entrypoint /bin/bash <SHA>
