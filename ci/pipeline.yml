@@ -208,6 +208,7 @@ jobs:
             BASE_IMAGE: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
   - name: build-key-samples-java11
     public: true
+    serial: true
     plan:
       - get: spring-native-stable-java11-image
       - get: git-repo
