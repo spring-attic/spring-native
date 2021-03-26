@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
+MILESTONE=0.9.x
 JAVA_VERSION=11
-GRAALVM_VERSION=21.0-dev
+GRAALVM_VERSION=stable
 PULL=false
 REBUILD=false
 HOST_WORK_DIR="$( pwd )"
@@ -16,7 +17,7 @@ while test $# -gt 0; do
       echo "options:"
       echo "-h, --help                show brief help"
       echo "-j, --java=VERSION        specify Java version to use, can be 8 or 11, 11 by default"
-      echo "-g, --graalvm=VERSION     specify GraalVM version to use, can be 21.0-dev or master, 21.0-dev by default"
+      echo "-g, --graalvm=VERSION     specify GraalVM flavor to use, can be stable or dev, stable by default"
       echo "-w, --workdir=/foo        specify the working directory, should be an absolute path, current one by default"
       echo "-p, --pull                force pulling of remote container images"
       echo "-r, --rebuild             force container image rebuild"
@@ -91,20 +92,21 @@ done
 DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/docker" >/dev/null 2>&1 && pwd )"
 CONTAINER_HOME=/home/$USER
 CONTAINER_WORK_DIR=$CONTAINER_HOME/spring-native
+CONTAINER_TAG=${GRAALVM_VERSION}-java${JAVA_VERSION}-${MILESTONE}
 DEV_IMAGE=Dockerfile.spring-native-dev
 
 if [ "$PULL" = true ] ; then
     echo "Updating container image if needed"
-    docker pull springci/spring-native:${GRAALVM_VERSION}-java${JAVA_VERSION}
+    docker pull springci/spring-native:${CONTAINER_TAG}
 fi
 
-docker image ls | grep spring-native-dev | grep ${GRAALVM_VERSION}-java${JAVA_VERSION} >/dev/null 2>&1 || export REBUILD=true
+docker image ls | grep spring-native-dev | grep ${CONTAINER_TAG} >/dev/null 2>&1 || export REBUILD=true
 
 test "$REBUILD" = false || docker build \
-  --build-arg BASE_IMAGE=springci/spring-native:${GRAALVM_VERSION}-java${JAVA_VERSION} \
+  --build-arg BASE_IMAGE=springci/spring-native:${CONTAINER_TAG} \
   --build-arg USER=$USER \
   --build-arg USER_ID=$(id -u ${USER}) \
   --build-arg USER_GID=$(id -g ${USER}) \
-  -t spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION} - < $DOCKER_DIR/$DEV_IMAGE
+  -t spring-native-dev:${CONTAINER_TAG} - < $DOCKER_DIR/$DEV_IMAGE
 
-docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it --privileged -w $CONTAINER_WORK_DIR spring-native-dev:${GRAALVM_VERSION}-java${JAVA_VERSION}
+docker run --hostname docker -p 8080:8080 -v $HOST_WORK_DIR:$CONTAINER_WORK_DIR:delegated -v $HOME/.m2:$CONTAINER_HOME/.m2:delegated -it --privileged -w $CONTAINER_WORK_DIR spring-native-dev:${CONTAINER_TAG}
