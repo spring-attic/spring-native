@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -31,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,16 +69,20 @@ import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.support.Utils;
 
+
+
 /**
  * Simple type system with some rudimentary caching.
  * 
  * @author Andy Clement
  */
 public class TypeSystem {
-	
+
 	private static Log logger = LogFactory.getLog(TypeSystem.class);
 
 	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
+
+	private static JavaModuleLookupSystem javaModuleLookupSystem = JavaModuleLookupSystem.get();
 
 	public Map<TypeId, Type> primitives = new HashMap<>();
 
@@ -238,6 +244,12 @@ public class TypeSystem {
 			// System class?
 			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(typeToLocate + ".class");
+			if (resourceAsStream == null) {
+				// One more try, are we on Java9+ and modules are hiding it from us...
+				if (javaModuleLookupSystem != null) {
+					resourceAsStream = javaModuleLookupSystem.findClassfile(typeToLocate+".class");
+				}
+			}
 			if (resourceAsStream == null) {
 				return null;
 			}
@@ -1325,6 +1337,97 @@ public class TypeSystem {
 
 	public void setAotOptions(AotOptions aotOptions) {
 		this.aotOptions = aotOptions;
+	}
+
+	static class JavaModuleLookupSystem {
+
+		private final URI JRTURI = URI.create("jrt:/");
+
+		private final FileSystem fs;
+
+		private Map<String, Path> packages = new HashMap<>();
+
+		private JavaModuleLookupSystem() throws IOException {
+			Map<String, String> env = new HashMap<>();
+			env.put("java.home",  System.getProperty("java.home"));
+			fs = FileSystems.newFileSystem(JRTURI, env);
+			// Cache the packages from the modules
+			Iterable<Path> rootDirectories = fs.getRootDirectories();
+			PackageCacheBuilderVisitor visitor = new PackageCacheBuilderVisitor();
+			for (Path rootDirectory : rootDirectories) {
+				Files.walkFileTree(rootDirectory, visitor);
+			}
+		}
+
+		public static JavaModuleLookupSystem get() {
+			try {
+				return new JavaModuleLookupSystem();
+			} catch (Exception e) {
+				return null;
+			}
+		}
+
+		class PackageCacheBuilderVisitor extends SimpleFileVisitor<Path> {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				if (file.getNameCount() > 3 && file.toString().endsWith(".class")) {
+					int nameCount = file.getNameCount();
+					if (nameCount > 3) { // /modules/java.base/java/lang/String.class
+						Path packagePath = file.subpath(2, nameCount-1); // e.g. java/lang
+						packages.put(packagePath.toString(), file.subpath(0, nameCount-1)); // java/lang -> /modules/java.base/java/lang
+					}
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		}
+
+		/**
+		 * @param classfileName of the form java/lang/String.class
+		 * @return an InputStream for loading the bytes for the class if it can be found, otherwise null
+		 */
+		public InputStream findClassfile(String classfileName) {
+			int idx = classfileName.lastIndexOf('/');
+			if (idx == -1) {
+				return null; // no package
+			}
+			Path packageStart = packages.get(classfileName.substring(0, idx));
+			try {
+				if (packageStart != null) {
+					ClassFileLocator locator = new ClassFileLocator(classfileName);
+					Files.walkFileTree(packageStart, locator);
+					Path classfile = locator.locatedClassfile;
+					if (classfile != null) {
+						return Files.newInputStream(classfile);
+					}
+				}
+			} catch (IOException ioe) {
+				return null;
+			}
+			return null;
+		}
+
+		class ClassFileLocator extends SimpleFileVisitor<Path> {
+
+			private String searchClassfile;
+
+			Path locatedClassfile;
+
+			public ClassFileLocator(String classfile) {
+				this.searchClassfile = classfile;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				if (file.getNameCount() > 2 && file.toString().endsWith(".class")) { // check if candidate
+					Path filePath = file.subpath(2, file.getNameCount());
+					if (filePath.toString().equals(searchClassfile)) {
+						locatedClassfile = file;
+						return FileVisitResult.TERMINATE;
+					}
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		}
 	}
 
 }
