@@ -55,6 +55,8 @@ Care must be taken to not pull too many classes into build-time initialization a
 
 For code executing at runtime, try to favor functional approaches like lambdas and method references instead of reflection when possible, since these constructs are automatically understood by the native-image static analysis.
 
+For example, if your Spring project is using `RootBeanDefinition`, using the `Supplier` based constructor will be native friendly in the sense that the `native-image` compiler will understand bean creations without requiring native reflection configuration. So instead of `new RootBeanDefinition(BeanFactoryChannelResolver.class)`, use `new RootBeanDefinition(BeanFactoryChannelResolver.class, BeanFactoryChannelResolver::new)`. See https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/support/RootBeanDefinition.html#RootBeanDefinition-java.lang.Class-java.util.function.Supplier-[the related Javadoc] for more details.
+
 It is perfectly fine to use reflection in a native world but it is most optimal to do it in code executed at build-time:
 
 * In the static block/fields of a class initialized at build-time
