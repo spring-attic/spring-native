@@ -88,6 +88,8 @@ org.springframework.cloud.sleuth.TraceHints
 org.springframework.cloud.task.CloudTaskHints
 org.springframework.context.annotation.ContextAnnotationHints
 org.springframework.core.annotation.CoreAnnotationHints
+org.springframework.data.rest.webmvc.config.RestControllerHints
+org.springframework.data.web.config.DataRestHints
 org.springframework.data.web.config.SpringDataWebHints
 org.springframework.hateoas.config.HateoasHints
 org.springframework.kafka.annotation.KafkaHints
