@@ -29,7 +29,18 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=BatchConfigurationSelector.class,
-		resources = @ResourceHint(patterns = "org/springframework/batch/core/schema-h2.sql"),
+		resources = @ResourceHint(patterns = {"org/springframework/batch/core/schema-h2.sql",
+				"org/springframework/batch/core/schema-db2.sql",
+				"org/springframework/batch/core/schema-derby.sql",
+				"org/springframework/batch/core/schema-hsqldb.sql",
+				"org/springframework/batch/core/schema-mysql.sql",
+				"org/springframework/batch/core/schema-oracle10g.sql",
+				"org/springframework/batch/core/schema-postgresql.sql",
+				"org/springframework/batch/core/schema-sqlf.sql",
+				"org/springframework/batch/core/schema-sqlite.sql",
+				"org/springframework/batch/core/schema-sqlserver.sql",
+				"org/springframework/batch/core/schema-sybase.sql"
+		}),
 		types = {
 		@TypeHint(types = AbstractDataSourceInitializer.class , access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = {
