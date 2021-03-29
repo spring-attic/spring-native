@@ -17,14 +17,12 @@
 package app.main;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * @author Dave Syer
- *
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleApplicationTests {
@@ -34,7 +32,7 @@ public class SampleApplicationTests {
 
 	@Test
 	public void test() {
-		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"value\":\"Hello\"}");
+		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"value\":\"Hello\",\"flurb\":{}}");
 	}
 
 }
