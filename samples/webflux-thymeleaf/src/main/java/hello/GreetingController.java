@@ -1,5 +1,7 @@
 package hello;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,13 @@ public class GreetingController {
 			Model model) {
 		model.addAttribute("greeting", new Greeting(name));
 		return "greeting";
+	}
+
+	@GetMapping("/greetings")
+	public String greetings(Model model) {
+		List<Greeting> greetings = Arrays.asList(new Greeting("foo"), new Greeting("bar"));
+		model.addAttribute("greetings", greetings);
+		return "greetings";
 	}
 
 }
