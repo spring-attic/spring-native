@@ -189,6 +189,10 @@ NOTE: The non-idomatic `property.set(...)` syntax in the Gradle Kotlin DSL is du
 
 See <<spring-aot-configuration>> for more details on the configuration options.
 
+==== Intellij IDEA
+
+For now, you should run or debug your application in Intellij IDEA by going to the Gradle tool windows -> Tasks -> application and right click on bootRun, then choose one of the Run or Debug entries.
+
 [[spring-aot-configuration]]
 === Configuring Spring AOT
 
