@@ -84,7 +84,7 @@ import java.util.EventListener;
 				@TypeHint(types = {
 						// petclinic
 						Repository.class,
-						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, JoinColumn.class, Table.class, Transient.class
+						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class, OneToOne.class, JoinColumn.class, Table.class, Transient.class
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
 				@TypeHint(types = {
 						SessionImpl.class,

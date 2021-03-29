@@ -1,24 +1,25 @@
 package app.main;
 
-import java.util.Optional;
-
+import app.main.model.Flurb;
 import app.main.model.Foo;
 import app.main.model.FooRepository;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.function.RouterFunction;
 
-import static org.springframework.web.servlet.function.RequestPredicates.GET;
-import static org.springframework.web.servlet.function.RouterFunctions.route;
-import static org.springframework.web.servlet.function.ServerResponse.ok;
+import java.util.Optional;
+
+import static org.springframework.web.servlet.function.RequestPredicates.*;
+import static org.springframework.web.servlet.function.RouterFunctions.*;
+import static org.springframework.web.servlet.function.ServerResponse.*;
 
 @SpringBootApplication
 public class SampleApplication {
 
-	private FooRepository entities;
+	private final FooRepository entities;
 
 	public SampleApplication(FooRepository entities) {
 		this.entities = entities;
@@ -27,10 +28,15 @@ public class SampleApplication {
 	@Bean
 	public CommandLineRunner runner() {
 		return args -> {
-				Optional<Foo> foo = entities.findById(1L);
-				if (!foo.isPresent()) {
-					entities.save(new Foo("Hello"));
-				}
+
+			Optional<Foo> maybeFoo = entities.findById(1L);
+			Foo foo;
+			foo = maybeFoo.orElseGet(() -> entities.save(new Foo("Hello")));
+			Flurb flurb = new Flurb();
+			flurb.setValue("Balla balla");
+			foo.setFlurb(flurb);
+			entities.save(foo);
+
 			entities.findWithBetween("a", "X");
 		};
 	}
@@ -47,5 +53,4 @@ public class SampleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SampleApplication.class, args);
 	}
-
 }
