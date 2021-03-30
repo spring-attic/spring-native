@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
  * @author Sebastien Deleuze
+ * @author Christoph Strobl
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldHint {
@@ -41,7 +42,12 @@ public @interface FieldHint {
 	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#unsafe-accesses">Unsafe accesses</a>
 	 */
 	boolean allowUnsafeAccess() default false;
-	
-	// TODO support allowWrite option when a use case requires it
+
+	/**
+	 * Allow write access on the related field.
+	 * @return {@code true} if allowed.
+	 * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual Configuration</a>
+	 */
+	boolean allowWrite() default false;
 
 }

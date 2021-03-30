@@ -225,6 +225,9 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 					if (fd.isAllowWrite()) {
 						existingSimilarOne.setAllowWrite(true);
 					}
+					if(fd.isAllowUnsafeAccess()) {
+						existingSimilarOne.setAllowUnsafeAccess(true);
+					}
 				} else {
 					addFieldDescriptor(fd);
 				}
