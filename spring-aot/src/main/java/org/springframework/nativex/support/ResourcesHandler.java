@@ -1848,7 +1848,8 @@ public class ResourcesHandler extends Handler {
 			}
 //			logger.debug(spaces(depth) + "fixed flags? "+Flag.toString(flags));
 //			logger.debug(depth, "ms: "+methods);
-			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), null, true, flags);
+
+			reflectionHandler.addAccess(dname, MethodDescriptor.toStringArray(methods), FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, flags);
 			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);

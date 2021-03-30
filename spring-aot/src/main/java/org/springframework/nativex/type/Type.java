@@ -1870,16 +1870,20 @@ public class Type {
 		List<Object> values = fieldInfo.values;
 		String name = null;
 		boolean allowUnsafeAccess = false; // default is false
+		boolean allowWrite = false; // default is false
 		for (int i = 0; i < values.size(); i += 2) {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
 			if (key.equals("allowUnsafeAccess")) {
 				allowUnsafeAccess = (Boolean) value;
-			} else if (key.equals("name")) {
+			} else if (key.equals("allowWrite")) {
+				allowWrite = (Boolean) value;
+			}
+			else if (key.equals("name")) {
 				name = (String) value;
 			}
 		}
-		fds.add(new FieldDescriptor(name, allowUnsafeAccess));
+		fds.add(new FieldDescriptor(name, allowUnsafeAccess, allowWrite));
 	}
 
 	private void unpackMethodInfo(AnnotationNode methodInfo, List<MethodDescriptor> mds) {

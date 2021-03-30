@@ -22,10 +22,12 @@ public class FieldDescriptor {
 	
 	private final String name;
 	private final boolean allowUnsafeAccess;
+	private final boolean allowWrite;
 	
-	public FieldDescriptor(String name, boolean allowUnsafeAccess) {
+	public FieldDescriptor(String name, boolean allowUnsafeAccess, boolean allowWrite) {
 		this.name = name;
 		this.allowUnsafeAccess = allowUnsafeAccess;
+		this.allowWrite = allowWrite;
 	}
 
 	public String getName() {
@@ -34,6 +36,10 @@ public class FieldDescriptor {
 
 	public boolean isAllowUnsafeAccess() {
 		return allowUnsafeAccess;
+	}
+
+	public boolean isAllowWrite() {
+		return allowWrite;
 	}
 
 	public static String[][] toStringArray(List<FieldDescriptor> fds) {
@@ -46,15 +52,23 @@ public class FieldDescriptor {
 			boolean aua = fd.allowUnsafeAccess;
 			String name = fd.getName();
 			if (aua) {
-				array[m] = new String[2];
+				array[m] = new String[fd.allowWrite ? 3 : 2];
 				array[m][0] = name;
 				array[m][1] = "true";
+				if(fd.allowWrite) {
+					array[m][2] = "true";
+				}
 			} else {
-				array[m] = new String[1];
+				array[m] = new String[fd.allowWrite ? 3 : 1];
 				array[m][0] = name;
+				if(fd.allowWrite) {
+					array[m][1] = "false";
+					array[m][2] = "true";
+				}
 			}
 		}
 		return array;
 	}
+
 
 }
