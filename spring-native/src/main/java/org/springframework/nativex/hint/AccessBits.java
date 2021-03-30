@@ -73,6 +73,11 @@ public class AccessBits {
 	public static final int PUBLIC_CONSTRUCTORS   = 0x0040;
 
 	/**
+	 * Type must be accessible from JNI code (it will be placed in the jni-config.json and not reflect-config.json)
+	 */
+	public static final int JNI = 0x0080;
+	
+	/**
 	 * No access.
 	 */
 	public static final int NONE = 0;

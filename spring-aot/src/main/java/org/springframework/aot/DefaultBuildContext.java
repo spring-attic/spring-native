@@ -33,6 +33,7 @@ import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -54,6 +55,10 @@ class DefaultBuildContext implements BuildContext {
 	private final ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
 	private final ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
+	
+	private final SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
+
+	private final ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
 
 	DefaultBuildContext(List<String> classpath) {
 		this.classpath = classpath;
@@ -86,6 +91,16 @@ class DefaultBuildContext implements BuildContext {
 	}
 
 	@Override
+	public void describeJNIReflection(Consumer<ReflectionDescriptor> consumer) {
+		consumer.accept(this.jniReflectionDescriptor);
+	}
+
+	@Override
+	public void describeSerialization(Consumer<SerializationDescriptor> consumer) {
+		consumer.accept(this.serializationDescriptor);
+	}
+
+	@Override
 	public void describeProxies(Consumer<ProxiesDescriptor> consumer) {
 		consumer.accept(this.proxiesDescriptor);
 	}
@@ -105,6 +120,14 @@ class DefaultBuildContext implements BuildContext {
 
 	public ReflectionDescriptor getReflectionDescriptor() {
 		return this.reflectionDescriptor;
+	}
+	
+	public SerializationDescriptor getSerializationDescriptor() {
+		return this.serializationDescriptor;
+	}
+
+	public ReflectionDescriptor getJNIReflectionDescriptor() {
+		return this.jniReflectionDescriptor;
 	}
 
 	public ProxiesDescriptor getProxiesDescriptor() {
@@ -135,4 +158,5 @@ class DefaultBuildContext implements BuildContext {
 			throw new CodeGenerationException("Unable to build classpath", ex);
 		}
 	}
+
 }

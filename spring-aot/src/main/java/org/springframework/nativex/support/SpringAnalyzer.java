@@ -45,6 +45,10 @@ public class SpringAnalyzer {
 
 	private InitializationHandler initializationHandler;
 
+	private JNIReflectionHandler jniReflectionHandler;
+
+	private SerializationHandler serializationHandler;
+
 	private OptionHandler optionHandler;
 
 	public SpringAnalyzer(TypeSystem typeSystem, AotOptions aotOptions) {
@@ -60,7 +64,11 @@ public class SpringAnalyzer {
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler(collector);
 		optionHandler = new OptionHandler(collector);
-		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, dynamicProxiesHandler, initializationHandler, optionHandler, aotOptions);
+		jniReflectionHandler = new JNIReflectionHandler(collector);
+		serializationHandler = new SerializationHandler(collector);
+		resourcesHandler = new ResourcesHandler(collector, reflectionHandler, 
+				dynamicProxiesHandler, initializationHandler, serializationHandler, 
+				jniReflectionHandler, optionHandler, aotOptions);
 
 		collector.setTypeSystem(typeSystem);
 		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
@@ -68,7 +76,9 @@ public class SpringAnalyzer {
 		collector.initializeAtBuildTime("org.springframework.aot.StaticSpringFactories");
 		dynamicProxiesHandler.setTypeSystem(typeSystem);
 		reflectionHandler.setTypeSystem(typeSystem);
+		jniReflectionHandler.setTypeSystem(typeSystem);
 		resourcesHandler.setTypeSystem(typeSystem);
+		serializationHandler.setTypeSystem(typeSystem);
 		initializationHandler.setTypeSystem(typeSystem);
 
 		logger.info("Spring Native operating mode: " + aotOptions.toMode().toString());

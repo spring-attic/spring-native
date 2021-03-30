@@ -23,6 +23,7 @@ import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 
 /**
  * Provide build context information.
@@ -61,10 +62,22 @@ public interface BuildContext {
 	void describeReflection(Consumer<ReflectionDescriptor> consumer);
 
 	/**
+	 * Contribute reflection information to the application, this is for types reflectively accessible from JNI.
+	 * @param consumer The reflection descriptor consumer
+	 */
+	void describeJNIReflection(Consumer<ReflectionDescriptor> consumer);
+
+	/**
 	 * Contribute proxies information to the application.
 	 * @param consumer The proxies descriptor consumer
 	 */
 	void describeProxies(Consumer<ProxiesDescriptor> consumer);
+
+	/**
+	 * Contribute serialization type information to the application.
+	 * @param consumer The serialization descriptor consumer
+	 */
+	void describeSerialization(Consumer<SerializationDescriptor> consumer);
 
 	/**
 	 * Contribute resources information to the application.

@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.FieldDescriptor;
 import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.ProxyDescriptor;
@@ -50,6 +51,10 @@ public class RequestedConfigurationManager {
 	private List<InitializationDescriptor> requestedInitializations = new ArrayList<>();
 
 	private Set<String> requestedOptions = new HashSet<>();
+	
+	private Set<String> requestedSerializableTypes = new HashSet<>();
+	
+	private Map<String, AccessDescriptor> requestedJNITypes = new HashMap<>();
 	
 	public void requestTypeAccess(String type, Integer accessRequired) {
 		requestTypeAccess(type, accessRequired, null, null);
@@ -151,6 +156,14 @@ public class RequestedConfigurationManager {
 	public Set<String> getRequestedOptions() {
 		return requestedOptions;
 	}
+	
+	public Map<String, AccessDescriptor> getRequestedJNITypes() {
+		return requestedJNITypes;
+	}
+	
+	public Set<String> getRequestedSerializableTypes() {
+		return requestedSerializableTypes;
+	}
 
 	public void mergeIn(RequestedConfigurationManager incomingRCM) {
 		for (Entry<String, Integer> entry : incomingRCM.getRequestedTypeAccesses()) {
@@ -160,6 +173,8 @@ public class RequestedConfigurationManager {
 		requestProxyDescriptors(incomingRCM.getRequestedProxies());
 		requestResourcesDescriptors(incomingRCM.getRequestedResources());
 		requestOptions(incomingRCM.getRequestedOptions());
+		requestSerializationTypes(incomingRCM.getSerializationTypes());
+		requestJniTypes(incomingRCM.getJNITypes());
 	}
 
 	public void addMethodDescriptors(String type, String[][] methods) {
@@ -170,6 +185,22 @@ public class RequestedConfigurationManager {
 		requestedTypeAccesses.remove(typename);
 		requestedMethodAccesses.remove(typename);
 		requestedFieldAccesses.remove(typename);
+	}
+
+	public void requestSerializationTypes(Set<String> serializationTypes) {
+		requestedSerializableTypes.addAll(serializationTypes);
+	}
+
+	public void requestJniTypes(Map<String, AccessDescriptor> jniTypes) {
+		requestedJNITypes.putAll(jniTypes);
+	}
+
+	private Map<String, AccessDescriptor> getJNITypes() {
+		return requestedJNITypes;
+	}
+
+	private Set<String> getSerializationTypes() {
+		return requestedSerializableTypes;
 	}
 
 }

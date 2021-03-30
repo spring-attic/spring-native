@@ -59,6 +59,8 @@ import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.ProxyHints;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.ResourcesHints;
+import org.springframework.nativex.hint.SerializationHint;
+import org.springframework.nativex.hint.SerializationHints;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.TypeHints;
 import org.springframework.util.ClassUtils;
@@ -1651,6 +1653,12 @@ public class Type {
 					hints.add(unpackNativeHint(an));
 				} else if (name.equals(NativeHints.class.getName())) {
 					hints.addAll(unpackNativeHints(an));
+				} else if (name.equals(SerializationHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackSerializationHint(an, defaultHintDeclaration);
+				} else if (name.equals(SerializationHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableAnnotationList(an, anno -> unpackSerializationHint(anno, defaultHintDeclaration));
 				} else if (name.equals(TypeHint.class.getName())) {
 					defaultHintPopulated=true;
 					unpackTypeHint(an, defaultHintDeclaration);
@@ -1713,6 +1721,8 @@ public class Type {
 					processHintList(value, anno -> unpackResourceHint(anno,ch));
 				} else if (key.equals("initialization")) {
 					processHintList(value, anno -> unpackInitializationHint(anno,ch));
+				} else if (key.equals("serializables")) {
+					processHintList(value, anno -> unpackSerializationHint(anno,ch));
 				} else if (key.equals("abortIfTypesMissing")) {
 					Boolean b = (Boolean) value;
 					ch.setAbortIfTypesMissing(b);
@@ -1786,6 +1796,7 @@ public class Type {
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
 		int accessRequired = -1;
+		boolean isJniHint = false;
 		List<MethodDescriptor> mds = new ArrayList<>();
 		List<FieldDescriptor> fds = new ArrayList<>();
 		for (int i = 0; i < values.size(); i += 2) {
@@ -1795,6 +1806,13 @@ public class Type {
 				types = (ArrayList<org.objectweb.asm.Type>) value;
 			} else if (key.equals("access")) {
 				accessRequired = (Integer) value;
+				if (accessRequired == AccessBits.JNI) {
+					accessRequired = -1; // reset to allow inferencing to occur
+					isJniHint = true;
+				} else if ((accessRequired & AccessBits.JNI)!=0) {
+					accessRequired = accessRequired - AccessBits.JNI;
+					isJniHint = true;
+				}
 			} else if (key.equals("typeNames")) {
 				typeNames = (ArrayList<String>) value;
 			} else if (key.equals("methods")) {
@@ -1814,7 +1832,11 @@ public class Type {
 				}
 				ad = new AccessDescriptor(accessRequired, mds, fds);
 			}
-			ch.addDependantType(type.getClassName(), ad);
+			if (isJniHint) {
+				ch.addJniType(type.getClassName(), ad);
+			} else {
+				ch.addDependantType(type.getClassName(), ad);				
+			}
 		}
 		for (String typeName : typeNames) {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
@@ -1829,7 +1851,35 @@ public class Type {
 					}
 					ad = new AccessDescriptor(accessRequired, mds, fds);
 				}
-				ch.addDependantType(typeName, ad);
+				if (isJniHint) {
+					ch.addJniType(typeName, ad);
+				} else {
+					ch.addDependantType(typeName, ad);				
+				}
+			}
+		}
+	}
+
+	private void unpackSerializationHint(AnnotationNode typeInfo, HintDeclaration ch) {
+		List<Object> values = typeInfo.values;
+		List<org.objectweb.asm.Type> types = new ArrayList<>();
+		List<String> typeNames = new ArrayList<>();
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("types")) {
+				types = (ArrayList<org.objectweb.asm.Type>) value;
+			} else if (key.equals("typeNames")) {
+				typeNames = (ArrayList<String>) value;
+			}
+		}
+		for (org.objectweb.asm.Type type : types) {
+			ch.addSerializationType(type.getClassName());
+		}
+		for (String typeName : typeNames) {
+			Type resolvedType = typeSystem.resolveName(typeName, true);
+			if (resolvedType != null) {
+				ch.addSerializationType(typeName);
 			}
 		}
 	}

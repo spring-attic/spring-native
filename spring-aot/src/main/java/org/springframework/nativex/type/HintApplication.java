@@ -181,4 +181,12 @@ public class HintApplication {
 		return hintDeclaration.getOptions();
 	}
 
+	public Set<String> getSerializationTypes() {
+		return hintDeclaration.getSerializationTypes();
+	}
+
+	public Map<String,AccessDescriptor> getJNITypes() {
+		return hintDeclaration.getJNITypes();
+	}
+
 }

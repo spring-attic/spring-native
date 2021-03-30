@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -66,6 +67,73 @@ public class TypeTests {
 	public void simpleResolution() {
 		typeSystem.resolveName("java.lang.String");
 		typeSystem.resolveName(TestClass1.class.getName());
+	}
+
+	@Test
+	public void serializationHints() {
+		Type s = typeSystem.resolveName(Ser1.class.getName());
+		List<HintDeclaration> hds = s.getCompilationHints();
+		assertEquals(1, hds.size());
+		HintDeclaration hd = hds.get(0);
+		Set<String> serializationTypes = hd.getSerializationTypes();
+		assertEquals(1, serializationTypes.size());
+		assertTrue(serializationTypes.contains("java.lang.String"));
+	}
+
+	@Test
+	public void serializationHints2() {
+		Type s = typeSystem.resolveName(Ser2.class.getName());
+		List<HintDeclaration> hds = s.getCompilationHints();
+		assertEquals(1, hds.size());
+		HintDeclaration hd = hds.get(0);
+		assertEquals("java.lang.String",hd.getTriggerTypename());
+		Set<String> serializationTypes = hd.getSerializationTypes();
+		assertEquals(2, serializationTypes.size());
+		assertTrue(serializationTypes.contains("java.lang.String"));
+		assertTrue(serializationTypes.contains("java.lang.Integer"));
+	}
+	
+	@SerializationHint(types = String.class)
+	static class Ser1 {
+	}
+	
+	@NativeHint(trigger = String.class, serializables = @SerializationHint(types=String.class, typeNames = "java.lang.Integer"))
+	static class Ser2 {
+	}
+	
+	@Test
+	public void jniTypeHints() {
+		Type s = typeSystem.resolveName(Jni1.class.getName());
+		List<HintDeclaration> hds = s.getCompilationHints();
+		assertEquals(1, hds.size());
+		HintDeclaration hd = hds.get(0);
+		Map<String, AccessDescriptor> jniTypes = hd.getJNITypes();
+		assertEquals(1, jniTypes.size());
+		assertTrue(jniTypes.containsKey("java.lang.String"));
+		assertEquals(AccessBits.LOAD_AND_CONSTRUCT, jniTypes.get("java.lang.String").getAccessBits());
+	}
+	
+	@Test
+	public void jniTypeHints2() {
+		Type s = typeSystem.resolveName(Jni2.class.getName());
+		List<HintDeclaration> hds = s.getCompilationHints();
+		assertEquals(1, hds.size());
+		HintDeclaration hd = hds.get(0);
+		assertEquals("java.lang.Integer", hd.getTriggerTypename());
+		Map<String, AccessDescriptor> jniTypes = hd.getJNITypes();
+		assertEquals(1, jniTypes.size());
+		assertTrue(jniTypes.containsKey("java.lang.Boolean"));
+		assertEquals(AccessBits.LOAD_AND_CONSTRUCT, jniTypes.get("java.lang.Boolean").getAccessBits());
+	}
+
+	@TypeHint(types = String.class, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.JNI)
+	static class Jni1 {
+	}
+
+	@NativeHint(trigger=Integer.class,types = 
+			@TypeHint(types = Boolean.class, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.JNI)
+	)
+	static class Jni2 {
 	}
 
 	@Test

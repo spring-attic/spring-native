@@ -63,6 +63,12 @@ public @interface NativeHint {
 	ProxyHint[] proxies() default {};
 	
 	/**
+	 * A set of serialization hints indicating which types will be (de)serialized if the trigger is active.
+	 * @return the serialization hint
+	 */
+	SerializationHint[] serializables() default {};
+	
+	/**
 	 * A set of resource information which specify which resources need including if the trigger is active.
 	 * @return the resource information
 	 */

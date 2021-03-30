@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
@@ -36,6 +35,8 @@ import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptorJsonMarshaller;
 
 /**
  * Generate code for bootstrapping Spring applications in a GraalVM native environment.
@@ -119,18 +120,27 @@ public class BootstrapCodeGenerator {
 		ProxiesDescriptor proxiesDescriptor = buildContext.getProxiesDescriptor();
 		if (!proxiesDescriptor.isEmpty()) {
 			Path proxiesConfigPath = graalVMConfigPath.resolve(Paths.get("proxy-config.json"));
-			ProxiesDescriptorJsonMarshaller proxiesMarshaller = new ProxiesDescriptorJsonMarshaller();
-			proxiesMarshaller.write(proxiesDescriptor, Files.newOutputStream(proxiesConfigPath));
+			ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor, Files.newOutputStream(proxiesConfigPath));
 		}
 		// resource-config.json
 		ResourcesDescriptor resourcesDescriptor = buildContext.getResourcesDescriptor();
 		if (!resourcesDescriptor.isEmpty()) {
 			Path resourceConfigPath = graalVMConfigPath.resolve(Paths.get("resource-config.json"));
-			ResourcesJsonMarshaller resourcesMarshaller = new ResourcesJsonMarshaller();
-			resourcesMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
+			ResourcesJsonMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
+		}
+		// serialization-config.json
+		SerializationDescriptor serializationDescriptor = buildContext.getSerializationDescriptor();
+		if (!serializationDescriptor.isEmpty()) {
+			Path serializationConfigPath = graalVMConfigPath.resolve(Paths.get("serialization-config.json"));
+			SerializationDescriptorJsonMarshaller.write(serializationDescriptor, Files.newOutputStream(serializationConfigPath));
+		}
+		// jni-config.json
+		ReflectionDescriptor jniReflectionDescriptor = buildContext.getJNIReflectionDescriptor();
+		if (!jniReflectionDescriptor.isEmpty()) {
+			Path jniReflectionConfigPath = graalVMConfigPath.resolve(Paths.get("jni-config.json"));
+			JsonMarshaller.write(jniReflectionDescriptor, Files.newOutputStream(jniReflectionConfigPath));
 		}
 	}
-
 
 	/**
 	 * Quick optimisation to help us avoid adding entries which are likely already included
@@ -155,6 +165,5 @@ public class BootstrapCodeGenerator {
 		}
 		return false;
 	}
-
 
 }

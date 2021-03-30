@@ -17,6 +17,7 @@
 package org.springframework.nativex.type;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,6 +39,10 @@ public class HintDeclaration {
 
 	private Map<String, AccessDescriptor> specificTypes = new LinkedHashMap<>();
 
+	private Map<String, AccessDescriptor> jniTypes = new LinkedHashMap<>();
+
+	private Set<String> serializationTypes = new HashSet<>();
+	
 	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
 
 	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
@@ -74,6 +79,9 @@ public class HintDeclaration {
 		if (proxyDescriptor!=null && !proxyDescriptor.isEmpty()) {
 			sb.append(":proxyDes=").append(proxyDescriptor);
 		}
+		if (jniTypes!=null && !jniTypes.isEmpty()) {
+			sb.append(":jniTypes=").append(jniTypes);
+		}
 		return sb.toString();
 	}
 
@@ -92,9 +100,25 @@ public class HintDeclaration {
 	public Map<String, AccessDescriptor> getDependantTypes() {
 		return specificTypes;
 	}
+	
+	public Map<String, AccessDescriptor> getJNITypes() {
+		return jniTypes;
+	}
 
+	public void addSerializationType(String className) {
+		serializationTypes.add(className);
+	}
+	
+	public Set<String> getSerializationTypes() {
+		return serializationTypes;
+	}
+	
 	public void addDependantType(String className, AccessDescriptor accessDescriptor) {
 		specificTypes.put(className, accessDescriptor);
+	}
+	
+	public void addJniType(String className, AccessDescriptor accessDescriptor) {
+		jniTypes.put(className, accessDescriptor);	
 	}
 
 	public void setAbortIfTypesMissing(Boolean b) {

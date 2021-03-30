@@ -53,6 +53,8 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.describeReflection(reflect -> reflect.merge(configurationCollector.getReflectionDescriptor()));
 		context.describeResources(resources -> resources.merge(configurationCollector.getResourcesDescriptors()));
 		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
+		context.describeSerialization(serial -> serial.merge(configurationCollector.getSerializationDescriptor()));
+		context.describeJNIReflection(jniReflect -> jniReflect.merge(configurationCollector.getJNIReflectionDescriptor()));
 		byte[] springComponentsFileContents = configurationCollector.getResources("META-INF/spring.components");
 		if (springComponentsFileContents!=null) {
 			logger.debug("Storing synthesized META-INF/spring.components");

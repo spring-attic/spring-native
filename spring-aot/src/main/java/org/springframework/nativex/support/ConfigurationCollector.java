@@ -43,6 +43,7 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
@@ -66,6 +67,10 @@ public class ConfigurationCollector {
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 	
+	private SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
+	
+	private ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
+	
 	private Set<String> options = new HashSet<>();
 
 	private Map<String,byte[]> newResourceFiles = new HashMap<>();
@@ -86,6 +91,14 @@ public class ConfigurationCollector {
 
 	public ResourcesDescriptor getResourcesDescriptors() {
 		return resourcesDescriptor;
+	}
+	
+	public SerializationDescriptor getSerializationDescriptor() {
+		return serializationDescriptor;
+	}
+	
+	public ReflectionDescriptor getJNIReflectionDescriptor() {
+		return jniReflectionDescriptor;
 	}
 	
 	public byte[] getResources(String name) {
@@ -197,6 +210,17 @@ public class ConfigurationCollector {
 		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
 		return filteredReflectionDescriptor;
 	}
+
+	public boolean addSerializationType(String className, boolean verify) {
+		if (verify) {
+			Type clazz = ts.resolveDotted(className, true);
+			if (clazz == null) {
+				return false;
+			}
+		}
+		serializationDescriptor.add(className);
+		return true;
+	}
 	
 	private boolean areMembersSpecified(ClassDescriptor cd) {
 		List<MethodDescriptor> methods = cd.getMethods();
@@ -261,6 +285,20 @@ public class ConfigurationCollector {
 		}
 	}
 
+	public void addJNIClassDescriptor(ClassDescriptor classDescriptor) {
+		if (!verifyType(classDescriptor)) {
+			return;
+		}
+		if (areMembersSpecified(classDescriptor)) {
+			if (!verifyMembers(classDescriptor)) {
+				Set<Flag> existingFlags = classDescriptor.getFlags();
+				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
+				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
+			}
+		}
+		jniReflectionDescriptor.merge(classDescriptor);
+	}
+	
 	public void addClassDescriptor(ClassDescriptor classDescriptor) {
 		if (!verifyType(classDescriptor)) {
 			return;
@@ -355,6 +393,10 @@ public class ConfigurationCollector {
 
 	public ClassDescriptor getClassDescriptorFor(String typename) {
 		return reflectionDescriptor.getClassDescriptor(typename);
+	}
+
+	public ClassDescriptor getJNIClassDescriptorFor(String typename) {
+		return jniReflectionDescriptor.getClassDescriptor(typename);
 	}
 
 }

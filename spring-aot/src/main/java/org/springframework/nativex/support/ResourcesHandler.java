@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,24 +42,23 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.type.ComponentProcessor;
-import org.springframework.nativex.type.NativeContext;
-import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.FieldDescriptor;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.HintApplication;
+import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.MissingTypeException;
+import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.ProxyDescriptor;
+import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.type.TypeUtils;
@@ -82,17 +80,26 @@ public class ResourcesHandler extends Handler {
 
 	private final InitializationHandler initializationHandler;
 	
+	private SerializationHandler serializationHandler;
+
+	private JNIReflectionHandler jniReflectionHandler;
+
 	private final OptionHandler optionHandler;
 
 	private final AotOptions aotOptions;
 	
 	private final Set<String> followed = new HashSet<>();
 
-	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler, OptionHandler optionHandler, AotOptions aotOptions) {
+	public ResourcesHandler(ConfigurationCollector collector, ReflectionHandler reflectionHandler, 
+			DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler,
+			SerializationHandler serializationHandler, JNIReflectionHandler jniReflectionHandler,
+			OptionHandler optionHandler, AotOptions aotOptions) {
 		super(collector);
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
 		this.initializationHandler = initializationHandler;
+		this.serializationHandler = serializationHandler;
+		this.jniReflectionHandler = jniReflectionHandler;
 		this.optionHandler = optionHandler;
 		this.aotOptions = aotOptions;
 	}
@@ -161,10 +168,33 @@ public class ResourcesHandler extends Handler {
 					reflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds),
 							FieldDescriptor.toStringArray(fds), true, accessFlags);
 				}
+				for (Map.Entry<String, AccessDescriptor> dependantType : ch.getJNITypes().entrySet()) {
+					String typename = dependantType.getKey();
+					AccessDescriptor ad = dependantType.getValue();
+					logger.debug("  fixed JNI access type registered " + typename + " with " + ad);
+					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
+					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
+					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
+							AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
+						logger.debug("  type has #" + mds.size()
+								+ " members specified, removing typewide method access flags");
+						accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+					}
+					List<FieldDescriptor> fds = ad.getFieldDescriptors();
+					jniReflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds),
+							FieldDescriptor.toStringArray(fds), true, accessFlags);
+				}
 				List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 				for (ProxyDescriptor pd : proxyDescriptors) {
 					logger.debug("Registering proxy descriptor: " + pd);
 					dynamicProxiesHandler.addProxy(pd);
+				}
+				Set<String> serializationTypes = ch.getSerializationTypes();
+				if (!serializationTypes.isEmpty()) {
+					logger.debug("Registering types as serializable: "+serializationTypes);
+					for (String st: serializationTypes) {
+						serializationHandler.addType(st);
+					}
 				}
 				List<org.springframework.nativex.type.ResourcesDescriptor> resourcesDescriptors = ch
 						.getResourcesDescriptors();
@@ -1253,11 +1283,12 @@ public class ResourcesHandler extends Handler {
 				break;
 			}
 			registerAnnotationChain(accessManager, hint.getAnnotationChain());
-
 			accessManager.requestProxyDescriptors(hint.getProxyDescriptors());
 			accessManager.requestResourcesDescriptors(hint.getResourceDescriptors());
 			accessManager.requestInitializationDescriptors(hint.getInitializationDescriptors());
 			accessManager.requestOptions(hint.getOptions());
+			accessManager.requestSerializationTypes(hint.getSerializationTypes());
+			accessManager.requestJniTypes(hint.getJNITypes());
 		}
 
 		// TODO think about pulling out into extension mechanism for condition evaluators
@@ -1789,6 +1820,12 @@ public class ResourcesHandler extends Handler {
 		}
 		for (org.springframework.nativex.type.ResourcesDescriptor rd : accessRequestor.getRequestedResources()) {
 			registerResourcesDescriptor(rd);
+		}
+		for (String serializationType: accessRequestor.getRequestedSerializableTypes()) {
+			serializationHandler.addType(serializationType);
+		}
+		for (Entry<String, AccessDescriptor> jniType : accessRequestor.getRequestedJNITypes().entrySet()) {
+			jniReflectionHandler.addAccess(jniType.getKey(), jniType.getValue());
 		}
 		for (Map.Entry<String, Integer> accessRequest : accessRequestor.getRequestedTypeAccesses()) {
 			String dname = accessRequest.getKey();
