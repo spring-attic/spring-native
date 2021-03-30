@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2019 the original author or authors.
+ * Copyright 2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,19 @@
  */
 package app.main.model;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.NoRepositoryBean;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-import java.util.List;
+@Entity
+public class Flurb {
+	@Id
+	@GeneratedValue
+	Long id;
 
-/**
- * @author Dave Syer
- */
-public interface FooRepository extends JpaRepository<Foo, Long> {
-	@Query("select f from Foo f where f.value between :min and :max")
-	List<Foo> findWithBetween(String min, String max);
+	String value;
 
-	Foo findFirstByFlurbValueContaining(String name);
+	public void setValue(String value) {
+		this.value = value;
+	}
 }

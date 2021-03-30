@@ -20,6 +20,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
+
+import org.thymeleaf.engine.IterationStatusVar;
 import org.thymeleaf.extras.java8time.expression.Temporals;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.expression.Fields;
@@ -47,7 +49,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				}
 		),
-		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
+		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
+		@TypeHint(types = IterationStatusVar.class, access = AccessBits.FULL_REFLECTION)
 })
 public class ThymeleafHints implements NativeConfiguration {
 }

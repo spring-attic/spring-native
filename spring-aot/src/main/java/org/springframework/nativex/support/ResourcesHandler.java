@@ -265,7 +265,7 @@ public class ResourcesHandler extends Handler {
 	private Properties synthesizeSpringComponents() {
 		Properties p = new Properties();
 		List<Entry<Type, List<Type>>> components = ts.scanForSpringComponents();
-		List<Entry<Type, List<Type>>> filteredComponents = filterOutNestedTypes(components);
+		List<Entry<Type, List<Type>>> filteredComponents = filterOutNestedConfigurationTypes(components);
 		for (Entry<Type, List<Type>> filteredComponent : filteredComponents) {
 			String k = filteredComponent.getKey().getDottedName();
 			p.put(k, filteredComponent.getValue().stream().map(t -> t.getDottedName())
@@ -688,15 +688,18 @@ public class ResourcesHandler extends Handler {
 //		}
 	}
 
-	private List<Entry<Type, List<Type>>> filterOutNestedTypes(List<Entry<Type, List<Type>>> springComponents) {
+	private List<Entry<Type, List<Type>>> filterOutNestedConfigurationTypes(List<Entry<Type, List<Type>>> indexedComponents) {
 		List<Entry<Type, List<Type>>> filtered = new ArrayList<>();
 		List<Entry<Type, List<Type>>> subtypesToRemove = new ArrayList<>();
-		for (Entry<Type, List<Type>> a : springComponents) {
-			String type = a.getKey().getDottedName();
-			subtypesToRemove.addAll(springComponents.stream()
-					.filter(e -> e.getKey().getDottedName().startsWith(type + "$")).collect(Collectors.toList()));
+		for (Entry<Type, List<Type>> indexedComponent : indexedComponents) {
+			Type componentKey = indexedComponent.getKey();
+			String type = componentKey.getDottedName();
+			if (componentKey.isAtConfiguration()) {
+				subtypesToRemove.addAll(indexedComponents.stream()
+						.filter(e -> e.getKey().getDottedName().startsWith(type + "$")).collect(Collectors.toList()));
+			}
 		}
-		filtered.addAll(springComponents);
+		filtered.addAll(indexedComponents);
 		filtered.removeAll(subtypesToRemove);
 		return filtered;
 	}
