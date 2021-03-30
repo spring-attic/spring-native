@@ -16,7 +16,9 @@
 package org.springframework.data.web.config;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
+import org.springframework.hateoas.config.HateoasHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
@@ -115,7 +117,7 @@ import reactor.core.publisher.Flux;
 				@InitializationHint(types = {org.springframework.hateoas.MediaTypes.class, org.springframework.util.MimeTypeUtils.class}, initTime = InitializationTime.BUILD)
 		},
 		imports = {
-				WebMvcHints.class
+				WebMvcHints.class, HateoasHints.class
 		}
 
 )
