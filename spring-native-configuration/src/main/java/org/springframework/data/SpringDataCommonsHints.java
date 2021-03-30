@@ -50,7 +50,10 @@ import org.springframework.nativex.hint.AccessBits;
 						PropertiesBasedNamedQueries.class
 				}),
 				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
-				@TypeHint(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS)
+				@TypeHint(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
+				@TypeHint(typeNames = {
+						"org.springframework.data.projection.SpelEvaluatingMethodInterceptor$TargetWrapper",
+				}, access = AccessBits.ALL)
 		},
 		proxies = @ProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",

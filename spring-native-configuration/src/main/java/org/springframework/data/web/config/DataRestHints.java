@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -42,7 +43,7 @@ import reactor.core.publisher.Flux;
 				typeNames = {
 
 						"org.springframework.hateoas.EntityModel",
-						"org.springframework.hateoas.CollectionModel",
+//						"org.springframework.hateoas.CollectionModel",
 						"org.springframework.hateoas.AffordanceModel",
 						"org.springframework.hateoas.config.RestTemplateHateoasConfiguration",
 						"org.springframework.hateoas.mediatype.hal.forms.HalFormsMediaTypeConfiguration",
@@ -86,8 +87,15 @@ import reactor.core.publisher.Flux;
 						// EvoInflector
 						"org.atteo.evo.inflector.English"
 				},
+
 				access = AccessBits.ALL
 
+		),
+		@TypeHint(
+
+				typeNames = "org.springframework.hateoas.CollectionModel",
+				fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true) // TODO: can we please solve this in Data REST
+//				access = AccessBits.L
 		)
 },
 		proxies = {
@@ -102,6 +110,7 @@ import reactor.core.publisher.Flux;
 				@ProxyHint(typeNames = {"org.springframework.web.bind.annotation.ControllerAdvice", "org.springframework.core.annotation.SynthesizedAnnotation"}),
 				@ProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestHeader", "org.springframework.core.annotation.SynthesizedAnnotation"})
 		},
+
 		initialization = {
 				@InitializationHint(types = {org.springframework.hateoas.MediaTypes.class, org.springframework.util.MimeTypeUtils.class}, initTime = InitializationTime.BUILD)
 		},
