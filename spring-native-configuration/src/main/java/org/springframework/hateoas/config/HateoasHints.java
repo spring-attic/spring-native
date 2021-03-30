@@ -16,7 +16,11 @@
 
 package org.springframework.hateoas.config;
 
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonHints;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -36,5 +40,24 @@ import org.springframework.nativex.type.NativeConfiguration;
 			HypermediaType[].class,
 			MediaTypeConfigurationProvider.class
 	}))
+@NativeHint(trigger = HypermediaAutoConfiguration.class,
+		types = {
+				@TypeHint(types = {
+						HypermediaConfigurationImportSelector.class,
+						HateoasConfiguration.class,
+						HypermediaHttpMessageConverterConfiguration.class
+					},
+						typeNames = {
+							"org.springframework.hateoas.mediatype.hal.HalConfiguration",
+							"org.springframework.hateoas.mediatype.hal.Jackson2HalModule",
+							"org.springframework.hateoas.mediatype.hal.LinkMixin",
+							"org.springframework.hateoas.mediatype.hal.RepresentationModelMixin",
+							"org.springframework.hateoas.mediatype.hal.CollectionModelMixin"
+						}, access = AccessBits.ALL
+				)
+		}
+		, imports = {JacksonHints.class}
+)
 public class HateoasHints implements NativeConfiguration {
+
 }
