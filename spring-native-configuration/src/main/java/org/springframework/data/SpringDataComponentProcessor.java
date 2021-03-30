@@ -23,17 +23,20 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeName;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
@@ -144,6 +147,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 					"org.springframework.data.r2dbc.repository.R2dbcRepository"
 			));
 
+	public static final String REPOSITORY_REST_RESOURCE_DESCRIPTOR = "Lorg/springframework/data/rest/core/annotation/RepositoryRestResource;";
+	
 	private static String repositoryName;
 	private static String queryAnnotationName;
 
@@ -223,6 +228,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		if (repositoryType.implementsInterface("org/springframework/data/repository/reactive/ReactiveCrudRepository")) {
 			imageContext.initializeAtBuildTime(repositoryType); // TODO: check if we really need this!
 		}
+
+		registerDataRestComponentsIfNecessary(repositoryType, imageContext);
 	}
 
 	private void detectCustomRepositoryImplementations(Type repositoryType, NativeContext imageContext) {
@@ -404,6 +411,43 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		}
 	}
 
+	private boolean isRestResource(Type type) {
+		return type.hasAnnotationInHierarchy(REPOSITORY_REST_RESOURCE_DESCRIPTOR);
+	}
+
+	private void registerDataRestComponentsIfNecessary(Type type, NativeContext context) {
+
+		if(!isRestResource(type)) {
+			return;
+		}
+
+		log.message(String.format("%s is a REST resource.", type.getDottedName()));
+
+		Map<String, String> annotationValuesInHierarchy = type.getAnnotationValuesInHierarchy(REPOSITORY_REST_RESOURCE_DESCRIPTOR);
+		if(annotationValuesInHierarchy.containsKey("excerptProjection")) {
+
+			String excerptProjectionSignatureType = annotationValuesInHierarchy.get("excerptProjection");
+			Type targetProjectionType = context.getTypeSystem().resolve(TypeName.fromTypeSignature(excerptProjectionSignatureType));
+
+			if(targetProjectionType != null) {
+
+				// TODO: check for default value and ignore that one
+
+				if(targetProjectionType.getDottedName().equals("org.springframework.data.rest.core.annotation.RepositoryRestResource$None")) {
+					return;
+				}
+
+				log.message("resolved excerpt projection: " + targetProjectionType.getDottedName());
+				registerDomainType(targetProjectionType, context);
+				context.addProxy(targetProjectionType.getDottedName(), "org.springframework.data.projection.TargetAware", "org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy");
+
+			} else {
+				log.message("excerpt projection " + excerptProjectionSignatureType + " not found!");
+			}
+		}
+
+	}
+
 	@Override
 	public void printSummary() {
 		log.printSummary();
@@ -412,6 +456,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	private boolean isPartOfSpringData(Type type) {
 		return type.isPartOfDomain(SPRING_DATA_NAMESPACE);
 	}
+
+
 
 	static class SpringDataComponentLog {
 
