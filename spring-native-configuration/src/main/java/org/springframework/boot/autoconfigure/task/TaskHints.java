@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.task;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @NativeHint(trigger = TaskExecutionAutoConfiguration.class, types = @TypeHint(types = ThreadPoolTaskExecutor.class), abortIfTypesMissing = true)
