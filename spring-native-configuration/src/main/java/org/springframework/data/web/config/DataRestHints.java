@@ -16,12 +16,10 @@
 package org.springframework.data.web.config;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
 import org.springframework.hateoas.config.HateoasHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -32,6 +30,7 @@ import reactor.core.publisher.Flux;
 
 @NativeHint(trigger = RepositoryRestMvcAutoConfiguration.class, types = {
 		@TypeHint(types = {
+
 				Flux.class,
 				org.reactivestreams.Publisher.class,
 				HalMediaTypeConfiguration.class,
@@ -44,11 +43,15 @@ import reactor.core.publisher.Flux;
 		},
 				typeNames = {
 
-						"org.springframework.hateoas.EntityModel",
+//						"org.springframework.hateoas.EntityModel",
 //						"org.springframework.hateoas.CollectionModel",
-						"org.springframework.hateoas.AffordanceModel",
-						"org.springframework.hateoas.config.RestTemplateHateoasConfiguration",
-						"org.springframework.hateoas.mediatype.hal.forms.HalFormsMediaTypeConfiguration",
+//						"org.springframework.hateoas.AffordanceModel",
+//						"org.springframework.hateoas.config.RestTemplateHateoasConfiguration",
+//						"org.springframework.hateoas.mediatype.hal.forms.HalFormsMediaTypeConfiguration",
+
+						"org.springframework.data.rest.core.annotation.Description",
+						"org.springframework.data.rest.core.config.EnumTranslationConfiguration",
+						"org.springframework.data.rest.core.config.RepositoryRestConfiguration",
 
 						"org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration",
 						"org.springframework.data.rest.webmvc.RepositoryRestController",
@@ -61,13 +64,10 @@ import reactor.core.publisher.Flux;
 						"org.springframework.data.rest.webmvc.RepositoryController",
 						"org.springframework.data.rest.webmvc.RepositoryPropertyReferenceController",
 						"org.springframework.data.rest.webmvc.RepositorySearchController",
-
-						"org.springframework.data.rest.core.annotation.Description",
-
-						"org.springframework.data.rest.core.config.RepositoryRestConfiguration",
-
-						"org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer",
 						"org.springframework.data.rest.webmvc.config.WebMvcRepositoryRestConfiguration",
+
+						// BOOT CONFIG
+						"org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer",
 
 						// PLUGIN
 						"org.springframework.plugin.core.support.PluginRegistryFactoryBean",
@@ -81,10 +81,8 @@ import reactor.core.publisher.Flux;
 						"org.springframework.plugin.core.support.AbstractTypeAwareSupport",
 						"org.springframework.plugin.core.support.PluginRegistryFactoryBean",
 
-						"org.springframework.data.rest.core.config.EnumTranslationConfiguration",
-
 						// JACKSON
-						"org.springframework.hateoas.EntityModel$MapSuppressingUnwrappingSerializer",
+//						"org.springframework.hateoas.EntityModel$MapSuppressingUnwrappingSerializer",
 
 						// EvoInflector
 						"org.atteo.evo.inflector.English"
@@ -93,12 +91,6 @@ import reactor.core.publisher.Flux;
 				access = AccessBits.ALL
 
 		),
-		@TypeHint(
-
-				typeNames = "org.springframework.hateoas.CollectionModel",
-				fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true) // TODO: can we please solve this in Data REST
-//				access = AccessBits.L
-		)
 },
 		proxies = {
 				@ProxyHint(typeNames = {"org.springframework.data.rest.webmvc.BasePathAwareController", "org.springframework.core.annotation.SynthesizedAnnotation"}),
