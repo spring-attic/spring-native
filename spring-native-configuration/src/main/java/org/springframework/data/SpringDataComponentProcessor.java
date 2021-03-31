@@ -398,13 +398,22 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		for (Type annotation : method.getAnnotationTypes()) {
 			registerSpringDataAnnotation(annotation, context);
 		}
+
+		if(method.getParameterCount() == 0) {
+			return;
+		}
+
+		// lookup for parameter annotations like @Param
+		for(int i=0; i<method.getParameterCount();i++) {
+			method.getParameterAnnotationTypes(i).forEach(it -> registerSpringDataAnnotation(it, context));
+		}
 	}
 
 	private void registerSpringDataAnnotation(Type annotation, NativeContext context) {
 
 		if (!context.hasReflectionConfigFor(annotation) && isPartOfSpringData(annotation)) {
 
-			context.addReflectiveAccess(annotation.getDottedName(), Flag.allPublicMethods);
+			context.addReflectiveAccess(annotation.getDottedName(), AccessBits.ANNOTATION);
 			context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
 
 			log.annotationFound(annotation);
