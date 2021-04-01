@@ -396,6 +396,28 @@ public class Type {
 		return fields.get();
 	}
 
+	public List<Field> getFieldsWithAnnotationName(String string, boolean checkMetaUsage) {
+		return getFieldsWithAnnotation("L" + string.replace(".", "/") + ";", checkMetaUsage);
+	}
+
+	public List<Field> getFieldsWithAnnotation(String string, boolean checkMetaUsage) {
+		if (dimensions > 0) {
+			return Collections.emptyList();
+		}
+		List<Field> results = new ArrayList<>();
+		if (node.methods != null) {
+			for (FieldNode fn : node.fields) {
+				if (hasAnnotation(fn, string, checkMetaUsage)) {
+					if (results == null) {
+						results = new ArrayList<>();
+					}
+					results.add(wrap(fn));
+				}
+			}
+		}
+		return results == null ? Collections.emptyList() : results;
+	}
+
 	private List<Field> resolveFields() {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.fields.stream().map(it -> new Field(it, typeSystem)).collect(Collectors.toList());
@@ -407,6 +429,10 @@ public class Type {
 
 	private Method wrap(MethodNode mn) {
 		return new Method(mn, typeSystem);
+	}
+
+	private Field wrap(FieldNode fn) {
+		return new Field(fn, typeSystem);
 	}
 
 	private boolean hasAnnotation(MethodNode m, String string) {
@@ -446,6 +472,22 @@ public class Type {
 			return findMetaAnnotationUsage(toAnnotations(mn.visibleAnnotations), lAnnotationDescriptor);
 		} else {
 			List<AnnotationNode> vAnnotations = mn.visibleAnnotations;
+			if (vAnnotations != null) {
+				for (AnnotationNode an : vAnnotations) {
+					if (an.desc.equals(lAnnotationDescriptor)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean hasAnnotation(FieldNode fn, String lAnnotationDescriptor, boolean checkMetaUsage) {
+		if (checkMetaUsage) {
+			return findMetaAnnotationUsage(toAnnotations(fn.visibleAnnotations), lAnnotationDescriptor);
+		} else {
+			List<AnnotationNode> vAnnotations = fn.visibleAnnotations;
 			if (vAnnotations != null) {
 				for (AnnotationNode an : vAnnotations) {
 					if (an.desc.equals(lAnnotationDescriptor)) {
@@ -2820,5 +2862,15 @@ public class Type {
 	public boolean shouldFollow() {
 		// Example: For isApplicationListener(): DataSourceInitializerInvoker imported from DataSourceInitializationConfiguration
 		return isAtConfiguration() || isImportSelector() || isImportRegistrar() || isBeanFactoryPostProcessor() || isApplicationListener();
+	}
+
+	public boolean hasAutowiredMethods() {
+		List<Method> ms = getMethodsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
+		return !ms.isEmpty();
+	}
+	
+	public boolean hasAutowiredFields() {
+		List<Field> fs = getFieldsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
+		return !fs.isEmpty();
 	}
 }

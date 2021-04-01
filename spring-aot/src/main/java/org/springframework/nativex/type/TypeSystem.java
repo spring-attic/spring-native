@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,11 +42,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
@@ -63,6 +66,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -1118,6 +1122,24 @@ public class TypeSystem {
 		return result.stream();
 	}
 
+	public Stream<Path> findUserCodeDirectoriesAndSpringJars(List<String> classpath) {
+		List<Path> result = new ArrayList<>();
+		for (String classpathEntry : classpath) {
+			File f = new File(classpathEntry);
+			if (f.isDirectory()) {
+				result.add(Paths.get(f.toURI()));
+			} else if (f.isFile() &&
+					   f.getName().endsWith(".jar") && 
+					   (f.getParent().endsWith(File.separator+"target") ||
+					    // This pattern recognizes libs/foo.jar which occurs with gradle multi module setups
+					    f.getParent().endsWith(File.separator+"libs") || f.getName().contains("spring"))
+					   ) {
+				result.add(Paths.get(f.toURI()));
+			}
+		}
+		return result.stream();
+	}
+
 	public Stream<Path> findClasses(Path path) {
 		ArrayList<Path> classfiles = new ArrayList<>();
 		if (Files.isDirectory(path)) {
@@ -1162,6 +1184,38 @@ public class TypeSystem {
 	public Entry<Type, List<Type>> getStereoTypesOnType(String slashedClassname) {
 		return resolveSlashed(slashedClassname).getRelevantStereotypes();
 	}
+	
+	public Optional<org.springframework.nativex.domain.reflect.ClassDescriptor> findMembersAutowiredOrBean(String classname) {
+		Type t = resolveSlashed(classname);
+		if (t.isComponent()) {
+			return Optional.empty();
+		}
+		List<Method> ms = t.getMethodsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
+		ms.addAll(t.getMethodsWithAnnotationName("org.springframework.context.annotation.Bean", false));
+		List<Field> fs = t.getFieldsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
+		fs.addAll(t.getFieldsWithAnnotationName("org.springframework.context.annotation.Bean", false));
+		org.springframework.nativex.domain.reflect.ClassDescriptor cd = null;
+		if (!ms.isEmpty() || !fs.isEmpty()) {
+			cd = org.springframework.nativex.domain.reflect.ClassDescriptor.of(classname);
+		}
+		if (ms.size()!=0) {
+			System.out.println("Found Autowired/Bean stuff on "+t.getDottedName()+": "+ms);
+			for (Method m: ms) {
+				String[] array = m.asConfigurationArray();
+				if (array != null) {
+					// some parts of it could not be resolved, ignore
+					cd.addMethodDescriptor(org.springframework.nativex.domain.reflect.MethodDescriptor.of(array));
+				}
+			}
+		}
+		if (fs.size()!=0) {
+			System.out.println("Found Autowired/Bean stuff on "+t.getDottedName()+": "+fs);
+			for (Field f: fs) {
+				cd.addFieldDescriptor(org.springframework.nativex.domain.reflect.FieldDescriptor.of(f.getName(),false,false));
+			}
+		}
+		return cd==null?Optional.empty():Optional.of(cd);
+	}
 
 	public String typenameOfClass(Path p) {
 		return Utils.scanClass(p).getClassname();
@@ -1170,6 +1224,22 @@ public class TypeSystem {
 	public List<Entry<Type, List<Type>>> scanForSpringComponents() {
 		return findDirectoriesOrTargetDirJar(getClasspath()).flatMap(this::findClasses).map(this::typenameOfClass)
 				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	public ReflectionDescriptor scanForLiteUsesOfAutowiredAndBean() {
+		List<org.springframework.nativex.domain.reflect.ClassDescriptor> classDescriptors = 
+				findUserCodeDirectoriesAndSpringJars(getClasspath())
+				.flatMap(this::findClasses)
+				.map(this::typenameOfClass)
+				.map(this::findMembersAutowiredOrBean)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.collect(Collectors.toList());
+		if (!classDescriptors.isEmpty()) {
+			return new ReflectionDescriptor(classDescriptors);
+		} else {
+			return null;
+		}
 	}
 
 	public Type getType_Import() {

@@ -94,6 +94,17 @@ public final class MethodDescriptor extends MemberDescriptor implements Comparab
 		}
 		return md;
 	}
+	
+	public static MethodDescriptor of(String...nameAndParameterTypes) {
+		MethodDescriptor md = new MethodDescriptor();
+		md.setName(nameAndParameterTypes[0]);
+		if (nameAndParameterTypes.length>1) {
+			md.setParameterTypes(Arrays.asList(Arrays.copyOfRange(nameAndParameterTypes,1,nameAndParameterTypes.length)));
+		} else {
+			md.setParameterTypes(NO_PARAMS);
+		}
+		return md;
+	}
 
 	public static String[][] toStringArray(List<org.springframework.nativex.type.MethodDescriptor> methods) {
 		if (methods == null) {

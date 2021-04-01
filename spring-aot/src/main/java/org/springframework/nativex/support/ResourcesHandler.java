@@ -1687,7 +1687,18 @@ public class ResourcesHandler extends Handler {
 //					logger.debug("ConfigurationPropertyAnalysis: whilst looking at type "+returnType.getDottedName()+" making these accessible:"+
 //							newMap.entrySet().stream().map(e -> "  ::"+e.getKey()+"="+AccessBits.toString(e.getValue())).collect(Collectors.toList()));
 				} else {
-					methodRCM.requestTypeAccess(returnType.getDottedName(), AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS);
+					// Note for the future - this code is intended to catch return types of bean methods that themselves
+					// include @Autowired fields/methods (but are not marked @Component). If deeper analysis is
+					// required the check down below "if (returnType.isComponent()) {" should be extended so full processing
+					// would happen for these return types.
+					int bits = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
+					if (returnType.hasAutowiredMethods()) {
+						bits|=AccessBits.DECLARED_METHODS;
+					}
+					if (returnType.hasAutowiredFields()) {
+						bits|=AccessBits.DECLARED_FIELDS;
+					}
+					methodRCM.requestTypeAccess(returnType.getDottedName(), bits);
 				}
 			}
 

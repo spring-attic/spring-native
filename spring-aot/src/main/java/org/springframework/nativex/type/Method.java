@@ -422,7 +422,7 @@ public class Method {
 			}
 			return output;
 		} catch (NullPointerException npe) {
-			throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")");
+			throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")", npe);
 		}
 	}
 	
