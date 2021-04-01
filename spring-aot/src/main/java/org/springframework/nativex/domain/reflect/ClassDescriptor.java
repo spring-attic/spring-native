@@ -136,24 +136,6 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		return cd;
 	}
 
-//	public static ClassDescriptor newGroup(String name, String type, String sourceType,
-//			String sourceMethod) {
-//		return new ClassDescriptor(ItemType.GROUP, name, null, type, sourceType,
-//				sourceMethod, null, null, null);
-//	}
-//
-//	public static ClassDescriptor newProperty(String prefix, String name, String type,
-//			String sourceType, String sourceMethod, String description,
-//			Object defaultValue, ItemDeprecation deprecation) {
-//		return new ClassDescriptor(ItemType.PROPERTY, prefix, name, type, sourceType,
-//				sourceMethod, description, defaultValue, deprecation);
-//	}
-//
-//	public static String newItemMetadataPrefix(String prefix, String suffix) {
-//		return prefix.toLowerCase(Locale.ENGLISH)
-//				+ ReflectionDescriptor.toDashedCase(suffix);
-//	}
-
 	public void setFlag(Flag f) {
 		if (flags == null) {
 			flags = new TreeSet<>();
@@ -214,20 +196,15 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		}
 		if (cd.getFields() != null) {
 			for (FieldDescriptor fd : cd.getFields()) {
-				FieldDescriptor existingSimilarOne = null;
-				for (FieldDescriptor existingFd : getFields()) {
-					if (existingFd.getName().equals(fd.getName())) {
-						existingSimilarOne = existingFd;
+				FieldDescriptor existingFieldDescriptor = null;
+				for (FieldDescriptor fieldDescriptor : getFields()) {
+					if (fieldDescriptor.getName().equals(fd.getName())) {
+						existingFieldDescriptor = fieldDescriptor;
 						break;
 					}
 				}
-				if (existingSimilarOne != null) {
-					if (fd.isAllowWrite()) {
-						existingSimilarOne.setAllowWrite(true);
-					}
-					if(fd.isAllowUnsafeAccess()) {
-						existingSimilarOne.setAllowUnsafeAccess(true);
-					}
+				if (existingFieldDescriptor != null) {
+					existingFieldDescriptor.merge(fd);
 				} else {
 					addFieldDescriptor(fd);
 				}

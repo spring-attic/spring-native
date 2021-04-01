@@ -19,11 +19,11 @@ package org.springframework.nativex.type;
 import java.util.List;
 
 public class FieldDescriptor {
-	
+
 	private final String name;
 	private final boolean allowUnsafeAccess;
 	private final boolean allowWrite;
-	
+
 	public FieldDescriptor(String name, boolean allowUnsafeAccess, boolean allowWrite) {
 		this.name = name;
 		this.allowUnsafeAccess = allowUnsafeAccess;
@@ -47,28 +47,19 @@ public class FieldDescriptor {
 			return null;
 		}
 		String[][] array = new String[fds.size()][];
-		for (int m=0;m<fds.size();m++) {
-			org.springframework.nativex.type.FieldDescriptor fd = fds.get(m);
-			boolean aua = fd.allowUnsafeAccess;
-			String name = fd.getName();
-			if (aua) {
-				array[m] = new String[fd.allowWrite ? 3 : 2];
-				array[m][0] = name;
-				array[m][1] = "true";
-				if(fd.allowWrite) {
-					array[m][2] = "true";
-				}
-			} else {
-				array[m] = new String[fd.allowWrite ? 3 : 1];
-				array[m][0] = name;
-				if(fd.allowWrite) {
-					array[m][1] = "false";
-					array[m][2] = "true";
-				}
-			}
+		for (int m = 0; m < fds.size(); m++) {
+			FieldDescriptor fd = fds.get(m);
+			array[m] = toStringArray(fd.getName(), fd.allowUnsafeAccess, fd.allowWrite);
 		}
 		return array;
 	}
 
+	public static String[] toStringArray(String fieldname, boolean allowUnsafeAccess, boolean allowWrite) {
+		String[] array = new String[3];
+		array[0] = fieldname;
+		array[1] = Boolean.toString(allowUnsafeAccess);
+		array[2] = Boolean.toString(allowWrite);
+		return array;
+	}
 
 }

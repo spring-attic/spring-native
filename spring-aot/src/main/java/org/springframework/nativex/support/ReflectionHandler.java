@@ -21,17 +21,15 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
-import org.springframework.nativex.type.AccessChecker;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.type.AccessChecker;
 import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.util.ObjectUtils;
 
 
 /**
@@ -109,21 +107,9 @@ public class ReflectionHandler extends Handler {
 			}
 			List<org.springframework.nativex.type.FieldDescriptor> fds = ad.getFieldDescriptors();
 			String[][] fields = new String[fds.size()][];
-			for (int m=0;m<mds.size();m++) {
-				org.springframework.nativex.type.FieldDescriptor fieldDescriptor = fds.get(m);
-				if (fieldDescriptor.isAllowUnsafeAccess()) {
-					if(fieldDescriptor.isAllowWrite()) {
-						fields[m]=new String[] {fieldDescriptor.getName(),Boolean.toString(fieldDescriptor.isAllowUnsafeAccess()), Boolean.toString(fieldDescriptor.isAllowWrite())};
-					} else {
-						fields[m] = new String[]{fieldDescriptor.getName(), Boolean.toString(fieldDescriptor.isAllowUnsafeAccess())};
-					}
-				} else {
-					if(fieldDescriptor.isAllowWrite()) {
-						fields[m]=new String[] {fieldDescriptor.getName(),"false", Boolean.toString(fieldDescriptor.isAllowWrite())};
-					} else {
-						fields[m] = new String[]{fieldDescriptor.getName()};
-					}
-				}
+			for (int f=0;f<fds.size();f++) {
+				org.springframework.nativex.type.FieldDescriptor fd = fds.get(f);
+				fields[f] = org.springframework.nativex.type.FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
 			}
 			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
 		}
@@ -176,23 +162,12 @@ public class ReflectionHandler extends Handler {
 		}
 		if (fields != null) {
 			for (String[] fs: fields) {
-
-				boolean allowUnsafeAccess = Boolean.valueOf(fs.length>1?fs[1]:"false");
-				boolean allowWrite = Boolean.valueOf(fs.length>2?fs[2]:"false");
-
+				boolean allowUnsafeAccess = Boolean.valueOf(fs[1]);
+				boolean allowWrite = Boolean.valueOf(fs[2]);
 				FieldDescriptor fd = FieldDescriptor.of(fs[0],allowWrite,allowUnsafeAccess);
 				FieldDescriptor existingFd = cd.getFieldDescriptorNamed(fd.getName());
 				if (existingFd != null) {
-					/*
-					 * TODO: if the check below is removed then we can end up with the very same FieldDescriptor added more than once.
-					 *  Problem is the reflect-config in the generated test sources will have the field set once and work but the one in main will fail with the duplicate
-					 *  and I don't know where this is coming from.
-					 *  You may try the data-rest sample and have a look at the following type hint in DataRestHints:
-					 *  	@TypeHint(typeNames = "org.springframework.hateoas.CollectionModel", fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true))
-					 */
-					if(!ObjectUtils.nullSafeEquals(fd, existingFd)) {
-						throw new IllegalStateException(String.format("nyi - need to merge field description %s with existing %s for type %s.", fd, existingFd, typename)); // merge of configuration necessary
-					}
+					existingFd.merge(fd);
 				} else {
 					cd.addFieldDescriptor(fd);
 				}

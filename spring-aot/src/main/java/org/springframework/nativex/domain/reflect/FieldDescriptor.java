@@ -23,7 +23,7 @@ package org.springframework.nativex.domain.reflect;
 public final class FieldDescriptor extends MemberDescriptor implements Comparable<FieldDescriptor> {
 
 	private boolean allowWrite = false;
-	
+
 	private boolean allowUnsafeAccess = false;
 
 	FieldDescriptor(String name, boolean allowWrite, boolean allowUnsafeAccess) {
@@ -93,6 +93,18 @@ public final class FieldDescriptor extends MemberDescriptor implements Comparabl
 
 	public FieldDescriptor copy() {
 		return new FieldDescriptor(name, allowWrite, allowUnsafeAccess);
+	}
+
+	public void merge(FieldDescriptor fd) {
+		if (!this.getName().equals(fd.getName())) {
+			throw new IllegalStateException("Attempt to merge a field descriptor for a field named "+this.getName()+" with a field descriptor for a field name "+fd.getName());
+		}
+		if (fd.allowUnsafeAccess) {
+			setAllowUnsafeAccess(true);
+		}
+		if (fd.allowWrite) {
+			setAllowWrite(true);
+		}
 	}
 	
 }

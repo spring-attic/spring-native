@@ -1913,7 +1913,6 @@ public class ResourcesHandler extends Handler {
 			}
 			*/
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
-//				resourcesRegistry.addResources(
 				collector.addResource(
 					dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class", false);
 			}
