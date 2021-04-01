@@ -2025,7 +2025,10 @@ public class Type {
 		// Note: Proxies hints will get discarded immediately if types are not around
 		List<String> proxyTypes = new ArrayList<>();
 		boolean typeMissing = false;
+		boolean typesSpecified = false;
+		boolean typenamesSpecified = false;
 		for (org.objectweb.asm.Type type : types) {
+			typesSpecified = true;
 			String typeName = type.getClassName();
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
@@ -2035,12 +2038,16 @@ public class Type {
 			}
 		}
 		for (String typeName : typeNames) {
+			typenamesSpecified = true;
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
 				proxyTypes.add(typeName);
 			} else {
 				typeMissing = true;
 			}
+		}
+		if (typesSpecified && typenamesSpecified) {
+			throw new IllegalStateException("ERROR: [Limitation] Don't mix typenames and explicit type references in a ProxyHint on type "+getDottedName());
 		}
 		if (!typeMissing) {
 			ch.addProxyDescriptor(new ProxyDescriptor(proxyTypes.toArray(new String[0])));

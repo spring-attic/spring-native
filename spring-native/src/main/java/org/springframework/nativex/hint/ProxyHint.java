@@ -25,7 +25,9 @@ import java.lang.annotation.RetentionPolicy;
  * sets of types need proxies.
  * Interface references via the {@link #types} member are the preferred form of use but sometimes due
  * to accessibility restrictions or nested types the type names may need to be specified in the {@link #typeNames}
- * member.
+ * member.  The ordering of types when building a proxy is important, therefore we don't allow mixing the class reference
+ * and string styles as it may not result in the ordering you entered the attributes in at the source level. In these cases
+ * it is best to simple use the typeNames attribute (the ordering within a particular attribute is guaranteed).
  *
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/DynamicProxy/">Dynamic proxy in native image</a>
  * @author Andy Clement
