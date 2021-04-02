@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.ComponentProcessor;

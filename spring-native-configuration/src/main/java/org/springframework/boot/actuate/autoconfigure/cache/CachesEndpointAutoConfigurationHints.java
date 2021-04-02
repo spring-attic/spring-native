@@ -21,7 +21,6 @@ import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationI
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /caches endpoint
 @NativeHint(trigger = CachesEndpointAutoConfiguration.class, types = {
