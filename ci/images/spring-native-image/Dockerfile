@@ -5,7 +5,7 @@ ARG MAVEN_VERSION=3.6.3
 ARG DOCKER_GID=130
 
 ENV PATH="/opt:/opt/apache-maven-$MAVEN_VERSION/bin:$PATH" \
-  DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update \
  && apt-get -y install git jq curl python unzip bc bsdmainutils build-essential gdb net-tools iptables iproute2 sudo \
