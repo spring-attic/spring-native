@@ -220,7 +220,6 @@ jobs:
         params:
           <<: *docker-hub-task-params
   - name: build-samples-stable-java11
-    old_name: build-21.0-dev-java11-samples
     public: true
     plan:
       - get: spring-native-stable-java11-image
@@ -240,7 +239,6 @@ jobs:
               params:
                 <<: *slack-fail-params
   - name: build-samples-dev-java11
-    old_name: build-master-java11-samples
     public: true
     plan:
       - get: spring-native-dev-java11-image

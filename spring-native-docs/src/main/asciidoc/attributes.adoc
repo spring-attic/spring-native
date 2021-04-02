@@ -5,7 +5,7 @@
 :hide-uri-scheme:
 :version: 0.9.2-SNAPSHOT
 
-:github-tag: master
+:github-tag: main
 :github-repo: spring-projects-experimental/spring-native
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
 :github-tree: https://github.com/{github-repo}/tree/{github-tag}

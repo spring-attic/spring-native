@@ -101,7 +101,7 @@ Note that using warnings rather than errors can cause serious problems for your 
 === Working with Multi-Modules projects
 
 The Spring Boot and AOT plugins should only be applied to the module that contains the main application class.
-We've shared https://github.com/spring-projects-experimental/spring-native/tree/master/samples/multi-modules/[a sample application showing how to set up multi-modules projects with Gradle and Maven].
+We've shared https://github.com/spring-projects-experimental/spring-native/tree/main/samples/multi-modules/[a sample application showing how to set up multi-modules projects with Gradle and Maven].
 
 
 [[troubleshooting-working-with-snapshots]]
