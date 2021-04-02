@@ -105,11 +105,11 @@ public class ReflectionHandler extends Handler {
 					methodsAndConstructors[m][p+1]=ps.get(p);
 				}
 			}
-			List<org.springframework.nativex.type.FieldDescriptor> fds = ad.getFieldDescriptors();
+			List<FieldDescriptor> fds = ad.getFieldDescriptors();
 			String[][] fields = new String[fds.size()][];
 			for (int f=0;f<fds.size();f++) {
-				org.springframework.nativex.type.FieldDescriptor fd = fds.get(f);
-				fields[f] = org.springframework.nativex.type.FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
+				FieldDescriptor fd = fds.get(f);
+				fields[f] = FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
 			}
 			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
 		}
@@ -161,15 +161,13 @@ public class ReflectionHandler extends Handler {
 			}
 		}
 		if (fields != null) {
-			for (String[] fs: fields) {
-				boolean allowUnsafeAccess = Boolean.valueOf(fs[1]);
-				boolean allowWrite = Boolean.valueOf(fs[2]);
-				FieldDescriptor fd = FieldDescriptor.of(fs[0],allowWrite,allowUnsafeAccess);
-				FieldDescriptor existingFd = cd.getFieldDescriptorNamed(fd.getName());
-				if (existingFd != null) {
-					existingFd.merge(fd);
+			for (String[] field: fields) {
+				FieldDescriptor fieldDescriptor = FieldDescriptor.of(field);
+				FieldDescriptor existingFieldDescriptor = cd.getFieldDescriptorNamed(fieldDescriptor.getName());
+				if (existingFieldDescriptor != null) {
+					existingFieldDescriptor.merge(fieldDescriptor);
 				} else {
-					cd.addFieldDescriptor(fd);
+					cd.addFieldDescriptor(fieldDescriptor);
 				}
 			}
 		}

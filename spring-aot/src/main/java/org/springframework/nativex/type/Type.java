@@ -49,6 +49,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationHints;
@@ -1970,12 +1971,11 @@ public class Type {
 				allowUnsafeAccess = (Boolean) value;
 			} else if (key.equals("allowWrite")) {
 				allowWrite = (Boolean) value;
-			}
-			else if (key.equals("name")) {
+			} else if (key.equals("name")) {
 				name = (String) value;
 			}
 		}
-		fds.add(new FieldDescriptor(name, allowUnsafeAccess, allowWrite));
+		fds.add(new FieldDescriptor(name, allowWrite, allowUnsafeAccess));
 	}
 
 	private void unpackMethodInfo(AnnotationNode methodInfo, List<MethodDescriptor> mds) {

@@ -16,17 +16,19 @@
 
 package org.springframework.nativex.domain.reflect;
 
+import java.util.List;
+
 /**
  *
  * @author Andy Clement
  */
-public final class FieldDescriptor extends MemberDescriptor implements Comparable<FieldDescriptor> {
+public final class FieldDescriptor extends MemberDescriptor {
 
 	private boolean allowWrite = false;
 
 	private boolean allowUnsafeAccess = false;
 
-	FieldDescriptor(String name, boolean allowWrite, boolean allowUnsafeAccess) {
+	public FieldDescriptor(String name, boolean allowWrite, boolean allowUnsafeAccess) {
 		super(name);
 		this.allowWrite = allowWrite;
 		this.allowUnsafeAccess = allowUnsafeAccess;
@@ -73,11 +75,6 @@ public final class FieldDescriptor extends MemberDescriptor implements Comparabl
 		return string.toString();
 	}
 
-	@Override
-	public int compareTo(FieldDescriptor o) {
-		return getName().compareTo(o.getName());
-	}
-
 	public void setAllowWrite(boolean b) {
 		this.allowWrite = b;
 	}
@@ -87,8 +84,7 @@ public final class FieldDescriptor extends MemberDescriptor implements Comparabl
 	}
 
 	public static FieldDescriptor of(String name, boolean allowWrite, boolean allowUnsafeAccess) {
-		FieldDescriptor fd = new FieldDescriptor(name, allowWrite, allowUnsafeAccess);
-		return fd;
+		return new FieldDescriptor(name, allowWrite, allowUnsafeAccess);
 	}
 
 	public FieldDescriptor copy() {
@@ -105,6 +101,32 @@ public final class FieldDescriptor extends MemberDescriptor implements Comparabl
 		if (fd.allowWrite) {
 			setAllowWrite(true);
 		}
+	}
+
+	public static String[][] toStringArray(List<FieldDescriptor> fds) {
+		if (fds == null) {
+			return null;
+		}
+		String[][] array = new String[fds.size()][];
+		for (int m = 0; m < fds.size(); m++) {
+			FieldDescriptor fd = fds.get(m);
+			array[m] = toStringArray(fd.getName(), fd.allowUnsafeAccess, fd.allowWrite);
+		}
+		return array;
+	}
+
+	public static String[] toStringArray(String fieldname, boolean allowUnsafeAccess, boolean allowWrite) {
+		String[] array = new String[3];
+		array[0] = fieldname;
+		array[1] = Boolean.toString(allowUnsafeAccess);
+		array[2] = Boolean.toString(allowWrite);
+		return array;
+	}
+
+	public static FieldDescriptor of(String[] array) {
+		boolean allowUnsafeAccess = Boolean.valueOf(array[1]);
+		boolean allowWrite = Boolean.valueOf(array[2]);
+		return FieldDescriptor.of(array[0], allowWrite, allowUnsafeAccess);
 	}
 	
 }

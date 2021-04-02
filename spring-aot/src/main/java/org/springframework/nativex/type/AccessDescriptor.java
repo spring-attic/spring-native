@@ -19,6 +19,7 @@ package org.springframework.nativex.type;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 
 public class AccessDescriptor {

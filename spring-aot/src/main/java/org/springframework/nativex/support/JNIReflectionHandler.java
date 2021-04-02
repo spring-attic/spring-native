@@ -49,7 +49,7 @@ public class JNIReflectionHandler extends Handler {
 	public void addAccess(String typename, AccessDescriptor accessDescriptor) {
 		addAccess(typename, 
 				MethodDescriptor.toStringArray(accessDescriptor.getMethodDescriptors()),
-				org.springframework.nativex.type.FieldDescriptor.toStringArray(accessDescriptor.getFieldDescriptors()), 
+				FieldDescriptor.toStringArray(accessDescriptor.getFieldDescriptors()), 
 				true, 
 				AccessBits.getFlags(accessDescriptor.getAccessBits()));
 	}
@@ -69,10 +69,10 @@ public class JNIReflectionHandler extends Handler {
 					methodsAndConstructors[m][p+1]=ps.get(p);
 				}
 			}
-			List<org.springframework.nativex.type.FieldDescriptor> fds = ad.getFieldDescriptors();
+			List<FieldDescriptor> fds = ad.getFieldDescriptors();
 			String[][] fields = new String[fds.size()][];
 			for (int m=0;m<mds.size();m++) {
-				org.springframework.nativex.type.FieldDescriptor fieldDescriptor = fds.get(m);
+				FieldDescriptor fieldDescriptor = fds.get(m);
 				if (fieldDescriptor.isAllowUnsafeAccess()) {
 					fields[m]=new String[] {fieldDescriptor.getName(),Boolean.toString(fieldDescriptor.isAllowUnsafeAccess())};
 				} else {

@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Andy Clement
  */
-public final class MethodDescriptor extends MemberDescriptor implements Comparable<MethodDescriptor> {
+public final class MethodDescriptor extends MemberDescriptor {
 
 	public final static String CONSTRUCTOR_NAME = "<init>";
 	
@@ -77,11 +77,6 @@ public final class MethodDescriptor extends MemberDescriptor implements Comparab
 		buildToStringProperty(string, "name", this.name);
 		buildToStringProperty(string, "parameterTypes", this.parameterTypes);
 		return string.toString();
-	}
-
-	@Override
-	public int compareTo(MethodDescriptor o) {
-		return getName().compareTo(o.getName());
 	}
 	
 	public static MethodDescriptor of(String name, String... parameterTypes) {

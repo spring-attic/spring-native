@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.Flag;
  * @author Andy Clement
  * @see ReflectionDescriptor
  */
-public final class ClassDescriptor implements Comparable<ClassDescriptor> {
+public final class ClassDescriptor {
 
 	private String name; // e.g. java.lang.Class
 
@@ -111,11 +111,6 @@ public final class ClassDescriptor implements Comparable<ClassDescriptor> {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
-	}
-
-	@Override
-	public int compareTo(ClassDescriptor o) {
-		return getName().compareTo(o.getName());
 	}
 
 	public Set<Flag> getFlags() {

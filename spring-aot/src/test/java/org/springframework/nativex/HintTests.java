@@ -19,9 +19,9 @@ package org.springframework.nativex;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.util.Collections;
@@ -32,6 +32,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
@@ -229,7 +230,7 @@ public class HintTests {
 		assertNotNull(accessDescriptor);
 		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
 		assertEquals(0,accessDescriptor.getMethodDescriptors().size());
-		org.springframework.nativex.type.FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
+		FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
 		assertEquals("foo",fd.getName());
 		assertTrue(fd.isAllowUnsafeAccess());
 	}
