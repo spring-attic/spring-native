@@ -20,7 +20,7 @@ RUN cd /opt \
  && cd graal/vm \
  && mx --disable-polyglot --disable-libpolyglot --dynamicimports /substratevm build
 
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 ENV JAVA_HOME=/opt/java
 ENV PATH="$JAVA_HOME/bin:$PATH"
