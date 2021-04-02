@@ -34,7 +34,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +41,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +64,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -1163,7 +1160,7 @@ public class TypeSystem {
 
 	public void walkJar(Path jarfile, ArrayList<Path> classfiles) {
 		try {
-			FileSystem jarfs = FileSystems.newFileSystem(jarfile,null);
+			FileSystem jarfs = FileSystems.newFileSystem(jarfile,(ClassLoader)null);
 			Iterable<Path> rootDirectories = jarfs.getRootDirectories();
 			TypeSystem.ClassCollectorFileVisitor x = new TypeSystem.ClassCollectorFileVisitor();
 			for (Path path: rootDirectories) {
