@@ -17,6 +17,7 @@
 package org.springframework.kafka.annotation;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
@@ -42,6 +43,7 @@ import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -96,7 +98,13 @@ import org.springframework.nativex.type.NativeConfiguration;
 				StringSerializer.class,
 				JsonSerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
-	}
+	},
+	proxies = @ProxyHint(types = {
+			Consumer.class,
+			org.springframework.aop.SpringProxy.class,
+			org.springframework.aop.framework.Advised.class,
+			org.springframework.core.DecoratingProxy.class
+	})
 )
 public class KafkaHints implements NativeConfiguration {
 }
