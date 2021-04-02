@@ -10,14 +10,14 @@
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>kafka</artifactId>
+	<artifactId>kafka-streams</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>kafka</name>
-	<description>GraalVM Apache Kafka Demo</description>
+	<description>GraalVM Apache Kafka Streams Demo</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<main.class>com.example.kafka.KafkaApplication</main.class>
+		<main.class>com.example.kafka.KafkaStreamsApplication</main.class>
 	</properties>
 
 	<dependencies>
@@ -36,6 +36,15 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

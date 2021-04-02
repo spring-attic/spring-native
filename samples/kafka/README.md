@@ -1,3 +1,3 @@
-## Kafka "Hello, world!" App
+## Apache Kafka "Hello, world!" App
 
-Spring Boot project with Kafka.
+Spring Boot project with Apache Kafka.

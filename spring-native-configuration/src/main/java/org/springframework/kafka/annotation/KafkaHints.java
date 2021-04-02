@@ -21,13 +21,20 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
-import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.errors.DefaultProductionExceptionHandler;
+import org.apache.kafka.streams.errors.LogAndFailExceptionHandler;
+import org.apache.kafka.streams.processor.DefaultPartitionGrouper;
+import org.apache.kafka.streams.processor.FailOnInvalidTimestamp;
+import org.apache.kafka.streams.processor.internals.StreamsPartitionAssignor;
+import org.apache.kafka.streams.processor.internals.assignment.FallbackPriorTaskAssignor;
+import org.apache.kafka.streams.processor.internals.assignment.HighAvailabilityTaskAssignor;
+import org.apache.kafka.streams.processor.internals.assignment.StickyTaskAssignor;
+import org.springframework.kafka.config.*;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -106,5 +113,35 @@ import org.springframework.nativex.type.NativeConfiguration;
 			org.springframework.core.DecoratingProxy.class
 	})
 )
+
+@NativeHint(trigger = StreamsBuilder.class,
+	types = {
+		@TypeHint(types = {
+				DefaultPartitionGrouper.class,
+				StreamsPartitionAssignor.class,
+				DefaultProductionExceptionHandler.class,
+				FailOnInvalidTimestamp.class,
+				HighAvailabilityTaskAssignor.class,
+				StickyTaskAssignor.class,
+				FallbackPriorTaskAssignor.class,
+				LogAndFailExceptionHandler.class
+		}),
+		@TypeHint(types = {
+				Serdes.class,
+				Serdes.ByteArraySerde.class,
+				Serdes.BytesSerde.class,
+				Serdes.ByteBufferSerde.class,
+				Serdes.DoubleSerde.class,
+				Serdes.FloatSerde.class,
+				Serdes.IntegerSerde.class,
+				Serdes.LongSerde.class,
+				Serdes.ShortSerde.class,
+				Serdes.StringSerde.class,
+				Serdes.UUIDSerde.class,
+				Serdes.VoidSerde.class
+		})
+	}
+)
+
 public class KafkaHints implements NativeConfiguration {
 }
