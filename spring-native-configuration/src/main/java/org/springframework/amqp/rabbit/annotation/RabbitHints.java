@@ -15,13 +15,25 @@
  */
 package org.springframework.amqp.rabbit.annotation;
 
+import org.springframework.amqp.rabbit.connection.ChannelProxy;
+import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
+import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
+import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 
-// There is no Rabbit sample currently in the repo to confirm this is correct
 @NativeHint(trigger=RabbitListenerConfigurationSelector.class,
 	resources = @ResourceHint(patterns = "rabbitmq-amqp-client.properties"),
-	types = @TypeHint(types= RabbitBootstrapConfiguration.class), abortIfTypesMissing = true)
+	types = @TypeHint(types= {
+			RabbitBootstrapConfiguration.class,
+			MultiRabbitBootstrapConfiguration.class,
+			RabbitListenerAnnotationBeanPostProcessor.class,
+			RabbitListenerEndpointRegistrar.class,
+			RabbitListenerEndpointRegistry.class
+	}),
+	proxies = @ProxyHint(types = ChannelProxy.class),
+	abortIfTypesMissing = true)
+
 public class RabbitHints implements NativeConfiguration { }
