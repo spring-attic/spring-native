@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
 @SpringBootApplication
@@ -28,7 +29,10 @@ public class KafkaApplication {
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, String> template) {
+	public ApplicationRunner runner(KafkaTemplate<String, String> template,
+				ConsumerFactory<String, String> cf) {
+
+		cf.addListener(new ConsumerFactory.Listener() { });
 		return args -> {
 			template.send("graal", "foo");
 			System.out.println("++++++Sent:foo");
