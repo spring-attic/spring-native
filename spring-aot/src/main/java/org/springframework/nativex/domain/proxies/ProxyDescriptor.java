@@ -20,19 +20,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reflection information about a single class.
+ * Describes a proxy via a set of types it should implement.
  *
  * @author Andy Clement
  */
 public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 
-	private List<String> interfaces; // e.g. java.io.Serializable
+	private List<String> types; // e.g. java.io.Serializable
 
 	ProxyDescriptor() {
 	}
 
-	ProxyDescriptor(List<String> interfaces) {
-		this.interfaces = interfaces;
+	public ProxyDescriptor(List<String> types) {
+		this.types = types;
 	}
 
 	@Override
@@ -45,13 +45,13 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 		}
 		ProxyDescriptor other = (ProxyDescriptor) o;
 		boolean result = true;
-		result = result && nullSafeEquals(this.interfaces, other.interfaces);
+		result = result && nullSafeEquals(this.types, other.types);
 		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = nullSafeHashCode(this.interfaces);
+		int result = nullSafeHashCode(this.types);
 		return result;
 	}
 
@@ -72,7 +72,7 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		buildToStringProperty(string, "interfaces", this.interfaces);
+		buildToStringProperty(string, "interfaces", this.types);
 		return string.toString();
 	}
 
@@ -84,8 +84,8 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 
 	@Override
 	public int compareTo(ProxyDescriptor o) {
-		List<String> l = this.interfaces;
-		List<String> r = o.interfaces;
+		List<String> l = this.types;
+		List<String> r = o.types;
 		if (l.size() != r.size()) {
 			return l.size() - r.size();
 		}
@@ -104,17 +104,16 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 		return pd;
 	}
 
-	public List<String> getInterfaces() {
-		return this.interfaces;
-	}
-
 	public void setInterfaces(List<String> interfaces) {
-		this.interfaces = new ArrayList<>();
-		this.interfaces.addAll(interfaces);
+		this.types = new ArrayList<>();
+		this.types.addAll(interfaces);
 	}
 
 	public boolean containsInterface(String intface) {
-		return interfaces.contains(intface);
+		return types.contains(intface);
 	}
 
+	public List<String> getTypes() {
+		return types;
+	}
 }

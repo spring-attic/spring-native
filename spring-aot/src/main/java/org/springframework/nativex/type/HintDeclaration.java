@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 
 /**
  * 

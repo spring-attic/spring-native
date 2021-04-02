@@ -19,6 +19,8 @@ package org.springframework.nativex.support;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+
 /**
  * 
  * @author Andy Clement
@@ -29,8 +31,8 @@ public class DynamicProxiesHandler extends Handler {
 		super(collector);
 	}
 
-	public boolean addProxy(org.springframework.nativex.type.ProxyDescriptor pd) {
-		return addProxy(Arrays.asList(pd.getTypes()));
+	public boolean addProxy(ProxyDescriptor pd) {
+		return addProxy(pd.getTypes());
 	}
 
 	public boolean addProxy(List<String> interfaceNames) {

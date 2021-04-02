@@ -32,6 +32,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
@@ -45,7 +46,6 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintApplication;
 import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
@@ -108,7 +108,7 @@ public class HintTests {
 		HintApplication hint = hints.get(0);
 		List<ProxyDescriptor> proxies= hint.getProxyDescriptors();
 		assertEquals(1,proxies.size());
-		String[] types = proxies.get(0).getTypes();
+		String[] types = proxies.get(0).getTypes().toArray(new String[] {}); 
 		assertEquals("java.lang.String",types[0]);
 		assertEquals("java.lang.Integer",types[1]);
 	}

@@ -25,10 +25,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.MethodDescriptor;
-import org.springframework.nativex.type.ProxyDescriptor;
 import org.springframework.nativex.type.ResourcesDescriptor;
 
 /**

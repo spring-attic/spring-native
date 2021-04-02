@@ -37,7 +37,7 @@ class ProxiesDescriptorJsonConverter {
 
 	public JSONArray toJsonArray(ProxyDescriptor pd) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<String> interfaces = pd.getInterfaces();
+		List<String> interfaces = pd.getTypes();
 		for (String intface: interfaces) {
 			jsonArray.put(intface);
 		}

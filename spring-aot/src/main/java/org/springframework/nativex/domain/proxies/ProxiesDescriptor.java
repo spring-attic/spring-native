@@ -76,29 +76,11 @@ public class ProxiesDescriptor {
 	}
 
 	public void consume(Consumer<List<String>> consumer) {
-		proxyDescriptors.stream().forEach(pd -> consumer.accept(pd.getInterfaces()));
+		proxyDescriptors.stream().forEach(pd -> consumer.accept(pd.getTypes()));
 	}
 
 	public void merge(ProxiesDescriptor otherProxyDescriptor) {
 		proxyDescriptors.addAll(otherProxyDescriptor.getProxyDescriptors());
 	}
-
-//	public boolean hasClassDescriptor(String string) {
-//		for (ProxyDescriptor cd: classDescriptors) {
-//			if (cd.getName().equals(string)) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//
-//	public ProxyDescriptor getClassDescriptor(String type) {
-//		for (ProxyDescriptor cd: classDescriptors) {
-//			if (cd.getName().equals(type)) {
-//				return cd;
-//			}
-//		}
-//		return null;
-//	}
 
 }

@@ -49,6 +49,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
@@ -2054,7 +2055,7 @@ public class Type {
 			throw new IllegalStateException("ERROR: [Limitation] Don't mix typenames and explicit type references in a ProxyHint on type "+getDottedName());
 		}
 		if (!typeMissing) {
-			ch.addProxyDescriptor(new ProxyDescriptor(proxyTypes.toArray(new String[0])));
+			ch.addProxyDescriptor(new ProxyDescriptor(proxyTypes));
 		}
 	}
 
