@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.init.InitializationJsonMarshaller;
+
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/REFLECTION.md
  * 
@@ -81,6 +84,14 @@ public class ProxiesDescriptor {
 
 	public void merge(ProxiesDescriptor otherProxyDescriptor) {
 		proxyDescriptors.addAll(otherProxyDescriptor.getProxyDescriptors());
+	}
+
+	public static ProxiesDescriptor fromJSON(String jsonString) {
+		return ProxiesDescriptorJsonMarshaller.read(jsonString);
+	}
+
+	public String toJSON() {
+		return ProxiesDescriptorJsonMarshaller.write(this);
 	}
 
 }

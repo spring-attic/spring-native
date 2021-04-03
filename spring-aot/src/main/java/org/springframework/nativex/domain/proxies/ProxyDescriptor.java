@@ -116,4 +116,5 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 	public List<String> getTypes() {
 		return types;
 	}
+
 }

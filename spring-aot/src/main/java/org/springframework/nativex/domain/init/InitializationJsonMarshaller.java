@@ -17,6 +17,7 @@
 package org.springframework.nativex.domain.init;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,28 +35,31 @@ import org.springframework.nativex.json.JSONObject;
 public class InitializationJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
+	
+	public static String write(InitializationDescriptor descriptor) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			write(descriptor,baos);
+			return baos.toString();
+		} catch (IOException ex) {
+			throw new IllegalStateException("Unable to write initialization descriptor", ex);
+		}
+	}
 
-	public void write(InitializationDescriptor metadata, OutputStream outputStream)
-			throws IOException {
+	public static void write(InitializationDescriptor metadata, OutputStream outputStream) {
 		try {
 			InitializationJsonConverter converter = new InitializationJsonConverter();
 			JSONObject jsonObject = converter.toJsonArray(metadata);
 			outputStream.write(jsonObject.toString(2).getBytes(StandardCharsets.UTF_8));
-		}
-		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
-			}
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
-			}
-			throw new IllegalStateException(ex);
+		} catch (Exception ex) {
+			throw new IllegalStateException("Unable to write initialization descriptor", ex);
 		}
 	}
 	
-	public static InitializationDescriptor read(String input) throws Exception {
+	public static InitializationDescriptor read(String input) {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8))) {
 			return read(bais);
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to read JSON string", e);
 		}
 	}
 
@@ -67,13 +71,13 @@ public class InitializationJsonMarshaller {
 
 	public static InitializationDescriptor read(InputStream inputStream) {
 		try {
-			return toDelayInitDescriptor(new JSONObject(toString(inputStream)));
+			return read(new JSONObject(toString(inputStream)));
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to read InitialiationDescriptor from inputstream", e);
 		}
 	}
 	
-	private static InitializationDescriptor toDelayInitDescriptor(JSONObject object) throws Exception {
+	private static InitializationDescriptor read(JSONObject object) throws Exception {
 		InitializationDescriptor rd = new InitializationDescriptor();
 		JSONArray array = object.getJSONArray("buildTimeInitialization");
 		for (int i=0;i<array.length();i++) {

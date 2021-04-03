@@ -16,9 +16,6 @@
 
 package org.springframework.nativex.support;
 
-import java.util.Objects;
-import java.util.Set;
-
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 
 /**
@@ -27,33 +24,28 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
  */
 public class InitializationHandler extends Handler {
 	
-
 	InitializationHandler(ConfigurationCollector collector) {
 		super(collector);
 	}
 	
-
 	public void registerInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
-		Set<String> buildtimeClasses = initializationDescriptor.getBuildtimeClasses();
-		if (buildtimeClasses.size()!=0) {
-			buildtimeClasses.stream()
-			.map(c -> ts.resolveDotted(c, true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
-			.forEach(collector::initializeAtBuildTime);
-		}
-		Set<String> runtimeClasses = initializationDescriptor.getRuntimeClasses();
-		if (runtimeClasses.size()!=0) {
-			runtimeClasses.stream()
-			.map(c -> ts.resolveDotted(c,true)/*cl.findClassByName(c, false)*/).filter(Objects::nonNull)
-			.forEach(collector::initializeAtRunTime);
-		}
-		Set<String> buildtimePackages = initializationDescriptor.getBuildtimePackages();
-		if (buildtimePackages.size()!=0) {
-			collector.initializeAtBuildTimePackages(buildtimePackages.toArray(new String[0]));
-		}
-		Set<String> runtimePackages = initializationDescriptor.getRuntimePackages();
-		if (runtimePackages.size()!=0) {
-			collector.initializeAtRunTimePackages(runtimePackages.toArray(new String[0]));
-		}
+		collector.addInitializationDescriptor(initializationDescriptor);
 	}
-	
+
+	public void initializeClassesAtBuildTime(String... typenames) {
+		collector.initializeClassesAtBuildTime(typenames);
+	}
+
+	public void initializeClassesAtRunTime(String... typenames) {
+		collector.initializeClassesAtRunTime(typenames);
+	}
+
+	public void initializePackagesAtBuildTime(String... packageNames) {
+		collector.initializePackagesAtBuildTime(packageNames);
+	}
+
+	public void initializePackagesAtRunTime(String... packageNames) {
+		collector.initializePackagesAtRunTime(packageNames);
+	}
+
 }

@@ -285,6 +285,10 @@ public class ConfigurationCollector {
 		}
 	}
 
+	public void addInitializationDescriptor(InitializationDescriptor initializationDescriptor) {
+		this.initializationDescriptor.merge(initializationDescriptor);
+	}
+
 	public void addJNIClassDescriptor(ClassDescriptor classDescriptor) {
 		if (!verifyType(classDescriptor)) {
 			return;
@@ -336,50 +340,27 @@ public class ConfigurationCollector {
 		}
 	}
 
-	public void initializeAtBuildTime(Type type) {
-		initializeAtBuildTime(type.getDottedName());
-	}
-
-	public void initializeAtRunTime(Type type) {
-		initializeAtRunTime(type.getDottedName());
-	}
-
-	public void initializeAtRunTime(List<Type> types) {
-		for (Type type: types) {
-			initializationDescriptor.addRuntimeClass(type.getDottedName());
-		}
-	}
-
-	public void initializeAtBuildTime(List<Type> types) {
-		for (Type type: types) {
-			initializationDescriptor.addBuildtimeClass(type.getDottedName());
-		}
-		for (Type type: types) {
-			initializeAtBuildTime(type.getDottedName());
-		}
-	}
-
-	public void initializeAtRunTime(String... typenames) {
-		for (String typename: typenames) {
-			initializationDescriptor.addRuntimeClass(typename);
-		}
-	}
-
-	public void initializeAtBuildTime(String... typenames) {
+	public void initializeClassesAtBuildTime(String... typenames) {
 		for (String typename: typenames) {
 			initializationDescriptor.addBuildtimeClass(typename);
 		}
 	}
 
-	public void initializeAtBuildTimePackages(String... packageNames) {
-		for (String packageName: packageNames) {
-			initializationDescriptor.addBuildtimePackage(packageName);
+	public void initializeClassesAtRunTime(String... typenames) {
+		for (String typename: typenames) {
+			initializationDescriptor.addRuntimeClass(typename);
 		}
 	}
 
-	public void initializeAtRunTimePackages(String... packageNames) {
-		for (String packageName: packageNames) {
-			initializationDescriptor.addRuntimePackage(packageName);
+	public void initializePackagesAtBuildTime(String... packagenames) {
+		for (String packagename: packagenames) {
+			initializationDescriptor.addBuildtimePackage(packagename);
+		}
+	}
+
+	public void initializePackagesAtRunTime(String... packagenames) {
+		for (String packagename: packagenames) {
+			initializationDescriptor.addRuntimePackage(packagename);
 		}
 	}
 

@@ -17,12 +17,14 @@
 package org.springframework.nativex.domain.resources;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
@@ -35,8 +37,16 @@ public class ResourcesJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public static void write(ResourcesDescriptor metadata, OutputStream outputStream)
-			throws IOException {
+	public static String write(ResourcesDescriptor descriptor) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			write(descriptor,baos);
+			return baos.toString();
+		} catch (IOException ex) {
+			throw new IllegalStateException("Unable to write resources descriptor", ex);
+		}
+	}
+
+	public static void write(ResourcesDescriptor metadata, OutputStream outputStream) {
 		try {
 			ResourcesJsonConverter converter = new ResourcesJsonConverter();
 			JSONObject jsonObject = converter.toJsonArray(metadata);
@@ -45,19 +55,15 @@ public class ResourcesJsonMarshaller {
 					.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
-			}
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
-			}
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	public static ResourcesDescriptor read(String input) throws Exception {
+	public static ResourcesDescriptor read(String input) {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8))) {
 			return read(bais);
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -98,25 +104,6 @@ public class ResourcesJsonMarshaller {
 		}
 		return rd;
 	}
-
-//	private static FieldDescriptor toFieldDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		boolean allowWrite = object.optBoolean("allowWrite");
-//		return new FieldDescriptor(name,allowWrite);
-//	}
-//
-//	private static MethodDescriptor toMethodDescriptor(JSONObject object) throws Exception {
-//		String name = object.getString("name");
-//		JSONArray parameterTypes = object.optJSONArray("parameterTypes");
-//		List<String> listOfParameterTypes = null;
-//		if (parameterTypes != null) {
-//			listOfParameterTypes = new ArrayList<>();
-//			for (int i=0;i<parameterTypes.length();i++) {
-//				listOfParameterTypes.add(parameterTypes.getString(i));
-//			}
-//		}
-//		return new MethodDescriptor(name, listOfParameterTypes);
-//	}
 
 	private static String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();

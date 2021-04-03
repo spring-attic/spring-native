@@ -19,6 +19,9 @@ package org.springframework.nativex.domain.resources;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
+import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
+
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/RESOURCES.md
  *
@@ -90,4 +93,11 @@ public class ResourcesDescriptor {
 		this.bundles.addAll(bundles);
 	}
 
+	public static ResourcesDescriptor fromJSON(String jsonString) {
+		return ResourcesJsonMarshaller.read(jsonString);
+	}
+
+	public String toJSON() {
+		return ResourcesJsonMarshaller.write(this);
+	}
 }

@@ -73,7 +73,7 @@ public class SpringAnalyzer {
 		collector.setTypeSystem(typeSystem);
 		// This cannot be done via other means because those other means attempt resolution to see if it is a valid name.
 		// Whereas it may not be compiled yet
-		collector.initializeAtBuildTime("org.springframework.aot.StaticSpringFactories");
+		collector.initializeClassesAtBuildTime("org.springframework.aot.StaticSpringFactories");
 		dynamicProxiesHandler.setTypeSystem(typeSystem);
 		reflectionHandler.setTypeSystem(typeSystem);
 		jniReflectionHandler.setTypeSystem(typeSystem);

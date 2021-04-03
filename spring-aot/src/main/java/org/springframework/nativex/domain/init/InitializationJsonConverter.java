@@ -36,6 +36,7 @@ class InitializationJsonConverter {
 			jsonArray.put(toPackageJsonObject(p));
 		}
 		object.put("buildTimeInitialization", jsonArray);
+		jsonArray = new JSONArray();
 		for (String p : metadata.getRuntimeClasses()) {
 			jsonArray.put(toClassJsonObject(p));
 		}

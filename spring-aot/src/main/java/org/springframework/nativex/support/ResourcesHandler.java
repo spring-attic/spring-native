@@ -496,7 +496,7 @@ public class ResourcesHandler extends Handler {
 
 		@Override
 		public void initializeAtBuildTime(Type type) {
-			collector.initializeAtBuildTime(type.getDottedName());
+			initializationHandler.initializeClassesAtBuildTime(type.getDottedName());
 		}
 
 		@Override

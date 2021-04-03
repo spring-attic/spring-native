@@ -17,6 +17,7 @@
 package org.springframework.nativex.domain.proxies;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,27 +37,31 @@ public class ProxiesDescriptorJsonMarshaller {
 
 	private static final int BUFFER_SIZE = 4098;
 
-	public static void write(ProxiesDescriptor metadata, OutputStream outputStream)
-			throws IOException {
+	public static String write(ProxiesDescriptor descriptor) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			write(descriptor,baos);
+			return baos.toString();
+		} catch (IOException ex) {
+			throw new IllegalStateException("Unable to write proxies descriptor", ex);
+		}
+	}
+	
+	public static void write(ProxiesDescriptor metadata, OutputStream outputStream) {
 		try {
 			ProxiesDescriptorJsonConverter converter = new ProxiesDescriptorJsonConverter();
 			JSONArray jsonArray = converter.toJsonArray(metadata);
 			outputStream.write(jsonArray.toString(2).getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
-			if (ex instanceof IOException) {
-				throw (IOException) ex;
-			}
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
-			}
 			throw new IllegalStateException(ex);
 		}
 	}
 	
-	public static ProxiesDescriptor read(String input) throws Exception {
+	public static ProxiesDescriptor read(String input) {
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8))) {
 			return read(bais);
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 

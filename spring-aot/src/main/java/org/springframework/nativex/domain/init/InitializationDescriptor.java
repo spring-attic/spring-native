@@ -80,8 +80,7 @@ public class InitializationDescriptor {
 	
 	public String toDetailedString() {
 		StringBuilder result = new StringBuilder();
-		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes    #%s runtime-init-packages\n",
-				buildtimeClasses.size(), buildtimePackages.size(), runtimeClasses.size(), runtimePackages.size()));
+		result.append(toString()).append("\n");
 		result.append("buildtime classes:\n");
 		this.buildtimeClasses.forEach(cd -> {
 			result.append(String.format("%s\n",cd));
@@ -104,21 +103,28 @@ public class InitializationDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes    #%s runtime-init-packages\n",
+		result.append(String.format("#%s buildtime-init-classes   #%s buildtime-init-packages   #%s runtime-init-classes   #%s runtime-init-packages\n",
 				buildtimeClasses.size(), buildtimePackages.size(), runtimeClasses.size(), runtimePackages.size()));
 		return result.toString();
 	}
 
 	public boolean isEmpty() {
-		return buildtimeClasses.isEmpty() && runtimeClasses.isEmpty();
+		return buildtimeClasses.isEmpty() && runtimeClasses.isEmpty() && buildtimePackages.isEmpty() && runtimePackages.isEmpty();
 	}
 
-	public static InitializationDescriptor of(String jsonString) {
-		try {
-			return InitializationJsonMarshaller.read(jsonString);
-		} catch (Exception e) {
-			throw new IllegalStateException("Unable to read json:\n"+jsonString, e);
-		}
+	public static InitializationDescriptor fromJSON(String jsonString) {
+		return InitializationJsonMarshaller.read(jsonString);
+	}
+
+	public String toJSON() {
+		return InitializationJsonMarshaller.write(this);
+	}
+
+	public void merge(InitializationDescriptor initializationDescriptor) {
+		this.buildtimeClasses.addAll(initializationDescriptor.getBuildtimeClasses());
+		this.buildtimePackages.addAll(initializationDescriptor.getBuildtimePackages());
+		this.runtimeClasses.addAll(initializationDescriptor.getRuntimeClasses());
+		this.runtimePackages.addAll(initializationDescriptor.getRuntimePackages());
 	}
 
 }
