@@ -16,14 +16,6 @@
 
 package org.springframework.kafka.annotation;
 
-import io.confluent.kafka.schemaregistry.client.rest.entities.ErrorMessage;
-import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaString;
-import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaTypeConverter;
-import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaRequest;
-import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaResponse;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.RangeAssignor;
@@ -42,7 +34,6 @@ import org.apache.kafka.streams.processor.internals.StreamsPartitionAssignor;
 import org.apache.kafka.streams.processor.internals.assignment.FallbackPriorTaskAssignor;
 import org.apache.kafka.streams.processor.internals.assignment.HighAvailabilityTaskAssignor;
 import org.apache.kafka.streams.processor.internals.assignment.StickyTaskAssignor;
-import org.springframework.kafka.config.*;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -66,6 +57,15 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
+
+import io.confluent.kafka.schemaregistry.client.rest.entities.ErrorMessage;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaString;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaTypeConverter;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaRequest;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaResponse;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 
 @NativeHint(trigger=KafkaListenerConfigurationSelector.class,
 	types = {
@@ -152,6 +152,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				Serdes.StringSerde.class,
 				Serdes.UUIDSerde.class,
 				Serdes.VoidSerde.class
+		})
+})
 @NativeHint(trigger = KafkaAvroSerializer.class,
 	types = {
 		@TypeHint(types = {
@@ -167,6 +169,5 @@ import org.springframework.nativex.type.NativeConfiguration;
 		})
 	}
 )
-
 public class KafkaHints implements NativeConfiguration {
 }
