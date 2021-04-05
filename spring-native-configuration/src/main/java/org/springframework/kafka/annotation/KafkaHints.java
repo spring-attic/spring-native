@@ -16,6 +16,14 @@
 
 package org.springframework.kafka.annotation;
 
+import io.confluent.kafka.schemaregistry.client.rest.entities.ErrorMessage;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaString;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaTypeConverter;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaRequest;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaResponse;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.RangeAssignor;
@@ -24,6 +32,7 @@ import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
+import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -106,5 +115,22 @@ import org.springframework.nativex.type.NativeConfiguration;
 			org.springframework.core.DecoratingProxy.class
 	})
 )
+
+@NativeHint(trigger = KafkaAvroSerializer.class,
+	types = {
+		@TypeHint(types = {
+				ErrorMessage.class,
+				KafkaAvroSerializer.class,
+				KafkaAvroDeserializer.class,
+				RegisterSchemaRequest.class,
+				RegisterSchemaResponse.class,
+				RuntimeDelegateImpl.class,
+				SchemaString.class,
+				SchemaTypeConverter.class,
+				TopicNameStrategy.class
+		})
+	}
+)
+
 public class KafkaHints implements NativeConfiguration {
 }
