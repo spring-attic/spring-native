@@ -18,19 +18,26 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
 // Hitting /metrics endpoint - needs tests
-// TODO likely incomplete, not tested
 @NativeHint(trigger = MetricsEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
 		PropertiesConfigAdapter.class,
 		SimplePropertiesConfigAdapter.class,
-		org.springframework.boot.actuate.metrics.MetricsEndpoint.ListNamesResponse.class,
 		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary[].class,
-	})
+	}),
+	@TypeHint(types = {
+		MetricsEndpoint.class,
+		MetricsEndpoint.MetricResponse.class,
+		MetricsEndpoint.Sample.class,
+		MetricsEndpoint.AvailableTag.class, 
+		MetricsEndpoint.ListNamesResponse.class
+	}, access=AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
 })
 public class MetricsEndpointAutoConfigurationHints implements NativeConfiguration {
 }
