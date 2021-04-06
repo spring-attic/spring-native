@@ -64,9 +64,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 					continue;
 				}
 				if (added.add(typename)) {
-					Set<String> added = 
-							imageContext.addReflectiveAccessHierarchy(typename, 
-									AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS);
+					Set<String> added = imageContext.addReflectiveAccessHierarchy(typename, AccessBits.FULL_REFLECTION);
 					analyze(imageContext, type, added);
 					imageContext.log("WebComponentProcessor: adding reflective access to "+added+" (whilst introspecting controller "+componentType+")");
 				}
@@ -84,8 +82,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 				}
 				String dottedFieldTypename = fieldTypename.replace("/", ".");
 				if (!ignore(dottedFieldTypename) && added.add(dottedFieldTypename)) {
-					added.addAll(imageContext.addReflectiveAccessHierarchy(dottedFieldTypename, 
-							AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_CONSTRUCTORS));
+					added.addAll(imageContext.addReflectiveAccessHierarchy(dottedFieldTypename, AccessBits.FULL_REFLECTION));
 					// Recursive analysis - helps with something like a Vets type that includes a List<Vet>. Vet gets
 					// recognized too.
 					analyze(imageContext, imageContext.getTypeSystem().resolveDotted(dottedFieldTypename,true), added);
