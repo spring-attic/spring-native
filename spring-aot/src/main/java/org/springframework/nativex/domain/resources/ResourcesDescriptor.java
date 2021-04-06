@@ -19,9 +19,6 @@ package org.springframework.nativex.domain.resources;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
-
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/RESOURCES.md
  *

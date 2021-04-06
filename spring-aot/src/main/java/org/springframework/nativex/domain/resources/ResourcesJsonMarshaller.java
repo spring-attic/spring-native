@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
