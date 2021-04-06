@@ -1,0 +1,10 @@
+{
+"namespace":"com.example.kafka",
+"type":"record",
+"name":"Thing3",
+"fields":[
+	{"name":"stringField", "type":"string"},
+	{"name":"intField", "type":"int"}
+	]
+}
+

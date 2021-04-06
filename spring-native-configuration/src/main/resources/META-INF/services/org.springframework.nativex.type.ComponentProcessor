@@ -4,3 +4,4 @@ org.springframework.web.WebComponentProcessor
 org.springframework.SynthesizerComputationComponentProcessor
 org.springframework.TransactionalComponentProcessor
 org.springframework.PrePostSecuredComponentProcessor
+org.springframework.kafka.KafkaComponentProcessor
