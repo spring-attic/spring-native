@@ -12,8 +12,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 @SpringBootApplication
 public class RabbitApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		SpringApplication.run(RabbitApplication.class, args).close();
+		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 
 	@RabbitListener(id = "graal", queues = "graal")
