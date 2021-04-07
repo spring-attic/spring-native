@@ -51,6 +51,7 @@ import org.hibernate.tuple.component.PojoComponentTuplizer;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
+import org.hibernate.type.EnumType;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -82,9 +83,9 @@ import java.util.EventListener;
 						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				@TypeHint(types = {
-						// petclinic
 						Repository.class,
-						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class, OneToOne.class, JoinColumn.class, Table.class, Transient.class
+						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class,
+						OneToOne.class, JoinColumn.class, Table.class, Transient.class
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
 				@TypeHint(types = {
 						SessionImpl.class,
@@ -117,7 +118,9 @@ import java.util.EventListener;
 						NoJtaPlatform.class,
 						//org.hibernate.service.jta.platform.internal.NoJtaPlatform.class
 						EntityManagerMessageLogger.class, // CoreMessageLogger.class,
-						Session.class, EventListener.class
+						Session.class, EventListener.class,
+
+						EnumType.class
 				}, typeNames = {
 						"org.hibernate.internal.EntityManagerMessageLogger_$logger",
 						"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
@@ -134,7 +137,6 @@ import java.util.EventListener;
 						OneToManyPersister.class, JoinedSubclassEntityPersister.class, SingleTableEntityPersister.class, UnionSubclassEntityPersister.class,
 						BasicCollectionPersister.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
-
 				// AST nodes from the org.hibernate.hql.internal.ast.tree package
 				// These are necessary when HQL/JPQL queries are used.
 				@TypeHint(types = {
