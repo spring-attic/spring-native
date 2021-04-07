@@ -181,7 +181,7 @@ jobs:
           dockerfile: ci-images-git-repo/ci/images/graalvm-ce-image/Dockerfile
           build_args:
             JVMCI_URL: ((jvmci-dev-java11))
-            GRAALVM_BRANCH: ((graalvm-stable-branch))
+            GRAALVM_BRANCH: ((graalvm-dev-branch))
   - name: build-spring-native-stable-image
     plan:
       - get: ci-images-git-repo
