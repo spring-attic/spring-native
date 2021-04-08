@@ -423,10 +423,12 @@
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-server</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
