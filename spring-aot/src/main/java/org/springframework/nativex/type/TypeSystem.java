@@ -229,6 +229,22 @@ public class TypeSystem {
 		}
 	}
 	
+	private Type resolve(Path pathToClassfile) {
+		try (InputStream is = Files.newInputStream(pathToClassfile)) {
+			ClassNode node = new ClassNode();
+			ClassReader reader = new ClassReader(is);
+			reader.accept(node, ClassReader.SKIP_DEBUG);
+			Type type = typeCache.get(node.name);
+			if (type == null) {
+				type = Type.forClassNode(this, node, 0);
+				typeCache.put(node.name, type);
+			}
+			return type;
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to load from path "+pathToClassfile,e);
+		}
+	}
+	
 	private Type findType(String slashedTypeName) {
 		int dimensions = 0;
 		String typeToLocate = slashedTypeName;
@@ -1223,6 +1239,25 @@ public class TypeSystem {
 				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
+	// TODO memory management when exploding typecache with scans done here
+	/**
+	 * Scan all classes considered to be 'bits of the application' (so everything apart
+	 * from system classes and spring jars) for any types matching the predicate.
+	 * 
+	 * <p>WARNING: likely to make our cached set of type data explode.
+	 * 
+	 * @param test the test condition to run against each class
+	 * @return return list of types matching the predicate
+	 */
+	public List<Type> scan(Predicate<Type> test) {
+		List<Type> matches = findDirectoriesOrTargetDirJar(getClasspath())
+				.flatMap(this::findClasses)
+				.map(this::resolve)
+				.filter(test)
+				.collect(Collectors.toList());
+		return matches;
+	}
+
 	public ReflectionDescriptor scanForLiteUsesOfAutowiredAndBean() {
 		List<org.springframework.nativex.domain.reflect.ClassDescriptor> classDescriptors = 
 				findUserCodeDirectoriesAndSpringJars(getClasspath())
@@ -1495,6 +1530,10 @@ public class TypeSystem {
 				return FileVisitResult.CONTINUE;
 			}
 		}
+	}
+
+	public Type resolve(Class<?> clazz) {
+		return resolve(clazz.getName().replace(".","/"));
 	}
 
 }

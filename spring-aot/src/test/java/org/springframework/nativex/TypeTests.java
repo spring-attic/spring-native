@@ -41,6 +41,7 @@ import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 //import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,9 +53,48 @@ public class TypeTests {
 
 	@BeforeAll
 	public static void setup() throws Exception {
-		File file = new File("./target/classes");
-		// System.out.println(file.getCanonicalPath());
+		File file = new File("./target/test-classes");
 		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
+	}
+	
+	@Test
+	public void subtypesClasses() {
+		Type resolve = typeSystem.resolve(AA.class);
+		List<Type> subtypes = resolve.getSubtypes();
+		assertThat(subtypes.size()).isEqualTo(2);
+		assertThat(subtypes).contains(typeSystem.resolve(BB.class));
+		assertThat(subtypes).contains(typeSystem.resolve(CC.class));
+	}
+
+	static class AA {
+	}
+	
+	static class BB extends AA {
+	}
+	
+	static class CC extends BB {	
+	}
+
+	@Test
+	public void subtypesInterfaces() {
+		Type resolve = typeSystem.resolve(III.class);
+		List<Type> subtypes = resolve.getSubtypes();
+		assertThat(subtypes.size()).isEqualTo(3);
+		assertThat(subtypes).contains(typeSystem.resolve(AAA.class));
+		assertThat(subtypes).contains(typeSystem.resolve(BBB.class));
+		assertThat(subtypes).contains(typeSystem.resolve(DDD.class));
+	}
+
+	static interface III {
+	}
+	
+	static class AAA implements III {	
+	}
+	
+	static class BBB extends AAA {
+	}
+	
+	static interface DDD extends III {	
 	}
 
 	@Test

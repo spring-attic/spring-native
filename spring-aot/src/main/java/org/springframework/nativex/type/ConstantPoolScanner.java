@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO is asm fast enough that we don't need to do cute things like this
 /**
  * Enables us to check things quickly in the constant pool. Just parses the class up to the end of the constant pool.
  *
@@ -34,6 +35,8 @@ import java.util.List;
  */
 public class ConstantPoolScanner {
 
+	private final String[] NONE = new String[0];
+	
 	private static final boolean DEBUG = false;
 
 	private final static byte CONSTANT_Utf8 = 1;
@@ -86,6 +89,10 @@ public class ConstantPoolScanner {
 	private List<String> referencedMethods = new ArrayList<String>();
 
 	private String slashedclassname;
+	
+	private String supername;
+	
+	private String[] interfacenames;
 
 
 	public static References getReferences(byte[] classbytes) {
@@ -128,7 +135,7 @@ public class ConstantPoolScanner {
 		}
 	}
 
-	private ConstantPoolScanner(byte[] bytes) {
+	public ConstantPoolScanner(byte[] bytes) {
 		parseClass(bytes);
 //		computeReferences();
 	}
@@ -177,6 +184,18 @@ public class ConstantPoolScanner {
 			int thisclassname = readUnsignedShort();
 			int classindex = ((Integer) cpdata[thisclassname]);
 			slashedclassname = accessUtf8(classindex);
+			int superclassname = readUnsignedShort();
+			classindex = ((Integer) cpdata[superclassname]);
+			supername = accessUtf8(classindex);
+			int intfaceCount = readUnsignedShort();
+			if (intfaceCount!=0) {
+				interfacenames = new String[intfaceCount];
+				for (int i=0;i<intfaceCount;i++) {
+					interfacenames[i] = accessUtf8((Integer)cpdata[readUnsignedShort()]);
+				}
+			} else {
+				interfacenames = NONE;
+			}
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Unexpected problem processing bytes for class", e);
@@ -352,5 +371,13 @@ public class ConstantPoolScanner {
 		}
 	}
 
+
+	public String getSuperclassname() {
+		return supername;
+	}
+
+	public String[] getInterfacenames() {
+		return interfacenames;
+	}
 
 }

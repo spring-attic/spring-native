@@ -31,4 +31,8 @@ public class Utils {
 		return new ConstantPoolScanner(p);
 	}
 
+	public static ConstantPoolScanner scanClass(byte[] bytes) {
+		return new ConstantPoolScanner(bytes);
+	}
+
 }

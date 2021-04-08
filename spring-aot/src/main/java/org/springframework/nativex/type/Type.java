@@ -320,6 +320,7 @@ public class Type {
 		}
 	}
 
+	// TODO fix inconsistency between extendsClass working with descriptors and implementsInterface working with slashed names
 	public boolean extendsClass(String clazzname) {
 		Type superclass = getSuperclass();
 		while (superclass != null) {
@@ -2885,4 +2886,22 @@ public class Type {
 		List<Field> fs = getFieldsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
 		return !fs.isEmpty();
 	}
+
+	/**
+	 * @return subtypes of the current type
+	 */
+	public List<Type> getSubtypes() {
+		long stime = System.currentTimeMillis();
+		String n = this.isInterface()?this.getName():this.getDescriptor();
+		List<Type> subtypes = typeSystem.scan(t -> {
+			if (t == this) {
+				return false;
+			}
+			return this.isInterface()?t.implementsInterface(n):t.extendsClass(n);
+		});
+		long etime = System.currentTimeMillis();
+		logger.debug("Time taken to scan for subtypes of "+getDottedName()+" was "+(etime-stime)+"ms");
+		return subtypes;
+	}
+
 }
