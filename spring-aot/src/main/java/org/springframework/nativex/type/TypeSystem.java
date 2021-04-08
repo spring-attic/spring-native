@@ -1533,7 +1533,11 @@ public class TypeSystem {
 	}
 
 	public Type resolve(Class<?> clazz) {
-		return resolve(clazz.getName().replace(".","/"));
+		return resolve(clazz.getName().replace(".","/"), false);
+	}
+
+	public Type resolve(Class<?> clazz, boolean silent) {
+		return resolve(clazz.getName().replace(".","/"), silent);
 	}
 
 }
