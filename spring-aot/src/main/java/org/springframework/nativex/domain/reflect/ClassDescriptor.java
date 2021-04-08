@@ -185,23 +185,27 @@ public final class ClassDescriptor {
 	 */
 	public void merge(ClassDescriptor cd) {
 		if (cd.getFlags()!= null) {
-		for (Flag flag : cd.getFlags()) {
-			this.setFlag(flag);
-		}
+			for (Flag flag : cd.getFlags()) {
+				this.setFlag(flag);
+			}
 		}
 		if (cd.getFields() != null) {
-			for (FieldDescriptor fd : cd.getFields()) {
-				FieldDescriptor existingFieldDescriptor = null;
-				for (FieldDescriptor fieldDescriptor : getFields()) {
-					if (fieldDescriptor.getName().equals(fd.getName())) {
-						existingFieldDescriptor = fieldDescriptor;
-						break;
+			if (fields == null) {
+				addFieldDescriptors(cd.getFields());
+			} else {
+				for (FieldDescriptor fd : cd.getFields()) {
+					FieldDescriptor existingFieldDescriptor = null;
+					for (FieldDescriptor fieldDescriptor : getFields()) {
+						if (fieldDescriptor.getName().equals(fd.getName())) {
+							existingFieldDescriptor = fieldDescriptor;
+							break;
+						}
 					}
-				}
-				if (existingFieldDescriptor != null) {
-					existingFieldDescriptor.merge(fd);
-				} else {
-					addFieldDescriptor(fd);
+					if (existingFieldDescriptor != null) {
+						existingFieldDescriptor.merge(fd);
+					} else {
+						addFieldDescriptor(fd);
+					}
 				}
 			}
 		}
