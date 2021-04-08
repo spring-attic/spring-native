@@ -106,6 +106,8 @@ Using the <<tracing-agent>> can also be useful an approximation of the required 
 [[how-to-contribute-dynamic-native-configuration]]
 === Dynamic native configuration
 
+Dynamic native configuration needs to be implemented in `spring-aot`. For debugging, you can use either `mvnDebug` or `gradle -Dorg.gradle.debug=true --no-daemon` and connect with a JVM remote debugger on port `8000` for Maven or `5005` for Gradle from your IDE.
+
 ==== Implementing `NativeConfiguration`
 
 Sometimes the necessary configuration is hard to statically declare and needs a more dynamic approach.
@@ -127,8 +129,6 @@ For example this is used by spring-data (via `SpringDataComponentProcessor`) to 
 * `SpringFactoriesProcessor` implementations are given a chance to process the keys and values loaded from `spring.factories` files.
 Currently they are allowed to do filtering but this is likely to be expanded in the future.
 By filtering it means they may programmatically compute that for some spring.factories key one of the values makes no sense (by analysing classpath contents, for example), and decide to discard meaning no further processing will be performed on it.
-
-These need to be implemented in `spring-aot`. For debugging them using the Maven plugin, you can use `mvnDebug` instead of `mvn` and connect with a JVM remote debugger from your IDE.
 
 [[how-to-contribute-using-container-build-env]]
 === Using container-based build environment
