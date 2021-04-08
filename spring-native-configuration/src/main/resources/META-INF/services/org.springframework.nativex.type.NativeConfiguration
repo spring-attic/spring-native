@@ -5,6 +5,7 @@ io.netty.NettyHints
 io.rsocket.RSocketHints
 kotlin.KotlinHints
 org.apache.catalina.TomcatHints
+org.apache.commons.pool2.CommonsPool2Hints
 org.apache.logging.Log4jHints
 org.h2.H2Hints
 org.hsqldb.HSQLDBHints
