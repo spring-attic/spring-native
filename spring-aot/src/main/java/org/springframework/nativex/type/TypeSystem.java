@@ -1260,6 +1260,21 @@ public class TypeSystem {
 		return matches;
 	}
 
+	/**
+	 * Scan all classes considered user code and spring jars.
+	 *
+	 * @param filter must not be {@literal null}.
+	 * @return a {@link Stream} of matching {@link Type types}.
+	 */
+	public Stream<Type> scanUserCodeDirectoriesAndSpringJars(Predicate<Type> filter) {
+
+		return this.findUserCodeDirectoriesAndSpringJars(this.getClasspath())
+				.flatMap(this::findClasses)
+				.map(this::typenameOfClass)
+				.map(this::resolveSlashed)
+				.filter(filter);
+	}
+
 	public ReflectionDescriptor scanForLiteUsesOfAutowiredAndBean() {
 		List<org.springframework.nativex.domain.reflect.ClassDescriptor> classDescriptors = 
 				findUserCodeDirectoriesAndSpringJars(getClasspath())

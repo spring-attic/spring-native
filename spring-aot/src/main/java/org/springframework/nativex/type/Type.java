@@ -1401,7 +1401,7 @@ public class Type {
 		}
 	}
 
-	private boolean isEnum() {
+	public boolean isEnum() {
 		return (node.access & Opcodes.ACC_ENUM)!=0;
 	}
 

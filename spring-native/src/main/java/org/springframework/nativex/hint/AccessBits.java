@@ -26,6 +26,7 @@ import java.util.List;
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
  * @author Sebastien Deleuze
+ * @author Christoph Strobl
  */
 public class AccessBits {
 
@@ -245,6 +246,31 @@ public class AccessBits {
 			result = result|PUBLIC_METHODS;
 		}
 		return result;
+	}
+
+	public static AccessBits fromFlags(Flag... flags) {
+
+		Integer value = 0;
+
+		for (Flag flag : flags) { // TODO: is this sufficient?
+			if (Flag.allDeclaredConstructors.equals(flag)) {
+				value = value | AccessBits.DECLARED_CONSTRUCTORS;
+			}
+			if (Flag.allPublicConstructors.equals(flag)) {
+				value = value | AccessBits.PUBLIC_CONSTRUCTORS;
+			}
+			if (Flag.allDeclaredMethods.equals(flag)) {
+				value = value | AccessBits.DECLARED_METHODS;
+			}
+			if (Flag.allPublicMethods.equals(flag)) {
+				value = value | AccessBits.PUBLIC_METHODS;
+			}
+			if (Flag.allDeclaredFields.equals(flag)) {
+				value = value | AccessBits.DECLARED_FIELDS;
+			}
+		}
+
+		return new AccessBits(value);
 	}
 
 	public static boolean isSet(int value, int mask) {

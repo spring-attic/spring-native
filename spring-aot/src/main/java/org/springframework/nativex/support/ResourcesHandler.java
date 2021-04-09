@@ -490,6 +490,11 @@ public class ResourcesHandler extends Handler {
 		}
 
 		@Override
+		public void addReflectiveAccess(String typeName, AccessDescriptor descriptor) {
+			reflectionHandler.addAccess(typeName, true, descriptor);
+		}
+
+		@Override
 		public boolean hasReflectionConfigFor(String typename) {
 			return collector.getClassDescriptorFor(typename)!=null;
 		}

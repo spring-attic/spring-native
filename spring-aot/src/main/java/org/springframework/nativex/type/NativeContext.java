@@ -27,6 +27,7 @@ import org.springframework.nativex.hint.Flag;
  * and call back into the system to register proxies/reflective-access/etc.
  * 
  * @author Andy Clement
+ * @author Christoph Strobl
  */
 public interface NativeContext {
 
@@ -41,6 +42,28 @@ public interface NativeContext {
 	}
 
 	void addReflectiveAccess(String key, Flag... flags);
+
+	/**
+	 * Add full {@link AccessDescriptor} for the given type (dotted type name).
+	 * This allows to specify {@link org.springframework.nativex.domain.reflect.MethodDescriptor method} and
+	 * {@link org.springframework.nativex.domain.reflect.FieldDescriptor field} access configuration.
+	 *
+	 * @param typeName the dotted type name (eg. java.lang.String). Must not be {@literal null}.
+	 * @param descriptor must not be {@literal null}.
+	 */
+	void addReflectiveAccess(String typeName, AccessDescriptor descriptor);
+
+	/**
+	 * Add full {@link AccessDescriptor} for the given {@link Type}.
+	 * This allows to specify {@link org.springframework.nativex.domain.reflect.MethodDescriptor method} and
+	 * {@link org.springframework.nativex.domain.reflect.FieldDescriptor field} access configuration.
+	 *
+	 * @param type must not be {@literal null}.
+	 * @param descriptor must not be {@literal null}.
+	 */
+	default void addReflectiveAccess(Type type, AccessDescriptor descriptor) {
+		addReflectiveAccess(type.getDottedName(), descriptor);
+	}
 
 	default Set<String> addReflectiveAccessHierarchy(Type type, int accessBits) {
 		return addReflectiveAccessHierarchy(type.getDottedName(), accessBits);
