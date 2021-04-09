@@ -2900,7 +2900,7 @@ public class Type {
 			return this.isInterface()?t.implementsInterface(n):t.extendsClass(n);
 		});
 		long etime = System.currentTimeMillis();
-		logger.debug("Time taken to scan for subtypes of "+getDottedName()+" was "+(etime-stime)+"ms and found "+subtypes.size()+" subtypes");
+		logger.debug("TIMER: Time taken to scan for subtypes of "+getDottedName()+" was "+(etime-stime)+"ms and found "+subtypes.size()+" subtypes");
 		return subtypes;
 	}
 
