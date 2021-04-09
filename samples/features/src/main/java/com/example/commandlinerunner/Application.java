@@ -7,8 +7,7 @@ import org.springframework.context.annotation.Import;
 import elsewhere.FooBeanFactory;
 
 @SpringBootApplication
-// 1. Importing configuration
-@Import(FooBeanFactory.class)
+@Import({FooBeanFactory.class,ConditionalConfig.class})
 public class Application {
 	
 	public static void main(String[] args) throws InterruptedException {

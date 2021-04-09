@@ -1052,7 +1052,8 @@ public class ResourcesHandler extends Handler {
 		NestedReference, // This was discovered as a nested type within some type currently being processed
 		HierarchyProcessing, // This was discovered whilst going up the hierarchy from some type currently being processed
 		Inferred, // This type was 'inferred' whilst processing a hint (e.g. the class in a @COC usage)
-		Specific // This type was explicitly listed in a hint that was processed
+		Specific, // This type was explicitly listed in a hint that was processed
+		InnerOfNestedCondition // it is the inner type of a class implementing AbstractNestedCondition
 	}
 	
 	private boolean checkJmxConstraint(Type type, ProcessingContext pc) {
@@ -1496,6 +1497,12 @@ public class ResourcesHandler extends Handler {
 						logger.debug("will follow " + t);
 						ReachedBy reason = isImportHint(hint)?ReachedBy.Import:ReachedBy.Inferred;
 						toFollow.put(t,reason);
+					} else if (t.isAbstractNestedCondition()) {
+						// The inner types are hosting conditions
+						logger.debug("will follow inner types inside this nested condition type " + t);
+						for (Type inner : t.getNestedTypes()) {
+							toFollow.put(inner, ReachedBy.InnerOfNestedCondition);
+						}
 					}
 				} else if (hint.isSkipIfTypesMissing() && (pc.depth() == 1 || isNestedConfiguration(type) /*|| reachedBy==ReachedBy.Specific*/ || pc.peekReachedBy()==ReachedBy.Import)) {
 					if (pc.depth()>1) {

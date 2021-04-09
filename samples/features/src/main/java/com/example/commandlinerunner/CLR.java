@@ -21,6 +21,9 @@ public class CLR implements CommandLineRunner {
 	}
 	
 	@Autowired
+	SomeBean someBean;
+	
+	@Autowired
 	ApplicationContext env;
 
 	@Override
