@@ -68,11 +68,11 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		// TODO make into a pluggable system
 		List<String> failedPropertyChecks = new ArrayList<>();
 		boolean factoryOK =
-				passesAnyConditionalOnClass(typeSystem, factory) &&
+				passesConditionalOnClass(typeSystem, factory) &&
 				passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
-				passesAnyConditionalOnBean(typeSystem, factory) &&
+				passesConditionalOnBean(typeSystem, factory) &&
 				passesIgnoreJmxConstraint(typeSystem, factory) &&
-				passesAnyConditionalOnWebApplication(typeSystem, factory) &&
+				passesConditionalOnWebApplication(typeSystem, factory) &&
 				passesAnyPropertyRelatedConditions(context.getClasspath(), typeSystem, factory, failedPropertyChecks, aotOptions);
 		if (!failedPropertyChecks.isEmpty()) {
 			logger.debug("Following property checks failed on "+factory.getFactory().getClassName()+": "+failedPropertyChecks);
@@ -105,14 +105,14 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 		return true;
 	}
 
-	private boolean passesAnyConditionalOnBean(TypeSystem typeSystem, SpringFactory factory) {
+	private boolean passesConditionalOnBean(TypeSystem typeSystem, SpringFactory factory) {
 		MergedAnnotation<Annotation> onBeanCondition = factory.getFactory().getAnnotations()
 				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		if (onBeanCondition.isPresent()) {
 			AnnotationAttributes attributes = onBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
 			return Stream.concat(Arrays.stream(attributes.getStringArray("value")),
 					Arrays.stream(attributes.getStringArray("type")))
-					.anyMatch(beanClass -> typeSystem.resolveClass(beanClass) != null);
+					.allMatch(beanClass -> typeSystem.resolveClass(beanClass) != null);
 		}
 		return true;
 	}

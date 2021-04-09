@@ -47,7 +47,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK = 
-				passesAnyConditionalOnClass(typeSystem, factory) && passesFilterCheck(typeSystem, factory) ;
+				passesConditionalOnClass(typeSystem, factory) && passesFilterCheck(typeSystem, factory) ;
 		if (factoryOK) {
 			String packageName = factory.getFactory().getPackageName();
 			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());

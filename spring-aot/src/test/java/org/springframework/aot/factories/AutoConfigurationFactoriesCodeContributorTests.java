@@ -25,6 +25,7 @@ import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.factories.fixtures.PublicFactory;
 import org.springframework.aot.factories.fixtures.TestAutoConfiguration;
 import org.springframework.aot.factories.fixtures.TestAutoConfigurationMissingType;
+import org.springframework.aot.factories.fixtures.TestAutoConfigurationMultipleTypes;
 import org.springframework.aot.factories.fixtures.TestFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.type.classreading.TypeSystem;
@@ -77,13 +78,23 @@ class AutoConfigurationFactoriesCodeContributorTests {
 	}
 
 	@Test
-	void shouldContributeFactoryNamesWhenConditionNotMet(TypeSystem typeSystem) {
+	void shouldNotContributeFactoryNameWhenConditionalOnClassNotMatch(TypeSystem typeSystem) {
 		CodeGenerator code = new CodeGenerator(new AotOptions());
 		SpringFactory factory = SpringFactory.resolve(EnableAutoConfiguration.class.getName(), TestAutoConfigurationMissingType.class.getName(), typeSystem);
 		Mockito.when(buildContext.getTypeSystem()).thenReturn(typeSystem);
 		this.contributor.contribute(factory, code, this.buildContext);
 		assertThat(code.generateStaticSpringFactories().toString())
 				.doesNotContain("names.add(EnableAutoConfiguration.class, \"org.springframework.aot.factories.fixtures.TestAutoConfigurationMissingType\");");
+	}
+
+	@Test
+	void shouldNotContributeFactoryNameWhenConditionalOnBeanNotMatch(TypeSystem typeSystem) {
+		CodeGenerator code = new CodeGenerator(new AotOptions());
+		SpringFactory factory = SpringFactory.resolve(EnableAutoConfiguration.class.getName(), TestAutoConfigurationMultipleTypes.class.getName(), typeSystem);
+		Mockito.when(buildContext.getTypeSystem()).thenReturn(typeSystem);
+		this.contributor.contribute(factory, code, this.buildContext);
+		assertThat(code.generateStaticSpringFactories().toString())
+				.doesNotContain("names.add(EnableAutoConfiguration.class, \"org.springframework.aot.factories.fixtures.TestAutoConfigurationMultipleTypes\");");
 	}
 
 }

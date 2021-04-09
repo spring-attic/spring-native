@@ -51,7 +51,7 @@ interface FactoriesCodeContributor {
 	 */
 	void contribute(SpringFactory factory, CodeGenerator code, BuildContext context);
 
-	default boolean passesAnyConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
+	default boolean passesConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
 		MergedAnnotation<Annotation> onClassCondition = factory.getFactory().getAnnotations().get(CONDITIONAL_ON_CLASS);
 		if (onClassCondition.isPresent()) {
 			AnnotationAttributes classConditions = onClassCondition
@@ -65,7 +65,7 @@ interface FactoriesCodeContributor {
 		return true;
 	}
 
-	default boolean passesAnyConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
+	default boolean passesConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
 		MergedAnnotation<Annotation> conditionalOnWebApp = factory.getFactory().getAnnotations().get(CONDITIONAL_ON_WEBAPP);
 		if (conditionalOnWebApp.isPresent()) {
 			Enum<?> webApplicationType = conditionalOnWebApp.asAnnotationAttributes().getEnum("type");

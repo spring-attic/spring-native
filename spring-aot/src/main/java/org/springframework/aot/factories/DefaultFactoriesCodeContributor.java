@@ -50,9 +50,9 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK =
-				passesAnyConditionalOnClass(typeSystem, factory) &&
+				passesConditionalOnClass(typeSystem, factory) &&
 						passesFilterCheck(typeSystem, factory) &&
-						passesAnyConditionalOnWebApplication(typeSystem, factory);
+						passesConditionalOnWebApplication(typeSystem, factory);
 		if (factoryOK) {
 			code.writeToStaticBlock(generateStaticInit(factory));
 			// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
