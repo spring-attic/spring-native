@@ -20,10 +20,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +64,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
 		try {
-			List<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem());
+			Set<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem());
 			FactoriesCodeContributors contributors = new FactoriesCodeContributors(aotOptions);
 			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context, aotOptions);
 
@@ -79,8 +81,8 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		}
 	}
 
-	List<SpringFactory> loadSpringFactories(TypeSystem typeSystem) throws IOException {
-		List<SpringFactory> factories = new ArrayList<>();
+	Set<SpringFactory> loadSpringFactories(TypeSystem typeSystem) throws IOException {
+		Set<SpringFactory> factories = new LinkedHashSet<>();
 		Enumeration<URL> factoriesLocations = typeSystem.getResourceLoader()
 				.getClassLoader().getResources(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
 		while (factoriesLocations.hasMoreElements()) {

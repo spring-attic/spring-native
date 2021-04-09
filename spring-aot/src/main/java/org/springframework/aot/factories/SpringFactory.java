@@ -16,6 +16,8 @@
 
 package org.springframework.aot.factories;
 
+import java.util.Objects;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.type.classreading.ClassDescriptor;
@@ -66,6 +68,19 @@ public class SpringFactory {
 
 	public ClassDescriptor getFactory() {
 		return this.factory;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SpringFactory that = (SpringFactory) o;
+		return factoryType.equals(that.factoryType) && factory.equals(that.factory);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(factoryType, factory);
 	}
 
 	@Override

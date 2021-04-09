@@ -18,6 +18,7 @@ package org.springframework.aot.factories;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +43,7 @@ class FactoriesCodeContributors {
 				new DefaultFactoriesCodeContributor(aotOptions));
 	}
 
-	public CodeGenerator createCodeGenerator(List<SpringFactory> factories, BuildContext context, AotOptions aotOptions) {
+	public CodeGenerator createCodeGenerator(Set<SpringFactory> factories, BuildContext context, AotOptions aotOptions) {
 		CodeGenerator codeGenerator = new CodeGenerator(aotOptions);
 		for (SpringFactory factory : factories) {
 			FactoriesCodeContributor contributor = this.contributors.stream()

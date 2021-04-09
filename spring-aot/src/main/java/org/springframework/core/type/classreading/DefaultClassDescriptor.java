@@ -17,6 +17,7 @@
 package org.springframework.core.type.classreading;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -146,4 +147,16 @@ public class DefaultClassDescriptor implements ClassDescriptor {
 		return this.annotations;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DefaultClassDescriptor that = (DefaultClassDescriptor) o;
+		return className.equals(that.className);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(className);
+	}
 }
