@@ -42,12 +42,13 @@ tasks.withType<Test> {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     builder = "paketobuildpacks/builder:tiny"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "1",
-            "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to """
-                -Dspring.spel.ignore=true                
-                -Dspring.native.remove-yaml-support=true
-            """.trimIndent()
+            "BP_NATIVE_IMAGE" to "true"
     )
+}
+
+springAot {
+    removeSpelSupport.set(true)
+    removeYamlSupport.set(true)
 }
 
 // TODO Remove SpEL and Yaml when supported with Gradle
