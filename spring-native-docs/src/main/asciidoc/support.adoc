@@ -68,6 +68,7 @@ RSocket security is also supported.
 ** `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint.
 * `spring-boot-starter-websocket`
 * `com.wavefront:wavefront-spring-boot-starter`
+* `spring-boot-starter-quartz`: supports the [Quartz Job Scheduling](http://www.quartz-scheduler.org/) engine. It adds types required by Quartz, and automatically registers any `Job` subclasses for reflection.
 
 IMPORTANT: Devtools is not supported yet, you can follow
 https://github.com/spring-projects-experimental/spring-native/issues/532[#532] to be aware when it will.
