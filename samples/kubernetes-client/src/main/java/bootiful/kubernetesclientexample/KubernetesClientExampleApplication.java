@@ -29,25 +29,15 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * @author Dave Syer
- * @author Josh Long
- */
+	* @author Dave Syer
+	* @author Josh Long
+	*/
 @SpringBootApplication
 public class KubernetesClientExampleApplication {
 
 	@SneakyThrows
 	public static void main(String[] args) {
 		SpringApplication.run(KubernetesClientExampleApplication.class, args);
-	}
-
-	@Bean
-	CommandLineRunner homeDirectoryRunner() {
-		return args -> {
-			File home = new File(System.getenv("HOME"));
-			File kubeconfig = new File(home, ".kube/config");
-			System.out.println(kubeconfig.getAbsolutePath());
-			System.out.println(kubeconfig.exists());
-		};
 	}
 
 	@Bean
@@ -62,24 +52,31 @@ public class KubernetesClientExampleApplication {
 	}
 
 	@Bean
-	Controller nodePrintingController(SharedInformerFactory sharedInformerFactory, NodePrintingReconciler reconciler) {
-		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
-				.watch(q -> ControllerBuilder.controllerWatchBuilder(V1Node.class, q).build())
-				.withReadyFunc(reconciler::informerReady).withReconciler(reconciler).withName("nodePrintingController")
-				.build();
+	Controller nodePrintingController(
+		SharedIndexInformer<V1Pod> podInformer,
+		SharedIndexInformer<V1Node> nodeInformer,
+		SharedInformerFactory sharedInformerFactory,
+		Reconciler reconciler) {
+
+		return ControllerBuilder
+			.defaultBuilder(sharedInformerFactory)
+			.watch(q -> ControllerBuilder.controllerWatchBuilder(V1Node.class, q).build())
+			.withReadyFunc(() -> podInformer.hasSynced() && nodeInformer.hasSynced())
+			.withReconciler(reconciler).withName("bootifulController")
+			.build();
 	}
 
 	@Bean
 	SharedIndexInformer<V1Node> nodeInformer(ApiClient apiClient, SharedInformerFactory sharedInformerFactory) {
 		return sharedInformerFactory.sharedIndexInformerFor(
-				new GenericKubernetesApi<>(V1Node.class, V1NodeList.class, "", "v1", "nodes", apiClient), V1Node.class,
-				0);
+			new GenericKubernetesApi<>(V1Node.class, V1NodeList.class, "", "v1", "nodes", apiClient), V1Node.class,
+			0);
 	}
 
 	@Bean
 	SharedIndexInformer<V1Pod> podInformer(ApiClient apiClient, SharedInformerFactory sharedInformerFactory) {
 		return sharedInformerFactory.sharedIndexInformerFor(
-				new GenericKubernetesApi<>(V1Pod.class, V1PodList.class, "", "v1", "pods", apiClient), V1Pod.class, 0);
+			new GenericKubernetesApi<>(V1Pod.class, V1PodList.class, "", "v1", "pods", apiClient), V1Pod.class, 0);
 	}
 
 	@Bean
@@ -92,43 +89,18 @@ public class KubernetesClientExampleApplication {
 		return new Lister<>(podInformer.getIndexer());
 	}
 
-}
+	@Bean
+	Reconciler reconciler(@Value("${namespace}") String namespace, Lister<V1Node> nodeLister, Lister<V1Pod> podLister) {
+		return request -> {
 
-@Component
-class NodePrintingReconciler implements Reconciler {
-
-	private final String namespace;
-
-	private final SharedInformer<V1Node> nodeInformer;
-
-	private final SharedInformer<V1Pod> podInformer;
-
-	private final Lister<V1Node> nodeLister;
-
-	private final Lister<V1Pod> podLister;
-
-	NodePrintingReconciler(@Value("${namespace}") String namespace, SharedInformer<V1Node> nodeInformer,
-			SharedInformer<V1Pod> podInformer, Lister<V1Node> nodeLister, Lister<V1Pod> podLister) {
-		this.namespace = namespace;
-		this.nodeInformer = nodeInformer;
-		this.podInformer = podInformer;
-		this.nodeLister = nodeLister;
-		this.podLister = podLister;
-	}
-
-	public boolean informerReady() {
-		return podInformer.hasSynced() && nodeInformer.hasSynced();
-	}
-
-	@Override
-	public Result reconcile(Request request) {
-		V1Node node = nodeLister.get(request.getName());
-		System.out.println("get all pods in namespace " + namespace);
-		podLister.namespace(namespace).list().stream().map(pod -> Objects.requireNonNull(pod.getMetadata()).getName())
+			V1Node node = nodeLister.get(request.getName());
+			System.out.println("get all pods in namespace " + namespace);
+			podLister.namespace(namespace).list().stream().map(pod -> Objects.requireNonNull(pod.getMetadata()).getName())
 				.forEach(podName -> System.out.println("pod name: " + podName));
 
-		System.out.println("triggered reconciling " + node.getMetadata().getName());
-		return new Result(false);
+			System.out.println("triggered reconciling " + node.getMetadata().getName());
+			return new Result(false);
+		};
 	}
 
 }
