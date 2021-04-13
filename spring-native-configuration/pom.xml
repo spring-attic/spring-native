@@ -12,6 +12,12 @@
     <name>Spring Native configuration</name>
 
     <dependencies>
+
+        <dependency>
+            <groupId>io.kubernetes</groupId>
+            <artifactId>client-java-spring-integration</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
@@ -40,7 +46,7 @@
         <dependency>
             <groupId>org.springframework.security.experimental</groupId>
             <artifactId>spring-security-oauth2-authorization-server</artifactId>
-  			<version>0.1.0</version>
+            <version>0.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -468,23 +474,23 @@
         </dependency>
     </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <repositories>
         <repository>
