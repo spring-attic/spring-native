@@ -322,12 +322,18 @@ public class Type {
 
 	// TODO fix inconsistency between extendsClass working with descriptors and implementsInterface working with slashed names
 	public boolean extendsClass(String clazzname) {
-		Type superclass = getSuperclass();
+		Type superclass = null;
+		if (dimensions > 0) {
+			superclass = typeSystem.resolveSlashed("java/lang/Object");
+		} else {
+			superclass = node.superName==null ? null : typeSystem.resolveSlashed(node.superName, true);
+		}
 		while (superclass != null) {
 			if (superclass.getDescriptor().equals(clazzname)) {
 				return true;
 			}
-			superclass = superclass.getSuperclass();
+			String nextSupername = superclass.node.superName;
+			superclass = nextSupername==null ? null : typeSystem.resolveSlashed(nextSupername, true);
 		}
 		return false;
 	}
