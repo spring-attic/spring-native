@@ -111,7 +111,7 @@ interface FactoriesCodeContributor {
 		// Problems observed discarding inner configurations due to eager property checks
 		// (configserver sample). Too aggressive, hence the $ check
 		if (aotOptions.isBuildTimePropertyChecking() && !factoryName.contains("$")) {
-			org.springframework.nativex.type.TypeSystem legacyTypeSystem = org.springframework.nativex.type.TypeSystem.get(classpath);
+			org.springframework.nativex.type.TypeSystem legacyTypeSystem = new org.springframework.nativex.type.TypeSystem(classpath);
 			Type legacyResolvedFactory = legacyTypeSystem.resolve(resolvedFactory);
 			String testResult = TypeUtils.testAnyConditionalOnProperty(legacyResolvedFactory, aotOptions);
 			if (testResult != null) {
