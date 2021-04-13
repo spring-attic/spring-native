@@ -29,6 +29,7 @@ import java.io.File;
 import java.util.Objects;
 
 /**
+	*
 	* @author Dave Syer
 	* @author Josh Long
 	*/
@@ -41,29 +42,21 @@ public class KubernetesClientExampleApplication {
 	}
 
 	@Bean
-	CommandLineRunner runner(SharedInformerFactory sharedInformerFactory, Controller controller) {
+	CommandLineRunner go(SharedInformerFactory sharedInformerFactory, Controller controller) {
 		return args -> {
-			System.out.println("starting informers..");
 			sharedInformerFactory.startAllRegisteredInformers();
-
-			System.out.println("running controllers..");
 			controller.run();
 		};
 	}
 
 	@Bean
-	Controller nodePrintingController(
-		SharedIndexInformer<V1Pod> podInformer,
-		SharedIndexInformer<V1Node> nodeInformer,
-		SharedInformerFactory sharedInformerFactory,
-		Reconciler reconciler) {
+	Controller nodePrintingController(SharedIndexInformer<V1Pod> podInformer, SharedIndexInformer<V1Node> nodeInformer,
+																																			SharedInformerFactory sharedInformerFactory, Reconciler reconciler) {
 
-		return ControllerBuilder
-			.defaultBuilder(sharedInformerFactory)
+		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(q -> ControllerBuilder.controllerWatchBuilder(V1Node.class, q).build())
-			.withReadyFunc(() -> podInformer.hasSynced() && nodeInformer.hasSynced())
-			.withReconciler(reconciler).withName("bootifulController")
-			.build();
+			.withReadyFunc(() -> podInformer.hasSynced() && nodeInformer.hasSynced()).withReconciler(reconciler)
+			.withName("bootifulController").build();
 	}
 
 	@Bean
@@ -95,7 +88,8 @@ public class KubernetesClientExampleApplication {
 
 			V1Node node = nodeLister.get(request.getName());
 			System.out.println("get all pods in namespace " + namespace);
-			podLister.namespace(namespace).list().stream().map(pod -> Objects.requireNonNull(pod.getMetadata()).getName())
+			podLister.namespace(namespace).list().stream()
+				.map(pod -> Objects.requireNonNull(pod.getMetadata()).getName())
 				.forEach(podName -> System.out.println("pod name: " + podName));
 
 			System.out.println("triggered reconciling " + node.getMetadata().getName());
