@@ -539,10 +539,12 @@ public class TypeSystem {
 		// Scan the classpath for things of interest, do this only once!
 		for (String classpathEntry : classpath) {
 			File f = new File(classpathEntry);
-			if (f.isDirectory()) {
-				scanFiles(f, f);
-			} else {
-				scanArchive(f);
+			if (f.exists()) {
+				if (f.isDirectory()) {
+					scanFiles(f, f);
+				} else {
+					scanArchive(f);
+				}
 			}
 		}
 	}

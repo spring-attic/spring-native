@@ -42,8 +42,14 @@ public class TypeSystemTests {
 
 	@Test
 	public void test() throws Exception {
-		Type t= typeSystem.resolveName("java.lang.String");
+		Type t = typeSystem.resolveName("java.lang.String");
 		assertNotNull(t);
+	}
+	
+	@Test
+	public void badpath() throws Exception {
+		TypeSystem ts = TypeSystem.get(Collections.singletonList("madeup"));
+		ts.findTypesAnnotated(Type.AtConfiguration, false);
 	}
 
 	@Test
