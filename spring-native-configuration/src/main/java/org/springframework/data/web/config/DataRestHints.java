@@ -15,8 +15,12 @@
  */
 package org.springframework.data.web.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
+import org.springframework.data.TypeProcessor;
 import org.springframework.hateoas.config.HateoasHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.hint.AccessBits;
@@ -25,7 +29,10 @@ import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.TypeSystem;
 import reactor.core.publisher.Flux;
 
 @NativeHint(trigger = RepositoryRestMvcAutoConfiguration.class, types = {
@@ -57,13 +64,6 @@ import reactor.core.publisher.Flux;
 						"org.springframework.data.rest.webmvc.RepositoryRestController",
 						"org.springframework.data.rest.webmvc.BasePathAwareController",
 
-						"org.springframework.data.rest.webmvc.RepositorySchemaController",
-						"org.springframework.data.rest.webmvc.ProfileController",
-						"org.springframework.data.rest.webmvc.alps.AlpsController",
-						"org.springframework.data.rest.webmvc.RepositoryEntityController",
-						"org.springframework.data.rest.webmvc.RepositoryController",
-						"org.springframework.data.rest.webmvc.RepositoryPropertyReferenceController",
-						"org.springframework.data.rest.webmvc.RepositorySearchController",
 						"org.springframework.data.rest.webmvc.config.WebMvcRepositoryRestConfiguration",
 
 						// BOOT CONFIG
@@ -114,6 +114,41 @@ import reactor.core.publisher.Flux;
 
 )
 public class DataRestHints implements NativeConfiguration {
+
+	public static final String BASE_PATH_AWARE_CONTROLLER = "Lorg/springframework/data/rest/webmvc/BasePathAwareController;";
+
+	/**
+	 * Registers full reflection for types (meta)annotated with @BasePathAwareController.
+	 * Not interested in any fields reachable from these types but inspecting the methods for web-bind annotations.
+	 */
+	TypeProcessor restControllerProcessor = new TypeProcessor(
+			(type, context) -> type.hasAnnotationInHierarchy(BASE_PATH_AWARE_CONTROLLER), // just the root types
+			(type, registrar) -> registrar.addReflectiveAccess(type, new AccessDescriptor(AccessBits.FULL_REFLECTION)),
+			(annotation, registrar) -> registrar.addReflectiveAccess(annotation, new AccessDescriptor(AccessBits.ANNOTATION))
+	).named("RestControllerProcessor")
+			.includeAnnotationsMatching(annotation -> {
+				return annotation.isPartOfDomain("org.springframework.web.bind.annotation") || annotation.isPartOfDomain("org.springframework.data.rest");
+			})
+			.skipFieldInspection();
+
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+
+		List<HintDeclaration> hints = new ArrayList<>();
+
+		// Rest Controllers
+		{
+			hints.addAll(restControllerProcessor.use(typeSystem)
+					.toProcessTypes(ts -> ts.findTypesAnnotated(BASE_PATH_AWARE_CONTROLLER, true)
+					.stream()
+					.map(ts::resolveName)
+			));
+		}
+
+		// TODO; we'd also need to register all types that extend org.springframework.data.rest.webmvc.configRepositoryRestConfigurer.
+
+		return hints;
+	}
 
 	// TODO: add a component processor that resolves types implementing RepositoryRestConfigurer
 

@@ -92,9 +92,9 @@ import org.springframework.util.StringUtils;
  * @author Andy Clement
  * @author Christoph Strobl
  * @author Jens Schauder
- */ 
+ */
 public class SpringDataComponentProcessor implements ComponentProcessor {
-	
+
 	private static Log logger = LogFactory.getLog(SpringDataComponentProcessor.class);
 
 	private static final String LOG_PREFIX = "SDCP: ";
@@ -147,19 +147,32 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 			));
 
 	public static final String REPOSITORY_REST_RESOURCE_DESCRIPTOR = "Lorg/springframework/data/rest/core/annotation/RepositoryRestResource;";
-	
+
 	private static String repositoryName;
 	private static String queryAnnotationName;
 
 	private final SpringDataComponentLog log = SpringDataComponentLog.instance();
 	private Set<String> keysSeen = new HashSet<>();
 
+	private final TypeProcessor typeProcessor = new TypeProcessor(
+
+			(type, nativeContext) -> {
+
+				// TODO: should we filter out "javax.persistence.Entity" because those are handled by the JpaComponentProcessor?
+
+				if (type.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE)) {
+					return false;
+				}
+				return true;
+			},
+			this::registerDomainTypeInConfiguration,
+			this::registerSpringDataAnnotationInConfiguration
+	).named(LOG_PREFIX);
+
 	static {
 		try {
 			repositoryName = "org.springframework.data.repository.Repository";
 			queryAnnotationName = "org.springframework.data.annotation.QueryAnnotation";
-//			repositoryName = Repository.class.getName();
-//			queryAnnotationName = QueryAnnotation.class.getName();
 		} catch (NoClassDefFoundError ncdfe) {
 			// This component processor isn't useful anyway in this run, so OK that these
 			// aren't here
@@ -267,7 +280,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		for (Type customImpl : customImplementations) {
 
-			imageContext.addReflectiveAccessHierarchy(customImpl, AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_METHODS);
+			imageContext.addReflectiveAccessHierarchy(customImpl, AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS);
 
 			for (Method method : customImpl.getMethods()) {
 				for (Type signatureType : method.getSignatureTypes(true)) {
@@ -328,44 +341,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 
 	private void registerDomainType(Type domainType, NativeContext imageContext) {
-
-		if (domainType.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || imageContext.hasReflectionConfigFor(domainType.getDottedName())) {
-			return;
-		}
-
-		log.message(String.format("Registering reflective access for %s", domainType.getDottedName()));
-
-		imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allDeclaredMethods,
-				Flag.allDeclaredConstructors, Flag.allDeclaredFields);
-
-		domainType.getAnnotations().forEach(it -> registerSpringDataAnnotation(it, imageContext));
-
-		domainType.getFields().forEach(field -> {
-			field.getAnnotationTypes().forEach(it -> registerSpringDataAnnotation(it, imageContext));
-		});
-
-		List<Method> methods = domainType.getMethods(m -> m.getName().startsWith("get"));
-		for (Method method : methods) {
-
-			registerSpringDataAnnotations(method, imageContext);
-
-			Set<Type> signatureTypes = method.getSignatureTypes(true);
-
-			for (Type signatureType : signatureTypes) {
-
-				// cycle guard, no need to do things over and over again
-				if (!imageContext.hasReflectionConfigFor(signatureType.getDottedName())) {
-
-					if (domainType.isPartOfDomain("java.") || domainType.isPartOfDomain("reactor.")) {
-						imageContext.addReflectiveAccess(domainType.getDottedName(), Flag.allPublicConstructors,
-								Flag.allPublicMethods);
-						return;
-					} else {
-						registerDomainType(signatureType, imageContext);
-					}
-				}
-			}
-		}
+		typeProcessor.process(domainType, imageContext);
 	}
 
 	protected boolean isQueryMethod(Method m) {
@@ -395,25 +371,45 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	private void registerSpringDataAnnotations(Method method, NativeContext context) {
 
 		for (Type annotation : method.getAnnotationTypes()) {
-			registerSpringDataAnnotation(annotation, context);
+			registerSpringDataAnnotationInConfiguration(annotation, context);
 		}
 
-		if(method.getParameterCount() == 0) {
+		if (method.getParameterCount() == 0) {
 			return;
 		}
 
 		// lookup for parameter annotations like @Param
-		for(int i=0; i<method.getParameterCount();i++) {
-			method.getParameterAnnotationTypes(i).forEach(it -> registerSpringDataAnnotation(it, context));
+		for (int i = 0; i < method.getParameterCount(); i++) {
+			method.getParameterAnnotationTypes(i).forEach(it -> registerSpringDataAnnotationInConfiguration(it, context));
 		}
 	}
 
-	private void registerSpringDataAnnotation(Type annotation, NativeContext context) {
+	private void registerDomainTypeInConfiguration(Type type, NativeContext nativeContext) {
 
-		if (!context.hasReflectionConfigFor(annotation) && isPartOfSpringData(annotation)) {
+		if(type.isPartOfDomain("sun.") || type.isPartOfDomain("jdk.")) {
+			return;
+		}
 
-			context.addReflectiveAccess(annotation.getDottedName(), AccessBits.ANNOTATION);
-			context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
+		log.message("Adding reflective access to " + type.getDottedName());
+
+		if (type.hasAnnotationInHierarchy("Lorg/springframework/data/annotation/AccessType;")) {
+			nativeContext.addReflectiveAccess(type.getDottedName(),
+					Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+		} else {
+			nativeContext.addReflectiveAccess(type.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+					Flag.allDeclaredFields);
+		}
+	}
+
+	private void registerSpringDataAnnotationInConfiguration(Type annotation, NativeContext context) {
+
+		if (!context.hasReflectionConfigFor(annotation)) {
+
+			if (isPartOfSpringData(annotation)) {
+
+				context.addReflectiveAccess(annotation.getDottedName(), AccessBits.ANNOTATION);
+				context.addProxy(annotation.getDottedName(), "org.springframework.core.annotation.SynthesizedAnnotation");
+			}
 
 			log.annotationFound(annotation);
 		}
@@ -425,35 +421,33 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 	private void registerDataRestComponentsIfNecessary(Type type, NativeContext context) {
 
-		if(!isRestResource(type)) {
+		if (!isRestResource(type)) {
 			return;
 		}
 
 		log.message(String.format("%s is a REST resource.", type.getDottedName()));
 
 		Map<String, String> annotationValuesInHierarchy = type.getAnnotationValuesInHierarchy(REPOSITORY_REST_RESOURCE_DESCRIPTOR);
-		if(annotationValuesInHierarchy.containsKey("excerptProjection")) {
+		if (annotationValuesInHierarchy.containsKey("excerptProjection")) {
 
 			String excerptProjectionSignatureType = annotationValuesInHierarchy.get("excerptProjection");
 			Type targetProjectionType = context.getTypeSystem().resolve(TypeName.fromTypeSignature(excerptProjectionSignatureType));
 
-			if(targetProjectionType != null) {
+			if (targetProjectionType != null) {
 
 				// TODO: check for default value and ignore that one
 
-				if(targetProjectionType.getDottedName().equals("org.springframework.data.rest.core.annotation.RepositoryRestResource$None")) {
+				if (targetProjectionType.getDottedName().equals("org.springframework.data.rest.core.annotation.RepositoryRestResource$None")) {
 					return;
 				}
 
 				log.message("resolved excerpt projection: " + targetProjectionType.getDottedName());
 				registerDomainType(targetProjectionType, context);
 				context.addProxy(targetProjectionType.getDottedName(), "org.springframework.data.projection.TargetAware", "org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy");
-
 			} else {
 				log.message("excerpt projection " + excerptProjectionSignatureType + " not found!");
 			}
 		}
-
 	}
 
 	@Override
@@ -464,7 +458,6 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 	private boolean isPartOfSpringData(Type type) {
 		return type.isPartOfDomain(SPRING_DATA_NAMESPACE);
 	}
-
 
 
 	static class SpringDataComponentLog {

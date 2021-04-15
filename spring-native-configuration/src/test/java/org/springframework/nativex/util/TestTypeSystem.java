@@ -28,8 +28,7 @@ import org.springframework.nativex.type.TypeSystem;
 
 /**
  * A type {@link TypeSystem} reading {@literal ./target/classes} able to resolve a given {@link Class} to its {@link Type}.
- * Should be static to avoid IO overhead.
- * Allows to {@link #excludePackages(String...)} based on their name - so make sure to {@link #clearExclusions()} during test setup.
+ * Allows to {@link #excludePackages(String...)} based on their name.
  *
  * @author Christoph Strobl
  */

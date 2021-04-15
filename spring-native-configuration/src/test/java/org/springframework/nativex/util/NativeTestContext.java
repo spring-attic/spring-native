@@ -16,6 +16,7 @@
 package org.springframework.nativex.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import java.util.TreeSet;
 
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
@@ -39,7 +41,7 @@ public class NativeTestContext implements NativeContext {
 	private final TypeSystem typeSystem;
 
 	MultiValueMap<String, List<String>> proxies;
-	MultiValueMap<String, List<Flag>> reflection;
+	MultiValueMap<String, AccessDescriptor> reflection;
 	Set<Type> builtTimeInit;
 	Set<String> resources;
 
@@ -76,7 +78,12 @@ public class NativeTestContext implements NativeContext {
 
 	@Override
 	public void addReflectiveAccess(String key, Flag... flags) {
-		reflection.add(key, Arrays.asList(flags));
+		reflection.add(key, new AccessDescriptor(AccessBits.fromFlags(flags).getValue()));
+	}
+
+	@Override
+	public void addReflectiveAccess(String typeName, AccessDescriptor descriptor) {
+		reflection.add(typeName, descriptor);
 	}
 
 	@Override
@@ -103,6 +110,13 @@ public class NativeTestContext implements NativeContext {
 	}
 
 	@Override
+	public void addReflectiveAccess(String parameterTypename, int accessBits) {
+
+		// something is off about the flags conversion in addReflectiveAccess(String key, Flag... flags)
+		addReflectiveAccess(parameterTypename, new AccessDescriptor(accessBits));
+	}
+
+	@Override
 	public boolean hasReflectionConfigFor(String typename) {
 		return reflection.containsKey(typename);
 	}
@@ -120,5 +134,49 @@ public class NativeTestContext implements NativeContext {
 	@Override
 	public void addResourceBundle(String string) {
 		resources.add(string);
+	}
+
+	public MultiValueMap<String, AccessDescriptor> getReflectionEntries() {
+		return reflection;
+	}
+
+	public List<AccessDescriptor> getReflectionEntries(Class<?> type) {
+		return reflection.get(cacheKey(type));
+	}
+
+	public AccessDescriptor getReflectionEntry(Class<?> type) {
+
+		List<AccessDescriptor> descriptors = reflection.getOrDefault(cacheKey(type), Collections.emptyList());
+		if (descriptors.isEmpty()) {
+			return null;
+		}
+		if (descriptors.size() == 1) {
+			return descriptors.iterator().next();
+		}
+		throw new IllegalStateException(String.format("Configuration should only contain one reflection entry for type %s but found %s.", type, descriptors.size()));
+	}
+
+	public Set<String> getResourcesEntries() {
+		return resources;
+	}
+
+	public MultiValueMap<String, List<String>> getProxyEntries() {
+		return proxies;
+	}
+
+	public boolean hasReflectionEntry(Class<?> type) {
+		return reflection.containsKey(cacheKey(type));
+	}
+
+	String cacheKey(Class<?> type) {
+		return typeSystem.resolve(type).getDottedName();
+	}
+
+	public void clear() {
+
+		this.proxies.clear();
+		this.reflection.clear();
+		this.builtTimeInit.clear();
+		this.resources.clear();
 	}
 }
