@@ -1346,15 +1346,17 @@ public class Type {
 		if (propertiesType.startsWith("Ljava/lang/") || // String/Integer/...
 			propertiesType.startsWith("Ljava/nio/") || // Charset
 			propertiesType.startsWith("Ljava/io/") || // File
-			propertiesType.startsWith("Ljava/net/") || // InetAddress
-			propertiesType.startsWith("Ljava/util/")) { // Map/List/Set/...
+			propertiesType.startsWith("Ljava/net/") // InetAddress
+			) {
 			return 0;
 		}
 		// See convertors in ApplicationConversionService.addApplicationConverters
 		if (propertiesType.equals("Ljava/time/Period;") ||
 			propertiesType.equals("Ljava/time/Duration;") ||
 			propertiesType.equals("Lorg/springframework/util/unit/DataSize;") ||
-			propertiesType.startsWith("Lorg/springframework/core/io/")) { // catching Resource, anything else?
+			propertiesType.startsWith("Lorg/springframework/core/io/") || // catching Resource, anything else?
+			propertiesType.startsWith("Ljava/util/") // Map/List/Set/...   issue #382
+			) { 
 			return AccessBits.CLASS;
 		}
 		Type type = typeSystem.Lresolve(propertiesType, true);
@@ -1383,15 +1385,16 @@ public class Type {
 		if (type != null) {
 			if (!collector.containsKey(propertiesType)) {
 				int inferredAccess = inferPropertyAccessRequired(propertiesType);
+//				logger.debug("inferPropertyAccessRequired: "+propertiesType+" return "+AccessBits.toString(inferredAccess));
 				if (inferredAccess !=0) {
 					collector.put(propertiesType, inferredAccess);
 					if (inferredAccess != AccessBits.CLASS) { 
-					for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
-						for (Type returnSignatureType: method.getSignatureTypes(true)) {
-							String returnTypeDescriptor = returnSignatureType.getDescriptor();
-							walkPropertyType(returnTypeDescriptor, collector);
+						for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
+							for (Type returnSignatureType: method.getSignatureTypes(true)) {
+								String returnTypeDescriptor = returnSignatureType.getDescriptor();
+								walkPropertyType(returnTypeDescriptor, collector);
+							}
 						}
-					}
 					}
 				}
 			}
