@@ -67,7 +67,6 @@ org.springframework.boot.autoconfigure.security.servlet.SecurityHints
 org.springframework.boot.autoconfigure.session.SessionHints
 org.springframework.boot.autoconfigure.task.TaskHints
 org.springframework.boot.autoconfigure.transaction.TransactionHints
-org.springframework.boot.autoconfigure.validation.ValidationHints
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketHints
 org.springframework.boot.autoconfigure.web.reactive.WebFluxHints
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientHints
