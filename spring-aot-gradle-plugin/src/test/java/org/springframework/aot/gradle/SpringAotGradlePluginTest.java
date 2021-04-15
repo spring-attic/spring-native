@@ -16,6 +16,7 @@
 
 package org.springframework.aot.gradle;
 
+import java.io.File;
 import java.util.Optional;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
@@ -53,10 +54,12 @@ public class SpringAotGradlePluginTest {
 		assertThat(aotSourceSet).isNotNull();
 		assertThat(aotSourceSet.getJava().getSourceDirectories())
 				.hasSize(1)
-				.allMatch(file -> file.getAbsolutePath().endsWith("/build/generated/sources/aot"));
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "sources" + File.separator + "aot"));
 		assertThat(aotSourceSet.getResources().getSourceDirectories())
 				.hasSize(1)
-				.allMatch(file -> file.getAbsolutePath().endsWith("/build/generated/resources/aot"));
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "resources" + File.separator + "aot"));
 		assertThat(aotSourceSet.getCompileClasspath()).containsAll(mainSourceSet.getRuntimeClasspath());
 	}
 
@@ -86,10 +89,12 @@ public class SpringAotGradlePluginTest {
 		assertThat(aotTestSourceSet).isNotNull();
 		assertThat(aotTestSourceSet.getJava().getSourceDirectories())
 				.hasSize(1)
-				.allMatch(file -> file.getAbsolutePath().endsWith("/build/generated/sources/aotTest"));
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "sources" + File.separator + "aotTest"));
 		assertThat(aotTestSourceSet.getResources().getSourceDirectories())
 				.hasSize(1)
-				.allMatch(file -> file.getAbsolutePath().endsWith("/build/generated/resources/aotTest"));
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "resources" + File.separator + "aotTest"));
 	}
 
 	@Test
