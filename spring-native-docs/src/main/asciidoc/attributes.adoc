@@ -17,7 +17,7 @@
 :graalvm-docs: https://www.graalvm.org/reference-manual
 :graalvm-native-docs: {graalvm-docs}/native-image
 
-:spring-boot-version: 2.4.5-SNAPSHOT
+:spring-boot-version: 2.4.5
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
 
 :spring-cloud-version: 2020.0.2
