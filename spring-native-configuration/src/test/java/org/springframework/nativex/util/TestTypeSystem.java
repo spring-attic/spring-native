@@ -16,6 +16,7 @@
 package org.springframework.nativex.util;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,7 +38,7 @@ public class TestTypeSystem extends TypeSystem {
 	private Set<String> excludedPackages;
 
 	public TestTypeSystem() {
-		this(Collections.singletonList(new File("./target/classes").toString()));
+		this(Arrays.asList(new File("./target/classes").toString(), new File("./target/test-classes").toString()));
 	}
 
 	public TestTypeSystem(List<String> classpath) {

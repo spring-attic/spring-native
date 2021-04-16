@@ -17,7 +17,9 @@ package org.springframework.data;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -29,6 +31,9 @@ import org.springframework.data.jpa.entities.WithFinalField;
 import org.springframework.data.jpa.entities.WithTypesInMethods;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
 import org.springframework.nativex.util.TestTypeSystem;
 
@@ -139,14 +144,37 @@ public class TypeProcessorTests {
 	}
 
 	@Test
+	public void usesTypeSystemScanToProcessTypesMatching() {
+
+		List<HintDeclaration> hints = processor
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.use(typeSystem).toProcessTypesMatching(type -> type.getName().endsWith("NotAnEntity"));
+
+		assertThat(hints).hasSize(1);
+		assertThat(capturedTypes).containsExactly("org.springframework.data.jpa.entities.NotAnEntity");
+	}
+
+	@Test
 	@Ignore("typeSystem.scan with predicate does not work")
 	public void shortcutTypeSystemLookupFunction() {
 
-		System.out.println(typeSystem.scan(type -> type.hasAnnotationInHierarchy("Ljavax/persistence/Entity;")));
-		System.out.println(typeSystem.scan(type -> type.hasAnnotationInHierarchy("javax.persistence.Entity")));
-		System.out.println(typeSystem.scan(type -> type.getName().contains("Entity")));
-		System.out.println(typeSystem.scan(type -> true));
+//		TypeSystem ts = new TypeSystem(Arrays.asList(new File("./target/classes").toString(), new File("./target/test-classes").toString()));
+		TypeSystem ts = new TypeSystem(Arrays.asList(new File("./target/classes").toString()));
 
-		System.out.println(processor.use(typeSystem).toProcessTypesMatching(type -> type.hasAnnotationInHierarchy("Ljavax/persistence/Entity;")));
+		System.out.println("----");
+		System.out.println("typeSystem.scan(type.hasAnnotationInHierarchy(...)): " + ts.scan(type -> type.hasAnnotationInHierarchy("Ljavax/persistence/Entity;")));
+		System.out.println("----");
+		System.out.println("typeSystem.findTypesAnnotated(...): " + ts.findTypesAnnotated("Ljavax/persistence/Entity;", true));
+		System.out.println("----");
+
+		Type type = ts.resolveName("org.springframework.data.jpa.entities.EntityWithAnnotations");
+		System.out.println("typeSystem.resolveName(...): " + type + " - hasAnnotationInHierarchy(...): " + type.hasAnnotationInHierarchy("Ljavax/persistence/Entity;"));
+
+//		System.out.println(typeSystem.scan(type -> type.getName().contains("Entity")));
+//		System.out.println(typeSystem.scan(type -> true));
+
+//		System.out.println(processor.use(typeSystem).toProcessTypesMatching(type -> type.hasAnnotationInHierarchy("Ljavax/persistence/Entity;")));
 	}
 }
