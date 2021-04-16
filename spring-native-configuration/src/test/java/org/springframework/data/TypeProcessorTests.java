@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.data.jpa.entities.ConcreteType;
 import org.springframework.data.jpa.entities.EntityWithAnnotations;
 import org.springframework.data.jpa.entities.Order;
 import org.springframework.data.jpa.entities.WithFinalField;
@@ -154,6 +155,16 @@ public class TypeProcessorTests {
 
 		assertThat(hints).hasSize(1);
 		assertThat(capturedTypes).containsExactly("org.springframework.data.jpa.entities.NotAnEntity");
+	}
+
+	@Test
+	public void capturesSignatureTypesOfType() {
+
+		processor.process(typeSystem.resolve(ConcreteType.class), nativeContext);
+
+		assertThat(capturedTypes)
+				.containsExactlyInAnyOrder("org.springframework.data.jpa.entities.ConcreteType", "org.springframework.data.jpa.entities.AbstractType", "org.springframework.data.jpa.entities.InterfaceType")
+				.doesNotContain("java.lang.Object");
 	}
 
 	@Test

@@ -79,10 +79,10 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class TypeProcessor { // TODO: move to another package | or maybe spring-aot
 
-	private final BiPredicate<Type, NativeContext> typeFilter;
 	private final BiConsumer<Type, NativeContext> typeRegistrar;
 	private final BiConsumer<Type, NativeContext> annotationRegistrar;
 
+	private BiPredicate<Type, NativeContext> typeFilter;
 	private Predicate<Method> ctorFilter = (method) -> method.getName().equals("<init>");
 	private Predicate<Method> methodFilter = (method) -> {
 
@@ -124,6 +124,8 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 		this.typeFilter = typeFilter;
 		this.typeRegistrar = typeRegistrar;
 		this.annotationRegistrar = annotationRegistrar;
+
+		skipTypesMatching(type -> type.getDottedName().equals("java.lang.Object") || type.isPartOfDomain("org.hibernate.engine"));
 	}
 
 	/**
@@ -216,6 +218,12 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	public TypeProcessor skipAnnotationInspection() {
 
 		this.annotationFilter = (type) -> false;
+		return this;
+	}
+
+	public TypeProcessor skipTypesMatching(Predicate<Type> excludeFilter) {
+
+		this.typeFilter = this.typeFilter.and(((BiPredicate<Type, NativeContext>) (type, context) -> excludeFilter.test(type)).negate());
 		return this;
 	}
 
@@ -332,6 +340,8 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 			return;
 		}
 
+		processSignatureTypesOfType(domainType, imageContext, seen);
+
 		// inspect annotations on the type itself and register those if necessary.
 		processAnnotationsOnType(domainType, imageContext, seen);
 
@@ -343,6 +353,14 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 
 		// inspect methods and register return types if necessary.
 		processMethodsOfType(domainType, imageContext, seen);
+	}
+
+	private void processSignatureTypesOfType(Type domainType, NativeContext imageContext, Set<Type> seen) {
+
+		domainType.getTypesInSignature()
+				.stream()
+				.map(imageContext.getTypeSystem()::resolve)
+				.forEach(it -> process(it, imageContext, seen));
 	}
 
 	private void processMethodsOfType(Type domainType, NativeContext imageContext, Set<Type> seen) {
@@ -431,7 +449,16 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 		 * @param types must not be {@literal null}.
 		 */
 		default void toProcessTypes(Iterable<Type> types) {
-			toProcessTypes(typeSystem -> StreamSupport.stream(types.spliterator(), false));
+			toProcessTypes(StreamSupport.stream(types.spliterator(), false));
+		}
+
+		/**
+		 * Process a multiple {@link Type types}.
+		 *
+		 * @param types must not be {@literal null}.
+		 */
+		default void toProcessTypes(Stream<Type> types) {
+			toProcessTypes(typeSystem -> types);
 		}
 
 		/**
@@ -467,7 +494,16 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 		 * @return the {@link List} of {@link HintDeclaration hints} to apply.
 		 */
 		default List<HintDeclaration> toProcessTypes(Iterable<Type> types) {
-			return toProcessTypes(typeSystem -> StreamSupport.stream(types.spliterator(), false));
+			return toProcessTypes(StreamSupport.stream(types.spliterator(), false));
+		}
+
+		/**
+		 * Process a multiple {@link Type types}.
+		 *
+		 * @param types must not be {@literal null}.
+		 */
+		default List<HintDeclaration> toProcessTypes(Stream<Type> types) {
+			return toProcessTypes(typeSystem -> types);
 		}
 
 		/**
