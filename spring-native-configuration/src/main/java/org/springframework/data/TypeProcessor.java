@@ -107,6 +107,23 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	private String componentLogName = "DomainTypeProcessor";
 
 	/**
+	 * Get the default configuration that uses {@link AccessBits#FULL_REFLECTION} for types and {@link AccessBits#ANNOTATION} for discovered annotations.
+	 *
+	 * @return new instance of {@link TypeProcessor}.
+	 */
+	public static TypeProcessor namedProcessor(String componentLogName) {
+		return new TypeProcessor(new AccessDescriptor(AccessBits.FULL_REFLECTION), new AccessDescriptor(AccessBits.ANNOTATION)).named(componentLogName);
+	}
+
+	/**
+	 * @param typeAccessDescriptor the {@link AccessDescriptor} to use for types.
+	 * @param annotationAccessDescriptor the {@link AccessDescriptor} to use for annotations.
+	 */
+	public TypeProcessor(AccessDescriptor typeAccessDescriptor, AccessDescriptor annotationAccessDescriptor) {
+		this((type, context) -> context.addReflectiveAccess(type, typeAccessDescriptor), (type, context) -> context.addReflectiveAccess(type, annotationAccessDescriptor));
+	}
+
+	/**
 	 * @param typeRegistrar callback function to potentially register configuration for types.
 	 * @param annotationRegistrar callback function to potentially register configuration for annotations.
 	 */
@@ -513,7 +530,13 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 		 * @return the {@link List} of {@link HintDeclaration hints} to apply.
 		 */
 		default List<HintDeclaration> toProcessTypesMatching(Predicate<Type> filter) {
-			return toProcessTypes(typeSystem -> typeSystem.scan(filter).stream());
+			return toProcessTypes(typeSystem -> {
+				return typeSystem.findUserCodeDirectoriesAndSpringJars(typeSystem.getClasspath())
+						.flatMap(typeSystem::findClasses)
+						.map(typeSystem::typenameOfClass)
+						.map(typeSystem::resolveSlashed)
+						.filter(filter);
+			});
 		}
 
 		/**
