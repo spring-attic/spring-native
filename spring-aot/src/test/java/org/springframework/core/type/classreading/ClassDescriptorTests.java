@@ -49,7 +49,7 @@ public class ClassDescriptorTests {
 	void resolveStringShouldHaveInterfaces() {
 		TypeDescriptor stringType = this.typeSystem.resolve(String.class.getName());
 		ClassDescriptor stringClass = stringType.getClassDescriptor();
-		assertThat(stringClass.getInterfaces()).hasSize(3).map(ClassDescriptor::getClassName)
+		assertThat(stringClass.getInterfaces()).hasSizeGreaterThanOrEqualTo(3).map(ClassDescriptor::getClassName)
 				.contains(Serializable.class.getName(), Comparable.class.getName(), CharSequence.class.getName());
 	}
 
