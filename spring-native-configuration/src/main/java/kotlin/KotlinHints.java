@@ -32,11 +32,7 @@ import static org.springframework.nativex.hint.AccessBits.*;
 				})
 		}, types = {
 				@TypeHint(types = kotlin.KotlinVersion.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS),
-				@TypeHint(typeNames = {
-						"kotlin.KotlinVersion[]",
-						"kotlin.KotlinVersion$Companion",
-						"kotlin.KotlinVersion$Companion[]"
-				})
+				@TypeHint(typeNames = "kotlin.KotlinVersion$Companion")
 })
 @NativeHint(trigger = kotlin.reflect.full.KClasses.class,
 	types = {
@@ -46,7 +42,7 @@ import static org.springframework.nativex.hint.AccessBits.*;
 		@TypeHint(types = kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter.class, access = DECLARED_FIELDS)
 	})
 @NativeHint(trigger = kotlin.coroutines.Continuation.class,
-		types = @TypeHint(types = kotlin.coroutines.Continuation.class, typeNames = "kotlin.coroutines.Continuation[]", access = LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS))
+		types = @TypeHint(types = kotlin.coroutines.Continuation.class, access = LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS))
 @NativeHint(trigger = com.fasterxml.jackson.module.kotlin.KotlinModule.class,
 		types = {
 			@TypeHint(types = com.fasterxml.jackson.module.kotlin.KotlinModule.class),

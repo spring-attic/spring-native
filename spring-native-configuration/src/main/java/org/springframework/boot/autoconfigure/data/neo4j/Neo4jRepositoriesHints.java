@@ -33,8 +33,7 @@ import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
 	@TypeHint(types = {
-		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class,
-		org.springframework.data.neo4j.repository.event.BeforeBindCallback.class,
+		org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback.class
 	}, access=AccessBits.CLASS|AccessBits.DECLARED_METHODS),
 	@TypeHint(types = {
 		Neo4jRepositoryFactoryBean.class,

@@ -38,9 +38,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 
-@NativeHint(trigger=DataSourceInitializationConfiguration.Registrar.class, types = {
-		@TypeHint(types=DataSourceInitializerPostProcessor.class, access=AccessBits.FULL_REFLECTION)})
-
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
 				access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)})

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.4.5</version>
+		<version>2.5.0-RC1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.spring.test</groupId>
@@ -100,12 +100,12 @@
 			</snapshots>
 		</pluginRepository>
 		<pluginRepository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<releases>
+			<id>spring-milestone</id>
+			<name>Spring milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
 				<enabled>false</enabled>
-			</releases>
+			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
@@ -118,12 +118,12 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<releases>
+			<id>spring-milestone</id>
+			<name>Spring milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
 				<enabled>false</enabled>
-			</releases>
+			</snapshots>
 		</repository>
 	</repositories>
 

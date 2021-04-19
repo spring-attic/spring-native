@@ -13,7 +13,7 @@
 		<revision>0.10.0-SNAPSHOT</revision>
 		<graalvm.version>21.0.0.2</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
-		<spring.boot.version>2.4.5</spring.boot.version>
+		<spring.boot.version>2.5.0-RC1</spring.boot.version>
 		<spring.cloud.version>2020.0.2</spring.cloud.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
@@ -268,6 +268,14 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring milestone</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -275,6 +283,14 @@
 			<name>Spring release</name>
 			<id>release</id>
 			<url>https://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestone</id>
+			<name>Spring milestone</name>
+			<url>https://repo.spring.io/milestone</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>

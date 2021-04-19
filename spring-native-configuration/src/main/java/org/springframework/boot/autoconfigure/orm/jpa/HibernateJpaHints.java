@@ -127,7 +127,6 @@ import java.util.EventListener;
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
 						"org.hibernate.annotations.common.util.impl.Log",
 				}),
-				@TypeHint(types = DataSourceInitializedPublisher.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
 				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory
 						Tuplizer.class, EntityTuplizer.class, AbstractEntityTuplizer.class, PojoEntityTuplizer.class,

@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-gradle-plugin</artifactId>
-			<version>1.4.31</version>
+			<version>1.5.0-RC</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

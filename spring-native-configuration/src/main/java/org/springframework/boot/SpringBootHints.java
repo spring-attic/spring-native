@@ -65,7 +65,6 @@ import org.springframework.nativex.hint.AccessBits;
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
 			org.springframework.boot.logging.LoggingSystem.class,
-			org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener.class,
 			org.springframework.boot.logging.logback.LogbackLoggingSystem.class
 	},
 	typeNames = {
