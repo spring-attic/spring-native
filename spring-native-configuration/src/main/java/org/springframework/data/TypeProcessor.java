@@ -83,8 +83,8 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	private final BiConsumer<Type, NativeContext> annotationRegistrar;
 
 	private BiPredicate<Type, NativeContext> typeFilter;
-	private Predicate<Method> ctorFilter = (method) -> method.getName().equals("<init>");
-	private Predicate<Method> methodFilter = (method) -> {
+	private BiPredicate<Type, Method> ctorFilter = (type, method) -> method.getName().equals("<init>");
+	private BiPredicate<Type, Method> methodFilter = (type, method) -> {
 
 		if (method.getName().startsWith("$$_hibernate")) {
 			return false;
@@ -162,6 +162,14 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	 * @return this.
 	 */
 	public TypeProcessor includeMethodsMatching(Predicate<Method> includeFilter) {
+		return includeMethodsMatching((type, method) -> includeFilter.test(method));
+	}
+
+	/**
+	 * @param includeFilter
+	 * @return this.
+	 */
+	public TypeProcessor includeMethodsMatching(BiPredicate<Type, Method> includeFilter) {
 
 		this.methodFilter = this.methodFilter.and(includeFilter);
 		return this;
@@ -176,11 +184,19 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	}
 
 	/**
+	 * @param excludeFilter
+	 * @return this
+	 */
+	public TypeProcessor skipMethodsMatching(BiPredicate<Type, Method> excludeFilter) {
+		return includeMethodsMatching(excludeFilter.negate());
+	}
+
+	/**
 	 * @return this.
 	 */
 	public TypeProcessor skipMethodInspection() {
 
-		this.methodFilter = (method) -> false;
+		this.methodFilter = (type, method) -> false;
 		return this;
 	}
 
@@ -250,7 +266,26 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 	 */
 	TypeProcessor includeConstructorsMatching(Predicate<Method> includeFilter) {
 
+		this.ctorFilter = this.ctorFilter.and((type, ctor) -> includeFilter.test(ctor));
+		return this;
+	}
+
+	/**
+	 * @param includeFilter
+	 * @return this.
+	 */
+	TypeProcessor includeConstructorsMatching(BiPredicate<Type, Method> includeFilter) {
+
 		this.ctorFilter = this.ctorFilter.and(includeFilter);
+		return this;
+	}
+
+	/**
+	 * @return this.
+	 */
+	public TypeProcessor skipConstructorInspection() {
+
+		this.ctorFilter = (type, method) -> false;
 		return this;
 	}
 
@@ -382,19 +417,19 @@ public class TypeProcessor { // TODO: move to another package | or maybe spring-
 
 	private void processMethodsOfType(Type domainType, NativeContext imageContext, Set<Type> seen) {
 
-		domainType.getMethods(methodFilter)
+		domainType.getMethods(method -> methodFilter.test(domainType, method))
 				.forEach(it -> processMethod(domainType, it, imageContext, seen));
 	}
 
 	private void processConstructorsOfType(Type domainType, NativeContext imageContext, Set<Type> seen) {
 
-		domainType.getMethods(ctorFilter)
+		domainType.getMethods(ctor -> ctorFilter.test(domainType, ctor))
 				.forEach(it -> processMethod(domainType, it, imageContext, seen));
 	}
 
 	private void processMethod(Type type, Method method, NativeContext imageContext, Set<Type> seen) {
 
-		imageContext.log(String.format(componentLogName + ": inspecting %s %s of %s", ctorFilter.test(method) ? "constructor" : "method", method, type.getDottedName()));
+		imageContext.log(String.format(componentLogName + ": inspecting %s %s of %s", ctorFilter.test(type, method) ? "constructor" : "method", method, type.getDottedName()));
 
 		method.getSignatureTypes(true).forEach(returnType -> process(returnType, imageContext, seen));
 		method.getParameterTypes().forEach(parameterType -> process(parameterType, imageContext, seen));
