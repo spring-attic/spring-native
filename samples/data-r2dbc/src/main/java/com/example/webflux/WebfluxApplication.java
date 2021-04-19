@@ -22,12 +22,7 @@ public class WebfluxApplication {
 	@Bean
 	ApplicationRunner runner(DatabaseClient dbc, ReservationRepository reservationRepository) {
 		return args -> {
-
-			dbc.sql("create table reservation\n" + "(\n" + "    id   serial primary key,\n"
-					+ "    name varchar(255) not null\n" + ")").fetch().rowsUpdated()
-					.then(reservationRepository.save(new Reservation(null, "Andy")))
-					.then(reservationRepository.save(new Reservation(null, "Sebastien")))
-					.then(reservationRepository.findAll().doOnNext(System.out::println).then()).subscribe();
+			reservationRepository.findAll().doOnNext(System.out::println).then().subscribe();
 		};
 	}
 
