@@ -35,7 +35,6 @@ import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
@@ -123,90 +122,103 @@ public class DataRestHints implements NativeConfiguration {
 
 		List<HintDeclaration> hints = new ArrayList<>();
 
-		// Rest Controllers
-		{
-			/*
-			 * Registers full reflection for types (meta)annotated with @BasePathAwareController.
-			 * Not interested in any fields reachable from these types but inspecting the methods for web-bind annotations.
-			 */
-			TypeProcessor restControllerProcessor = new TypeProcessor(
-					(type, context) -> type.hasAnnotationInHierarchy(BASE_PATH_AWARE_CONTROLLER), // just the root types
-					(type, registrar) -> registrar.addReflectiveAccess(type, new AccessDescriptor(AccessBits.FULL_REFLECTION)),
-					(annotation, registrar) -> registrar.addReflectiveAccess(annotation, new AccessDescriptor(AccessBits.ANNOTATION))
-			).named("RestMvcConfigurationProcessor - RestController")
-					.includeAnnotationsMatching(annotation -> {
-						return annotation.isPartOfDomain("org.springframework.web.bind.annotation") || annotation.isPartOfDomain("org.springframework.data.rest");
-					})
-					.skipFieldInspection();
+		hints.addAll(computeRestControllerHints(typeSystem));
+		hints.addAll(computeRepositoryRestConfigurer(typeSystem));
+		hints.addAll(computeExcerptProjectionHints(typeSystem));
 
-			hints.addAll(restControllerProcessor.use(typeSystem)
-					.toProcessTypes(ts -> ts.findTypesAnnotated(BASE_PATH_AWARE_CONTROLLER, true)
-							.stream()
-							.map(ts::resolveName)
-					));
-		}
+		// TODO: what about RestResource and others
 
-		// RestConfigurer Hints
-		{
-			// register all types that extend org.springframework.data.rest.webmvc.configRepositoryRestConfigurer
-			// like "org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer"
-
-			TypeProcessor configProcessor = TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - RepositoryRestConfigurer")
-					.skipAnnotationInspection()
-					.skipMethodInspection()
-					.skipFieldInspection();
-
-			hints.addAll(configProcessor.use(typeSystem)
-					.toProcessTypesMatching(it ->
-							it.implementsInterface(REPOSITORY_REST_CONFIGURER, true)
-					));
-		}
-
-		{ // RepositoryRestResource - Proxies
-
-			// inspect RepositoryRestResource for excerpt projections and register types as well as the required proxy
-
-			TypeHintCreatingProcessor excerptProjectionProcessor = TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - ExcerptProjection")
-					.skipFieldInspection().use(typeSystem);
-
-			hints.addAll(typeSystem.findTypesAnnotated(REPOSITORY_REST_RESOURCE, true)
-					.stream()
-					.map(typeSystem::resolveName)
-					.flatMap(type -> {
-
-						Map<String, String> annotationValuesInHierarchy = type.getAnnotationValuesInHierarchy(REPOSITORY_REST_RESOURCE);
-						if (!annotationValuesInHierarchy.containsKey("excerptProjection")) {
-							return Stream.empty();
-						}
-
-						String excerptProjectionSignatureType = annotationValuesInHierarchy.get("excerptProjection");
-						Type targetProjectionType = typeSystem.resolve(TypeName.fromTypeSignature(excerptProjectionSignatureType));
-
-						if (targetProjectionType == null || targetProjectionType.getDottedName().equals("org.springframework.data.rest.core.annotation.RepositoryRestResource$None")) {
-							return Stream.empty();
-						}
-
-						List<HintDeclaration> projectionHints = new ArrayList<>();
-
-						// types ues
-						projectionHints.addAll(excerptProjectionProcessor.toProcessType(targetProjectionType));
-
-						// the projection proxy
-						HintDeclaration proxyHint = new HintDeclaration();
-						ProxyDescriptor proxyDescriptor = new ProxyDescriptor(Arrays.asList(targetProjectionType.getDottedName(), "org.springframework.data.projection.TargetAware", "org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy"));
-						proxyHint.addProxyDescriptor(proxyDescriptor);
-
-						projectionHints.add(proxyHint);
-
-						return projectionHints.stream();
-					})
-					.collect(Collectors.toList()));
-		}
-
-		{
-			// TODO: what about RestResource
-		}
 		return hints;
+	}
+
+	/**
+	 * Compute {@link HintDeclaration hints} for all types that extend org.springframework.data.rest.webmvc.configRepositoryRestConfigurer.
+	 * like "org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer"
+	 *
+	 * @param typeSystem must not be {@literal null}.
+	 * @return never {@literal null}.
+	 */
+	private List<HintDeclaration> computeRepositoryRestConfigurer(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - RepositoryRestConfigurer")
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.use(typeSystem)
+				.toProcessTypesMatching(it ->
+						it.implementsInterface(REPOSITORY_REST_CONFIGURER, true)
+				);
+	}
+
+	/**
+	 * Compute {@link HintDeclaration hints} for all types (meta)annotated with @BasePathAwareController.
+	 * Not interested in any fields reachable from these types but inspecting the methods for web-bind annotations.
+	 *
+	 * @param typeSystem must not be {@literal null}.
+	 * @return never {@literal null}.
+	 */
+	private List<HintDeclaration> computeRestControllerHints(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - RestController")
+				.skipTypesMatching(type -> !type.hasAnnotationInHierarchy(BASE_PATH_AWARE_CONTROLLER))
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.includeAnnotationsMatching(annotation ->
+						annotation.isPartOfDomain("org.springframework.web") ||
+						annotation.isPartOfDomain("org.springframework.data.rest")
+				)
+				.use(typeSystem)
+				.toProcessTypes(ts -> ts.findTypesAnnotated(BASE_PATH_AWARE_CONTROLLER, true)
+						.stream()
+						.map(ts::resolveName)
+				);
+	}
+
+	/**
+	 * Compute {@link HintDeclaration hints} for all types (meta)annotated with @RepositoryRestResource.
+	 * Extract the excerptProjection and register types as well as proxy configuration.
+	 *
+	 * @param typeSystem must not be {@literal null}.
+	 * @return never {@literal null}.
+	 */
+	private List<HintDeclaration> computeExcerptProjectionHints(TypeSystem typeSystem) {
+
+		TypeHintCreatingProcessor excerptProjectionProcessor = TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - ExcerptProjection")
+				.skipFieldInspection().use(typeSystem);
+
+		return typeSystem.findTypesAnnotated(REPOSITORY_REST_RESOURCE, true)
+				.stream()
+				.map(typeSystem::resolveName)
+				.flatMap(type -> {
+
+					Map<String, String> annotationValuesInHierarchy = type.getAnnotationValuesInHierarchy(REPOSITORY_REST_RESOURCE);
+					if (!annotationValuesInHierarchy.containsKey("excerptProjection")) {
+						return Stream.empty();
+					}
+
+					String excerptProjectionSignatureType = annotationValuesInHierarchy.get("excerptProjection");
+					Type targetProjectionType = typeSystem.resolve(TypeName.fromTypeSignature(excerptProjectionSignatureType));
+
+					if (targetProjectionType == null || targetProjectionType.getDottedName().equals("org.springframework.data.rest.core.annotation.RepositoryRestResource$None")) {
+						return Stream.empty();
+					}
+
+					List<HintDeclaration> projectionHints = new ArrayList<>();
+
+					// types reachable
+					projectionHints.addAll(excerptProjectionProcessor.toProcessType(targetProjectionType));
+
+					// the projection proxy
+					HintDeclaration proxyHint = new HintDeclaration();
+					ProxyDescriptor proxyDescriptor = new ProxyDescriptor(Arrays.asList(targetProjectionType.getDottedName(), "org.springframework.data.projection.TargetAware", "org.springframework.aop.SpringProxy", "org.springframework.core.DecoratingProxy"));
+					proxyHint.addProxyDescriptor(proxyDescriptor);
+
+					projectionHints.add(proxyHint);
+
+					return projectionHints.stream();
+				})
+				.collect(Collectors.toList());
 	}
 
 	// TODO: split up and refine access to hateos and plugin configuration classes
