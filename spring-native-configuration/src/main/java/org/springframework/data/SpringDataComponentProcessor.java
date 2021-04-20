@@ -34,6 +34,7 @@ import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.StringUtils;
 
@@ -158,7 +159,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 				// TODO: should we filter out "javax.persistence.Entity" because those are handled by the JpaComponentProcessor?
 
-				if (type.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE)) {
+				if (type.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || TypeProcessor.isExcludedByDefault(type)) {
 					return false;
 				}
 				return true;

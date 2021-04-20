@@ -26,6 +26,7 @@ import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeProcessor;
 
 /**
  * @author Christoph Strobl

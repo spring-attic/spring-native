@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.nativex.util;
+package org.springframework.aot;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -47,7 +46,7 @@ public class NativeTestContext implements NativeContext {
 	Set<String> resources;
 
 	public NativeTestContext() {
-		this(new TypeSystem(Arrays.asList(new File("./target/classes").toString(), new File("./target/test-classes").toString())));
+		this(new TestTypeSystem());
 	}
 
 	public NativeTestContext(TypeSystem typeSystem) {

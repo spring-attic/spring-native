@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.entities;
+package org.springframework.nativex.type.entities;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
-public class WithTypesInMethods {
+import org.springframework.beans.factory.annotation.Value;
 
-	WithTypesInMethods(Date date) {
+@Entity
+public class LineItem {
+
+	private String name;
+
+	@ManyToOne
+	Order orderReference; // cycle back to Order
+
+	LineItem() {
 
 	}
 
-	void parameterInMethod(Long val1, Integer val2) {
-
+	LineItem(@Value("---") String name) {
+		this.name = name;
 	}
 
-	List<String> parameterInReturnSignature() {
-		return Collections.emptyList();
-	}
+	// no methods what so ever
 }

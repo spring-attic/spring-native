@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
-import org.springframework.data.TypeProcessor;
-import org.springframework.data.TypeProcessor.TypeHintCreatingProcessor;
+import org.springframework.nativex.type.TypeProcessor;
+import org.springframework.nativex.type.TypeProcessor.TypeHintCreatingProcessor;
 import org.springframework.hateoas.config.HateoasHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
@@ -164,7 +164,7 @@ public class DataRestHints implements NativeConfiguration {
 				.skipTypesMatching(type -> !type.hasAnnotationInHierarchy(BASE_PATH_AWARE_CONTROLLER))
 				.skipFieldInspection()
 				.skipConstructorInspection()
-				.includeAnnotationsMatching(annotation ->
+				.filterAnnotations(annotation ->
 						annotation.isPartOfDomain("org.springframework.web") ||
 						annotation.isPartOfDomain("org.springframework.data.rest")
 				)

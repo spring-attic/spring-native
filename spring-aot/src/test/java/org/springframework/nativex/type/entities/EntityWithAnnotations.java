@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.entities;
+package org.springframework.nativex.type.entities;
 
-public interface InterfaceType {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+
+@Entity
+public class EntityWithAnnotations {
+
+	@GeneratedValue
+	private Long id; // simple value
+
+	@SomeAnnotation // annotation with meta annotation @Nullable
+	String name;
 
 }

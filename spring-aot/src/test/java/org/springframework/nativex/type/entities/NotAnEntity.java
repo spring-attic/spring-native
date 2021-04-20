@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.entities;
+package org.springframework.nativex.type.entities;
 
-public class ConcreteType extends AbstractType implements InterfaceType {
+public class NotAnEntity {
 
+	String id;
+	String value;
 }

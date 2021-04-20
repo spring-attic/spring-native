@@ -33,22 +33,18 @@ import org.springframework.data.jpa.entities.Order;
 import org.springframework.data.jpa.entities.SomeAnnotation;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
-import org.springframework.nativex.util.TestTypeSystem;
 
 public class JpaComponentProcessorTests {
 
-	private TestTypeSystem typeSystem;
 
-	private NativeTestContext nativeContext;
+	private NativeTestContext nativeContext = new NativeTestContext();
+	private TypeSystem typeSystem = nativeContext.getTypeSystem();
 	private JpaComponentProcessor processor;
 
 	@Before
 	public void setUp() {
-
-		typeSystem = new TestTypeSystem();
-		nativeContext = new NativeTestContext(typeSystem);
-
 		processor = new JpaComponentProcessor();
 	}
 

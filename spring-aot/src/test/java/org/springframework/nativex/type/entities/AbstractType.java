@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.jpa.entities;
+package org.springframework.nativex.type.entities;
 
 public abstract class AbstractType {
 
