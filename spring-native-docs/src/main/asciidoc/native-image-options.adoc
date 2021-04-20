@@ -28,6 +28,7 @@ This option is currently (hopefully, temporarily) required for Netty-based appli
 See {github-issues}/8[this issue] for more details.
 You can use it with specific classes or package specified if needed.
 * `-H:+PrintAnalysisCallTree` helps to find what classes, methods, and fields are used and why.
+* `-H:Log=registerResource:3` prints the resources included in the native image.
 You can find more details in GraalVM https://github.com/oracle/graal/blob/master/substratevm/Reports.md[reports documentation].
 * `-H:ReportAnalysisForbiddenType=com.example.Foo` helps to find why the specified class is included in the native image.
 * `--trace-class-initialization` provides a comma-separated list of fully-qualified class names that a class initialization is traced for.
