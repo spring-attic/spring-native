@@ -124,10 +124,6 @@ The following example adds a `native-image` profile that triggers the plugin dur
           <groupId>org.graalvm.nativeimage</groupId>
           <artifactId>native-image-maven-plugin</artifactId>
           <version>{graalvm-version}</version>
-          <configuration>
-            <!-- The native image build needs to know the entry point to your application -->
-            <mainClass>com.example.restservice.RestServiceApplication</mainClass>
-          </configuration>
           <executions>
             <execution>
               <goals>

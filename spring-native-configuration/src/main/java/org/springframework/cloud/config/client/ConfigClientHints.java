@@ -25,7 +25,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = ConfigClientAutoConfiguration.class,
-		options = { "--enable-http", "--enable-all-security-services" },
+		options = "--enable-http",
 		types = @TypeHint(types = {Environment.class, PropertySource.class, ConfigClientProperties.class }, access = AccessBits.ALL))
 @NativeHint(trigger = BootstrapImportSelector.class, types = @TypeHint(types = ConfigServiceBootstrapConfiguration.class))
 public class ConfigClientHints implements NativeConfiguration {

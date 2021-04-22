@@ -22,7 +22,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.security.config.annotation.web.reactive.ReactiveOAuth2ClientImportSelector.OAuth2ClientWebFluxSecurityConfiguration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
-@NativeHint(trigger = ReactiveOAuth2ClientImportSelector.class, options = "--enable-all-security-services", follow = true, types = {
+@NativeHint(trigger = ReactiveOAuth2ClientImportSelector.class, follow = true, types = {
 		@TypeHint(types = {
 				ClientRegistration.class,
 				OAuth2ClientWebFluxSecurityConfiguration.class})

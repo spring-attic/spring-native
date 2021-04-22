@@ -38,7 +38,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @NativeHint(trigger = OAuth2AuthorizationServerConfiguration.class, types = 
 	@TypeHint(types = OAuth2AuthorizationCodeAuthenticationProvider.class,
 		methods = @MethodHint(name="setProviderSettings",parameterTypes=ProviderSettings.class)))
-@NativeHint(trigger = SpringWebMvcImportSelector.class, options = "--enable-all-security-services", follow = true, types = {
+@NativeHint(trigger = SpringWebMvcImportSelector.class, follow = true, types = {
 		@TypeHint(types= DispatcherServlet.class, access = AccessBits.CLASS),
 		@TypeHint(types = WebMvcSecurityConfiguration.class)
 })

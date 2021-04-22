@@ -57,7 +57,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @NativeHint(trigger = ConfigServerAutoConfiguration.class,
-		options = { "--enable-all-security-services", "--enable-https", "--enable-http"}, types =
+		options = { "--enable-https", "--enable-http" }, types =
 		@TypeHint(types = {
 				MergeCommand.FastForwardMode.Merge.class,
 				JGitText.class,

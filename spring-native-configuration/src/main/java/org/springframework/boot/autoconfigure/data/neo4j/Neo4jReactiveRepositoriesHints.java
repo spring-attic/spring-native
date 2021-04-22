@@ -32,7 +32,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class,
-		options = { "--enable-https", "--enable-all-security-services" }, types = {
+		options = "--enable-https", types = {
 	@TypeHint(types = {
 		org.springframework.data.neo4j.core.mapping.callback.ReactiveBeforeBindCallback.class
 	}, access= AccessBits.CLASS|AccessBits.DECLARED_METHODS),
