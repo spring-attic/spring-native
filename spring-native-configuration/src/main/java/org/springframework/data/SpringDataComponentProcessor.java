@@ -389,13 +389,8 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 		log.message("Adding reflective access to " + type.getDottedName());
 
-		if (type.hasAnnotationInHierarchy("Lorg/springframework/data/annotation/AccessType;")) {
-			nativeContext.addReflectiveAccess(type.getDottedName(),
-					Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		} else {
-			nativeContext.addReflectiveAccess(type.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-					Flag.allDeclaredFields);
-		}
+		nativeContext.addReflectiveAccess(type.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
+				Flag.allDeclaredFields);
 	}
 
 	private void registerSpringDataAnnotationInConfiguration(Type annotation, NativeContext context) {
