@@ -19,5 +19,5 @@ import org.springframework.nativex.type.NativeConfiguration;
 		ReusableMessageFactory.class, DefaultFlowMessageFactory.class
 	})
 )
-public class Log4jHints implements NativeConfiguration {
+public class Log4jApiHints implements NativeConfiguration {
 }
