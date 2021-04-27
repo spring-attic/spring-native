@@ -41,7 +41,8 @@ tasks.withType<Test> {
 }
 
 tasks.getByName<BootBuildImage>("bootBuildImage") {
-    builder = "paketobuildpacks/builder:tiny"
+    // TODO Bring back "paketobuildpacks/builder:tiny" before 0.10.0 release
+    builder = "dmikusa/graalvm-tiny"
     environment = mapOf(
             "BP_NATIVE_IMAGE" to "true"
     )
