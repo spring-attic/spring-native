@@ -6,6 +6,7 @@ This is a practical guide that uses the https://spring.io/guides/gs/rest-service
 
 TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io, add the "Spring Native" dependency and generate the project.
 
+[[getting-started-buildpacks-system-requirements]]
 ==== System Requirements
 
 Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details. https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.

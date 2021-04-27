@@ -73,6 +73,8 @@ include::native-image-options.adoc[]
 
 include::tracing-agent.adoc[]
 
+include::executable-jar-to-native.adoc[]
+
 include::troubleshooting.adoc[]
 
 include::how-to-contribute.adoc[]

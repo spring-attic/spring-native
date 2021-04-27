@@ -1,0 +1,40 @@
+[[executable-jar-to-native]]
+== Executable JAR to native
+
+It is possible to turn a https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html[Spring Boot executable JAR] to a native executable or a container image containing a native executable. This can be useful for various use cases:
+
+* Keep the regular JVM pipeline and turn the JVM Spring Boot application to native on the CI/CD platform.
+* Keep an architecture neutral deployment artifact (`native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation]).
+
+WARNING: A mandatory pre-requisite is to use <<spring-aot>> Maven or Gradle upstream to build the Spring Boot executable JAR.
+
+=== With Buildpacks
+
+With Spring Boot, https://buildpacks.io/[Buildpacks] is usually used with the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuilImage`) integration. But you can also use directly https://buildpacks.io/docs/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<spring-aot>> into an optimized container image:
+
+* Prerequisite: a Docker daemon needs to be available, https://hub.docker.com/search?type=edition&offering=community[locally] or https://buildpacks.io/docs/app-developer-guide/build-a-windows-app/#using-remote-docker-hosts[remotely].
+* https://buildpacks.io/docs/tools/pack/[Install `pack`].
+* Adapt to your project and run `pack build --builder paketobuildpacks/builder:tiny --path target/my-app-0.0.1-SNAPSHOT.jar --env 'BP_NATIVE_IMAGE=true' my-app:0.0.1`
+
+NOTE: This does not require a local `native-image` installation.
+
+=== With `native-image`
+
+Another option is to turn a Spring Boot executable JAR built with <<spring-aot>> into a native executable using GraalVM `native-image` compiler:
+
+* <<getting-started-native-image-system-requirements,Install native-image>>.
+* Adapt to your project and run:
+
+```
+#!/usr/bin/env bash
+
+rm -rf target/native-image
+mkdir -p target/native-image
+cd target/native-image
+jar -xvf ../my-app-0.0.1-SNAPSHOT-exec.jar >/dev/null 2>&1
+cp -R META-INF BOOT-INF/classes
+native-image -H:Name=my-app -cp BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
+mv my-app ../
+```
+
+NOTE: This is documented as a simple bash script but can be adapted to whatever is suitable to you environment.
