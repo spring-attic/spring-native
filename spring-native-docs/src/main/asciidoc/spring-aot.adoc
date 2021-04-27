@@ -38,6 +38,8 @@ The plugin should be declared as following:
 </build>
 ----
 
+WARNING: With Maven, the `org.springframework.experimental:spring-native` dependency is mandatory, so make sure to add it to `<dependencies></dependencies>`.
+
 Maven goals `spring-aot:generate` (`process-test-classes` phase) and `spring-aot:test-generate` (`prepare-package` phase) are automatically invoked in the Maven lifecycle when using the `mvn verify` or `mvn package` commands.
 The `spring-aot:*` goals are not meant to be called by themselves since they rely on other parts of the lifecycle.
 Sources are generated in `target/generated-sources/spring-aot/` and test sources in `target/generated-test-sources/spring-aot/`.
