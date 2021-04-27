@@ -1,0 +1,6 @@
+version: '3.1'
+services:
+  data-r2dbc-kotlin:
+    image: data-r2dbc-kotlin:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"

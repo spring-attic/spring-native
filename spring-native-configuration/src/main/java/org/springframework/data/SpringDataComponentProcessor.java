@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.NativeContext;
@@ -113,7 +114,11 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 					// Reactive
 					"org.springframework.data.repository.reactive.ReactiveCrudRepository",
-					"org.springframework.data.repository.reactive.ReactiveSortingRepository"
+					"org.springframework.data.repository.reactive.ReactiveSortingRepository",
+
+					// Kotlin
+					"org.springframework.data.repository.kotlin.CoroutineCrudRepository",
+					"org.springframework.data.repository.kotlin.CoroutineSortingRepository"
 			));
 
 	private static final Set<String> STORE_REPOSITORY_DECLARATION_NAMES = new HashSet<>(
@@ -159,7 +164,7 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 				// TODO: should we filter out "javax.persistence.Entity" because those are handled by the JpaComponentProcessor?
 
-				if (type.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || TypeProcessor.isExcludedByDefault(type)) {
+				if (type.isPartOfDomain(SPRING_DATA_DOMAIN_NAMESPACE) || TypeProcessor.isExcludedByDefault(type) || type.isPartOfDomain("kotlinx.coroutines.")) {
 					return false;
 				}
 				return true;
@@ -238,6 +243,19 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 		// reactive repo
 		if (repositoryType.implementsInterface("org/springframework/data/repository/reactive/ReactiveCrudRepository")) {
 			imageContext.initializeAtBuildTime(repositoryType); // TODO: check if we really need this!
+		}
+
+		// kotlin
+		if (repositoryType.implementsInterface("org/springframework/data/repository/kotlin/CoroutineCrudRepository")) {
+
+			logger.debug(LOG_PREFIX + "kotlin.Coroutine repository detected. Adding kotlin Flow, Iterable, Unit, Long and Boolean.");
+
+			imageContext.addReflectiveAccess("java.lang.Iterable", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+			imageContext.addReflectiveAccess("kotlinx.coroutines.flow.Flow", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+			imageContext.addReflectiveAccess("kotlin.collections.Iterable", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+			imageContext.addReflectiveAccess("kotlin.Unit", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+			imageContext.addReflectiveAccess("kotlin.Long", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+			imageContext.addReflectiveAccess("kotlin.Boolean", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
 		}
 	}
 
