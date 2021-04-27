@@ -50,9 +50,7 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 * `spring-boot-starter-jdbc`
 * `spring-boot-starter-logging`
 ** Logback is supported, but not configuration with `logback.xml` so please configure it with `application.properties` or `application.yml` for now, see https://github.com/spring-projects-experimental/spring-native/issues/625[#625] for more details.
-* `spring-boot-starter-log4j2`
-** JMX support is disabled because it is incompatible with the build time initialization currently required for logging.
-** The footprint is not optimal yet due to the inclusion `GraalJSEngineFactory`, see https://github.com/oracle/graal/issues/2991[graal#115] for more details.
+** Log4j2 is not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/115[#115].
 * `spring-boot-starter-mail`
 * `spring-boot-starter-thymeleaf`
 * `spring-boot-starter-rsocket`
