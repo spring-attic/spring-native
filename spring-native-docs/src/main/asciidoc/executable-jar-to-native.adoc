@@ -1,40 +1,50 @@
 [[executable-jar-to-native]]
 == Executable JAR to native
 
-It is possible to turn a https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html[Spring Boot executable JAR] to a native executable or a container image containing a native executable. This can be useful for various use cases:
+It is possible to turn a {spring-boot-docs}/html/appendix-executable-jar-format.html[Spring Boot executable JAR] to a native executable, or a container image containing a native executable.
+This can be useful for various use cases:
 
 * Keep the regular JVM pipeline and turn the JVM Spring Boot application to native on the CI/CD platform.
-* Keep an architecture neutral deployment artifact (`native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation]).
+* Keep an architecture neutral deployment artifact, as `native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation].
 
 WARNING: A mandatory pre-requisite is to use <<spring-aot>> Maven or Gradle upstream to build the Spring Boot executable JAR.
 
 === With Buildpacks
 
-With Spring Boot, https://buildpacks.io/[Buildpacks] is usually used with the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuilImage`) integration. But you can also use directly https://buildpacks.io/docs/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<spring-aot>> into an optimized container image:
+Spring Boot applications usually use {buildpacks}[Buildpacks] via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuilImage`) integration.
+You can also use directly {buildpacks-docs}/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<spring-aot>> into an optimized container image.
 
-* Prerequisite: a Docker daemon needs to be available, https://hub.docker.com/search?type=edition&offering=community[locally] or https://buildpacks.io/docs/app-developer-guide/build-a-windows-app/#using-remote-docker-hosts[remotely].
-* https://buildpacks.io/docs/tools/pack/[Install `pack`].
-* Adapt to your project and run `pack build --builder paketobuildpacks/builder:tiny --path target/my-app-0.0.1-SNAPSHOT.jar --env 'BP_NATIVE_IMAGE=true' my-app:0.0.1`
+First, make sure that a Docker daemon is available, either https://hub.docker.com/search?type=edition&offering=community[locally] or {buildpacks-docs}/app-developer-guide/build-a-windows-app/#using-remote-docker-hosts[remotely].
+You also need to {buildpacks-docs}/tools/pack/[Install `pack`].
+
+Assuming a Spring Boot executable JAR built as `my-app-0.0.1-SNAPSHOT.jar` in the `target` directory, run:
+
+[source,bash]
+----
+pack build --builder paketobuildpacks/builder:tiny \
+    --path target/my-app-0.0.1-SNAPSHOT.jar --env 'BP_NATIVE_IMAGE=true' my-app:0.0.1
+----
 
 NOTE: This does not require a local `native-image` installation.
 
 === With `native-image`
 
-Another option is to turn a Spring Boot executable JAR built with <<spring-aot>> into a native executable using GraalVM `native-image` compiler:
+Another option is to turn a Spring Boot executable JAR built with <<spring-aot>> into a native executable using the GraalVM `native-image` compiler.
+For this to work, you need to <<getting-started-native-image-system-requirements,Install native-image>>.
 
-* <<getting-started-native-image-system-requirements,Install native-image>>.
-* Adapt to your project and run:
+Assuming a Spring Boot executable JAR built as `my-app-0.0.1-SNAPSHOT.jar` in the `target` directory:
 
-```
+[source,bash]
+----
 #!/usr/bin/env bash
 
 rm -rf target/native-image
 mkdir -p target/native-image
 cd target/native-image
-jar -xvf ../my-app-0.0.1-SNAPSHOT-exec.jar >/dev/null 2>&1
+jar -xvf ../my-app-0.0.1-SNAPSHOT.jar >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 native-image -H:Name=my-app -cp BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
 mv my-app ../
-```
+----
 
 NOTE: This is documented as a simple bash script but can be adapted to whatever is suitable to you environment.

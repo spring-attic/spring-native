@@ -5,6 +5,9 @@
 :hide-uri-scheme:
 :version: 0.10.0-SNAPSHOT
 
+:buildpacks: https://buildpacks.io/
+:buildpacks-docs: {buildpacks}/docs
+
 :github-tag: main
 :github-repo: spring-projects-experimental/spring-native
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
