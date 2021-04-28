@@ -57,7 +57,6 @@ org.springframework.boot.autoconfigure.data.redis.RedisDataSupportHints
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesHints
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesHints
 org.springframework.boot.autoconfigure.http.HttpMessageConverterHints
-org.springframework.boot.autoconfigure.integration.IntegrationHints
 org.springframework.boot.autoconfigure.jackson.JacksonHints
 org.springframework.boot.autoconfigure.jdbc.JdbcHints
 org.springframework.boot.autoconfigure.mail.JavamailHints
@@ -96,6 +95,7 @@ org.springframework.data.rest.webmvc.config.RestControllerHints
 org.springframework.data.web.config.DataRestHints
 org.springframework.data.web.config.SpringDataWebHints
 org.springframework.hateoas.config.HateoasHints
+org.springframework.integration.IntegrationHints
 org.springframework.kafka.annotation.KafkaHints
 org.springframework.messaging.MessagingAnnotationHints
 org.springframework.scheduling.annotation.SchedulingHints
