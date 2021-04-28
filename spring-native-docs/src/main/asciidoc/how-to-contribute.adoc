@@ -1,15 +1,18 @@
 [[how-to-contribute]]
 == How to contribute
 
-This section describes how to contribute native support for libraries or features used in Spring applications. This can be done either by submitting {github-prs}[submit pull requests] to Spring Native for the scope supported on https://start.spring.io, or by providing native support directly at library or application level otherwise.
+This section describes how to contribute native support for libraries or features used in Spring applications.
+This can be done either by submitting {github-prs}[submit pull requests] to Spring Native for the scope supported on https://start.spring.io, or by providing native support directly at library or application level otherwise.
 
 [[how-to-contribute-design]]
 === Designing native-friendly Spring libraries
 
-Native support is mostly about making an application and its libraries possible to analyze at build-time to configure what's required or not at runtime. The goal is to do that in an optimal way to have a minimal footprint.
+Native support is mostly about making an application and its libraries possible to analyze at build-time to configure what's required or not at runtime.
+The goal is to do that in an optimal way to have a minimal footprint.
 
 Spring applications are dynamic, which means they typically use Java language features like reflection in various places.
-Spring Native and its Spring AOT build plugins performs AOT transformations, in the context of a specific application classpath and configuration in order to generate the optimal native configuration. They also generate programmatic versions of `spring.factories` or auto-configurations to reduce the amount of reflection required at runtime.
+Spring Native and its Spring AOT build plugins performs AOT transformations, in the context of a specific application classpath and configuration in order to generate the optimal native configuration.
+They also generate programmatic versions of `spring.factories` or auto-configurations to reduce the amount of reflection required at runtime.
 
 Each reflection entry (per constructor/method/field) leads to the creation of a proxy class by `native-image`, so from a footprint point of view, these AOT transformations allow a smaller and more optimal configuration to be generated.
 
@@ -30,7 +33,8 @@ This behavior could potentially become the default in a future Spring Framework 
 Spring related code should use `NativeDetector.inNativeImage()` (provided by `spring-core` dependency in the `org.springframework.core` package) to detect native-specific code paths.
 Spring Framework or Spring Data takes advantage of this utility method to disable CGLIB proxies since they are not supported in native images for example.
 
-However, where possible we recommend writing code that will work in both contexts rather always falling back on the `NativeDetector`, common code will be easier to reason about and test/debug.
+Whenever possible, we recommend writing code that works in both contexts rather than always falling back on the `NativeDetector`.
+This way, common code is easier to reason about and test/debug.
 
 ==== Do classpath checks in static block/fields and configure build-time initialization
 
@@ -52,39 +56,50 @@ NOTE: Care must be taken to limit as much as possible the amount of other classe
 
 For code executing at runtime, try to favor functional approaches like lambdas and method references instead of reflection when possible, since these constructs are automatically understood by the native-image static analysis.
 
-For example, if your Spring project is using `RootBeanDefinition`, using the `Supplier` based constructor will be native friendly in the sense that the `native-image` compiler will understand bean creations without requiring native reflection configuration. So instead of `new RootBeanDefinition(BeanFactoryChannelResolver.class)`, use `new RootBeanDefinition(BeanFactoryChannelResolver.class, BeanFactoryChannelResolver::new)`. See https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/support/RootBeanDefinition.html#RootBeanDefinition-java.lang.Class-java.util.function.Supplier-[the related Javadoc] for more details.
+For example, if your Spring project is using `RootBeanDefinition`, using the `Supplier` based constructor is native friendly in the sense that the `native-image` compiler understands bean creations without requiring native reflection configuration.
+Concretely, instead of `new RootBeanDefinition(BeanFactoryChannelResolver.class)`, use `new RootBeanDefinition(BeanFactoryChannelResolver.class, BeanFactoryChannelResolver::new)`.
+
+NOTE: See {spring-framework-api}/org/springframework/beans/factory/support/RootBeanDefinition.html#RootBeanDefinition-java.lang.Class-java.util.function.Supplier-[the related Javadoc] for more details.
 
 ==== Move reflection to build-time when possible
 
 It is fine to use reflection in a native world but it is most optimal to do it in code executed at build-time:
 
-* In the static block/fields of a class initialized at build-time
-* In an AOT transformation run as a Spring AOT build plugin
+* In the static block/fields of a class initialized at build-time.
+* In an AOT transformation run as a Spring AOT build plugin.
 
 NOTE: More guidelines will be provided here as <<spring-aot>> matures.
 
 [[how-to-contribute-design-import-selectors]]
 ==== Provide hints for import selectors
 
-Spring Native chases down configuration references to other configurations (`@Import` usages). However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
-Spring Native does not do that level of analysis (it could get very complicated). This means that, although Spring Native can tell it has encountered a selector, it does not know what types that selector needs reflective access to or what further configurations it references.
+Spring Native chases down configuration references to other configurations (`@Import` usages).
+However if you use an import selector, that means code is deciding what the next imported configuration should be, which is harder to follow.
+Spring Native does not do that level of analysis (it could get very complicated).
+This means that, although Spring Native can tell it has encountered a selector, it does not know what types that selector needs reflective access to or what further configurations it references.
 
-Now, Spring Native could simply continue, and maybe it would work, maybe it would crash at runtime. Typically, the error produced when things go wrong due to this missing information is very cryptic. If the selector is doing a "if this type is around, return this configuration to include", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration. For this reason, Spring Native analysis fails early and fast, indicating that it does not know what a particular selector is doing.
+Spring Native could simply continue, and maybe it would work, maybe it would crash at runtime.
+Typically, the error produced when things go wrong due to this missing information is very cryptic.
+If the selector is doing a "if this type is around, return this configuration to include", it may be not finding some type (when it is really there but is not exposed in the image) and not including some critical configuration.
+For this reason, Spring Native analysis fails early and fast, indicating that it does not know what a particular selector is doing.
 
-To fix it, you should add a hint with the related import selector specified as trigger. See for example https://github.com/spring-projects-experimental/spring-native/blob/84b2ad170c566d6c8aa38de04bf37224bd8d215d/spring-native-configuration/src/main/java/org/springframework/security/config/annotation/web/reactive/ReactiveSecurityHints.java[this hint] and https://github.com/spring-projects-experimental/spring-native/blob/d5129e207bbf3d005b8d2109f153579dc300f8e7/spring-native-configuration/src/main/resources/META-INF/services/org.springframework.nativex.type.NativeConfiguration#L104[related service loader entry] as an example.
+To fix it, you should add a hint with the related import selector specified as trigger.
+See for example {github-tree}/spring-native-configuration/src/main/java/org/springframework/security/config/annotation/web/reactive/ReactiveSecurityHints.java[this hint] and the {github-tree}/spring-native-configuration/src/main/resources/META-INF/services/org.springframework.nativex.type.NativeConfiguration#L104[related service loader entry].
 
 You can temporarily turn this hard error into a warning by setting the `failOnMissingSelectorHint` option to `false` in <<spring-aot-configuration>>.
 
 [[how-to-contribute-new-hints]]
 === Contributing new hints
 
-For most cases Spring Native understands how Spring applications operate - how configurations refer to each other, how beans are going to be instantiated, etc. However, there are some subtleties that it doesn't understand and to plug those knowledge gaps it relies on hints, these tell the system what extra configuration may be needed for the native image build when particular auto configurations or libraries are active in an application.
+For most cases Spring Native understands how Spring applications operate - how configurations refer to each other, how beans are going to be instantiated, etc.
+However, there are some subtleties that it doesn't understand and to plug those knowledge gaps it relies on hints, these tell the system what extra configuration may be needed for the native image build when particular auto configurations or libraries are active in an application.
 
 A hint may indicate that a specific resource must be included or that reflection on a particular type is required.
 
 When adding support for a new area of Spring or new version of a library, the typical approach to work out the missing hints is as follows:
 
-. Notice an error if your application when you try to build it or run it -- a `classnotfound`, `methodnotfound`, or similar error. If you are using a piece of Spring we don't have a sample for, this is likely to happen.
+. Notice an error if your application when you try to build it or run it -- a `classnotfound`, `methodnotfound`, or similar error.
+If you are using a piece of Spring we don't have a sample for, this is likely to happen.
 
 . Try to determine which configuration classes give rise to the need for that reflective access to occur.
 Usually, we do a few searches for references to the type that is missing, and those searches guide us to the configuration.

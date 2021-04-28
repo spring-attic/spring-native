@@ -11,7 +11,8 @@ TIP: The easiest way to start a new native Spring Boot project is to go to https
 
 Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details. https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
 
-NOTE: You can run `docker run hello-world` (without `sudo`) to check the Docker daemon is reachable as expected, see related https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/htmlsingle/#build-image-docker-daemon[Maven] or https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/#build-image-docker-daemon[Gradle] Spring Boot plugin documentation.
+NOTE: You can run `docker run hello-world` (without `sudo`) to check the Docker daemon is reachable as expected.
+Check the {spring-boot-maven-plugin-docs}/#build-image-docker-daemon[Maven] or {spring-boot-gradle-plugin-docs}/#build-image-docker-daemon[Gradle] Spring Boot plugin documentation for more details.
 
 TIP: On MacOS, it is recommended to increase the memory allocated to Docker to at least `8GB`, and potentially add more CPUs as well.
 See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
