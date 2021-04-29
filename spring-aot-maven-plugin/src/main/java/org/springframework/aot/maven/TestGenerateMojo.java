@@ -44,10 +44,10 @@ import org.springframework.aot.BootstrapCodeGenerator;
 public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	/**
-	 * The location of the generated bootstrap test sources.
+	 * Location of generated source files created by Spring AOT to bootstrap the test context.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-test-sources/spring-aot/")
-	private File outputDirectory;
+	private File generatedTestSourcesDirectory;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -56,9 +56,9 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
-		recreateGeneratedSourcesFolder(this.outputDirectory);
-		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "java"));
-		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
+		recreateGeneratedSourcesFolder(this.generatedTestSourcesDirectory);
+		Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
+		Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
 		try {
 			List<String> testClasspathElements = this.project.getTestClasspathElements();
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());

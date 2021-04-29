@@ -17,7 +17,6 @@
 package org.springframework.aot.maven;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -34,7 +33,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.aot.BootstrapCodeGenerator;
-import org.springframework.util.FileSystemUtils;
 
 /**
  * @author Brian Clozel
@@ -46,10 +44,10 @@ import org.springframework.util.FileSystemUtils;
 public class GenerateMojo extends AbstractBootstrapMojo {
 
 	/**
-	 * The location of the generated bootstrap sources.
+	 * Location of generated source files created by Spring AOT to bootstrap the application.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-sources/spring-aot/")
-	private File outputDirectory;
+	private File generatedSourcesDirectory;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -58,9 +56,9 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			// TODO respect includes/excludes
 			resourceFolders.add(new File(r.getDirectory()).toPath());
 		}
-		recreateGeneratedSourcesFolder(this.outputDirectory);
-		Path sourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "java"));
-		Path resourcesPath = this.outputDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
+		recreateGeneratedSourcesFolder(this.generatedSourcesDirectory);
+		Path sourcesPath = this.generatedSourcesDirectory.toPath().resolve(Paths.get("src", "main", "java"));
+		Path resourcesPath = this.generatedSourcesDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
 		try {
 			List<String> runtimeClasspathElements = project.getRuntimeClasspathElements();
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
