@@ -177,6 +177,10 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		aotTestSourceSet.getResources().srcDir(generateAotTestSources.getResourcesOutputDirectory());
 		tasks.named(aotTestSourceSet.getCompileJavaTaskName()).configure(task -> task.dependsOn(generateAotTestSources));
 		testSourceSet.setRuntimeClasspath(aotTestSourceSet.getOutput().minus(aotSourceSet.getOutput()).plus(testSourceSet.getRuntimeClasspath()));
+		tasks.named(aotTestSourceSet.getProcessResourcesTaskName(), Copy.class, (aotProcessTestResources) -> {
+			aotProcessTestResources.from(generateAotTestSources.getResourcesOutputDirectory());
+			aotProcessTestResources.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+		});
 	}
 
 }
