@@ -147,6 +147,8 @@ public class JpaComponentProcessor implements ComponentProcessor {
 		public void process(Type type, NativeContext context) {
 
 			if (type.isEnum() && !context.hasReflectionConfigFor(ENUM_TYPE)) {
+
+				context.log(String.format("JpaComponentProcessor: detected enum usage in entity. Adding load/construct for %s.", type, ENUM_TYPE));
 				context.addReflectiveAccess(ENUM_TYPE, new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
 			}
 		}

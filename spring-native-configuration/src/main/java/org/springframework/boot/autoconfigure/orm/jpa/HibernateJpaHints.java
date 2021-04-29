@@ -120,12 +120,15 @@ import java.util.EventListener;
 						EntityManagerMessageLogger.class, // CoreMessageLogger.class,
 						Session.class, EventListener.class,
 
-						EnumType.class
+						EnumType.class,
+						InheritanceType.class,
+
 				}, typeNames = {
 						"org.hibernate.internal.EntityManagerMessageLogger_$logger",
 						"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
 						"org.hibernate.annotations.common.util.impl.Log",
+						"org.hibernate.cfg.beanvalidation.TypeSafeActivator",
 				}),
 				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory

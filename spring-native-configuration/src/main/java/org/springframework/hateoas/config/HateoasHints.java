@@ -16,24 +16,34 @@
 
 package org.springframework.hateoas.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonHints;
 import org.springframework.hateoas.Affordance;
 import org.springframework.hateoas.AffordanceModel;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.hateoas.server.ExposesResourceFor;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
+import org.springframework.hateoas.server.core.EvoInflectorLinkRelationProvider;
+import org.springframework.hateoas.server.core.LastInvocationAware;
 import org.springframework.hateoas.server.core.Relation;
+import org.springframework.hateoas.server.mvc.UriComponentsContributor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeProcessor;
+import org.springframework.nativex.type.TypeSystem;
 
 
 @NativeHint(trigger = WebStackImportSelector.class, types = {
@@ -54,50 +64,23 @@ import org.springframework.nativex.type.NativeConfiguration;
 		types = {
 				@TypeHint(types = {
 
+						HypermediaType.class,
+						ExposesResourceFor.class,
+						RepresentationModelAssembler.class,
+						DefaultLinkRelationProvider.class,
+						EvoInflectorLinkRelationProvider.class,
+						LastInvocationAware.class,
+						Relation.class,
+						UriComponentsContributor.class,
+
 						HypermediaConfigurationImportSelector.class,
 						HateoasConfiguration.class,
 						HypermediaHttpMessageConverterConfiguration.class,
 
-						Relation.class,
-
-						Link.class,
-						LinkRelation.class,
 						Affordance.class,
 						AffordanceModel.class,
-
-						EntityModel.class,
-						PagedModel.class,
-						RepresentationModel.class,
-
 						RestTemplateHateoasConfiguration.class,
-				},
-						typeNames = {
-
-								"org.springframework.hateoas.StringLinkRelation",
-								"org.springframework.hateoas.EntityModel$MapSuppressingUnwrappingSerializer",
-
-								// HAL
-								"org.springframework.hateoas.mediatype.hal.HalConfiguration",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule",
-								"org.springframework.hateoas.mediatype.hal.LinkMixin",
-								"org.springframework.hateoas.mediatype.hal.RepresentationModelMixin",
-								"org.springframework.hateoas.mediatype.hal.CollectionModelMixin",
-								"org.springframework.hateoas.mediatype.hal.HalLinkRelation",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule$HalLink",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule$HalLinkListSerializer",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule$HalLinkListDeserializer",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule$TrueOnlyBooleanSerializer",
-								"org.springframework.hateoas.mediatype.hal.Jackson2HalModule$EmbeddedMapper",
-								"org.springframework.hateoas.mediatype.hal.forms.HalFormsMediaTypeConfiguration"
-
-								// TODO: ALPS
-
-								// TODO: COLLECTION JSON
-
-								// TODO: UBER
-
-						}, access = AccessBits.ALL
-				),
+				}, access = AccessBits.ALL),
 				@TypeHint(
 						types = CollectionModel.class,
 						fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true)
@@ -109,4 +92,124 @@ import org.springframework.nativex.type.NativeConfiguration;
 )
 public class HateoasHints implements NativeConfiguration {
 
+	private static final String ENTITY_LINKS = "org/springframework/hateoas/server/EntityLinks";
+	private static final String JACKSON_ANNOTATION = "Lcom/fasterxml/jackson/annotation/JacksonAnnotation;";
+
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+
+		List<HintDeclaration> hints = new ArrayList<>();
+
+		hints.addAll(computeAtConfigurationClasses(typeSystem));
+		hints.addAll(computeRepresentationModels(typeSystem));
+		hints.addAll(computeEntityLinks(typeSystem));
+		hints.addAll(computeJacksonMappings(typeSystem));
+
+		return hints;
+	}
+
+	private List<HintDeclaration> computeAtConfigurationClasses(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("HateoasHints - Configuration Classes")
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.onTypeDiscovered((type, context) -> context.addReflectiveAccess(type, new AccessDescriptor(AccessBits.ALL)))
+				.use(typeSystem)
+				.toProcessTypesMatching(type -> type.isPartOfDomain("org.springframework.hateoas") && type.isAtConfiguration());
+	}
+
+	private List<HintDeclaration> computeEntityLinks(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("HateoasHints - EntityLinks")
+				.filterAnnotations(annotation ->
+						annotation.isPartOfDomain("org.springframework"))
+				.skipTypesMatching(type -> !type.isPartOfDomain("org.springframework.hateoas"))
+				.use(typeSystem)
+				.toProcessTypesMatching(type -> type.implementsInterface(ENTITY_LINKS, true));
+	}
+
+
+	/**
+	 * Use {@link org.springframework.nativex.type.Type types} that extend {@literal org.springframework.hateoas.RepresentationModel}
+	 * or implement {@literal org.springframework.hateoas.RepresentationModelProcessor} as a starting point to register configuration
+	 * for domain types and annotations from {@literal org.springframework} or {@literal com.fasterxml.jackson}.
+	 *
+	 * @param typeSystem must not be {@literal null}.
+	 * @return
+	 */
+	List<HintDeclaration> computeRepresentationModels(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("HateoasHints - RepresentationModel")
+				.skipTypesMatching(type -> type.isPartOfDomain("org.springframework.") || type.isPartOfDomain("com.fasterxml.jackson."))
+				.filterAnnotations(annotation -> {
+					return annotation.isPartOfDomain("org.springframework") ||
+							annotation.isPartOfDomain("com.fasterxml.jackson.annotation");
+				})
+				.use(typeSystem)
+				.toProcessTypesMatching(type -> {
+
+					try {
+						return type.extendsClass("Lorg/springframework/hateoas/RepresentationModel;") ||
+								type.implementsInterface("org/springframework/hateoas/server/RepresentationModelProcessor", true);
+					} catch (MissingTypeException e) {
+
+					}
+					return false;
+				});
+	}
+
+	List<HintDeclaration> computeJacksonMappings(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("HateoasHints - Jackson Mapping Candidates")
+				.skipTypesMatching(type -> {
+					if (type.isPartOfDomain("com.fasterxml.jackson.") || type.isPartOfDomain("java.")) {
+						return true;
+					}
+					if (type.isPartOfDomain("org.springframework.")) {
+						if (!type.isPartOfDomain("org.springframework.hateoas.")) {
+							return true;
+						}
+					}
+					return false;
+				})
+				.filterAnnotations(annotation -> annotation.isPartOfDomain("com.fasterxml.jackson."))
+				.use(typeSystem)
+				.toProcessTypesMatching(this::usesJackson);
+	}
+
+	private boolean usesJackson(Type type) {
+
+		try {
+
+			// capture types like: Jackson2HalModules
+			if (type.implementsInterface("com/fasterxml/jackson/databind/Module", true)) {
+				return true;
+			}
+
+			// capture types like: AlpsJsonHttpMessageConverter
+			if (type.extendsClass("Lorg/springframework/http/converter/json/MappingJackson2HttpMessageConverter;")) {
+				return true;
+			}
+
+			// capture types like: Jackson2HalModules$TrueOnlyBooleanSerializer
+			if (type.extendsClass("Lcom/fasterxml/jackson/databind/JsonSerializer;") || type.extendsClass("Lcom/fasterxml/jackson/databind/JsonDeserializer;")) {
+				return true;
+			}
+
+			if (type.getAnnotations().stream().filter(ann -> ann.isAnnotated(JACKSON_ANNOTATION)).findAny().isPresent()) {
+				return true;
+			}
+
+			if (!type.getMethodsWithAnnotation(JACKSON_ANNOTATION, true).isEmpty()) {
+				return true;
+			}
+
+			return !type.getFieldsWithAnnotation(JACKSON_ANNOTATION, true).isEmpty();
+		} catch (MissingTypeException e) {
+
+		}
+
+		return false;
+	}
 }

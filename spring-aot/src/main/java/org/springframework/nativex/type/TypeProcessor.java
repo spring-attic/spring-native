@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -110,7 +111,15 @@ public class TypeProcessor {
 	 * @param annotationAccessDescriptor the {@link AccessDescriptor} to use for annotations.
 	 */
 	public TypeProcessor(AccessDescriptor typeAccessDescriptor, AccessDescriptor annotationAccessDescriptor) {
-		this((type, context) -> context.addReflectiveAccess(type, typeAccessDescriptor), (type, context) -> context.addReflectiveAccess(type, annotationAccessDescriptor));
+		this((type, context) -> {
+
+			context.log(String.format("TypeProcessor - Registering %s with access %s.", type.getName(), typeAccessDescriptor));
+			context.addReflectiveAccess(type, typeAccessDescriptor);
+		}, (type, context) -> {
+
+			context.log(String.format("TypeProcessor - Registering %s with access %s.", type.getName(), annotationAccessDescriptor));
+			context.addReflectiveAccess(type, annotationAccessDescriptor);
+		});
 	}
 
 	/**
@@ -461,7 +470,8 @@ public class TypeProcessor {
 
 		domainType.getTypesInSignature()
 				.stream()
-				.map(imageContext.getTypeSystem()::resolve)
+				.map(it -> imageContext.getTypeSystem().resolve(it, true))
+				.filter(Objects::nonNull)
 				.forEach(it -> process(it, imageContext, seen));
 	}
 
@@ -501,7 +511,8 @@ public class TypeProcessor {
 
 				imageContext.log(String.format(componentLogName + ": inspecting field %s of %s", field.getName(), domainType.getDottedName()));
 
-				field.getTypesInSignature().stream().map(imageContext.getTypeSystem()::resolve)
+				field.getTypesInSignature().stream().map(it -> imageContext.getTypeSystem().resolve(it, true))
+						.filter(Objects::nonNull)
 						.forEach(signatureType -> process(signatureType, imageContext, seen));
 
 				field.getAnnotationTypes().forEach(annotation -> {
@@ -541,6 +552,10 @@ public class TypeProcessor {
 
 		// meta annotations
 		processAnnotationsOnType(annotation, imageContext, seen);
+	}
+
+	public String getComponentLogName() {
+		return componentLogName;
 	}
 
 	public static boolean isExcludedByDefault(Type type) {
@@ -727,6 +742,14 @@ public class TypeProcessor {
 
 			HintDeclaration hintDeclaration = new HintDeclaration();
 			hintDeclaration.addDependantType(typeName, descriptor);
+			if (requiresResourceAccess(descriptor)) {
+
+				String resourceName = TypeName.fromClassName(typeName.replace("[]", "")).toSlashName();
+				if (!resourceName.endsWith(".class")) {
+					resourceName = resourceName + ".class";
+				}
+				hintDeclaration.addResourcesDescriptor(new ResourcesDescriptor(new String[]{resourceName}, false));
+			}
 			reflectionHints.add(hintDeclaration);
 		}
 
@@ -737,6 +760,10 @@ public class TypeProcessor {
 			Set<String> added = new TreeSet<>();
 			registerHierarchy(type, added, accessBits);
 			return added;
+		}
+
+		private boolean requiresResourceAccess(AccessDescriptor accessDescriptor) {
+			return accessDescriptor.getAccessBits() != null && AccessBits.isSet(AccessBits.RESOURCE, accessDescriptor.getAccessBits());
 		}
 
 		private void registerHierarchy(Type type, Set<String> visited, int accessBits) {

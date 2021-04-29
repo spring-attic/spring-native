@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeProcessor.TypeHintCreatingProcessor;
 import org.springframework.hateoas.config.HateoasHints;
@@ -116,6 +118,7 @@ public class DataRestHints implements NativeConfiguration {
 	private static final String BASE_PATH_AWARE_CONTROLLER = "Lorg/springframework/data/rest/webmvc/BasePathAwareController;";
 	private static final String REPOSITORY_REST_CONFIGURER = "org/springframework/data/rest/webmvc/config/RepositoryRestConfigurer";
 	private static final String REPOSITORY_REST_RESOURCE = "Lorg/springframework/data/rest/core/annotation/RepositoryRestResource;";
+	private static final String JACKSON_ANNOTATION = "Lcom/fasterxml/jackson/annotation/JacksonAnnotation;";
 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
@@ -125,6 +128,7 @@ public class DataRestHints implements NativeConfiguration {
 		hints.addAll(computeRestControllerHints(typeSystem));
 		hints.addAll(computeRepositoryRestConfigurer(typeSystem));
 		hints.addAll(computeExcerptProjectionHints(typeSystem));
+		hints.addAll(computeJacksonMappingCandidates(typeSystem));
 
 		// TODO: what about RestResource and others
 
@@ -132,7 +136,7 @@ public class DataRestHints implements NativeConfiguration {
 	}
 
 	/**
-	 * Compute {@link HintDeclaration hints} for all types that extend org.springframework.data.rest.webmvc.configRepositoryRestConfigurer.
+	 * Compute {@link HintDeclaration hints} for all types that extend org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer.
 	 * like "org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer"
 	 *
 	 * @param typeSystem must not be {@literal null}.
@@ -145,6 +149,9 @@ public class DataRestHints implements NativeConfiguration {
 				.skipMethodInspection()
 				.skipFieldInspection()
 				.skipConstructorInspection()
+				.onTypeDiscovered((type, context) -> {
+					context.addReflectiveAccess(type, new AccessDescriptor(AccessBits.ALL));
+				})
 				.use(typeSystem)
 				.toProcessTypesMatching(it ->
 						it.implementsInterface(REPOSITORY_REST_CONFIGURER, true)
@@ -221,5 +228,42 @@ public class DataRestHints implements NativeConfiguration {
 				.collect(Collectors.toList());
 	}
 
+	List<HintDeclaration> computeJacksonMappingCandidates(TypeSystem typeSystem) {
+
+		return TypeProcessor.namedProcessor("RestMvcConfigurationProcessor - Jackson Mapping Candidates")
+				.skipTypesMatching(type -> {
+					if(type.isPartOfDomain("com.fasterxml.jackson.") || type.isPartOfDomain("java.")) {
+						return true;
+					}
+					if(type.isPartOfDomain("org.springframework.")) {
+						if(!type.isPartOfDomain("org.springframework.data.rest")) {
+							return true;
+						}
+					}
+					return false;
+				})
+				.filterAnnotations(annotation -> annotation.isPartOfDomain("com.fasterxml.jackson."))
+				.use(typeSystem)
+				.toProcessTypesMatching(this::usesJackson);
+	}
+
+	private boolean usesJackson(Type type) {
+
+		try {
+			if (type.getAnnotations().stream().filter(ann -> ann.isAnnotated(JACKSON_ANNOTATION)).findAny().isPresent()) {
+				return true;
+			}
+
+			if (!type.getMethodsWithAnnotation(JACKSON_ANNOTATION, true).isEmpty()) {
+				return true;
+			}
+
+			return !type.getFieldsWithAnnotation(JACKSON_ANNOTATION, true).isEmpty();
+		} catch (MissingTypeException e) {
+
+		}
+
+		return false;
+	}
 	// TODO: split up and refine access to hateos and plugin configuration classes
 }

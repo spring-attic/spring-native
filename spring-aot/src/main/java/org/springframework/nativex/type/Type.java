@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1073,7 +1074,7 @@ public class Type {
 		return getJavaxAnnotations(new HashSet<>());
 	}
 
-	private boolean isAnnotated(String Ldescriptor) {
+	public boolean isAnnotated(String Ldescriptor) {
 		if (dimensions > 0) {
 			return false;
 		}
