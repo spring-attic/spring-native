@@ -295,6 +295,7 @@ jobs:
             path: git-repo
             status: pending
         - task: build-project
+          privileged: true
           image: spring-native-stable-java11-image
           file: git-repo/ci/tasks/build-pr-project.yml
           params:
