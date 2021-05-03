@@ -42,7 +42,7 @@ resource_types:
       repository: teliaoss/github-pr-resource
       tag: v0.23.0
   - name: slack-notification
-    type: docker-image
+    type: registry-image
     source:
       repository: cfcommunity/slack-notification-resource
       tag: latest
@@ -79,34 +79,34 @@ resources:
       uri: ((graalvm-repo))
       branch: ((graalvm-dev-branch))
   - name: ci-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native-ci
   - name: graalvm-ce-stable-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/graalvm-ce
       tag: stable-java11-((milestone))
   - name: graalvm-ce-dev-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/graalvm-ce
       tag: dev-java11-((milestone))
   - name: spring-native-stable-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native
       tag: stable-java11-((milestone))
   - name: spring-native-dev-java11-image
-    type: docker-image
+    type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
