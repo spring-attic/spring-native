@@ -87,6 +87,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-config-client`
 * `spring-cloud-config-server`
 * `spring-cloud-starter-netflix-eureka-client` (Java 11 only)
+** Manual configuration required, see https://github.com/oracle/graal/issues/3392 related issue.
 *  `spring-cloud-starter-task`
 * `spring-cloud-function-web`
 ** `--enable-https` flag is required for HTTPS support.
