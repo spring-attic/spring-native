@@ -132,6 +132,19 @@ public class TypeTests {
 		assertTrue(serializationTypes.contains("java.lang.String"));
 		assertTrue(serializationTypes.contains("java.lang.Integer"));
 	}
+
+	@Test
+	public void serializationHints3() {
+		Type s = typeSystem.resolveName(Ser3.class.getName());
+		List<HintDeclaration> hds = s.getCompilationHints();
+		assertEquals(1, hds.size());
+		HintDeclaration hd = hds.get(0);
+		assertEquals("java.lang.String",hd.getTriggerTypename());
+		Set<String> serializationTypes = hd.getSerializationTypes();
+		assertEquals(2, serializationTypes.size());
+		assertTrue(serializationTypes.contains("java.lang.String"));
+		assertTrue(serializationTypes.contains("java.lang.Integer"));
+	}
 	
 	@SerializationHint(types = String.class)
 	static class Ser1 {
@@ -139,6 +152,14 @@ public class TypeTests {
 	
 	@NativeHint(trigger = String.class, serializables = @SerializationHint(types=String.class, typeNames = "java.lang.Integer"))
 	static class Ser2 {
+	}
+
+	@NativeHint(trigger = String.class, imports = SerializationImports.class)
+	static class Ser3 {
+	}
+
+	@SerializationHint(types=String.class, typeNames = "java.lang.Integer")
+	static class SerializationImports {
 	}
 	
 	@Test

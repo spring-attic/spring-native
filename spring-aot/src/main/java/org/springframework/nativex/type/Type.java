@@ -1834,6 +1834,10 @@ public class Type {
 						unpackInitializationHint(an, ch);
 					} else if (annotationClassname.equals(InitializationHints.class.getName())) {
 						processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, ch));
+					} else if (annotationClassname.equals(SerializationHint.class.getName())) {
+						unpackSerializationHint(an, ch);
+					} else if (annotationClassname.equals(SerializationHints.class.getName())) {
+						processRepeatableAnnotationList(an, anno -> unpackSerializationHint(anno, ch));
 					}
 				}
 			}
