@@ -109,6 +109,7 @@ org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
 org.springframework.session.servlet.HttpSessionHints
 org.springframework.session.server.WebSessionHints
 org.springframework.stereotype.ComponentHints
+org.springframework.test.JUnitJupiterHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
 org.springframework.web.socket.WebSocketHints
