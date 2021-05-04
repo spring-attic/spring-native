@@ -104,6 +104,7 @@ org.springframework.security.config.annotation.web.configuration.WebMvcSecurityH
 org.springframework.security.config.annotation.web.reactive.ReactiveSecurityHints
 org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
 org.springframework.session.server.HttpSessionHints
+org.springframework.session.servlet.WebSessionHints
 org.springframework.stereotype.ComponentHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
