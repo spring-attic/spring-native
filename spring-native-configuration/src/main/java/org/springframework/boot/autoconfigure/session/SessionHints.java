@@ -20,27 +20,9 @@ import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.R
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ServletSessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
 import org.springframework.nativex.hint.ResourceHint;
-import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.security.web.csrf.DefaultCsrfToken;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 @NativeHint(trigger = ReactiveSessionConfigurationImportSelector.class, types =
 	@TypeHint(types = {
@@ -93,34 +75,5 @@ import java.util.TreeSet;
 				"org/springframework/session/jdbc/schema-sybase.sql"
 		})
 )
-@NativeHint(trigger = SpringHttpSessionConfiguration.class, serializables = {
-	@SerializationHint(types= {
-			ArrayList.class,
-			TreeMap.class,
-			TreeSet.class,
-			Locale.class,
-			DefaultSavedRequest.class,
-			DefaultCsrfToken.class,
-			SecurityContextImpl.class,
-			SimpleGrantedAuthority.class,
-			WebAuthenticationDetails.class,
-			User.class,
-			AbstractAuthenticationToken.class,
-			UsernamePasswordAuthenticationToken.class,
-			OAuth2AuthenticationToken.class,
-			OAuth2LoginAuthenticationToken.class,
-			OAuth2AuthorizationCodeAuthenticationToken.class
-	},
-	typeNames = {
-			"org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
-			"org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken",
-			"java.util.Collections$UnmodifiableCollection",
-			"java.util.Collections$UnmodifiableList",
-			"java.util.Collections$UnmodifiableRandomAccessList",
-			"java.util.Collections$UnmodifiableSet",
-			"java.lang.String$CaseInsensitiveComparator",
-			"org.springframework.security.core.userdetails.User$AuthorityComparator"
-	})
-}, abortIfTypesMissing = true)
 public class SessionHints implements NativeConfiguration {
 }
