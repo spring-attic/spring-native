@@ -2,35 +2,36 @@
 
 RC=0
 
-echo "Testing buildpacks-based builds"
-if ! (cd "samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
-  RC=1
-fi
-docker run commandlinerunner:0.0.1-SNAPSHOT&
-PID=$!
-sleep 3
-kill ${PID} > /dev/null 2>&1
-if ! (cd "samples/commandlinerunner-gradle" && ./gradlew bootBuildImage); then
-  RC=1
-fi
-docker run commandlinerunner-gradle:0.0.1-SNAPSHOT&
-PID=$!
-sleep 3
-kill ${PID} > /dev/null 2>&1
-if ! (cd "samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
-  RC=1
-fi
-docker run webmvc-kotlin:0.0.1-SNAPSHOT&
-PID=$!
-sleep 3
-kill ${PID} > /dev/null 2>&1
-if ! (cd "samples/security-kotlin" && ./gradlew bootBuildImage); then
-  RC=1
-fi
-docker run security-kotlin:0.0.1-SNAPSHOT&
-PID=$!
-sleep 3
-kill ${PID} > /dev/null 2>&1
+#TODO Disabled due to Docker rate limit issue, to be restored when https://github.com/spring-projects/spring-boot/issues/25898 will be fixed
+#echo "Testing buildpacks-based builds"
+#if ! (cd "samples/commandlinerunner" && mvn -ntp spring-boot:build-image); then
+#  RC=1
+#fi
+#docker run commandlinerunner:0.0.1-SNAPSHOT&
+#PID=$!
+#sleep 3
+#kill ${PID} > /dev/null 2>&1
+#if ! (cd "samples/commandlinerunner-gradle" && ./gradlew bootBuildImage); then
+#  RC=1
+#fi
+#docker run commandlinerunner-gradle:0.0.1-SNAPSHOT&
+#PID=$!
+#sleep 3
+#kill ${PID} > /dev/null 2>&1
+#if ! (cd "samples/webmvc-kotlin" && ./gradlew bootBuildImage); then
+#  RC=1
+#fi
+##docker run webmvc-kotlin:0.0.1-SNAPSHOT&
+#PID=$!
+#sleep 3
+#kill ${PID} > /dev/null 2>&1
+#if ! (cd "samples/security-kotlin" && ./gradlew bootBuildImage); then
+#  RC=1
+#fi
+#docker run security-kotlin:0.0.1-SNAPSHOT&
+#PID=$!
+#sleep 3
+#kill ${PID} > /dev/null 2>&1
 
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
