@@ -369,10 +369,8 @@ jobs:
           tag: generated-changelog/tag
           body: generated-changelog/changelog.md
 groups:
-  - name: "each-commit-builds"
-    jobs: [ "build-key-samples-java11", "deploy"]
-  - name: "daily-builds"
-    jobs: [ "build-samples-stable-java11", "build-samples-dev-java11"]
+  - name: "builds"
+    jobs: ["build-key-samples-java11", "deploy", "build-samples-stable-java11", "build-samples-dev-java11"]
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
