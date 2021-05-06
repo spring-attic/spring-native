@@ -14,6 +14,8 @@ params:
   CONTEXT: ci-images-git-repo/ci/images
   DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
   DOCKER_HUB_AUTH: ((docker-hub-auth))
+  JVMCI_URL: ((jvmci-url))
+  GRAALVM_BRANCH: ((graalvm-branch))
 run:
   path: /bin/sh
   args:

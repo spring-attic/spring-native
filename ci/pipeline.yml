@@ -125,6 +125,7 @@ resources:
 jobs:
   - name: build-ci-image
     plan:
+      - get: git-repo
       - get: ci-images-git-repo
         trigger: true
       - task: build-ci-image
@@ -146,6 +147,7 @@ jobs:
         trigger: true
   - name: build-graalvm-ce-stable-image
     plan:
+      - get: git-repo
       - get: ci-images-git-repo
       - get: graalvm-stable-git-repo
         passed: [check-graalvm-ce-stable-every-day]
@@ -154,7 +156,7 @@ jobs:
         passed: [check-graalvm-ce-stable-every-day]
       - task: build-graalvm-ce-stable-image
         privileged: true
-        file: git-repo/ci/tasks/build-ci-image.yml
+        file: git-repo/ci/tasks/build-graalvm-ce-image.yml
         output_mapping:
           image: graalvm-ce-stable-java11-image
         vars:
@@ -173,6 +175,7 @@ jobs:
         trigger: true
   - name: build-graalvm-ce-dev-image
     plan:
+      - get: git-repo
       - get: ci-images-git-repo
       - get: graalvm-dev-git-repo
         passed: [check-graalvm-ce-dev-every-day]
@@ -181,7 +184,7 @@ jobs:
         passed: [check-graalvm-ce-dev-every-day]
       - task: build-graalvm-ce-dev-image
         privileged: true
-        file: git-repo/ci/tasks/build-ci-image.yml
+        file: git-repo/ci/tasks/build-graalvm-ce-image.yml
         output_mapping:
           image: graalvm-ce-dev-java11-image
         vars:
@@ -190,12 +193,13 @@ jobs:
           graalvm-branch: ((graalvm-dev-branch))
   - name: build-spring-native-stable-image
     plan:
+      - get: git-repo
       - get: ci-images-git-repo
         passed: [build-graalvm-ce-stable-image]
         trigger: true
       - task: build-spring-native-stable-image
         privileged: true
-        file: git-repo/ci/tasks/build-ci-image.yml
+        file: git-repo/ci/tasks/build-spring-native-image.yml
         output_mapping:
           image: spring-native-stable-java11-image
         vars:
@@ -203,12 +207,13 @@ jobs:
           base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
   - name: build-spring-native-dev-image
     plan:
+      - get: git-repo
       - get: ci-images-git-repo
         passed: [build-graalvm-ce-dev-image]
         trigger: true
       - task: build-spring-native-dev-image
         privileged: true
-        file: git-repo/ci/tasks/build-ci-image.yml
+        file: git-repo/ci/tasks/build-spring-native-image.yml
         output_mapping:
           image: spring-native-dev-java11-image
         vars:
