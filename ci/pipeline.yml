@@ -160,7 +160,7 @@ jobs:
         output_mapping:
           image: graalvm-ce-stable-java11-image
         vars:
-          ci-image-name: graalvm-ce-stable-java11-image
+          ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-stable-java11))
           graalvm-branch: ((graalvm-stable-branch))
   - name: check-graalvm-ce-dev-change
@@ -188,7 +188,7 @@ jobs:
         output_mapping:
           image: graalvm-ce-dev-java11-image
         vars:
-          ci-image-name: graalvm-ce-dev-java11-image
+          ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-dev-java11))
           graalvm-branch: ((graalvm-dev-branch))
   - name: build-spring-native-stable-image
@@ -203,7 +203,7 @@ jobs:
         output_mapping:
           image: spring-native-stable-java11-image
         vars:
-          ci-image-name: spring-native-stable-java11-image
+          ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
   - name: build-spring-native-dev-image
     plan:
@@ -217,7 +217,7 @@ jobs:
         output_mapping:
           image: spring-native-dev-java11-image
         vars:
-          ci-image-name: spring-native-dev-java11-image
+          ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
   - name: build-key-samples-java11
     public: true
