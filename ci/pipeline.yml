@@ -84,20 +84,6 @@ resources:
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native-ci
-  - name: graalvm-ce-stable-java11-image
-    type: registry-image
-    icon: docker
-    source:
-      <<: *registry-image-resource-source
-      repository: ((docker-hub-organization))/graalvm-ce
-      tag: stable-java11-((milestone))
-  - name: graalvm-ce-dev-java11-image
-    type: registry-image
-    icon: docker
-    source:
-      <<: *registry-image-resource-source
-      repository: ((docker-hub-organization))/graalvm-ce
-      tag: dev-java11-((milestone))
   - name: spring-native-stable-java11-image
     type: registry-image
     icon: docker
@@ -141,10 +127,13 @@ jobs:
     plan:
       - get: ci-images-git-repo
         trigger: true
-      - put: ci-image
-        params:
-          build: ci-images-git-repo/ci/images
-          dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
+      - task: build-ci-image
+        privileged: true
+        file: git-repo/ci/tasks/build-ci-image.yml
+        output_mapping:
+          image: ci-image
+        vars:
+          ci-image-name: ci-image
   - name: check-graalvm-ce-stable-change
     plan:
       - get: graalvm-stable-git-repo
@@ -163,13 +152,15 @@ jobs:
         trigger: true
       - get: every-day
         passed: [check-graalvm-ce-stable-every-day]
-      - put: graalvm-ce-stable-java11-image
-        params:
-          build: ci-images-git-repo/ci/images
-          dockerfile: ci-images-git-repo/ci/images/graalvm-ce-image/Dockerfile
-          build_args:
-            JVMCI_URL: ((jvmci-stable-java11))
-            GRAALVM_BRANCH: ((graalvm-stable-branch))
+      - task: build-graalvm-ce-stable-image
+        privileged: true
+        file: git-repo/ci/tasks/build-ci-image.yml
+        output_mapping:
+          image: graalvm-ce-stable-java11-image
+        vars:
+          ci-image-name: graalvm-ce-stable-java11-image
+          jvmci-url: ((jvmci-stable-java11))
+          graalvm-branch: ((graalvm-stable-branch))
   - name: check-graalvm-ce-dev-change
     plan:
       - get: graalvm-dev-git-repo
@@ -188,37 +179,41 @@ jobs:
         trigger: true
       - get: every-day
         passed: [check-graalvm-ce-dev-every-day]
-      - put: graalvm-ce-dev-java11-image
-        params:
-          build: ci-images-git-repo/ci/images
-          dockerfile: ci-images-git-repo/ci/images/graalvm-ce-image/Dockerfile
-          build_args:
-            JVMCI_URL: ((jvmci-dev-java11))
-            GRAALVM_BRANCH: ((graalvm-dev-branch))
+      - task: build-graalvm-ce-dev-image
+        privileged: true
+        file: git-repo/ci/tasks/build-ci-image.yml
+        output_mapping:
+          image: graalvm-ce-dev-java11-image
+        vars:
+          ci-image-name: graalvm-ce-dev-java11-image
+          jvmci-url: ((jvmci-dev-java11))
+          graalvm-branch: ((graalvm-dev-branch))
   - name: build-spring-native-stable-image
     plan:
       - get: ci-images-git-repo
-      - get: graalvm-ce-stable-java11-image
         passed: [build-graalvm-ce-stable-image]
         trigger: true
-      - put: spring-native-stable-java11-image
-        params:
-          build: ci-images-git-repo/ci/images
-          dockerfile: ci-images-git-repo/ci/images/spring-native-image/Dockerfile
-          build_args:
-            BASE_IMAGE: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
+      - task: build-spring-native-stable-image
+        privileged: true
+        file: git-repo/ci/tasks/build-ci-image.yml
+        output_mapping:
+          image: spring-native-stable-java11-image
+        vars:
+          ci-image-name: spring-native-stable-java11-image
+          base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
   - name: build-spring-native-dev-image
     plan:
       - get: ci-images-git-repo
-      - get: graalvm-ce-dev-java11-image
         passed: [build-graalvm-ce-dev-image]
         trigger: true
-      - put: spring-native-dev-java11-image
-        params:
-          build: ci-images-git-repo/ci/images
-          dockerfile: ci-images-git-repo/ci/images/spring-native-image/Dockerfile
-          build_args:
-            BASE_IMAGE: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
+      - task: build-spring-native-dev-image
+        privileged: true
+        file: git-repo/ci/tasks/build-ci-image.yml
+        output_mapping:
+          image: spring-native-dev-java11-image
+        vars:
+          ci-image-name: spring-native-dev-java11-image
+          base-image: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
   - name: build-key-samples-java11
     public: true
     serial: true
