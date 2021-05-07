@@ -67,7 +67,7 @@ public class HateoasHintsTests {
 	@Test
 	public void jackson() {
 
-		List<HintDeclaration> hintDeclarations = hateoasHints.computeJacksonMappings(typeSystem);
+		List<HintDeclaration> hintDeclarations = hateoasHints.computeJacksonMappings(typeSystem, Collections.emptySet());
 		assertHints(hintDeclarations)
 				// Assert only the ones using jackson
 				.hasSize(7)

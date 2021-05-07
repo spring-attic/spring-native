@@ -18,6 +18,9 @@ package org.springframework.hateoas.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
@@ -44,6 +47,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.util.StringUtils;
 
 
 @NativeHint(trigger = WebStackImportSelector.class, types = {
@@ -94,23 +98,64 @@ public class HateoasHints implements NativeConfiguration {
 
 	private static final String ENTITY_LINKS = "org/springframework/hateoas/server/EntityLinks";
 	private static final String JACKSON_ANNOTATION = "Lcom/fasterxml/jackson/annotation/JacksonAnnotation;";
+	private static final String ENABLE_HYPERMEDIA_SUPPORT = "Lorg/springframework/hateoas/config/EnableHypermediaSupport;";
 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 
+		Set<String> hypermediaFormats = computeConfiguredHypermediaFormats(typeSystem);
+
 		List<HintDeclaration> hints = new ArrayList<>();
 
-		hints.addAll(computeAtConfigurationClasses(typeSystem));
+		hints.addAll(computeAtConfigurationClasses(typeSystem, hypermediaFormats));
 		hints.addAll(computeRepresentationModels(typeSystem));
 		hints.addAll(computeEntityLinks(typeSystem));
-		hints.addAll(computeJacksonMappings(typeSystem));
+		hints.addAll(computeJacksonMappings(typeSystem, hypermediaFormats));
 
 		return hints;
 	}
 
-	private List<HintDeclaration> computeAtConfigurationClasses(TypeSystem typeSystem) {
+	private Set<String> computeConfiguredHypermediaFormats(TypeSystem typeSystem) {
+
+		return typeSystem.scanUserCodeDirectoriesAndSpringJars(type -> {
+			try {
+				return type.isAnnotated(ENABLE_HYPERMEDIA_SUPPORT);
+			} catch (MissingTypeException e) {
+				return false;
+			}
+		})
+				.flatMap(type -> {
+					try {
+						String formats = type.getAnnotationValuesInHierarchy(ENABLE_HYPERMEDIA_SUPPORT).getOrDefault("type", "");
+						return StringUtils.hasText(formats) ? Stream.of(formats.split(";")) : Stream.empty();
+					} catch (MissingTypeException ex) {
+						return Stream.empty();
+					}
+				})
+				.map(it -> {
+					String value = it.replaceAll(".*org\\.springframework\\.hateoas\\.config\\.EnableHypermediaSupport\\$HypermediaType\\.", "").toLowerCase();
+					switch (value) {
+						case "hal_forms":
+							return "hal";
+						case "collection_json":
+							return "collectionjson";
+						default:
+							return value;
+					}
+				})
+				.collect(Collectors.toSet());
+	}
+
+
+	private List<HintDeclaration> computeAtConfigurationClasses(TypeSystem typeSystem, Set<String> hypermediaFormats) {
 
 		return TypeProcessor.namedProcessor("HateoasHints - Configuration Classes")
+				.skipTypesMatching(type -> {
+					if (type.isPartOfDomain("org.springframework.hateoas.mediatype")) {
+						return !isSupportedHypermediaFormat(type, hypermediaFormats);
+					}
+					return false;
+				})
 				.skipAnnotationInspection()
 				.skipMethodInspection()
 				.skipFieldInspection()
@@ -159,7 +204,7 @@ public class HateoasHints implements NativeConfiguration {
 				});
 	}
 
-	List<HintDeclaration> computeJacksonMappings(TypeSystem typeSystem) {
+	List<HintDeclaration> computeJacksonMappings(TypeSystem typeSystem, Set<String> hypermediaFormats) {
 
 		return TypeProcessor.namedProcessor("HateoasHints - Jackson Mapping Candidates")
 				.skipTypesMatching(type -> {
@@ -170,6 +215,7 @@ public class HateoasHints implements NativeConfiguration {
 						if (!type.isPartOfDomain("org.springframework.hateoas.")) {
 							return true;
 						}
+						return !isSupportedHypermediaFormat(type, hypermediaFormats);
 					}
 					return false;
 				})
@@ -210,6 +256,28 @@ public class HateoasHints implements NativeConfiguration {
 
 		}
 
+		return false;
+	}
+
+	private boolean isSupportedHypermediaFormat(Type type, Set<String> hypermediaFormats) {
+
+		if (hypermediaFormats.isEmpty()) {
+			return true;
+		}
+
+		if (!type.isPartOfDomain("org.springframework.hateoas.mediatype")) {
+			return true;
+		}
+
+		if (type.getPackageName().equals("org.springframework.hateoas.mediatype")) {
+			return true;
+		}
+
+		for (String hypermediaFormat : hypermediaFormats) {
+			if (type.getPackageName().contains(hypermediaFormat)) {
+				return true;
+			}
+		}
 		return false;
 	}
 }
