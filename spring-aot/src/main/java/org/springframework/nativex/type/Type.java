@@ -67,6 +67,8 @@ import org.springframework.nativex.hint.SerializationHints;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.TypeHints;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Andy Clement
@@ -627,7 +629,34 @@ public class Type {
 				if (anno.desc.equals(lookingFor)) {
 					List<Object> os = anno.values;
 					for (int i = 0; i < os.size(); i += 2) {
-						collector.put(os.get(i).toString(), os.get(i + 1).toString());
+						if(os.get(i+1) instanceof List) {
+
+							List<String> resolvedAttributeValues = new ArrayList<>();
+
+							for(Object attributeValue : (List)os.get(i+1)) {
+
+								if(!ObjectUtils.isArray(attributeValue)) {
+									resolvedAttributeValues.add(attributeValue.toString());
+									continue;
+								}
+
+								String attributeValueStringRepresentation = "";
+								String[] args = (String[]) attributeValue;
+								if(args[0].startsWith("L") && args[0].endsWith(";")) {
+									Type resolve = typeSystem.Lresolve(args[0], true);
+									if(resolve != null) {
+										attributeValueStringRepresentation = resolve.getDottedName();
+									}
+								}
+								if(args.length > 1) {
+									attributeValueStringRepresentation += ("." + args[1]);
+								}
+								resolvedAttributeValues.add(attributeValueStringRepresentation);
+							}
+							collector.put(os.get(i).toString(), StringUtils.collectionToDelimitedString(resolvedAttributeValues, ";"));
+						} else {
+							collector.put(os.get(i).toString(), os.get(i + 1).toString());
+						}
 					}
 				}
 				try {
