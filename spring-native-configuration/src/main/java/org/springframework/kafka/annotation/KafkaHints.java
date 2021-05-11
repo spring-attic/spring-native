@@ -21,6 +21,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -116,7 +118,9 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 				DefaultPartitioner.class,
 				StringDeserializer.class,
 				StringSerializer.class,
-				JsonSerializer.class
+				JsonSerializer.class,
+				ByteArrayDeserializer.class,
+				ByteArraySerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
 	},
 	proxies = @ProxyHint(types = {
