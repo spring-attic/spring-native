@@ -88,7 +88,7 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	private boolean removeUnusedConfig = true;
 
 	@Parameter
-	private boolean verify;
+	private boolean verify = true;
 
 	@Parameter
 	private boolean removeYamlSupport;

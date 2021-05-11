@@ -101,10 +101,13 @@ Type ownerType = ts.resolveSlashed(owner);
 			if (ownerType.isAtConfiguration()) {
 				boolean isAtBeanMethod = ownerType.isAtBeanMethod(name,descriptor);
 				if (isAtBeanMethod) {
-					if (methodsUsingGetBeanCalls == null) {
-						methodsUsingGetBeanCalls = new ArrayList<>();
+					// Filter out valid super.myAtBeanMethod() use cases
+					if (!name.equals(methodName)) {
+						if (methodsUsingGetBeanCalls == null) {
+							methodsUsingGetBeanCalls = new ArrayList<>();
+						}
+						methodsUsingGetBeanCalls.add(methodName);
 					}
-					methodsUsingGetBeanCalls.add(methodName);
 				}
 			} else {
 				super.visitMethodInsn(opcode, owner, name, descriptor, itface);
