@@ -103,8 +103,8 @@ org.springframework.security.config.annotation.method.configuration.GlobalMethod
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints
 org.springframework.security.config.annotation.web.reactive.ReactiveSecurityHints
 org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
-org.springframework.session.server.HttpSessionHints
-org.springframework.session.servlet.WebSessionHints
+org.springframework.session.servlet.HttpSessionHints
+org.springframework.session.server.WebSessionHints
 org.springframework.stereotype.ComponentHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
