@@ -48,6 +48,7 @@ import java.util.TreeSet;
         SecurityContextImpl.class,
         SimpleGrantedAuthority.class,
         User.class,
+        Number.class,
         AbstractAuthenticationToken.class,
         UsernamePasswordAuthenticationToken.class,
         OAuth2AuthenticationToken.class,

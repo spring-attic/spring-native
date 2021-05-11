@@ -20,24 +20,34 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.TypeSystem;
-import org.springframework.security.web.server.csrf.DefaultCsrfToken;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedCookie;
 import org.springframework.session.CommonSessionSerializables;
-import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
+import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 
+import java.util.Locale;
+import java.util.TreeMap;
 
-@NativeHint(trigger = SpringWebSessionConfiguration.class,
+@NativeHint(trigger = SpringHttpSessionConfiguration.class,
         imports = CommonSessionSerializables.class,
         serializables = {@SerializationHint(types = {
-                Number.class,
-                DefaultCsrfToken.class
+                TreeMap.class,
+                Locale.class,
+                DefaultSavedRequest.class,
+                DefaultCsrfToken.class,
+                WebAuthenticationDetails.class,
+                SavedCookie.class
+
+        }, typeNames = {
+                "java.lang.String$CaseInsensitiveComparator",
         })
         }, abortIfTypesMissing = true)
-public class WebSessionHints implements NativeConfiguration {
-
+public class HttpSessionHints implements NativeConfiguration {
     @Override
     public boolean isValid(TypeSystem typeSystem) {
-        // Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(REACTIVE))
-        boolean usesWebSession = typeSystem.resolveName("org.springframework.web.server.WebSession", true) != null;
-        return usesWebSession;
+        boolean usesHttpSession = typeSystem.resolveName("javax.servlet.http.HttpSession", true) != null;
+        return usesHttpSession;
     }
 }
