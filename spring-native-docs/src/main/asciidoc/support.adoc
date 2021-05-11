@@ -102,6 +102,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 
 * Lombok
 * Spring Kafka
+* Spring Session (Redis and JDBC)
 * https://grpc.io/[GRPC]
 * H2 database
 * Mysql JDBC driver
