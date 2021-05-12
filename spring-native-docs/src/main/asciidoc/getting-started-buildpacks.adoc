@@ -195,6 +195,45 @@ NOTE: `tiny` builder allows small footprint and reduced surface attack, you can 
 
 TIP: Additional `native-image` arguments can be added using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
+===== Freeze GraalVM version
+
+By default, GraalVM versions will be upgraded automatically by Buildpacks to the latest release.
+You can explicitly configure Spring Boot {spring-boot-maven-plugin-docs}#build-image-example-buildpacks[Maven] or {spring-boot-gradle-plugin-docs}#build-image-example-buildpacks[Gradle] plugins with a specific version of `java-native-image` buildpack which will freeze GraalVM version, see {paketo-docs}/buildpacks/language-family-buildpacks/java-native-image/#configuring-the-graalvm-version[related versions mapping].
+For example, if you want to force using GraalVM `21.0`, you can configure:
+
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <!-- ... -->
+        <image>
+            <buildpacks>
+                <buildpack>gcr.io/paketo-buildpacks/java-native-image:5.3.0</buildpack>
+            </buildpacks>
+        </image>
+    </configuration>
+</plugin>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+bootBuildImage {
+    // ...
+    buildpacks = ["gcr.io/paketo-buildpacks/java-native-image:5.3.0"]
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+    // ...
+    buildpacks = listOf("gcr.io/paketo-buildpacks/java-native-image:5.3.0")
+}
+----
+
 ===== Maven Repository
 
 Configure your build to include the required repository for the `spring-native` dependency, as follows:

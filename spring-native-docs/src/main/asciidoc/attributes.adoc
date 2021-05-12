@@ -8,6 +8,9 @@
 :buildpacks: https://buildpacks.io/
 :buildpacks-docs: {buildpacks}/docs
 
+:paketo: https://paketo.io/
+:paketo-docs: {paketo}/docs
+
 :github-tag: main
 :github-repo: spring-projects-experimental/spring-native
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
