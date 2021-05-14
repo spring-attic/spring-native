@@ -15,7 +15,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<wavefront.version>2.1.0</wavefront.version>
+		<wavefront.version>2.2.0-RC1</wavefront.version>
 	</properties>
 
 	<dependencies>
