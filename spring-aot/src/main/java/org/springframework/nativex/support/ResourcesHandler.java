@@ -1689,29 +1689,18 @@ public class ResourcesHandler extends Handler {
 				// null means that type is not on the classpath so skip further analysis of this method...
 				continue;
 			} else {
-				if (returnType.isConfigurationProperties()) {
-					Map<String, Integer> propertyTypesForAccess = returnType.processAsConfigurationProperties();
-					Map<String,Integer> newMap = new HashMap<>();
-					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
-						methodRCM.requestTypeAccess(Type.fromLdescriptorToDotted(entry.getKey()),entry.getValue());
-						newMap.put(Type.fromLdescriptorToDotted(entry.getKey()),entry.getValue());
-					}
-//					logger.debug("ConfigurationPropertyAnalysis: whilst looking at type "+returnType.getDottedName()+" making these accessible:"+
-//							newMap.entrySet().stream().map(e -> "  ::"+e.getKey()+"="+AccessBits.toString(e.getValue())).collect(Collectors.toList()));
-				} else {
-					// Note for the future - this code is intended to catch return types of bean methods that themselves
-					// include @Autowired fields/methods (but are not marked @Component). If deeper analysis is
-					// required the check down below "if (returnType.isComponent()) {" should be extended so full processing
-					// would happen for these return types.
-					int bits = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-					if (returnType.hasAutowiredMethods()) {
-						bits|=AccessBits.DECLARED_METHODS;
-					}
-					if (returnType.hasAutowiredFields()) {
-						bits|=AccessBits.DECLARED_FIELDS;
-					}
-					methodRCM.requestTypeAccess(returnType.getDottedName(), bits);
+				// Note for the future - this code is intended to catch return types of bean methods that themselves
+				// include @Autowired fields/methods (but are not marked @Component). If deeper analysis is
+				// required the check down below "if (returnType.isComponent()) {" should be extended so full processing
+				// would happen for these return types.
+				int bits = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
+				if (returnType.hasAutowiredMethods()) {
+					bits|=AccessBits.DECLARED_METHODS;
 				}
+				if (returnType.hasAutowiredFields()) {
+					bits|=AccessBits.DECLARED_FIELDS;
+				}
+				methodRCM.requestTypeAccess(returnType.getDottedName(), bits);
 			}
 
 			// Example method being handled here:

@@ -17,10 +17,16 @@
 package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeProcessor;
+import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, types = {
 		@TypeHint(types = {
@@ -50,4 +56,30 @@ import org.springframework.nativex.hint.TypeHint;
 		@TypeHint(types= ArrayList.class)
 })
 public class ConfigurationPropertiesHints implements NativeConfiguration {
+
+	private static final String CONFIGURATION_PROPERTIES_ANNOTATION = "Lorg/springframework/boot/context/properties/ConfigurationProperties;";
+
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+		List<HintDeclaration> hints = new ArrayList<>();
+		hints.addAll(computeConfigurationPropertiesHints(typeSystem));
+		return hints;
+	}
+
+	private List<HintDeclaration> computeConfigurationPropertiesHints(TypeSystem typeSystem) {
+		return TypeProcessor.namedProcessor("ConfigurationPropertiesHints - ConfigurationProperties")
+				.skipTypesMatching(type -> type.isPartOfDomain("org.springframework.boot") ||
+						!(type.hasAnnotationInHierarchy(CONFIGURATION_PROPERTIES_ANNOTATION)))
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.onTypeDiscovered((type, context) -> {
+					Map<String, Integer> propertyTypesForAccess = type.processAsConfigurationProperties();
+					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
+						context.addReflectiveAccess(Type.fromLdescriptorToDotted(entry.getKey()), entry.getValue());
+					}
+				})
+				.use(typeSystem)
+				.toProcessTypes(ts -> ts.findTypesAnnotated(CONFIGURATION_PROPERTIES_ANNOTATION, true).stream().map(ts::resolveName)
+				);
+	}
 }

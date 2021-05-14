@@ -1,14 +1,11 @@
 package com.example.bootfeatures;
 
-import com.example.bootfeatures.nestedcfg.School;
-import com.example.bootfeatures.separatecfg.University;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties({Creds.class,University.class,School.class,AcmeProperties.class,Props2.class})
+@ConfigurationPropertiesScan
 public class Application {
 
 	public static void main(String[] args) throws InterruptedException {
