@@ -43,7 +43,12 @@ import org.springframework.nativex.type.NativeConfiguration;
 						"org.springframework.cloud.sleuth.instrument.annotation.SleuthAdvisorConfig$AnnotationClassOrMethodOrArgsPointcut",
 						"org.springframework.cloud.sleuth.instrument.annotation.SleuthAdvisorConfig$AnnotationClassOrMethodFilter",
 						"org.springframework.cloud.sleuth.autoconfig.brave.AnyTracerModePropertySetCondition$OnConcreteTracerMode",
-						"org.springframework.cloud.sleuth.autoconfig.brave.AnyTracerModePropertySetCondition$OnAutoTracerMode"
+						"org.springframework.cloud.sleuth.autoconfig.brave.AnyTracerModePropertySetCondition$OnAutoTracerMode",
+						"org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinRestTemplateSenderConfiguration",
+						"org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinRestTemplateSenderConfiguration$DefaultZipkinUrlExtractorConfiguration",
+						"org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinRestTemplateSenderConfiguration$DiscoveryClientZipkinUrlExtractorConfiguration",
+						"org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinRestTemplateSenderConfiguration$DiscoveryClientZipkinUrlExtractorConfiguration$ZipkinClientLoadBalancedConfiguration",
+						"org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinRestTemplateSenderConfiguration$DiscoveryClientZipkinUrlExtractorConfiguration$ZipkinClientNoOpConfiguration"
 				}, access = AccessBits.ALL)
 })
 public class TraceHints implements NativeConfiguration {

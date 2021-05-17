@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+  sleuth-zipkin:
+    image: sleuth-zipkin:0.0.1-SNAPSHOT
+    volumes:
+      - ${HOME}:/home/cnb
+    ports:
+      - "8080:8080"
