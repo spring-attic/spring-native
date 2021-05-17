@@ -45,6 +45,10 @@ import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.cloud.config.environment.PropertyValueDescriptor;
 import org.springframework.cloud.config.server.config.ConfigServerAutoConfiguration;
+import org.springframework.cloud.config.server.ssh.HostKeyAlgoSupportedValidator;
+import org.springframework.cloud.config.server.ssh.HostKeyAndAlgoBothExistValidator;
+import org.springframework.cloud.config.server.ssh.KnownHostsFileValidator;
+import org.springframework.cloud.config.server.ssh.PrivateKeyValidator;
 import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
@@ -58,19 +62,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @NativeHint(trigger = ConfigServerAutoConfiguration.class,
 		options = { "--enable-https", "--enable-http" }, types =
-		@TypeHint(types = {
-				MergeCommand.FastForwardMode.Merge.class,
-				JGitText.class,
-				CoreConfig.class,
-				CoreConfig.AutoCRLF.class,
-				CoreConfig.CheckStat.class,
-				CoreConfig.EOL.class,
-				CoreConfig.HideDotFiles.class,
-				CoreConfig.SymLinks.class,
-				PropertyValueDescriptor.class,
-				TextResourceOrigin.class,
-				OriginLookup.class
-		}, access = AccessBits.ALL)
+		{
+				@TypeHint(types = {
+						MergeCommand.FastForwardMode.Merge.class,
+						JGitText.class,
+						CoreConfig.class,
+						CoreConfig.AutoCRLF.class,
+						CoreConfig.CheckStat.class,
+						CoreConfig.EOL.class,
+						CoreConfig.HideDotFiles.class,
+						CoreConfig.SymLinks.class,
+						PropertyValueDescriptor.class,
+						TextResourceOrigin.class,
+						OriginLookup.class
+				}, access = AccessBits.ALL),
+				@TypeHint(types = {
+						PrivateKeyValidator.class,
+						KnownHostsFileValidator.class,
+						HostKeyAlgoSupportedValidator.class,
+						HostKeyAndAlgoBothExistValidator.class
+				})
+		}
 , initialization = {
 		@InitializationHint(types = {
 				AttributesHandler.class,
