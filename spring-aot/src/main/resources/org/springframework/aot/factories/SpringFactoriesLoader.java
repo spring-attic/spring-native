@@ -58,7 +58,21 @@ public final class SpringFactoriesLoader {
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
 		if (AotModeDetector.isAotModeEnabled()) {
-			return loadStaticFactories(factoryType);
+			List<Supplier<Object>> result = StaticSpringFactories.factories.get(factoryType);
+			if (result == null) {
+				return new ArrayList<>(0);
+			}
+			List<T> factories = new ArrayList<>(result.size());
+			for (Supplier<Object> supplier : result) {
+				// TODO: protect against factories that fail during instantiation
+				try {
+					factories.add((T) supplier.get());
+				}
+				catch (Throwable throwable) {
+					logger.trace("Could not instantiate factory for " + factoryType, throwable);
+				}
+			}
+			return factories;
 		}
 		else {
 			ClassLoader classLoaderToUse = classLoader;
@@ -78,27 +92,25 @@ public final class SpringFactoriesLoader {
 		}
 	}
 
-	public static <T> List<T> loadStaticFactories(Class<T> factoryType) {
-		List<Supplier<Object>> result = StaticSpringFactories.factories.get(factoryType);
-		if (result == null) {
-			return new ArrayList<>(0);
-		}
-		List<T> factories = new ArrayList<>(result.size());
-		for (Supplier<Object> supplier : result) {
-			// TODO: protect against factories that fail during instantiation
-			try {
-				factories.add((T) supplier.get());
-			}
-			catch (Throwable throwable) {
-				logger.trace("Could not instantiate factory for " + factoryType, throwable);
-			}
-		}
-		return factories;
-	}
-
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
 		if (AotModeDetector.isAotModeEnabled()) {
-			return loadStaticFactoryNames(factoryType);
+			List<String> result = new ArrayList<>();
+			List<String> names = StaticSpringFactories.names.get(factoryType);
+			if (names != null) {
+				result.addAll(names);
+			}
+			List<Supplier<Object>> stored = StaticSpringFactories.factories.get(factoryType);
+			if (stored != null) {
+				for (Supplier<Object> supplier : stored) {
+					try {
+						result.add(supplier.get().getClass().getName());
+					}
+					catch (Throwable throwable) {
+						logger.trace("Could not get factory name for " + factoryType, throwable);
+					}
+				}
+			}
+			return result;
 		}
 		else {
 			ClassLoader classLoaderToUse = classLoader;
@@ -108,26 +120,6 @@ public final class SpringFactoriesLoader {
 			String factoryTypeName = factoryType.getName();
 			return loadSpringFactories(classLoaderToUse).getOrDefault(factoryTypeName, Collections.emptyList());
 		}
-	}
-
-	public static List<String> loadStaticFactoryNames(Class<?> factoryType) {
-		List<String> result = new ArrayList<>();
-		List<String> names = StaticSpringFactories.names.get(factoryType);
-		if (names != null) {
-			result.addAll(names);
-		}
-		List<Supplier<Object>> stored = StaticSpringFactories.factories.get(factoryType);
-		if (stored != null) {
-			for (Supplier<Object> supplier : stored) {
-				try {
-					result.add(supplier.get().getClass().getName());
-				}
-				catch (Throwable throwable) {
-					logger.trace("Could not get factory name for " + factoryType, throwable);
-				}
-			}
-		}
-		return result;
 	}
 
 	private static Map<String, List<String>> loadSpringFactories(ClassLoader classLoader) {
