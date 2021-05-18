@@ -17,7 +17,9 @@
 package org.springframework.nativex.substitutions.framework;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.oracle.svm.core.annotate.Alias;
@@ -25,27 +27,53 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.commons.logging.Log;
 
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.Nullable;
+import org.springframework.nativex.AotModeDetector;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithAot;
 import org.springframework.util.Assert;
 
-@TargetClass(className="org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = { WithAot.class, OnlyIfPresent.class })
+@TargetClass(className = "org.springframework.core.io.support.SpringFactoriesLoader", onlyWith = {WithAot.class, OnlyIfPresent.class})
 final class Target_SpringFactoriesLoader {
 
 	@Alias
 	private static Log logger;
 
+
 	@SuppressWarnings("unchecked")
 	@Substitute
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
+		if (AotModeDetector.isAotModeEnabled()) {
+			return loadStaticFactories(factoryType);
+		}
+		else {
+			ClassLoader classLoaderToUse = classLoader;
+			if (classLoaderToUse == null) {
+				classLoaderToUse = Target_SpringFactoriesLoader.class.getClassLoader();
+			}
+			List<String> factoryImplementationNames = loadFactoryNames(factoryType, classLoaderToUse);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Loaded [" + factoryType.getName() + "] names: " + factoryImplementationNames);
+			}
+			List<T> result = new ArrayList<>(factoryImplementationNames.size());
+			for (String factoryImplementationName : factoryImplementationNames) {
+				result.add(instantiateFactory(factoryImplementationName, factoryType, classLoaderToUse));
+			}
+			AnnotationAwareOrderComparator.sort(result);
+			return result;
+		}
+	}
+
+	@Substitute
+	public static <T> List<T> loadStaticFactories(Class<T> factoryType) {
 		List<Supplier<Object>> result = Target_StaticSpringFactories.factories.get(factoryType);
 		if (result == null) {
 			return new ArrayList<>(0);
 		}
 		List<T> factories = new ArrayList<>(result.size());
-		for (Supplier<Object> supplier: result) {
+		for (Supplier<Object> supplier : result) {
 			// TODO: protect against factories that fail during instantiation
 			try {
 				factories.add((T) supplier.get());
@@ -59,6 +87,21 @@ final class Target_SpringFactoriesLoader {
 
 	@Substitute
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
+		if (AotModeDetector.isAotModeEnabled()) {
+			return loadStaticFactoryNames(factoryType);
+		}
+		else {
+			ClassLoader classLoaderToUse = classLoader;
+			if (classLoaderToUse == null) {
+				classLoaderToUse = Target_SpringFactoriesLoader.class.getClassLoader();
+			}
+			String factoryTypeName = factoryType.getName();
+			return loadSpringFactories(classLoaderToUse).getOrDefault(factoryTypeName, Collections.emptyList());
+		}
+	}
+
+	@Substitute
+	public static List<String> loadStaticFactoryNames(Class<?> factoryType) {
 		List<String> result = new ArrayList<>();
 		List<String> names = Target_StaticSpringFactories.names.get(factoryType);
 		if (names != null) {
@@ -66,7 +109,7 @@ final class Target_SpringFactoriesLoader {
 		}
 		List<Supplier<Object>> stored = Target_StaticSpringFactories.factories.get(factoryType);
 		if (stored != null) {
-			for (Supplier<Object> supplier: stored) {
+			for (Supplier<Object> supplier : stored) {
 				try {
 					result.add(supplier.get().getClass().getName());
 				}
@@ -76,6 +119,16 @@ final class Target_SpringFactoriesLoader {
 			}
 		}
 		return result;
+	}
+
+	@Alias
+	private static Map<String, List<String>> loadSpringFactories(ClassLoader classLoader) {
+		return null;
+	}
+
+	@Alias
+	private static <T> T instantiateFactory(String factoryImplementationName, Class<T> factoryType, ClassLoader classLoader) {
+		return null;
 	}
 
 }

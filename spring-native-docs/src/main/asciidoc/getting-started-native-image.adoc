@@ -74,8 +74,6 @@ IMPORTANT: Spring Native {version} only supports Spring Boot {spring-boot-versio
 
 The Spring AOT plugin performs ahead-of-time transformations required to improve native image compatibility and footprint.
 
-TIP: The transformations also apply to the JVM so this can be applied regardless.
-
 
 [source,xml,subs="attributes,verbatim"]
 ----

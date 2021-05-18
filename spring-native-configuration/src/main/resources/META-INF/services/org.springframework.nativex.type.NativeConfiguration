@@ -100,6 +100,7 @@ org.springframework.hateoas.config.HateoasHints
 org.springframework.integration.IntegrationHints
 org.springframework.kafka.annotation.KafkaHints
 org.springframework.messaging.MessagingAnnotationHints
+org.springframework.nativex.SpringNativeHints
 org.springframework.scheduling.annotation.SchedulingHints
 org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityHints
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints

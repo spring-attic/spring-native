@@ -33,10 +33,6 @@ import org.springframework.util.ClassUtils;
  */
 public class NativeListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-	private static final String GENERATED_CLASS = "org.springframework.aot.StaticSpringFactories";
-
-	private static final boolean generatedClassPresent = ClassUtils.isPresent(GENERATED_CLASS, null);
-
 	private static final Log logger = LogFactory.getLog(NativeListener.class);
 
 	static {
@@ -49,17 +45,15 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 	}
 
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		// TODO Check why the test does not work on native even after adding the class reflection entry on GENERATED_CLASS
-		if (!NativeDetector.inNativeImage() && !generatedClassPresent) {
-			throw new GeneratedClassNotFoundException(GENERATED_CLASS);
+		if (AotModeDetector.isAotModeEnabled()) {
+			logger.info("This application is bootstrapped with code generated with Spring AOT");
+			ConfigurableEnvironment environment = event.getEnvironment();
+			Properties props = new Properties();
+			props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
+			props.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
+			props.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
+			props.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
+			environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
 		}
-		logger.info("This application is bootstrapped with code generated with Spring AOT");
-		ConfigurableEnvironment environment = event.getEnvironment();
-		Properties props = new Properties();
-		props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
-		props.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
-		props.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
-		props.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
-		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
 	}
 }
