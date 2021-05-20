@@ -61,6 +61,8 @@ import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+
+import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
@@ -69,7 +71,6 @@ import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.support.Utils;
-
 
 
 /**
@@ -1119,22 +1120,43 @@ public class TypeSystem {
 		return typesMakingIsPresentChecksInStaticInitializers;
 	}
 
+	// TODO Should be able to perform an AOT analysis of @ComponentScan, see https://github.com/spring-projects-experimental/spring-native/issues/801
 	public Stream<Path> findDirectoriesOrTargetDirJar(List<String> classpath) {
 		List<Path> result = new ArrayList<>();
+		String mainPackagePath = getMainPackagePath(classpath);
 		for (String classpathEntry : classpath) {
 			File f = new File(classpathEntry);
 			if (f.isDirectory()) {
 				result.add(Paths.get(f.toURI()));
-			} else if (f.isFile() &&
-					   f.getName().endsWith(".jar") && 
-					   (f.getParent().endsWith(File.separator+"target") ||
-					    // This pattern recognizes libs/foo.jar which occurs with gradle multi module setups
-					    f.getParent().endsWith(File.separator+"libs"))
-					   ) {
+			} else if (f.isFile() && f.getName().endsWith(".jar") && (
+					f.getParent().endsWith(File.separator + "target") ||  // Maven multi-module
+							f.getParent().endsWith(File.separator + "libs") || // Gradle multi-module
+							f.getAbsolutePath().contains(mainPackagePath))) { // Same package than the main application class
 				result.add(Paths.get(f.toURI()));
 			}
 		}
 		return result.stream();
+	}
+
+	private String getMainPackagePath(List<String> classpath) {
+		for (String path : classpath) {
+			String mainClass = null;
+			try {
+				mainClass = MainClassFinder.findSingleMainClass(new File(path));
+			}
+			catch (IOException e) {
+				logger.error(e);
+			}
+			if (mainClass != null) {
+				String[] mainClassParts = mainClass.split("\\.");
+				String[] mainPackageParts = Arrays.copyOfRange(mainClassParts, 0, mainClassParts.length - 2);
+				String mainPackagePath = String.join(File.separator, mainPackageParts);
+				logger.debug("TypeSystem found Spring Boot main package path: " + mainPackagePath);
+				return mainPackagePath;
+			}
+		}
+		logger.debug("Unable to find main class");
+		return null;
 	}
 
 	public Stream<Path> findUserCodeDirectoriesAndSpringJars(List<String> classpath) {
@@ -1237,8 +1259,14 @@ public class TypeSystem {
 	}
 
 	public List<Entry<Type, List<Type>>> scanForSpringComponents() {
-		return findDirectoriesOrTargetDirJar(getClasspath()).flatMap(this::findClasses).map(this::typenameOfClass)
-				.map(this::getStereoTypesOnType).filter(Objects::nonNull).collect(Collectors.toList());
+		return findDirectoriesOrTargetDirJar(getClasspath()).flatMap(this::findClasses).map(p -> {
+			try {
+				return getStereoTypesOnType(typenameOfClass(p));
+			} catch (IllegalStateException|MissingTypeException ex) {
+				logger.debug("Error during scanning Spring components : " + ex.getMessage());
+			}
+			return null;
+			}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	// TODO memory management when exploding typecache with scans done here
