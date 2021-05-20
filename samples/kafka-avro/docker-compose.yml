@@ -2,7 +2,6 @@ version: '3'
 services:
   kafka:
     image: wurstmeister/kafka
-    container_name: kafka
     hostname: kafka
     ports:
       - "9092:9092"
@@ -25,7 +24,6 @@ services:
   schema-registry:
     image: confluentinc/cp-schema-registry
     hostname: schema-registry
-    container_name: schema-registry
     depends_on:
       - kafka
     ports:

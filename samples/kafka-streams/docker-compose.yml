@@ -2,7 +2,6 @@ version: '3'
 services:
     kafka:
       image: wurstmeister/kafka
-      container_name: kafka-iq-advanced
       ports:
         - "9092:9092"
       environment:
