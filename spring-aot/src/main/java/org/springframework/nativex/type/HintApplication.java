@@ -96,6 +96,9 @@ public class HintApplication {
 		if (!getInitializationDescriptors().isEmpty()) {
 			s.append(",initialization=").append(getInitializationDescriptors());
 		}
+		if (!getProxyDescriptors().isEmpty()) {
+			s.append(",proxies=").append(getProxyDescriptors());
+		}
 //		s.append(",skipIfTypesMissing=").append(skipIfTypesMissing);
 //		s.append(",follow=").append(follow);
 		s.append("}");

@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +33,17 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.ClassProxyHint;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -243,4 +247,25 @@ public class HintTests {
 	static class TestClass7 {
 	}
 
+	@Test
+	public void classProxyDescriptors() {
+		Type t = typeSystem.resolveName(TestClass8.class.getName());
+		List<HintApplication> hints = t.getApplicableHints();
+		assertEquals(1,hints.size());
+		HintApplication hint = hints.get(0);
+		System.out.println(hint);
+		List<ProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		assertThat(proxyDescriptors).hasSize(1);
+		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
+		ClassProxyDescriptor cpd = (ClassProxyDescriptor)proxyDescriptors.get(0);
+		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
+		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.io.Serializable");
+		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
+	}
+
+	@NativeHint(
+		classProxies = @ClassProxyHint(targetClass = String.class, interfaces = Serializable.class,proxyFeatures = ProxyBits.EXPOSE_PROXY)
+	)
+	static class TestClass8 {
+	}
 }

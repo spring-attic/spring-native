@@ -24,15 +24,15 @@ import java.util.List;
  *
  * @author Andy Clement
  */
-public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
+public class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 
-	private List<String> types; // e.g. java.io.Serializable
+	protected List<String> types; // e.g. java.io.Serializable
 
 	ProxyDescriptor() {
 	}
 
 	public ProxyDescriptor(List<String> types) {
-		this.types = types;
+		this.types = new ArrayList<>(types);
 	}
 
 	@Override
@@ -115,6 +115,10 @@ public final class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 
 	public List<String> getTypes() {
 		return types;
+	}
+
+	public boolean isClassProxy() {
+		return false;
 	}
 
 }

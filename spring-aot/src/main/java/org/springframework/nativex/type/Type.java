@@ -37,7 +37,6 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,14 +49,18 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.ClassProxyHint;
+import org.springframework.nativex.hint.ClassProxyHints;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationHints;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.NativeHints;
+import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.hint.ProxyHint;
 import org.springframework.nativex.hint.ProxyHints;
 import org.springframework.nativex.hint.ResourceHint;
@@ -1755,6 +1758,12 @@ public class Type {
 				} else if (name.equals(ProxyHints.class.getName())) {
 					defaultHintPopulated=true;
 					processRepeatableAnnotationList(an, anno -> unpackProxyHint(anno, defaultHintDeclaration));
+				} else if (name.equals(ClassProxyHint.class.getName())) {
+					defaultHintPopulated=true;
+					unpackClassProxyHint(an, defaultHintDeclaration);
+				} else if (name.equals(ClassProxyHints.class.getName())) {
+					defaultHintPopulated=true;
+					processRepeatableAnnotationList(an, anno -> unpackClassProxyHint(anno, defaultHintDeclaration));
 				} else if (name.equals(ResourceHint.class.getName())) {
 					defaultHintPopulated=true;
 					unpackResourceHint(an, defaultHintDeclaration);
@@ -1801,6 +1810,8 @@ public class Type {
 					processImportHints(ch, value);
 				} else if (key.equals("proxies")) {
 					processHintList(value, anno -> unpackProxyHint(anno,ch));
+				} else if (key.equals("classProxies")) {
+					processHintList(value, anno -> unpackClassProxyHint(anno,ch));
 				} else if (key.equals("resources")) {
 					processHintList(value, anno -> unpackResourceHint(anno,ch));
 				} else if (key.equals("initialization")) {
@@ -1945,6 +1956,60 @@ public class Type {
 					ch.addDependantType(typeName, ad);				
 				}
 			}
+		}
+	}
+
+	private void unpackClassProxyHint(AnnotationNode typeInfo, HintDeclaration ch) {
+		List<Object> values = typeInfo.values;
+		String targetClassName = "java.lang.Object";
+		List<org.objectweb.asm.Type> interfaces = new ArrayList<>();
+		List<String> interfaceNames = new ArrayList<>();
+		int proxyFeatures = ProxyBits.NONE;
+		boolean typeMissing = false;
+		for (int i = 0; i < values.size(); i += 2) {
+			String key = (String) values.get(i);
+			Object value = values.get(i + 1);
+			if (key.equals("targetClass")) {
+				targetClassName = ((org.objectweb.asm.Type) value).getClassName();
+			} else if (key.equals("targetClassName")) {
+				targetClassName = (String) value;
+			} else if (key.equals("interfaces")) {
+				interfaces = (ArrayList<org.objectweb.asm.Type>) value;
+			} else if (key.equals("interfaceNames")) {
+				interfaceNames = (ArrayList<String>) value;
+			} else if (key.equals("proxyFeatures")) {
+				proxyFeatures = (Integer)value;
+			}
+		}
+		Type resolvedType = typeSystem.resolveName(targetClassName, true);
+		if (resolvedType == null) {
+			typeMissing = true;
+		}		
+		List<String> proxyInterfaceTypes = new ArrayList<>();
+		for (org.objectweb.asm.Type intface : interfaces) {
+			String intfaceName = intface.getClassName();
+			resolvedType = typeSystem.resolveName(intfaceName, true);
+			if (resolvedType != null) {
+				proxyInterfaceTypes.add(intfaceName);
+			} else {
+				typeMissing = true;
+			}
+		}
+		for (String intfaceName : interfaceNames) {
+			resolvedType = typeSystem.resolveName(intfaceName, true);
+			if (resolvedType != null) {
+				proxyInterfaceTypes.add(intfaceName);
+			} else {
+				typeMissing = true;
+			}
+		}
+		if (!typeMissing) {
+			ClassProxyDescriptor cpd = new ClassProxyDescriptor(
+					targetClassName,
+					proxyInterfaceTypes,
+					proxyFeatures
+					);
+			ch.addProxyDescriptor(cpd);
 		}
 	}
 

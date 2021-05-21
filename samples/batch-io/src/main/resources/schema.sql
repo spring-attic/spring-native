@@ -1,0 +1,4 @@
+CREATE TABLE PERSON  (
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL
+);

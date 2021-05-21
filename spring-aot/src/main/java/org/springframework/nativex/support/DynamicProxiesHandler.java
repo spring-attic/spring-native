@@ -19,6 +19,7 @@ package org.springframework.nativex.support;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 
 /**
@@ -32,7 +33,16 @@ public class DynamicProxiesHandler extends Handler {
 	}
 
 	public boolean addProxy(ProxyDescriptor pd) {
-		return addProxy(pd.getTypes());
+		if (pd.isClassProxy()) {
+			return collector.addClassProxy((ClassProxyDescriptor)pd, true);
+		} else {
+			return addProxy(pd.getTypes());
+		}
+	}
+	
+	public boolean addClassProxy(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
+		ClassProxyDescriptor cpd = new ClassProxyDescriptor(targetClassName, interfaceNames, proxyFeatures);
+		return collector.addClassProxy(cpd, true);
 	}
 
 	public boolean addProxy(List<String> interfaceNames) {

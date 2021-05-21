@@ -33,7 +33,8 @@ It is of course also possible to provide directly GraalVM native configuration f
 
 Here is the full list of what can be specified in a hint:
 
-* `proxies` which list proxies for which types are needed and should be built into the image.
+* `proxies` which list interfaces for which JDK proxy types are needed and should be built into the image.
+* `classProxies` which lists more complex proxy configurations where the proxy will extend a class.
 * `types` which lists any reflective needs.
 It should use class references but string names for classes are allowed if visibility (private classes) prevents a class reference. If these are types that are accessed via JNI and should go into a `jni-config.json` file rather than `reflect-config.json` then ensure the access bit JNI is set when defining access.
 * `serializables` which lists any serialization needs via a list of `@SerializationHint` annotations.

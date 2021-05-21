@@ -61,6 +61,13 @@ public @interface NativeHint {
 	 * @return the proxy information
 	 */
 	ProxyHint[] proxies() default {};
+
+	/**
+	 * A set of class proxy information which describe a class based proxy that should be created at build time
+	 * if the trigger is active.
+	 * @return the class proxy information
+	 */
+	ClassProxyHint[] classProxies() default {};
 	
 	/**
 	 * A set of serialization hints indicating which types will be (de)serialized if the trigger is active.

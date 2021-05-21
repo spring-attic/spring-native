@@ -33,9 +33,9 @@ import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
@@ -65,6 +65,8 @@ public class ConfigurationCollector {
 
 	private ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
+	private List<ClassProxyDescriptor> classProxyDescriptors = new ArrayList<>();
+
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 	
 	private SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
@@ -83,6 +85,10 @@ public class ConfigurationCollector {
 
 	public ProxiesDescriptor getProxyDescriptors() {
 		return proxiesDescriptor;
+	}
+
+	public List<ClassProxyDescriptor> getClassProxyDescriptors() {
+		return classProxyDescriptors;
 	}
 
 	public ReflectionDescriptor getReflectionDescriptor() {
@@ -131,6 +137,19 @@ public class ConfigurationCollector {
 			}
 		}
 		proxiesDescriptor.add(ProxyDescriptor.of(interfaceNames));
+		return true;
+	}
+
+	public boolean addClassProxy(ClassProxyDescriptor cpd, boolean verify) {
+		if (verify) {
+			if (ts.resolveName(cpd.getTargetClassType(), true)==null) {
+				return false;
+			}
+			if (!checkTypes(cpd.getInterfaceTypes(), t -> t!=null && t.isInterface())) {
+				return false;
+			}
+		}
+		classProxyDescriptors.add(cpd);
 		return true;
 	}
 
@@ -206,11 +225,15 @@ public class ConfigurationCollector {
 	}
 
 	public ReflectionDescriptor addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor) {
-		ReflectionDescriptor filteredReflectionDescriptor = filterVerified(reflectionDescriptor);
+		return addReflectionDescriptor(reflectionDescriptor, true);
+	}
+
+	public ReflectionDescriptor addReflectionDescriptor(ReflectionDescriptor reflectionDescriptor, boolean verify) {
+		ReflectionDescriptor filteredReflectionDescriptor = verify?filterVerified(reflectionDescriptor):reflectionDescriptor;
 		this.reflectionDescriptor.merge(filteredReflectionDescriptor);
 		return filteredReflectionDescriptor;
 	}
-
+	
 	public boolean addSerializationType(String className, boolean verify) {
 		if (verify) {
 			Type clazz = ts.resolveDotted(className, true);

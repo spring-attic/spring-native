@@ -4,7 +4,7 @@ RC=0
 
 echo "Graal: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
-for i in commandlinerunner webflux-netty webmvc-tomcat webflux-thymeleaf grpc jdbc-tx
+for i in commandlinerunner webflux-netty webmvc-tomcat webflux-thymeleaf grpc jdbc-tx class-proxies-aop
 do
 
   if ! (cd samples/$i && ./build.sh); then

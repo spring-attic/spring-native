@@ -80,6 +80,23 @@ please use `mvn package spring-boot:run`.
 The Spring AOT plugin will do the best it can to catch everything but it doesn't understand every bit of code out there.
 In these situations you can write native configuration yourself, see <<native-hints>>, <<tracing-agent>> and <<how-to-contribute>>.
 
+==== ClassProxyHint errors
+
+When running native image an error indicating a `ClassProxyHint` is missing may be produced, like this:
+
+----
+Caused by: java.lang.IllegalStateException: Class proxy missing at runtime, hint required at build time: @ClassProxyHint(targetClass=com.example.batch.ItemReaderListener.class, interfaces={org.springframework.aop.scope.ScopedObject.class, java.io.Serializable.class, org.springframework.aop.framework.AopInfrastructureBean.class})
+----
+
+This indicates a hint was missing to construct the proxy at build time. New classes cannot be generated at runtime in native images. By including these
+hints on your application (alongside the other hints), the original building of your application will generate the required proxy classes (and their
+support classes) and they will be included in the native-image. At runtime when a class proxy is required, these classes generated earlier will then be loaded.
+
+The error message includes exactly the hint text that needs to be pasted into the source.
+
+A class proxy is a proxy that extends a class. This is in contrast to a regular `ProxyHint` which only specifies a set of interfaces to be implemented
+by a JDK Proxy class.
+
 ==== No access hint found for import selector: XXX
 
 See <<how-to-contribute-design-import-selectors>>.
