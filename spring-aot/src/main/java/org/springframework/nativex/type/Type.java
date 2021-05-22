@@ -1767,12 +1767,6 @@ public class Type {
 				} else if (name.equals(InitializationHints.class.getName())) {
 					defaultHintPopulated=true;
 					processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, defaultHintDeclaration));
-				} else if (name.equals(InitializationHint.class.getName())) {
-					defaultHintPopulated=true;
-					unpackInitializationHint(an, defaultHintDeclaration);
-				} else if (name.equals(InitializationHints.class.getName())) {
-					defaultHintPopulated=true;
-					processRepeatableAnnotationList(an, anno -> unpackInitializationHint(anno, defaultHintDeclaration));
 				}
 			}
 		}
