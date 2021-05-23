@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 /**
  * 
- * @author Raphael Winterhalter
+ * @author Rafael Winterhalter
  * @author Andy Clement
  */
 public class Interceptors {

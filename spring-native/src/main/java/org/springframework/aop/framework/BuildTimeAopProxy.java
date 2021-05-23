@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  * a message is constructed indicating the hint the user should provide in the application
  * to generate it at build time.
  * 
- * @author Raphael Winterhalter
+ * @author Rafael Winterhalter
  * @author Andy Clement
  */
 @SuppressWarnings("serial")

@@ -20,7 +20,7 @@ package org.springframework.aop.framework;
  * Marker interface for a build time generated proxy indicating it should
  * have an AdvisedSupport object set in order to operate correctly.
  * 
- * @author Raphael Winterhalter
+ * @author Rafael Winterhalter
  * @author Andy Clement
  */
 public interface _AdvisedSupportAware {

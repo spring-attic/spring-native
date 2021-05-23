@@ -48,7 +48,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 /**
  * Proxy generator for a Spring proxy - built using Byte Buddy.
  * 
- * @author Raphael Winterhalter
+ * @author Rafael Winterhalter
  * @author Andy Clement
  */
 public class ProxyGenerator {

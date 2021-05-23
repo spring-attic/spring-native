@@ -27,7 +27,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Represents a proxy class built at compilation time, stored on disk and then loaded at runtime.
  * 
- * @author Raphael Winterhalter
+ * @author Rafael Winterhalter
  * @author Andy Clement
  */
 @SuppressWarnings("serial")
