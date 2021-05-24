@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS Lego_Set (
   id INT(4),
   name VARCHAR(100),
   min_Age INT(4),
-  max_Age INT(4)) engine=InnoDB;
+  max_Age INT(4),
+  created_at DATETIME,
+  updated_at DATETIME) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS Handbuch (
   handbuch_id INT(4),

@@ -15,6 +15,7 @@
  */
 package com.example.data.jdbc;
 
+import java.time.Instant;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -22,7 +23,9 @@ import java.util.Map;
 
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.annotation.AccessType.Type;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -44,6 +47,12 @@ public class LegoSet {
 	// You can build multiple models from one LegoSet
 	@MappedCollection(keyColumn = "NAME")
 	private final @AccessType(Type.FIELD) Map<String, Model> models;
+
+	@CreatedDate
+	private Instant createdAt;
+
+	@LastModifiedDate
+	private Instant updatedAt;
 
 	LegoSet() {
 		this.models = new HashMap<>();
@@ -140,6 +149,22 @@ public class LegoSet {
 		this.manual = manual;
 	}
 
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Instant getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Instant updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	public boolean equals(final Object o) {
 		if (o == this) return true;
 		if (!(o instanceof LegoSet)) return false;
@@ -188,6 +213,6 @@ public class LegoSet {
 	}
 
 	public String toString() {
-		return "LegoSet(id=" + this.id + ", name=" + this.name + ", minimumAge=" + this.minimumAge + ", maximumAge=" + this.maximumAge + ", manual=" + this.manual + ", models=" + this.models + ")";
+		return "LegoSet(id=" + this.id + ", name=" + this.name + ", minimumAge=" + this.minimumAge + ", maximumAge=" + this.maximumAge + ", manual=" + this.manual + ", models=" + this.models + ", createdAt=" + this.createdAt + ", updatedAt=" + this.updatedAt + ")";
 	}
 }

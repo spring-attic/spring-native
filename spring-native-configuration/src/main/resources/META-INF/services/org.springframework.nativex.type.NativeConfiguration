@@ -50,6 +50,7 @@ org.springframework.boot.autoconfigure.condition.ConditionalHints
 org.springframework.boot.autoconfigure.context.MessageSourceHints
 org.springframework.boot.autoconfigure.data.RepositoriesHints
 org.springframework.data.SpringDataCommonsHints
+org.springframework.data.jdbc.repository.config.DataJdbcHints
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesHints
 org.springframework.boot.autoconfigure.data.mongodb.MongoRepositoriesHints
