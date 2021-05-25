@@ -5,8 +5,8 @@ plugins {
     id("org.springframework.boot") version "2.5.0"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     id("org.springframework.experimental.aot") version "0.10.0-SNAPSHOT"
-    kotlin("jvm") version "1.5.0-RC"
-    kotlin("plugin.spring") version "1.5.0-RC"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.spring") version "1.5.0"
 }
 
 group = "com.example"
