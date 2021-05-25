@@ -11,5 +11,5 @@ task-timeout: 30m
 graalvm-repo: "https://github.com/oracle/graal.git"
 graalvm-stable-branch: "release/graal-vm/21.1"
 graalvm-dev-branch: "master"
-jvmci-stable-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.1-b04/labsjdk-ce-11.0.11+8-jvmci-21.1-b04-linux-amd64.tar.gz"
-jvmci-dev-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.1-b04/labsjdk-ce-11.0.11+8-jvmci-21.1-b04-linux-amd64.tar.gz"
+jvmci-stable-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.1-b05/labsjdk-ce-11.0.11+8-jvmci-21.1-b05-linux-amd64.tar.gz"
+jvmci-dev-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.2-b02/labsjdk-ce-11.0.11+8-jvmci-21.2-b02-linux-amd64.tar.gz"
