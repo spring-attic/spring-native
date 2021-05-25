@@ -4,16 +4,14 @@ ARG JVMCI_URL
 ARG GRAALVM_BRANCH
 
 ENV JAVA_HOME=/opt/openjdk-jvmci
-ENV PATH="/opt/mx-master:$JAVA_HOME/bin:$PATH"
+ENV PATH="/opt/mx:$JAVA_HOME/bin:$PATH"
 
 RUN apt-get -y update \
  && apt-get -y install git jq curl build-essential python unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
 RUN cd /opt \
- && curl -LO https://github.com/graalvm/mx/archive/master.zip \
- && unzip master.zip \
- && rm master.zip \
+ && git clone --single-branch --branch master https://github.com/graalvm/mx.git \
  && curl -L $JVMCI_URL | tar -xz \
  && mv *jdk* openjdk-jvmci \
  && git clone --single-branch --branch $GRAALVM_BRANCH https://github.com/oracle/graal.git \
