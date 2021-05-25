@@ -27,7 +27,7 @@
 		<!-- TODO Bring back "paketobuildpacks/builder:tiny" before 0.10.0 release -->
 		<builder>dmikusa/graalvm-tiny</builder>
 
-		<spring-cloud.version>2020.0.2</spring-cloud.version>
+		<spring-cloud.version>2020.0.3-SNAPSHOT</spring-cloud.version>
 	</properties>
 
 	<build>
