@@ -18,7 +18,9 @@ package org.springframework.nativex.type;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +29,11 @@ import org.mockito.Mockito;
 import org.springframework.aot.NativeTestContext;
 import org.springframework.aot.TestTypeSystem;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.TypeProcessor.DiscoveryContext;
+import org.springframework.nativex.type.TypeProcessor.TriConsumer;
 import org.springframework.nativex.type.entities.ConcreteType;
 import org.springframework.nativex.type.entities.EntityWithAnnotations;
+import org.springframework.nativex.type.entities.MultiLevel0;
 import org.springframework.nativex.type.entities.Order;
 import org.springframework.nativex.type.entities.WithFinalField;
 import org.springframework.nativex.type.entities.WithTypesInMethods;
@@ -168,5 +173,88 @@ class TypeProcessorTests {
 		TypeProcessor.namedProcessor("test").onTypeDiscovered(consumer).use(typeSystem).toProcessType(typeSystem.resolve(Object.class));
 
 		Mockito.verifyNoInteractions(consumer);
+	}
+
+	@Test
+	void collectsPath() {
+
+		CapturingTriConsumer consumer = new CapturingTriConsumer();
+		TypeProcessor.namedProcessor("test").onTypeDiscovered(consumer).use(typeSystem).toProcessType(typeSystem.resolve(MultiLevel0.class));
+
+		assertThat(consumer.pathTo("org.springframework.nativex.type.entities.InterfaceType"))
+				.isEqualTo("T:org.springframework.nativex.type.entities.MultiLevel0 -> T:org.springframework.nativex.type.entities.InterfaceType");
+
+		assertThat(consumer.discoveryContextOf("org.springframework.nativex.type.entities.MultiLevel2").getPath().getParent().getLeafType().getDottedName())
+				.isEqualTo("org.springframework.nativex.type.entities.MultiLevel1");
+
+		assertThat(consumer.pathTo("java.lang.String"))
+				.isEqualTo("T:org.springframework.nativex.type.entities.MultiLevel0 -> "+
+						"F:toLevel1 -> " +
+						"F:toLevel2 -> " +
+						"F:toLevel3 -> " +
+						"F:value");
+	}
+
+	@Test
+	void noSignatureFollowLimit() {
+
+		processor.process(typeSystem.resolve(MultiLevel0.class), nativeContext);
+
+		assertThat(capturedTypes)
+				.containsExactlyInAnyOrder("org.springframework.nativex.type.entities.MultiLevel0",
+						"org.springframework.nativex.type.entities.InterfaceType",
+						"org.springframework.nativex.type.entities.MultiLevel1",
+						"org.springframework.nativex.type.entities.MultiLevel2",
+						"org.springframework.nativex.type.entities.MultiLevel3",
+						"java.lang.String");
+	}
+
+	@Test
+	void limitSignatureFollowToRoot() {
+
+		processor.limitInspectionDepth(1).process(typeSystem.resolve(MultiLevel0.class), nativeContext);
+
+		assertThat(capturedTypes)
+				.containsExactlyInAnyOrder("org.springframework.nativex.type.entities.MultiLevel0",
+						"org.springframework.nativex.type.entities.InterfaceType",
+						"org.springframework.nativex.type.entities.MultiLevel1")
+				.doesNotContain(
+						"org.springframework.nativex.type.entities.MultiLevel2",
+						"org.springframework.nativex.type.entities.MultiLevel3",
+						"java.lang.String");
+	}
+
+	@Test
+	void limitSignatureToRootAndNothingMore() {
+
+		processor.limitInspectionDepth(0).process(typeSystem.resolve(MultiLevel0.class), nativeContext);
+
+		assertThat(capturedTypes)
+				.containsExactly("org.springframework.nativex.type.entities.MultiLevel0")
+				.doesNotContain(
+						"org.springframework.nativex.type.entities.InterfaceType",
+						"org.springframework.nativex.type.entities.MultiLevel1",
+						"org.springframework.nativex.type.entities.MultiLevel2",
+						"org.springframework.nativex.type.entities.MultiLevel3",
+						"java.lang.String");
+	}
+
+	static class CapturingTriConsumer implements TriConsumer<Type, DiscoveryContext, NativeContext> {
+
+		Map<String, DiscoveryContext> discoveryMap = new LinkedHashMap<>();
+
+		@Override
+		public void accept(Type type, DiscoveryContext context, NativeContext var3) {
+			discoveryMap.put(type.getDottedName(), context);
+		}
+
+		DiscoveryContext discoveryContextOf(String dottedTypeName) {
+			return discoveryMap.get(dottedTypeName);
+		}
+
+		String pathTo(String dottedTypeName) {
+			DiscoveryContext discoveryContext = discoveryContextOf(dottedTypeName);
+			return discoveryContext != null ? discoveryContext.getPath().toString() : null;
+		}
 	}
 }
