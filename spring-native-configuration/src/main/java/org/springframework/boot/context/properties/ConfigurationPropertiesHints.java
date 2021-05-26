@@ -68,10 +68,8 @@ public class ConfigurationPropertiesHints implements NativeConfiguration {
 
 	private List<HintDeclaration> computeConfigurationPropertiesHints(TypeSystem typeSystem) {
 		return TypeProcessor.namedProcessor("ConfigurationPropertiesHints - ConfigurationProperties")
-				.skipTypesMatching(type -> type.isPartOfDomain("org.springframework.boot") ||
-						!(type.hasAnnotationInHierarchy(CONFIGURATION_PROPERTIES_ANNOTATION)))
-				.skipFieldInspection()
-				.skipConstructorInspection()
+				.filter(type -> type.hasAnnotationInHierarchy(CONFIGURATION_PROPERTIES_ANNOTATION) && !type.isPartOfDomain("org.springframework.boot"))
+				.limitInspectionDepth(0)
 				.onTypeDiscovered((type, context) -> {
 					Map<String, Integer> propertyTypesForAccess = type.processAsConfigurationProperties();
 					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
@@ -79,7 +77,6 @@ public class ConfigurationPropertiesHints implements NativeConfiguration {
 					}
 				})
 				.use(typeSystem)
-				.toProcessTypes(ts -> ts.findTypesAnnotated(CONFIGURATION_PROPERTIES_ANNOTATION, true).stream().map(ts::resolveName)
-				);
+				.processTypes();
 	}
 }
