@@ -30,24 +30,23 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ClassProxyHint {
 
-	// TODO sort out defaults for these members
-	Class<?> targetClass();
+	Class<?> targetClass() default Object.class;
 	
-	//	Class<?>[] targetClassName();
+	String targetClassName() default "java.lang.Object";
 	
 	/**
 	 * Preferred way to configure interfaces for a class proxy.
 	 * @return the types
 	 */
 	Class<?>[] interfaces() default {};
-
+	
 	/**
 	 * Alternative way to configure interfaces for a class proxy, should be used when type visibility
 	 * prevents using {@link Class} references, or for nested types which should be specific using a {@code $} separator
 	 * (for example {@code com.example.Foo$Bar}).
 	 * @return the type names
 	 */
-	//	String[] interfaceNames() default {};
+	String[] interfaceNames() default {};
 
 	int proxyFeatures() default ProxyBits.NONE;
 

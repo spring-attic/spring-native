@@ -253,7 +253,6 @@ public class HintTests {
 		List<HintApplication> hints = t.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
-		System.out.println(hint);
 		List<ProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
 		assertThat(proxyDescriptors).hasSize(1);
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
@@ -264,8 +263,29 @@ public class HintTests {
 	}
 
 	@NativeHint(
-		classProxies = @ClassProxyHint(targetClass = String.class, interfaces = Serializable.class,proxyFeatures = ProxyBits.EXPOSE_PROXY)
+		classProxies = @ClassProxyHint(targetClass = String.class, interfaces = Serializable.class, proxyFeatures = ProxyBits.EXPOSE_PROXY)
 	)
 	static class TestClass8 {
+	}
+
+	@Test
+	public void classProxyDescriptors2() {
+		Type t = typeSystem.resolveName(TestClass9.class.getName());
+		List<HintApplication> hints = t.getApplicableHints();
+		assertEquals(1,hints.size());
+		HintApplication hint = hints.get(0);
+		List<ProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		assertThat(proxyDescriptors).hasSize(1);
+		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
+		ClassProxyDescriptor cpd = (ClassProxyDescriptor)proxyDescriptors.get(0);
+		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
+		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
+	}
+
+	@NativeHint(
+		classProxies = @ClassProxyHint(targetClassName = "java.lang.String", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
+	)
+	static class TestClass9 {
 	}
 }
