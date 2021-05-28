@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.util.Set;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
@@ -61,7 +62,10 @@ import org.springframework.nativex.hint.AccessBits;
 			LogManager.class,
 			JavaLoggingSystem.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = java.util.LinkedHashSet.class)
+		@TypeHint(types = {
+				java.util.LinkedHashSet.class,
+				Set.class
+		})
 	},
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
