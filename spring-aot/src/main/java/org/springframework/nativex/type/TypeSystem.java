@@ -1149,7 +1149,7 @@ public class TypeSystem {
 			}
 			if (mainClass != null) {
 				String[] mainClassParts = mainClass.split("\\.");
-				String[] mainPackageParts = Arrays.copyOfRange(mainClassParts, 0, mainClassParts.length - 2);
+				String[] mainPackageParts = Arrays.copyOfRange(mainClassParts, 0, mainClassParts.length - 1);
 				String mainPackagePath = String.join(File.separator, mainPackageParts);
 				logger.debug("TypeSystem found Spring Boot main package path: " + mainPackagePath);
 				return mainPackagePath;
