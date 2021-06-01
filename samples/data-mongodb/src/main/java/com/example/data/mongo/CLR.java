@@ -2,7 +2,9 @@ package com.example.data.mongo;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.domain.Example;
@@ -153,6 +155,31 @@ public class CLR implements CommandLineRunner {
 
 			List<OrderProjection> result = repository.findOrderProjectionByCustomerId(order.getCustomerId());
 			result.forEach(it -> System.out.println(String.format("OrderProjection(%s){id=%s, customerId=%s}", it.getClass().getSimpleName(), it.getId(), it.getCustomerId())));
+			System.out.println("-----------------\n\n\n");
+		}
+
+		// DBRefs
+		{
+
+			System.out.println("---- DBREFs ----");
+			repository.deleteAll();
+			template.execute(Coupon.class, mongoCollection -> mongoCollection.deleteMany(new Document()));
+
+			Coupon coupon = new Coupon("X3R");
+			template.insert(coupon);
+
+			Order order = new Order("c42", new Date()).//
+					addItem(product1).addItem(product2).addItem(product3);
+			order.setCoupon(coupon);
+			order.setReduction(coupon);
+			order.setSimpleRef(coupon);
+
+			repository.save(order);
+
+			Optional<Order> loaded = repository.findById(order.getId());
+			System.out.println("simple ref (no proxy): " + loaded.get().getSimpleRef().getCode());
+			System.out.println("lazyLoading (aot): " + loaded.get().getCoupon().getCode());
+			System.out.println("lazyLoading (jdk): " + loaded.get().getReduction().getId());
 			System.out.println("-----------------\n\n\n");
 		}
 
