@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 sleep 6
-if [[ `cat target/native-image/test-output.txt | grep -E "DONE"` ]]
+if [[ `cat target/native/test-output.txt | grep -E "DONE"` ]]
 then
   exit 0
 else 

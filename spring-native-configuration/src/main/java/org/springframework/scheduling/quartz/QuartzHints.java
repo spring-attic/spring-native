@@ -112,7 +112,7 @@ public class QuartzHints implements NativeConfiguration {
 			List<Type> jobSubtypes = job.getSubtypes();
 			HintDeclaration hintDeclaration = new HintDeclaration();
 			for (Type jobSubtype: jobSubtypes) {
-				hintDeclaration.addDependantType(jobSubtype.getDottedName(), new AccessDescriptor(AccessBits.FULL_REFLECTION));				
+				hintDeclaration.addDependantType(jobSubtype.getDottedName(), new AccessDescriptor(AccessBits.FULL_REFLECTION));
 			}
 			return Collections.singletonList(hintDeclaration);
 		}

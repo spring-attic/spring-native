@@ -1,10 +1,8 @@
 [[getting-started-native-image]]
 === Getting started with native image Maven plugin
 
-This section gives you a practical overview of building a Spring Boot native application using the {graalvm-native-docs}/NativeImageMavenPlugin/[native image Maven plugin].
+This section gives you a practical overview of building a Spring Boot native application using the {graalvm-native-buildtools}[GraalVM native build tools].
 This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
-
-NOTE: There is not yet an official native image Gradle plugin, that's why this section is only about Maven. You can vote and subscribe to https://github.com/oracle/graal/issues/3302[graal/issue3302] if you are interested about building native images with Gradle without <<getting-started-buildpacks, using Buildpacks>>.
 
 [[getting-started-native-image-system-requirements]]
 ==== System Requirements
@@ -106,55 +104,55 @@ The Spring AOT plugin performs ahead-of-time transformations required to improve
 
 The plugin provides a number of options to customize the transformations, see <<spring-aot-configuration>> for more details.
 
-===== Enable native image support
+===== Add the native build tools plugin
 
-GraalVM provides a {graalvm-native-docs}/NativeImageMavenPlugin/[Maven Plugin] to invoke the native image compiler from your Maven build.
-The following example adds a `native-image` profile that triggers the plugin during the `package` phase:
+GraalVM provides {graalvm-native-buildtools}[Gradle and Maven plugins] to invoke the native image compiler from your build.
+The following example adds a `native` profile that triggers the plugin during the `package` phase:
 
 
 [source,xml,subs="attributes,verbatim"]
 ----
 <profiles>
-  <profile>
-    <id>native-image</id>
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>org.graalvm.nativeimage</groupId>
-          <artifactId>native-image-maven-plugin</artifactId>
-          <version>{graalvm-version}</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>native-image</goal>
-              </goals>
-              <phase>package</phase>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
-  </profile>
-</profiles>
-----
-
-
-In a default Spring Boot setup, the `spring-boot-maven-plugin` also runs during the `package` phase and replaces the regular jar by the repackaged, executable jar.
-To avoid a clash between the two plugins, make sure to specify a classifier like `exec` below for the executable jar:
-
-
-[source,xml,subs="attributes,verbatim"]
-----
-<plugins>
-    <!-- ... -->
-    <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-            <classifier>exec</classifier>
-        </configuration>
-    </plugin>
-</plugins>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>{graalvm-native-buildtools-version}</version>
+                        <executions>
+                            <execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- ... -->
+                        </configuration>
+                    </plugin>
+                    <!-- Avoid a clash between Spring Boot repackaging and native-maven-plugin -->
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 ----
 
 
@@ -198,7 +196,7 @@ The native application can be built as follows:
 
 [source,bash]
 ----
-$ mvn -Pnative-image package
+$ mvn -Pnative package
 ----
 
 NOTE: During the native compilation, you will see a lot of `WARNING: Could not register reflection metadata` messages. They are expected and will be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[#502] for more details.
@@ -214,7 +212,7 @@ To run your application, invoke the following:
 
 [source,bash]
 ----
-$ target/com.example.restservice.restserviceapplication
+$ target/gs-rest-service
 ----
 
 

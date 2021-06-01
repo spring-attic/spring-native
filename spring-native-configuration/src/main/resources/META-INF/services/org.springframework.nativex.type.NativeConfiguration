@@ -76,6 +76,11 @@ org.springframework.boot.context.properties.ConfigurationPropertiesHints
 org.springframework.boot.context.config.ConfigDataPropertiesHints
 org.springframework.boot.context.ContextHints
 org.springframework.boot.logging.LogbackHints
+org.springframework.boot.test.SpringBootTestHints
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientHints
+org.springframework.boot.test.web.client.WebClientTestHints
+org.springframework.boot.test.web.reactive.server.ReactiveServerTestHints
+org.springframework.boot.web.client.ClientHttpRequestFactoryHints
 org.springframework.cache.annotation.CachingHints
 org.springframework.cloud.bootstrap.BootstrapHints
 org.springframework.cloud.client.FeaturesEndpointHints
@@ -109,7 +114,8 @@ org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
 org.springframework.session.servlet.HttpSessionHints
 org.springframework.session.server.WebSessionHints
 org.springframework.stereotype.ComponentHints
-org.springframework.test.JUnitJupiterHints
+org.springframework.test.context.jdbc.SqlScriptsTestExecutionListenerHints
+org.springframework.test.web.reactive.server.DefaultWebTestClientBuilderHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
 org.springframework.web.socket.WebSocketHints

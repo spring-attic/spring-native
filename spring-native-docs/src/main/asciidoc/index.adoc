@@ -59,7 +59,7 @@ Check the <<spring-aot,dedicated section>> for more details.
 
 include::getting-started-buildpacks.adoc[]
 
-include::getting-started-native-image.adoc[]
+include::getting-started-native-buildtools.adoc[]
 
 include::support.adoc[]
 

@@ -16,18 +16,22 @@
 
 package org.springframework.samples.petclinic.owner;
 
-import static org.mockito.BDDMockito.given;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,16 +48,11 @@ class VisitControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@Autowired
 	private VisitRepository visits;
 
-	@MockBean
+	@Autowired
 	private PetRepository pets;
-
-	@BeforeEach
-	void init() {
-		given(this.pets.findById(TEST_PET_ID)).willReturn(new Pet());
-	}
 
 	@Test
 	void testInitNewVisitForm() throws Exception {
@@ -73,6 +72,47 @@ class VisitControllerTests {
 		mockMvc.perform(post("/owners/*/pets/{petId}/visits/new", TEST_PET_ID).param("name", "George"))
 				.andExpect(model().attributeHasErrors("visit")).andExpect(status().isOk())
 				.andExpect(view().name("pets/createOrUpdateVisitForm"));
+	}
+
+
+	@TestConfiguration
+	static class VisitControllerTestConfiguration {
+
+		@Bean
+		VisitRepository visits() {
+			return new VisitRepository() {
+				@Override
+				public void save(Visit visit) throws DataAccessException {
+				}
+
+				@Override
+				public List<Visit> findByPetId(Integer petId) {
+					return Lists.emptyList();
+				}
+			};
+		}
+
+		@Bean
+		PetRepository pets() {
+			return new PetRepository() {
+				@Override
+				public List<PetType> findPetTypes() {
+					return null;
+				}
+
+				@Override
+				public Pet findById(Integer id) {
+					if (id.equals(TEST_PET_ID)) {
+						return new Pet();
+					}
+					return null;
+				}
+
+				@Override
+				public void save(Pet pet) {
+				}
+			};
+		}
 	}
 
 }

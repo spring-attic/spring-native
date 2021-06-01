@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-OUTPUT=`cat target/native-image/test-output.txt`
+OUTPUT=`cat target/native/test-output.txt`
 if [[ ${OUTPUT} == *"INFO com.example.logger.LoggerApplication - info"* && ${OUTPUT} == *"ERROR com.example.logger.LoggerApplication - ouch"* && ${OUTPUT} == *"java.lang.RuntimeException"* ]]
 then
   exit 0

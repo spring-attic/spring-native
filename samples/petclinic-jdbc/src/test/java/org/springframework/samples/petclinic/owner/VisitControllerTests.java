@@ -1,17 +1,21 @@
 package org.springframework.samples.petclinic.owner;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.mockito.BDDMockito.given;
 import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 /**
@@ -28,16 +32,11 @@ public class VisitControllerTests {
 	@Autowired
 	private WebTestClient client;
 
-	@MockBean
+	@Autowired
 	private VisitRepository visits;
 
-	@MockBean
+	@Autowired
 	private PetRepository pets;
-
-	@BeforeEach
-	public void init() {
-		given(this.pets.findById(TEST_PET_ID)).willReturn(new Pet());
-	}
 
 	@Test
 	public void testInitNewVisitForm() throws Exception {
@@ -55,6 +54,46 @@ public class VisitControllerTests {
 	public void testProcessNewVisitFormHasErrors() throws Exception {
 		client.post().uri("/owners/*/pets/{petId}/visits/new", TEST_PET_ID).body(fromFormData("name", "George"))
 				.exchange().expectStatus().isOk();
+	}
+
+	@TestConfiguration
+	static class VisitControllerTestConfiguration {
+
+		@Bean
+		VisitRepository visits() {
+			return new VisitRepository() {
+				@Override
+				public void save(Visit visit) throws DataAccessException {
+				}
+
+				@Override
+				public List<Visit> findByPetId(Integer petId) {
+					return Lists.emptyList();
+				}
+			};
+		}
+
+		@Bean
+		PetRepository pets() {
+			return new PetRepository() {
+				@Override
+				public List<PetType> findPetTypes() {
+					return null;
+				}
+
+				@Override
+				public Pet findById(int id) {
+					if (id == TEST_PET_ID) {
+						return new Pet();
+					}
+					return null;
+				}
+
+				@Override
+				public void save(Pet pet) {
+				}
+			};
+		}
 	}
 
 }

@@ -38,9 +38,9 @@ Assuming a Spring Boot executable JAR built as `my-app-0.0.1-SNAPSHOT.jar` in th
 ----
 #!/usr/bin/env bash
 
-rm -rf target/native-image
-mkdir -p target/native-image
-cd target/native-image
+rm -rf target/native
+mkdir -p target/native
+cd target/native
 jar -xvf ../my-app-0.0.1-SNAPSHOT.jar >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 native-image -H:Name=my-app -cp BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`

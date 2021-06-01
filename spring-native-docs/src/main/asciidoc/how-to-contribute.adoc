@@ -221,11 +221,11 @@ Compiling FieldPosition[] java.text.DecimalFormat.getPositiveSuffixFieldPosition
 
 Thousands and thousands of lines typically.
 Typically we turn on that option for `native-image` in the `pom.xml`.
-The output is produced to stdout which our samples capture in `target/native-image/output.txt`.
+The output is produced to stdout which our samples capture in `target/native/output.txt`.
 With two builds done, we can use a script from this folder to produce a tree diff:
 
 ----
-compilationDiff.sh java8build/target/native-image/output.txt java11build/target/native-image/output.txt 8-11.html
+compilationDiff.sh java8build/target/native/output.txt java11build/target/native/output.txt 8-11.html
 ----
 
 The inputs are the two collected PrintAOTCompilation outputs to compare and the name for an HTML file that should be generated (this will contain the navigable tree).

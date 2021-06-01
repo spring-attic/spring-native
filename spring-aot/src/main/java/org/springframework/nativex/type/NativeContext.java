@@ -85,6 +85,7 @@ public interface NativeContext {
 		addReflectiveAccess(parameterTypename, AccessBits.getFlags(accessBits));
 	}
 
+	// TODO Should probably be named addResource and provide a isBundle parameter
 	void addResourceBundle(String string);
 
 }

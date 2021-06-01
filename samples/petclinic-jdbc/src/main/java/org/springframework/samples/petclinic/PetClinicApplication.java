@@ -18,7 +18,9 @@ package org.springframework.samples.petclinic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.SerializationHint;
+import org.springframework.nativex.hint.TypeHint;
 
 /**
  * PetClinic Spring Boot Application.
@@ -27,6 +29,12 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  */
 @SpringBootApplication
+@SerializationHint(types = {
+        org.springframework.samples.petclinic.model.BaseEntity.class,
+        org.springframework.samples.petclinic.model.Person.class,
+        org.springframework.samples.petclinic.vet.Vet.class,
+        java.lang.Number.class
+})
 public class PetClinicApplication {
 
     public static void main(String[] args) {

@@ -17,17 +17,20 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.assertj.core.util.Lists;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +39,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -56,36 +58,11 @@ class OwnerControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@Autowired
 	private OwnerRepository owners;
 
-	@MockBean
+	@Autowired
 	private VisitRepository visits;
-
-	private Owner george;
-
-	@BeforeEach
-	void setup() {
-		george = new Owner();
-		george.setId(TEST_OWNER_ID);
-		george.setFirstName("George");
-		george.setLastName("Franklin");
-		george.setAddress("110 W. Liberty St.");
-		george.setCity("Madison");
-		george.setTelephone("6085551023");
-		Pet max = new Pet();
-		PetType dog = new PetType();
-		dog.setName("dog");
-		max.setId(1);
-		max.setType(dog);
-		max.setName("Max");
-		max.setBirthDate(LocalDate.now());
-		george.setPetsInternal(Collections.singleton(max));
-		given(this.owners.findById(TEST_OWNER_ID)).willReturn(george);
-		Visit visit = new Visit();
-		visit.setDate(LocalDate.now());
-		given(this.visits.findByPetId(max.getId())).willReturn(Collections.singletonList(visit));
-	}
 
 	@Test
 	void testInitCreationForm() throws Exception {
@@ -118,13 +95,11 @@ class OwnerControllerTests {
 
 	@Test
 	void testProcessFindFormSuccess() throws Exception {
-		given(this.owners.findByLastName("")).willReturn(Lists.newArrayList(george, new Owner()));
 		mockMvc.perform(get("/owners")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
 	}
 
 	@Test
 	void testProcessFindFormByLastName() throws Exception {
-		given(this.owners.findByLastName(george.getLastName())).willReturn(Lists.newArrayList(george));
 		mockMvc.perform(get("/owners").param("lastName", "Franklin")).andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
 	}
@@ -194,6 +169,78 @@ class OwnerControllerTests {
 						description.appendText("Max did not have any visits");
 					}
 				}))).andExpect(view().name("owners/ownerDetails"));
+	}
+
+
+	@TestConfiguration
+	static class OwnerControllerTestConfiguration {
+
+		Pet max;
+
+		Owner george;
+
+		public OwnerControllerTestConfiguration() {
+			max = new Pet();
+			PetType dog = new PetType();
+			dog.setName("dog");
+			max.setId(1);
+			max.setType(dog);
+			max.setName("Max");
+			max.setBirthDate(LocalDate.now());
+
+			george = new Owner();
+			george.setId(TEST_OWNER_ID);
+			george.setFirstName("George");
+			george.setLastName("Franklin");
+			george.setAddress("110 W. Liberty St.");
+			george.setCity("Madison");
+			george.setTelephone("6085551023");
+			george.setPetsInternal(Collections.singleton(max));
+		}
+
+		@Bean
+		VisitRepository visits() {
+			Visit visit = new Visit();
+			visit.setDate(LocalDate.now());
+			return new VisitRepository() {
+				@Override
+				public void save(Visit visit) throws DataAccessException {
+				}
+				@Override
+				public List<Visit> findByPetId(Integer petId) {
+					if (petId.equals(max.getId())) {
+						return Collections.singletonList(visit);
+					}
+					return null;
+				}
+			};
+		}
+
+		@Bean
+		OwnerRepository owners() {
+			return new OwnerRepository() {
+				@Override
+				public Collection<Owner> findByLastName(String lastName) {
+					if (lastName.equals("")) {
+						return Lists.newArrayList(george, new Owner());
+					}
+					else if (lastName.equals(george.getLastName())) {
+						return Lists.newArrayList(george);
+					}
+					return Lists.emptyList();
+				}
+				@Override
+				public Owner findById(Integer id) {
+					if (id.equals(TEST_OWNER_ID)) {
+						return george;
+					}
+					return null;
+				}
+				@Override
+				public void save(Owner owner) {
+				}
+			};
+		}
 	}
 
 }

@@ -8,10 +8,6 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,16 +17,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @author Colin But
  */
-@ExtendWith(MockitoExtension.class)
 public class PetTypeFormatterTests {
 
-    @Mock
     private PetRepository pets;
 
     private PetTypeFormatter petTypeFormatter;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
+        pets = new PetRepository() {
+            @Override
+            public List<PetType> findPetTypes() {
+                return makePetTypes();
+            }
+
+            @Override
+            public Pet findById(int id) {
+                return null;
+            }
+
+            @Override
+            public void save(Pet pet) {
+            }
+        };
         this.petTypeFormatter = new PetTypeFormatter(pets);
     }
 
@@ -44,14 +53,12 @@ public class PetTypeFormatterTests {
 
     @Test
     public void shouldParse() throws ParseException {
-        Mockito.when(this.pets.findPetTypes()).thenReturn(makePetTypes());
         PetType petType = petTypeFormatter.parse("Bird", Locale.ENGLISH);
         assertEquals("Bird", petType.getName());
     }
 
     @Test
     public void shouldThrowParseException() throws ParseException {
-        Mockito.when(this.pets.findPetTypes()).thenReturn(makePetTypes());
         assertThrows(ParseException.class,
                 () -> petTypeFormatter.parse("Fish", Locale.ENGLISH));
     }

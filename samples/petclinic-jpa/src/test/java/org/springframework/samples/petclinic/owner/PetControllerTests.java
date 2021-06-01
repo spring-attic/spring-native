@@ -16,7 +16,9 @@
 
 package org.springframework.samples.petclinic.owner;
 
-import static org.mockito.BDDMockito.given;
+import java.util.Collection;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -24,11 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,22 +51,11 @@ class PetControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@Autowired
 	private PetRepository pets;
 
-	@MockBean
+	@Autowired
 	private OwnerRepository owners;
-
-	@BeforeEach
-	void setup() {
-		PetType cat = new PetType();
-		cat.setId(3);
-		cat.setName("hamster");
-		given(this.pets.findPetTypes()).willReturn(Lists.newArrayList(cat));
-		given(this.owners.findById(TEST_OWNER_ID)).willReturn(new Owner());
-		given(this.pets.findById(TEST_PET_ID)).willReturn(new Pet());
-
-	}
 
 	@Test
 	void testInitCreationForm() throws Exception {
@@ -108,6 +99,58 @@ class PetControllerTests {
 				.param("birthDate", "2015/02/12")).andExpect(model().attributeHasNoErrors("owner"))
 				.andExpect(model().attributeHasErrors("pet")).andExpect(status().isOk())
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
+	}
+
+
+	@TestConfiguration
+	static class PetControllerTestConfiguration {
+
+		@Bean
+		PetRepository pets() {
+			PetType cat = new PetType();
+			cat.setId(3);
+			cat.setName("hamster");
+			return new PetRepository() {
+				@Override
+				public List<PetType> findPetTypes() {
+					return Lists.newArrayList(cat);
+				}
+
+				@Override
+				public Pet findById(Integer id) {
+					if (id.equals(TEST_PET_ID)) {
+						return new Pet();
+					}
+					return null;
+				}
+
+				@Override
+				public void save(Pet pet) {
+				}
+			};
+		}
+
+		@Bean
+		OwnerRepository owners() {
+			return new OwnerRepository() {
+				@Override
+				public Collection<Owner> findByLastName(String lastName) {
+					return Lists.emptyList();
+				}
+
+				@Override
+				public Owner findById(Integer id) {
+					if (id.equals(TEST_OWNER_ID)) {
+						return new Owner();
+					}
+					return null;
+				}
+
+				@Override
+				public void save(Owner owner) {
+				}
+			};
+		}
 	}
 
 }

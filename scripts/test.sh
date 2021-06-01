@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # If supplied $1 is the executable and $2 is the file where to create test-output.txt and summary.csv, otherwise these
 # default to the 'target/current-directory-name' (e.g. target/commandlinerunner) and 
-# target/native-image respectively
+# target/native respectively
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -26,9 +26,9 @@ else
 fi
 
 if [ -z "$1" ] || [[ "$1" == "--"* ]]; then
-  TEST_OUTPUT_FILE=target/native-image/test-output.txt
-  BUILD_OUTPUT_FILE=target/native-image/output.txt
-  SUMMARY_CSV_FILE=target/native-image/summary.csv
+  TEST_OUTPUT_FILE=target/native/test-output.txt
+  BUILD_OUTPUT_FILE=target/native/output.txt
+  SUMMARY_CSV_FILE=target/native/summary.csv
 else
   TEST_OUTPUT_FILE=$1/test-output.txt
   BUILD_OUTPUT_FILE=$1/output.txt

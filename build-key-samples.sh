@@ -10,8 +10,8 @@ do
   if ! (cd samples/$i && ./build.sh); then
     RC=1
   fi
-  if [ -f "samples/$i/target/native-image/summary.csv" ]; then
-    cat samples/$i/target/native-image/summary.csv >> samples-summary.csv
+  if [ -f "samples/$i/target/native/summary.csv" ]; then
+    cat samples/$i/target/native/summary.csv >> samples-summary.csv
   else
     echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
   fi

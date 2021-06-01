@@ -5,7 +5,7 @@ NC='\033[0m'
 
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
 
-../configserver/target/configserver 2>&1 > target/native-image/server-output.txt &
+../configserver/target/configserver 2>&1 > target/native/server-output.txt &
 
 SERVERPID=$!
 sleep 10 

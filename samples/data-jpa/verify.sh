@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [[ ! `cat target/native-image/test-output.txt | grep -E "Application run failed|No suitable logging system located"` ]]; then
+if [[ ! `cat target/native/test-output.txt | grep -E "Application run failed|No suitable logging system located"` ]]; then
 RESPONSE=`curl -s localhost:8080/`
 if [[ "$RESPONSE" == '{"value":"Hello","flurb":{}}' ]]; then
   exit 0

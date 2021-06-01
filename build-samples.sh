@@ -42,8 +42,8 @@ do
     if ! (cd "$d" && ./build.sh); then
       RC=1
     fi
-    if [ -f "$d/target/native-image/summary.csv" ]; then
-      cat $d/target/native-image/summary.csv >> samples-summary.csv
+    if [ -f "$d/target/native/summary.csv" ]; then
+      cat $d/target/native/summary.csv >> samples-summary.csv
     else
      echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,-,,,, >> samples-summary.csv
     fi

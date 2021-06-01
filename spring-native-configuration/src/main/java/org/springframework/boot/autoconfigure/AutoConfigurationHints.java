@@ -23,7 +23,10 @@ import org.springframework.nativex.hint.AccessBits;
 
 
 @NativeHint(trigger = ImportAutoConfigurationImportSelector.class, types =
-		@TypeHint(types = ImportAutoConfiguration.class, typeNames = "org.springframework.boot.autoconfigure.test.ImportAutoConfiguration")
+		{
+				@TypeHint(types = ImportAutoConfiguration.class),
+				@TypeHint(types = ImportAutoConfigurationImportSelector.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE)
+		}
 )
 @NativeHint(trigger = AutoConfigurationImportSelector.class)
 @TypeHint(types = { AutoConfigureBefore.class, AutoConfigureAfter.class, AutoConfigureOrder.class, AutoConfigurationPackage.class },

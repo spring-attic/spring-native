@@ -10,15 +10,15 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 rm -rf target
-mkdir -p target/native-image
+mkdir -p target/native
 
 echo "Packaging $ARTIFACT with Maven"
-mvn -DskipTests package > target/native-image/output.txt
+mvn -DskipTests package > target/native/output.txt
 
 JAR="$ARTIFACT-$VERSION.jar"
 rm -f $ARTIFACT
 echo "Unpacking $JAR"
-cd target/native-image
+cd target/native
 jar -xvf ../$JAR >/dev/null 2>&1
 cp -R META-INF BOOT-INF/classes
 

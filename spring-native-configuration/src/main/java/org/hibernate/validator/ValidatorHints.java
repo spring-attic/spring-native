@@ -298,10 +298,12 @@ import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = ValidatorImpl.class,
+		resources = @ResourceHint(patterns="org.hibernate.validator.ValidationMessages", isBundle = true),
 		jdkProxies = @JdkProxyHint(types = {
 				javax.validation.Validator.class,
 				org.springframework.aop.SpringProxy.class,

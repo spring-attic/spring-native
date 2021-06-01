@@ -28,10 +28,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
-		resources = {
-				@ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
-				@ResourceHint(patterns="org.hibernate.validator.ValidationMessages", isBundle = true)
-		},
+		resources = @ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
 		types = @TypeHint(types = {
 				SharedEntityManagerCreator.class, // TODO is this one in the right place?
 				JpaRepositoryFactoryBean.class,

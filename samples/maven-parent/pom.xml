@@ -68,9 +68,9 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<groupId>org.graalvm.nativeimage</groupId>
-					<artifactId>native-image-maven-plugin</artifactId>
-					<version>21.1.0</version>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<version>${native.buildtools.version}</version>
 					<configuration>
 						<imageName>${project.artifactId}</imageName>
 						<buildArgs>${native.build.args}</buildArgs>
@@ -78,9 +78,16 @@
 					<executions>
 						<execution>
 							<goals>
-								<goal>native-image</goal>
+								<goal>build</goal>
 							</goals>
 							<phase>package</phase>
+						</execution>
+						<execution>
+							<id>test</id>
+							<goals>
+								<goal>test</goal>
+							</goals>
+							<phase>test</phase>
 						</execution>
 					</executions>
 				</plugin>
@@ -159,18 +166,29 @@
 	</dependencyManagement>
 
 	<profiles>
-		<!-- Enable building a native image using a local installation of native-image with GraalVM native-image-maven-plugin -->
+		<!-- Enable building a native image using a local installation of native-image with GraalVM native-maven-plugin -->
 		<profile>
-			<id>native-image</id>
+			<id>native</id>
 			<properties>
-				<!-- Avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
+				<!-- Avoid a clash between Spring Boot repackaging and native-maven-plugin -->
 				<classifier>exec</classifier>
+
+				<native.buildtools.version>0.9.0</native.buildtools.version>
 			</properties>
+			<dependencies>
+				<!-- Won't be need as of JUnit 5.8, see https://github.com/junit-team/junit5/issues/2619 -->
+				<dependency>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>junit-platform-native</artifactId>
+					<version>${native.buildtools.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.graalvm.nativeimage</groupId>
-						<artifactId>native-image-maven-plugin</artifactId>
+						<groupId>org.graalvm.buildtools</groupId>
+						<artifactId>native-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>

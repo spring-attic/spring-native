@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 sleep 2
-if [[ `cat target/native-image/test-output.txt | grep -E "Received:(HOW|MUCH|WOOD|A|WOODCHUCK|CHUCK|IF|COULD|WOULD?)"` ]]; then
+if [[ `cat target/native/test-output.txt | grep -E "Received:(HOW|MUCH|WOOD|A|WOODCHUCK|CHUCK|IF|COULD|WOULD?)"` ]]; then
 	exit 0
 else
 	exit 1

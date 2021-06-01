@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [[ `cat target/native-image/test-output.txt | grep "Started MethodSecurityApplication"` ]]; then
+if [[ `cat target/native/test-output.txt | grep "Started MethodSecurityApplication"` ]]; then
 
 RESPONSE=`curl localhost:8080/hello`
 if [[ "$RESPONSE" != *'Unauthorized'* ]]; then
