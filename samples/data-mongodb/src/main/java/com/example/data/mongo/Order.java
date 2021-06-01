@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -36,6 +37,15 @@ public class Order {
 	private Date orderDate;
 
 	private List<LineItem> items;
+
+	@DBRef
+	private Coupon simpleRef;
+
+	@DBRef(lazy = true) // AotProxy
+	private Coupon coupon;
+
+	@DBRef(lazy = true) // JdkProxy
+	private PriceReduction reduction;
 
 	protected Order() {
 	}
@@ -107,6 +117,30 @@ public class Order {
 		this.items = items;
 	}
 
+	public Coupon getCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(Coupon coupon) {
+		this.coupon = coupon;
+	}
+
+	public void setReduction(PriceReduction reduction) {
+		this.reduction = reduction;
+	}
+
+	public PriceReduction getReduction() {
+		return reduction;
+	}
+
+	public Coupon getSimpleRef() {
+		return simpleRef;
+	}
+
+	public void setSimpleRef(Coupon simpleRef) {
+		this.simpleRef = simpleRef;
+	}
+
 	@Override
 	public String toString() {
 		return "Order{" +
@@ -114,6 +148,8 @@ public class Order {
 				", customerId='" + customerId + '\'' +
 				", orderDate=" + orderDate +
 				", items=" + items +
+				", coupon=" + coupon +
+				", reduction=" + reduction +
 				'}';
 	}
 }

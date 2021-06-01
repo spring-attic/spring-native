@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.data.mongodb;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.autoconfigure.data.SpringDataReactiveHints;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
@@ -34,9 +40,15 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactoryBean;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.TypeSystem;
 
 
 @NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, types = {
@@ -66,4 +78,50 @@ import org.springframework.nativex.hint.TypeHint;
 )
 public class MongoRepositoriesHints implements NativeConfiguration {
 
+	@Override
+	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+
+		if (!typeSystem.canResolve("org/springframework/data/mongodb/core/mapping/Document")) {
+			return Collections.emptyList();
+		}
+
+		List<Type> scan = typeSystem.scan(type -> !type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DBRef;", false).isEmpty());
+		List<HintDeclaration> hints = scan.stream()
+				.flatMap(type -> {
+					return type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DBRef;", false)
+							.stream()
+							.filter(field -> {
+										if (field == null) {
+											return false;
+										}
+										Map<String, String> annotationValuesInHierarchy = field.getAnnotationValuesInHierarchy("Lorg/springframework/data/mongodb/core/mapping/DBRef;");
+										return annotationValuesInHierarchy.get("lazy") == "true";
+									}
+							)
+							.map(field -> {
+
+								if (field.getType().isInterface()) {
+
+									HintDeclaration hintDeclaration = new HintDeclaration();
+									List<String> interfaces = new ArrayList<>(field.getSignature().stream().map(typeSystem::resolveSlashed).map(Type::getDottedName).collect(Collectors.toList()));
+									interfaces.add(0, "org.springframework.data.mongodb.core.convert.LazyLoadingProxy");
+									interfaces.add("org.springframework.aop.SpringProxy");
+									interfaces.add("org.springframework.aop.framework.Advised");
+									interfaces.add("org.springframework.core.DecoratingProxy");
+
+									JdkProxyDescriptor descriptor = new JdkProxyDescriptor(interfaces);
+									hintDeclaration.addProxyDescriptor(descriptor);
+									return hintDeclaration;
+								}
+
+								HintDeclaration hintDeclaration = new HintDeclaration();
+								AotProxyDescriptor descriptor = new AotProxyDescriptor(field.getType().getDottedName(), Collections.singletonList("org.springframework.data.mongodb.core.convert.LazyLoadingProxy"), ProxyBits.IS_STATIC);
+								hintDeclaration.addProxyDescriptor(descriptor);
+								return hintDeclaration;
+							});
+				}).collect(Collectors.toList());
+
+		System.out.println("MongoDBRef proxies: " + hints);
+		return hints;
+	}
 }
