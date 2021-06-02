@@ -15,17 +15,24 @@
  */
 package com.example.data.jdbc;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 
 @Configuration
 public class DataJdbcConfiguration {
 
 	final AtomicInteger id = new AtomicInteger(0);
+
+	@Bean
+	public AuditorAware<String> anonymousAuditorAware(){
+		return () -> Optional.of("anonymous");
+	}
 
 	@Bean
 	public ApplicationListener<?> idSetting() {

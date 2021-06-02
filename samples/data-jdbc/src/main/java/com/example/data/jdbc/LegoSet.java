@@ -23,8 +23,10 @@ import java.util.Map;
 
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.annotation.AccessType.Type;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
@@ -53,6 +55,12 @@ public class LegoSet {
 
 	@LastModifiedDate
 	private Instant updatedAt;
+
+	@CreatedBy
+	private String createdBy;
+
+	@LastModifiedBy
+	private String modifiedBy;
 
 	LegoSet() {
 		this.models = new HashMap<>();
@@ -165,6 +173,22 @@ public class LegoSet {
 		this.updatedAt = updatedAt;
 	}
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 	public boolean equals(final Object o) {
 		if (o == this) return true;
 		if (!(o instanceof LegoSet)) return false;
@@ -213,6 +237,16 @@ public class LegoSet {
 	}
 
 	public String toString() {
-		return "LegoSet(id=" + this.id + ", name=" + this.name + ", minimumAge=" + this.minimumAge + ", maximumAge=" + this.maximumAge + ", manual=" + this.manual + ", models=" + this.models + ", createdAt=" + this.createdAt + ", updatedAt=" + this.updatedAt + ")";
+		return "LegoSet(id=" + this.id +
+				", name=" + this.name +
+				", minimumAge=" + this.minimumAge +
+				", maximumAge=" + this.maximumAge +
+				", manual=" + this.manual +
+				", models=" + this.models +
+				", createdAt=" + this.createdAt +
+				", updatedAt=" + this.updatedAt +
+				", createdBy=" + this.createdBy +
+				", modifiedBy=" + this.modifiedBy +
+				")";
 	}
 }
