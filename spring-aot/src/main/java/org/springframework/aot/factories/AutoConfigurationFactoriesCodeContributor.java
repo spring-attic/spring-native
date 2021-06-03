@@ -88,7 +88,7 @@ public class AutoConfigurationFactoriesCodeContributor implements FactoriesCodeC
 
 	private boolean passesIgnoreJmxConstraint(TypeSystem typeSystem, SpringFactory factory) {
 		String name = factory.getFactory().getCanonicalClassName();
-		if (name.toLowerCase().contains("jmx")) {
+		if (aotOptions.isRemoveJmxSupport() && name.toLowerCase().contains("jmx")) {
 			return false;
 		}
 		return true;
