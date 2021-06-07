@@ -89,7 +89,7 @@ public @interface NativeHint {
 	InitializationHint[] initialization() default {};
 
 	/**
-	 * A set of types that have @TypeHint/@ProxyHint/etc. annotations on them that should be pulled in as type hints for this one.
+	 * A set of types that have {@link TypeHint} / {@link JdkProxyHint} / etc. annotations on them that should be pulled in as type hints for this one.
 	 * Using this mechanism a set of TypeHints can be shared by two hints without duplication (e.g. webflux and webmvc).
 	 * @return the types to import
 	 */

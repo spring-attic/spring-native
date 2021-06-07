@@ -41,7 +41,7 @@ It should use class references but string names for classes are allowed if visib
 * `resources` which lists patterns that match resources (including .class files) that should be included in the image.
 * `initialization` which lists classes/packages that should be explicitly initialized at either build-time or run-time.
 There should not really be a trigger specified on hints included `initialization`.
-* `imports` can be useful if two hints share a number of `@TypeHint`/`@ProxyHint`/etc in common.
+* `imports` can be useful if two hints share a number of `@TypeHint`/`@JdkProxyHint`/etc in common.
 For example reactive-web and webmvc may expose a lot of common infrastructure.
 Rather than duplicate those in two places, those info annotations (TypeHint/ProxyHint/etc) can all be placed on a separate type and then `imports` can reference that type to pull them into a particular `@NativeHint`.
 
