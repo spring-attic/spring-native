@@ -98,6 +98,19 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-cloud-starter-sleuth`
 
+[[support-spring-data]]
+=== Spring Data
+
+[IMPORTANT]
+====
+https://docs.spring.io/spring-data/commons/docs/current/reference/html/#repositories.custom-implementations[Custom repository] implementation fragments need to be annotated with `@Component`.
+====
+
+==== Spring Data MongoDB
+
+- https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mapping-usage-references[Lazy loading references] are currently not supported.
+- https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.transactions[Multi Document Transactions] are currently not supported.
+
 [[support-others]]
 === Others
 
