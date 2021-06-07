@@ -149,6 +149,10 @@ public class ConfigurationContributor implements BootstrapContributor {
 		List<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
 		List<String> classProxyNames = new ArrayList<>();
 		for (AotProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
+			if(context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {
+				logger.debug("Cannot reach class proxy target type of: "+classProxyDescriptor);
+				continue;
+			}
 			classProxyNames.add(generateBuildTimeClassProxy(classProxyDescriptor, context));
 		}
 		return classProxyNames;
@@ -170,6 +174,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		// TODO [build time proxies] is this parent OK?
 		URLClassLoader ucl = new URLClassLoader(urls,ConfigurationContributor.class.getClassLoader());
 		logger.debug("Creating build time class proxy for class "+c.getTargetClassType());
+
 		Unloaded<?> unloadedProxy = ProxyGenerator.getProxyBytes(c, ucl);
 		
 		Path primaryProxyFilepath = Paths.get(proxyConfiguration.getProxyClassName().replace(".", "/") + ".class");

@@ -34,6 +34,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
@@ -1075,6 +1076,14 @@ public class TypeProcessor {
 		@Override
 		public boolean addProxy(String... interfaces) {
 			return addProxy(Arrays.asList(interfaces));
+		}
+
+		@Override
+		public void addAotProxy(AotProxyDescriptor proxyDescriptor) {
+
+			HintDeclaration hintDeclaration = new HintDeclaration();
+			hintDeclaration.addProxyDescriptor(proxyDescriptor);
+			proxyHints.add(hintDeclaration);
 		}
 
 		@Override
