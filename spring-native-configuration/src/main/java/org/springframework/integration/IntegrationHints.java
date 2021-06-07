@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -71,15 +71,15 @@ import org.springframework.nativex.type.NativeConfiguration;
 								com.jayway.jsonpath.JsonPath.class
 						})
 		},
-		proxies = {
-				@ProxyHint(
+		jdkProxies = {
+				@JdkProxyHint(
 						types = {
 								org.springframework.integration.gateway.RequestReplyExchanger.class,
 								org.springframework.aop.SpringProxy.class,
 								org.springframework.aop.framework.Advised.class,
 								org.springframework.core.DecoratingProxy.class
 						}),
-				@ProxyHint(
+				@JdkProxyHint(
 						types = {
 								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class,
 								org.springframework.aop.SpringProxy.class,

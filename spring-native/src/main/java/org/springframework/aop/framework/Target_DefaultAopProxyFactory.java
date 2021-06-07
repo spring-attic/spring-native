@@ -17,6 +17,7 @@ package org.springframework.aop.framework;
 
 import java.lang.reflect.Proxy;
 
+import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
 import com.oracle.svm.core.annotate.Alias;
@@ -26,7 +27,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 /**
  * Patch the DefaultAopProxyFactory.createAopProxy() method so that it will look for a class based proxy
  * generated at build time, instead of attempting to generate a class at runtime which will fail. If the class cannot
- * be found, produces a clear @ClassProxyHint indicating what needs including at build time to cause
+ * be found, produces a clear @see {@link AotProxyHint} indicating what needs including at build time to cause
  * Spring Native to create the class based proxy early such that it is included in the packaged application.
  * 
  * @author Andy Clement

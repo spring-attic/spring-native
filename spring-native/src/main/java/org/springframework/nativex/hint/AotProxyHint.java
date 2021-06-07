@@ -26,9 +26,9 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @author Andy Clement
  */
-@Repeatable(ClassProxyHints.class)
+@Repeatable(AotProxyHints.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClassProxyHint {
+public @interface AotProxyHint {
 
 	Class<?> targetClass() default Object.class;
 	

@@ -56,7 +56,7 @@ import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -123,7 +123,7 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 				ByteArraySerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
 	},
-	proxies = @ProxyHint(types = {
+	jdkProxies = @JdkProxyHint(types = {
 			Consumer.class,
 			org.springframework.aop.SpringProxy.class,
 			org.springframework.aop.framework.Advised.class,

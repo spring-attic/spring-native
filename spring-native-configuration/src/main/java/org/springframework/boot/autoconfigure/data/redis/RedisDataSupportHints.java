@@ -20,7 +20,7 @@ import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
 /**
@@ -81,10 +81,10 @@ import org.springframework.nativex.hint.TypeHint;
 						org.springframework.data.redis.core.StringRedisTemplate.class,
 				})
 		,
-		proxies = {
-				@ProxyHint(typeNames = "org.springframework.data.redis.connection.DefaultedRedisConnection"),
-				@ProxyHint(typeNames = "org.springframework.data.redis.connection.ReactiveRedisConnection"),
-				@ProxyHint(typeNames = {
+		jdkProxies = {
+				@JdkProxyHint(typeNames = "org.springframework.data.redis.connection.DefaultedRedisConnection"),
+				@JdkProxyHint(typeNames = "org.springframework.data.redis.connection.ReactiveRedisConnection"),
+				@JdkProxyHint(typeNames = {
 						"org.springframework.data.redis.connection.StringRedisConnection",
 						"org.springframework.data.redis.connection.DecoratedRedisConnection"
 				})
@@ -121,8 +121,8 @@ import org.springframework.nativex.hint.TypeHint;
 						org.springframework.data.redis.repository.query.RedisQueryCreator.class,
 				})
 		},
-		proxies = {
-				@ProxyHint(typeNames = {
+		jdkProxies = {
+				@JdkProxyHint(typeNames = {
 						"org.springframework.data.keyvalue.annotation.KeySpace",
 						"org.springframework.core.annotation.SynthesizedAnnotation"
 				})

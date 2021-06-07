@@ -19,7 +19,7 @@ package org.springframework.security.config.annotation.method.configuration;
 import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
@@ -39,7 +39,7 @@ import org.springframework.security.access.intercept.aopalliance.MethodSecurityM
 @NativeHint(trigger = ReactiveMethodSecuritySelector.class, types = @TypeHint(types= {
 		AutoProxyRegistrar.class,
 		ReactiveMethodSecurityConfiguration.class}))
-@NativeHint(proxies = @ProxyHint(types = {
+@NativeHint(jdkProxies = @JdkProxyHint(types = {
 		org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,
 		org.springframework.core.annotation.SynthesizedAnnotation.class
 }))

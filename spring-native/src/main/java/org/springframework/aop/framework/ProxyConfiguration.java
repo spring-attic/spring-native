@@ -218,7 +218,7 @@ public class ProxyConfiguration {
 
 	public String asHint() {
 		StringBuilder s = new StringBuilder();
-		s.append("@ClassProxyHint(");
+		s.append("@AotProxyHint(");
 		boolean commaNeeded = false;
 		if (targetClass != null) {
 			// Visibility check?

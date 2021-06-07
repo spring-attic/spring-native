@@ -18,7 +18,7 @@ package org.springframework.amqp.rabbit.annotation;
 import org.springframework.amqp.rabbit.connection.ChannelProxy;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -33,7 +33,7 @@ import org.springframework.nativex.hint.TypeHint;
 			RabbitListenerEndpointRegistrar.class,
 			RabbitListenerEndpointRegistry.class
 	}),
-	proxies = @ProxyHint(types = ChannelProxy.class),
+	jdkProxies = @JdkProxyHint(types = ChannelProxy.class),
 	abortIfTypesMissing = true)
 
 public class RabbitHints implements NativeConfiguration { }

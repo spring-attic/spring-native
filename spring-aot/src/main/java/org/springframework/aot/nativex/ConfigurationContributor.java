@@ -39,7 +39,7 @@ import org.springframework.aot.BuildContext;
 import org.springframework.aot.ResourceFile;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.hint.Flag;
@@ -146,16 +146,16 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 	
 	public List<String> generateBuildTimeClassProxies(ConfigurationCollector configurationCollector, BuildContext context) {
-		List<ClassProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
+		List<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
 		List<String> classProxyNames = new ArrayList<>();
-		for (ClassProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
+		for (AotProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
 			classProxyNames.add(generateBuildTimeClassProxy(classProxyDescriptor, context));
 		}
 		return classProxyNames;
 	}
 	
 	@SuppressWarnings("deprecation")
-	private String generateBuildTimeClassProxy(ClassProxyDescriptor cpd, BuildContext context) {
+	private String generateBuildTimeClassProxy(AotProxyDescriptor cpd, BuildContext context) {
 		BuildTimeProxyDescriptor c = cpd.asCPDescriptor();
 		ProxyConfiguration proxyConfiguration = ProxyConfiguration.get(c, null);
 		List<String> classpath = context.getClasspath();

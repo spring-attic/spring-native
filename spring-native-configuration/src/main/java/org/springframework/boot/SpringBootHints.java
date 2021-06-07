@@ -26,7 +26,7 @@ import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
@@ -78,8 +78,8 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory",
 			"org.springframework.nativex.substitutions.boot.NativeSpringBootVersion"
 	}, initTime = InitializationTime.BUILD),
-		proxies = {
-			@ProxyHint(types = {
+		jdkProxies = {
+			@JdkProxyHint(types = {
 					org.springframework.boot.context.properties.ConfigurationProperties.class,
 					org.springframework.core.annotation.SynthesizedAnnotation.class
 			})

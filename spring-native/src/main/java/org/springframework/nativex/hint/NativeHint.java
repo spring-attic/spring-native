@@ -60,14 +60,14 @@ public @interface NativeHint {
 	 * A set of proxy information which indicate which sets of types need a proxy if the trigger is active.
 	 * @return the proxy information
 	 */
-	ProxyHint[] proxies() default {};
+	JdkProxyHint[] jdkProxies() default {};
 
 	/**
 	 * A set of class proxy information which describe a class based proxy that should be created at build time
 	 * if the trigger is active.
 	 * @return the class proxy information
 	 */
-	ClassProxyHint[] classProxies() default {};
+	AotProxyHint[] aotProxies() default {};
 	
 	/**
 	 * A set of serialization hints indicating which types will be (de)serialized if the trigger is active.

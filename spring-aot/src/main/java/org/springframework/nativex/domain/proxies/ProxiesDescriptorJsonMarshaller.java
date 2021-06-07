@@ -88,8 +88,8 @@ public class ProxiesDescriptorJsonMarshaller {
 		return pds;
 	}
 	
-	private static ProxyDescriptor toProxyDescriptor(JSONArray array) throws Exception {
-		ProxyDescriptor pd = new ProxyDescriptor();
+	private static JdkProxyDescriptor toProxyDescriptor(JSONArray array) throws Exception {
+		JdkProxyDescriptor pd = new JdkProxyDescriptor();
 		List<String> interfaces = new ArrayList<>();
 		for (int i=0;i<array.length();i++) {
 			interfaces.add(array.getString(i));

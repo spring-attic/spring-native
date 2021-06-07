@@ -33,18 +33,18 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.ClassProxyHint;
+import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
@@ -110,14 +110,14 @@ public class HintTests {
 		List<HintApplication> hints = testClass.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
-		List<ProxyDescriptor> proxies= hint.getProxyDescriptors();
+		List<JdkProxyDescriptor> proxies= hint.getProxyDescriptors();
 		assertEquals(1,proxies.size());
 		String[] types = proxies.get(0).getTypes().toArray(new String[] {}); 
 		assertEquals("java.lang.String",types[0]);
 		assertEquals("java.lang.Integer",types[1]);
 	}
 
-	@NativeHint(proxies = { @ProxyHint(types = { String.class,Integer.class }) })
+	@NativeHint(jdkProxies = { @JdkProxyHint(types = { String.class,Integer.class }) })
 	static class TestClass2 {
 	}
 
@@ -253,17 +253,17 @@ public class HintTests {
 		List<HintApplication> hints = t.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
-		List<ProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		List<JdkProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
 		assertThat(proxyDescriptors).hasSize(1);
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
-		ClassProxyDescriptor cpd = (ClassProxyDescriptor)proxyDescriptors.get(0);
+		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
 		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.io.Serializable");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
 	@NativeHint(
-		classProxies = @ClassProxyHint(targetClass = String.class, interfaces = Serializable.class, proxyFeatures = ProxyBits.EXPOSE_PROXY)
+		aotProxies = @AotProxyHint(targetClass = String.class, interfaces = Serializable.class, proxyFeatures = ProxyBits.EXPOSE_PROXY)
 	)
 	static class TestClass8 {
 	}
@@ -274,17 +274,17 @@ public class HintTests {
 		List<HintApplication> hints = t.getApplicableHints();
 		assertEquals(1,hints.size());
 		HintApplication hint = hints.get(0);
-		List<ProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		List<JdkProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
 		assertThat(proxyDescriptors).hasSize(1);
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
-		ClassProxyDescriptor cpd = (ClassProxyDescriptor)proxyDescriptors.get(0);
+		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
 		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
 	@NativeHint(
-		classProxies = @ClassProxyHint(targetClassName = "java.lang.String", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
+		aotProxies = @AotProxyHint(targetClassName = "java.lang.String", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
 	)
 	static class TestClass9 {
 	}

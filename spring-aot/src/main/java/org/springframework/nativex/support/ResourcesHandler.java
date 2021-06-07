@@ -44,7 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -184,8 +184,8 @@ public class ResourcesHandler extends Handler {
 					jniReflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds),
 							FieldDescriptor.toStringArray(fds), true, accessFlags);
 				}
-				List<ProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
-				for (ProxyDescriptor pd : proxyDescriptors) {
+				List<JdkProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
+				for (JdkProxyDescriptor pd : proxyDescriptors) {
 					logger.debug("Registering proxy descriptor: " + pd);
 					dynamicProxiesHandler.addProxy(pd);
 				}
@@ -1830,7 +1830,7 @@ public class ResourcesHandler extends Handler {
 			initializationHandler.registerInitializationDescriptor(initializationDescriptor);
 		}
 		optionHandler.addOptions(accessRequestor.getRequestedOptions());
-		for (ProxyDescriptor proxyDescriptor : accessRequestor.getRequestedProxies()) {
+		for (JdkProxyDescriptor proxyDescriptor : accessRequestor.getRequestedProxies()) {
 			dynamicProxiesHandler.addProxy(proxyDescriptor);
 		}
 		for (org.springframework.nativex.type.ResourcesDescriptor rd : accessRequestor.getRequestedResources()) {

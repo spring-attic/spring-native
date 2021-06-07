@@ -23,7 +23,7 @@ import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -53,33 +53,33 @@ import org.springframework.nativex.type.NativeConfiguration;
 				ModularBatchConfiguration.class,
 				SimpleBatchConfiguration.class,
 				ScopeConfiguration.class
-		})}, proxies = {
-		@ProxyHint(typeNames = {
+		})}, jdkProxies = {
+		@JdkProxyHint(typeNames = {
 				"org.springframework.batch.core.repository.JobRepository",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyHint(typeNames = {
+		@JdkProxyHint(typeNames = {
 				"org.springframework.batch.core.launch.JobLauncher",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyHint(typeNames = {
+		@JdkProxyHint(typeNames = {
 				"org.springframework.batch.core.configuration.JobRegistry",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyHint(typeNames = {
+		@JdkProxyHint(typeNames = {
 				"org.springframework.batch.core.explore.JobExplorer",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyHint(typeNames = {
+		@JdkProxyHint(typeNames = {
 				"org.springframework.transaction.PlatformTransactionManager",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
-		@ProxyHint(typeNames = {
+		@JdkProxyHint(typeNames = {
 				"java.util.concurrent.ConcurrentMap", 
 				"java.io.Serializable",
 				"java.util.Map",

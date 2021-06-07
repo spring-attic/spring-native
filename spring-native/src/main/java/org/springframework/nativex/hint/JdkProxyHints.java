@@ -20,11 +20,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Repeatable annotation container for {@link ProxyHint} annotations.
+ * Repeatable annotation container for {@link JdkProxyHint} annotations.
  * 
  * @author Andy Clement
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProxyHints {
-	ProxyHint[] value();
+public @interface JdkProxyHints {
+	JdkProxyHint[] value();
 }

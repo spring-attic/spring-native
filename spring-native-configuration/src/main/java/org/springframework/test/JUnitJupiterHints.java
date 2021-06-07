@@ -3,7 +3,7 @@ package org.springframework.test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -23,9 +23,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 				org.springframework.test.context.BootstrapWith.class,
 				SpringBootConfiguration.class
 		}, access = AccessBits.ANNOTATION)
-}, proxies = {
-		@ProxyHint(types = { org.springframework.test.context.BootstrapWith.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
-		@ProxyHint(types = { org.springframework.boot.test.context.SpringBootTest.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
+}, jdkProxies = {
+		@JdkProxyHint(types = { org.springframework.test.context.BootstrapWith.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
+		@JdkProxyHint(types = { org.springframework.boot.test.context.SpringBootTest.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 })
 public class JUnitJupiterHints implements NativeConfiguration {
 }

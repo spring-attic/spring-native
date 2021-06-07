@@ -297,12 +297,12 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = ValidatorImpl.class,
-		proxies = @ProxyHint(types = {
+		jdkProxies = @JdkProxyHint(types = {
 				javax.validation.Validator.class,
 				org.springframework.aop.SpringProxy.class,
 				org.springframework.aop.framework.Advised.class,

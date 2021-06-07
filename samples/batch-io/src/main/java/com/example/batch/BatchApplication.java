@@ -3,9 +3,9 @@ package com.example.batch;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.nativex.hint.ClassProxyHint;
+import org.springframework.nativex.hint.AotProxyHint;
 
-@ClassProxyHint(targetClass=com.example.batch.ItemReaderListener.class, interfaces={org.springframework.aop.scope.ScopedObject.class, java.io.Serializable.class, org.springframework.aop.framework.AopInfrastructureBean.class})
+@AotProxyHint(targetClass=com.example.batch.ItemReaderListener.class, interfaces={org.springframework.aop.scope.ScopedObject.class, java.io.Serializable.class, org.springframework.aop.framework.AopInfrastructureBean.class})
 @EnableBatchProcessing
 @SpringBootApplication
 public class BatchApplication {

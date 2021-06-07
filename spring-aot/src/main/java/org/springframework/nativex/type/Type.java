@@ -49,20 +49,20 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.ClassProxyHint;
-import org.springframework.nativex.hint.ClassProxyHints;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.AotProxyHints;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationHints;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.NativeHints;
 import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.nativex.hint.ProxyHint;
-import org.springframework.nativex.hint.ProxyHints;
+import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.JdkProxyHints;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.ResourcesHints;
 import org.springframework.nativex.hint.SerializationHint;
@@ -1752,18 +1752,18 @@ public class Type {
 				} else if (name.equals(TypeHints.class.getName())) {
 					defaultHintPopulated=true;
 					processRepeatableAnnotationList(an, anno -> unpackTypeHint(anno, defaultHintDeclaration));
-				} else if (name.equals(ProxyHint.class.getName())) {
+				} else if (name.equals(JdkProxyHint.class.getName())) {
 					defaultHintPopulated=true;
 					unpackProxyHint(an, defaultHintDeclaration);
-				} else if (name.equals(ProxyHints.class.getName())) {
+				} else if (name.equals(JdkProxyHints.class.getName())) {
 					defaultHintPopulated=true;
 					processRepeatableAnnotationList(an, anno -> unpackProxyHint(anno, defaultHintDeclaration));
-				} else if (name.equals(ClassProxyHint.class.getName())) {
+				} else if (name.equals(AotProxyHint.class.getName())) {
 					defaultHintPopulated=true;
-					unpackClassProxyHint(an, defaultHintDeclaration);
-				} else if (name.equals(ClassProxyHints.class.getName())) {
+					unpackAotProxyHint(an, defaultHintDeclaration);
+				} else if (name.equals(AotProxyHints.class.getName())) {
 					defaultHintPopulated=true;
-					processRepeatableAnnotationList(an, anno -> unpackClassProxyHint(anno, defaultHintDeclaration));
+					processRepeatableAnnotationList(an, anno -> unpackAotProxyHint(anno, defaultHintDeclaration));
 				} else if (name.equals(ResourceHint.class.getName())) {
 					defaultHintPopulated=true;
 					unpackResourceHint(an, defaultHintDeclaration);
@@ -1802,10 +1802,10 @@ public class Type {
 					processHintList(value, anno -> unpackTypeHint(anno,ch));
 				} else if (key.equals("imports")) {
 					processImportHints(ch, value);
-				} else if (key.equals("proxies")) {
+				} else if (key.equals("jdkProxies")) {
 					processHintList(value, anno -> unpackProxyHint(anno,ch));
-				} else if (key.equals("classProxies")) {
-					processHintList(value, anno -> unpackClassProxyHint(anno,ch));
+				} else if (key.equals("aotProxies")) {
+					processHintList(value, anno -> unpackAotProxyHint(anno,ch));
 				} else if (key.equals("resources")) {
 					processHintList(value, anno -> unpackResourceHint(anno,ch));
 				} else if (key.equals("initialization")) {
@@ -1861,9 +1861,9 @@ public class Type {
 						unpackResourceHint(an, ch);
 					} else if (annotationClassname.equals(ResourcesHints.class.getName())) {
 						processRepeatableAnnotationList(an, anno -> unpackResourceHint(anno, ch));
-					} else if (annotationClassname.equals(ProxyHint.class.getName())) {
+					} else if (annotationClassname.equals(JdkProxyHint.class.getName())) {
 						unpackProxyHint(an, ch);
-					} else if (annotationClassname.equals(ProxyHints.class.getName())) {
+					} else if (annotationClassname.equals(JdkProxyHints.class.getName())) {
 						processRepeatableAnnotationList(an, anno -> unpackProxyHint(anno, ch));
 					} else if (annotationClassname.equals(InitializationHint.class.getName())) {
 						unpackInitializationHint(an, ch);
@@ -1953,7 +1953,7 @@ public class Type {
 		}
 	}
 
-	private void unpackClassProxyHint(AnnotationNode typeInfo, HintDeclaration ch) {
+	private void unpackAotProxyHint(AnnotationNode typeInfo, HintDeclaration ch) {
 		List<Object> values = typeInfo.values;
 		String targetClassName = "java.lang.Object";
 		List<org.objectweb.asm.Type> interfaces = new ArrayList<>();
@@ -1998,7 +1998,7 @@ public class Type {
 			}
 		}
 		if (!typeMissing) {
-			ClassProxyDescriptor cpd = new ClassProxyDescriptor(
+			AotProxyDescriptor cpd = new AotProxyDescriptor(
 					targetClassName,
 					proxyInterfaceTypes,
 					proxyFeatures
@@ -2158,7 +2158,7 @@ public class Type {
 			throw new IllegalStateException("ERROR: [Limitation] Don't mix typenames and explicit type references in a ProxyHint on type "+getDottedName());
 		}
 		if (!typeMissing) {
-			ch.addProxyDescriptor(new ProxyDescriptor(proxyTypes));
+			ch.addProxyDescriptor(new JdkProxyDescriptor(proxyTypes));
 		}
 	}
 

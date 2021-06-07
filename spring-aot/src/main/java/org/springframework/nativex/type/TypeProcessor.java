@@ -34,7 +34,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.CollectionUtils;
@@ -1067,7 +1067,7 @@ public class TypeProcessor {
 		public boolean addProxy(List<String> interfaces) {
 
 			HintDeclaration hintDeclaration = new HintDeclaration();
-			hintDeclaration.addProxyDescriptor(new ProxyDescriptor(interfaces));
+			hintDeclaration.addProxyDescriptor(new JdkProxyDescriptor(interfaces));
 			proxyHints.add(hintDeclaration);
 			return true;
 		}

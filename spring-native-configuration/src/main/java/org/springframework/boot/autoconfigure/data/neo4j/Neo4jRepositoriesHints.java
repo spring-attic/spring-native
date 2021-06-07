@@ -27,7 +27,7 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
 import org.springframework.data.neo4j.repository.support.SimpleNeo4jRepository;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
@@ -55,8 +55,8 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.data.neo4j.core.mapping.callback.OptimisticLockingSupport"
 		}
 	) },
-	proxies = {
-		@ProxyHint(typeNames = {
+	jdkProxies = {
+		@JdkProxyHint(typeNames = {
 			"org.springframework.data.annotation.Id",
 			"org.springframework.core.annotation.SynthesizedAnnotation"
 		})

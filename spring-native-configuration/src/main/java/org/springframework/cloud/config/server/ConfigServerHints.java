@@ -54,7 +54,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -111,8 +111,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 		}, initTime = InitializationTime.BUILD)
 }, resources = {
 		@ResourceHint(patterns = "org.eclipse.jgit.internal.JGitText", isBundle = true)
-}, proxies = {
-		@ProxyHint(types = {PathVariable.class, SynthesizedAnnotation.class})
+}, jdkProxies = {
+		@JdkProxyHint(types = {PathVariable.class, SynthesizedAnnotation.class})
 })
 public class ConfigServerHints implements NativeConfiguration {
 }

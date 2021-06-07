@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -55,7 +55,7 @@ public class HintDeclarationAssert extends AbstractAssert<HintDeclarationAssert,
 
 	public HintDeclarationAssert containsProxyFor(Class<?> type) {
 
-		if (!actual.getProxyDescriptors().stream().map(ProxyDescriptor::getTypes)
+		if (!actual.getProxyDescriptors().stream().map(JdkProxyDescriptor::getTypes)
 				.anyMatch(types -> type.getName().equals(types.get(0)))) {
 
 			failWithMessage("Expected HintDeclaration to contain proxy config for %s but was not in %s",
@@ -65,10 +65,10 @@ public class HintDeclarationAssert extends AbstractAssert<HintDeclarationAssert,
 	}
 
 	public HintDeclarationAssert containsProxy(Class<?>... interfaces) {
-		return containsProxy(ProxyDescriptor.of(Arrays.stream(interfaces).map(Class::getName).collect(Collectors.toList())));
+		return containsProxy(JdkProxyDescriptor.of(Arrays.stream(interfaces).map(Class::getName).collect(Collectors.toList())));
 	}
 
-	public HintDeclarationAssert containsProxy(ProxyDescriptor proxyDescriptor) {
+	public HintDeclarationAssert containsProxy(JdkProxyDescriptor proxyDescriptor) {
 
 		Assertions.assertThat(actual.getProxyDescriptors()).contains(proxyDescriptor);
 		return this;

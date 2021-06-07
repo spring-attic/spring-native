@@ -35,9 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ClassProxyDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -65,7 +65,7 @@ public class ConfigurationCollector {
 
 	private ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
-	private List<ClassProxyDescriptor> classProxyDescriptors = new ArrayList<>();
+	private List<AotProxyDescriptor> classProxyDescriptors = new ArrayList<>();
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 	
@@ -87,7 +87,7 @@ public class ConfigurationCollector {
 		return proxiesDescriptor;
 	}
 
-	public List<ClassProxyDescriptor> getClassProxyDescriptors() {
+	public List<AotProxyDescriptor> getClassProxyDescriptors() {
 		return classProxyDescriptors;
 	}
 
@@ -136,11 +136,11 @@ public class ConfigurationCollector {
 				return false;
 			}
 		}
-		proxiesDescriptor.add(ProxyDescriptor.of(interfaceNames));
+		proxiesDescriptor.add(JdkProxyDescriptor.of(interfaceNames));
 		return true;
 	}
 
-	public boolean addClassProxy(ClassProxyDescriptor cpd, boolean verify) {
+	public boolean addClassProxy(AotProxyDescriptor cpd, boolean verify) {
 		if (verify) {
 			if (ts.resolveName(cpd.getTargetClassType(), true)==null) {
 				return false;

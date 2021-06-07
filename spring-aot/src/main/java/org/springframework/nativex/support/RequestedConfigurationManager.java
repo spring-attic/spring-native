@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.MethodDescriptor;
@@ -44,7 +44,7 @@ public class RequestedConfigurationManager {
 	private Map<String, List<MethodDescriptor>> requestedMethodAccesses = new HashMap<>();
 	private Map<String, List<FieldDescriptor>> requestedFieldAccesses = new HashMap<>();
 	
-	private List<ProxyDescriptor> requestedProxies = new ArrayList<>();
+	private List<JdkProxyDescriptor> requestedProxies = new ArrayList<>();
 	
 	private List<ResourcesDescriptor> requestedResources = new ArrayList<>();
 
@@ -111,8 +111,8 @@ public class RequestedConfigurationManager {
 		requestedTypeAccesses.put(type, newAccess);
 	}
 	
-	public void requestProxyDescriptors(List<ProxyDescriptor> proxyDescriptors) {
-		for (ProxyDescriptor pd: proxyDescriptors) {
+	public void requestProxyDescriptors(List<JdkProxyDescriptor> proxyDescriptors) {
+		for (JdkProxyDescriptor pd: proxyDescriptors) {
 			requestedProxies.add(pd);
 		}
 	}
@@ -141,7 +141,7 @@ public class RequestedConfigurationManager {
 		return requestedTypeAccesses.entrySet();
 	}
 
-	public List<ProxyDescriptor> getRequestedProxies() {
+	public List<JdkProxyDescriptor> getRequestedProxies() {
 		return requestedProxies;
 	}
 	

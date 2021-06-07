@@ -19,7 +19,7 @@ package io.lettuce;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = io.lettuce.core.RedisClient.class,
@@ -84,8 +84,8 @@ import org.springframework.nativex.hint.TypeHint;
 						typeNames = "io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerLimitField",
 						fields = @FieldHint(name = "producerLimit", allowUnsafeAccess = true))
 		},
-		proxies = {
-				@ProxyHint(typeNames = {
+		jdkProxies = {
+				@JdkProxyHint(typeNames = {
 						"io.lettuce.core.api.sync.RedisCommands", "io.lettuce.core.cluster.api.sync.RedisClusterCommands"
 				})
 		}

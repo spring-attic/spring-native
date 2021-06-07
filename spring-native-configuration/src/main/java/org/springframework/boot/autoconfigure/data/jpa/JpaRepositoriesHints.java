@@ -21,7 +21,7 @@ import org.springframework.data.jpa.repository.support.JpaEvaluationContextExten
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
@@ -42,7 +42,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
 				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE)
 		,
-		proxies = @ProxyHint(typeNames = {
+		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",

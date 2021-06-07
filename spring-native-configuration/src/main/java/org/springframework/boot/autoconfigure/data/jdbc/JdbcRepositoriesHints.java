@@ -29,7 +29,7 @@ import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback
 import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ProxyHint;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
 /**
@@ -48,7 +48,7 @@ import org.springframework.nativex.hint.TypeHint;
 				BeforeDeleteCallback.class,
 				BeforeSaveCallback.class,
 				RelationalAuditingCallback.class
-		}), proxies = @ProxyHint(typeNames = {
+		}), jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jdbc.core.convert.RelationResolver",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",

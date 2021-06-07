@@ -29,13 +29,13 @@ class ProxiesDescriptorJsonConverter {
 
 	public JSONArray toJsonArray(ProxiesDescriptor metadata) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		for (ProxyDescriptor cd : metadata.getProxyDescriptors()) {
+		for (JdkProxyDescriptor cd : metadata.getProxyDescriptors()) {
 				jsonArray.put(toJsonArray(cd));
 		}
 		return jsonArray;
 	}
 
-	public JSONArray toJsonArray(ProxyDescriptor pd) throws Exception {
+	public JSONArray toJsonArray(JdkProxyDescriptor pd) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		List<String> interfaces = pd.getTypes();
 		for (String intface: interfaces) {

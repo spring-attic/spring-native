@@ -19,7 +19,7 @@ package org.springframework.nativex;
 import org.junit.jupiter.api.Test;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -82,7 +82,7 @@ public class DescriptorTests {
 
 	@Test
 	public void proxiesDescriptor() {
-		ProxyDescriptor d = new ProxyDescriptor(Collections.singletonList("java.io.Serializable"));
+		JdkProxyDescriptor d = new JdkProxyDescriptor(Collections.singletonList("java.io.Serializable"));
 		assertThat(d.getTypes()).hasSize(1).contains("java.io.Serializable");
 		ProxiesDescriptor pd = new ProxiesDescriptor();
 		pd.add(d);

@@ -24,14 +24,14 @@ import java.util.List;
  *
  * @author Andy Clement
  */
-public class ProxyDescriptor implements Comparable<ProxyDescriptor> {
+public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
 	protected List<String> types; // e.g. java.io.Serializable
 
-	ProxyDescriptor() {
+	JdkProxyDescriptor() {
 	}
 
-	public ProxyDescriptor(List<String> types) {
+	public JdkProxyDescriptor(List<String> types) {
 		this.types = new ArrayList<>(types);
 	}
 
@@ -43,7 +43,7 @@ public class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ProxyDescriptor other = (ProxyDescriptor) o;
+		JdkProxyDescriptor other = (JdkProxyDescriptor) o;
 		boolean result = true;
 		result = result && nullSafeEquals(this.types, other.types);
 		return result;
@@ -83,7 +83,7 @@ public class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 	}
 
 	@Override
-	public int compareTo(ProxyDescriptor o) {
+	public int compareTo(JdkProxyDescriptor o) {
 		List<String> l = this.types;
 		List<String> r = o.types;
 		if (l.size() != r.size()) {
@@ -98,8 +98,8 @@ public class ProxyDescriptor implements Comparable<ProxyDescriptor> {
 		return 0; // equal!
 	}
 
-	public static ProxyDescriptor of(List<String> interfaces) {
-		ProxyDescriptor pd = new ProxyDescriptor();
+	public static JdkProxyDescriptor of(List<String> interfaces) {
+		JdkProxyDescriptor pd = new JdkProxyDescriptor();
 		pd.setInterfaces(interfaces);
 		return pd;
 	}

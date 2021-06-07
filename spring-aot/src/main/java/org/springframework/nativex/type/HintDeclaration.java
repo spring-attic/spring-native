@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
-import org.springframework.nativex.domain.proxies.ProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class HintDeclaration {
 
 	private Set<String> serializationTypes = new HashSet<>();
 	
-	private List<ProxyDescriptor> proxyDescriptor = new ArrayList<>();
+	private List<JdkProxyDescriptor> proxyDescriptor = new ArrayList<>();
 
 	private List<ResourcesDescriptor> resourceDescriptors = new ArrayList<>();
 
@@ -134,11 +134,11 @@ public class HintDeclaration {
 		follow = b;
 	}
 
-	public void addProxyDescriptor(ProxyDescriptor pd) {
+	public void addProxyDescriptor(JdkProxyDescriptor pd) {
 		proxyDescriptor.add(pd);
 	}
 	
-	public List<ProxyDescriptor> getProxyDescriptors() {
+	public List<JdkProxyDescriptor> getProxyDescriptors() {
 		return proxyDescriptor;
 	}
 	

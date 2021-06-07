@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  */
 public class ProxiesDescriptor {
 
-	private final List<ProxyDescriptor> proxyDescriptors;
+	private final List<JdkProxyDescriptor> proxyDescriptors;
 
 	public ProxiesDescriptor() {
 		this.proxyDescriptors = new ArrayList<>();
@@ -37,13 +37,13 @@ public class ProxiesDescriptor {
 		this.proxyDescriptors = new ArrayList<>(metadata.proxyDescriptors);
 	}
 
-	public List<ProxyDescriptor> getProxyDescriptors() {
+	public List<JdkProxyDescriptor> getProxyDescriptors() {
 		return this.proxyDescriptors;
 	}
 
-	public void add(ProxyDescriptor proxyDescriptor) {
+	public void add(JdkProxyDescriptor proxyDescriptor) {
 		boolean alreadyExists = false;
-		for (ProxyDescriptor pd: proxyDescriptors) {
+		for (JdkProxyDescriptor pd: proxyDescriptors) {
 			if (pd.equals(proxyDescriptor)) {
 				alreadyExists = true;
 			}

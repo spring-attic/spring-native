@@ -26,13 +26,13 @@ import org.springframework.nativex.hint.ProxyBits;
  * 
  * @author Andy Clement
  */
-public class ClassProxyDescriptor extends ProxyDescriptor {
+public class AotProxyDescriptor extends JdkProxyDescriptor {
 	
 	private final String targetClassName;
 
 	private final int proxyFeatures;
 	
-	public ClassProxyDescriptor(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
+	public AotProxyDescriptor(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
 		super(interfaceNames);
 		this.targetClassName = targetClassName;
 		this.proxyFeatures = proxyFeatures;
@@ -78,8 +78,8 @@ public class ClassProxyDescriptor extends ProxyDescriptor {
 	}
 	
 	public boolean equals(Object other) {
-		if (other instanceof ClassProxyDescriptor) {
-			ClassProxyDescriptor that = (ClassProxyDescriptor)other;
+		if (other instanceof AotProxyDescriptor) {
+			AotProxyDescriptor that = (AotProxyDescriptor)other;
 			if (!that.getTargetClassType().equals(getTargetClassType())) {
 				return false;
 			}
