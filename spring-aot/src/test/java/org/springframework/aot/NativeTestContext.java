@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
@@ -41,6 +42,7 @@ public class NativeTestContext implements NativeContext {
 	private final TypeSystem typeSystem;
 
 	MultiValueMap<String, List<String>> proxies;
+	MultiValueMap<String, AotProxyDescriptor> classProxies;
 	MultiValueMap<String, AccessDescriptor> reflection;
 	Set<Type> builtTimeInit;
 	Set<String> resources;
@@ -69,6 +71,11 @@ public class NativeTestContext implements NativeContext {
 	@Override
 	public boolean addProxy(String... interfaces) {
 		return addProxy(Arrays.asList(interfaces));
+	}
+
+	@Override
+	public void addAotProxy(AotProxyDescriptor proxyDescriptor) {
+		classProxies.add(proxyDescriptor.getTargetClassType(), proxyDescriptor);
 	}
 
 	@Override

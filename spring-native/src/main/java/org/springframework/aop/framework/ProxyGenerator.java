@@ -147,7 +147,9 @@ public class ProxyGenerator {
 					}
 				}
 			}
-			doValidateClass(proxySuperClass.getSuperclass(), proxyClassLoader);
+			if(proxySuperClass.getSuperclass() != null) { // required?
+				doValidateClass(proxySuperClass.getSuperclass(), proxyClassLoader);
+			}
 		}
 	}
 

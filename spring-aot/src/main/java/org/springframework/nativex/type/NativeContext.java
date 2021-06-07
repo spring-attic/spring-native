@@ -19,13 +19,14 @@ package org.springframework.nativex.type;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 
 /**
  * Allows plugins to the native image build process to participate in programmatic analysis of the application
  * and call back into the system to register proxies/reflective-access/etc.
- * 
+ *
  * @author Andy Clement
  * @author Christoph Strobl
  */
@@ -34,6 +35,26 @@ public interface NativeContext {
 	boolean addProxy(List<String> interfaces);
 
 	boolean addProxy(String... interfaces);
+
+	/**
+	 * Add a {@link org.springframework.nativex.domain.proxies.AotProxyDescriptor} for the given type (dotted type name).
+	 *
+	 * @param dottedClassName the dotted class name (eg. com.example.ToBeProxied).
+	 * @param interfaces must not be {@literal null}.
+	 * @param proxyFeatures the feature {@link org.springframework.nativex.hint.ProxyBits bits}.
+	 * @since 0.10
+	 */
+	default void addAotProxy(String dottedClassName, List<String> interfaces, int proxyFeatures) {
+		addAotProxy(new AotProxyDescriptor(dottedClassName, interfaces, proxyFeatures));
+	}
+
+	/**
+	 * Add the given {@link AotProxyDescriptor}.
+	 *
+	 * @param proxyDescriptor must not be {@literal null}.
+	 * @since 0.10
+	 */
+	void addAotProxy(AotProxyDescriptor proxyDescriptor);
 
 	TypeSystem getTypeSystem();
 
@@ -87,5 +108,4 @@ public interface NativeContext {
 
 	// TODO Should probably be named addResource and provide a isBundle parameter
 	void addResourceBundle(String string);
-
 }
