@@ -114,6 +114,7 @@ https://docs.spring.io/spring-data/commons/docs/current/reference/html/#reposito
 [[support-others]]
 === Others
 
+* https://micrometer.io/[Micrometer]
 * Lombok
 * Spring Kafka
 * Spring Session (Redis and JDBC)
