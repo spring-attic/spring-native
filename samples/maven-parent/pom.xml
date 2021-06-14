@@ -24,8 +24,7 @@
 		<native.build.args/>
 
 		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
-		<!-- TODO Bring back "paketobuildpacks/builder:tiny" before 0.10.0 release -->
-		<builder>dmikusa/graalvm-tiny</builder>
+		<builder>paketobuildpacks/builder:tiny</builder>
 
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 	</properties>
