@@ -58,7 +58,7 @@ TIP: The easiest way to start a new native Spring Boot project is to go to https
 
 include::getting-started-buildpacks.adoc[]
 
-include::getting-started-native-buildtools.adoc[]
+include::getting-started-native-build-tools.adoc[]
 
 include::support.adoc[]
 

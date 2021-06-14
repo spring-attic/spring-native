@@ -1,5 +1,5 @@
 [[getting-started-native-build-tools]]
-=== Getting started with native build tools
+=== Getting started with Native Build Tools
 
 This section gives you a practical overview of building a Spring Boot native application using the {graalvm-native-buildtools}[GraalVM native build tools].
 This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
