@@ -41,4 +41,10 @@ public class ResourcesDescriptor {
 		return "RD[patterns="+Arrays.asList(patterns)+",isBundle="+isBundle+"]";
 	}
 
+	public static ResourcesDescriptor ofType(String typename) {
+		String pattern = typename.replace(".","/")+".class";
+		String[] patterns = new String[] {pattern};
+		return new ResourcesDescriptor(patterns, false);
+	}
+
 }

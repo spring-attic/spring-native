@@ -156,6 +156,10 @@ public class ResourcesHandler extends Handler {
 					String typename = dependantType.getKey();
 					AccessDescriptor ad = dependantType.getValue();
 					logger.debug("  fixed type registered " + typename + " with " + ad);
+					if (AccessBits.isResourceAccessRequired(ad.getAccessBits()) && !typename.contains("[]")) {
+						org.springframework.nativex.type.ResourcesDescriptor resourcesDescriptor = org.springframework.nativex.type.ResourcesDescriptor.ofType(typename);
+						registerResourcesDescriptor(resourcesDescriptor);
+					}
 					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
 					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
@@ -1914,10 +1918,13 @@ public class ResourcesHandler extends Handler {
 			}
 			*/
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
-				collector.addResource(
-					dname.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class", false);
+				collector.addResource(fromTypenameToClassResource(dname), false);
 			}
 		}
+	}
+	
+	private String fromTypenameToClassResource(String name) {
+		return name.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class";
 	}
 	
 	private Flag[] filterFlags(Flag[] flags, Flag... toFilter) {
