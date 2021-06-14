@@ -17,6 +17,7 @@
 package org.springframework.hateoas.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,17 +37,24 @@ import org.springframework.hateoas.server.core.EvoInflectorLinkRelationProvider;
 import org.springframework.hateoas.server.core.LastInvocationAware;
 import org.springframework.hateoas.server.core.Relation;
 import org.springframework.hateoas.server.mvc.UriComponentsContributor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ProxyBits;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
+import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.plugin.PluginHints;
 import org.springframework.util.StringUtils;
 
 
@@ -68,6 +76,7 @@ import org.springframework.util.StringUtils;
 		types = {
 				@TypeHint(types = {
 
+						org.springframework.stereotype.Controller.class,
 						HypermediaType.class,
 						ExposesResourceFor.class,
 						RepresentationModelAssembler.class,
@@ -85,13 +94,30 @@ import org.springframework.util.StringUtils;
 						AffordanceModel.class,
 						RestTemplateHateoasConfiguration.class,
 				}, access = AccessBits.ALL),
+				@TypeHint(typeNames = {
+						"org.atteo.evo.inflector.English",
+				}, access = AccessBits.ALL),
 				@TypeHint(
 						types = CollectionModel.class,
 						fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true)
 				)
 		},
+		initialization = {
+				@InitializationHint(types = {org.springframework.hateoas.MediaTypes.class, org.springframework.util.MimeTypeUtils.class}, initTime = InitializationTime.BUILD)
+		},
+		jdkProxies = {
+				@JdkProxyHint(typeNames = {"java.util.List", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.PathVariable", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.ModelAttribute", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.stereotype.Controller", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.ControllerAdvice", "org.springframework.core.annotation.SynthesizedAnnotation"}),
+				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestHeader", "org.springframework.core.annotation.SynthesizedAnnotation"})
+		},
 		imports = {
-				JacksonHints.class
+				PluginHints.class,
+				JacksonHints.class,
 		}
 )
 public class HateoasHints implements NativeConfiguration {
@@ -103,14 +129,20 @@ public class HateoasHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 
+		if(!typeSystem.canResolve("org/springframework/hateoas/config/EnableHypermediaSupport")) {
+			return Collections.emptyList();
+		}
+
 		Set<String> hypermediaFormats = computeConfiguredHypermediaFormats(typeSystem);
 
 		List<HintDeclaration> hints = new ArrayList<>();
+		hints.addAll(computePlugins(typeSystem));
 
 		hints.addAll(computeAtConfigurationClasses(typeSystem, hypermediaFormats));
 		hints.addAll(computeRepresentationModels(typeSystem));
 		hints.addAll(computeEntityLinks(typeSystem));
 		hints.addAll(computeJacksonMappings(typeSystem, hypermediaFormats));
+		hints.addAll(computeControllerProxies(typeSystem));
 
 		return hints;
 	}
@@ -146,7 +178,6 @@ public class HateoasHints implements NativeConfiguration {
 				.collect(Collectors.toSet());
 	}
 
-
 	private List<HintDeclaration> computeAtConfigurationClasses(TypeSystem typeSystem, Set<String> hypermediaFormats) {
 
 		return TypeProcessor.namedProcessor("HateoasHints - Configuration Classes")
@@ -173,7 +204,6 @@ public class HateoasHints implements NativeConfiguration {
 				.use(typeSystem)
 				.toProcessTypesMatching(type -> type.implementsInterface(ENTITY_LINKS, true));
 	}
-
 
 	/**
 	 * Use {@link org.springframework.nativex.type.Type types} that extend {@literal org.springframework.hateoas.RepresentationModel}
@@ -204,6 +234,29 @@ public class HateoasHints implements NativeConfiguration {
 				});
 	}
 
+	/**
+	 * Create proxies for all {@link org.springframework.stereotype.Controller} classes and the return types of their methods
+	 * annotated with {@link org.springframework.web.bind.annotation.RequestMapping}.
+	 *
+	 * @param typeSystem must not be {@literal null}.
+	 * @return never {@literal null}.
+	 */
+	List<HintDeclaration> computeControllerProxies(TypeSystem typeSystem) {
+
+		return typeSystem.scanUserCodeDirectoriesAndSpringJars(HateoasHints::isWebControllerProxyCandidate)
+				.map(type -> {
+
+					HintDeclaration hint = new HintDeclaration();
+					hint.addProxyDescriptor(lastInvocationAwareClassProxyDescriptor(type.getDottedName()));
+					type.getMethods().stream().filter(Method::isAtMapping).forEach(method -> {
+						hint.addProxyDescriptor(lastInvocationAwareClassProxyDescriptor(method.getReturnType().getDottedName()));
+					});
+					return hint;
+				})
+				.collect(Collectors.toList());
+	}
+
+
 	List<HintDeclaration> computeJacksonMappings(TypeSystem typeSystem, Set<String> hypermediaFormats) {
 
 		return TypeProcessor.namedProcessor("HateoasHints - Jackson Mapping Candidates")
@@ -222,6 +275,21 @@ public class HateoasHints implements NativeConfiguration {
 				.filterAnnotations(annotation -> annotation.isPartOfDomain("com.fasterxml.jackson."))
 				.use(typeSystem)
 				.toProcessTypesMatching(this::usesJackson);
+	}
+
+	private List<HintDeclaration> computePlugins(TypeSystem typeSystem) {
+
+		// TODO: maybe move to PluginHints.
+		return typeSystem.scanUserCodeDirectoriesAndSpringJars(type -> type.implementsInterface("org/springframework/plugin/core/Plugin", true))
+				.map(type -> {
+					HintDeclaration hint = new HintDeclaration();
+					hint.addDependantType(type.getDottedName(), new AccessDescriptor(AccessBits.FULL_REFLECTION));
+					return hint;
+				}).collect(Collectors.toList());
+	}
+
+	private static boolean isWebControllerProxyCandidate(Type type) {
+		return type.isAtController() || type.isAnnotated("Lorg/springframework/data/rest/webmvc/BasePathAwareController;");
 	}
 
 	private boolean usesJackson(Type type) {
@@ -279,5 +347,9 @@ public class HateoasHints implements NativeConfiguration {
 			}
 		}
 		return false;
+	}
+
+	private AotProxyDescriptor lastInvocationAwareClassProxyDescriptor(String dottedTypeName) {
+		return new AotProxyDescriptor(dottedTypeName, Collections.singletonList("org.springframework.hateoas.server.core.LastInvocationAware"), ProxyBits.IS_STATIC);
 	}
 }

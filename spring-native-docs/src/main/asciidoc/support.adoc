@@ -69,10 +69,7 @@ RSocket security is also supported.
 ** `org.apache.tomcat.experimental:tomcat-embed-programmatic` dependency can be used instead of `tomcat-embed-core` and `tomcat-embed-websocket` ones for optimized footprint.
 * `spring-boot-starter-websocket`
 * `com.wavefront:wavefront-spring-boot-starter`
-* `spring-boot-starter-quartz`: supports the [Quartz Job Scheduling](http://www.quartz-scheduler.org/) engine. It adds types required by Quartz, and automatically registers any `Job` subclasses for reflection.
-
-IMPORTANT: Devtools is not supported yet, you can follow
-https://github.com/spring-projects-experimental/spring-native/issues/532[#532] to be aware when it will.
+* `spring-boot-starter-quartz`: supports the http://www.quartz-scheduler.org/[Quartz Job Scheduling] engine. It adds types required by Quartz, and automatically registers any `Job` subclasses for reflection.
 
 [[support-spring-cloud]]
 === Spring Cloud
@@ -121,10 +118,3 @@ https://docs.spring.io/spring-data/commons/docs/current/reference/html/#reposito
 * H2 database
 * Mysql JDBC driver
 * PostgreSQL JDBC driver
-
-[[support-limitations]]
-=== Limitations
-
-CGLIB proxies on classes are not supported, only JDK dynamic proxies on interfaces are for now. As a consequence `spring.aop.proxy-target-class` is set to `false` when using Spring Native. You can subscribe to and vote for https://github.com/spring-projects-experimental/spring-native/issues/356[#356] if you are interested about proxy support on classes.
-
-NOTE: If you are using `@Configuration` without setting `proxyBeanMethods=false` and use only method parameters to inject bean dependencies, Spring Native handles that scenario so that a CGLIB proxy is not required.

@@ -315,6 +315,10 @@ public class Method {
 					return true;
 				}
 				Type annotationType = typeSystem.Lresolve(an.desc, true);
+				if(annotationType == null) {
+					continue;
+				}
+
 				boolean metaUsage = annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMapping)) ||
 						annotationType.isMetaAnnotated(Type.fromLdescriptorToSlashed(Type.AtMessageMapping));;
 				if (metaUsage) {

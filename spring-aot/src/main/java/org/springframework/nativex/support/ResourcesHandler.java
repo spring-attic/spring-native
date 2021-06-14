@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -481,6 +482,11 @@ public class ResourcesHandler extends Handler {
 				dynamicProxiesHandler.addProxy(Arrays.asList(interfaces));
 			}
 			return true;
+		}
+
+		@Override
+		public void addAotProxy(AotProxyDescriptor proxyDescriptor) {
+			dynamicProxiesHandler.addClassProxy(proxyDescriptor.getTargetClassType(), proxyDescriptor.getInterfaceTypes(), proxyDescriptor.getProxyFeatures());
 		}
 
 		@Override

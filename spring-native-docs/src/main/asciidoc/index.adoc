@@ -54,12 +54,11 @@ There are two main ways to build a Spring Boot native application:
 * Using <<getting-started-buildpacks, Spring Boot Buildpacks support>> to generate a lightweight container containing a native executable.
 * Using <<getting-started-native-image, the GraalVM native image Maven plugin support>> to generate a native executable.
 
-NOTE: To use Spring Native from your IDE, additional steps are required.
-Check the <<spring-aot,dedicated section>> for more details.
+TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io, add the "Spring Native" dependency and generate the project.
 
 include::getting-started-buildpacks.adoc[]
 
-include::getting-started-native-buildtools.adoc[]
+include::getting-started-native-build-tools.adoc[]
 
 include::support.adoc[]
 

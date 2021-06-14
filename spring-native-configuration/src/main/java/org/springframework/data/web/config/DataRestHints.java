@@ -51,7 +51,6 @@ import reactor.core.publisher.Flux;
 				org.reactivestreams.Publisher.class,
 				HalMediaTypeConfiguration.class,
 
-				org.springframework.stereotype.Controller.class,
 				org.springframework.data.repository.core.support.RepositoryFactoryInformation.class,
 				org.springframework.data.repository.support.Repositories.class,
 				org.springframework.data.repository.support.RepositoryInvoker.class,
@@ -69,18 +68,6 @@ import reactor.core.publisher.Flux;
 
 						"org.springframework.data.rest.webmvc.config.WebMvcRepositoryRestConfiguration",
 
-						// PLUGIN
-						"org.springframework.plugin.core.support.PluginRegistryFactoryBean",
-						"org.springframework.plugin.core.OrderAwarePluginRegistry",
-						"org.springframework.plugin.core.Plugin",
-						"org.springframework.plugin.core.PluginRegistry",
-						"org.springframework.plugin.core.PluginRegistrySupport",
-						"org.springframework.plugin.core.SimplePluginRegistry",
-						"org.springframework.plugin.core.config.EnablePluginRegistries",
-						"org.springframework.plugin.core.config.PluginRegistriesBeanDefinitionRegistrar",
-						"org.springframework.plugin.core.support.AbstractTypeAwareSupport",
-						"org.springframework.plugin.core.support.PluginRegistryFactoryBean",
-
 						// JACKSON
 //						"org.springframework.hateoas.EntityModel$MapSuppressingUnwrappingSerializer",
 
@@ -95,18 +82,6 @@ import reactor.core.publisher.Flux;
 		jdkProxies = {
 				@JdkProxyHint(typeNames = {"org.springframework.data.rest.webmvc.BasePathAwareController", "org.springframework.core.annotation.SynthesizedAnnotation"}),
 				@JdkProxyHint(typeNames = {"org.springframework.data.rest.webmvc.RepositoryRestController", "org.springframework.data.rest.webmvc.BasePathAwareController", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"java.util.List", "org.springframework.aop.SpringProxy", "org.springframework.aop.framework.Advised", "org.springframework.core.DecoratingProxy"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestParam", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestBody", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.PathVariable", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.ModelAttribute", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.stereotype.Controller", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.ControllerAdvice", "org.springframework.core.annotation.SynthesizedAnnotation"}),
-				@JdkProxyHint(typeNames = {"org.springframework.web.bind.annotation.RequestHeader", "org.springframework.core.annotation.SynthesizedAnnotation"})
-		},
-
-		initialization = {
-				@InitializationHint(types = {org.springframework.hateoas.MediaTypes.class, org.springframework.util.MimeTypeUtils.class}, initTime = InitializationTime.BUILD)
 		},
 		imports = {
 				WebMvcHints.class, HateoasHints.class
