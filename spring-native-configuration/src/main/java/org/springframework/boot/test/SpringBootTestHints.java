@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -20,6 +19,10 @@ import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger = org.junit.jupiter.api.Test.class, types = {
+		@TypeHint(typeNames = {
+				"org.springframework.boot.test.context.ImportsContextCustomizer$ImportsSelector",
+				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelector"
+		}, access = AccessBits.RESOURCE),
 		@TypeHint(types = {
 				org.springframework.test.context.junit.jupiter.SpringExtension.class,
 				org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.class,
@@ -49,11 +52,7 @@ import org.springframework.nativex.type.TypeSystem;
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(typeNames = { "org.springframework.context.annotation.ComponentScan$Filter", "org.springframework.core.annotation.SynthesizedAnnotation" })
-// TODO Use @TypeHint when https://github.com/spring-projects-experimental/spring-native/issues/813 will be fixed
-}, resources = @ResourceHint(patterns = {
-		"org/springframework/boot/test/context/ImportsContextCustomizer$ImportsSelector.class",
-		"org/springframework/boot/autoconfigure/ImportAutoConfigurationImportSelector.class"
-}))
+})
 public class SpringBootTestHints implements NativeConfiguration {
 
 	@Override
