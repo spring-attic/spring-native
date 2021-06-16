@@ -16,6 +16,7 @@
 
 package org.springframework.integration;
 
+import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
@@ -24,7 +25,15 @@ import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-
+@NativeHint(trigger = JdbcMessageStore.class,
+		resources = @ResourceHint(patterns = {
+				"org/springframework/integration/jdbc/schema-h2.sql",
+				"org/springframework/integration/jdbc/schema-mysql.sql",
+				"org/springframework/integration/jdbc/schema-oracle.sql",
+				"org/springframework/integration/jdbc/schema-postgresql.sql",
+				"org/springframework/integration/jdbc/schema-hsqldb.sql",
+				"org/springframework/integration/jdbc/schema-sqlserver.sql",
+				"org/springframework/integration/jdbc/schema-sybase.sql"}))
 @NativeHint(trigger = org.springframework.integration.config.EnableIntegration.class,
 		initialization =
 		@InitializationHint(initTime = InitializationTime.BUILD,
