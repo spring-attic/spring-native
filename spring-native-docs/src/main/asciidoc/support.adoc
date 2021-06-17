@@ -105,7 +105,6 @@ https://docs.spring.io/spring-data/commons/docs/current/reference/html/#reposito
 
 ==== Spring Data MongoDB
 
-- https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mapping-usage-references[Lazy loading references] are currently not supported.
 - https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.transactions[Multi Document Transactions] are currently not supported.
 
 [[support-others]]

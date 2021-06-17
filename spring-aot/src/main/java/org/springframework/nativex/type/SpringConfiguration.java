@@ -33,15 +33,15 @@ public class SpringConfiguration {
 
 	private static Log logger = LogFactory.getLog(SpringConfiguration.class);
 
-	private final static Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
-	
 	private final static Map<String, String[]> proposedFactoryGuards = new HashMap<>();
-	
-	private final static List<AccessChecker> accessVerifiers = new ArrayList<>();
-	
-	private final static List<ComponentProcessor> processors = new ArrayList<>();
 
-	private final static List<SpringFactoriesProcessor> springFactoriesProcessors = new ArrayList<>();
+	private final Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
+	
+	private final List<AccessChecker> accessVerifiers = new ArrayList<>();
+	
+	private final List<ComponentProcessor> processors = new ArrayList<>();
+
+	private final List<SpringFactoriesProcessor> springFactoriesProcessors = new ArrayList<>();
 	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		logger.debug("SpringConfiguration: Discovering hints");
@@ -115,7 +115,7 @@ public class SpringConfiguration {
 		return (results==null?Collections.emptyList():results);
 	}
 	
-	public static Map<String, List<HintDeclaration>> getProposedhints() {
+	public Map<String, List<HintDeclaration>> getProposedhints() {
 		return proposedHints;
 	}
 	

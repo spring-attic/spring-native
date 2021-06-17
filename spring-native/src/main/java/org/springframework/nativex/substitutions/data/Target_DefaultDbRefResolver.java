@@ -34,7 +34,7 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", onlyWith = {OnlyIfPresent.class})
+@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
 public final class Target_DefaultDbRefResolver {
 
 	@Alias
@@ -70,7 +70,7 @@ public final class Target_DefaultDbRefResolver {
 		return handler.populateId(property, dbref, proxyFactory.getProxy(LazyLoadingProxy.class.getClassLoader()));
 	}
 
-	@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", innerClass = "LazyLoadingInterceptor", onlyWith = {OnlyIfPresent.class})
+	@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", innerClass = "LazyLoadingInterceptor", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
 	static final class LazyLoadingInterceptor implements MethodInterceptor, org.springframework.cglib.proxy.MethodInterceptor, Serializable {
 
 		@Alias
