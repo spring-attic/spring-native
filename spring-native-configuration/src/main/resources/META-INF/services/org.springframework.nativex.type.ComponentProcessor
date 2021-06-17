@@ -4,5 +4,6 @@ org.springframework.data.JpaComponentProcessor
 org.springframework.web.WebComponentProcessor
 org.springframework.SynthesizerComputationComponentProcessor
 org.springframework.TransactionalComponentProcessor
+org.springframework.TransactionalEventListenerComponentProcessor
 org.springframework.PrePostSecuredComponentProcessor
 org.springframework.kafka.KafkaComponentProcessor

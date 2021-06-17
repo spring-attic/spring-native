@@ -1585,4 +1585,9 @@ public class TypeSystem {
 		return resolve(clazz.getName().replace(".","/"), silent);
 	}
 
+	public boolean exists(TypeName typename) {
+		Type resolvedType = resolve(typename);
+		return resolvedType != null;
+	}
+
 }
