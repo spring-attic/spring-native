@@ -1101,14 +1101,6 @@ public class TypeProcessor {
 
 			HintDeclaration hintDeclaration = new HintDeclaration();
 			hintDeclaration.addDependantType(typeName, descriptor);
-			if (requiresResourceAccess(descriptor)) {
-
-				String resourceName = TypeName.fromClassName(typeName.replace("[]", "")).toSlashName();
-				if (!resourceName.endsWith(".class")) {
-					resourceName = resourceName + ".class";
-				}
-				hintDeclaration.addResourcesDescriptor(new ResourcesDescriptor(new String[]{resourceName}, false));
-			}
 			reflectionHints.add(hintDeclaration);
 		}
 
@@ -1119,10 +1111,6 @@ public class TypeProcessor {
 			Set<String> added = new TreeSet<>();
 			registerHierarchy(type, added, accessBits);
 			return added;
-		}
-
-		private boolean requiresResourceAccess(AccessDescriptor accessDescriptor) {
-			return accessDescriptor.getAccessBits() != null && AccessBits.isSet(AccessBits.RESOURCE, accessDescriptor.getAccessBits());
 		}
 
 		private void registerHierarchy(Type type, Set<String> visited, int accessBits) {
