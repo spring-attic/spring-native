@@ -48,7 +48,7 @@ public class TypeSystemTests {
 	
 	@Test
 	public void badpath() throws Exception {
-		TypeSystem ts = TypeSystem.get(Collections.singletonList("madeup"));
+		TypeSystem ts = new TypeSystem(Collections.singletonList("madeup"));
 		ts.findTypesAnnotated(Type.AtConfiguration, false);
 	}
 

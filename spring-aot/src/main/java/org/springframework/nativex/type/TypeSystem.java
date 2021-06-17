@@ -111,24 +111,11 @@ public class TypeSystem {
 
 	private Map<String, ReflectionDescriptor> reflectionConfigurations;
 	
-	// Map from classpaths to TypeSystems managing those classpaths
-	private static Map<String, TypeSystem> typeSystems = new HashMap<>();
-
 	// A map from the types whose clinits make isPresent checks to the types that they are checking the presence
 	// of (the parameters to the isPresent calls)
 	private Map<String,List<String>> typesMakingIsPresentChecksInStaticInitializers;
 	
 	public AotOptions aotOptions;
-
-	public static synchronized TypeSystem get(List<String> classpath) {
-		String classpathString = classpath.toString();
-		TypeSystem ts = typeSystems.get(classpathString);
-		if (ts == null) {
-			ts = new TypeSystem(classpath);
-			typeSystems.put(classpathString, ts);
-		}
-		return ts;
-	}
 
 	public TypeSystem(List<String> classpath) {
 		this.classpath = classpath;
@@ -722,7 +709,7 @@ public class TypeSystem {
 	public List<HintDeclaration> findActiveDefaultHints() {
 		List<HintDeclaration> activeDefaultHints = new ArrayList<>();
 		activeDefaultHints.addAll(findHints("java.lang.Object"));
-		Map<String, List<HintDeclaration>> proposedhints = SpringConfiguration.getProposedhints();
+		Map<String, List<HintDeclaration>> proposedhints = hintLocator.getProposedhints();
 		for (Map.Entry<String,List<HintDeclaration>> proposedhint: proposedhints.entrySet()) {
 			String keytype = proposedhint.getKey();
 			if (keytype.equals("java.lang.Object")) {
