@@ -22,7 +22,7 @@ import org.springframework.nativex.type.TypeSystem;
 		@TypeHint(typeNames = {
 				"org.springframework.boot.test.context.ImportsContextCustomizer$ImportsSelector",
 				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelector"
-		}, access = AccessBits.RESOURCE),
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE),
 		@TypeHint(types = {
 				org.springframework.test.context.junit.jupiter.SpringExtension.class,
 				org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.class,
