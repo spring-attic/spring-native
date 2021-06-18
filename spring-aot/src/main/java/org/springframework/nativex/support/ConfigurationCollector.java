@@ -65,7 +65,7 @@ public class ConfigurationCollector {
 
 	private ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
-	private List<AotProxyDescriptor> classProxyDescriptors = new ArrayList<>();
+	private Set<AotProxyDescriptor> classProxyDescriptors = new HashSet<>();
 
 	private InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 	
@@ -87,7 +87,7 @@ public class ConfigurationCollector {
 		return proxiesDescriptor;
 	}
 
-	public List<AotProxyDescriptor> getClassProxyDescriptors() {
+	public Set<AotProxyDescriptor> getClassProxyDescriptors() {
 		return classProxyDescriptors;
 	}
 

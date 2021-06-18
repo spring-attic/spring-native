@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -146,7 +147,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 	
 	public List<String> generateBuildTimeClassProxies(ConfigurationCollector configurationCollector, BuildContext context) {
-		List<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
+		Set<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
 		List<String> classProxyNames = new ArrayList<>();
 		for (AotProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
 			if(context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {

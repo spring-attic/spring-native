@@ -32,6 +32,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.BuildTimeProxyDescriptor;
+import org.springframework.aop.framework.ProxyConfiguration;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
@@ -287,5 +289,40 @@ public class HintTests {
 		aotProxies = @AotProxyHint(targetClassName = "java.lang.String", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
 	)
 	static class TestClass9 {
+	}
+	
+	@Test
+	public void proxyConfigurationClassNames() {
+		BuildTimeProxyDescriptor staticProxy = new BuildTimeProxyDescriptor("com.example.events.HelloEventListener",Collections.emptyList(), ProxyBits.IS_STATIC);
+		BuildTimeProxyDescriptor exposeProxy = new BuildTimeProxyDescriptor("com.example.events.HelloEventListener",Collections.emptyList(), ProxyBits.EXPOSE_PROXY);
+		ProxyConfiguration pc1 = ProxyConfiguration.get(staticProxy,Thread.currentThread().getContextClassLoader());
+		ProxyConfiguration pc2 = ProxyConfiguration.get(exposeProxy,Thread.currentThread().getContextClassLoader());
+		assertThat(pc1.getProxyClassName()).isNotEqualTo(pc2.getProxyClassName());
+	}
+	
+
+	@Test
+	public void classProxyDescriptors3() {
+		Type t = typeSystem.resolveName(TestClass10.class.getName());
+		List<HintApplication> hints = t.getApplicableHints();
+		assertEquals(1,hints.size());
+		HintApplication hint = hints.get(0);
+		List<JdkProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		assertThat(proxyDescriptors).hasSize(2);
+		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
+		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
+		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.Integer");
+		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
+		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
+		AotProxyDescriptor cpd2 = (AotProxyDescriptor)proxyDescriptors.get(1);
+		assertThat(cpd2.getTargetClassType()).isEqualTo("java.lang.Number");
+		assertThat(cpd2.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd2.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
+	}
+	
+	@AotProxyHint(targetClassName = "java.lang.Integer", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
+	@AotProxyHint(targetClassName = "java.lang.Number", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
+	static class TestClass10 {
 	}
 }

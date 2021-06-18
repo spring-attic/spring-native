@@ -43,21 +43,21 @@ public class TransactionalComponentProcessor implements ComponentProcessor {
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		if (type.isInterface()) {
-			List<String> transactionalInterfaces = new ArrayList<>();
-			for (Type intface: type.getInterfaces()) {
-				transactionalInterfaces.add(intface.getDottedName());
-			}
-			if (transactionalInterfaces.size()==0) {
-				imageContext.log("TransactionalComponentProcessor: unable to find interfaces to proxy on "+componentType);
-				return;
-			}
+		List<String> transactionalInterfaces = new ArrayList<>();
+		for (Type intface: type.getInterfaces()) {
+			transactionalInterfaces.add(intface.getDottedName());
+		}
+		if (transactionalInterfaces.size()!=0) {
 			transactionalInterfaces.add("org.springframework.aop.SpringProxy");
 			transactionalInterfaces.add("org.springframework.aop.framework.Advised");
 			transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
 			imageContext.addProxy(transactionalInterfaces);
 			imageContext.log("TransactionalComponentProcessor: creating proxy for these interfaces: "+transactionalInterfaces);
-		} else {
+		}
+		if (!type.isInterface()) {
+			// Rationalize why some contexts want one or the other (a class proxy for the class itself vs a jdk proxy for the interfaces it implements)
+			// Does it depend on whether the annotation is on the inherited interface methods?
+			// Compare events sample and jdbc-tx sample
 			// TODO is IS_STATIC always right here?
 			imageContext.addAotProxy(type.getDottedName(), Collections.emptyList(), ProxyBits.IS_STATIC);
 			imageContext.log("TransactionalComponentProcessor: creating proxy for this class: "+type.getDottedName());
