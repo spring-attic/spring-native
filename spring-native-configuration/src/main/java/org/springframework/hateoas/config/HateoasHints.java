@@ -38,13 +38,14 @@ import org.springframework.hateoas.server.core.LastInvocationAware;
 import org.springframework.hateoas.server.core.Relation;
 import org.springframework.hateoas.server.mvc.UriComponentsContributor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -129,7 +130,7 @@ public class HateoasHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 
-		if(!typeSystem.canResolve("org/springframework/hateoas/config/EnableHypermediaSupport")) {
+		if (!typeSystem.canResolve("org/springframework/hateoas/config/EnableHypermediaSupport")) {
 			return Collections.emptyList();
 		}
 
@@ -244,13 +245,14 @@ public class HateoasHints implements NativeConfiguration {
 	List<HintDeclaration> computeControllerProxies(TypeSystem typeSystem) {
 
 		return typeSystem.scanUserCodeDirectoriesAndSpringJars(HateoasHints::isWebControllerProxyCandidate)
+				.flatMap(type -> {
+					return Stream.concat(Stream.of(type), type.getMethods().stream().filter(Method::isAtMapping).map(Method::getReturnType));
+				})
+				.distinct()
 				.map(type -> {
 
 					HintDeclaration hint = new HintDeclaration();
-					hint.addProxyDescriptor(lastInvocationAwareClassProxyDescriptor(type.getDottedName()));
-					type.getMethods().stream().filter(Method::isAtMapping).forEach(method -> {
-						hint.addProxyDescriptor(lastInvocationAwareClassProxyDescriptor(method.getReturnType().getDottedName()));
-					});
+					hint.addProxyDescriptor(lastInvocationAwareProxyDescriptor(type));
 					return hint;
 				})
 				.collect(Collectors.toList());
@@ -289,7 +291,7 @@ public class HateoasHints implements NativeConfiguration {
 	}
 
 	private static boolean isWebControllerProxyCandidate(Type type) {
-		return type.isAtController() || type.isAnnotated("Lorg/springframework/data/rest/webmvc/BasePathAwareController;");
+		return (type.isAtController() || type.isAnnotated("Lorg/springframework/data/rest/webmvc/BasePathAwareController;")) && !type.isAnnotation();
 	}
 
 	private boolean usesJackson(Type type) {
@@ -349,7 +351,22 @@ public class HateoasHints implements NativeConfiguration {
 		return false;
 	}
 
-	private AotProxyDescriptor lastInvocationAwareClassProxyDescriptor(String dottedTypeName) {
-		return new AotProxyDescriptor(dottedTypeName, Collections.singletonList("org.springframework.hateoas.server.core.LastInvocationAware"), ProxyBits.IS_STATIC);
+	private JdkProxyDescriptor lastInvocationAwareProxyDescriptor(Type type) {
+
+		if (!type.isInterface()) {
+			return new AotProxyDescriptor(type.getDottedName(), Collections.singletonList("org.springframework.hateoas.server.core.LastInvocationAware"), ProxyBits.IS_STATIC);
+		}
+
+		List<String> proxyInterfaces = new ArrayList<>();
+		proxyInterfaces.add("org.springframework.hateoas.server.core.LastInvocationAware");
+		proxyInterfaces.add(type.getDottedName());
+		for (Type intface : type.getInterfaces()) {
+			proxyInterfaces.add(intface.getDottedName());
+		}
+		proxyInterfaces.add("org.springframework.aop.SpringProxy");
+		proxyInterfaces.add("org.springframework.aop.framework.Advised");
+		proxyInterfaces.add("org.springframework.core.DecoratingProxy");
+
+		return new JdkProxyDescriptor(proxyInterfaces);
 	}
 }
