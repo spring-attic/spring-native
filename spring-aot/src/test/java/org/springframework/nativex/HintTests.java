@@ -325,4 +325,27 @@ public class HintTests {
 	@AotProxyHint(targetClassName = "java.lang.Number", interfaceNames = "java.util.List", proxyFeatures = ProxyBits.EXPOSE_PROXY)
 	static class TestClass10 {
 	}
+
+	@Test
+	public void topLevelJdkProxyHints() {
+		Type t = typeSystem.resolveName(TestClass11.class.getName());
+		List<HintApplication> hints = t.getApplicableHints();
+		assertEquals(1,hints.size());
+		HintApplication hint = hints.get(0);
+		List<JdkProxyDescriptor> proxyDescriptors = hint.getProxyDescriptors();
+		assertThat(proxyDescriptors).hasSize(2);
+		assertThat(proxyDescriptors.get(0).isClassProxy()).isFalse();
+		assertThat(proxyDescriptors.get(1).isClassProxy()).isFalse();
+		JdkProxyDescriptor jpd = proxyDescriptors.get(0);
+		assertThat(jpd.containsInterface("java.util.Set")).isTrue();
+		assertThat(jpd.containsInterface("java.io.Serializable")).isTrue();
+		JdkProxyDescriptor jpd2 = proxyDescriptors.get(1);
+		assertThat(jpd2.containsInterface("java.util.Map")).isTrue();
+		assertThat(jpd2.containsInterface("java.io.Serializable")).isTrue();
+	}
+	
+	@JdkProxyHint(typeNames={"java.util.Set","java.io.Serializable"})
+	@JdkProxyHint(typeNames={"java.util.Map","java.io.Serializable"})
+	static class TestClass11 {
+	}
 }
