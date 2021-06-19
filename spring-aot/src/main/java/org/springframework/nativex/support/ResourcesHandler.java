@@ -754,9 +754,9 @@ public class ResourcesHandler extends Handler {
 	private void processSpringFactory(TypeSystem ts, Properties p) {
 		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
 		List<String> forRemoval = new ArrayList<>();
-		int excludedAutoConfigCount = 0;
 		Enumeration<Object> factoryKeys = p.keys();
 		boolean modified = false;
+		List<String> otherAutoConfigurationKeys = new ArrayList<>(); // e.g. org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 		
 		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
 			Properties filteredProperties = new Properties();
@@ -768,13 +768,13 @@ public class ResourcesHandler extends Handler {
 					values.add(value);
 				}
 				if (aotOptions.isRemoveUnusedConfig()) {
-				for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
-					int len = values.size();
-					if (springFactoriesProcessor.filter(key, values)) {
-						logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
-						modified = true;
+					for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
+						int len = values.size();
+						if (springFactoriesProcessor.filter(key, values)) {
+							logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
+							modified = true;
+						}
 					}
-				}
 				}
 				if (modified) {
 					filteredProperties.put(key, String.join(",", values));
@@ -834,6 +834,10 @@ public class ResourcesHandler extends Handler {
 							}	
 						}
 						continue;
+					} else if (k.startsWith("org.springframework.boot.test.autoconfigure.")) {
+						// TODO [issue839] smarter test, check what kind of thing it points at rather than that prefix
+						otherAutoConfigurationKeys.add(k);
+						continue;
 					}
 					if (ts.shouldBeProcessed(k)) {
 						for (String v : p.getProperty(k).split(",")) {
@@ -865,35 +869,11 @@ public class ResourcesHandler extends Handler {
 
 		modified = processConfigurationsWithKey(p, managementContextConfigurationKey) || modified;
 		
-		// TODO refactor this chunk to call processConfigurationsWithKey()
 		// Handle EnableAutoConfiguration
-		String enableAutoConfigurationValues = (String) p.get(enableAutoconfigurationKey);
-		if (enableAutoConfigurationValues != null) {
-			List<String> configurations = new ArrayList<>();
-			for (String s : enableAutoConfigurationValues.split(",")) {
-				configurations.add(s);
-			}
-			logger.debug("Processing spring.factories - EnableAutoConfiguration lists #" + configurations.size()
-					+ " configurations");
-			for (String config : configurations) {
-				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
-					if (aotOptions.isRemoveUnusedConfig()) {
-						excludedAutoConfigCount++;
-						logger.debug("Excluding auto-configuration " + config);
-						forRemoval.add(config);
-					}
-				}
-			}
-			if (aotOptions.isRemoveUnusedConfig()) {
-				logger.debug(
-						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
-				configurations.removeAll(forRemoval);
-				p.put(enableAutoconfigurationKey, String.join(",", configurations));
-				logger.debug("These configurations are remaining in the EnableAutoConfiguration key value:");
-				for (int c = 0; c < configurations.size(); c++) {
-					logger.debug((c + 1) + ") " + configurations.get(c));
-				}
-			}
+		// TODO [issue839] sort out method signature, forRemoval not needed, use retval for whether it did anything
+		processFactoriesKey(p, enableAutoconfigurationKey, forRemoval);
+		for (String key: otherAutoConfigurationKeys) {
+			processFactoriesKey(p, key, forRemoval);
 		}
 
 		if (forRemoval.size() > 0) {
@@ -928,6 +908,38 @@ public class ResourcesHandler extends Handler {
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	private void processFactoriesKey(Properties p, String key, List<String> forRemoval) {
+		String enableAutoConfigurationValues = (String) p.get(key);
+		int excludedAutoConfigCount = 0;
+		if (enableAutoConfigurationValues != null) {
+			List<String> configurations = new ArrayList<>();
+			for (String s : enableAutoConfigurationValues.split(",")) {
+				configurations.add(s);
+			}
+			logger.debug("Processing spring.factories - "+key+" lists #" + configurations.size()
+					+ " configurations");
+			for (String config : configurations) {
+				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
+					if (aotOptions.isRemoveUnusedConfig()) {
+						excludedAutoConfigCount++;
+						logger.debug("Excluding auto-configuration " + config);
+						forRemoval.add(config);
+					}
+				}
+			}
+			if (aotOptions.isRemoveUnusedConfig()) {
+				logger.debug(
+						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
+				configurations.removeAll(forRemoval);
+				p.put(key, String.join(",", configurations));
+				logger.debug("These configurations are remaining in the "+key+" key value:");
+				for (int c = 0; c < configurations.size(); c++) {
+					logger.debug((c + 1) + ") " + configurations.get(c));
+				}
+			}
 		}
 	}
 
