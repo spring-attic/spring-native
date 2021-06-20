@@ -16,7 +16,15 @@
 
 package org.springframework.boot.autoconfigure.aop;
 
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.weaver.reflect.Java15AnnotationFinder;
+import org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider;
+import org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor;
@@ -25,6 +33,7 @@ import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -41,7 +50,18 @@ import org.springframework.nativex.hint.AccessBits;
 				AbstractAdvisorAutoProxyCreator.class,
 				AnnotationAwareAspectJAutoProxyCreator.class,
 				AspectJAwareAdvisorAutoProxyCreator.class,
+				EnableAspectJAutoProxy.class,
+				Aspect.class,
+				Pointcut.class,
+				Before.class,
+				AfterReturning.class,
+				After.class,
 				Around.class},
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
+		@TypeHint(types = {
+				Java15AnnotationFinder.class, 
+				Java15GenericSignatureInformationProvider.class,
+				Java15ReflectionBasedReferenceTypeDelegate.class},
+			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
 })
 public class AopHints implements NativeConfiguration { }
