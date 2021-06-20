@@ -84,6 +84,20 @@ resources:
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native-ci
+  - name: graalvm-ce-stable-java11-image
+    type: registry-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/graalvm-ce
+      tag: stable-java11-((milestone))
+  - name: graalvm-ce-dev-java11-image
+    type: registry-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/graalvm-ce
+      tag: dev-java11-((milestone))
   - name: spring-native-stable-java11-image
     type: registry-image
     icon: docker
@@ -135,6 +149,9 @@ jobs:
           image: ci-image
         vars:
           ci-image-name: ci-image
+      - put: ci-image
+        params:
+          image: ci-image/image.tar
   - name: check-graalvm-ce-stable-change
     plan:
       - get: graalvm-stable-git-repo
@@ -163,6 +180,9 @@ jobs:
           ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-stable-java11))
           graalvm-branch: ((graalvm-stable-branch))
+      - put: graalvm-ce-stable-java11-image
+        params:
+          image: graalvm-ce-stable-java11-image/image.tar
   - name: check-graalvm-ce-dev-change
     plan:
       - get: graalvm-dev-git-repo
@@ -191,6 +211,9 @@ jobs:
           ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-dev-java11))
           graalvm-branch: ((graalvm-dev-branch))
+      - put: graalvm-ce-dev-java11-image
+        params:
+          image: graalvm-ce-dev-java11-image/image.tar
   - name: build-spring-native-stable-image
     plan:
       - get: git-repo
@@ -205,6 +228,9 @@ jobs:
         vars:
           ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
+      - put: spring-native-stable-java11-image
+        params:
+          image: spring-native-stable-java11-image/image.tar
   - name: build-spring-native-dev-image
     plan:
       - get: git-repo
@@ -219,6 +245,9 @@ jobs:
         vars:
           ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
+      - put: spring-native-dev-java11-image
+        params:
+          image: spring-native-dev-java11-image/image.tar
   - name: build-key-samples-java11
     public: true
     serial: true
