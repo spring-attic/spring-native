@@ -16,6 +16,7 @@
 
 package org.springframework.samples.petclinic;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Disabled // TODO Profiles not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/764
 class PetclinicIntegrationTests {
 
 	@Autowired

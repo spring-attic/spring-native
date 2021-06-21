@@ -19,12 +19,10 @@ package org.springframework.samples.petclinic;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.SerializationHint;
-import org.springframework.nativex.hint.TypeHint;
 
 /**
  * PetClinic Spring Boot Application.
  *
- * @author Dave Syer
  * @author Dave Syer
  */
 @SpringBootApplication
@@ -33,13 +31,6 @@ import org.springframework.nativex.hint.TypeHint;
 		org.springframework.samples.petclinic.model.Person.class,
 		org.springframework.samples.petclinic.vet.Vet.class,
 		java.lang.Number.class
-})
-@TypeHint(typeNames = {
-		"org.springframework.samples.petclinic.vet.VetControllerTests",
-		"org.springframework.samples.petclinic.owner.VisitControllerTests",
-		"org.springframework.samples.petclinic.owner.PetControllerTests",
-		"org.springframework.samples.petclinic.owner.OwnerControllerTests",
-		"org.springframework.samples.petclinic.service.ClinicServiceTests"
 })
 public class PetClinicApplication {
 

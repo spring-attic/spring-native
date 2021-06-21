@@ -515,6 +515,10 @@
             <artifactId>okhttp</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
