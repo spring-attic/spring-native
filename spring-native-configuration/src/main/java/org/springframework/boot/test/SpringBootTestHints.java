@@ -7,6 +7,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -24,6 +25,7 @@ import org.springframework.nativex.type.TypeSystem;
 				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelector"
 		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE),
 		@TypeHint(types = {
+				SpringBootTest.WebEnvironment.class,
 				org.springframework.test.context.junit.jupiter.SpringExtension.class,
 				org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.class,
 				org.springframework.test.context.support.DefaultBootstrapContext.class,

@@ -23,7 +23,6 @@ org.springframework.batch.core.configuration.annotation.BatchHints
 org.springframework.beans.factory.annotation.BeanFactoryAnnotationHints
 org.springframework.beans.factory.config.PropertiesHints
 org.springframework.boot.SpringBootHints
-org.springframework.boot.SpringBootTestHints
 org.springframework.boot.actuate.autoconfigure.ActuatorHints
 org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfigurationHints
