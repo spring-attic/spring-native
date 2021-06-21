@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -19,6 +20,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.security.test.context.support.WithSecurityContext;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 @NativeHint(trigger = org.junit.jupiter.api.Test.class, types = {
 		@TypeHint(typeNames = {
@@ -46,6 +50,7 @@ import org.springframework.nativex.type.TypeSystem;
 				org.springframework.boot.test.context.SpringBootTest.class,
 				org.springframework.test.context.web.WebAppConfiguration.class,
 				org.springframework.test.context.BootstrapWith.class,
+				AutoConfigureMockMvc.class,
 				SpringBootConfiguration.class
 		}, access = AccessBits.ANNOTATION)
 }, jdkProxies = {
@@ -57,6 +62,14 @@ import org.springframework.nativex.type.TypeSystem;
 		@JdkProxyHint(typeNames = { "org.springframework.context.annotation.ComponentScan$Filter", "org.springframework.core.annotation.SynthesizedAnnotation" })
 })
 @NativeHint(trigger = TestDatabaseAutoConfiguration.class, types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
+// TODO Move to Spring Security (test) hint
+@NativeHint(trigger = WithSecurityContext.class, types = {
+		@TypeHint(types = SecurityContextPersistenceFilter.class, access = AccessBits.FULL_REFLECTION),
+		@TypeHint(types = FilterChainProxy.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
+		@TypeHint(types = WithSecurityContext.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
+		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory")
+}, jdkProxies = {@JdkProxyHint(types = { WithSecurityContext.class, org.springframework.core.annotation.SynthesizedAnnotation.class })
+})
 public class SpringBootTestHints implements NativeConfiguration {
 
 	@Override
