@@ -24,6 +24,7 @@ import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.test.context.support.WithSecurityContext;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.test.context.TestPropertySource;
 
 @NativeHint(trigger = org.junit.jupiter.api.Test.class, types = {
 		@TypeHint(typeNames = {
@@ -52,7 +53,8 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 				org.springframework.test.context.web.WebAppConfiguration.class,
 				org.springframework.test.context.BootstrapWith.class,
 				AutoConfigureMockMvc.class,
-				SpringBootConfiguration.class
+				SpringBootConfiguration.class,
+				TestPropertySource.class
 		}, access = AccessBits.ANNOTATION)
 }, jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.test.context.BootstrapWith.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
