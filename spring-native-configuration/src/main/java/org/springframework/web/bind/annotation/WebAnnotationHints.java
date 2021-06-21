@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 				Controller.class,
 				RestController.class,
 				RequestParam.class,
+				RequestPart.class,
 				PathVariable.class,
 				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
 				ResponseStatus.class, HttpStatus.class
