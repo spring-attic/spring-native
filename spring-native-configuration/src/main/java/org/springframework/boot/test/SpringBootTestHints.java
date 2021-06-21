@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfigur
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -64,7 +65,10 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 @NativeHint(trigger = TestDatabaseAutoConfiguration.class, types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
 // TODO Move to Spring Security (test) hint
 @NativeHint(trigger = WithSecurityContext.class, types = {
-		@TypeHint(types = SecurityContextPersistenceFilter.class, access = AccessBits.FULL_REFLECTION),
+		@TypeHint(types = {
+				SecurityContextPersistenceFilter.class
+		}, access = AccessBits.FULL_REFLECTION),
+		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = AccessBits.FULL_REFLECTION, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
 		@TypeHint(types = FilterChainProxy.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = WithSecurityContext.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
 		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory")
