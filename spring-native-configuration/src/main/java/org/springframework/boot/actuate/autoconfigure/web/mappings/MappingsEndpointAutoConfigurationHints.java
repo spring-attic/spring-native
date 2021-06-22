@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlerMappingDetails;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -24,8 +25,13 @@ import org.springframework.nativex.hint.TypeHint;
 @NativeHint(trigger = MappingsEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
 		org.springframework.boot.actuate.web.mappings.HandlerMethodDescription.class,
+		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings.class,
 		org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappings.class,
+		org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlerMappingDescription.class,
+		org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlerMappingDetails.class,
+		org.springframework.boot.actuate.web.mappings.reactive.RequestMappingConditionsDescription.class,
+		org.springframework.boot.actuate.web.mappings.reactive.RequestMappingConditionsDescription.MediaTypeExpressionDescription.class,
 		org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletMappingDescription.class,
 		org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletMappingDetails.class,
 		org.springframework.boot.actuate.web.mappings.servlet.FilterRegistrationMappingDescription.class,
