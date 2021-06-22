@@ -1767,6 +1767,12 @@ public class ResourcesHandler extends Handler {
 							methodRCM.requestTypeAccess(s, inferredType.getValue());
 							if (hint.isFollow() || t.shouldFollow()) {
 								additionalFollows.put(t,ReachedBy.Other);
+							} else if (t.isAbstractNestedCondition()) {
+								// The inner types are hosting conditions
+								logger.debug("will follow inner types inside this nested condition type " + t);
+								for (Type inner : t.getNestedTypes()) {
+									toFollow.put(inner, ReachedBy.InnerOfNestedCondition);
+								}								
 							}
 						} else if (hint.isSkipIfTypesMissing()) {
 							passesTests = false;
