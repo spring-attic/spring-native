@@ -70,6 +70,10 @@ RSocket security is also supported.
 * `spring-boot-starter-websocket`
 * `com.wavefront:wavefront-spring-boot-starter`
 * `spring-boot-starter-quartz`: supports the http://www.quartz-scheduler.org/[Quartz Job Scheduling] engine. It adds types required by Quartz, and automatically registers any `Job` subclasses for reflection.
+* `spring-boot-starter-test`
+** Additional native hints could be required for now, for example for `@AutoConfigureXxx` annotations. This limitation will be removed in upcoming versions.
+** Libraries generating bytecode at runtime like Mockito are not supported.
+** The testing support is based on https://github.com/graalvm/native-build-tools.
 
 [[support-spring-cloud]]
 === Spring Cloud
