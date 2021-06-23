@@ -17,8 +17,12 @@
 package org.springframework;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -35,11 +39,14 @@ import org.springframework.nativex.type.Type;
  * @author Andy Clement
  */
 public class SynthesizerComputationComponentProcessor implements ComponentProcessor {
-	
+
+	private static final Predicate<Type> IS_SPRING_ANNOTATION =
+			anno -> anno.getDottedName().startsWith("org.springframework");
+
 	// The @AliasFor'd attributes don't always seem to be accessed via a proxy
 	// so there is no need to create a proxy. This is the list that don't
 	// seem to need a proxy:
-	private static String[] DONT_NEED_PROXY = new String[] {
+	private static final String[] DONT_NEED_PROXY = new String[] {
 			"org.springframework.boot.autoconfigure.SpringBootApplication",
 			"org.springframework.boot.SpringBootConfiguration",
 			"org.springframework.context.annotation.Configuration",
@@ -58,34 +65,20 @@ public class SynthesizerComputationComponentProcessor implements ComponentProces
 
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
-		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		Predicate<Type> isSpringAnnotation =  anno -> anno.getDottedName().startsWith("org.springframework");
+		final Type type = imageContext.getTypeSystem().resolveName(componentType);
+		final Set<Type> collector = new HashSet<>();
+		final Queue<Type> toProcess = new LinkedList<>();
 
-		Set<Type> collector = new HashSet<>();
-		for (Type annotationType: type.getAnnotations()) {
-			annotationType.collectAnnotations(collector, isSpringAnnotation);
-		}
+		toProcess.add(type);
 
-		List<Method> methods = type.getMethods();
-		// Example with annotations on the method and against parameters:
-		// @GetMapping("/greeting")
-		// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-		for (Method method: methods) {
-			for (Type methodAnnotationType: method.getAnnotationTypes()) {
-				methodAnnotationType.collectAnnotations(collector, isSpringAnnotation);
-			}
-			for (int pi=0;pi<method.getParameterCount();pi++) {
-				List<Type> parameterAnnotationTypes = method.getParameterAnnotationTypes(pi);
-				for (Type parameterAnnotationType: parameterAnnotationTypes) {
-					parameterAnnotationType.collectAnnotations(collector, isSpringAnnotation);
-				}
-			}
-		}
-		
-		List<Field> fields = type.getFields();
-		for (Field field: fields) {
-			for (Type fieldAnnotationType: field.getAnnotationTypes()) {
-				fieldAnnotationType.collectAnnotations(collector, isSpringAnnotation);
+		while (!toProcess.isEmpty()) {
+			Type nextType = toProcess.poll();
+			processType(nextType, collector);
+
+			Arrays.stream(nextType.getInterfaces()).forEach(iface -> toProcess.add(iface));
+			Type superClass = nextType.getSuperclass();
+			if (superClass != null) {
+				toProcess.add(superClass);
 			}
 		}
 
@@ -107,9 +100,38 @@ public class SynthesizerComputationComponentProcessor implements ComponentProces
 				proxied.add(aliasForTarget);
 			}
 		}
-		imageContext.log("SynthesizerComputerComponentProcessor: From examining "+type.getDottedName()+" determined "+proxied.size()+" types as synthesized proxies: "+proxied);
+		imageContext.log(SynthesizerComputationComponentProcessor.class.getSimpleName() + ": From examining "+type.getDottedName()+" determined "+proxied.size()+" types as synthesized proxies: "+proxied);
 	}
-	
+
+	public void processType(Type type, Set<Type> collector) {
+		for (Type annotationType: type.getAnnotations()) {
+			annotationType.collectAnnotations(collector, IS_SPRING_ANNOTATION);
+		}
+
+		List<Method> methods = type.getMethods();
+		// Example with annotations on the method and against parameters:
+		// @GetMapping("/greeting")
+		// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+		for (Method method: methods) {
+			for (Type methodAnnotationType: method.getAnnotationTypes()) {
+				methodAnnotationType.collectAnnotations(collector, IS_SPRING_ANNOTATION);
+			}
+			for (int pi=0;pi<method.getParameterCount();pi++) {
+				List<Type> parameterAnnotationTypes = method.getParameterAnnotationTypes(pi);
+				for (Type parameterAnnotationType: parameterAnnotationTypes) {
+					parameterAnnotationType.collectAnnotations(collector, IS_SPRING_ANNOTATION);
+				}
+			}
+		}
+
+		List<Field> fields = type.getFields();
+		for (Field field: fields) {
+			for (Type fieldAnnotationType: field.getAnnotationTypes()) {
+				fieldAnnotationType.collectAnnotations(collector, IS_SPRING_ANNOTATION);
+			}
+		}
+	}
+
 	private boolean ignore(String name) {
 		for (String entry: DONT_NEED_PROXY) {
 			if (entry.equals(name)) {
