@@ -1,7 +1,7 @@
 [[getting-started-buildpacks]]
 === Getting started with Buildpacks
 
-This section gives you a practical overview of building a Spring Boot native application using {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks].
+This section gives you a practical overview of building a Spring Boot native application using {spring-boot-docs}/html/features.html#features.container-images.building.buildpacks[Cloud Native Buildpacks].
 This is a practical guide that uses the https://spring.io/guides/gs/rest-service/[RESTful Web Service getting started guide].
 
 [[getting-started-buildpacks-system-requirements]]
