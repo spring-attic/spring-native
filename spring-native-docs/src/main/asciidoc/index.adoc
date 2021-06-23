@@ -25,7 +25,7 @@ The key differences between a regular JVM and this native image platform are:
 * Classpath is fixed at build time.
 * No class lazy loading: everything shipped in the executables will be loaded in memory on startup.
 * Some code will run at build time.
-* There are some https://github.com/oracle/graal/blob/master/substratevm/Limitations.md[limitations] around some aspects of Java applications that are not fully supported.
+* There are some https://www.graalvm.org/reference-manual/native-image/Limitations/[limitations] around some aspects of Java applications that are not fully supported.
 
 The goal of this project is to incubate the support for Spring Native, an alternative to Spring JVM, and provide a native deployment option designed to be packaged in lightweight containers.
 In practice, the target is to support your Spring applications, almost unmodified, on this new platform.
