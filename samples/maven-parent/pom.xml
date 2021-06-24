@@ -18,10 +18,7 @@
 
 	<properties>
 		<!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
-		<classifier/>
-
-		<!-- Customize native-image arguments with this property -->
-		<native.build.args/>
+		<repackage.classifier/>
 
 		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
 		<builder>paketobuildpacks/builder:tiny</builder>
@@ -36,12 +33,11 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<configuration>
-						<classifier>${classifier}</classifier>
+						<classifier>${repackage.classifier}</classifier>
 						<image>
 							<builder>${builder}</builder>
 							<env>
 								<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-								<BP_NATIVE_IMAGE_BUILD_ARGUMENTS>${native.build.args}</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
 							</env>
 							<pullPolicy>IF_NOT_PRESENT</pullPolicy>
 						</image>
@@ -70,10 +66,6 @@
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>native-maven-plugin</artifactId>
 					<version>${native.buildtools.version}</version>
-					<configuration>
-						<imageName>${project.artifactId}</imageName>
-						<buildArgs>${native.build.args}</buildArgs>
-					</configuration>
 					<executions>
 						<execution>
 							<goals>
@@ -170,12 +162,12 @@
 			<id>native</id>
 			<properties>
 				<!-- Avoid a clash between Spring Boot repackaging and native-maven-plugin -->
-				<classifier>exec</classifier>
+				<repackage.classifier>exec</repackage.classifier>
 
 				<native.buildtools.version>0.9.0</native.buildtools.version>
 			</properties>
 			<dependencies>
-				<!-- Won't be need as of JUnit 5.8, see https://github.com/junit-team/junit5/issues/2619 -->
+				<!-- Won't be needed as of JUnit 5.8, see https://github.com/junit-team/junit5/issues/2619 -->
 				<dependency>
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>junit-platform-native</artifactId>

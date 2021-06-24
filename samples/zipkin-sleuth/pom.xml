@@ -15,7 +15,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<native.build.args>--enable-url-protocols=http</native.build.args>
 	</properties>
 
 	<dependencies>

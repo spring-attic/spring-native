@@ -54,7 +54,6 @@
 						<builder>${builder}</builder>
 						<env>
 							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-							<BP_NATIVE_IMAGE_BUILD_ARGUMENTS>${native.build.args}</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
 						</env>
 					</image>
 				</configuration>

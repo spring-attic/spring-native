@@ -33,6 +33,7 @@ It is of course also possible to provide directly GraalVM native configuration f
 
 Here is the full list of what can be specified in a hint:
 
+* `options` as defined in <<native-image-options, here>> that will be passed when executing `native-image`
 * `jdkProxies` which list interfaces for which JDK proxy types are needed and should be built into the image.
 * `aotProxies` which lists more complex proxy configurations where the proxy will extend a class.
 * `types` which lists any reflective needs.
