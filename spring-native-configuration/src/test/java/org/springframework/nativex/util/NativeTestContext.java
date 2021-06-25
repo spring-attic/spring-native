@@ -57,6 +57,7 @@ public class NativeTestContext implements NativeContext {
 		this.typeSystem = typeSystem;
 
 		this.proxies = new LinkedMultiValueMap<>();
+		this.classProxies = new LinkedMultiValueMap<>();
 		this.reflection = new LinkedMultiValueMap<>();
 		this.builtTimeInit = new LinkedHashSet<>();
 		this.resources = new LinkedHashSet<>();
@@ -170,6 +171,10 @@ public class NativeTestContext implements NativeContext {
 
 	public MultiValueMap<String, List<String>> getProxyEntries() {
 		return proxies;
+	}
+
+	public MultiValueMap<String, AotProxyDescriptor> getClassProxyEntries() {
+		return classProxies;
 	}
 
 	public boolean hasReflectionEntry(Class<?> type) {
