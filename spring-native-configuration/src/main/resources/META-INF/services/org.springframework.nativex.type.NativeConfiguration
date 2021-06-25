@@ -18,6 +18,7 @@ org.hamcrest.HamcrestHints
 org.hibernate.HibernateHints
 org.hibernate.validator.ValidatorHints
 org.postgresql.PostgresqlHints
+org.slf4j.JulToSlf4jHints
 org.springframework.SpringFrameworkHints
 org.springframework.amqp.rabbit.annotation.RabbitHints
 org.springframework.batch.core.configuration.annotation.BatchHints
