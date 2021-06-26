@@ -11,7 +11,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 	trigger = SLF4JBridgeHandler.class,
 		types = @TypeHint(types = {
 				SLF4JBridgeHandler.class
-		}, access = AccessBits.FULL_REFLECTION)
+		}, access = AccessBits.DECLARED_METHODS)
 )
 public class JulToSlf4jHints implements NativeConfiguration {
 }
