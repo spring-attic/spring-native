@@ -25,6 +25,8 @@ import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
+
+
 @NativeHint(trigger = JdbcMessageStore.class,
 		resources = @ResourceHint(patterns = {
 				"org/springframework/integration/jdbc/schema-h2.sql",
@@ -101,6 +103,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(
 				types = {
 						org.springframework.integration.core.GenericSelector.class,
+						org.springframework.messaging.support.GenericMessage.class,
 						org.springframework.integration.transformer.GenericTransformer.class,
 						org.springframework.integration.handler.GenericHandler.class,
 						java.util.function.Function.class,
