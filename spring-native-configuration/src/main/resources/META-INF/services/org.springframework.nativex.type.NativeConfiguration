@@ -49,8 +49,6 @@ org.springframework.boot.autoconfigure.cache.CacheHints
 org.springframework.boot.autoconfigure.condition.ConditionalHints
 org.springframework.boot.autoconfigure.context.MessageSourceHints
 org.springframework.boot.autoconfigure.data.RepositoriesHints
-org.springframework.data.SpringDataCommonsHints
-org.springframework.data.jdbc.repository.config.DataJdbcHints
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesHints
 org.springframework.boot.autoconfigure.data.mongodb.MongoRepositoriesHints
@@ -101,6 +99,8 @@ org.springframework.cloud.stream.kafka.KafkaBinderHints
 org.springframework.cloud.task.CloudTaskHints
 org.springframework.context.annotation.ContextAnnotationHints
 org.springframework.core.annotation.CoreAnnotationHints
+org.springframework.data.SpringDataCommonsHints
+org.springframework.data.jdbc.repository.config.DataJdbcHints
 org.springframework.data.rest.webmvc.config.RestControllerHints
 org.springframework.data.web.config.DataRestHints
 org.springframework.data.web.config.SpringDataWebHints
