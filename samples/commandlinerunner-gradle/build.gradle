@@ -3,7 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'org.springframework.experimental.aot' version '0.10.2-SNAPSHOT'
 	id 'java'
-	id 'org.graalvm.buildtools.native' version '0.9.0'
+	id 'org.graalvm.buildtools.native' version '0.9.1'
 }
 
 group = 'com.example'
