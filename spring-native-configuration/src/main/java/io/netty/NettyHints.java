@@ -21,6 +21,7 @@ import io.netty.channel.unix.Errors;
 import io.netty.channel.unix.IovArray;
 import io.netty.channel.unix.Limits;
 import io.netty.channel.unix.Socket;
+import io.netty.handler.codec.compression.BrotliDecoder;
 import io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler;
 import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
@@ -42,7 +43,8 @@ import org.springframework.nativex.hint.NativeHint;
 				Http2ServerUpgradeCodec.class,
 				CleartextHttp2ServerUpgradeHandler.class,
 				Http2ConnectionHandler.class,
-				HostsFileEntriesResolver.class
+				HostsFileEntriesResolver.class,
+				BrotliDecoder.class
 		}, typeNames = {
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
 		})
