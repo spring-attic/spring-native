@@ -22,8 +22,10 @@ import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Recognize spring.components that need validate proxies and register them.
@@ -41,20 +43,15 @@ public class ValidatedComponentProcessor implements ComponentProcessor {
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		List<String> transactionalInterfaces = new ArrayList<>();
-		boolean hasInterfaceMethods = false;
-		for (Type intface: type.getAllInterfaces()) {
-			transactionalInterfaces.add(intface.getDottedName());
-			if (!intface.getMethods().isEmpty()) {
-				hasInterfaceMethods = true;
-			}
-		}
-		if (!transactionalInterfaces.isEmpty() && hasInterfaceMethods) {
-			transactionalInterfaces.add("org.springframework.aop.SpringProxy");
-			transactionalInterfaces.add("org.springframework.aop.framework.Advised");
-			transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
-			imageContext.addProxy(transactionalInterfaces);
-			imageContext.log(ValidatedComponentProcessor.class.getSimpleName() + ": creating proxy for these interfaces: " + transactionalInterfaces);
+		boolean hasInterfaceMethods = Arrays.stream(type.getAllInterfaces()).anyMatch(type1 -> !type1.getMethods().isEmpty());
+		if (hasInterfaceMethods) {
+			List<String> proxyInterfaces = new ArrayList<>(Arrays.stream(
+					type.getImplementedInterfaces()).map(Type::getDottedName).collect(Collectors.toList()));
+			proxyInterfaces.add("org.springframework.aop.SpringProxy");
+			proxyInterfaces.add("org.springframework.aop.framework.Advised");
+			proxyInterfaces.add("org.springframework.core.DecoratingProxy");
+			imageContext.addProxy(proxyInterfaces);
+			imageContext.log(ValidatedComponentProcessor.class.getSimpleName() + ": creating proxy for these interfaces: " + proxyInterfaces);
 		} else if (!type.isInterface()) {
 			// TODO is IS_STATIC always right here?
 			imageContext.addAotProxy(type.getDottedName(), Collections.emptyList(), ProxyBits.IS_STATIC);

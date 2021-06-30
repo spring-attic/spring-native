@@ -28,10 +28,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -243,12 +245,23 @@ public class Type {
 		return interfaces;
 	}
 
-	public Type[] getAllInterfaces() {
-		List<Type> allInterfaces = new ArrayList<>(Arrays.asList(getInterfaces()));
+	public Type[] getImplementedInterfaces() {
+		Set<Type> implementedInterfaces = new LinkedHashSet<>(Arrays.asList(getInterfaces()));
 		Type type = getSuperclass();
 		while (type != null) {
-			allInterfaces.addAll(Arrays.asList(type.getInterfaces()));
+			implementedInterfaces.addAll(Arrays.asList(type.getInterfaces()));
 			type = type.getSuperclass();
+		}
+		return implementedInterfaces.toArray(new Type[implementedInterfaces.size()]);
+	}
+
+	public Type[] getAllInterfaces() {
+		Set<Type> allInterfaces = new LinkedHashSet<>();
+		Queue<Type> toProcess = new LinkedList<>(Arrays.asList(getImplementedInterfaces()));
+		while (!toProcess.isEmpty()) {
+			Type type = toProcess.poll();
+			allInterfaces.add(type);
+			toProcess.addAll(Arrays.asList(type.getInterfaces()));
 		}
 		return allInterfaces.toArray(new Type[allInterfaces.size()]);
 	}

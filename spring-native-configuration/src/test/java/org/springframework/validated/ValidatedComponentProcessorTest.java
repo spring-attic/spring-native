@@ -8,6 +8,7 @@ import org.springframework.nativex.util.NativeTestContext;
 import org.springframework.validated.components.ComponentWithValidatedInterface;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceAndExtraInterface;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceOverSuperClass;
+import org.springframework.validated.components.ComponentWithValidatedInterfaceOverSuperInterface;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceWithDefault;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceWithoutMethod;
 import org.springframework.validated.components.ValidatedComponent;
@@ -61,6 +62,18 @@ public class ValidatedComponentProcessorTest {
                 "org.springframework.validated.components.ValidatedInterface",
                 Arrays.asList(
                         "org.springframework.validated.components.ValidatedInterface",
+                        "org.springframework.aop.SpringProxy",
+                        "org.springframework.aop.framework.Advised",
+                        "org.springframework.core.DecoratingProxy"),
+                null);
+    }
+
+    @Test
+    public void shouldDescribeProxiesForComponentWithValidatedInterfaceOverSuperInterface() {
+        checkProxies(ComponentWithValidatedInterfaceOverSuperInterface.class,
+                "org.springframework.validated.components.MiddleInterface",
+                Arrays.asList(
+                        "org.springframework.validated.components.MiddleInterface",
                         "org.springframework.aop.SpringProxy",
                         "org.springframework.aop.framework.Advised",
                         "org.springframework.core.DecoratingProxy"),
