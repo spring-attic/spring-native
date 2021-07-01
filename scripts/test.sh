@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # If supplied $1 is the executable and $2 is the file where to create test-output.txt and summary.csv, otherwise these
-# default to the 'target/current-directory-name' (e.g. target/commandlinerunner) and 
-# target/native respectively
+# default to the 'target/current-directory-name' (e.g. target/commandlinerunner) and target/native respectively for Maven
+# or 'build/native/current-directory-name' (e.g. build/native/commandlinerunner) and build/native respectively for Gradle.
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -10,8 +10,16 @@ NC='\033[0m'
 if [[ "$1" == "-s" ]]; then
   SILENT=true
   shift 1
-else 
+else
   SILENT=false
+fi
+
+if [ -f pom.xml ]; then
+  EXECUTABLE_DIR=target
+  REPORT_DIR=target/native
+else
+  EXECUTABLE_DIR=build/native
+  REPORT_DIR=build/native
 fi
 
 if ! [ -z "$1" ]; then
@@ -19,16 +27,16 @@ if ! [ -z "$1" ]; then
 		EXECUTABLE=${1}
 		shift 1
 	else
-		EXECUTABLE=target/${PWD##*/}
+		EXECUTABLE=${EXECUTABLE_DIR}/${PWD##*/}
 	fi
 else
-	EXECUTABLE=${1:-target/${PWD##*/}}
+	EXECUTABLE=${1:-${EXECUTABLE_DIR}/${PWD##*/}}
 fi
 
 if [ -z "$1" ] || [[ "$1" == "--"* ]]; then
-  TEST_OUTPUT_FILE=target/native/test-output.txt
-  BUILD_OUTPUT_FILE=target/native/output.txt
-  SUMMARY_CSV_FILE=target/native/summary.csv
+  TEST_OUTPUT_FILE=${REPORT_DIR}/test-output.txt
+  BUILD_OUTPUT_FILE=${REPORT_DIR}/output.txt
+  SUMMARY_CSV_FILE=${REPORT_DIR}/summary.csv
 else
   TEST_OUTPUT_FILE=$1/test-output.txt
   BUILD_OUTPUT_FILE=$1/output.txt
