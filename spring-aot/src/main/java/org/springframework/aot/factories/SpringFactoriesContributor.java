@@ -54,7 +54,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 
 	private static final Log logger = LogFactory.getLog(SpringFactoriesContributor.class);
 	
-	private static List<SpringFactoriesProcessor> springFactoriesProcessors;
+	private List<SpringFactoriesProcessor> springFactoriesProcessors;
 
 	@Override
 	public int getOrder() {

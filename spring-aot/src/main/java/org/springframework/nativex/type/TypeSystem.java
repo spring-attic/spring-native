@@ -84,7 +84,7 @@ public class TypeSystem {
 
 	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
 
-	private static JavaModuleLookupSystem javaModuleLookupSystem = JavaModuleLookupSystem.get();
+	private JavaModuleLookupSystem javaModuleLookupSystem = JavaModuleLookupSystem.get();
 
 	public Map<TypeId, Type> primitives = new HashMap<>();
 
