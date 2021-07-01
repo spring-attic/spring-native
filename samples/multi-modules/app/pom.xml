@@ -61,8 +61,7 @@
 								</goals>
 								<configuration>
 									<image>
-										<!-- TODO Bring back "paketobuildpacks/builder:tiny" before 0.10.0 release -->
-										<builder>dmikusa/graalvm-tiny</builder>
+										<builder>paketobuildpacks/builder:tiny</builder>
 										<env>
 											<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
 										</env>

@@ -20,7 +20,6 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -29,8 +28,7 @@ test {
 }
 
 bootBuildImage {
-	// TODO Bring back "paketobuildpacks/builder:tiny" before 0.10.0 release
-	builder = "dmikusa/graalvm-tiny"
+	builder = "paketobuildpacks/builder:tiny"
 	environment = [
 			"BP_NATIVE_IMAGE" : "true"
 	]
