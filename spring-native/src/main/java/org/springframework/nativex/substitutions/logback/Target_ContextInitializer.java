@@ -33,7 +33,7 @@ import org.springframework.nativex.substitutions.LogbackIsAround;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
-@TargetClass(className = "ch.qos.logback.classic.util.ContextInitializer", onlyWith = { OnlyIfPresent.class, LogbackIsAround.class, RemoveXmlSupport.class })
+@TargetClass(className = "ch.qos.logback.classic.util.ContextInitializer", onlyWith = { OnlyIfPresent.class, LogbackIsAround.class })
 final class Target_ContextInitializer {
 
 	@Alias
@@ -46,16 +46,9 @@ final class Target_ContextInitializer {
 		}
 		final String urlString = url.toString();
 		if (urlString.endsWith("groovy")) {
-			if (EnvUtil.isGroovyAvailable()) {
-				// avoid directly referring to GafferConfigurator so as to avoid
-				// loading groovy.lang.GroovyObject . See also http://jira.qos.ch/browse/LBCLASSIC-214
-				GafferUtil.runGafferConfiguratorOn(loggerContext, this, url);
-			} else {
-				StatusManager sm = loggerContext.getStatusManager();
-				sm.add(new ErrorStatus("Groovy classes are not available on the class path. ABORTING INITIALIZATION.", loggerContext));
-			}
-		} else {
-			throw new LogbackException("Unexpected filename extension of file [" + url.toString() + "]. Should be either .groovy or .xml");
+			throw new LogbackException("Logback Groovy configuration is not supported on native");
+		} else if (urlString.endsWith("xml")) {
+			throw new LogbackException("Logback XML configuration is not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/625");
 		}
 	}
 }
