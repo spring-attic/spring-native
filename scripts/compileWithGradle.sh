@@ -11,7 +11,14 @@ rm -rf build
 mkdir -p build/native
 
 echo "Packaging ${PWD##*/} with Gradle"
-./gradlew nativeTest nativeBuild &> build/native/output.txt
+# Only run security-kotlin tests to speedup the full build while still testing a Gradle project
+if [[ ${PWD##*/} == "security-kotlin" ]]
+then
+  echo "Performing native testing for ${PWD##*/}"
+  ./gradlew nativeTest nativeBuild &> build/native/output.txt
+else
+  ./gradlew nativeBuild &> build/native/output.txt
+fi
 
 if [[ -f build/native/${PWD##*/} ]]
 then

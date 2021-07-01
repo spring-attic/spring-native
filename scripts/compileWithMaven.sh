@@ -11,7 +11,15 @@ rm -rf target
 mkdir -p target/native
 
 echo "Packaging ${PWD##*/} with Maven"
-mvn -ntp -Pnative package &> target/native/output.txt
+# Only run Petclinic tests to speedup the full build while still testing a complex testing scenario
+if [[ ${PWD##*/} == petclinic* ]]
+then
+  echo "Performing native testing for ${PWD##*/}"
+  mvn -ntp -Pnative package &> target/native/output.txt
+else
+  mvn -ntp -DskipTests -Pnative package &> target/native/output.txt
+fi
+
 
 if [[ -f target/${PWD##*/} ]]
 then
