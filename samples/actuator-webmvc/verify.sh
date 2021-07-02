@@ -24,4 +24,14 @@ if [[ "$RESPONSE" != *"statistic"* ]]; then
   echo "Failed to get data from metrics/jvm.classes.loaded endpoint: $RESPONSE"
   exit 5
 fi
+RESPONSE=`curl -s localhost:8080/actuator/custom`
+if [[ "$RESPONSE" != *"OK"* ]]; then
+  echo "Failed to get data from custom endpoint: $RESPONSE"
+  exit 6
+fi
+RESPONSE=`curl -s localhost:8080/actuator/customnc`
+if [[ "$RESPONSE" != *"OK"* ]]; then
+  echo "Failed to get data from customnc endpoint: $RESPONSE"
+  exit 7
+fi
 exit 0
