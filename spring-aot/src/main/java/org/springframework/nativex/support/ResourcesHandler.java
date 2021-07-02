@@ -1716,13 +1716,7 @@ public class ResourcesHandler extends Handler {
 				// required the check down below "if (returnType.isComponent()) {" should be extended so full processing
 				// would happen for these return types.
 				int bits = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-				if (returnType.hasAutowiredMethods()) {
-					bits|=AccessBits.DECLARED_METHODS;
-				}
-				if (returnType.hasAutowiredFields()) {
-					bits|=AccessBits.DECLARED_FIELDS;
-				}
-				methodRCM.requestTypeAccess(returnType.getDottedName(), bits);
+				methodRCM.requestTypeAccess(returnType.getDottedName(), bits, returnType.getRequiredAccessibleMethods(), returnType.getRequiredAccessibleFields());
 			}
 
 			// Example method being handled here:
@@ -1908,7 +1902,7 @@ public class ResourcesHandler extends Handler {
 			Integer access = reflectionConfigurationAlreadyAdded.get(dname);
 			if (access == null) {
 				logger.debug(spaces(depth) + "configuring reflective access to " + dname + "   " + AccessBits.toString(requestedAccess)+
-						(methods==null?"":" mds="+methods));
+						(methods==null?"(NO EXPLICIT METHODS)":" mds="+methods));
 				reflectionConfigurationAlreadyAdded.put(dname, requestedAccess);
 			} else {
 				int extraAccess = AccessBits.compareAccess(access,requestedAccess);

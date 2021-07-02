@@ -3005,5 +3005,72 @@ public class Type {
 		logger.debug("TIMER: Time taken to scan for subtypes of "+getDottedName()+" was "+(etime-stime)+"ms and found "+subtypes.size()+" subtypes");
 		return subtypes;
 	}
+	
+	/**
+	 * Determine if any methods on this type look like they need to be reflectively accessible and if so return
+	 * the descriptors for them. Managing the list of annotations that should be accessible is painful, so this
+	 * code will assume if the annotation starts with org.springframework it is a candidate of interest (it will
+	 * ignore those containing Null to skip Nullable/etc).
+	 * 
+	 * @return list of {@link MethodDescriptor} for those methods of interest
+	 */
+	public List<MethodDescriptor> getRequiredAccessibleMethods() {
+		List<Method> methods = new ArrayList<>();
+		for (Method method: getMethods()) {
+			boolean ignore = true;
+			for (Type t: method.getAnnotationTypes()) {
+				String name = t.getDottedName();
+				if (name.startsWith("org.springframework.") && !name.contains("Null")) {
+					ignore = false;
+					break;
+				}
+			}
+			if (!ignore) {
+				methods.add(method);
+			}
+		}
+		if (methods.isEmpty()) {
+			return null;
+		}
+		List<MethodDescriptor> methodDescriptors = new ArrayList<>();
+		for (Method method: methods) {
+			String[] array = method.asConfigurationArray();
+			methodDescriptors.add(MethodDescriptor.of(array));
+		}
+		return methodDescriptors;
+	}
+
+	/**
+	 * Determine if any fields on this type look like they need to be reflectively accessible and if so return
+	 * the descriptors for them. Managing the list of annotations that should be accessible is painful, so this
+	 * code will assume if the annotation starts with org.springframework it is a candidate of interest (it will
+	 * ignore those containing Null to skip Nullable/etc).
+	 * 
+	 * @return list of {@link MethodDescriptor} for those methods of interest
+	 */
+	public List<FieldDescriptor> getRequiredAccessibleFields() {
+		List<Field> fields = new ArrayList<>();
+		for (Field field: getFields()) {
+			boolean ignore = true;
+			for (Type t: field.getAnnotationTypes()) {
+				String name = t.getDottedName();
+				if (name.startsWith("org.springframework.") && !name.contains("Null")) {
+					ignore = false;
+					break;
+				}
+			}
+			if (!ignore) {
+				fields.add(field);
+			}
+		}
+		if (fields.isEmpty()) {
+			return null;
+		}
+		List<FieldDescriptor> fieldDescriptors = new ArrayList<>();
+		for (Field field: fields) {
+			fieldDescriptors.add(FieldDescriptor.of(field.getName(),false,false));
+		}
+		return fieldDescriptors;
+	}
 
 }

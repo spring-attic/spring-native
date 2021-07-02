@@ -167,7 +167,8 @@ public class RequestedConfigurationManager {
 
 	public void mergeIn(RequestedConfigurationManager incomingRCM) {
 		for (Entry<String, Integer> entry : incomingRCM.getRequestedTypeAccesses()) {
-			requestTypeAccess(entry.getKey(), entry.getValue());
+			String typename = entry.getKey();
+			requestTypeAccess(typename, entry.getValue(), incomingRCM.getMethodAccessRequestedFor(typename), incomingRCM.getFieldAccessRequestedFor(typename));
 		}
 		requestInitializationDescriptors(incomingRCM.getRequestedInitializations());
 		requestProxyDescriptors(incomingRCM.getRequestedProxies());
