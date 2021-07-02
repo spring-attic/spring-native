@@ -11,7 +11,7 @@ WARNING: A mandatory pre-requisite is to use <<spring-aot>> Maven or Gradle upst
 
 === With Buildpacks
 
-Spring Boot applications usually use {buildpacks}[Buildpacks] via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuilImage`) integration.
+Spring Boot applications usually use {buildpacks}[Buildpacks] via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integration.
 You can also use directly {buildpacks-docs}/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<spring-aot>> into an optimized container image.
 
 First, make sure that a Docker daemon is available, either https://hub.docker.com/search?type=edition&offering=community[locally] or {buildpacks-docs}/app-developer-guide/build-a-windows-app/#using-remote-docker-hosts[remotely].
