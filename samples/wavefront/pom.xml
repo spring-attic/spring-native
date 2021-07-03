@@ -15,7 +15,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<wavefront.version>2.2.0-RC1</wavefront.version>
 	</properties>
 
 	<dependencies>
@@ -53,18 +52,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.wavefront</groupId>
-				<artifactId>wavefront-spring-boot-bom</artifactId>
-				<version>${wavefront.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>

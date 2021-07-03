@@ -99,7 +99,7 @@
 			<dependency>
 				<groupId>com.wavefront</groupId>
 				<artifactId>wavefront-spring-boot</artifactId>
-				<version>2.2.0-RC1</version>
+				<version>2.2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>io.grpc</groupId>
