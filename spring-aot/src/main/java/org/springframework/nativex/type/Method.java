@@ -422,7 +422,21 @@ public class Method {
 			String[] output = new String[params.size() + 1];
 			output[0] = getName();
 			for (p = 0; p < params.size(); p++) {
-				output[p + 1] = params.get(p).getDottedName();
+				Type type = params.get(p);
+				if (type != null) {
+					output[p + 1] = params.get(p).getDottedName();
+				} else {
+					String primitiveId = internalParameterTypes[p].getDescriptor();
+					String name = null;
+					if (primitiveId.length()==1) {
+						name = primitiveToName(primitiveId);
+					}
+					if (name == null) {
+						throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")");
+					} else {
+						output[p+1] = name;
+					}
+				}
 			}
 			return output;
 		} catch (NullPointerException npe) {
@@ -498,17 +512,7 @@ public class Method {
 				}
 				StringBuilder pstring = new StringBuilder();
 				if (n.length()==1) {
-					switch (n) {
-					case "I": pstring.append("int"); break;
-					case "Z": pstring.append("boolean"); break;
-					case "J": pstring.append("long"); break;
-					case "B": pstring.append("byte"); break;
-					case "C": pstring.append("char"); break;
-					case "S": pstring.append("short"); break;
-					case "F": pstring.append("float"); break;
-					case "D": pstring.append("double"); break;
-					default: throw new IllegalStateException(n);
-					}
+					pstring.append(primitiveToName(n));
 				} else {
 					// n is java/lang/String 
 					pstring.append(n.replace("/", "."));
@@ -522,6 +526,20 @@ public class Method {
 		}
 		MethodDescriptor md = MethodDescriptor.of(mn.name, paramStrings);
 		return md;
+	}
+	
+	private String primitiveToName(String primitiveDescriptor) {
+		switch (primitiveDescriptor) {
+		case "I": return "int";  
+		case "Z": return "boolean";  
+		case "J": return "long"; 
+		case "B": return "byte"; 
+		case "C": return "char"; 
+		case "S": return "short"; 
+		case "F": return "float"; 
+		case "D": return "double"; 
+		default: throw new IllegalStateException(primitiveDescriptor);
+		}
 	}
 
 }
