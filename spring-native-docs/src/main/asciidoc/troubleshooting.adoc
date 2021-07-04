@@ -75,6 +75,47 @@ You should add resource configuration using <<native-hints>>.
 Because of a temporary limitation of the AOT plugin, developers need to trigger the `package` phase if they wish to run the application with the Spring Boot Maven plugin:
 please use `mvn package spring-boot:run`.
 
+[[logback-workaround]]
+==== How can I configure programmatically Logback as a `logback.xml` alternative?
+
+As a workaround for https://github.com/spring-projects-experimental/spring-native/issues/625[#625], you can create a `src/main/resources/META-INF/services/ch.qos.logback.classic.spi.Configurator` file with the following content:
+
+[source,subs="attributes,verbatim"]
+----
+org.springframework.boot.logging.logback.CustomConfigurator
+----
+
+Add a `org.springframework.boot.logging.logback.CustomConfigurator` class similar to the one bellow which will disable Spring Boot logging configuration override, reuse Spring Boot defaults, and allow you to customize Logback `LoggerContext`:
+
+[source,java,subs="attributes,verbatim"]
+----
+public class CustomConfigurator extends ContextAwareBase implements Configurator {
+
+	@Override
+	public void configure(LoggerContext context) {
+
+		// Set this to avoid LoggerContext override by Spring Boot
+		context.putObject(LoggingSystem.class.getName(), new Object());
+
+		// Apply Spring Boot default configuration, make sure CustomConfigurator
+		// is in the org.springframework.boot.logging.logback package
+		LogbackConfigurator configurator = new LogbackConfigurator(context);
+		new DefaultLogbackConfiguration(null).apply(configurator);
+		context.setPackagingDataEnabled(true);
+
+		// Your custom configuration goes there
+		context.addListener(...);
+	}
+}
+----
+
+Add also the following hint to your Spring Boot application class:
+
+[source,java,subs="attributes,verbatim"]
+----
+@InitializationHint(types = ColorConverter.class, initTime = InitializationTime.BUILD)
+----
+
 ==== Missing configuration
 
 The Spring AOT plugin will do the best it can to catch everything but it doesn't understand every bit of code out there.

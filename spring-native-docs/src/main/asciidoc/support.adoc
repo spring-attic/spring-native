@@ -50,7 +50,7 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 * `spring-boot-starter-jdbc`
 * `spring-boot-starter-integration`
 * `spring-boot-starter-logging`
-** Logback is supported, but not configuration with `logback.xml` so please configure it with `application.properties` or `application.yml` for now, see https://github.com/spring-projects-experimental/spring-native/issues/625[#625] for more details.
+** Logback is supported, but https://github.com/spring-projects-experimental/spring-native/issues/625[not configuration with `logback.xml`] so please configure it with `application.properties` or `application.yml` for now, or use <<logback-workaround, this workaround>> to configure it programmatically.
 ** Log4j2 is not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/115[#115].
 * `spring-boot-starter-mail`
 * `spring-boot-starter-thymeleaf`
