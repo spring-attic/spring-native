@@ -15,9 +15,9 @@ echo "Packaging ${PWD##*/} with Maven"
 if [[ ${PWD##*/} == petclinic* ]]
 then
   echo "Performing native testing for ${PWD##*/}"
-  mvn -ntp -Pnative package &> target/native/output.txt
+  mvn -ntp -Pnative package $* &> target/native/output.txt
 else
-  mvn -ntp -DskipTests -Pnative package &> target/native/output.txt
+  mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
 fi
 
 
