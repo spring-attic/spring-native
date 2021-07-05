@@ -34,10 +34,13 @@ import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreat
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
+
+import java.lang.reflect.Proxy;
 
 @NativeHint(trigger = AopAutoConfiguration.class,
 	types = {
@@ -62,6 +65,9 @@ import org.springframework.nativex.hint.AccessBits;
 				Java15AnnotationFinder.class, 
 				Java15GenericSignatureInformationProvider.class,
 				Java15ReflectionBasedReferenceTypeDelegate.class},
-			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS)
-})
+			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(types = Proxy.class, access = AccessBits.DECLARED_METHODS) // aspect on proxied bean such as repository
+	},
+	resources = @ResourceHint(patterns = "org.aspectj.weaver.weaver-messages", isBundle = true) // messages in debug log
+)
 public class AopHints implements NativeConfiguration { }
