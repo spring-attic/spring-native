@@ -57,8 +57,7 @@ import org.springframework.nativex.hint.AccessBits;
 		@TypeHint(types = { ConfigurationClassPostProcessor.class },
 				methods = @MethodHint(name="setMetadataReaderFactory", parameterTypes = MetadataReaderFactory.class)
 		),
-		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE),
-//		@TypeHint(types = Profile.class, access = AccessBits.ANNOTATION)
+		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE)
 })
 public class ContextAnnotationHints implements NativeConfiguration {
 }
