@@ -53,7 +53,8 @@ public class CLR implements CommandLineRunner {
 		{
 			System.out.println("refresh index");
 			repository.deleteAll();
-			operations.indexOps(Conference.class).refresh();
+			operations.indexOps(Conference.class).delete();
+			operations.indexOps(Conference.class).create();
 		}
 
 		{

@@ -1,5 +1,10 @@
 package app.main.model;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -7,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import java.time.Instant;
 
 @Entity
 public class Foo {
@@ -14,14 +20,19 @@ public class Foo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-
 	private String value;
-
 	@Enumerated
 	private SomeEnum enumerated;
-
 	@OneToOne(cascade = CascadeType.ALL)
 	private Flurb flurb;
+	@CreatedDate
+	Instant createdAt;
+	@CreatedBy
+	String createdBy;
+	@LastModifiedDate
+	Instant modifiedAt;
+	@LastModifiedBy
+	String modifiedBy;
 
 	public Foo() {
 	}

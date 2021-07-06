@@ -1,12 +1,26 @@
 package com.example.webflux;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.Instant;
 
 public class Reservation {
 
 	@Id
 	private Integer id;
 	private String name;
+	@CreatedDate
+	Instant createdAt;
+	@CreatedBy
+	String createdBy;
+	@LastModifiedDate
+	Instant modifiedAt;
+	@LastModifiedBy
+	String modifiedBy;
 
 	public String toString() {
 		return "Reservation(id="+id+",name="+name+")";

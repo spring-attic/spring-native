@@ -15,10 +15,15 @@
  */
 package com.example.data.mongo;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -36,6 +41,15 @@ public class Order {
 	private Date orderDate;
 
 	private List<LineItem> items;
+
+	@CreatedDate
+	Instant createdAt;
+	@CreatedBy
+	String createdBy;
+	@LastModifiedDate
+	Instant modifiedAt;
+	@LastModifiedBy
+	String modifiedBy;
 
 	protected Order() {
 	}
