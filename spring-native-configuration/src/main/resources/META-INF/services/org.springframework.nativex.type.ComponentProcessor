@@ -1,3 +1,4 @@
+org.springframework.cloud.square.SquareComponentProcessor
 org.springframework.SpringAtRepositoryComponentProcessor
 org.springframework.data.SpringDataComponentProcessor
 org.springframework.data.JpaComponentProcessor
