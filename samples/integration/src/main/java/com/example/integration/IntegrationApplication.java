@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
@@ -36,21 +37,32 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 public class IntegrationApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(IntegrationApplication.class, args);
+		ApplicationContext context = SpringApplication.run(IntegrationApplication.class, args);
 
-		WebClient.create()
+		WebClient webClient =
+				context.getBean(WebClient.Builder.class)
+						.baseUrl("http://localhost:8080")
+						.build();
+
+		Thread.sleep(1000);
+
+		System.out.println("Starting 'dateSourceEndpoint'...");
+
+		webClient
 				.get()
-				.uri("http://localhost:8080//control-bus/dateSourceEndpoint")
+				.uri("control-bus/dateSourceEndpoint")
 				.retrieve()
 				.toBodilessEntity()
 				.block(Duration.ofSeconds(10));
 
 		Thread.sleep(1000);
 
+		System.out.println("Obtaining integration graph...");
+
 		String integrationGraph =
-				WebClient.create()
+				webClient
 						.get()
-						.uri("http://localhost:8080/integration-graph")
+						.uri("integration-graph")
 						.accept(MediaType.APPLICATION_JSON)
 						.retrieve()
 						.bodyToMono(String.class)
