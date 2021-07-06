@@ -7,8 +7,8 @@ import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
 import org.springframework.validated.components.ComponentWithValidatedInterface;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceAndExtraInterface;
-import org.springframework.validated.components.ComponentWithValidatedInterfaceOverSuperClass;
-import org.springframework.validated.components.ComponentWithValidatedInterfaceOverSuperInterface;
+import org.springframework.validated.components.ComponentWithValidatedInterfaceOverProxyClass;
+import org.springframework.validated.components.ComponentWithValidatedInterfaceOverProxyInterface;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceWithDefault;
 import org.springframework.validated.components.ComponentWithValidatedInterfaceWithoutMethod;
 import org.springframework.validated.components.ValidatedComponent;
@@ -49,7 +49,7 @@ public class ValidatedComponentProcessorTest {
                 "org.springframework.validated.components.ValidatedInterface",
                 Arrays.asList(
                         "org.springframework.validated.components.ValidatedInterface",
-                        "org.springframework.validated.components.SimpleInterface",
+                        "org.springframework.validated.components.VoidInterface",
                         "org.springframework.aop.SpringProxy",
                         "org.springframework.aop.framework.Advised",
                         "org.springframework.core.DecoratingProxy"),
@@ -58,7 +58,7 @@ public class ValidatedComponentProcessorTest {
 
     @Test
     public void shouldDescribeProxiesForComponentWithValidatedInterfaceOverSuperClass() {
-        checkProxies(ComponentWithValidatedInterfaceOverSuperClass.class,
+        checkProxies(ComponentWithValidatedInterfaceOverProxyClass.class,
                 "org.springframework.validated.components.ValidatedInterface",
                 Arrays.asList(
                         "org.springframework.validated.components.ValidatedInterface",
@@ -70,10 +70,10 @@ public class ValidatedComponentProcessorTest {
 
     @Test
     public void shouldDescribeProxiesForComponentWithValidatedInterfaceOverSuperInterface() {
-        checkProxies(ComponentWithValidatedInterfaceOverSuperInterface.class,
-                "org.springframework.validated.components.MiddleInterface",
+        checkProxies(ComponentWithValidatedInterfaceOverProxyInterface.class,
+                "org.springframework.validated.components.ProxyInterface",
                 Arrays.asList(
-                        "org.springframework.validated.components.MiddleInterface",
+                        "org.springframework.validated.components.ProxyInterface",
                         "org.springframework.aop.SpringProxy",
                         "org.springframework.aop.framework.Advised",
                         "org.springframework.core.DecoratingProxy"),

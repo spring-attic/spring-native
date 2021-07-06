@@ -1,4 +1,4 @@
-package org.springframework.validated.components;
+package com.example.validator.hierarchy;
 
 import org.springframework.validation.annotation.Validated;
 
