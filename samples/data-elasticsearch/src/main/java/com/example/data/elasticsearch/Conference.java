@@ -15,24 +15,44 @@
  */
 package com.example.data.elasticsearch;
 
-import static org.springframework.data.elasticsearch.annotations.FieldType.*;
-
-import java.lang.Object;
-import java.util.List;
-
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
+
+import java.lang.Object;
+import java.time.Instant;
+import java.util.List;
+
+import static org.springframework.data.elasticsearch.annotations.FieldType.*;
 
 @Document(indexName = "conference-index")
 public class Conference {
 
-	private @Id String id;
+	private @Id
+	String id;
 	private String name;
-	private @Field(type = Date) String date;
+	private @Field(type = Date)
+	String date;
 	private GeoPoint location;
 	private List<String> keywords;
+
+	@CreatedDate
+	@Field(type = FieldType.Date, format = DateFormat.basic_date_time)
+	Instant createdAt;
+	@CreatedBy
+	String createdBy;
+	@LastModifiedDate
+	@Field(type = FieldType.Date, format= DateFormat.basic_date_time)
+	Instant modifiedAt;
+	@LastModifiedBy
+	String modifiedBy;
 
 	// do not remove it
 	public Conference() {

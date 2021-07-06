@@ -17,12 +17,24 @@ package com.example.data.mongo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.ReactiveAuditorAware;
+import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing;
+import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @SpringBootApplication
+@EnableReactiveMongoAuditing(auditorAwareRef = "fixedAuditor")
 public class MongoApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(MongoApplication.class);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
+
+	@Bean
+	ReactiveAuditorAware<String> fixedAuditor(){
+		return () -> Mono.just("Douglas Adams");}
 }
