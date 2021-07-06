@@ -472,6 +472,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-webflux</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-websocket</artifactId>
             <scope>provided</scope>
         </dependency>
