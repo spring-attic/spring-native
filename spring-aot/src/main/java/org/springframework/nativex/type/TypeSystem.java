@@ -484,6 +484,215 @@ public class TypeSystem {
 		}
 	}
 
+	/**
+	 * Prepare a {@link TypeScanner} selecting (single class files or jars) for {@link Type} scanning.
+	 *
+	 * @param filter must not be {@literal null}.
+	 * @return new instance of {@link TypeScanner}.
+	 */
+	public TypeScanner scanFiles(Predicate<File> filter) {
+		return new TypeScanner(this).files(filter);
+	}
+
+	/**
+	 * Prepare a {@link TypeScanner} selecting specific dependencies (.jar files) for {@link Type} scanning. <br />
+	 *
+	 * <dl>
+	 *     <dt>log4j-core</dt>
+	 *     <dd>matches any version of the given artifact name</dd>
+	 *     <dt>log4j-core-2.1.4.jar*</dt>
+	 *     <dd>artifact names ending with .jar match against the exact file name.</dd>
+	 *     <dt>log4j*</dt>
+	 *     <dd>the * postfix will scan for all artifacts staring with the given name.</dd>
+	 * </dl>
+	 *
+	 * @param artifactNames must not be {@literal null}.
+	 * @return new instance of {@link TypeScanner}.
+	 */
+	public TypeScanner scanDependencies(String... artifactNames) {
+
+		TypeScanner scanner = new TypeScanner(this).files(file -> {
+
+			boolean found = false;
+
+			String artifactNameFromFile = TypeScanner.extractArtifactNameFromFile(file).toLowerCase();
+
+			for (String artifactName : artifactNames) {
+				if (artifactName.endsWith("*")) {
+					found = artifactNameFromFile.startsWith(artifactName.replace("*", "").toLowerCase());
+				} else if (artifactName.endsWith(".jar")) {
+					found = file.getName().equalsIgnoreCase(artifactName);
+				} else {
+					found = artifactNameFromFile.equals(artifactName.toLowerCase());
+				}
+				if (found) {
+					break;
+				}
+			}
+			return found;
+		});
+
+		scanner.includeAppPackages = false; // TODO: would you expect bits of the app to be scanned? I don't think so.
+		return scanner;
+	}
+
+	/**
+	 * Utility for discovering {@link Type types} within dependencies
+	 */
+	public static class TypeScanner {
+
+		private final TypeSystem typeSystem;
+		private boolean cacheResults = false;
+		private boolean includeAppPackages = true;
+		private Predicate<File> fileFilter = (it) -> true;
+		private Predicate<Type> typeFilter = (it) -> true;
+
+		TypeScanner(TypeSystem typeSystem) {
+			this.typeSystem = typeSystem;
+		}
+
+		TypeScanner files(Predicate<File> filter) {
+
+			this.fileFilter = filter;
+			return this;
+		}
+
+		/**
+		 * Include types matching the given {@link Predicate filter}.
+		 *
+		 * @param filter must not be {@literal null}.
+		 * @return this.
+		 */
+		public TypeScanner forTypes(Predicate<Type> filter) {
+
+			this.typeFilter = filter;
+			return this;
+		}
+
+		/**
+		 * Put discovered {@link Type types} into the overall {@link TypeSystem} cache.
+		 * <strong>Use with caution!</strong>
+		 *
+		 * @return this.
+		 */
+		public TypeScanner cacheResults() {
+
+			cacheResults = true;
+			return this;
+		}
+
+		/**
+		 * Start looking for {@link File files} matching the given {@link Predicate filter} and inspect discovered {@link Type types}.
+		 *
+		 * @return never {@literal null}.
+		 */
+		public Stream<Type> stream() {
+
+			return Stream.concat(
+					typeSystem.appPackages.values() // the list of pages
+							.stream()
+							.filter(it -> includeAppPackages)
+							.flatMap(it -> it.stream()) // get the individual Files
+							.distinct()
+							.filter(file -> !file.getName().contains("module-info") && !file.getName().contains("package-info"))
+							.filter(fileFilter)
+							.flatMap(file -> {
+								return readTypes(file);
+							}),
+					typeSystem.packageCache.values()
+							.stream()
+							.flatMap(it -> it.stream())
+							.distinct()
+							.filter(fileFilter)
+							.flatMap(jarFile -> {
+								return readTypesFromJar(jarFile);
+							}))
+					.distinct()
+					.filter(typeFilter)
+					.map(it -> {
+
+						// Cache, should we?
+						if (cacheResults) {
+							typeSystem.typeCache.putIfAbsent(it.getName(), it);
+						}
+						return it;
+					});
+		}
+
+		/**
+		 * Collect {@link Type types} from {@link File files} matching the given {@link Predicate filter}.
+		 *
+		 * @return never {@literal null}.
+		 */
+		public List<Type> list() {
+			return stream().collect(Collectors.toList());
+		}
+
+		private Stream<Type> readTypes(File file) {
+
+			if (file.isDirectory()) {
+				return Arrays.stream(file.listFiles()).flatMap(this::readTypes);
+			} else if (file.getName().endsWith(".class")) {
+				try {
+					byte[] bytes = Files.readAllBytes(Paths.get(file.toURI()));
+					return Stream.of(typeForNode(new ClassReader(bytes)));
+				} catch (IOException ioe) {
+					throw new IllegalStateException(ioe);
+				}
+			}
+			return Stream.empty();
+		}
+
+		private Stream<Type> readTypesFromJar(File zipFile) {
+
+			Collection<Type> types = new ArrayList<>();
+
+			try (ZipFile zf = new ZipFile(zipFile)) {
+				Enumeration<? extends ZipEntry> entries = zf.entries();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					if (entry.getName().endsWith(".class") && !entry.getName().contains("module-info") && !entry.getName().contains("package-info")) {
+						types.add(typeForNode(new ClassReader(zf.getInputStream(entry))));
+					}
+				}
+			} catch (IOException ioe) {
+				throw new IllegalStateException(ioe);
+			}
+
+			return types.stream();
+		}
+
+		/**
+		 * Remove the file {@literal .jar} file type extension and potential version identifiers.
+		 *
+		 * <ul>
+		 *     <li>log4j.jar -&gt; log4j</li>
+		 *     <li>log-4-j.jar -&gt; log-4-j</li>
+		 *     <li>log4j-1.3.0-SNAPSHOT.jar -&gt; log4j</li>
+		 *     <li>log-4-j-1.4.0.jar -&gt; log-4-j</li>
+		 *     <li>log4j-1.4.0.jar -&gt; log4j</li>
+		 *     <li>log4j-1.5.0.M1 -&gt; log4j</li>
+		 * </ul>
+		 * @param file
+		 * @return
+		 */
+		static String extractArtifactNameFromFile(File file) {
+			return file.getName().replaceAll("\\.jar|-(!?\\d\\.).*[\\w\\d]", "");
+		}
+
+		Type typeForNode(ClassReader reader) {
+
+			ClassNode node = new ClassNode();
+			reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+
+			if (node == null && typeSystem.typeCache.containsKey(node.name)) {
+				return typeSystem.typeCache.get(node.name);
+			}
+
+			return Type.forClassNode(this.typeSystem, node, 0);
+		}
+	}
+
 	public static byte[] loadFromStream(InputStream stream) {
 		try {
 			BufferedInputStream bis = new BufferedInputStream(stream);
