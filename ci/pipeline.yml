@@ -128,11 +128,6 @@ resources:
       repository: spring-native
       access_token: ((github-ci-release-token))
       pre_release: false
-  - name: slack-alert
-    type: slack-notification
-    icon: slack
-    source:
-      url: ((slack-webhook-url))
   - name: every-day
     type: time
     source: {interval: 24h}
@@ -218,6 +213,7 @@ jobs:
     plan:
       - get: git-repo
       - get: ci-images-git-repo
+      - get: every-day
         passed: [build-graalvm-ce-stable-image]
         trigger: true
       - task: build-spring-native-stable-image
@@ -235,6 +231,7 @@ jobs:
     plan:
       - get: git-repo
       - get: ci-images-git-repo
+      - get: every-day
         passed: [build-graalvm-ce-dev-image]
         trigger: true
       - task: build-spring-native-dev-image
@@ -275,11 +272,6 @@ jobs:
           file: git-repo/ci/tasks/build-samples.yml
           params:
             <<: *docker-hub-task-params
-        on_failure:
-          do:
-            - put: slack-alert
-              params:
-                <<: *slack-fail-params
   - name: build-samples-dev-java11
     public: true
     plan:
