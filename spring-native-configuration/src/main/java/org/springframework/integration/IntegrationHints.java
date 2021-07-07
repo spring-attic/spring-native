@@ -27,6 +27,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.TypeProcessor;
@@ -78,7 +79,10 @@ import org.springframework.nativex.type.TypeSystem;
 						types = {
 								org.springframework.integration.xml.xpath.XPathUtils.class,
 								org.springframework.integration.json.JsonPathUtils.class,
-								com.jayway.jsonpath.JsonPath.class
+								com.jayway.jsonpath.JsonPath.class,
+								org.springframework.integration.gateway.MethodArgsHolder.class,
+								org.springframework.integration.routingslip.ExpressionEvaluatingRoutingSlipRouteStrategy.RequestAndReply.class,
+								org.springframework.integration.core.Pausable.class
 						})
 		},
 		jdkProxies = {
@@ -152,15 +156,24 @@ public class IntegrationHints implements NativeConfiguration {
 	private static final String MESSAGING_GATEWAY_ANNOTATION =
 			"Lorg/springframework/integration/annotation/MessagingGateway;";
 
+	private static final String ABSTRACT_ENDPOINT_TYPE = "Lorg/springframework/integration/endpoint/AbstractEndpoint;";
+
+	private static final String MESSAGE_TYPE = "org/springframework/messaging/Message";
+
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 		List<HintDeclaration> hints = new ArrayList<>();
 		hints.addAll(computeMessagingGatewayHints(typeSystem));
+		hints.addAll(computeAbstractEndpointHints(typeSystem));
+//		hints.addAll(computeMessageHints(typeSystem));
 		return hints;
 	}
 
 	private static List<HintDeclaration> computeMessagingGatewayHints(TypeSystem typeSystem) {
 		return TypeProcessor.namedProcessor("IntegrationHints - MessagingGateway")
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.skipConstructorInspection()
 				.filter(type ->
 						type.hasAnnotationInHierarchy(MESSAGING_GATEWAY_ANNOTATION) &&
 								type.isInterface() &&
@@ -173,5 +186,33 @@ public class IntegrationHints implements NativeConfiguration {
 				.use(typeSystem)
 				.processTypes();
 	}
+
+	private static List<HintDeclaration> computeAbstractEndpointHints(TypeSystem typeSystem) {
+		return TypeProcessor.namedProcessor("IntegrationHints - AbstractEndpoint")
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.filter(type -> type.extendsClass(ABSTRACT_ENDPOINT_TYPE))
+				.onTypeDiscovered((type, context) ->
+					context.addReflectiveAccess(type,
+							new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))
+				.use(typeSystem)
+				.processTypes();
+	}
+
+/*	private static List<HintDeclaration> computeMessageHints(TypeSystem typeSystem) {
+		return TypeProcessor.namedProcessor("IntegrationHints - Message")
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.filter(type -> type.implementsInterface(MESSAGE_TYPE))
+				.onTypeDiscovered((type, context) ->
+						context.addReflectiveAccess(type,
+								new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))
+				.use(typeSystem)
+				.processTypes();
+	}*/
 
 }
