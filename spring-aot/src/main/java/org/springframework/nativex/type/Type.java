@@ -21,16 +21,19 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -240,6 +243,27 @@ public class Type {
 			}
 		}
 		return interfaces;
+	}
+
+	public Type[] getImplementedInterfaces() {
+		Set<Type> implementedInterfaces = new LinkedHashSet<>(Arrays.asList(getInterfaces()));
+		Type type = getSuperclass();
+		while (type != null) {
+			implementedInterfaces.addAll(Arrays.asList(type.getInterfaces()));
+			type = type.getSuperclass();
+		}
+		return implementedInterfaces.toArray(new Type[implementedInterfaces.size()]);
+	}
+
+	public Type[] getAllInterfaces() {
+		Set<Type> allInterfaces = new LinkedHashSet<>();
+		Queue<Type> toProcess = new LinkedList<>(Arrays.asList(getImplementedInterfaces()));
+		while (!toProcess.isEmpty()) {
+			Type type = toProcess.poll();
+			allInterfaces.add(type);
+			toProcess.addAll(Arrays.asList(type.getInterfaces()));
+		}
+		return allInterfaces.toArray(new Type[allInterfaces.size()]);
 	}
 
 	public boolean isPartOfDomain(String packageName) {
@@ -732,7 +756,7 @@ public class Type {
 		if (dimensions > 0) {
 			return false;
 		}
-		boolean b = isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>());
+		boolean b = isMetaAnnotated(fromLdescriptorToSlashed(AtConfiguration), new HashSet<>(), false);
 		if (b) {
 			return b;
 		}
@@ -746,16 +770,16 @@ public class Type {
 	}
 	
 	public boolean isAtComponent() {
-		return dimensions>0?false:isMetaAnnotated(fromLdescriptorToSlashed(AtComponent), new HashSet<>());
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtComponent), new HashSet<>(), false);
 	}
 
 	public boolean isAtSpringBootApplication() {
 		return (dimensions > 0) ? false
-				: isMetaAnnotated(fromLdescriptorToSlashed(AtSpringBootApplication), new HashSet<>());
+				: isMetaAnnotated(fromLdescriptorToSlashed(AtSpringBootApplication), new HashSet<>(), false);
 	}
 
 	public boolean isAtController() {
-		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtController), new HashSet<>());
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtController), new HashSet<>(), false);
 	}
 
 	public boolean isAbstractNestedCondition() {
@@ -766,13 +790,17 @@ public class Type {
 	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
+		return isMetaAnnotated(slashedTypeDescriptor, false);
+	}
+
+	public boolean isMetaAnnotated(String slashedTypeDescriptor, boolean includeHierarchy) {
 		if (dimensions > 0) {
 			return false;
 		}
-		return isMetaAnnotated(slashedTypeDescriptor, new HashSet<>());
+		return isMetaAnnotated(slashedTypeDescriptor, new HashSet<>(), includeHierarchy);
 	}
 
-	private boolean isMetaAnnotated(String slashedTypeDescriptor, Set<String> seen) {
+	private boolean isMetaAnnotated(String slashedTypeDescriptor, Set<String> seen, boolean includeHierarchy) {
 		if (dimensions > 0) {
 			return false;
 		}
@@ -786,9 +814,20 @@ public class Type {
 			}
 			if (!seen.contains(tname)) {
 				seen.add(tname);
-				if (t.isMetaAnnotated(slashedTypeDescriptor, seen)) {
+				if (t.isMetaAnnotated(slashedTypeDescriptor, seen, false)) {
 					return true;
 				}
+			}
+		}
+		if (includeHierarchy) {
+			for (Type intface : getInterfaces()) {
+				if (intface.isMetaAnnotated(slashedTypeDescriptor, seen, true)) {
+					return true;
+				}
+			}
+			Type superclass = getSuperclass();
+			if (superclass != null && superclass.isMetaAnnotated(slashedTypeDescriptor, seen, true)) {
+				return true;
 			}
 		}
 		return false;
@@ -1397,7 +1436,7 @@ public class Type {
 			return AccessBits.CLASS;
 		}
 		int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-		if (type.isAtValidated()) {
+		if (type.isAtValidated(false)) {
 			// Need access to the annotations on the fields that define validation constraints
 			access |= AccessBits.DECLARED_FIELDS;
 		}
@@ -1564,8 +1603,8 @@ public class Type {
 		}
 	}
 	
-	public boolean isAtValidated() {
-		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtValidated));	
+	public boolean isAtValidated(boolean includeHierarchy) {
+		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtValidated), includeHierarchy);
 	}
 	
 	public boolean isAtConstructorBinding() {
@@ -2228,7 +2267,7 @@ public class Type {
 	
 	public boolean isConfigurationProperties() {
 		return (dimensions > 0) ? false
-				: isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties), new HashSet<>());
+				: isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties), new HashSet<>(), false);
 	}
 
 	public static int inferAccessRequired(Type t) {
@@ -2252,7 +2291,7 @@ public class Type {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
 			int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-			if (t.isAtValidated()) {
+			if (t.isAtValidated(false)) {
 				access |= AccessBits.DECLARED_FIELDS;
 			}
 			if (!t.isAtConstructorBinding()) {
@@ -2343,7 +2382,7 @@ public class Type {
 	}
 
 	public boolean isAnnotatedInHierarchy(String anno) {
-		if (isAnnotated(AtTransactional)) {
+		if (isAnnotated(anno)) {
 			return true;
 		}
 		List<Method> methodsWithAnnotation = getMethodsWithAnnotation(anno);
