@@ -297,7 +297,7 @@ public class Method {
 					}
 					Type ptype = typeSystem.resolve(t, true);
 					if (ptype == null) {
-						logger.debug("WARNING: method has unresolvable parameters: " + mn.name + mn.desc);
+						logger.debug("WARNING: method has unresolvable parameters: " + mn.name + mn.desc+" param type: "+t.getDescriptor());
 						unresolvableParams = true;
 					}
 					results.add(ptype);
@@ -426,12 +426,25 @@ public class Method {
 			String[] output = new String[params.size() + 1];
 			output[0] = getName();
 			for (p = 0; p < params.size(); p++) {
-				output[p+1] = internalParameterTypes[p].getClassName();
-				if (ensureParametersResolvable) {
-					Type type = params.get(p);
-					if (type == null && internalParameterTypes[p].getDescriptor().endsWith(";")) {
-						logger.debug("Problem producing configuration array for " + mn.name + mn.desc + "  (param#"+p+") - cannot resolve "+internalParameterTypes[p].getClassName());
-						return null;
+				Type type = params.get(p);
+				if (type != null) {
+					output[p + 1] = params.get(p).getDottedName();
+				} else {
+					String primitiveId = internalParameterTypes[p].getDescriptor();
+					String name = null;
+					if (primitiveId.length()==1) {
+						name = primitiveToName(primitiveId);
+					}
+					if (name == null) {
+						// Unresolvable reference type, hmm
+						if (primitiveId.length()!=1) {
+							String id = primitiveId.substring(1,primitiveId.length()-1).replace("/",".");
+							output[p+1] = id;
+						} else {
+						throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")="+primitiveId);
+						}
+					} else {
+						output[p+1] = name;
 					}
 				}
 			}
