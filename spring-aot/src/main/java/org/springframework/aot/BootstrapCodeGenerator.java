@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.context.bootstrap.ContextBootstrapContributor;
+import org.springframework.aot.factories.SpringFactoriesContributor;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
@@ -94,6 +95,10 @@ public class BootstrapCodeGenerator {
 			ContextBootstrapContributor bootstrapContributor = new ContextBootstrapContributor();
 			logger.debug("Executing Contributor: " + bootstrapContributor.getClass().getName());
 			bootstrapContributor.contribute(buildContext, this.aotOptions);
+
+			SpringFactoriesContributor factoriesContributor = new SpringFactoriesContributor();
+			logger.debug("Executing Contributor: " + factoriesContributor.getClass().getName());
+			factoriesContributor.contribute(buildContext, this.aotOptions);
 		}
 		else {
 			ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
