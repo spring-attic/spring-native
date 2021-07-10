@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.lang.Nullable;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -40,6 +41,13 @@ public interface BuildContext {
 	 * @return The {@link TypeSystem} based on the "compile+runtime" application classpath.
 	 */
 	TypeSystem getTypeSystem();
+
+	/**
+	 * Get the main class name if specified.
+	 * @return main class name or {@code null} if not specified
+	 */
+	@Nullable
+	String getMainClass();
 
 	/**
 	 * Contribute source files to the application.

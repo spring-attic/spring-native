@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.lang.Nullable;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -43,6 +44,9 @@ import org.springframework.util.ReflectionUtils;
 class DefaultBuildContext implements BuildContext {
 
 	private final TypeSystem typeSystem;
+
+	@Nullable
+	private final String mainClass;
 
 	private final List<String> classpath;
 
@@ -61,7 +65,12 @@ class DefaultBuildContext implements BuildContext {
 	private final ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
 
 	DefaultBuildContext(List<String> classpath) {
+		this(null, classpath);
+	}
+
+	DefaultBuildContext(@Nullable String mainClass, List<String> classpath) {
 		this.classpath = classpath;
+		this.mainClass = mainClass;
 		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(getBootstrapClassLoader(classpath)));
 	}
 
@@ -73,6 +82,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public List<String> getClasspath() {
 		return this.classpath;
+	}
+
+	@Override
+	public String getMainClass() {
+		return this.mainClass;
 	}
 
 	@Override

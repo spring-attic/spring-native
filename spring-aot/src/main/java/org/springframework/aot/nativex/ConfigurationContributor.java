@@ -108,8 +108,11 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 
 	private String getMainClass(BuildContext context) {
+		String mainClass = context.getMainClass();
+		if (mainClass != null) {
+			return mainClass;
+		}
 		for (String path : context.getClasspath()) {
-			String mainClass = null;
 			try {
 				mainClass = MainClassFinder.findSingleMainClass(new File(path));
 			}

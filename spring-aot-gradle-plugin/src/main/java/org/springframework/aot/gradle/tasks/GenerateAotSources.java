@@ -102,7 +102,7 @@ public class GenerateAotSources extends DefaultTask {
 		try {
 			generator.generate(this.sourcesOutputDirectory.get().getAsFile().toPath(),
 					this.resourcesOutputDirectory.get().getAsFile().toPath(),
-					classpathElements, resourcesElements);
+					classpathElements, resourcesElements, null);
 		}
 		catch (IOException exc) {
 			throw new TaskExecutionException(this, exc);
