@@ -33,6 +33,8 @@ import org.springframework.nativex.type.TypeProcessor;
  */
 public class JpaComponentProcessor implements ComponentProcessor {
 
+	private static final String ENTITY_LISTENERS = "Ljavax/persistence/EntityListeners;";
+
 	private final TypeProcessor typeProcessor = new TypeProcessor(
 			(type, context) -> {
 
@@ -70,6 +72,11 @@ public class JpaComponentProcessor implements ComponentProcessor {
 
 		Type domainType = imageContext.getTypeSystem().resolveName(componentType);
 		typeProcessor.use(imageContext).toProcessType(domainType);
+
+		for (String listener : domainType.findAnnotationValue(ENTITY_LISTENERS, false, false)) {
+			Type listenerType = imageContext.getTypeSystem().Lresolve(listener);
+			imageContext.addReflectiveAccess(listenerType.getDottedName(), AccessBits.FULL_REFLECTION);
+		}
 	}
 
 	private void registerAnnotationInConfiguration(Type annotation, NativeContext context) {
