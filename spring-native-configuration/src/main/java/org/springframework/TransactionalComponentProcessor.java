@@ -17,8 +17,10 @@
 package org.springframework;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.type.ComponentProcessor;
@@ -35,32 +37,25 @@ public class TransactionalComponentProcessor implements ComponentProcessor {
 	@Override
 	public boolean handle(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		boolean hasTxMethods = type!=null && type.hasTransactionalMethods();
-		boolean isInteresting =  (type != null && (type.isTransactional() || hasTxMethods));
-		return isInteresting;
+		return type.isTransactional();
 	}
 
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type type = imageContext.getTypeSystem().resolveName(componentType);
-		List<String> transactionalInterfaces = new ArrayList<>();
-		for (Type intface: type.getInterfaces()) {
-			transactionalInterfaces.add(intface.getDottedName());
-		}
-		if (transactionalInterfaces.size()!=0) {
-			transactionalInterfaces.add("org.springframework.aop.SpringProxy");
-			transactionalInterfaces.add("org.springframework.aop.framework.Advised");
-			transactionalInterfaces.add("org.springframework.core.DecoratingProxy");
-			imageContext.addProxy(transactionalInterfaces);
-			imageContext.log("TransactionalComponentProcessor: creating proxy for these interfaces: "+transactionalInterfaces);
-		}
-		if (!type.isInterface()) {
-			// Rationalize why some contexts want one or the other (a class proxy for the class itself vs a jdk proxy for the interfaces it implements)
-			// Does it depend on whether the annotation is on the inherited interface methods?
-			// Compare events sample and jdbc-tx sample
+		boolean hasInterfaceMethods = Arrays.stream(type.getAllInterfaces()).anyMatch(type1 -> !type1.getMethods().isEmpty());
+		if (hasInterfaceMethods) {
+			List<String> proxyInterfaces = new ArrayList<>(Arrays.stream(
+					type.getImplementedInterfaces()).map(Type::getDottedName).collect(Collectors.toList()));
+			proxyInterfaces.add("org.springframework.aop.SpringProxy");
+			proxyInterfaces.add("org.springframework.aop.framework.Advised");
+			proxyInterfaces.add("org.springframework.core.DecoratingProxy");
+			imageContext.addProxy(proxyInterfaces);
+			imageContext.log(ValidatedComponentProcessor.class.getSimpleName() + ": creating proxy for these interfaces: " + proxyInterfaces);
+		} else if (!type.isInterface()) {
 			// TODO is IS_STATIC always right here?
 			imageContext.addAotProxy(type.getDottedName(), Collections.emptyList(), ProxyBits.IS_STATIC);
-			imageContext.log("TransactionalComponentProcessor: creating proxy for this class: "+type.getDottedName());
+			imageContext.log(ValidatedComponentProcessor.class.getSimpleName() + ": creating proxy for this class: " + type.getDottedName());
 		}
 	}
 

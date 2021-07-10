@@ -2357,28 +2357,7 @@ public class Type {
 	 * @return true if type or a method inside is marked @Transactional
 	 */
 	public boolean isTransactional() {
-		// TODO are these usable as meta annotations?
-		return isAnnotated(AtTransactional) || isAnnotated(AtJavaxTransactional);
-	}
-
-	public boolean hasTransactionalMethods() {
-		// TODO meta annotation usage?
-		List<Method> methodsWithAtTransactional = getMethodsWithAnnotation(AtTransactional);
-		if (methodsWithAtTransactional.size() > 0) {
-			return true;
-		}
-		List<Method> methodsWithAtJavaxTransactional = getMethodsWithAnnotation(AtJavaxTransactional);
-		if (methodsWithAtJavaxTransactional.size() > 0) {
-			return true;
-		}
-		return false;
-	}
-	
-	public List<Method> getTransactionalMethods() {
-		List<Method> results = new ArrayList<>();
-		results.addAll(getMethodsWithAnnotation(AtTransactional));
-		results.addAll(getMethodsWithAnnotation(AtJavaxTransactional));
-		return results;
+		return isAnnotatedInHierarchy(AtTransactional) || isAnnotatedInHierarchy(AtJavaxTransactional);
 	}
 
 	public boolean isAnnotatedInHierarchy(String anno) {

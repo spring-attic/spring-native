@@ -1,0 +1,14 @@
+package org.springframework.transactional.components;
+
+import org.springframework.stereotype.Component;
+
+// needs jdk proxy
+@Component
+public class ComponentWithTransactionalInterfaceOverProxyInterface implements ProxyInterface {
+
+    @Override
+    public void foo() {
+
+    }
+
+}
