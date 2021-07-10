@@ -26,13 +26,16 @@ import java.util.Collections;
 import org.hibernate.type.EnumType;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.jpa.entities.AuditingListener;
 import org.springframework.data.jpa.entities.EntityWithEnum;
+import org.springframework.data.jpa.entities.EntityWithListener;
 import org.springframework.data.jpa.entities.LineItem;
 import org.springframework.data.jpa.entities.NotAnEntity;
 import org.springframework.data.jpa.entities.Order;
 import org.springframework.data.jpa.entities.SomeAnnotation;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
 
@@ -144,6 +147,20 @@ public class JpaComponentProcessorTests {
 		process(Order.class);
 
 		assertThat(nativeContext.hasReflectionEntry(SomeAnnotation.class)).isFalse();
+	}
+
+	@Test
+	public void shouldAddFullReflectionForEntityListener() {
+
+		process(EntityWithListener.class);
+
+		assertThat(nativeContext.getReflectionEntry(AuditingListener.class))
+				.satisfies(config -> {
+					assertThat(config.getAccessBits()).isEqualTo(AccessBits.LOAD_AND_CONSTRUCT);
+
+					MethodDescriptor methodDescriptor = config.getMethodDescriptors().iterator().next();
+					assertThat(methodDescriptor.getName()).isEqualTo("beforeAnyOperation");
+				});
 	}
 
 	void process(Class<?> type) {

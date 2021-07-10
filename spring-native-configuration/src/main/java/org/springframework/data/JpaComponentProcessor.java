@@ -15,6 +15,7 @@
  */
 package org.springframework.data;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Field;
+import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
@@ -32,6 +34,8 @@ import org.springframework.nativex.type.TypeProcessor;
  * @author Christoph Strobl
  */
 public class JpaComponentProcessor implements ComponentProcessor {
+
+	private static final String ENTITY_LISTENERS = "Ljavax/persistence/EntityListeners;";
 
 	private final TypeProcessor typeProcessor = new TypeProcessor(
 			(type, context) -> {
@@ -70,6 +74,18 @@ public class JpaComponentProcessor implements ComponentProcessor {
 
 		Type domainType = imageContext.getTypeSystem().resolveName(componentType);
 		typeProcessor.use(imageContext).toProcessType(domainType);
+
+		for (String listener : domainType.findAnnotationValue(ENTITY_LISTENERS, false, false)) {
+			Type listenerType = imageContext.getTypeSystem().Lresolve(listener);
+			List<MethodDescriptor> methodDescriptors = listenerType
+					.getMethods(method -> method.getAnnotationTypes().stream().anyMatch(
+							type -> type.getDottedName().startsWith("javax.persistence")))
+					.stream()
+					.map(it -> new MethodDescriptor(it.getName(), Arrays.asList(it.asConfigurationArray())))
+					.collect(Collectors.toList());
+
+			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList()));
+		}
 	}
 
 	private void registerAnnotationInConfiguration(Type annotation, NativeContext context) {
