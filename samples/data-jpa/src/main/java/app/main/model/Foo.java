@@ -22,6 +22,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.time.Instant;
 
+@EntityListeners(AuditingListener.class)
 @Entity
 public class Foo {
 
