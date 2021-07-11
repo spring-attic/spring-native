@@ -16,16 +16,16 @@
 
 package org.springframework;
 
+import org.springframework.nativex.hint.ProxyBits;
+import org.springframework.nativex.type.ComponentProcessor;
+import org.springframework.nativex.type.NativeContext;
+import org.springframework.nativex.type.Type;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.nativex.type.ComponentProcessor;
-import org.springframework.nativex.type.NativeContext;
-import org.springframework.nativex.type.Type;
 
 /**
  * Recognize spring.components that need transactional proxies and register them.
@@ -55,7 +55,7 @@ public class TransactionalComponentProcessor implements ComponentProcessor {
 		} else if (!type.isInterface()) {
 			// TODO is IS_STATIC always right here?
 			imageContext.addAotProxy(type.getDottedName(), Collections.emptyList(), ProxyBits.IS_STATIC);
-			imageContext.log(ValidatedComponentProcessor.class.getSimpleName() + ": creating proxy for this class: " + type.getDottedName());
+			imageContext.log(TransactionalComponentProcessor.class.getSimpleName() + ": creating proxy for this class: " + type.getDottedName());
 		}
 	}
 
