@@ -29,7 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,6 +94,31 @@ public class ConfigurationCollector {
 	}
 
 	public ReflectionDescriptor getReflectionDescriptor() {
+		String exclusions = System.getProperty("spring.native.reflection-exclusions");
+		if (exclusions != null) {
+			List<Pattern> patterns = new ArrayList<>();
+			StringTokenizer st = new StringTokenizer(exclusions,",");
+			while (st.hasMoreElements()) {
+				String nextPattern = st.nextToken();
+				patterns.add(Pattern.compile(nextPattern));
+			}
+			ReflectionDescriptor newRD = new ReflectionDescriptor();
+			List<ClassDescriptor> classDescriptors = reflectionDescriptor.getClassDescriptors();
+			for (ClassDescriptor cd: classDescriptors) {
+				boolean exclude = false;
+				for (Pattern p: patterns) {
+					if (p.matcher(cd.getName()).matches()) {
+						exclude = true;
+						System.out.println("ReflectionExclusion: excluding "+cd.getName());
+						break;
+					}
+				}
+				if (!exclude) {
+					newRD.add(cd);
+				}
+			}
+			return newRD;
+		}
 		return reflectionDescriptor;
 	}
 
