@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.sql.DataSource;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -23,8 +25,12 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.handler.advice.RequestHandlerRetryAdvice;
 import org.springframework.integration.http.config.EnableIntegrationGraphController;
+import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
+import org.springframework.integration.jdbc.store.channel.H2ChannelMessageStoreQueryProvider;
+import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.integration.webflux.dsl.WebFlux;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -77,12 +83,26 @@ public class IntegrationApplication {
 	}
 
 	@Bean
-	IntegrationFlow printFormattedSecondsFlow() {
+	JdbcChannelMessageStore jdbcChannelMessageStore(DataSource dataSource) {
+		JdbcChannelMessageStore jdbcChannelMessageStore = new JdbcChannelMessageStore(dataSource);
+		jdbcChannelMessageStore.setChannelMessageStoreQueryProvider(new H2ChannelMessageStoreQueryProvider());
+		return jdbcChannelMessageStore;
+	}
+
+	@Bean(PollerMetadata.DEFAULT_POLLER)
+	PollerMetadata defaultPoller() {
+		PollerMetadata pollerMetadata = new PollerMetadata();
+		pollerMetadata.setTrigger(new PeriodicTrigger(10));
+		return pollerMetadata;
+	}
+
+	@Bean
+	IntegrationFlow printFormattedSecondsFlow(JdbcChannelMessageStore jdbcChannelMessageStore) {
 		return IntegrationFlows
 				.fromSupplier(Date::new,
 						e -> e.id("dateSourceEndpoint")
 								.poller(p -> p.fixedDelay(1000, 1000)))
-				.channel("dateChannel")
+				.channel(c -> c.queue("dateChannel", jdbcChannelMessageStore, "dateChannelGroup"))
 				.gateway(subflow -> subflow.convert(Integer.class,
 						e -> e.advice(new RequestHandlerRetryAdvice())))
 				.handle(m -> System.out.println("Current seconds: " + m.getPayload()))

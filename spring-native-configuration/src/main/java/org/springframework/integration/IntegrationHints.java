@@ -52,28 +52,17 @@ import org.springframework.nativex.type.TypeSystem;
 								org.springframework.integration.dsl.IntegrationFlow.class,
 								org.springframework.integration.gateway.RequestReplyExchanger.class,
 								org.springframework.integration.graph.Graph.class,
-								org.springframework.integration.graph.CompositeMessageHandlerNode.class,
-								org.springframework.integration.graph.DiscardingMessageHandlerNode.class,
-								org.springframework.integration.graph.EndpointNode.class,
-								org.springframework.integration.graph.ErrorCapableCompositeMessageHandlerNode.class,
-								org.springframework.integration.graph.ErrorCapableDiscardingMessageHandlerNode.class,
-								org.springframework.integration.graph.ErrorCapableEndpointNode.class,
-								org.springframework.integration.graph.ErrorCapableMessageHandlerNode.class,
-								org.springframework.integration.graph.ErrorCapableRoutingNode.class,
-								org.springframework.integration.graph.IntegrationNode.class,
-								org.springframework.integration.graph.LinkNode.class,
-								org.springframework.integration.graph.MessageChannelNode.class,
-								org.springframework.integration.graph.MessageGatewayNode.class,
-								org.springframework.integration.graph.MessageHandlerNode.class,
-								org.springframework.integration.graph.MessageProducerNode.class,
-								org.springframework.integration.graph.MessageSourceNode.class,
-								org.springframework.integration.graph.PollableChannelNode.class,
-								org.springframework.integration.graph.ReceiveCounters.class,
-								org.springframework.integration.graph.RoutingMessageHandlerNode.class,
 								org.springframework.integration.graph.SendTimers.class,
 								org.springframework.integration.graph.TimerStats.class,
 								org.springframework.integration.http.management.IntegrationGraphController.class,
-								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class
+								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class,
+								org.springframework.messaging.support.GenericMessage.class,
+								org.springframework.messaging.support.ErrorMessage.class,
+								org.springframework.integration.message.AdviceMessage.class,
+								org.springframework.integration.support.MutableMessage.class,
+								org.springframework.integration.store.MessageGroupMetadata.class,
+								org.springframework.integration.store.MessageHolder.class,
+								org.springframework.integration.store.MessageMetadata.class
 						}),
 				@TypeHint(access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS,
 						types = {
@@ -158,6 +147,8 @@ public class IntegrationHints implements NativeConfiguration {
 
 	private static final String ABSTRACT_ENDPOINT_TYPE = "Lorg/springframework/integration/endpoint/AbstractEndpoint;";
 
+	private static final String INTEGRATION_NODE_TYPE = "Lorg/springframework/integration/graph/IntegrationNode;";
+
 	private static final String MESSAGE_TYPE = "org/springframework/messaging/Message";
 
 	@Override
@@ -165,6 +156,8 @@ public class IntegrationHints implements NativeConfiguration {
 		List<HintDeclaration> hints = new ArrayList<>();
 		hints.addAll(computeMessagingGatewayHints(typeSystem));
 		hints.addAll(computeAbstractEndpointHints(typeSystem));
+		hints.addAll(computeIntegrationNodeHints(typeSystem));
+//		TODO Fails with 'Unable to find class file for org/springframework/web/server/WebFilter' on 'spring-aot-maven-plugin:test-generate'
 //		hints.addAll(computeMessageHints(typeSystem));
 		return hints;
 	}
@@ -201,7 +194,21 @@ public class IntegrationHints implements NativeConfiguration {
 				.processTypes();
 	}
 
-/*	private static List<HintDeclaration> computeMessageHints(TypeSystem typeSystem) {
+	private static List<HintDeclaration> computeIntegrationNodeHints(TypeSystem typeSystem) {
+		return TypeProcessor.namedProcessor("IntegrationHints - IntegrationNode")
+				.skipAnnotationInspection()
+				.skipMethodInspection()
+				.skipFieldInspection()
+				.skipConstructorInspection()
+				.filter(type -> type.extendsClass(INTEGRATION_NODE_TYPE))
+				.onTypeDiscovered((type, context) ->
+						context.addReflectiveAccess(type,
+								new AccessDescriptor(AccessBits.FULL_REFLECTION)))
+				.use(typeSystem)
+				.processTypes();
+	}
+
+	private static List<HintDeclaration> computeMessageHints(TypeSystem typeSystem) {
 		return TypeProcessor.namedProcessor("IntegrationHints - Message")
 				.skipAnnotationInspection()
 				.skipMethodInspection()
@@ -213,6 +220,6 @@ public class IntegrationHints implements NativeConfiguration {
 								new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))
 				.use(typeSystem)
 				.processTypes();
-	}*/
+	}
 
 }
