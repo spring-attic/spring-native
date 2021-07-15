@@ -17,15 +17,20 @@
 package org.springframework.integration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
 
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -52,17 +57,12 @@ import org.springframework.nativex.type.TypeSystem;
 								org.springframework.integration.dsl.IntegrationFlow.class,
 								org.springframework.integration.gateway.RequestReplyExchanger.class,
 								org.springframework.integration.graph.Graph.class,
+								org.springframework.integration.graph.LinkNode.class,
 								org.springframework.integration.graph.SendTimers.class,
 								org.springframework.integration.graph.TimerStats.class,
+								org.springframework.integration.graph.ReceiveCounters.class,
 								org.springframework.integration.http.management.IntegrationGraphController.class,
-								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class,
-								org.springframework.messaging.support.GenericMessage.class,
-								org.springframework.messaging.support.ErrorMessage.class,
-								org.springframework.integration.message.AdviceMessage.class,
-								org.springframework.integration.support.MutableMessage.class,
-								org.springframework.integration.store.MessageGroupMetadata.class,
-								org.springframework.integration.store.MessageHolder.class,
-								org.springframework.integration.store.MessageMetadata.class
+								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class
 						}),
 				@TypeHint(access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS,
 						types = {
@@ -72,6 +72,30 @@ import org.springframework.nativex.type.TypeSystem;
 								org.springframework.integration.gateway.MethodArgsHolder.class,
 								org.springframework.integration.routingslip.ExpressionEvaluatingRoutingSlipRouteStrategy.RequestAndReply.class,
 								org.springframework.integration.core.Pausable.class
+						})
+		},
+		serializables = {
+				@SerializationHint(
+						types = {
+								Number.class,
+								ArrayList.class,
+								HashMap.class,
+								Properties.class,
+								Hashtable.class,
+								Exception.class,
+								UUID.class,
+								org.springframework.messaging.support.GenericMessage.class,
+								org.springframework.messaging.support.ErrorMessage.class,
+								org.springframework.messaging.MessageHeaders.class,
+								org.springframework.integration.message.AdviceMessage.class,
+								org.springframework.integration.support.MutableMessage.class,
+								org.springframework.integration.support.MutableMessageHeaders.class,
+								org.springframework.integration.store.MessageGroupMetadata.class,
+								org.springframework.integration.store.MessageHolder.class,
+								org.springframework.integration.store.MessageMetadata.class,
+								org.springframework.integration.history.MessageHistory.class,
+								org.springframework.integration.history.MessageHistory.Entry.class,
+								org.springframework.integration.handler.DelayHandler.DelayedMessageWrapper.class
 						})
 		},
 		jdkProxies = {
@@ -113,6 +137,12 @@ import org.springframework.nativex.type.TypeSystem;
 						kotlin.Unit.class
 				},
 				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
+@NativeHint(trigger = org.springframework.integration.file.splitter.FileSplitter.class,
+		serializables =
+		@SerializationHint(types = {
+				org.springframework.integration.file.splitter.FileSplitter.FileMarker.class,
+				org.springframework.integration.file.splitter.FileSplitter.FileMarker.Mark.class,
+		}))
 @NativeHint(trigger = org.springframework.integration.xml.transformer.XsltPayloadTransformer.class,
 		types =
 		@TypeHint(types = org.springframework.web.context.support.ServletContextResource.class,
@@ -157,8 +187,8 @@ public class IntegrationHints implements NativeConfiguration {
 		hints.addAll(computeMessagingGatewayHints(typeSystem));
 		hints.addAll(computeAbstractEndpointHints(typeSystem));
 		hints.addAll(computeIntegrationNodeHints(typeSystem));
-//		TODO Fails with 'Unable to find class file for org/springframework/web/server/WebFilter' on 'spring-aot-maven-plugin:test-generate'
-//		hints.addAll(computeMessageHints(typeSystem));
+		//		TODO Fails with 'Unable to find class file for org/springframework/web/server/WebFilter' on 'spring-aot-maven-plugin:test-generate'
+		//		hints.addAll(computeMessageHints(typeSystem));
 		return hints;
 	}
 
@@ -188,8 +218,8 @@ public class IntegrationHints implements NativeConfiguration {
 				.skipConstructorInspection()
 				.filter(type -> type.extendsClass(ABSTRACT_ENDPOINT_TYPE))
 				.onTypeDiscovered((type, context) ->
-					context.addReflectiveAccess(type,
-							new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))
+						context.addReflectiveAccess(type,
+								new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))
 				.use(typeSystem)
 				.processTypes();
 	}

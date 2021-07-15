@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -27,7 +29,9 @@ import org.springframework.integration.handler.advice.RequestHandlerRetryAdvice;
 import org.springframework.integration.http.config.EnableIntegrationGraphController;
 import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
 import org.springframework.integration.jdbc.store.channel.H2ChannelMessageStoreQueryProvider;
+import org.springframework.integration.redis.store.RedisChannelMessageStore;
 import org.springframework.integration.scheduling.PollerMetadata;
+import org.springframework.integration.support.json.JacksonJsonUtils;
 import org.springframework.integration.webflux.dsl.WebFlux;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.scheduling.support.PeriodicTrigger;
@@ -89,6 +93,14 @@ public class IntegrationApplication {
 		return jdbcChannelMessageStore;
 	}
 
+	@Bean
+	RedisChannelMessageStore redisChannelMessageStore(RedisConnectionFactory connectionFactory) {
+		RedisChannelMessageStore redisChannelMessageStore = new RedisChannelMessageStore(connectionFactory);
+		redisChannelMessageStore.setValueSerializer(
+				new GenericJackson2JsonRedisSerializer(JacksonJsonUtils.messagingAwareMapper()));
+		return redisChannelMessageStore;
+	}
+
 	@Bean(PollerMetadata.DEFAULT_POLLER)
 	PollerMetadata defaultPoller() {
 		PollerMetadata pollerMetadata = new PollerMetadata();
@@ -97,7 +109,8 @@ public class IntegrationApplication {
 	}
 
 	@Bean
-	IntegrationFlow printFormattedSecondsFlow(JdbcChannelMessageStore jdbcChannelMessageStore) {
+	IntegrationFlow printFormattedSecondsFlow(JdbcChannelMessageStore jdbcChannelMessageStore,
+			RedisChannelMessageStore redisChannelMessageStore) {
 		return IntegrationFlows
 				.fromSupplier(Date::new,
 						e -> e.id("dateSourceEndpoint")
@@ -105,6 +118,7 @@ public class IntegrationApplication {
 				.channel(c -> c.queue("dateChannel", jdbcChannelMessageStore, "dateChannelGroup"))
 				.gateway(subflow -> subflow.convert(Integer.class,
 						e -> e.advice(new RequestHandlerRetryAdvice())))
+				.channel(c -> c.queue(redisChannelMessageStore, "secondsChannelGroup"))
 				.handle(m -> System.out.println("Current seconds: " + m.getPayload()))
 				.get();
 	}
