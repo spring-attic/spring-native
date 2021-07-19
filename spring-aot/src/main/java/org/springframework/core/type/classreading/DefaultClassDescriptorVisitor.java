@@ -111,7 +111,7 @@ class DefaultClassDescriptorVisitor extends ClassVisitor {
 	@Override
 	@Nullable
 	public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-		return MergedAnnotationReadingVisitor.get(this.typeSystem.getResourceLoader().getClassLoader(), this::getSource,
+		return MergedAnnotationReadingVisitor.get(this.typeSystem.getResourceLoader().getClassLoader(), getSource(),
 				descriptor, visible, this.annotations::add);
 	}
 
