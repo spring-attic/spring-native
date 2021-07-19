@@ -46,6 +46,8 @@ class DefaultBuildContext implements BuildContext {
 
 	private final List<String> classpath;
 
+	private final String mainClass;
+
 	private final List<SourceFile> sourceFiles = new ArrayList<>();
 
 	private final List<ResourceFile> resourceFiles = new ArrayList<>();
@@ -55,13 +57,18 @@ class DefaultBuildContext implements BuildContext {
 	private final ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 
 	private final ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
-	
+
 	private final SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
 
 	private final ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
 
 	DefaultBuildContext(List<String> classpath) {
+		this(classpath, null);
+	}
+
+	DefaultBuildContext(List<String> classpath, String mainClass) {
 		this.classpath = classpath;
+		this.mainClass = mainClass;
 		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(getBootstrapClassLoader(classpath)));
 	}
 
@@ -73,6 +80,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public List<String> getClasspath() {
 		return this.classpath;
+	}
+
+	@Override
+	public String getMainClass() {
+		return mainClass;
 	}
 
 	@Override
@@ -121,7 +133,7 @@ class DefaultBuildContext implements BuildContext {
 	public ReflectionDescriptor getReflectionDescriptor() {
 		return this.reflectionDescriptor;
 	}
-	
+
 	public SerializationDescriptor getSerializationDescriptor() {
 		return this.serializationDescriptor;
 	}
@@ -145,7 +157,7 @@ class DefaultBuildContext implements BuildContext {
 			for (URI uri : uris) {
 				urls.add(uri.toURL());
 			}
-			ClassLoader parentClassLoader =  null;
+			ClassLoader parentClassLoader = null;
 			// If we're on JDK9+, we need to use the PlatformClassLoader
 			// or we'll miss JDK classes that aren't in the base module.
 			if (ClassUtils.hasMethod(Optional.class, "stream", new Class[0])) {
@@ -153,8 +165,7 @@ class DefaultBuildContext implements BuildContext {
 				parentClassLoader = (ClassLoader) ReflectionUtils.invokeMethod(getPlatformClassLoader, null);
 			}
 			return new URLClassLoader(urls.toArray(new URL[0]), parentClassLoader);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new CodeGenerationException("Unable to build classpath", ex);
 		}
 	}
