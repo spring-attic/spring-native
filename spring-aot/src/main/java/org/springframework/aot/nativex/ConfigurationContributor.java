@@ -64,7 +64,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 	
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
-		TypeSystem typeSystem = new TypeSystem(context.getClasspath());
+		TypeSystem typeSystem = new TypeSystem(context.getClasspath(), context.getMainClass());
 		typeSystem.setAotOptions(aotOptions);
 		SpringAnalyzer springAnalyzer = new SpringAnalyzer(typeSystem, aotOptions);
 		springAnalyzer.analyze();
@@ -108,6 +108,9 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 
 	private String getMainClass(BuildContext context) {
+		if (context.getMainClass() != null) {
+			return context.getMainClass();
+		}
 		for (String path : context.getClasspath()) {
 			String mainClass = null;
 			try {

@@ -27,6 +27,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
@@ -45,6 +46,8 @@ import org.springframework.aot.gradle.dsl.SpringAotExtension;
 public class GenerateAotSources extends DefaultTask {
 
 	private FileCollection classpath;
+
+	private String mainClass;
 
 	private SourceDirectorySet resourceDirectories;
 
@@ -67,6 +70,15 @@ public class GenerateAotSources extends DefaultTask {
 
 	public void setClasspath(FileCollection classpath) {
 		this.classpath = classpath;
+	}
+
+	@Input
+	public String getMainClass() {
+		return this.mainClass;
+	}
+
+	public void setMainClass(String mainClass) {
+		this.mainClass = mainClass;
 	}
 
 	@InputFiles
@@ -102,7 +114,7 @@ public class GenerateAotSources extends DefaultTask {
 		try {
 			generator.generate(this.sourcesOutputDirectory.get().getAsFile().toPath(),
 					this.resourcesOutputDirectory.get().getAsFile().toPath(),
-					classpathElements, resourcesElements);
+					classpathElements, mainClass, resourcesElements);
 		}
 		catch (IOException exc) {
 			throw new TaskExecutionException(this, exc);

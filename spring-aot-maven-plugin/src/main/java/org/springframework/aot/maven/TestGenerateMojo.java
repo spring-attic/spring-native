@@ -62,7 +62,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 		try {
 			List<String> testClasspathElements = this.project.getTestClasspathElements();
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-			generator.generate(sourcesPath, resourcesPath, testClasspathElements, resourceFolders);
+			generator.generate(sourcesPath, resourcesPath, testClasspathElements, mainClass, resourceFolders);
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
 			this.buildContext.refresh(this.buildDir);

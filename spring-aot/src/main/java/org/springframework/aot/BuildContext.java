@@ -37,6 +37,11 @@ public interface BuildContext {
 	List<String> getClasspath();
 	
 	/**
+	 * The (optional) main class if it needs to be specified.
+	 */
+	String getMainClass();
+
+	/**
 	 * @return The {@link TypeSystem} based on the "compile+runtime" application classpath.
 	 */
 	TypeSystem getTypeSystem();

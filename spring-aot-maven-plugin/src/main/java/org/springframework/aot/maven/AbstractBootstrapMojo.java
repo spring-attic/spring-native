@@ -111,6 +111,8 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter
 	private boolean failOnMissingSelectorHint;
 
+	@Parameter(property = "spring.aot.mainClass")
+	protected String mainClass;
 
 	protected AotOptions getAotOptions() {
 		AotOptions aotOptions = new AotOptions();

@@ -117,9 +117,16 @@ public class TypeSystem {
 	
 	public AotOptions aotOptions;
 
-	public TypeSystem(List<String> classpath) {
+	private String mainClass;
+
+	public TypeSystem(List<String> classpath, String mainClass) {
 		this.classpath = classpath;
+		this.mainClass = mainClass;
 		index();
+	}
+
+	public TypeSystem(List<String> classpath) {
+		this(classpath, null);
 	}
 
 	public List<String> getClasspath() {
@@ -1335,23 +1342,27 @@ public class TypeSystem {
 	}
 
 	private String getMainPackagePath(List<String> classpath) {
+		String mainClass = this.mainClass;
 		for (String path : classpath) {
-			String mainClass = null;
+			if (mainClass != null) {
+				break;
+			}
 			try {
 				mainClass = MainClassFinder.findSingleMainClass(new File(path));
 			}
 			catch (IOException e) {
 				logger.error(e);
 			}
-			if (mainClass != null) {
-				String[] mainClassParts = mainClass.split("\\.");
-				String[] mainPackageParts = Arrays.copyOfRange(mainClassParts, 0, mainClassParts.length - 1);
-				String mainPackagePath = String.join(File.separator, mainPackageParts);
-				logger.debug("TypeSystem found Spring Boot main package path: " + mainPackagePath);
-				return mainPackagePath;
-			}
 		}
-		logger.debug("Unable to find main class");
+		if (mainClass != null) {
+			String[] mainClassParts = mainClass.split("\\.");
+			String[] mainPackageParts = Arrays.copyOfRange(mainClassParts, 0, mainClassParts.length - 1);
+			String mainPackagePath = String.join(File.separator, mainPackageParts);
+			logger.debug("TypeSystem found Spring Boot main package path: " + mainPackagePath);
+			return mainPackagePath;
+		} else {
+			logger.debug("Unable to find main class");
+		}
 		return null;
 	}
 

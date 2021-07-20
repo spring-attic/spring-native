@@ -46,6 +46,8 @@ class DefaultBuildContext implements BuildContext {
 
 	private final List<String> classpath;
 
+	private final String mainClass;
+
 	private final List<SourceFile> sourceFiles = new ArrayList<>();
 
 	private final List<ResourceFile> resourceFiles = new ArrayList<>();
@@ -60,8 +62,9 @@ class DefaultBuildContext implements BuildContext {
 
 	private final ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
 
-	DefaultBuildContext(List<String> classpath) {
+	DefaultBuildContext(String mainClass, List<String> classpath) {
 		this.classpath = classpath;
+		this.mainClass = mainClass;
 		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(getBootstrapClassLoader(classpath)));
 	}
 
@@ -73,6 +76,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public List<String> getClasspath() {
 		return this.classpath;
+	}
+
+	@Override
+	public String getMainClass() {
+		return mainClass;
 	}
 
 	@Override

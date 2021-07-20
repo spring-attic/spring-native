@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
@@ -63,12 +64,13 @@ public class BootstrapCodeGenerator {
 	 * @param sourcesPath the root path generated source files should be written to
 	 * @param resourcesPath the root path generated resource files should be written to
 	 * @param classpath the "compile+runtime" classpath of the application
+	 * @param mainClass the main class of the application (optional, can be null)
 	 * @param resourceFolders paths to folders containing project main resources
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
-	public void generate(Path sourcesPath, Path resourcesPath, List<String> classpath, Set<Path> resourceFolders) throws IOException {
+	public void generate(Path sourcesPath, Path resourcesPath, List<String> classpath, @Nullable String mainClass, Set<Path> resourceFolders) throws IOException {
 		logger.debug("Starting code generation with classpath: " + classpath);
-		DefaultBuildContext buildContext = new DefaultBuildContext(classpath);
+		DefaultBuildContext buildContext = new DefaultBuildContext(mainClass, classpath);
 		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
 		for (BootstrapContributor contributor : contributors) {
 			logger.debug("Executing Contributor: " + contributor.getClass().getName());

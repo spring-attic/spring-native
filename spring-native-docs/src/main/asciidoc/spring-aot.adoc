@@ -207,6 +207,8 @@ Here are all the options available:
 
 * `failOnMissingSelectorHint` is set to `true` by default and throw an error if no hint is provided for an active selector, setting it to `false` switches the plugin from a hard error to a warning. See the Troubleshooting section for more details on this.
 
+* `mainClass` allows to specify a main class, useful when multiple ones are present.
+
 * [Experimental] `buildTimePropertiesMatchIfMissing` is set to `true` by default. Setting it to `false` means for any properties specifying `matchIfMissing=true` that will be overridden and not respected. This does flip the application into a mode where it needs to be much more explicit
 about specifying properties that activate configurations. (This is a work-in-progress option really for experimenting with image size vs explicit property trade offs).
 
