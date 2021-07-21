@@ -1358,7 +1358,7 @@ public class Type {
 	}
 	
 	private Map<String,Integer> processConfigurationProperties(List<String> propertiesTypes) {
-//		if (true) return Collections.emptyMap();
+		if (disablePropertyReflection) return Collections.emptyMap();
 		Map<String,Integer> collector = new HashMap<>();
 		for (String propertiesType: propertiesTypes) {
 			Type type = typeSystem.Lresolve(propertiesType, true);
@@ -2284,11 +2284,21 @@ public class Type {
 				: isMetaAnnotated(fromLdescriptorToSlashed(AtConfigurationProperties), new HashSet<>(), false);
 	}
 
+	public static boolean disablePropertyReflection = false;
+	
+	static {
+		if (disablePropertyReflection) {
+			logger.debug("property reflection disabled!");
+		}
+	}
+		
 	public static int inferAccessRequired(Type t) {
 		if (t == null) {
 			return AccessBits.FULL_REFLECTION;
 		}
-		if ((t.isBeanFactoryPostProcessor() || t.isBeanPostProcessor()) && t.getTypeSystem().isNativeNextMode()) {
+		if (t.isConfigurationProperties() && disablePropertyReflection && t.getTypeSystem().isNativeNextMode()) {
+			return AccessBits.NONE;
+		} else if ((t.isBeanFactoryPostProcessor() || t.isBeanPostProcessor()) && t.getTypeSystem().isNativeNextMode()) {
 			return AccessBits.NONE;
 		} else if ((t.isAtConfiguration() || t.isImportSelector() || t.isImportRegistrar()/* || t.isConfigurationProperties()*/) && t.getTypeSystem().isNativeNextMode()) {
 			return AccessBits.NONE;
@@ -2304,7 +2314,7 @@ public class Type {
 			// RESOURCE
 			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE;
 		} else if (t.isBeanPostProcessor()) {
-			return AccessBits.LOAD_AND_CONSTRUCT /*| AccessBits.DECLARED_METHODS*/ | AccessBits.RESOURCE;
+			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS /*| AccessBits.DECLARED_METHODS*/ | AccessBits.RESOURCE;
 		} else if (t.isArray()) {
 			return AccessBits.CLASS;
 		} else if (t.isConfigurationProperties()) {
