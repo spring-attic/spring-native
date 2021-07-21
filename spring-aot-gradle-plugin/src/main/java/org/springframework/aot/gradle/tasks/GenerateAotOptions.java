@@ -22,6 +22,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 
+import org.gradle.api.tasks.Optional;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.nativex.AotOptions;
 
@@ -50,6 +51,8 @@ public class GenerateAotOptions implements Serializable {
 
 	private final Property<Boolean> failOnMissingSelectorHint;
 
+	private final Property<String> mainClass;
+
 	private final Property<Boolean> buildTimePropertiesMatchIfMissing;
 
 	private final Property<String[]> buildTimePropertiesChecks;
@@ -64,6 +67,7 @@ public class GenerateAotOptions implements Serializable {
 		this.verify = extension.getVerify();
 		this.removeUnusedConfig = extension.getRemoveUnusedConfig();
 		this.failOnMissingSelectorHint = extension.getFailOnMissingSelectorHint();
+		this.mainClass = extension.getMainClass();
 		this.buildTimePropertiesMatchIfMissing = extension.getBuildTimePropertiesMatchIfMissing();
 		this.buildTimePropertiesChecks = extension.getBuildTimePropertiesChecks();
 	}
@@ -111,6 +115,12 @@ public class GenerateAotOptions implements Serializable {
 	@Input
 	public Property<Boolean> getFailOnMissingSelectorHint() {
 		return this.failOnMissingSelectorHint;
+	}
+
+	@Input
+	@Optional
+	public Property<String> getMainClass() {
+		return this.mainClass;
 	}
 
 	@Input

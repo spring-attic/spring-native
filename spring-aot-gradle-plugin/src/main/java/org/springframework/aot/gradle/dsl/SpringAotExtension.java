@@ -49,6 +49,8 @@ public class SpringAotExtension {
 
 	private final Property<String[]> buildTimePropertiesChecks;
 
+	private final Property<String> mainClass;
+
 	public SpringAotExtension(ObjectFactory objectFactory) {
 		this.mode = objectFactory.property(AotMode.class).convention(AotMode.NATIVE);
 		this.debugVerify = objectFactory.property(Boolean.class).convention(false);
@@ -61,6 +63,7 @@ public class SpringAotExtension {
 		this.failOnMissingSelectorHint = objectFactory.property(Boolean.class).convention(true);
 		this.buildTimePropertiesMatchIfMissing = objectFactory.property(Boolean.class).convention(true);
 		this.buildTimePropertiesChecks = objectFactory.property(String[].class).convention(new String[0]);
+		this.mainClass = objectFactory.property(String.class).convention((String)null);
 	}
 
 	/**
@@ -124,6 +127,13 @@ public class SpringAotExtension {
 	 */
 	public Property<Boolean> getFailOnMissingSelectorHint() {
 		return this.failOnMissingSelectorHint;
+	}
+
+	/**
+	 * Allows to specify a main class, useful when multiple ones are present.
+	 */
+	public Property<String> getMainClass() {
+		return this.mainClass;
 	}
 
 	/**
