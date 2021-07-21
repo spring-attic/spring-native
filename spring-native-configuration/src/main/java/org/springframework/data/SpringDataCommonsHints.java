@@ -21,6 +21,8 @@ import java.util.Properties;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.data.convert.ReadingConverter;
+import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.jpa.repository.support.EntityManagerBeanDefinitionRegistrarPostProcessor;
 import org.springframework.data.mapping.context.AbstractMappingContext;
 import org.springframework.data.mapping.context.MappingContext;
@@ -51,6 +53,7 @@ import org.springframework.nativex.hint.AccessBits;
 						RepositoryMetadata.class,
 						PropertiesBasedNamedQueries.class
 				}),
+				@TypeHint(types = {ReadingConverter.class, WritingConverter.class}, access = AccessBits.ANNOTATION),
 				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
 				@TypeHint(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
 				@TypeHint(typeNames = {

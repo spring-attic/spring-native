@@ -16,13 +16,18 @@
 
 package com.example.data.mongo;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.convert.ReadingConverter;
+import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-
-import java.util.Optional;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
 @SpringBootApplication
 @EnableMongoAuditing(auditorAwareRef = "fixedAuditor")
@@ -36,5 +41,34 @@ public class MongoApplication {
 	@Bean
 	AuditorAware<String> fixedAuditor() {
 		return () -> Optional.of("Douglas Adams");
+	}
+
+	@Bean
+	public MongoCustomConversions mongoCustomConversions() {
+
+		return new MongoCustomConversions(
+				Arrays.asList(
+						new StringToNameConverter(),
+						new NameToStringConverter()));
+	}
+
+	@ReadingConverter
+	public static class StringToNameConverter implements Converter<String, Name> {
+
+		@Override
+		public Name convert(String source) {
+
+			String[] args = source.split(";");
+			return new Name(args[0].trim(), args[1].trim());
+		}
+	}
+
+	@WritingConverter
+	public static class NameToStringConverter implements Converter<Name, String> {
+
+		@Override
+		public String convert(Name source) {
+			return source.getFirstname()  + "; " + source.getLastname();
+		}
 	}
 }
