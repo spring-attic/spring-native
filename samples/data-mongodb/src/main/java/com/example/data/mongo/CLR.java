@@ -23,7 +23,10 @@ public class CLR implements CommandLineRunner {
 	private MongoTemplate template;
 
 	@Autowired
-	private OrderRepository repository;
+	private OrderRepository orderRepository;
+
+	@Autowired
+	private CustomerRepository customerRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -40,13 +43,13 @@ public class CLR implements CommandLineRunner {
 		{
 			System.out.println("---- FIND ALL ----");
 
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
 			Order order = new Order("c42", new Date()).//
 					addItem(product1).addItem(product2).addItem(product3);
-			repository.save(order);
+			orderRepository.save(order);
 
-			Iterable<Order> all = repository.findAll();
+			Iterable<Order> all = orderRepository.findAll();
 			all.forEach(System.out::println);
 
 			System.out.println("-----------------\n\n\n");
@@ -54,27 +57,27 @@ public class CLR implements CommandLineRunner {
 
 		{
 			System.out.println("---- Paging / Sorting ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
-			repository.save(new Order("c42", new Date()).addItem(product1));
-			repository.save(new Order("c42", new Date()).addItem(product2));
-			repository.save(new Order("c42", new Date()).addItem(product3));
+			orderRepository.save(new Order("c42", new Date()).addItem(product1));
+			orderRepository.save(new Order("c42", new Date()).addItem(product2));
+			orderRepository.save(new Order("c42", new Date()).addItem(product3));
 
-			repository.save(new Order("b12", new Date()).addItem(product1));
-			repository.save(new Order("b12", new Date()).addItem(product1));
+			orderRepository.save(new Order("b12", new Date()).addItem(product1));
+			orderRepository.save(new Order("b12", new Date()).addItem(product1));
 
 			// sort
-			List<Order> sortedByCustomer = repository.findBy(Sort.by("customerId"));
+			List<Order> sortedByCustomer = orderRepository.findBy(Sort.by("customerId"));
 			System.out.println("sortedByCustomer: " + sortedByCustomer);
 
 			// page
-			Page<Order> c42_page0 = repository.findByCustomerId("c42", PageRequest.of(0, 2));
+			Page<Order> c42_page0 = orderRepository.findByCustomerId("c42", PageRequest.of(0, 2));
 			System.out.println("c42_page0: " + c42_page0);
-			Page<Order> c42_page1 = repository.findByCustomerId("c42", c42_page0.nextPageable());
+			Page<Order> c42_page1 = orderRepository.findByCustomerId("c42", c42_page0.nextPageable());
 			System.out.println("c42_page1: " + c42_page1);
 
 			// slice
-			Slice<Order> c42_slice0 = repository.findSliceByCustomerId("c42", PageRequest.of(0, 2));
+			Slice<Order> c42_slice0 = orderRepository.findSliceByCustomerId("c42", PageRequest.of(0, 2));
 			System.out.println("c42_slice0: " + c42_slice0);
 
 			System.out.println("-----------------\n\n\n");
@@ -83,13 +86,13 @@ public class CLR implements CommandLineRunner {
 		// Part Tree Query
 		{
 			System.out.println("---- PART TREE QUERY ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
 			Order order = new Order("c42", new Date()).//
 					addItem(product1).addItem(product2).addItem(product3);
-			repository.save(order);
+			orderRepository.save(order);
 
-			List<Order> byCustomerId = repository.findByCustomerId(order.getCustomerId());
+			List<Order> byCustomerId = orderRepository.findByCustomerId(order.getCustomerId());
 			byCustomerId.forEach(System.out::println);
 
 			System.out.println("-----------------\n\n\n");
@@ -98,13 +101,13 @@ public class CLR implements CommandLineRunner {
 		// Annotated Query
 		{
 			System.out.println("---- ANNOTATED QUERY ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
 			Order order = new Order("c42", new Date()).//
 					addItem(product1).addItem(product2).addItem(product3);
-			repository.save(order);
+			orderRepository.save(order);
 
-			List<Order> byCustomerId = repository.findByCustomerViaAnnotation(order.getCustomerId());
+			List<Order> byCustomerId = orderRepository.findByCustomerViaAnnotation(order.getCustomerId());
 			byCustomerId.forEach(System.out::println);
 
 			System.out.println("-----------------\n\n\n");
@@ -113,16 +116,16 @@ public class CLR implements CommandLineRunner {
 		// Annotated Aggregations
 		{
 			System.out.println("---- ANNOTATED AGGREGATIONS ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
-			repository.save(new Order("c42", new Date()).addItem(product1));
-			repository.save(new Order("c42", new Date()).addItem(product2));
-			repository.save(new Order("c42", new Date()).addItem(product3));
+			orderRepository.save(new Order("c42", new Date()).addItem(product1));
+			orderRepository.save(new Order("c42", new Date()).addItem(product2));
+			orderRepository.save(new Order("c42", new Date()).addItem(product3));
 
-			repository.save(new Order("b12", new Date()).addItem(product1));
-			repository.save(new Order("b12", new Date()).addItem(product1));
+			orderRepository.save(new Order("b12", new Date()).addItem(product1));
+			orderRepository.save(new Order("b12", new Date()).addItem(product1));
 
-			List<OrdersPerCustomer> result = repository.totalOrdersPerCustomer(Sort.by(Sort.Order.desc("total")));
+			List<OrdersPerCustomer> result = orderRepository.totalOrdersPerCustomer(Sort.by(Sort.Order.desc("total")));
 			System.out.println("result: " + result);
 
 //			assertThat(result).containsExactly(new OrdersPerCustomer("c42", 3L), new OrdersPerCustomer("b12", 2L));
@@ -132,13 +135,13 @@ public class CLR implements CommandLineRunner {
 		// Custom Implementation
 		{
 			System.out.println("---- CUSTOM IMPLEMENTATION ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
 			Order order = new Order("c42", new Date()).//
 					addItem(product1).addItem(product2).addItem(product3);
-			order = repository.save(order);
+			order = orderRepository.save(order);
 
-			Invoice invoice = repository.getInvoiceFor(order);
+			Invoice invoice = orderRepository.getInvoiceFor(order);
 			System.out.println("invoice: " + invoice);
 
 			System.out.println("-----------------\n\n\n");
@@ -147,14 +150,35 @@ public class CLR implements CommandLineRunner {
 		// Result Projection
 		{
 			System.out.println("---- RESULT PROJECTION ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
 			Order order = new Order("c42", new Date()).//
 					addItem(product1).addItem(product2).addItem(product3);
-			repository.save(order);
+			orderRepository.save(order);
 
-			List<OrderProjection> result = repository.findOrderProjectionByCustomerId(order.getCustomerId());
+			List<OrderProjection> result = orderRepository.findOrderProjectionByCustomerId(order.getCustomerId());
 			result.forEach(it -> System.out.println(String.format("OrderProjection(%s){id=%s, customerId=%s}", it.getClass().getSimpleName(), it.getId(), it.getCustomerId())));
+			System.out.println("-----------------\n\n\n");
+		}
+
+		// Custom Conversions
+		{
+			System.out.println("---- CUSTOM CONVERSION ----");
+			customerRepository.deleteAll();
+
+			customerRepository.save(new Customer("c-1", "c", "42"));
+
+			Document saved = template.execute(Customer.class, collection -> {
+				return collection.find(new Document("_id", "c-1")).first();
+			});
+
+			System.out.println("Raw Document: " + saved);
+			if(!saved.get("name").equals("c; 42")) {
+				throw new RuntimeException("Custom Conversion is broken");
+			}
+			Optional<Customer> byId = customerRepository.findById("c-1");
+
+			System.out.println("Domain Object: " + byId.get());
 			System.out.println("-----------------\n\n\n");
 		}
 
@@ -162,7 +186,7 @@ public class CLR implements CommandLineRunner {
 		{
 
 			System.out.println("---- DBREFs ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 			template.execute(Coupon.class, mongoCollection -> mongoCollection.deleteMany(new Document()));
 
 			Coupon coupon = new Coupon("X3R");
@@ -174,9 +198,9 @@ public class CLR implements CommandLineRunner {
 			order.setReduction(coupon);
 			order.setSimpleRef(coupon);
 
-			repository.save(order);
+			orderRepository.save(order);
 
-			Optional<Order> loaded = repository.findById(order.getId());
+			Optional<Order> loaded = orderRepository.findById(order.getId());
 			System.out.println("simple ref (no proxy): " + loaded.get().getSimpleRef().getCode());
 			System.out.println("lazyLoading (aot): " + loaded.get().getCoupon().getCode());
 			System.out.println("lazyLoading (jdk): " + loaded.get().getReduction().getId());
@@ -186,13 +210,13 @@ public class CLR implements CommandLineRunner {
 		{
 
 			System.out.println("---- QUERY BY EXAMPLE ----");
-			repository.deleteAll();
+			orderRepository.deleteAll();
 
-			Order order1 = repository.save(new Order("c42", new Date()).addItem(product1));
-			Order order2 = repository.save(new Order("b12", new Date()).addItem(product1));
+			Order order1 = orderRepository.save(new Order("c42", new Date()).addItem(product1));
+			Order order2 = orderRepository.save(new Order("b12", new Date()).addItem(product1));
 
 			Example<Order> example = Example.of(new Order(order1.getCustomerId()), ExampleMatcher.matching().withIgnorePaths("items"));
-			Iterable<Order> result = repository.findAll(example);
+			Iterable<Order> result = orderRepository.findAll(example);
 
 			System.out.println("result: " + result);
 
