@@ -55,16 +55,16 @@ public class SpringAotApplication extends SpringApplication {
 		if (springAot) {
 			logger.info("AOT mode enabled");
 			setApplicationContextFactory(AOT_FACTORY);
-			setInitializers(Arrays.asList(getBootstrapper(), new ConditionEvaluationReportLoggingListener()));
+			setInitializers(Arrays.asList(getBootstrapInitializer(), new ConditionEvaluationReportLoggingListener()));
 		}
 		else {
 			logger.info("AOT mode disabled");
 		}
 	}
 
-	private ApplicationContextInitializer<?> getBootstrapper() {
+	private ApplicationContextInitializer<?> getBootstrapInitializer() {
 		try {
-			return (ApplicationContextInitializer<?>) Class.forName("org.springframework.aot.ContextBootstrap").getDeclaredConstructor().newInstance();
+			return (ApplicationContextInitializer<?>) Class.forName("org.springframework.aot.ContextBootstrapInitializer").getDeclaredConstructor().newInstance();
 		}
 		catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new IllegalStateException(e);
