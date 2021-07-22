@@ -85,7 +85,7 @@ public class ContextBootstrapGenerator {
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
 		List<JavaFile> bootstrapClasses = new ArrayList<>();
-		bootstrapClasses.add(createClass(packageName, "ContextBootstrap",
+		bootstrapClasses.add(createClass(packageName, "ContextBootstrapInitializer",
 				generateBootstrapMethod(beanFactory, packageName, selector)));
 		for (ProtectedBootstrapClass protectedBootstrapClass : this.protectedBootstrapClasses.values()) {
 			bootstrapClasses.add(protectedBootstrapClass.build());
