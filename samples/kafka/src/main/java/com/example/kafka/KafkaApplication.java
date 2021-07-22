@@ -37,12 +37,13 @@ public class KafkaApplication {
 	public ApplicationRunner runner(KafkaTemplate<String, Greeting> template,
 			ConsumerFactory<String, Greeting> cf) {
 
-		cf.addListener(new ConsumerFactory.Listener() {
+		cf.addListener(new ConsumerFactory.Listener<String, Greeting>() {
 
 		});
 		return args -> {
-			template.send("graal", new Greeting("Hello from GraalVM!"));
-			System.out.println("++++++Sent:foo");
+			Greeting data = new Greeting("Hello from GraalVM!");
+			template.send("graal", data);
+			System.out.println("++++++Sent: " + data);
 			Thread.sleep(5000);
 		};
 	}
