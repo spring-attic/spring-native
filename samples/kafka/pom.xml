@@ -17,6 +17,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring-kafka.version>2.7.5-SNAPSHOT</spring-kafka.version>
 	</properties>
 
 	<dependencies>
