@@ -52,7 +52,6 @@ import org.springframework.nativex.type.TypeSystem;
 		@TypeHint(types = {	AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access=AccessBits.PUBLIC_METHODS),
 		@TypeHint(types= {
 				InfrastructureAdvisorAutoProxyCreator.class,
-				EnableAspectJAutoProxy.class,
 				Aspect.class,
 				Pointcut.class,
 				Before.class,
@@ -80,6 +79,8 @@ public class AopHints implements NativeConfiguration {
 				new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
 			hintDeclaration.addDependantType("org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator",
 				new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
+			hintDeclaration.addDependantType("org.springframework.context.annotation.EnableAspectJAutoProxy",
+					new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
 			return Collections.singletonList(hintDeclaration);
 		}
 		return Collections.emptyList();
