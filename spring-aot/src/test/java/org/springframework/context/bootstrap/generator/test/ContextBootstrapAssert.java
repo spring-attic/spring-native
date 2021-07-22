@@ -49,8 +49,8 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 		return this.myself;
 	}
 
-	public TextAssert contextBootstrap() {
-		return source(this.packageName, "ContextBootstrap");
+	public TextAssert contextBootstrapInitializer() {
+		return source(this.packageName, "ContextBootstrapInitializer");
 	}
 
 	public TextAssert source(String packageName, String name) {
