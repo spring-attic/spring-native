@@ -25,7 +25,7 @@ public class KafkaApplication {
 
 	@KafkaListener(id = "graal", topics = "graal")
 	public void listen(Greeting in) {
-		System.out.println("++++++Received:" + in);
+		System.out.println("++++++Received: " + in);
 	}
 
 	@Bean
