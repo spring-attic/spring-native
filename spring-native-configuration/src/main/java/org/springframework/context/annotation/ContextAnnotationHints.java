@@ -16,21 +16,11 @@
 
 package org.springframework.context.annotation;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger = AdviceModeImportSelector.class, abortIfTypesMissing = true, follow = true)
-@NativeHint(trigger = Import.class, follow = true) // Whatever is @Imported should be followed
-@NativeHint(trigger = Conditional.class, extractTypesFromAttributes = "value" ) // TODO need extract?
-@NativeHint(types = @TypeHint(types = { ComponentScan.class, Configuration.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
-// TODO Check required access for enums like this FilterType
-@NativeHint(types = { @TypeHint(types = FilterType.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) })
-@NativeHint(types = {
-		@TypeHint(types= ComponentScan.Filter.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
-		@TypeHint(types= ApplicationContext.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE)
-})
+@NativeHint(types = @TypeHint(types = { ComponentScan.class }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
 public class ContextAnnotationHints implements NativeConfiguration {
 }
