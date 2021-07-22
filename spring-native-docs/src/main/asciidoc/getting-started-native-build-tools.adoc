@@ -207,6 +207,10 @@ plugins {
     // ...
     id 'org.graalvm.buildtools.native' version '{graalvm-native-buildtools-version}'
 }
+
+nativeBuild {
+    classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
+}
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
@@ -214,6 +218,10 @@ plugins {
 plugins {
     // ...
     id("org.graalvm.buildtools.native") version "{graalvm-native-buildtools-version}"
+}
+
+nativeBuild {
+    classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
 }
 ----
 
