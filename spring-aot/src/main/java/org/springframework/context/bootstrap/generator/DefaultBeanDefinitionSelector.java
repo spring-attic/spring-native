@@ -49,11 +49,6 @@ public class DefaultBeanDefinitionSelector implements BeanDefinitionSelector {
 		this.excludedBeanNames.add(AnnotationConfigUtils.COMMON_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_FACTORY_BEAN_NAME);
-
-		// See https://github.com/spring-projects/spring-data-commons/pull/2399
-		this.excludedBeanNames.add("projectingArgumentResolverBeanPostProcessor");
-		// Need Spring Boot 2.5.3-SNAPSHOT
-		this.excludedBeanNames.add("healthEndpointGroupsBeanPostProcessor");
 	}
 
 	@Override
