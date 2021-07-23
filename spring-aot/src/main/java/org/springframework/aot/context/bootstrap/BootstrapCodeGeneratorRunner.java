@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 public class BootstrapCodeGeneratorRunner {
 
 	public static void main(String[] args) throws IOException {
-		Assert.state(args.length == 3, "Missing argument");
+		Assert.state(args.length >= 3, "Missing argument");
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode("native");
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
@@ -44,6 +44,7 @@ public class BootstrapCodeGeneratorRunner {
 		String[] folders = StringUtils.split(args[2], File.pathSeparator);
 		Set<Path> resourceFolders = folders != null ? Arrays.stream(folders)
 				.map(Paths::get).collect(Collectors.toSet()) : Collections.emptySet();
-		generator.generate(sourcesPath, resourcesPath, classLoader, resourceFolders);
+		String mainClass = args.length >= 4 ? args[3] : null;
+		generator.generate(sourcesPath, resourcesPath, classLoader, mainClass, resourceFolders);
 	}
 }
