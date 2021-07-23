@@ -105,6 +105,10 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				args.add(resourcesPath.toAbsolutePath().toString());
 				// resourcesFolders
 				args.add(StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
+				// Application main class
+				if (this.mainClass != null) {
+					args.add(this.mainClass);
+				}
 
 				int exitCode = runProcess.run(true, args, Collections.emptyMap());
 				if (exitCode != 0 && exitCode != 130) {
@@ -113,7 +117,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			}
 			else {
 				BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-				generator.generate(sourcesPath, resourcesPath, runtimeClasspathElements, resourceFolders);
+				generator.generate(sourcesPath, resourcesPath, runtimeClasspathElements, this.mainClass, resourceFolders);
 			}
 			compileGeneratedSources(sourcesPath, runtimeClasspathElements);
 			processGeneratedResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));
