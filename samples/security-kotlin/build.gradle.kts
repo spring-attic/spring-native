@@ -56,3 +56,7 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
     }
 }
+
+nativeBuild {
+    classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
+}

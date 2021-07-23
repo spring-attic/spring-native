@@ -33,3 +33,7 @@ bootBuildImage {
 			"BP_NATIVE_IMAGE" : "true"
 	]
 }
+
+nativeBuild {
+	classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
+}
