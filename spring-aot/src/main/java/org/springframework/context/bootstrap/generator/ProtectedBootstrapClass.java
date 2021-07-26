@@ -48,7 +48,8 @@ public class ProtectedBootstrapClass {
 	public ProtectedBootstrapClass(String packageName) {
 		this.packageName = packageName;
 		this.methods = new ArrayList<>();
-		this.type = TypeSpec.classBuilder("ContextBootstrap").addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+		this.type = TypeSpec.classBuilder(ContextBootstrapGenerator.BOOTSTRAP_CLASS_NAME)
+				.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 	}
 
 	public void addBeanRegistrationMethod(String beanName, Class<?> type,
