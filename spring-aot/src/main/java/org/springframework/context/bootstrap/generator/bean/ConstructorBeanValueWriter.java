@@ -69,9 +69,18 @@ public class ConstructorBeanValueWriter extends AbstractBeanValueWriter {
 		}
 		// We need to process any parameters that might hold generic to manage them upfront.
 		List<ParameterResolution> parameters = resolveParameters(this.constructor.getParameters(), (i) -> ResolvableType.forConstructorParameter(this.constructor, i));
+		boolean innerClass = isInnerClass(getDeclaringType());
+		if (innerClass) { // Remove the implicit argument
+			parameters.remove(0);
+		}
 		boolean hasAssignment = parameters.stream().anyMatch(ParameterResolution::hasAssignment);
 		if (parameters.isEmpty()) {
-			code.add("$T::new", getType());
+			if (innerClass) {
+				code.add("() -> context.getBean($T.class).new $L()", getDeclaringType().getEnclosingClass(), getDeclaringType().getSimpleName());
+			}
+			else {
+				code.add("$T::new", getType());
+			}
 		}
 		else {
 			code.add("() ->");
@@ -83,7 +92,12 @@ public class ConstructorBeanValueWriter extends AbstractBeanValueWriter {
 			else {
 				code.add(" ");
 			}
-			code.add("new $T(", getDeclaringType());
+			if (innerClass) {
+				code.add("context.getBean($T.class).new $L(", getDeclaringType().getEnclosingClass(), getDeclaringType().getSimpleName());
+			}
+			else {
+				code.add("new $T(", getDeclaringType());
+			}
 			for (int i = 0; i < parameters.size(); i++) {
 				parameters.get(i).applyParameter(code);
 				if (i < parameters.size() - 1) {
@@ -98,6 +112,10 @@ public class ConstructorBeanValueWriter extends AbstractBeanValueWriter {
 		if (hasAssignment) {
 			code.add(";\n").unindent().add("}");
 		}
+	}
+
+	private static boolean isInnerClass(Class<?> type) {
+		return type.isMemberClass() && !Modifier.isStatic(type.getModifiers());
 	}
 
 }
