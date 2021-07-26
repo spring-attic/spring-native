@@ -13,7 +13,7 @@ public class WebfluxApplication {
 	}
 
 	@RestController
-	static class Foo {
+	class Foo {
 
 		@GetMapping("/")
 		public String greet() {
