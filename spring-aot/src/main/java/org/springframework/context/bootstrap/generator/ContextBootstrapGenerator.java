@@ -56,6 +56,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 public class ContextBootstrapGenerator {
 
+	static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
+
 	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
 
 	private final List<BeanValueWriterSupplier> beanValueWriterSuppliers;
@@ -85,7 +87,7 @@ public class ContextBootstrapGenerator {
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
 		List<JavaFile> bootstrapClasses = new ArrayList<>();
-		bootstrapClasses.add(createClass(packageName, "ContextBootstrapInitializer",
+		bootstrapClasses.add(createClass(packageName, BOOTSTRAP_CLASS_NAME,
 				generateBootstrapMethod(beanFactory, packageName, selector)));
 		for (ProtectedBootstrapClass protectedBootstrapClass : this.protectedBootstrapClasses.values()) {
 			bootstrapClasses.add(protectedBootstrapClass.build());
@@ -124,7 +126,7 @@ public class ContextBootstrapGenerator {
 								.computeIfAbsent(protectedPackageName, ProtectedBootstrapClass::new);
 						protectedBootstrapClass.addBeanRegistrationMethod(beanName, beanValueWriter.getType(),
 								beanRegistrationGenerator);
-						ClassName protectedClassName = ClassName.get(protectedPackageName, "ContextBootstrap");
+						ClassName protectedClassName = ClassName.get(protectedPackageName, BOOTSTRAP_CLASS_NAME);
 						code.addStatement("$T.$L(context)", protectedClassName,
 								ProtectedBootstrapClass.registerBeanMethodName(beanName, beanValueWriter.getType()));
 					}
