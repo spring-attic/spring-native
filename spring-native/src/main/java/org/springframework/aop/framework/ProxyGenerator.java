@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Function;
 
+import net.bytebuddy.ClassFileVersion;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.Nullable;
@@ -70,12 +71,13 @@ public class ProxyGenerator {
 
 			validateClassIfNecessary(proxySuperClass, classLoader);
 
-			ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.DISABLED);
+			Class<?> target = resolve(targetClass, classLoader);
+			ByteBuddy byteBuddy = new ByteBuddy(ClassFileVersion.of(target)).with(TypeValidation.DISABLED);
 			byteBuddy = byteBuddy.ignore(ElementMatchers.none());
 			byteBuddy = byteBuddy.with(new ProxyNamingStrategy(config));
 			byteBuddy = byteBuddy.with(new AuxiliaryTypeNamingStrategy());
 
-			DynamicType.Builder<?> builder = byteBuddy.subclass(resolve(config.getTargetClass(), classLoader));
+			DynamicType.Builder<?> builder = byteBuddy.subclass(target);
 			builder = builder.implement(resolve(config.getProxiedInterfaces(), classLoader));
 
 			builder = configure(builder, proxySuperClass, config, classLoader);
