@@ -16,14 +16,11 @@
 
 package org.springframework.aot;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -34,8 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.ContextBootstrapContributor;
 import org.springframework.aot.factories.SpringFactoriesContributor;
 import org.springframework.aot.nativex.ConfigurationContributor;
-import org.springframework.boot.loader.tools.MainClassFinder;
-import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;
@@ -66,20 +61,10 @@ public class BootstrapCodeGenerator {
 		this.aotOptions = aotOptions;
 	}
 
-	public void generate(Path sourcesPath, Path resourcesPath, List<String> classpath,  @Nullable String mainClass, Set<Path> resourceFolders) throws IOException {
-		logger.debug("Starting code generation with classpath: " + classpath);
-		File classesFolder = Paths.get(classpath.get(0)).toFile();
-		String singleMainClass = MainClassFinder.findSingleMainClass(classesFolder);
-		DefaultBuildContext buildContext = new DefaultBuildContext(mainClass != null ? mainClass : singleMainClass, classpath);
-		generate(sourcesPath, resourcesPath, buildContext, resourceFolders);
-	}
-
-	public void generate(Path sourcesPath, Path resourcesPath, URLClassLoader classLoader, @Nullable String mainClass, Set<Path> resourceFolders) throws IOException {
-		logger.debug("Starting code generation with classLoader: " + classLoader);
-		File classesFolder = Paths.get(classLoader.getURLs()[0].getFile()).toFile();
-		String singleMainClass = MainClassFinder.findSingleMainClass(classesFolder);
-		DefaultBuildContext buildContext = new DefaultBuildContext(mainClass != null ? mainClass : singleMainClass, classLoader);
-		generate(sourcesPath, resourcesPath, buildContext, resourceFolders);
+	public void generate(ApplicationStructure structure) throws IOException {
+		logger.debug("Starting code generation with classLoader: " + structure.getClassLoader());
+		DefaultBuildContext buildContext = new DefaultBuildContext(structure);
+		generate(structure.getSourcesPath(), structure.getResourcesPath(), structure.getResourceFolders(), buildContext);
 	}
 
 	/**
@@ -91,7 +76,7 @@ public class BootstrapCodeGenerator {
 	 * @param resourceFolders paths to folders containing project main resources
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
-	private void generate(Path sourcesPath, Path resourcesPath, DefaultBuildContext buildContext, Set<Path> resourceFolders) throws IOException {
+	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext) throws IOException {
 		if (this.aotOptions.toMode().equals(Mode.NATIVE)) {
 			ContextBootstrapContributor bootstrapContributor = new ContextBootstrapContributor();
 			logger.debug("Executing Contributor: " + bootstrapContributor.getClass().getName());
