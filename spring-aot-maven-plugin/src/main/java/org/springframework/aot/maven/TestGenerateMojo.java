@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
+import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
@@ -73,8 +74,11 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 		Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
 		try {
 			List<String> testClasspathElements = this.project.getTestClasspathElements();
+			Path classesPath = Paths.get(project.getBuild().getTestOutputDirectory());
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-			generator.generate(sourcesPath, resourcesPath, testClasspathElements, mainClass, resourceFolders);
+			ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
+					classesPath, null, project.getRuntimeClasspathElements(), null);
+			generator.generate(applicationStructure);
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
 			this.buildContext.refresh(this.buildDir);
