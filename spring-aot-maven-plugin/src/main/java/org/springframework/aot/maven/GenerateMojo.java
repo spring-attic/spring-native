@@ -36,7 +36,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
 import org.springframework.boot.loader.tools.RunProcess;
 import org.springframework.nativex.support.Mode;
@@ -99,13 +98,17 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				args.add(asClasspathArgument(runtimeClasspathElements));
 				// main class
 				args.add(BootstrapCodeGeneratorRunner.class.getCanonicalName());
-				// sourcesPath
+				// [0] sourcesPath
 				args.add(sourcesPath.toAbsolutePath().toString());
-				// resourcesPath
+				// [1] resourcesPath
 				args.add(resourcesPath.toAbsolutePath().toString());
-				// resourcesFolders
+				// [2] resourcesFolders
 				args.add(StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
-				// Application main class
+				// [3] classesFolder
+				args.add(project.getBuild().getOutputDirectory());
+				// [4] classPathElements
+				args.add(StringUtils.collectionToDelimitedString(runtimeClasspathElements, File.pathSeparator));
+				// [5] Application main class
 				if (this.mainClass != null) {
 					args.add(this.mainClass);
 				}
@@ -116,8 +119,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				}
 			}
 			else {
-				BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-				generator.generate(sourcesPath, resourcesPath, runtimeClasspathElements, this.mainClass, resourceFolders);
+				throw new IllegalStateException("Non NATIVE mode are not implemented");
 			}
 			compileGeneratedSources(sourcesPath, runtimeClasspathElements);
 			processGeneratedResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));

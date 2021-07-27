@@ -17,20 +17,26 @@
 package org.springframework.aot.gradle.tasks;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.process.CommandLineArgumentProvider;
 
 import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link org.gradle.api.Task} that generates AOT sources using the {@link BootstrapCodeGenerator}.
@@ -38,11 +44,11 @@ import org.springframework.aot.gradle.dsl.SpringAotExtension;
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
-public class GenerateAotSources extends DefaultTask {
-
-	private FileCollection classpath;
+public class GenerateAotSources extends JavaExec {
 
 	private SourceDirectorySet resourceDirectories;
+	
+	private final DirectoryProperty mainSourceSetOutputDirectory;
 
 	private final DirectoryProperty sourcesOutputDirectory;
 
@@ -51,18 +57,12 @@ public class GenerateAotSources extends DefaultTask {
 	private final GenerateAotOptions aotOptions;
 
 	public GenerateAotSources() {
+		this.mainSourceSetOutputDirectory = getProject().getObjects().directoryProperty();
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
-	}
-
-	@InputFiles
-	public FileCollection getClasspath() {
-		return this.classpath;
-	}
-
-	public void setClasspath(FileCollection classpath) {
-		this.classpath = classpath;
+		setMain(BootstrapCodeGeneratorRunner.class.getCanonicalName());
+		getArgumentProviders().add(new BootstrapGeneratorArgumentProvider());
 	}
 
 	@InputFiles
@@ -72,6 +72,11 @@ public class GenerateAotSources extends DefaultTask {
 
 	public void setResourceInputDirectories(SourceDirectorySet resourceDirectories) {
 		this.resourceDirectories = resourceDirectories;
+	}
+
+	@InputDirectory
+	public DirectoryProperty getMainSourceSetOutputDirectory() {
+		return this.mainSourceSetOutputDirectory;
 	}
 
 	@OutputDirectory
@@ -89,19 +94,32 @@ public class GenerateAotSources extends DefaultTask {
 		return this.aotOptions;
 	}
 
-	@TaskAction
-	public void generateSources() {
-		List<String> classpathElements = this.classpath.getFiles().stream()
-				.map(File::getAbsolutePath).collect(Collectors.toList());
-		Set<Path> resourcesElements = this.resourceDirectories.getSrcDirs().stream().map(File::toPath).collect(Collectors.toSet());
-		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(this.aotOptions.toAotOptions());
-		try {
-			generator.generate(this.sourcesOutputDirectory.get().getAsFile().toPath(),
-					this.resourcesOutputDirectory.get().getAsFile().toPath(),
-					classpathElements, this.aotOptions.getMainClass().getOrNull(), resourcesElements);
+	private class BootstrapGeneratorArgumentProvider implements CommandLineArgumentProvider {
+
+		@Override
+		public Iterable<String> asArguments() {
+			List<String> arguments = new ArrayList<>();
+			// path to generated sources
+			arguments.add(GenerateAotSources.this.sourcesOutputDirectory.get().getAsFile().toPath().toString());
+			// path to generated resources
+			arguments.add(GenerateAotSources.this.resourcesOutputDirectory.get().getAsFile().toPath().toString());
+			// application resources locations
+			arguments.add(toPathArgument(GenerateAotSources.this.resourceDirectories.getSrcDirs()));
+			// application classes locations
+			arguments.add(GenerateAotSources.this.mainSourceSetOutputDirectory.get().getAsFile().toPath().toString());
+			// application classpath
+			arguments.add(toPathArgument(getClasspath().getFiles()));
+			
+			// main application class
+			if (GenerateAotSources.this.aotOptions.getMainClass().isPresent()) {
+				arguments.add(GenerateAotSources.this.aotOptions.getMainClass().get());
+			}
+			return arguments;
 		}
-		catch (IOException exc) {
-			throw new TaskExecutionException(this, exc);
+
+		private String toPathArgument(Set<File> files) {
+			List<String> paths = files.stream().map(File::toPath).map(Path::toString).collect(Collectors.toList());
+			return StringUtils.collectionToDelimitedString(paths, File.pathSeparator);
 		}
 	}
 

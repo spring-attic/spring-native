@@ -18,14 +18,13 @@ package org.springframework.aot.context.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.Assert;
@@ -33,18 +32,34 @@ import org.springframework.util.StringUtils;
 
 public class BootstrapCodeGeneratorRunner {
 
+	/**
+	 * <ul>
+	 * 	<li>[0] sourcesPath
+	 * 	<li>[1] resourcesPath
+	 * 	<li>[2] resourcesFolders
+	 * 	<li>[3] classesFolder
+	 * 	<li>[4] classPathElements
+	 * 	<li>[5] Application main class
+	 * </ul>
+	 */
 	public static void main(String[] args) throws IOException {
-		Assert.state(args.length >= 3, "Missing argument");
+		Assert.state(args.length >= 4, "Missing argument");
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode("native");
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
+
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
 		Path sourcesPath = Paths.get(args[0]);
 		Path resourcesPath = Paths.get(args[1]);
-		URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
-		String[] folders = StringUtils.split(args[2], File.pathSeparator);
-		Set<Path> resourceFolders = folders != null ? Arrays.stream(folders)
-				.map(Paths::get).collect(Collectors.toSet()) : Collections.emptySet();
-		String mainClass = args.length >= 4 ? args[3] : null;
-		generator.generate(sourcesPath, resourcesPath, classLoader, mainClass, resourceFolders);
+		String[] folders = StringUtils.tokenizeToStringArray(args[2], File.pathSeparator);
+		Set<Path> resourceFolders = Arrays.stream(folders).map(Paths::get).collect(Collectors.toSet());
+		Path classesPath = Paths.get(args[3]);
+		String[] classPath = StringUtils.tokenizeToStringArray(args[4], File.pathSeparator);
+		String mainClass = args.length >= 6 ? args[5] : null;
+
+		ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
+				classesPath, mainClass, Arrays.asList(classPath), classLoader);
+		generator.generate(applicationStructure);
 	}
 }
