@@ -44,6 +44,7 @@ import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
 import org.springframework.context.bootstrap.generator.bean.GenericBeanRegistrationGenerator;
 import org.springframework.context.bootstrap.generator.bean.SimpleBeanRegistrationGenerator;
+import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -133,6 +134,9 @@ public class ContextBootstrapGenerator {
 				}
 			}
 		}
+		// FIXME: provide SPI for this
+		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(code);
+
 		method.addCode(code.build());
 		return method.build();
 	}
