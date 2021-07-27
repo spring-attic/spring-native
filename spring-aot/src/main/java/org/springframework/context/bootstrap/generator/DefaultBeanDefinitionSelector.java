@@ -43,12 +43,12 @@ public class DefaultBeanDefinitionSelector implements BeanDefinitionSelector {
 		this.excludedBeanNames = new HashSet<>();
 		this.excludedBeanNames.add(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_PROCESSOR_BEAN_NAME);
+		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_FACTORY_BEAN_NAME);
 
 		// TODO Make a better split between the AOT and runtime parts otherwise too much reflection is required, so for now @Autowired on fields/setters and event listeners are not properly supported
 		this.excludedBeanNames.add(AnnotationConfigUtils.AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.COMMON_ANNOTATION_PROCESSOR_BEAN_NAME);
-		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_PROCESSOR_BEAN_NAME);
-		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_FACTORY_BEAN_NAME);
 	}
 
 	@Override
