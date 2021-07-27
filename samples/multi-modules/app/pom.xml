@@ -47,7 +47,7 @@
 
 	<profiles>
 		<profile>
-			<id>native</id>
+			<id>buildImage</id>
 			<build>
 				<plugins>
 					<plugin>

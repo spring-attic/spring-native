@@ -18,5 +18,5 @@ Or Maven:
 
 ```shell
 # build the native image with GraalVM
-$ mvn package -Pnative
+$ mvn package -PbuildImage
 ```
