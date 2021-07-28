@@ -13,8 +13,8 @@ You then need a local installation of the native image compiler.
 To install the native image compiler on MacOS or Linux, we recommend using https://sdkman.io/[SDKMAN]:
 
 * https://sdkman.io/install[Install SDKMAN].
-* Install GraalVM with `sdk install java {graalvm-version}.r8-grl` for Java 8 or `sdk install java {graalvm-version}.r11-grl` for Java 11.
-* Make sure to use the newly installed JDK with `sdk use java {graalvm-version}.r8-grl` or `sdk use java {graalvm-version}.r11-grl`.
+* Install GraalVM with `sdk install java {graalvm-version}.r11-grl` for Java 11.
+* Make sure to use the newly installed JDK with `sdk use java {graalvm-version}.r11-grl`.
 * Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 Alternatively or if you are on Microsoft Windows, you can manually install GraalVM builds as follows:
