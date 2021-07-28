@@ -49,6 +49,8 @@ Spring Native is composed of the following modules:
 [[getting-started]]
 == Getting Started
 
+NOTE: Applications using Spring Native should be compiled with Java 11.
+
 There are two main ways to build a Spring Boot native application:
 
 * Using <<getting-started-buildpacks, Spring Boot Buildpacks support>> to generate a lightweight container containing a native executable.

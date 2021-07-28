@@ -17,7 +17,7 @@ GraalVM issues impacting the Spring ecosystem are identified on their issue trac
 [[support-language]]
 === Language
 
-Java 8, Java 11, and Kotlin 1.5+ are supported.
+Java 11, and Kotlin 1.5+ are supported.
 
 Kotlin Coroutines are supported but require additional reflection entries due to how Coroutines generates bytecode with an `Object` return type.
 
