@@ -47,6 +47,7 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 * `spring-boot-starter-data-neo4j`
 * `spring-boot-starter-data-r2dbc`
 * `spring-boot-starter-data-redis`
+* `spring-boot-starter-hateoas`
 * `spring-boot-starter-jdbc`
 * `spring-boot-starter-integration`
 * `spring-boot-starter-logging`
