@@ -33,6 +33,11 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>3.1.6</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -46,6 +51,7 @@
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
 				<configuration>
+					<removeXmlSupport>false</removeXmlSupport>
 					<removeSpelSupport>true</removeSpelSupport>
 					<removeYamlSupport>true</removeYamlSupport>
 				</configuration>
