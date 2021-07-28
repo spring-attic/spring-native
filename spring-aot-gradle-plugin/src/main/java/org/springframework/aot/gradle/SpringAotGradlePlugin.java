@@ -88,6 +88,13 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			SourceSet aotTestSourceSet = createAotTestSourceSet(sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
 			GenerateAotSources generateAotTestSources = createGenerateAotTestSourcesTask(project.getTasks(), sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
 			configureAotTestTasks(project.getTasks(), sourceSets, aotSourceSet, aotTestSourceSet, generateAotTestSources);
+
+			project.getPlugins().withType(SpringBootPlugin.class, springBootPlugin -> {
+				project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) ->
+						bootJar.classpath(aotSourceSet.getRuntimeClasspath()));
+				project.getTasks().named("bootRun", BootRun.class, (bootRun) ->
+						bootRun.classpath(aotSourceSet.getRuntimeClasspath()));
+			});
 			
 			project.getPlugins().withId("org.jetbrains.kotlin.jvm", kotlinPlugin -> {
 				project.getTasks().named("compileAotKotlin")
@@ -143,11 +150,6 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			aotProcessResources.from(generateAotSources.getResourcesOutputDirectory());
 			aotProcessResources.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
 		});
-
-		project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) ->
-				bootJar.classpath(aotSourceSet.getRuntimeClasspath()));
-		project.getTasks().named("bootRun", BootRun.class, (bootRun) ->
-				bootRun.classpath(aotSourceSet.getRuntimeClasspath()));
 	}
 
 	private SourceSet createAotTestSourceSet(SourceSetContainer sourceSets, File aotTestSourcesDirectory, File aotTestResourcesDirectory) {
