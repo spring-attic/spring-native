@@ -13,7 +13,7 @@ allprojects {
 	apply plugin: 'java-library'
 	apply plugin: 'io.spring.dependency-management'
 
-	sourceCompatibility = '1.8'
+	sourceCompatibility = '11'
 	
 	dependencyManagement {
 		imports {

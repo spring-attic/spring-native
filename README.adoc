@@ -30,6 +30,8 @@ If you have not previously done so, please sign the https://cla.pivotal.io/sign/
 
 Contributions are welcome, especially for adding support via pull requests for libraries widely used in the Spring ecosystem not yet support. Please refer to the {documentation-url}#how-to-contribute[how to contribute] section for more details.
 
+This project requires Java 11.
+
 == License
 
 https://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
