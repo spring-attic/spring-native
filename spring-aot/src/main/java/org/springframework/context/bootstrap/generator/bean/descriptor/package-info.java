@@ -14,35 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.infrastructure;
-
-import java.util.function.Supplier;
-
 /**
- * A helper class for bean value suppliers that throw checked exceptions.
- *
- * @author Stephane Nicoll
+ * Provide the necessary metadata to instantiate a bean.
  */
-public final class ExceptionHandler {
-
-	private ExceptionHandler() {
-	}
-
-	public static <T> Supplier<T> wrapException(SmartSupplier<T> delegate) {
-		return () -> {
-			try {
-				return delegate.get();
-			}
-			catch (Exception ex) {
-				throw new RuntimeException(ex.getMessage(), ex);
-			}
-		};
-	}
-
-	public interface SmartSupplier<T> {
-
-		T get() throws Exception;
-
-	}
-
-}
+package org.springframework.context.bootstrap.generator.bean.descriptor;
