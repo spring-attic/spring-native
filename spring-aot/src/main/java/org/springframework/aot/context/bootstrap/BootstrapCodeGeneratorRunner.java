@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -46,10 +47,14 @@ public class BootstrapCodeGeneratorRunner {
 		Assert.state(args.length >= 4, "Missing argument");
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode("native");
-		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
+		// TODO Manage properly logging, for now just avoid debug logging by default (with Logback)
+		LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
+		loggingSystem.beforeInitialize();
+
+		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		Path sourcesPath = Paths.get(args[0]);
 		Path resourcesPath = Paths.get(args[1]);
 		String[] folders = StringUtils.tokenizeToStringArray(args[2], File.pathSeparator);
