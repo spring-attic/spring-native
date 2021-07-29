@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 source ${PWD%/*samples/*}/scripts/wait.sh
 RC=0
 
