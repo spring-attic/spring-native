@@ -37,7 +37,7 @@ class FactoriesCodeContributors {
 	private final List<FactoriesCodeContributor> contributors;
 
 	FactoriesCodeContributors(AotOptions aotOptions) {
-		this.contributors = Arrays.asList(new AutoConfigurationFactoriesCodeContributor(aotOptions),
+		this.contributors = Arrays.asList(new IgnoredFactoriesCodeContributor(),
 				new TestAutoConfigurationFactoriesCodeContributor(aotOptions),
 				new NoArgConstructorFactoriesCodeContributor(),
 				new PrivateFactoriesCodeContributor(),
