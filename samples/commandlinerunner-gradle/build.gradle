@@ -35,5 +35,5 @@ bootBuildImage {
 }
 
 nativeBuild {
-	classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
+	classpath(processAotResources.outputs, aotClasses.outputs)
 }

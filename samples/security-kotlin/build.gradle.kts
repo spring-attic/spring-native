@@ -58,5 +58,6 @@ tasks.withType<KotlinCompile> {
 }
 
 nativeBuild {
-    classpath("$buildDir/resources/aot", "$buildDir/classes/java/aot")
+    classpath(tasks.named("processAotResources").get().outputs,
+        tasks.named("aotClasses").get().outputs)
 }
