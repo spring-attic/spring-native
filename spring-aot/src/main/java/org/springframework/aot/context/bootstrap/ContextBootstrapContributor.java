@@ -65,13 +65,16 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		applicationContext.setEnvironment(new StandardEnvironment());
 
 		// TODO: auto-detect main class
-		ClassDescriptor mainClass = typeSystem.resolveClass(context.getMainClass());
-		logger.info("Detected main class: " + mainClass.getCanonicalClassName());
-		try {
-			applicationContext.registerBean(ClassUtils.forName(mainClass.getCanonicalClassName(), classLoader));
-		}
-		catch (ClassNotFoundException exc) {
-			 throw new IllegalStateException("Could not load main class" + mainClass.getCanonicalClassName(), exc);
+		String mainClassName = context.getMainClass();
+		if (mainClassName != null) {
+			ClassDescriptor mainClass = typeSystem.resolveClass(mainClassName);
+			logger.info("Detected main class: " + mainClass.getCanonicalClassName());
+			try {
+				applicationContext.registerBean(ClassUtils.forName(mainClass.getCanonicalClassName(), classLoader));
+			}
+			catch (ClassNotFoundException exc) {
+				throw new IllegalStateException("Could not load main class" + mainClass.getCanonicalClassName(), exc);
+			}
 		}
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(applicationContext).processBeanDefinitions();
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
