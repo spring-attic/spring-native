@@ -16,11 +16,17 @@
 
 package org.springframework.context.annotation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrarTests.CustomClasspathScanningConfiguration.CustomClasspathScanningImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.samples.compose.ImportConfiguration;
 import org.springframework.context.annotation.samples.condition.ConditionalConfigurationOne;
 import org.springframework.context.annotation.samples.scan.ScanConfiguration;
@@ -28,6 +34,7 @@ import org.springframework.context.annotation.samples.simple.ConfigurationOne;
 import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,6 +87,15 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 				ConfigurationOne.class.getName(), "beanOne", ConfigurationTwo.class.getName(), "beanTwo");
 	}
 
+	@Test // gh-953
+	void processBeanDefinitionsWithCustomClasspathScanningAndNullBeanRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
+				new MockEnvironment().withProperty("test.one.enabled", "true"), CustomClasspathScanningConfiguration.class);
+		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		// Environment not linked so the condition evaluations applies on an "empty" environment.
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(CustomClasspathScanningConfiguration.class.getName());
+	}
+
 	// Bean definitions
 
 	@Test
@@ -119,6 +135,26 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 			context.registerBean(componentClass);
 		}
 		return context;
+	}
+
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(CustomClasspathScanningImportBeanDefinitionRegistrar.class)
+	static class CustomClasspathScanningConfiguration {
+
+		static class CustomClasspathScanningImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+
+			@Override
+			public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
+				ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider();
+				provider.registerDefaultFilters();
+				List<BeanDefinition> candidateComponents = new ArrayList<>(provider.findCandidateComponents(ConditionalConfigurationOne.class.getPackageName()));
+				for (int i = 0; i < candidateComponents.size(); i++) {
+					registry.registerBeanDefinition("candidateComponent" + i, candidateComponents.get(i));
+				}
+			}
+		}
+
 	}
 
 }
