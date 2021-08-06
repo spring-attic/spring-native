@@ -1,6 +1,9 @@
 package org.springframework.context.bootstrap.generator.bean;
 
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,6 +21,7 @@ import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
@@ -46,16 +50,35 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 
 	@Override
 	public void writeBeanRegistration(BootstrapWriterContext context, Builder code) {
-		MemberDescriptor<Executable> instanceCreator = this.beanValueWriter.getDescriptor().getInstanceCreator();
-		if (isAccessibleFrom(this.beanValueWriter.getDescriptor(), context.getPackageName())) {
+		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
+		registerReflectionMetadata(context.getRuntimeReflectionRegistry(), descriptor);
+
+		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
+		if (isAccessibleFrom(descriptor, context.getPackageName())) {
 			writeBeanRegistration(code);
 		}
 		else {
-			Class<?> beanType = this.beanValueWriter.getDescriptor().getBeanType();
+			Class<?> beanType = descriptor.getBeanType();
 			String protectedPackageName = instanceCreator.getMember().getDeclaringClass().getPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
 			String methodName = addBeanRegistrationMethod(javaFile, this.beanName, beanType, this::writeBeanRegistration);
 			code.addStatement("$T.$L(context)", javaFile.getClassName(), methodName);
+		}
+	}
+
+	private void registerReflectionMetadata(RuntimeReflectionRegistry registry, BeanInstanceDescriptor descriptor) {
+		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
+		if (instanceCreator != null) {
+			registry.addMethod(instanceCreator.getMember());
+		}
+		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
+			Member member = injectionPoint.getMember();
+			if (member instanceof Executable) {
+				registry.addMethod((Method) member);
+			}
+			else if (member instanceof Field) {
+				registry.addField((Field) member);
+			}
 		}
 	}
 

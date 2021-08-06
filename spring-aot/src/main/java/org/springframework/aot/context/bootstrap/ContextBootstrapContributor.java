@@ -16,9 +16,6 @@
 
 package org.springframework.aot.context.bootstrap;
 
-import java.util.List;
-
-import com.squareup.javapoet.JavaFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +27,7 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
+import org.springframework.context.bootstrap.generator.BootstrapGenerationResult;
 import org.springframework.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.StandardEnvironment;
@@ -41,6 +39,7 @@ import org.springframework.util.ClassUtils;
 /**
  * @author Brian Clozel
  * @author Sebastien Deleuze
+ * @author Stephane Nicoll
  */
 public class ContextBootstrapContributor implements BootstrapContributor {
 
@@ -76,8 +75,9 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		}
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(applicationContext).processBeanDefinitions();
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
-		List<JavaFile> javaFiles = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
-		javaFiles.forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
+		BootstrapGenerationResult bootstrapGenerationResult = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
+		bootstrapGenerationResult.getSourceFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
+		context.describeReflection((reflectionDescriptor) -> bootstrapGenerationResult.getClassDescriptors().forEach(reflectionDescriptor::merge));
 	}
 
 	// TODO Avoid duplication with WebApplicationType and SpringAotApplication.AOT_FACTORY

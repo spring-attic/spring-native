@@ -72,7 +72,7 @@ public class ContextBootstrapGenerator {
 	 * @param excludeTypes the types to exclude
 	 * @return a list of {@linkplain JavaFile java source files}
 	 */
-	public List<JavaFile> generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName,
+	public BootstrapGenerationResult generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName,
 			Class<?>... excludeTypes) {
 		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
@@ -81,7 +81,8 @@ public class ContextBootstrapGenerator {
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
 		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
-		return writerContext.toJavaFiles();
+		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
+				writerContext.getRuntimeReflectionRegistry().getClassDescriptors()) ;
 	}
 
 	public BootstrapClass createDefaultBoostrapJavaFile(String packageName) {
