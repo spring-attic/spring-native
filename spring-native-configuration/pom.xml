@@ -40,7 +40,6 @@
         <dependency>
             <groupId>org.springframework.security.experimental</groupId>
             <artifactId>spring-security-oauth2-authorization-server</artifactId>
-            <version>0.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -61,7 +60,6 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>6.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
