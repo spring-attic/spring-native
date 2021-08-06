@@ -16,11 +16,8 @@
 
 package org.springframework.context.bootstrap.generator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
@@ -30,7 +27,6 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,14 +35,13 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationGenerator;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.GenericBeanRegistrationGenerator;
-import org.springframework.context.bootstrap.generator.bean.SimpleBeanRegistrationGenerator;
+import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationGenerator;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
@@ -57,13 +52,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 public class ContextBootstrapGenerator {
 
-	static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
-
 	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
 
 	private final List<BeanValueWriterSupplier> beanValueWriterSuppliers;
-
-	private final Map<String, ProtectedBootstrapClass> protectedBootstrapClasses = new HashMap<>();
 
 	public ContextBootstrapGenerator(ClassLoader classLoader) {
 		this(SpringFactoriesLoader.loadFactories(BeanValueWriterSupplier.class, classLoader));
@@ -83,33 +74,31 @@ public class ContextBootstrapGenerator {
 	 */
 	public List<JavaFile> generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName,
 			Class<?>... excludeTypes) {
+		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
+		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
 		this.beanValueWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
-		List<JavaFile> bootstrapClasses = new ArrayList<>();
-		bootstrapClasses.add(createClass(packageName, BOOTSTRAP_CLASS_NAME,
-				generateBootstrapMethod(beanFactory, packageName, selector)));
-		for (ProtectedBootstrapClass protectedBootstrapClass : this.protectedBootstrapClasses.values()) {
-			bootstrapClasses.add(protectedBootstrapClass.build());
-		}
-		return bootstrapClasses;
+		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
+		return writerContext.toJavaFiles();
 	}
 
-	public JavaFile createClass(String packageName, String bootstrapClassName, MethodSpec bootstrapMethod) {
+	public BootstrapClass createDefaultBoostrapJavaFile(String packageName) {
 		ParameterizedTypeName typeName = ParameterizedTypeName.get(
 				ClassName.get(ApplicationContextInitializer.class),
 				ClassName.get(GenericApplicationContext.class));
-		return JavaFile.builder(packageName, TypeSpec.classBuilder(bootstrapClassName).addSuperinterface(typeName).addModifiers(Modifier.PUBLIC)
-				.addMethod(bootstrapMethod).build()).build();
+		return new BootstrapClass(packageName, BootstrapWriterContext.BOOTSTRAP_CLASS_NAME,
+				(type) -> type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
 	}
 
-	public MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, String packageName,
+	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,
 			BeanDefinitionSelector selector) {
 		ClassLoader classLoader = beanFactory.getBeanClassLoader();
 		MethodSpec.Builder method = MethodSpec.methodBuilder("initialize").addModifiers(Modifier.PUBLIC)
-				.addParameter(GenericApplicationContext.class, "context");
+				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
+		registerApplicationContextInfrastructure(code);
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
@@ -117,20 +106,7 @@ public class ContextBootstrapGenerator {
 				BeanRegistrationGenerator beanRegistrationGenerator = getBeanRegistrationGenerator(beanName,
 						beanDefinition, classLoader);
 				if (beanRegistrationGenerator != null) {
-					BeanValueWriter beanValueWriter = beanRegistrationGenerator.getBeanValueWriter();
-					if (beanValueWriter.isAccessibleFrom(packageName)) {
-						beanRegistrationGenerator.writeBeanRegistration(code);
-					}
-					else {
-						String protectedPackageName = beanValueWriter.getDeclaringType().getPackage().getName();
-						ProtectedBootstrapClass protectedBootstrapClass = this.protectedBootstrapClasses
-								.computeIfAbsent(protectedPackageName, ProtectedBootstrapClass::new);
-						protectedBootstrapClass.addBeanRegistrationMethod(beanName, beanValueWriter.getType(),
-								beanRegistrationGenerator);
-						ClassName protectedClassName = ClassName.get(protectedPackageName, BOOTSTRAP_CLASS_NAME);
-						code.addStatement("$T.$L(context)", protectedClassName,
-								ProtectedBootstrapClass.registerBeanMethodName(beanName, beanValueWriter.getType()));
-					}
+					beanRegistrationGenerator.writeBeanRegistration(writerContext, code);
 				}
 			}
 		}
@@ -141,19 +117,17 @@ public class ContextBootstrapGenerator {
 		return method.build();
 	}
 
+	private void registerApplicationContextInfrastructure(CodeBlock.Builder code) {
+		code.add("// infrastructure\n");
+		code.addStatement("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new $T())",
+				ContextAnnotationAutowireCandidateResolver.class);
+		code.add("\n");
+	}
+
 	private BeanRegistrationGenerator getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition,
 			ClassLoader classLoader) {
-		ResolvableType beanType = beanDefinition.getResolvableType();
 		BeanValueWriter beanValueWriter = getBeanValueSupplier(beanDefinition, classLoader);
-		if (beanValueWriter != null) {
-			if (beanType.hasGenerics()) {
-				return new GenericBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter);
-			}
-			else {
-				return new SimpleBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter);
-			}
-		}
-		return null;
+		return (beanValueWriter != null) ? new DefaultBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter) : null;
 	}
 
 	private BeanValueWriter getBeanValueSupplier(BeanDefinition beanDefinition, ClassLoader classLoader) {

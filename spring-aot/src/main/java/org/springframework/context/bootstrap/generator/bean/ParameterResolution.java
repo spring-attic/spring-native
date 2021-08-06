@@ -1,10 +1,8 @@
 package org.springframework.context.bootstrap.generator.bean;
 
 import java.lang.reflect.Parameter;
-import java.util.function.Consumer;
 
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.CodeBlock.Builder;
 
 /**
  * An executable's {@link Parameter} resolution.
@@ -27,19 +25,8 @@ class ParameterResolution {
 	 * @param code the necessary code to resolve the parameter
 	 * @return a new instance
 	 */
-	static ParameterResolution ofParameter(CodeBlock.Builder code) {
-		return new ParameterResolution(code.build(), null);
-	}
-
-	/**
-	 * Create a resolution for a parameter that does not require an assignment.
-	 * @param code a callback to write the necessary code to resolve the parameter
-	 * @return a new instance
-	 */
-	static ParameterResolution ofParameter(Consumer<CodeBlock.Builder> code) {
-		CodeBlock.Builder builder = CodeBlock.builder();
-		code.accept(builder);
-		return ofParameter(builder);
+	static ParameterResolution ofParameter(CodeBlock code) {
+		return new ParameterResolution(code, null);
 	}
 
 	/**
@@ -48,8 +35,8 @@ class ParameterResolution {
 	 * @param parameter the necessary code to use the assignment to resolve the parameter
 	 * @return a new instance
 	 */
-	static ParameterResolution ofAssignableParameter(Builder assignment, Builder parameter) {
-		return new ParameterResolution(parameter.build(), assignment.build());
+	static ParameterResolution ofAssignableParameter(CodeBlock assignment, CodeBlock parameter) {
+		return new ParameterResolution(parameter, assignment);
 	}
 
 	/**

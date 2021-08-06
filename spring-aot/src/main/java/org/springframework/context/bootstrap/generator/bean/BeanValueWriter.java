@@ -18,6 +18,8 @@ package org.springframework.context.bootstrap.generator.bean;
 
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+
 /**
  * Abstract how to write the bean value supplier of a bean definition.
  *
@@ -25,11 +27,7 @@ import com.squareup.javapoet.CodeBlock;
  */
 public interface BeanValueWriter {
 
-	Class<?> getType();
-
-	Class<?> getDeclaringType();
-
-	boolean isAccessibleFrom(String packageName);
+	BeanInstanceDescriptor getDescriptor();
 
 	void writeValueSupplier(CodeBlock.Builder code);
 
