@@ -316,11 +316,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-elasticsearch</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-neo4j</artifactId>
             <scope>provided</scope>
         </dependency>
