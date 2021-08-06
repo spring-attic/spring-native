@@ -55,7 +55,8 @@ class ConditionEvaluator {
 			@Nullable Environment environment, @Nullable ResourceLoader resourceLoader) {
 
 		this.context = new ConditionContextImpl(registry, environment, resourceLoader);
-		this.report = ConditionEvaluationStateReport.get(this.context.getBeanFactory());
+		this.report = (this.context.getBeanFactory() != null) ? ConditionEvaluationStateReport.get(this.context.getBeanFactory())
+				: new ConditionEvaluationStateReport();
 	}
 
 	/**
