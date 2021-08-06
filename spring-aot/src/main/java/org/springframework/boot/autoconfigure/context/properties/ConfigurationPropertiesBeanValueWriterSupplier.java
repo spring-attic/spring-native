@@ -16,15 +16,15 @@
 
 package org.springframework.boot.autoconfigure.context.properties;
 
-import com.squareup.javapoet.CodeBlock.Builder;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
-import org.springframework.context.bootstrap.generator.bean.AbstractBeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
+import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link BeanValueWriterSupplier} for {@link ConfigurationProperties} support.
@@ -37,28 +37,12 @@ class ConfigurationPropertiesBeanValueWriterSupplier implements BeanValueWriterS
 	@Override
 	public BeanValueWriter get(BeanDefinition beanDefinition, ClassLoader classLoader) {
 		if (MethodValidationExcludeFilter.class.getName().equals(beanDefinition.getBeanClassName())) {
-			return new MethodValidationExcludeFilterBeanValueWriter(beanDefinition, classLoader);
+			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(MethodValidationExcludeFilter.class,
+					ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class));
+			return new SimpleBeanValueWriter(descriptor, (code) ->
+					code.add("() -> $T.byAnnotation($T.class)", MethodValidationExcludeFilter.class, ConfigurationProperties.class));
 		}
 		return null;
-	}
-
-	private static class MethodValidationExcludeFilterBeanValueWriter extends AbstractBeanValueWriter {
-
-		MethodValidationExcludeFilterBeanValueWriter(BeanDefinition beanDefinition, ClassLoader classLoader) {
-			super(beanDefinition, classLoader);
-		}
-
-		@Override
-		public Class<?> getDeclaringType() {
-			return MethodValidationExcludeFilter.class;
-		}
-
-		@Override
-		public void writeValueSupplier(Builder code) {
-			code.add("() -> $T.byAnnotation($T.class)", MethodValidationExcludeFilter.class,
-					ConfigurationProperties.class);
-		}
-
 	}
 
 }

@@ -18,23 +18,21 @@ package org.springframework.context.bootstrap.generator.bean;
 
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
+
 /**
  * Abstract how to register a bean in the context.
  *
  * @author Stephane Nicoll
  */
+@FunctionalInterface
 public interface BeanRegistrationGenerator {
 
 	/**
 	 * Generate the necessary {@code statements} to register a bean in the context.
+	 * @param context the writer context
 	 * @param code the builder to use to add the registration statement(s)
 	 */
-	void writeBeanRegistration(CodeBlock.Builder code);
-
-	/**
-	 * Return the {@link BeanValueWriter} that this instance uses.
-	 * @return the bean value writer
-	 */
-	BeanValueWriter getBeanValueWriter();
+	void writeBeanRegistration(BootstrapWriterContext context, CodeBlock.Builder code);
 
 }

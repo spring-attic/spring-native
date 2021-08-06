@@ -1,21 +1,8 @@
-/*
- * Copyright 2019-2021 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.context.bootstrap.generator.bean;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -36,65 +23,151 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ClassUtils;
 
 /**
- * Base {@link BeanValueWriter} implementation.
+ * Default {@link BeanValueWriter} implementation.
  *
  * @author Stephane Nicoll
  */
-public abstract class AbstractBeanValueWriter implements BeanValueWriter {
+public class DefaultBeanValueWriter implements BeanValueWriter {
+
+	private final BeanInstanceDescriptor descriptor;
 
 	private final BeanDefinition beanDefinition;
 
 	private final ClassLoader classLoader;
 
-	private final Class<?> type;
+	private final InjectionPointWriter injectionPointWriter;
 
-	public AbstractBeanValueWriter(BeanDefinition beanDefinition, ClassLoader classLoader) {
-		this.classLoader = classLoader;
+	public DefaultBeanValueWriter(BeanInstanceDescriptor descriptor, BeanDefinition beanDefinition,
+			ClassLoader classLoader) {
+		this.descriptor = descriptor;
 		this.beanDefinition = beanDefinition;
-		this.type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
+		this.classLoader = classLoader;
+		this.injectionPointWriter = new InjectionPointWriter();
 	}
 
-	protected final BeanDefinition getBeanDefinition() {
+	@Override
+	public BeanInstanceDescriptor getDescriptor() {
+		return this.descriptor;
+	}
+
+	public BeanDefinition getBeanDefinition() {
 		return this.beanDefinition;
 	}
 
 	@Override
-	public final Class<?> getType() {
-		return this.type;
+	public void writeValueSupplier(Builder code) {
+		MemberDescriptor<Executable> descriptor = getDescriptor().getInstanceCreator();
+		if (descriptor == null) {
+			throw new IllegalStateException("Could not handle " + this.beanDefinition + ": no instance creator available");
+		}
+		Executable member = descriptor.getMember();
+		if (member instanceof Constructor) {
+			writeBeanInstantiation(code, (Constructor<?>) member, getDescriptor().getInjectionPoints());
+		}
+		if (member instanceof Method) {
+			writeBeanInstantiation(code, (Method) member, getDescriptor().getInjectionPoints());
+		}
 	}
 
-	@Override
-	public boolean isAccessibleFrom(String packageName) {
-		return isAccessible(this.beanDefinition.getResolvableType())
-				&& isAccessible(ResolvableType.forClass(getDeclaringType()));
+	private void writeBeanInstantiation(Builder code, Constructor<?> constructor, List<MemberDescriptor<?>> injectionPoints) {
+		Class<?> declaringType = getDescriptor().getBeanType();
+		boolean innerClass = isInnerClass(declaringType);
+		// We need to process any parameters that might hold generic to manage them upfront.
+		List<ParameterResolution> parameters = resolveParameters(constructor.getParameters(),
+				(i) -> ResolvableType.forConstructorParameter(constructor, i));
+		if (innerClass) { // Remove the implicit argument
+			parameters.remove(0);
+		}
+		boolean hasAssignment = parameters.stream().anyMatch(ParameterResolution::hasAssignment);
+		boolean multiStatements = hasAssignment || !injectionPoints.isEmpty();
+		// Shortcut for common case
+		if (!multiStatements && !innerClass && parameters.isEmpty()) {
+			code.add("$T::new", getDescriptor().getBeanType());
+			return;
+		}
+		branch(injectionPoints.isEmpty(), () -> code.add("() ->"), () -> code.add("(instanceContext) ->"));
+		branch(multiStatements, () -> code.beginControlFlow(""), () -> code.add(" "));
+		parameters.stream().filter(ParameterResolution::hasAssignment).forEach((parameter) -> parameter.applyAssignment(code));
+		if (hasAssignment && injectionPoints.isEmpty()) {
+			code.add("return ");
+		}
+		else if (!injectionPoints.isEmpty()) {
+			code.add("$T bean = ", declaringType);
+		}
+		branch(innerClass,
+				() -> code.add("context.getBean($T.class).new $L(", declaringType.getEnclosingClass(), declaringType.getSimpleName()),
+				() -> code.add("new $T(", declaringType));
+		for (int i = 0; i < parameters.size(); i++) {
+			parameters.get(i).applyParameter(code);
+			if (i < parameters.size() - 1) {
+				code.add(", ");
+			}
+		}
+		code.add(")");
+		if (multiStatements) {
+			code.add(";\n");
+		}
+		if (!injectionPoints.isEmpty()) {
+			for (MemberDescriptor<?> injectionPoint : injectionPoints) {
+				code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
+			}
+			code.add("return bean;\n");
+		}
+		if (multiStatements) {
+			code.unindent().add("}");
+		}
 	}
 
-	protected boolean isAccessible(ResolvableType target) {
-		// resolve to the actual class as the proxy won't have the same characteristics
-		ResolvableType nonProxyTarget = target.as(ClassUtils.getUserClass(target.toClass()));
-		if (!Modifier.isPublic(nonProxyTarget.toClass().getModifiers())) {
-			return false;
+	private static boolean isInnerClass(Class<?> type) {
+		return type.isMemberClass() && !Modifier.isStatic(type.getModifiers());
+	}
+
+	private void writeBeanInstantiation(Builder code, Method method, List<MemberDescriptor<?>> injectionPoints) {
+		// We need to process any parameters that might hold generic to manage them upfront.
+		List<ParameterResolution> parameters = resolveParameters(method.getParameters(), (i) -> ResolvableType.forMethodParameter(method, i));
+		boolean hasAssignment = parameters.stream().anyMatch(ParameterResolution::hasAssignment);
+		boolean multiStatements = hasAssignment || !injectionPoints.isEmpty();
+		branch(injectionPoints.isEmpty(), () -> code.add("() ->"), () -> code.add("(instanceContext) ->"));
+		branch(multiStatements, () -> code.beginControlFlow(""), () -> code.add(" "));
+		parameters.stream().filter(ParameterResolution::hasAssignment).forEach((parameter) -> parameter.applyAssignment(code));
+		Class<?> declaringType = method.getDeclaringClass();
+		if (hasAssignment && injectionPoints.isEmpty()) {
+			code.add("return ");
 		}
-		Class<?> declaringClass = nonProxyTarget.toClass().getDeclaringClass();
-		if (declaringClass != null) {
-			if (!isAccessible(ResolvableType.forClass(declaringClass))) {
-				return false;
+		else if (!injectionPoints.isEmpty()) {
+			code.add("$T bean = ", getDescriptor().getBeanType());
+		}
+		branch(Modifier.isStatic(method.getModifiers()),
+				() -> code.add("$T", declaringType),
+				() -> code.add("context.getBean($T.class)", declaringType));
+		code.add(".$L(", method.getName());
+		for (int i = 0; i < parameters.size(); i++) {
+			parameters.get(i).applyParameter(code);
+			if (i < parameters.size() - 1) {
+				code.add(", ");
 			}
 		}
-		if (nonProxyTarget.hasGenerics()) {
-			for (ResolvableType generic : nonProxyTarget.getGenerics()) {
-				if (!isAccessible(generic)) {
-					return false;
-				}
-			}
+		code.add(")");
+		if (multiStatements) {
+			code.add(";\n");
 		}
-		return true;
+		if (!injectionPoints.isEmpty()) {
+			for (MemberDescriptor<?> injectionPoint : injectionPoints) {
+				code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
+			}
+			code.add("return bean;\n");
+		}
+		if (multiStatements) {
+			code.unindent().add("}");
+		}
 	}
 
 	protected boolean hasCheckedException(Class<?>... exceptionTypes) {
@@ -114,8 +187,9 @@ public abstract class AbstractBeanValueWriter implements BeanValueWriter {
 					parametersResolution.add(resolveParameterBeanDependency(((BeanReference) value).getBeanName(), parameterType));
 				}
 				else {
-					parametersResolution.add(ParameterResolution.ofParameter((code) ->
-							writeParameterValue(code, value, parameterType)));
+					Builder code = CodeBlock.builder();
+					writeParameterValue(code, value, parameterType);
+					parametersResolution.add(ParameterResolution.ofParameter(code.build()));
 				}
 			}
 			else {
@@ -201,13 +275,13 @@ public abstract class AbstractBeanValueWriter implements BeanValueWriter {
 					(assignment) -> assignment.add(".getObject()"));
 		}
 		else if (resolvedClass.isAssignableFrom(GenericApplicationContext.class)) {
-			return ParameterResolution.ofParameter((code) -> code.add("context"));
+			return ParameterResolution.ofParameter(CodeBlock.of("context"));
 		}
 		else if (resolvedClass.isAssignableFrom(ConfigurableListableBeanFactory.class)) {
-			return ParameterResolution.ofParameter((code) -> code.add("context.getBeanFactory()"));
+			return ParameterResolution.ofParameter(CodeBlock.of("context.getBeanFactory()"));
 		}
 		else if (resolvedClass.isAssignableFrom(ConfigurableEnvironment.class)) {
-			return ParameterResolution.ofParameter((code) -> code.add("context.getEnvironment()"));
+			return ParameterResolution.ofParameter(CodeBlock.of("context.getEnvironment()"));
 		}
 		else {
 			return resolveParameterBeanDependency(null, parameterType);
@@ -236,15 +310,15 @@ public abstract class AbstractBeanValueWriter implements BeanValueWriter {
 			Builder parameterValue = CodeBlock.builder();
 			parameterValue.add("$L", parameterName);
 			objectProviderAssignment.accept(parameterValue);
-			return ParameterResolution.ofAssignableParameter(assignment, parameterValue);
+			return ParameterResolution.ofAssignableParameter(assignment.build(), parameterValue.build());
 		}
 		else {
-			return ParameterResolution.ofParameter((code) -> {
-				code.add("context.getBeanProvider(");
-				TypeHelper.generateResolvableTypeFor(code, targetType);
-				code.add(")");
-				objectProviderAssignment.accept(code);
-			});
+			Builder code = CodeBlock.builder();
+			code.add("context.getBeanProvider(");
+			TypeHelper.generateResolvableTypeFor(code, targetType);
+			code.add(")");
+			objectProviderAssignment.accept(code);
+			return ParameterResolution.ofParameter(code.build());
 		}
 	}
 
@@ -257,31 +331,40 @@ public abstract class AbstractBeanValueWriter implements BeanValueWriter {
 		else {
 			code.add("context.getBean($T.class)", resolvedClass);
 		}
-		return ParameterResolution.ofParameter(code);
+		return ParameterResolution.ofParameter(code.build());
 	}
 
 	// Copied from com.squareup.javapoet.Util
 	private static String characterLiteralWithoutSingleQuotes(char c) {
 		// see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
 		switch (c) {
-		case '\b':
-			return "\\b"; /* \u0008: backspace (BS) */
-		case '\t':
-			return "\\t"; /* \u0009: horizontal tab (HT) */
-		case '\n':
-			return "\\n"; /* \u000a: linefeed (LF) */
-		case '\f':
-			return "\\f"; /* \u000c: form feed (FF) */
-		case '\r':
-			return "\\r"; /* \u000d: carriage return (CR) */
-		case '\"':
-			return "\""; /* \u0022: double quote (") */
-		case '\'':
-			return "\\'"; /* \u0027: single quote (') */
-		case '\\':
-			return "\\\\"; /* \u005c: backslash (\) */
-		default:
-			return Character.isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c);
+			case '\b':
+				return "\\b"; /* \u0008: backspace (BS) */
+			case '\t':
+				return "\\t"; /* \u0009: horizontal tab (HT) */
+			case '\n':
+				return "\\n"; /* \u000a: linefeed (LF) */
+			case '\f':
+				return "\\f"; /* \u000c: form feed (FF) */
+			case '\r':
+				return "\\r"; /* \u000d: carriage return (CR) */
+			case '\"':
+				return "\""; /* \u0022: double quote (") */
+			case '\'':
+				return "\\'"; /* \u0027: single quote (') */
+			case '\\':
+				return "\\\\"; /* \u005c: backslash (\) */
+			default:
+				return Character.isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c);
+		}
+	}
+
+	private static void branch(boolean condition, Runnable ifTrue, Runnable ifFalse) {
+		if (condition) {
+			ifTrue.run();
+		}
+		else {
+			ifFalse.run();
 		}
 	}
 

@@ -25,7 +25,8 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.BasePackages;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.ConstructorBeanValueWriter;
+import org.springframework.context.bootstrap.generator.bean.DefaultBeanValueWriter;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
 
@@ -40,20 +41,17 @@ class AutoConfigurationPackagesBeanValueWriterSupplier implements BeanValueWrite
 	@Override
 	public BeanValueWriter get(BeanDefinition beanDefinition, ClassLoader classLoader) {
 		if (BasePackages.class.getName().equals(beanDefinition.getBeanClassName())) {
-			return new BasePackagesBeanValueWriter(beanDefinition, classLoader);
+			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(BasePackages.class,
+					BasePackages.class.getDeclaredConstructors()[0]);
+			return new BasePackagesBeanValueWriter(descriptor, beanDefinition, classLoader);
 		}
 		return null;
 	}
 
-	private static class BasePackagesBeanValueWriter extends ConstructorBeanValueWriter {
+	private static class BasePackagesBeanValueWriter extends DefaultBeanValueWriter {
 
-		BasePackagesBeanValueWriter(BeanDefinition beanDefinition, ClassLoader classLoader) {
-			super(beanDefinition, classLoader, BasePackages.class.getDeclaredConstructors()[0]);
-		}
-
-		@Override
-		public Class<?> getDeclaringType() {
-			return BasePackages.class;
+		BasePackagesBeanValueWriter(BeanInstanceDescriptor descriptor, BeanDefinition beanDefinition, ClassLoader classLoader) {
+			super(descriptor, beanDefinition, classLoader);
 		}
 
 		@Override
