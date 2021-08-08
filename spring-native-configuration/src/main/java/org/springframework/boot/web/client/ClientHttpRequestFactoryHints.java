@@ -12,5 +12,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 		okhttp3.OkHttpClient.class,
 		org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class
 }))
+@NativeHint(trigger = org.springframework.http.client.SimpleClientHttpRequestFactory.class, types = @TypeHint(types = {
+		org.springframework.http.client.SimpleClientHttpRequestFactory.class
+}))
 public class ClientHttpRequestFactoryHints implements NativeConfiguration {
 }
