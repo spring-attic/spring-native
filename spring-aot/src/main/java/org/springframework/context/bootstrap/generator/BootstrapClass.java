@@ -51,7 +51,7 @@ public class BootstrapClass {
 		this.methods = new LinkedHashMap<>();
 	}
 
-	BootstrapClass(String packageName, String name) {
+	public BootstrapClass(String packageName, String name) {
 		this(packageName, name, (type) -> {
 		});
 	}
