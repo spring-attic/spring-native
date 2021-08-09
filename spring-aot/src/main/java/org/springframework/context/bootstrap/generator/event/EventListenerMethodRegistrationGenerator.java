@@ -100,7 +100,7 @@ public class EventListenerMethodRegistrationGenerator {
 				code.add(",\n");
 			}
 		}
-		code.add("\n").unindent().unindent().addStatement(")");
+		code.add("\n").unindent().unindent().addStatement("))");
 	}
 
 	public List<EventListenerMetadataGenerator> process(String beanName) {
