@@ -71,7 +71,7 @@ class EventListenerMetadataGenerator {
 				code.add(", ");
 			}
 		}
-		code.add("))");
+		code.add(")");
 	}
 
 }

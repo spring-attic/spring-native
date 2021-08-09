@@ -37,7 +37,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 		beanFactory.registerBeanDefinition("single", BeanDefinitionBuilder.rootBeanDefinition(SingleEventListener.class)
 				.getBeanDefinition());
 		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"single\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class))", ");");
+				"    EventListenerMetadata.forBean(\"single\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)", "));");
 	}
 
 	@Test
@@ -48,8 +48,8 @@ class EventListenerMethodRegistrationGeneratorTests {
 		beanFactory.registerBeanDefinition("another", BeanDefinitionBuilder.rootBeanDefinition(AnotherEventListener.class)
 				.getBeanDefinition());
 		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"test\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)),",
-				"    EventListenerMetadata.forBean(\"another\", AnotherEventListener.class).annotatedMethod(\"onRefresh\"))", ");");
+				"    EventListenerMetadata.forBean(\"test\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
+				"    EventListenerMetadata.forBean(\"another\", AnotherEventListener.class).annotatedMethod(\"onRefresh\")", "));");
 	}
 
 	@Test
@@ -62,9 +62,9 @@ class EventListenerMethodRegistrationGeneratorTests {
 		beanFactory.registerBeanDefinition("transactional", BeanDefinitionBuilder.rootBeanDefinition(SingleTransactionalEventListener.class)
 				.getBeanDefinition());
 		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"simple\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)),",
-				"    EventListenerMetadata.forBean(\"transactional\", SingleTransactionalEventListener.class).eventListenerFactoryBeanName(\"internalTxEventListenerFactory\").annotatedMethod(\"onEvent\", ApplicationEvent.class))",
-				");");
+				"    EventListenerMetadata.forBean(\"simple\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
+				"    EventListenerMetadata.forBean(\"transactional\", SingleTransactionalEventListener.class).eventListenerFactoryBeanName(\"internalTxEventListenerFactory\").annotatedMethod(\"onEvent\", ApplicationEvent.class)",
+				"));");
 	}
 
 
