@@ -112,7 +112,7 @@ public class ContextBootstrapGenerator {
 			}
 		}
 		// FIXME: provide SPI for this
-		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(code);
+		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(writerContext, code);
 
 		method.addCode(code.build());
 		return method.build();

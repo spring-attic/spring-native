@@ -35,6 +35,7 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.EventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;
@@ -83,7 +84,13 @@ public class EventListenerMethodRegistrationGenerator {
 		return result;
 	}
 
-	public void writeEventListenersRegistration(CodeBlock.Builder code) {
+	/**
+	 * Generate the necessary {@code statements} to register event listeners annotated
+	 * method in the context.
+	 * @param context the writer context
+	 * @param code the builder to use to add the registration statement(s)
+	 */
+	public void writeEventListenersRegistration(BootstrapWriterContext context, CodeBlock.Builder code) {
 		List<EventListenerMetadataGenerator> eventGenerators = new ArrayList<>();
 		for (String beanName : this.beanFactory.getBeanDefinitionNames()) {
 			eventGenerators.addAll(process(beanName));
@@ -91,6 +98,7 @@ public class EventListenerMethodRegistrationGenerator {
 		if (eventGenerators.isEmpty()) {
 			return; // No listener detected
 		}
+		eventGenerators.forEach((eventGenerator) -> eventGenerator.registerReflectionMetadata(context.getRuntimeReflectionRegistry()));
 		code.add("context.registerBean($S, $T.class, () -> new $L(context,\n", REGISTRAR_BEAN_NAME, REGISTRAR, REGISTRAR.simpleName());
 		code.indent().indent();
 		Iterator<EventListenerMetadataGenerator> it = eventGenerators.iterator();
