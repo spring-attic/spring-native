@@ -26,7 +26,7 @@ public class BootstrapWriterContext {
 
 	private final RuntimeReflectionRegistry runtimeReflectionRegistry = new RuntimeReflectionRegistry();
 
-	BootstrapWriterContext(BootstrapClass defaultJavaFile) {
+	public BootstrapWriterContext(BootstrapClass defaultJavaFile) {
 		this.packageName = defaultJavaFile.getClassName().packageName();
 		this.bootstrapClasses.put(packageName, defaultJavaFile);
 	}
