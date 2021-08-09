@@ -22,6 +22,7 @@ import java.util.EventListener;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.event.EventListenerMetadata;
 
 /**
@@ -55,12 +56,12 @@ class EventListenerMetadataGenerator {
 	/**
 	 * Write an {@link EventListenerMetadata} registration.
 	 */
-	public void writeEventListenerMetadata(CodeBlock.Builder code) {
+	void writeEventListenerMetadata(CodeBlock.Builder code) {
 		code.add("$T.forBean($S, $T.class)", METADATA, this.beanName, this.beanType);
 		if (this.eventListenerFactoryBeanName != null) {
 			code.add(".eventListenerFactoryBeanName($S)", this.eventListenerFactoryBeanName);
 		}
-		code.add(".annotatedMethod($S",this.method.getName());
+		code.add(".annotatedMethod($S", this.method.getName());
 		Class<?>[] parameterTypes = this.method.getParameterTypes();
 		if (parameterTypes.length > 0) {
 			code.add(", ");
@@ -72,6 +73,14 @@ class EventListenerMetadataGenerator {
 			}
 		}
 		code.add(")");
+	}
+
+	/**
+	 * Write the necessary reflection metadata for the specified instance.
+	 * @param registry the registry to use
+	 */
+	void registerReflectionMetadata(RuntimeReflectionRegistry registry) {
+		registry.addMethod(this.method);
 	}
 
 }
