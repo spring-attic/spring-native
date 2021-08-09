@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.bean;
-
-import com.squareup.javapoet.CodeBlock;
-
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-
 /**
- * Abstract how to write the bean value supplier of a bean definition.
- *
- * @author Stephane Nicoll
+ * Support classes for providing runtime reflection hints.
  */
-public interface BeanValueWriter {
-
-	BeanInstanceDescriptor getDescriptor();
-
-	void writeValueSupplier(CodeBlock.Builder code);
-
-}
+package org.springframework.context.bootstrap.generator.reflect;

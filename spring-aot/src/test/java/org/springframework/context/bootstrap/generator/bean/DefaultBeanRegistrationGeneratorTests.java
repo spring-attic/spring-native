@@ -21,55 +21,37 @@ import java.util.function.Consumer;
 import com.squareup.javapoet.CodeBlock.Builder;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.beans.factory.BeanDefinitionRegistrar;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SimpleBeanRegistrationGenerator}.
+ * Tests for {@link DefaultBeanRegistrationGenerator}.
  *
  * @author Stephane Nicoll
  */
-class SimpleBeanRegistrationGeneratorTests {
+class DefaultBeanRegistrationGeneratorTests {
 
 	@Test
 	void writeWithSyntheticFlag() {
-		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-				.rootBeanDefinition(SampleFactory.class.getName(), "create").getBeanDefinition();
-		beanDefinition.setSynthetic(true);
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(SampleFactory.class.getName(), "create").setSynthetic(true).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
-				.contains("context.registerBean(\"test\", Object.class, () -> SampleFactory::new, BeanDefinitionCustomizers.synthetic());");
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
+						+ ".customize((builder) -> builder.setSynthetic(true)).register(context);");
 	}
-
 
 	private CodeSnippet generateCode(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
-		return CodeSnippet.of((code) -> new SimpleBeanRegistrationGenerator("test", beanDefinition,
-				new TestBeanValueWriter(beanDefinition, instanceSupplier)).writeBeanRegistration(code));
-	}
-
-	private static class TestBeanValueWriter extends AbstractBeanValueWriter {
-
-		private final Consumer<Builder> instanceSupplier;
-
-		public TestBeanValueWriter(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
-			super(beanDefinition, SimpleBeanRegistrationGeneratorTests.class.getClassLoader());
-			this.instanceSupplier = instanceSupplier;
-		}
-
-		@Override
-		public Class<?> getDeclaringType() {
-			return SimpleBeanRegistrationGeneratorTests.class;
-		}
-
-		@Override
-		public void writeValueSupplier(Builder code) {
-			this.instanceSupplier.accept(code);
-
-		}
+		return CodeSnippet.of((code) -> {
+			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
+					beanDefinition.getResolvableType().toClass(), null), instanceSupplier);
+			new DefaultBeanRegistrationGenerator("test", beanDefinition, beanValueWriter).writeBeanRegistration(code);
+		});
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ClassUtils;
 
 /**
  * Shared generation helper.
@@ -34,7 +35,7 @@ abstract class TypeHelper {
 	}
 
 	private static void generate(CodeBlock.Builder code, ResolvableType target, boolean forceResolvableType) {
-		Class<?> type = target.toClass();
+		Class<?> type = ClassUtils.getUserClass(target.toClass());
 		if (!target.hasGenerics()) {
 			if (forceResolvableType) {
 				code.add("$T.forClass($T.class)", ResolvableType.class, type);

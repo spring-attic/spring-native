@@ -28,6 +28,7 @@ import com.squareup.javapoet.JavaFile;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
+import org.springframework.context.bootstrap.generator.BootstrapGenerationResult;
 import org.springframework.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
@@ -76,10 +77,10 @@ public class ContextBootstrapGeneratorTester {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions();
 		Path srcDirectory = generateSrcDirectory();
-		List<JavaFile> javaFiles = new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(
+		BootstrapGenerationResult result = new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(
 				beanFactory, this.packageName,
 				this.excludeTypes.toArray(new Class<?>[0]));
-		writeSources(srcDirectory, javaFiles);
+		writeSources(srcDirectory, result.getSourceFiles());
 		return new ContextBootstrapStructure(srcDirectory, this.packageName);
 	}
 
