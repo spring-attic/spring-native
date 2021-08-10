@@ -16,6 +16,7 @@
 
 package org.springframework.context.bootstrap.generator.reflect;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -47,6 +48,17 @@ class RuntimeReflectionEntryTests {
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("test");
 			assertThat(methodDescriptor.getParameterTypes()).containsExactly("java.lang.String", "java.lang.Integer");
+		});
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterConstructor() {
+		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
+		ClassDescriptor descriptor = RuntimeReflectionEntry.of(TestClass.class).withMethods(constructor)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
+			assertThat(methodDescriptor.getParameterTypes()).isEmpty();
 		});
 	}
 
