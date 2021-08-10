@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
@@ -67,6 +72,40 @@ class InjectedConstructorResolverTests {
 	}
 
 	@Test
+	void resolveMixedArgsConstructorWithUserValue() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgConstructor.class)
+				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, "user-value");
+		context.registerBeanDefinition("test", beanDefinition);
+		assertAttributes(context, createResolver(MixedArgConstructor.class,
+				ApplicationContext.class, String.class, Environment.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
+			assertThat((String) attributes.get(1)).isEqualTo("user-value");
+			assertThat((Environment) attributes.get(2)).isEqualTo(context.getEnvironment());
+		});
+	}
+
+	@Test
+	void resolveMixedArgsConstructorWithUserBeanReference() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", String.class, "1");
+		context.registerBean("two", String.class, "2");
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgConstructor.class)
+				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, new RuntimeBeanReference("two"));
+		context.registerBeanDefinition("test", beanDefinition);
+		assertAttributes(context, createResolver(MixedArgConstructor.class,
+				ApplicationContext.class, String.class, Environment.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
+			assertThat((String) attributes.get(1)).isEqualTo("2");
+			assertThat((Environment) attributes.get(2)).isEqualTo(context.getEnvironment());
+		});
+	}
+
+	@Test
 	void resolveQualifiedDependency() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
@@ -121,6 +160,15 @@ class InjectedConstructorResolverTests {
 
 		public MultiArgConstructor(ResourceLoader resourceLoader, Environment environment, ObjectProvider<String> provider) {
 		}
+	}
+
+	@SuppressWarnings("unused")
+	static class MixedArgConstructor {
+
+		public MixedArgConstructor(ApplicationContext context, String test, Environment environment) {
+
+		}
+
 	}
 
 	@SuppressWarnings("unused")

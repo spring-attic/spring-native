@@ -79,6 +79,26 @@ class BeanDefinitionRegistrarTests {
 	}
 
 	@Test
+	void registerWithInjectedConstructorAndConstructorArgs() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
+				new ContextAnnotationAutowireCandidateResolver());
+		context.registerBean("testBean", String.class, "test");
+		context.registerBean("anotherBean", String.class, "another");
+		BeanDefinitionRegistrar.of("test", MultiArgConstructorSample.class)
+				.instanceSupplier((instanceContext) -> instanceContext.constructor(String.class, Integer.class)
+						.create(context, (attributes) -> new MultiArgConstructorSample(attributes.get(0), attributes.get(1))))
+				.customize((builder) -> builder.addConstructorArgReference("anotherBean").addConstructorArgValue(42))
+				.register(context);
+		assertContext(context, () -> {
+			assertThat(context.containsBean("test")).isTrue();
+			MultiArgConstructorSample bean = context.getBean(MultiArgConstructorSample.class);
+			assertThat(bean.name).isEqualTo("another");
+			assertThat(bean.counter).isEqualTo(42);
+		});
+	}
+
+	@Test
 	void registerWithInvalidConstructor() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		assertThatThrownBy(() -> {
@@ -186,6 +206,19 @@ class BeanDefinitionRegistrarTests {
 		ConstructorSample(ResourceLoader resourceLoader) {
 			this.resourceLoader = resourceLoader;
 		}
+	}
+
+	static class MultiArgConstructorSample {
+
+		private final String name;
+
+		private final Integer counter;
+
+		public MultiArgConstructorSample(String name, Integer counter) {
+			this.name = name;
+			this.counter = counter;
+		}
+
 	}
 
 	static class InjectionSample {
