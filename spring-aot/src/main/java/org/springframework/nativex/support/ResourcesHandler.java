@@ -731,10 +731,8 @@ public class ResourcesHandler extends Handler {
 				// This 'name' may not be the same as 's' if 's' referred to an inner type -
 				// 'name' will include the right '$' characters.
 				String name = t.getDottedName();
-				if (t.hasOnlySimpleConstructor() && t.isPublic()) {
-//					if (!t.getTypeSystem().isNativeNextMode()) {
-//						reflectionHandler.addAccess(name, new String[][] { { "<init>" } },null, false);
-//					}
+				if (t.hasOnlySimpleConstructor()) {
+					reflectionHandler.addAccess(name, new String[][] { { "<init>" } },null, false);
 				} else {
 					reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
 				}
@@ -799,10 +797,7 @@ public class ResourcesHandler extends Handler {
 						) {
 					if (k.equals("org.springframework.boot.diagnostics.FailureAnalyzer") ||
 						k.equals("org.springframework.context.ApplicationListener") ||
-						k.equals("org.springframework.context.ApplicationContextInitializer") ||
-						k.equals("org.springframework.context.origin.BeanDefinitionOriginAnalyzer") || 
-						k.equals("org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector") || 
-						k.equals("org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier")
+						k.equals("org.springframework.context.ApplicationContextInitializer")
 						) {
 						// TODO really needs to register all those values without a no arg ctor (for now)
 						// something like this:
@@ -845,11 +840,8 @@ public class ResourcesHandler extends Handler {
 						continue;
 					}
 					if (ts.shouldBeProcessed(k)) {
-						//org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=org.springframework.boot.autoconfigure.condition.OnBeanCondition,org.springframework.boot.autoconfigure.condition.OnClassCondition,org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition	
-						if (!k.equals("org.springframework.boot.autoconfigure.AutoConfigurationImportFilter")) {// || !ts.isNativeNextMode()) {
-							for (String v : p.getProperty(k).split(",")) {
-								registerTypeReferencedBySpringFactoriesKey(v);
-							}
+						for (String v : p.getProperty(k).split(",")) {
+							registerTypeReferencedBySpringFactoriesKey(v);
 						}
 					} else {
 						logger.debug("Skipping processing spring.factories key " + k + " due to missing guard types");
