@@ -16,6 +16,7 @@
 
 package org.springframework.context.bootstrap.generator.reflect;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -34,6 +35,8 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
  * @author Stephane Nicoll
  */
 public class RuntimeReflectionEntry {
+
+	private static final String CONSTRUCTOR_NAME = "<init>";
 
 	private final Class<?> type;
 
@@ -96,7 +99,8 @@ public class RuntimeReflectionEntry {
 	}
 
 	private MethodDescriptor toMethodDescriptor(Executable method) {
-		return MethodDescriptor.of(method.getName(), Arrays.stream(method.getParameterTypes())
+		String name = (method instanceof Constructor) ? CONSTRUCTOR_NAME : method.getName();
+		return MethodDescriptor.of(name, Arrays.stream(method.getParameterTypes())
 				.map(Class::getCanonicalName).toArray(String[]::new));
 	}
 
