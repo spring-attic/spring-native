@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.MethodSpec;
 
@@ -58,11 +59,11 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 			writeBeanRegistration(code);
 		}
 		else {
-			Class<?> beanType = descriptor.getBeanType();
 			String protectedPackageName = instanceCreator.getMember().getDeclaringClass().getPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
-			String methodName = addBeanRegistrationMethod(javaFile, this.beanName, beanType, this::writeBeanRegistration);
-			code.addStatement("$T.$L(context)", javaFile.getClassName(), methodName);
+			MethodSpec method = addBeanRegistrationMethod(descriptor, this::writeBeanRegistration);
+			javaFile.addMethod(method);
+			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
 		}
 	}
 
@@ -133,19 +134,32 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		}
 	}
 
-	private String addBeanRegistrationMethod(BootstrapClass javaFile, String beanName,
-			Class<?> type, Consumer<Builder> code) {
-		String name = registerBeanMethodName(beanName, type);
+	private MethodSpec addBeanRegistrationMethod(BeanInstanceDescriptor descriptor, Consumer<Builder> code) {
+		String name = registerBeanMethodName(descriptor);
 		MethodSpec.Builder method = MethodSpec.methodBuilder(name)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
 				.addParameter(GenericApplicationContext.class, "context");
-		javaFile.addMethod(method, code);
-		return name;
+		CodeBlock.Builder body = CodeBlock.builder();
+		code.accept(body);
+		method.addCode(body.build());
+		return method.build();
 	}
 
-	private String registerBeanMethodName(String beanName, Class<?> type) {
-		String target = (isValidName(beanName)) ? beanName : type.getSimpleName();
-		return "register" + StringUtils.capitalize(target);
+	private String registerBeanMethodName(BeanInstanceDescriptor descriptor) {
+		Executable member = descriptor.getInstanceCreator().getMember();
+		if (member instanceof Method) {
+			String target = (isValidName(beanName)) ? beanName : member.getName();
+			return String.format("register%s_%s", member.getDeclaringClass().getSimpleName(), target);
+		}
+		else if (member.getDeclaringClass().getEnclosingClass() != null) {
+			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();
+			Class<?> enclosingClass = member.getDeclaringClass().getEnclosingClass();
+			return String.format("register%s_%s",enclosingClass.getSimpleName(), target);
+		}
+		else {
+			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();
+			return "register" + StringUtils.capitalize(target);
+		}
 	}
 
 	private boolean isValidName(String className) {
