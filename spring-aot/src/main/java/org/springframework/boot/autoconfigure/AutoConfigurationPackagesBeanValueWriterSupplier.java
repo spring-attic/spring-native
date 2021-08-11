@@ -18,14 +18,13 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.function.Supplier;
 
-import com.squareup.javapoet.CodeBlock.Builder;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.BasePackages;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.DefaultBeanValueWriter;
+import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
+import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
@@ -38,36 +37,27 @@ import org.springframework.core.annotation.Order;
 @Order(0)
 class AutoConfigurationPackagesBeanValueWriterSupplier implements BeanValueWriterSupplier {
 
+	private final ParameterWriter parameterWriter = new ParameterWriter();
+
 	@Override
-	public BeanValueWriter get(BeanDefinition beanDefinition, ClassLoader classLoader) {
+	public BeanValueWriter get(BeanDefinition beanDefinition) {
 		if (BasePackages.class.getName().equals(beanDefinition.getBeanClassName())) {
 			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(BasePackages.class,
 					BasePackages.class.getDeclaredConstructors()[0]);
-			return new BasePackagesBeanValueWriter(descriptor, beanDefinition, classLoader);
+			return new SimpleBeanValueWriter(descriptor, (code) -> {
+				code.add("() -> new $T(", BasePackages.class);
+				code.add(this.parameterWriter.writeParameterValue(getPackageNames(beanDefinition),
+						ResolvableType.forArrayComponent(ResolvableType.forClass(String.class))));
+				code.add(")"); // End of constructor
+			});
 		}
 		return null;
 	}
 
-	private static class BasePackagesBeanValueWriter extends DefaultBeanValueWriter {
-
-		BasePackagesBeanValueWriter(BeanInstanceDescriptor descriptor, BeanDefinition beanDefinition, ClassLoader classLoader) {
-			super(descriptor, beanDefinition, classLoader);
-		}
-
-		@Override
-		public void writeValueSupplier(Builder code) {
-			code.add("() -> new $T(", BasePackages.class);
-			writeParameterValue(code, getPackageNames(getBeanDefinition()),
-					ResolvableType.forArrayComponent(ResolvableType.forClass(String.class)));
-			code.add(")"); // End of constructor
-		}
-
-		private String[] getPackageNames(BeanDefinition beanDefinition) {
-			Supplier<?> instanceSupplier = ((RootBeanDefinition) beanDefinition).getInstanceSupplier();
-			BasePackages basePackages = (BasePackages) instanceSupplier.get();
-			return basePackages.get().toArray(new String[0]);
-		}
-
+	private String[] getPackageNames(BeanDefinition beanDefinition) {
+		Supplier<?> instanceSupplier = ((RootBeanDefinition) beanDefinition).getInstanceSupplier();
+		BasePackages basePackages = (BasePackages) instanceSupplier.get();
+		return basePackages.get().toArray(new String[0]);
 	}
 
 }

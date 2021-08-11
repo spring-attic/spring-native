@@ -106,6 +106,21 @@ class InjectedConstructorResolverTests {
 	}
 
 	@Test
+	void resolveUserValueWithTypeConversionRequired() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(CharDependency.class)
+				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, "\\");
+		context.registerBeanDefinition("test", beanDefinition);
+		assertAttributes(context, createResolver(CharDependency.class, char.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(Character.class);
+			assertThat((Character) attribute).isEqualTo('\\');
+		});
+	}
+
+	@Test
 	void resolveQualifiedDependency() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
@@ -175,6 +190,14 @@ class InjectedConstructorResolverTests {
 	static class QualifiedDependency {
 
 		QualifiedDependency(@Qualifier("two") String s) {
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	static class CharDependency {
+
+		CharDependency(char escapeChar) {
 		}
 
 	}

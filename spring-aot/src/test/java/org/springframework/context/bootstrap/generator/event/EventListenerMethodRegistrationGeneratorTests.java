@@ -2,6 +2,7 @@ package org.springframework.context.bootstrap.generator.event;
 
 import java.util.List;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import org.junit.jupiter.api.Test;
 
@@ -83,7 +84,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 		beanFactory.registerBeanDefinition("another", BeanDefinitionBuilder.rootBeanDefinition(AnotherEventListener.class)
 				.getBeanDefinition());
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		BootstrapWriterContext context = new BootstrapWriterContext(new BootstrapClass("com.example", "Test"));
+		BootstrapWriterContext context = creteBootstrapContext();
 		processor.writeEventListenersRegistration(context, CodeBlock.builder());
 		List<RuntimeReflectionEntry> entries = context.getRuntimeReflectionRegistry().getEntries();
 		assertThat(entries).hasSize(2);
@@ -109,8 +110,11 @@ class EventListenerMethodRegistrationGeneratorTests {
 
 	private CodeSnippet generateCode(ConfigurableListableBeanFactory beanFactory) {
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		BootstrapWriterContext context = new BootstrapWriterContext(new BootstrapClass("com.example", "Test"));
-		return CodeSnippet.of((code) -> processor.writeEventListenersRegistration(context, code));
+		return CodeSnippet.of((code) -> processor.writeEventListenersRegistration(creteBootstrapContext(), code));
+	}
+
+	private static BootstrapWriterContext creteBootstrapContext() {
+		return new BootstrapWriterContext(BootstrapClass.of(ClassName.get("com.example", "Test")));
 	}
 
 }

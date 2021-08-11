@@ -44,9 +44,9 @@ class DefaultBeanValueWriterSupplier implements BeanValueWriterSupplier, BeanFac
 	}
 
 	@Override
-	public BeanValueWriter get(BeanDefinition beanDefinition, ClassLoader classLoader) {
+	public BeanValueWriter get(BeanDefinition beanDefinition) {
 		BeanInstanceDescriptor descriptor = this.beanInstanceDescriptorFactory.create(beanDefinition);
-		return (descriptor != null) ? new DefaultBeanValueWriter(descriptor, beanDefinition, classLoader) : null;
+		return (descriptor != null) ? new DefaultBeanValueWriter(descriptor, beanDefinition) : null;
 	}
 
 }

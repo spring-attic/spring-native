@@ -16,13 +16,13 @@
 
 package org.springframework.context.bootstrap.generator;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import javax.lang.model.element.Modifier;
+
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -41,42 +41,57 @@ public class BootstrapClass {
 
 	private final TypeSpec.Builder type;
 
-	private final Map<String, MethodSpec> methods;
+	private final List<MethodSpec> methods;
 
-	BootstrapClass(String packageName, String name, Consumer<TypeSpec.Builder> type) {
-		this.packageName = packageName;
-		this.className = ClassName.get(packageName, name);
+	private BootstrapClass(ClassName className, Consumer<TypeSpec.Builder> type) {
+		this.packageName = className.packageName();
+		this.className = className;
 		this.type = TypeSpec.classBuilder(className);
 		type.accept(this.type);
-		this.methods = new LinkedHashMap<>();
+		this.methods = new ArrayList<>();
 	}
 
-	public BootstrapClass(String packageName, String name) {
-		this(packageName, name, (type) -> {
-		});
+	/**
+	 * Create an instance for the specified {@link ClassName}.
+	 * @param className the class name
+	 * @param type a callback to customize the type, i.e. to change default modifiers
+	 * @return a new {@link BootstrapClass}
+	 */
+	public static BootstrapClass of(ClassName className, Consumer<TypeSpec.Builder> type) {
+		return new BootstrapClass(className, type);
 	}
 
+	/**
+	 * Create an instance for the specified {@link ClassName}, as a {@code public} type.
+	 * @param className the class name
+	 * @return a new {@link BootstrapClass}
+	 */
+	public static BootstrapClass of(ClassName className) {
+		return of(className, (type) -> type.addModifiers(Modifier.PUBLIC));
+	}
+
+	/**
+	 * Return the {@link ClassName} of this instance.
+	 * @return the class name
+	 */
 	public ClassName getClassName() {
 		return this.className;
 	}
 
-	public boolean hasMethod(String name) {
-		return this.methods.containsKey(name);
-	}
-
+	/**
+	 * Add the specified {@link MethodSpec method}.
+	 * @param method the method to add
+	 */
 	public void addMethod(MethodSpec method) {
-		this.methods.put(method.name, method);
+		this.methods.add(method);
 	}
 
-	public void addMethod(MethodSpec.Builder method, Consumer<Builder> code) {
-		CodeBlock.Builder body = CodeBlock.builder();
-		code.accept(body);
-		method.addCode(body.build());
-		addMethod(method.build());
-	}
-
-	public JavaFile build() {
-		return JavaFile.builder(this.packageName, this.type.addMethods(this.methods.values()).build()).build();
+	/**
+	 * Return a {@link JavaFile} with the state of this instance
+	 * @return a java file
+	 */
+	public JavaFile toJavaFile() {
+		return JavaFile.builder(this.packageName, this.type.addMethods(this.methods).build()).build();
 	}
 
 }
