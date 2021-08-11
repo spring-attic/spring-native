@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,6 +79,13 @@ class RuntimeReflectionEntryTests {
 			assertThat(fieldDescriptor.isAllowWrite()).isTrue();
 			assertThat(fieldDescriptor.isAllowUnsafeAccess()).isFalse();
 		});
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterFieldsFlags() {
+		ClassDescriptor descriptor = RuntimeReflectionEntry.of(TestClass.class).withFlags(Flag.allDeclaredConstructors)
+				.withFlags(Flag.allDeclaredMethods).build().toClassDescriptor();
+		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 	}
 
 	@SuppressWarnings("unused")

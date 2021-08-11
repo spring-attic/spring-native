@@ -27,6 +27,7 @@ import java.util.Set;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
+import org.springframework.nativex.hint.Flag;
 
 /**
  * Describe the need for reflection for a particular {@link Class type}.
@@ -44,10 +45,13 @@ public class RuntimeReflectionEntry {
 
 	private final Set<Field> fields;
 
+	private final Set<Flag> flags;
+
 	private RuntimeReflectionEntry(Builder builder) {
 		this.type = builder.type;
 		this.methods = Collections.unmodifiableSet(builder.methods);
 		this.fields = Collections.unmodifiableSet(builder.fields);
+		this.flags = Collections.unmodifiableSet(builder.flags);
 	}
 
 	/**
@@ -84,6 +88,14 @@ public class RuntimeReflectionEntry {
 	}
 
 	/**
+	 * Return the {@link Flag flags} to set.
+	 * @return the flags to set
+	 */
+	public Set<Flag> getFlags() {
+		return this.flags;
+	}
+
+	/**
 	 * Create a {@link ClassDescriptor} from this entry
 	 * @return a class descriptor describing this entry
 	 */
@@ -95,6 +107,7 @@ public class RuntimeReflectionEntry {
 		for (Field field : fields) {
 			descriptor.addFieldDescriptor(toFieldDescriptor(field));
 		}
+		descriptor.setFlags(this.flags);
 		return descriptor;
 	}
 
@@ -116,6 +129,8 @@ public class RuntimeReflectionEntry {
 
 		private final Set<Field> fields = new HashSet<>();
 
+		private final Set<Flag> flags = new HashSet<>();
+
 		Builder(Class<?> type) {
 			this.type = type;
 		}
@@ -123,7 +138,7 @@ public class RuntimeReflectionEntry {
 		/**
 		 * Add the specified {@link Executable methods or constructors}.
 		 * @param methods the methods to add
-		 * @return this for method chaning
+		 * @return this for method chaining
 		 */
 		public Builder withMethods(Executable... methods) {
 			this.methods.addAll(Arrays.asList(methods));
@@ -133,10 +148,20 @@ public class RuntimeReflectionEntry {
 		/**
 		 * Add the specified {@link Field fields}.
 		 * @param fields the fields to add
-		 * @return this for method chaning
+		 * @return this for method chaining
 		 */
 		public Builder withFields(Field... fields) {
 			this.fields.addAll(Arrays.asList(fields));
+			return this;
+		}
+
+		/**
+		 * Set the specified {@link Flag flags}.
+		 * @param flags the flags to set
+		 * @return this for method chaining
+		 */
+		public Builder withFlags(Flag... flags) {
+			this.flags.addAll(Arrays.asList(flags));
 			return this;
 		}
 

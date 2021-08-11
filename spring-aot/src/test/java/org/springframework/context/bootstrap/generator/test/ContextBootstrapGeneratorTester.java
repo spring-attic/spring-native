@@ -81,7 +81,7 @@ public class ContextBootstrapGeneratorTester {
 				beanFactory, this.packageName,
 				this.excludeTypes.toArray(new Class<?>[0]));
 		writeSources(srcDirectory, result.getSourceFiles());
-		return new ContextBootstrapStructure(srcDirectory, this.packageName);
+		return new ContextBootstrapStructure(srcDirectory, this.packageName, result.getClassDescriptors());
 	}
 
 	private String generateShortName(Class<?> target) {
