@@ -23,6 +23,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
@@ -42,6 +45,7 @@ import org.springframework.context.bootstrap.generator.sample.visibility.PublicO
 import org.springframework.context.bootstrap.generator.test.ContextBootstrapGeneratorTester;
 import org.springframework.context.bootstrap.generator.test.ContextBootstrapStructure;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.nativex.hint.Flag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,6 +79,15 @@ class ContextBootstrapGeneratorTests {
 				"    context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());",
 				"");
 		assertThat(structure).contextBootstrapInitializer().contains("import " + ContextAnnotationAutowireCandidateResolver.class.getName() + ";");
+	}
+
+	@Test
+	void bootstrapClassRegisterDependencyResolutionReflectionEntries() {
+		ContextBootstrapStructure structure = this.generatorTester.generate();
+		assertThat(structure).hasClassDescriptor(Qualifier.class,
+				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods));
+		assertThat(structure).hasClassDescriptor(Value.class,
+				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods));
 	}
 
 	@Test

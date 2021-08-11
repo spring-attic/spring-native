@@ -21,10 +21,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractPathAssert;
+import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.PathAssert;
 
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,13 +44,27 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 
 	private final String packageName;
 
-	public ContextBootstrapAssert(Path projectDirectory, String packageName) {
+	private final MapAssert<String, ClassDescriptor> classDescriptors;
+
+	public ContextBootstrapAssert(Path projectDirectory, String packageName,
+			List<ClassDescriptor> classDescriptors) {
 		super(projectDirectory, ContextBootstrapAssert.class);
 		this.packageName = packageName;
+		this.classDescriptors = new MapAssert<>(classDescriptors.stream().collect(Collectors.toMap(ClassDescriptor::getName, (desc) -> desc)));
 	}
 
 	public ContextBootstrapAssert hasSource(String packageName, String name) {
 		validateAndGetAsset(this.actual, packageName, name);
+		return this.myself;
+	}
+
+	public ContextBootstrapAssert hasClassDescriptor(Class<?> type) {
+		this.classDescriptors.containsKey(type.getName());
+		return this.myself;
+	}
+
+	public ContextBootstrapAssert hasClassDescriptor(Class<?> type, Consumer<ClassDescriptor> assertions) {
+		this.classDescriptors.hasEntrySatisfying(type.getName(), assertions);
 		return this.myself;
 	}
 
