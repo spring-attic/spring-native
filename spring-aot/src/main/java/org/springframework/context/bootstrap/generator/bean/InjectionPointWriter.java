@@ -11,15 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
-import com.squareup.javapoet.TypeName;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
-import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -61,47 +58,35 @@ class InjectionPointWriter {
 		CodeBlock.Builder code = CodeBlock.builder();
 		Class<?> declaringType = creator.getDeclaringClass();
 		boolean innerClass = isInnerClass(declaringType);
-
-		code.add("instanceContext.constructor(");
 		Class<?>[] parameterTypes = Arrays.stream(creator.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
-		if (innerClass) {
-			parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length);
+		// Shortcut for common case
+		if (!innerClass && parameterTypes.length == 0) {
+			code.add("new $T()", declaringType);
+			return code.build();
 		}
+		code.add("instanceContext.constructor(");
 		code.add(Arrays.stream(parameterTypes).map((d) -> "$T.class").collect(Collectors.joining(", ")), (Object[]) parameterTypes);
 		code.add(")\n").indent().indent();
 		code.add(".create(context, (attributes) ->");
-		List<ParameterResolution> parameters = resolveParameters(creator.getParameters(),
-				(index) -> ResolvableType.forConstructorParameter(creator, index));
+		List<CodeBlock> parameters = resolveParameters(creator.getParameters());
 		if (innerClass) { // Remove the implicit argument
 			parameters.remove(0);
 		}
-		boolean hasAssignment = parameters.stream().anyMatch(ParameterResolution::hasAssignment);
-		if (hasAssignment) {
-			code.beginControlFlow("");
-			parameters.stream().filter(ParameterResolution::hasAssignment).forEach((parameter) -> parameter.applyAssignment(code));
-		}
-		else {
-			code.add(" ");
-		}
-		if (hasAssignment) {
-			code.add("return ");
-		}
+
+		code.add(" ");
 		if (innerClass) {
 			code.add("context.getBean($T.class).new $L(", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 		}
 		else {
-			code.add("new $L(", declaringType.getSimpleName());
+			code.add("new $T(", declaringType);
 		}
 		for (int i = 0; i < parameters.size(); i++) {
-			parameters.get(i).applyParameter(code);
+			code.add(parameters.get(i));
 			if (i < parameters.size() - 1) {
 				code.add(", ");
 			}
 		}
 		code.add(")");
-		if (hasAssignment) {
-			code.add(";\n").unindent().add("}");
-		}
 		code.add(")").unindent().unindent(); // end of invoke
 		return code.build();
 	}
@@ -111,6 +96,18 @@ class InjectionPointWriter {
 	}
 
 	private CodeBlock writeMethodInstantiation(Method injectionPoint) {
+		if (injectionPoint.getParameterCount() == 0) {
+			Builder code = CodeBlock.builder();
+			Class<?> declaringType = injectionPoint.getDeclaringClass();
+			if (Modifier.isStatic(injectionPoint.getModifiers())) {
+				code.add("$T", declaringType);
+			}
+			else {
+				code.add("context.getBean($T.class)", declaringType);
+			}
+			code.add(".$L()", injectionPoint.getName());
+			return code.build();
+		}
 		return write(injectionPoint, (code) -> code.add(".create(context, (attributes) ->"), true);
 	}
 
@@ -128,24 +125,17 @@ class InjectionPointWriter {
 
 	private CodeBlock write(Method injectionPoint, Consumer<Builder> attributesResolver, boolean instantiation) {
 		CodeBlock.Builder code = CodeBlock.builder();
-		code.add("instanceContext.method($S, ", injectionPoint.getName());
+		code.add("instanceContext.method(");
+		if (instantiation) {
+			code.add("$T.class, ", injectionPoint.getDeclaringClass());
+		}
+		code.add("$S, ", injectionPoint.getName());
 		Class<?>[] parameterTypes = Arrays.stream(injectionPoint.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
 		code.add(Arrays.stream(parameterTypes).map((d) -> "$T.class").collect(Collectors.joining(", ")), (Object[]) parameterTypes);
 		code.add(")\n").indent().indent();
 		attributesResolver.accept(code);
-		List<ParameterResolution> parameters = resolveParameters(injectionPoint.getParameters(),
-				(index) -> ResolvableType.forMethodParameter(injectionPoint, index));
-		boolean hasAssignment = parameters.stream().anyMatch(ParameterResolution::hasAssignment);
-		if (hasAssignment) {
-			code.beginControlFlow("");
-			parameters.stream().filter(ParameterResolution::hasAssignment).forEach((parameter) -> parameter.applyAssignment(code));
-		}
-		else {
-			code.add(" ");
-		}
-		if (hasAssignment && instantiation) {
-			code.add("return ");
-		}
+		List<CodeBlock> parameters = resolveParameters(injectionPoint.getParameters());
+		code.add(" ");
 		if (instantiation) {
 			if (Modifier.isStatic(injectionPoint.getModifiers())) {
 				code.add("$T", injectionPoint.getDeclaringClass());
@@ -159,15 +149,12 @@ class InjectionPointWriter {
 		}
 		code.add(".$L(", injectionPoint.getName());
 		for (int i = 0; i < parameters.size(); i++) {
-			parameters.get(i).applyParameter(code);
+			code.add(parameters.get(i));
 			if (i < parameters.size() - 1) {
 				code.add(", ");
 			}
 		}
 		code.add(")");
-		if (hasAssignment) {
-			code.add(";\n").unindent().add("}");
-		}
 		code.add(")").unindent().unindent(); // end of invoke
 		return code.build();
 	}
@@ -199,22 +186,12 @@ class InjectionPointWriter {
 		return code.build();
 	}
 
-	private List<ParameterResolution> resolveParameters(Parameter[] parameters, Function<Integer, ResolvableType> resolvableTypeFactory) {
-		List<ParameterResolution> parametersResolution = new ArrayList<>();
+	private List<CodeBlock> resolveParameters(Parameter[] parameters) {
+		List<CodeBlock> parameterValues = new ArrayList<>();
 		for (int i = 0; i < parameters.length; i++) {
-			ResolvableType resolvableType = resolvableTypeFactory.apply(i);
-			if (resolvableType.hasGenerics()) {
-				String parameterName = String.format("attributes%s", i);
-				Builder assignment = CodeBlock.builder();
-				TypeName typeName = TypeName.get(resolvableType.getType());
-				assignment.add("$T $L = attributes.get($L)", typeName, parameterName, i);
-				parametersResolution.add(ParameterResolution.ofAssignableParameter(assignment.build(), CodeBlock.of(parameterName)));
-			}
-			else {
-				parametersResolution.add(ParameterResolution.ofParameter(CodeBlock.of("attributes.get($L)", i)));
-			}
+			parameterValues.add(CodeBlock.of("attributes.get($L)", i));
 		}
-		return parametersResolution;
+		return parameterValues;
 	}
 
 }

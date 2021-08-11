@@ -41,7 +41,7 @@ class DefaultBeanValueWriterSupplierTests {
 	}
 
 	@Test
-	void getWithIncomatibleBeanDefinitionReturnNull() {
+	void getWithIncompatibleBeanDefinitionReturnNull() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanValueWriter writer = getBeanValueWriter(beanFactory, BeanDefinitionBuilder
 				.genericBeanDefinition("com.example.Test").getBeanDefinition());
@@ -51,7 +51,7 @@ class DefaultBeanValueWriterSupplierTests {
 	private BeanValueWriter getBeanValueWriter(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
 		supplier.setBeanFactory(beanFactory);
-		return supplier.get(beanDefinition, getClass().getClassLoader());
+		return supplier.get(beanDefinition);
 	}
 
 }

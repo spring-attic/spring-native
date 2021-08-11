@@ -55,6 +55,18 @@ public final class CodeSnippet implements AssertProvider<CodeSnippetAssert> {
 	 * @see #create() to use additional options
 	 */
 	public static CodeSnippet of(Consumer<CodeBlock.Builder> code) {
+		CodeBlock.Builder body = CodeBlock.builder();
+		code.accept(body);
+		return of(body.build());
+	}
+
+	/**
+	 * Create a {@link CodeSnippet} using the specified code.
+	 * @param code the code snippet
+	 * @return a {@link CodeSnippet} instance
+	 * @see #create() to use additional options
+	 */
+	public static CodeSnippet of(CodeBlock code) {
 		return create().build(code);
 	}
 
@@ -86,7 +98,7 @@ public final class CodeSnippet implements AssertProvider<CodeSnippetAssert> {
 			return this;
 		}
 
-		public CodeSnippet build(Consumer<CodeBlock.Builder> code) {
+		public CodeSnippet build(CodeBlock code) {
 			MethodSpec.Builder method = MethodSpec.methodBuilder("test").addModifiers(Modifier.PUBLIC);
 			if (this.methodCustomizer != null) {
 				this.methodCustomizer.accept(method);
@@ -96,7 +108,7 @@ public final class CodeSnippet implements AssertProvider<CodeSnippetAssert> {
 				this.bodyCustomizer.accept(body);
 			}
 			body.add(START_SNIPPET);
-			code.accept(body);
+			body.add(code);
 			body.add(END_SNIPPET);
 			method.addCode(body.build());
 			String fileContent = write(createTestJavaFile(method.build()));

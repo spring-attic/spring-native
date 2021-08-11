@@ -34,4 +34,8 @@ public abstract class SampleFactory {
 		return type.getName();
 	}
 
+	public static Integer integerBean() {
+		return 42;
+	}
+
 }
