@@ -88,7 +88,7 @@ public class RuntimeReflectionEntry {
 	 * @return a class descriptor describing this entry
 	 */
 	public ClassDescriptor toClassDescriptor() {
-		ClassDescriptor descriptor = ClassDescriptor.of(this.type.getCanonicalName());
+		ClassDescriptor descriptor = ClassDescriptor.of(this.type.getName());
 		for (Executable method : methods) {
 			descriptor.addMethodDescriptor(toMethodDescriptor(method));
 		}

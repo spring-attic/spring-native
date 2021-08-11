@@ -41,6 +41,12 @@ class RuntimeReflectionEntryTests {
 	}
 
 	@Test
+	void toClassDescriptorShouldRegisterInnerClassWithDollarSeparator() {
+		ClassDescriptor descriptor = RuntimeReflectionEntry.of(TestClass.class).build().toClassDescriptor();
+		assertThat(descriptor.getName()).isEqualTo("org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionEntryTests$TestClass");
+	}
+
+	@Test
 	void toClassDescriptorShouldRegisterMethod() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class);
 		ClassDescriptor descriptor = RuntimeReflectionEntry.of(TestClass.class).withMethods(method)
