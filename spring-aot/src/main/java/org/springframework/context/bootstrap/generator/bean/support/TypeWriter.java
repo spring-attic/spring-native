@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.bean;
+package org.springframework.context.bootstrap.generator.bean.support;
 
 import java.util.Arrays;
 
@@ -28,13 +28,16 @@ import org.springframework.util.ClassUtils;
  *
  * @author Stephane Nicoll
  */
-abstract class TypeHelper {
+public class TypeWriter {
 
-	static void generateResolvableTypeFor(CodeBlock.Builder code, ResolvableType target) {
+
+	public CodeBlock generateTypeFor(ResolvableType target) {
+		CodeBlock.Builder code = CodeBlock.builder();
 		generate(code, target, false);
+		return code.build();
 	}
 
-	private static void generate(CodeBlock.Builder code, ResolvableType target, boolean forceResolvableType) {
+	private void generate(CodeBlock.Builder code, ResolvableType target, boolean forceResolvableType) {
 		Class<?> type = ClassUtils.getUserClass(target.toClass());
 		if (!target.hasGenerics()) {
 			if (forceResolvableType) {

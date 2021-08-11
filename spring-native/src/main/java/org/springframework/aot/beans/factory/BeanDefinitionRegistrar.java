@@ -49,21 +49,18 @@ public class BeanDefinitionRegistrar {
 		return of(beanName, ResolvableType.forClass(beanType));
 	}
 
-	public BeanDefinitionRegistrar customize(Consumer<BeanDefinitionBuilder> builder) {
-		builder.accept(this.builder);
+	public BeanDefinitionRegistrar customize(SmartConsumer<RootBeanDefinition> beanDefinition) {
+		this.customizers.add(beanDefinition);
 		return this;
 	}
 
 	public BeanDefinitionRegistrar instanceSupplier(SmartFunction<InstanceSupplierContext, ?> instanceContext) {
-		this.customizers.add((beanDefinition) -> beanDefinition.setInstanceSupplier(() -> instanceContext.apply(this.context)));
-		return this;
+		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(() -> instanceContext.apply(this.context)));
 	}
 
 	public BeanDefinitionRegistrar instanceSupplier(SmartSupplier<?> instanceSupplier) {
-		this.customizers.add((beanDefinition) -> beanDefinition.setInstanceSupplier(instanceSupplier));
-		return this;
+		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(instanceSupplier));
 	}
-
 
 	public void register(GenericApplicationContext context) {
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) builder.getBeanDefinition();
@@ -78,21 +75,54 @@ public class BeanDefinitionRegistrar {
 
 		private final Class<?> beanType;
 
+		/**
+		 * Create a new instance for the specified bean.
+		 * @param beanName the name of the bean
+		 * @param beanType the type of the bean
+		 */
 		public InstanceSupplierContext(String beanName, Class<?> beanType) {
 			this.beanName = beanName;
 			this.beanType = beanType;
 		}
 
+		/**
+		 * Create an {@link InjectedElementResolver} for the specified constructor.
+		 * @param parameterTypes the constructor parameter types
+		 * @return a resolved for the specified constructor
+		 */
 		public InjectedElementResolver constructor(Class<?>... parameterTypes) {
 			return new InjectedConstructorResolver(this.beanName, this.beanType, getConstructor(parameterTypes));
 		}
 
+		/**
+		 * Create an {@link InjectedElementResolver} for the specified field.
+		 * @param name the name of the field
+		 * @param type the type of the field
+		 * @return a resolved for the specified field
+		 */
 		public InjectedElementResolver field(String name, Class<?> type) {
 			return new InjectedFieldResolver(this.beanName, getField(name, type));
 		}
 
+		/**
+		 * Create an {@link InjectedElementResolver} for the specified factory method.
+		 * @param declaredType the type on which the method is declared
+		 * @param name the name of the method
+		 * @param parameterTypes the method parameter types
+		 * @return a resolved for the specified factory method
+		 */
+		public InjectedElementResolver method(Class<?> declaredType, String name, Class<?>... parameterTypes) {
+			return new InjectedMethodResolver(this.beanName, declaredType, getMethod(declaredType, name, parameterTypes));
+		}
+
+		/**
+		 * Create an {@link InjectedElementResolver} for the specified bean method.
+		 * @param name the name of the method on the target bean
+		 * @param parameterTypes the method parameter types
+		 * @return a resolved for the specified bean method
+		 */
 		public InjectedElementResolver method(String name, Class<?>... parameterTypes) {
-			return new InjectedMethodResolver(this.beanName, this.beanType, getMethod(name, parameterTypes));
+			return method(this.beanType, name, parameterTypes);
 		}
 
 		private Constructor<?> getConstructor(Class<?>... parameterTypes) {
@@ -114,14 +144,14 @@ public class BeanDefinitionRegistrar {
 			return field;
 		}
 
-		private Method getMethod(String methodName, Class<?>... parameterTypes) {
-			Method method = ReflectionUtils.findMethod(this.beanType, methodName, parameterTypes);
+		private Method getMethod(Class<?> declaredType, String methodName, Class<?>... parameterTypes) {
+			Method method = ReflectionUtils.findMethod(declaredType, methodName, parameterTypes);
 			if (method == null) {
 				String message = String.format("No method '%s' with type(s) [%s] found on %s", methodName,
-						toCommaSeparatedNames(parameterTypes), this.beanType.getName());
+						toCommaSeparatedNames(parameterTypes), declaredType.getName());
 				throw new IllegalArgumentException(message);
 			}
-			return AopUtils.selectInvocableMethod(method, this.beanType);
+			return AopUtils.selectInvocableMethod(method, declaredType);
 		}
 
 		private String toCommaSeparatedNames(Class<?>... parameterTypes) {

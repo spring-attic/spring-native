@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
@@ -47,7 +48,17 @@ public class BootstrapWriterContext {
 	 */
 	public BootstrapClass getBootstrapClass(String packageName) {
 		return this.bootstrapClasses.computeIfAbsent(packageName, (p) ->
-				new BootstrapClass(packageName, BOOTSTRAP_CLASS_NAME, (type) -> type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
+				BootstrapClass.of(ClassName.get(packageName, BOOTSTRAP_CLASS_NAME),
+						(type) -> type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
+	}
+
+	/**
+	 * Specify if a {@link BootstrapClass} for the specified package name is registered.
+	 * @param packageName the package name to use
+	 * @return {@code true} if the class is registered for that package
+	 */
+	public boolean hasBootstrapClass(String packageName) {
+		return this.bootstrapClasses.containsKey(packageName);
 	}
 
 	/**
@@ -55,7 +66,7 @@ public class BootstrapWriterContext {
 	 * @return the java files of bootstrap classes in this instance
 	 */
 	public List<JavaFile> toJavaFiles() {
-		return this.bootstrapClasses.values().stream().map(BootstrapClass::build).collect(Collectors.toList());
+		return this.bootstrapClasses.values().stream().map(BootstrapClass::toJavaFile).collect(Collectors.toList());
 	}
 
 	/**
@@ -66,5 +77,5 @@ public class BootstrapWriterContext {
 	public RuntimeReflectionRegistry getRuntimeReflectionRegistry() {
 		return this.runtimeReflectionRegistry;
 	}
-	
+
 }

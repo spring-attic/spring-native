@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.bean;
+package org.springframework.context.bootstrap.generator.sample.visibility;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+public class ProtectedConstructorComponent {
 
-/**
- * Strategy interface to write the bean value supplier of a {@link BeanDefinition}.
- *
- * @author Stephane Nicoll
- */
-@FunctionalInterface
-public interface BeanValueWriterSupplier {
+	ProtectedConstructorComponent() {
 
-	/**
-	 * Return the {@link BeanValueWriter} to use for the specified {@link BeanDefinition}.
-	 * @param beanDefinition the bean definition to handle
-	 * @return the {@link BeanValueWriter} to use, or {@code null}
-	 */
-	BeanValueWriter get(BeanDefinition beanDefinition);
-
+	}
 }

@@ -4,8 +4,8 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.lang.model.SourceVersion;
@@ -17,11 +17,18 @@ import com.squareup.javapoet.MethodSpec;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.bean.support.MultiStatement;
+import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
+import org.springframework.context.bootstrap.generator.bean.support.TypeWriter;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
@@ -35,6 +42,8 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerator {
+
+	private static final TypeWriter typeWriter = new TypeWriter();
 
 	private final String beanName;
 
@@ -69,9 +78,7 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 
 	private void registerReflectionMetadata(RuntimeReflectionRegistry registry, BeanInstanceDescriptor descriptor) {
 		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
-		if (instanceCreator != null) {
-			registry.addMethod(instanceCreator.getMember());
-		}
+		registry.addMethod(instanceCreator.getMember());
 		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
 			Member member = injectionPoint.getMember();
 			if (member instanceof Executable) {
@@ -94,22 +101,52 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 	}
 
 	private void handleBeanDefinitionMetadata(Builder code) {
-		List<Runnable> customizers = new ArrayList<>();
+		MultiStatement statements = new MultiStatement();
 		if (this.beanDefinition.isPrimary()) {
-			customizers.add(() -> code.add(".setPrimary(true)"));
+			statements.add("bd.setPrimary(true)");
 		}
 		if (this.beanDefinition instanceof AbstractBeanDefinition
 				&& ((AbstractBeanDefinition) this.beanDefinition).isSynthetic()) {
-			customizers.add(() -> code.add(".setSynthetic(true)"));
+			statements.add("bd.setSynthetic(true)");
 		}
 		if (this.beanDefinition.getRole() != BeanDefinition.ROLE_APPLICATION) {
-			customizers.add(() -> code.add(".setRole($L)", this.beanDefinition.getRole()));
+			statements.add("bd.setRole($L)", this.beanDefinition.getRole());
 		}
-		if (!customizers.isEmpty()) {
-			code.add((".customize((builder) -> builder"));
-			customizers.forEach(Runnable::run);
-			code.add(")");
+		if (this.beanDefinition.hasConstructorArgumentValues()) {
+			handleArgumentValues(statements, this.beanDefinition.getConstructorArgumentValues());
 		}
+		if (statements.isEmpty()) {
+			return;
+		}
+		code.add(statements.toCodeBlock(".customize((bd) ->"));
+		code.add(")");
+	}
+
+	private void handleArgumentValues(MultiStatement statements, ConstructorArgumentValues constructorArgumentValues) {
+		Map<Integer, ValueHolder> values = constructorArgumentValues.getIndexedArgumentValues();
+		if (values.size() == 1) {
+			Entry<Integer, ValueHolder> entry = values.entrySet().iterator().next();
+			statements.add(writeArgumentValue("bd.getConstructorArgumentValues().", entry.getKey(), entry.getValue()));
+		}
+		else {
+			statements.add("ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues()");
+			statements.addAll(values.entrySet(), (entry) -> writeArgumentValue("argumentValues.", entry.getKey(), entry.getValue()));
+		}
+	}
+
+	private CodeBlock writeArgumentValue(String prefix, Integer index, ValueHolder valueHolder) {
+		Builder code = CodeBlock.builder();
+		code.add(prefix);
+		code.add("addIndexedArgumentValue($L, ", index);
+		Object value = valueHolder.getValue();
+		if (value instanceof BeanReference) {
+			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
+		}
+		else {
+			code.add(new ParameterWriter().writeParameterValue(value, ResolvableType.forInstance(value)));
+		}
+		code.add(")");
+		return code.build();
 	}
 
 	private boolean isAccessibleFrom(BeanInstanceDescriptor descriptor, String packageName) {
@@ -127,7 +164,7 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 	private void writeBeanType(Builder code) {
 		ResolvableType resolvableType = this.beanDefinition.getResolvableType();
 		if (resolvableType.hasGenerics()) {
-			TypeHelper.generateResolvableTypeFor(code, resolvableType);
+			code.add(typeWriter.generateTypeFor(resolvableType));
 		}
 		else {
 			code.add("$T.class", ClassUtils.getUserClass(this.beanDefinition.getResolvableType().toClass()));
@@ -154,7 +191,7 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		else if (member.getDeclaringClass().getEnclosingClass() != null) {
 			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();
 			Class<?> enclosingClass = member.getDeclaringClass().getEnclosingClass();
-			return String.format("register%s_%s",enclosingClass.getSimpleName(), target);
+			return String.format("register%s_%s", enclosingClass.getSimpleName(), target);
 		}
 		else {
 			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();

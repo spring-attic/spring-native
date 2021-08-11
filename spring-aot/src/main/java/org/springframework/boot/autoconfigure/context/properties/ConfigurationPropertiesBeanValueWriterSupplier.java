@@ -35,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
 class ConfigurationPropertiesBeanValueWriterSupplier implements BeanValueWriterSupplier {
 
 	@Override
-	public BeanValueWriter get(BeanDefinition beanDefinition, ClassLoader classLoader) {
+	public BeanValueWriter get(BeanDefinition beanDefinition) {
 		if (MethodValidationExcludeFilter.class.getName().equals(beanDefinition.getBeanClassName())) {
 			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(MethodValidationExcludeFilter.class,
 					ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class));

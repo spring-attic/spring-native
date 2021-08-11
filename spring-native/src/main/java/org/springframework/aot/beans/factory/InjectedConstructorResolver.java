@@ -79,7 +79,8 @@ class InjectedConstructorResolver implements InjectedElementResolver {
 				return context.getBean(((BeanReference) value).getBeanName(), parameter.getParameterType());
 			}
 			else {
-				return value;
+				return context.getBeanFactory().getTypeConverter()
+						.convertIfNecessary(value, parameter.getParameterType());
 			}
 		}
 		return null;
