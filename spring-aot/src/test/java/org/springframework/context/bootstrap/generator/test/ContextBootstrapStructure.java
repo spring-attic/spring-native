@@ -17,8 +17,11 @@
 package org.springframework.context.bootstrap.generator.test;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import org.assertj.core.api.AssertProvider;
+
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
 
 /**
  * Represent a generated bootstrap structure and act as an entry point for AssertJ
@@ -32,28 +35,25 @@ public final class ContextBootstrapStructure implements AssertProvider<ContextBo
 
 	private final String packageName;
 
+	private final List<ClassDescriptor> classDescriptors;
+
 	/**
 	 * Create an instance based on the specified source {@link Path directory} and chosen
 	 * package name.
 	 * @param sourceDirectory the generated source directory
-	 * @param packageName the package to use for the main {@code ContextBootstrap} class.
+	 * @param packageName the package to use for the main {@code ContextBootstrap} class
+	 * @param classDescriptors the {@link ClassDescriptor class descriptors}
 	 */
-	public ContextBootstrapStructure(Path sourceDirectory, String packageName) {
+	public ContextBootstrapStructure(Path sourceDirectory, String packageName,
+			List<ClassDescriptor> classDescriptors) {
 		this.sourceDirectory = sourceDirectory;
 		this.packageName = packageName;
+		this.classDescriptors = classDescriptors;
 	}
 
 	@Override
 	public ContextBootstrapAssert assertThat() {
-		return new ContextBootstrapAssert(this.sourceDirectory, this.packageName);
-	}
-
-	/**
-	 * Return the source directory.
-	 * @return the source directory
-	 */
-	public Path getSourceDirectory() {
-		return this.sourceDirectory;
+		return new ContextBootstrapAssert(this.sourceDirectory, this.packageName, this.classDescriptors);
 	}
 
 }
