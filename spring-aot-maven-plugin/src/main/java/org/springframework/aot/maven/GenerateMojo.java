@@ -87,6 +87,8 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 			findJarFile(this.pluginArtifacts, "com.squareup", "javapoet")
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
+					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 
 			if (getAotOptions().toMode().equals(Mode.NATIVE)) {
 				RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
