@@ -51,6 +51,8 @@ public class SpringAotExtension {
 
 	private final Property<String> mainClass;
 
+	private final Property<Integer> codeGenDebugPort;
+
 	public SpringAotExtension(ObjectFactory objectFactory) {
 		this.mode = objectFactory.property(AotMode.class).convention(AotMode.NATIVE);
 		this.debugVerify = objectFactory.property(Boolean.class).convention(false);
@@ -64,6 +66,7 @@ public class SpringAotExtension {
 		this.buildTimePropertiesMatchIfMissing = objectFactory.property(Boolean.class).convention(true);
 		this.buildTimePropertiesChecks = objectFactory.property(String[].class).convention(new String[0]);
 		this.mainClass = objectFactory.property(String.class).convention((String)null);
+		this.codeGenDebugPort = objectFactory.property(Integer.class).convention((Integer) null);
 	}
 
 	/**
@@ -134,6 +137,13 @@ public class SpringAotExtension {
 	 */
 	public Property<String> getMainClass() {
 		return this.mainClass;
+	}
+
+	/**
+	 * Set remote debug port for code generation (not set by default).
+	 */
+	public Property<Integer> getCodeGenDebugPort() {
+		return this.codeGenDebugPort;
 	}
 
 	/**

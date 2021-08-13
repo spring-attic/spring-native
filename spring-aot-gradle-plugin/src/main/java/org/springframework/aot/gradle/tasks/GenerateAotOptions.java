@@ -57,6 +57,8 @@ public class GenerateAotOptions implements Serializable {
 
 	private final Property<String[]> buildTimePropertiesChecks;
 
+	private final Property<Integer> codeGenDebugPort;
+
 	public GenerateAotOptions(SpringAotExtension extension) {
 		this.mode = extension.getMode().map(aotMode -> aotMode.getSlug());
 		this.debugVerify = extension.getDebugVerify();
@@ -70,6 +72,7 @@ public class GenerateAotOptions implements Serializable {
 		this.mainClass = extension.getMainClass();
 		this.buildTimePropertiesMatchIfMissing = extension.getBuildTimePropertiesMatchIfMissing();
 		this.buildTimePropertiesChecks = extension.getBuildTimePropertiesChecks();
+		this.codeGenDebugPort = extension.getCodeGenDebugPort();
 	}
 
 	@Input
@@ -121,6 +124,12 @@ public class GenerateAotOptions implements Serializable {
 	@Optional
 	public Property<String> getMainClass() {
 		return this.mainClass;
+	}
+
+	@Input
+	@Optional
+	public Property<Integer> getCodeGenDebugPort() {
+		return this.codeGenDebugPort;
 	}
 
 	@Input
