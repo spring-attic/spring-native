@@ -95,6 +95,11 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 
 				List<String> args = new ArrayList<>();
+				// remote debug
+				if (this.codeGenDebugPort != null) {
+					args.add("-Xdebug");
+					args.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + this.codeGenDebugPort);
+				}
 				// plugin classpath
 				args.add("-cp");
 				args.add(asClasspathArgument(runtimeClasspathElements));
