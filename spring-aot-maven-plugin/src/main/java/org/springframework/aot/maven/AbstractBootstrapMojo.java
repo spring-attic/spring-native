@@ -108,6 +108,9 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter(property = "spring.aot.mainClass")
 	protected String mainClass;
 
+	@Parameter(property = "spring.aot.codeGenDebugPort")
+	protected Integer codeGenDebugPort;
+
 	protected AotOptions getAotOptions() {
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode(mode);
