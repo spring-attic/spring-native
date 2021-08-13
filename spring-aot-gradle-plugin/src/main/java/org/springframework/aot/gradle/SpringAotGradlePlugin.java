@@ -65,6 +65,8 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 	public static final String GENERATE_TEST_TASK_NAME = "generateTestAot";
 
+	public static final String CODE_GEN_DEBUG_PORT_PROPERTY = "codeGenDebugPort";
+
 
 	@Override
 	public void apply(final Project project) {
