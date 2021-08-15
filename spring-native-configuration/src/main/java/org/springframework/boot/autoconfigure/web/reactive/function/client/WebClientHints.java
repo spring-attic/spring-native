@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-@TypeHint(types = NioSocketChannel.class, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
+@NativeHint(trigger = NioSocketChannel.class,
+		types = @TypeHint(types = NioSocketChannel.class, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS))
 public class WebClientHints implements NativeConfiguration {
 }
