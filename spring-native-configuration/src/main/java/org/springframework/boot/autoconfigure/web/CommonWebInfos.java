@@ -18,10 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.springframework.nativex.hint.ResourceHint;
 
-// Accessed from org.apache.catalina.startup.Tomcat
 @ResourceHint(patterns = {
-	"org/springframework/http/mime.types",
-	"org/apache/catalina/startup/MimeTypeMappings.properties",
 	"^static/.*",
 	"^templates/.*",
 	"^META-INF/resources/webjars/.*"

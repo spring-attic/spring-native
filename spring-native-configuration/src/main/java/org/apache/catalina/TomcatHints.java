@@ -25,6 +25,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoa
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -39,6 +40,7 @@ import org.springframework.nativex.hint.AccessBits;
 				org.apache.catalina.servlets.DefaultServlet.class,
 				org.apache.catalina.Globals.class
 		}, initTime = InitializationTime.BUILD)
-}, imports = CommonWebInfos.class)
+}, resources = @ResourceHint(patterns = "org/apache/catalina/startup/MimeTypeMappings.properties")
+, imports = CommonWebInfos.class)
 public class TomcatHints implements NativeConfiguration {
 }
