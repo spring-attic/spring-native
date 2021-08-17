@@ -48,8 +48,8 @@ class ConfigurationPropertiesBeanDefinitionOriginAnalyzerTests {
 	void analyzeConfigurationPropertiesInfrastructure() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(SampleAutoConfiguration.class);
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
-		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions());
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));
 		this.analyzer.analyze(analysis);
 		assertThat(analysis.resolved()).hasSize(5);
 		HashSet<String> parents = analysis.resolved().map(BeanDefinitionDescriptor::getOrigins)

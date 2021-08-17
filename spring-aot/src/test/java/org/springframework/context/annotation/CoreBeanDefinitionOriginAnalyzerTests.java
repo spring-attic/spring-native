@@ -58,8 +58,8 @@ class CoreBeanDefinitionOriginAnalyzerTests {
 		for (Class<?> component : components) {
 			context.registerBean(component);
 		}
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
-		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions());
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));
 		new CoreBeanDefinitionOriginAnalyzer().analyze(analysis);
 		return analysis;
 	}
