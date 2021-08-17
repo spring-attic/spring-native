@@ -23,7 +23,7 @@ class AutoConfigurationPackagesBeanDefinitionOriginAnalyzerTests {
 	void analyseAutoConfigurePackages() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(SampleConfiguration.class);
-		new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(context);
 		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(context.getBeanFactory());
 		this.analyzer.analyze(analysis);
 		assertThat(analysis.resolved()).singleElement().satisfies((processed) -> {

@@ -76,7 +76,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 				throw new IllegalStateException("Could not load main class" + mainClass.getCanonicalClassName(), exc);
 			}
 		}
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(applicationContext).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
 		BootstrapGenerationResult bootstrapGenerationResult = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
 		bootstrapGenerationResult.getSourceFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));

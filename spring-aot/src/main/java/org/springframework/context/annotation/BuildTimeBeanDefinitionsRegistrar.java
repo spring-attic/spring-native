@@ -34,25 +34,20 @@ public class BuildTimeBeanDefinitionsRegistrar {
 
 	private static final Log logger = LogFactory.getLog(BuildTimeBeanDefinitionsRegistrar.class);
 
-	private final GenericApplicationContext context;
-
-	public BuildTimeBeanDefinitionsRegistrar(GenericApplicationContext context) {
-		Assert.notNull(context, "Context must not be null");
-		Assert.state(!context.isActive(), () -> "Context must not be active");
-		this.context = context;
-	}
-
 	/**
 	 * Process bean definitions without creating any instance and return the
 	 * {@link ConfigurableListableBeanFactory bean factory}.
+	 * @param context the context to process
 	 * @return the bean factory with the result of the processing
 	 */
-	public ConfigurableListableBeanFactory processBeanDefinitions() {
+	public ConfigurableListableBeanFactory processBeanDefinitions(GenericApplicationContext context) {
+		Assert.notNull(context, "Context must not be null");
+		Assert.state(!context.isActive(), () -> "Context must not be active");
 		if (logger.isDebugEnabled()) {
 			logger.debug("Parsing configuration classes");
 		}
-		parseConfigurationClasses();
-		ConfigurableListableBeanFactory beanFactory = this.context.getBeanFactory();
+		parseConfigurationClasses(context);
+		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Resolving types for " + beanFactory.getBeanDefinitionCount() + " bean definitions");
 		}
@@ -62,13 +57,13 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		return beanFactory;
 	}
 
-	private void parseConfigurationClasses() {
+	private void parseConfigurationClasses(GenericApplicationContext context) {
 		ConfigurationClassPostProcessor configurationClassPostProcessor = new ConfigurationClassPostProcessor();
-		configurationClassPostProcessor.setApplicationStartup(this.context.getApplicationStartup());
-		configurationClassPostProcessor.setBeanClassLoader(this.context.getClassLoader());
-		configurationClassPostProcessor.setEnvironment(this.context.getEnvironment());
-		configurationClassPostProcessor.setResourceLoader(this.context);
-		configurationClassPostProcessor.postProcessBeanFactory(this.context.getBeanFactory());
+		configurationClassPostProcessor.setApplicationStartup(context.getApplicationStartup());
+		configurationClassPostProcessor.setBeanClassLoader(context.getClassLoader());
+		configurationClassPostProcessor.setEnvironment(context.getEnvironment());
+		configurationClassPostProcessor.setResourceLoader(context);
+		configurationClassPostProcessor.postProcessBeanFactory(context.getBeanFactory());
 	}
 
 }

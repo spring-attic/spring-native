@@ -46,11 +46,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class BuildTimeBeanDefinitionsRegistrarTests {
 
+	private final BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+
 	@Test
 	void processBeanDefinitionsWithRegisteredConfigurationClasses() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
 				ConfigurationOne.class, ConfigurationTwo.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConfigurationOne.class.getName(),
 				ConfigurationTwo.class.getName(), "beanOne", "beanTwo");
 	}
@@ -58,7 +60,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	@Test
 	void processBeanDefinitionsWithRegisteredConfigurationClassWithImport() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ImportConfiguration.class.getName(),
 				ConfigurationOne.class.getName(), ConfigurationTwo.class.getName(), "beanOne", "beanTwo");
 	}
@@ -66,7 +68,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	@Test
 	void processBeanDefinitionsWithClasspathScanning() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ScanConfiguration.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ScanConfiguration.class.getName(),
 				"configurationOne", "configurationTwo", "simpleComponent", "beanOne", "beanTwo");
 	}
@@ -74,7 +76,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	@Test
 	void processBeanDefinitionsWithConditionsOnConfigurationClassNotMatching() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConditionalConfigurationOne.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConditionalConfigurationOne.class.getName());
 	}
 
@@ -82,7 +84,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	void processBeanDefinitionsWithConditionsOnConfigurationClassMatching() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), ConditionalConfigurationOne.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConditionalConfigurationOne.class.getName(),
 				ConfigurationOne.class.getName(), "beanOne", ConfigurationTwo.class.getName(), "beanTwo");
 	}
@@ -91,7 +93,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	void processBeanDefinitionsWithCustomClasspathScanningAndNullBeanRegistry() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), CustomClasspathScanningConfiguration.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		// Environment not linked so the condition evaluations applies on an "empty" environment.
 		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(CustomClasspathScanningConfiguration.class.getName());
 	}
@@ -101,7 +103,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	@Test
 	void processBeanDefinitionsForConfigurationClassCreateRelevantBeanDefinition() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinition(ConfigurationOne.class.getName()))
 				.isInstanceOfSatisfying(ConfigurationClassBeanDefinition.class, (bd) -> {
 					assertThat(bd.getConfigurationClass().getMetadata().getClassName()).isEqualTo(ConfigurationOne.class.getName());
@@ -112,7 +114,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	@Test
 	void processBeanDefinitionsForBeanMethodCreateRelevantBeanDefinition() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions();
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinition("beanOne"))
 				.isInstanceOfSatisfying(BeanMethodBeanDefinition.class, (bd) -> {
 					assertThat(bd.getFactoryMethodMetadata().getMethodName()).isEqualTo("beanOne");
