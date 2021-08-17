@@ -41,7 +41,7 @@ class BeanFactoryStructureAnalyzerTests {
 
 	private BeanFactoryStructure analyze(GenericApplicationContext context) {
 		return new BeanFactoryStructureAnalyzer(context.getClassLoader()).analyze(
-				new BuildTimeBeanDefinitionsRegistrar(context).processBeanDefinitions());
+				new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(context));
 	}
 
 }

@@ -22,8 +22,8 @@ class WebServerFactoryAutoConfigurationBeanDefinitionOriginAnalyzerTests {
 	void webServerFactoryCustomizerBeanPostProcessorIsAnalyzed() {
 		GenericApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.registerBean(ServletWebServerFactoryAutoConfiguration.class);
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
-		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions());
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));
 		this.analyzer.analyze(analysis);
 		assertThat(analysis.resolved().filter((candidate) ->
 				WebServerFactoryCustomizerBeanPostProcessor.class.getName().equals(candidate.getBeanDefinition().getBeanClassName())))
@@ -37,8 +37,8 @@ class WebServerFactoryAutoConfigurationBeanDefinitionOriginAnalyzerTests {
 	void errorPageRegistrarBeanPostProcessorIsAnalyzed() {
 		GenericApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.registerBean(ServletWebServerFactoryAutoConfiguration.class);
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
-		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions());
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));
 		this.analyzer.analyze(analysis);
 		assertThat(analysis.resolved().filter((candidate) ->
 				ErrorPageRegistrarBeanPostProcessor.class.getName().equals(candidate.getBeanDefinition().getBeanClassName())))

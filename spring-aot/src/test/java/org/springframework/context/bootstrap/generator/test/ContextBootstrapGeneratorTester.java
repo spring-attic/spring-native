@@ -74,8 +74,8 @@ public class ContextBootstrapGeneratorTester {
 		for (Class<?> candidate : candidates) {
 			context.registerBean(generateShortName(candidate), candidate);
 		}
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar(context);
-		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions();
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		Path srcDirectory = generateSrcDirectory();
 		BootstrapGenerationResult result = new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(
 				beanFactory, this.packageName,
