@@ -28,12 +28,15 @@ import java.util.stream.Collectors;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.process.CommandLineArgumentProvider;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
@@ -113,12 +116,27 @@ public class GenerateAotSources extends JavaExec {
 			arguments.add(GenerateAotSources.this.mainSourceSetOutputDirectory.get().getAsFile().toPath().toString());
 			// application classpath
 			arguments.add(toPathArgument(getClasspath().getFiles()));
-			
+			// log level
+			arguments.add(getLogLevel());
+
 			// main application class
 			if (GenerateAotSources.this.aotOptions.getMainClass().isPresent()) {
 				arguments.add(GenerateAotSources.this.aotOptions.getMainClass().get());
 			}
 			return arguments;
+		}
+
+		private String getLogLevel() {
+			Logger rootLogger = Logging.getLogger(Logger.ROOT_LOGGER_NAME);
+			if (rootLogger.isDebugEnabled()) {
+				return "DEBUG";
+			} else if (rootLogger.isInfoEnabled()) {
+				return "INFO";
+			} else if (rootLogger.isWarnEnabled()) {
+				return "WARN";
+			} else {
+				return "ERROR";
+			}
 		}
 
 		private String toPathArgument(Set<File> files) {
