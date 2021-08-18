@@ -47,11 +47,11 @@ public class SpringConfiguration {
 		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
 		for (NativeConfiguration hintProvider: hintProviders) {
-			logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName());
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
 				boolean valid = hintProvider.isValid(typeSystem);
 				if (!valid) {
+					logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName()+" - isValid() check says they should not apply");
 					continue;
 				}
 				List<HintDeclaration> hints = new ArrayList<>();
@@ -63,7 +63,7 @@ public class SpringConfiguration {
 						hintProvider.getClass().getName()+" threw a NoClassDefFoundError for "+ncdfe.getMessage()+
 						": it is better if they handle that internally in case they are computing a variety of hints");
 				}
-				logger.debug("Found "+hints.size()+" hints from provider "+hintProvider.getClass().getName());
+				logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName()+" - found "+hints.size()+" hints");
 				for (HintDeclaration hint: hints) {
 					if (hint.getTriggerTypename() == null) {
 						// Default to Object which means this hint always applies

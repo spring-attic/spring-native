@@ -1319,9 +1319,10 @@ public class Type {
 					}
 				} else {
 					for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
-						hints.add(new HintApplication(new ArrayList<>(annotationChain),
-							asMap(typesCollectedFromAnnotation, hintOnAnnotation.skipIfTypesMissing),
-							hintOnAnnotation));
+						HintApplication ha = new HintApplication(new ArrayList<>(annotationChain),
+							asMap(typesCollectedFromAnnotation, hintOnAnnotation.skipIfTypesMissing, hintOnAnnotation.follow),
+							hintOnAnnotation);
+						hints.add(ha);
 					}
 				}
 			}
@@ -1474,7 +1475,7 @@ public class Type {
 		return (node.access & Opcodes.ACC_ENUM)!=0;
 	}
 
-	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck) {
+	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck, boolean follow) {
 		Map<String, Integer> map = new HashMap<>();
 		for (String t : typesCollectedFromAnnotation) {
 			Type type = typeSystem.Lresolve(t, true);
@@ -1484,7 +1485,7 @@ public class Type {
 			} else {
 				ar = inferAccessRequired(type);
 			}
-			if (ar!= AccessBits.NONE) {
+			if (ar!= AccessBits.NONE || follow) {
 				map.put(fromLdescriptorToDotted(t), ar);
 			}
 		}
