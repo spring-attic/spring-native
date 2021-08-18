@@ -16,22 +16,30 @@
 
 package org.springframework.context.annotation;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrarTests.CustomClasspathScanningConfiguration.CustomClasspathScanningImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.samples.compose.ImportConfiguration;
 import org.springframework.context.annotation.samples.condition.ConditionalConfigurationOne;
 import org.springframework.context.annotation.samples.scan.ScanConfiguration;
 import org.springframework.context.annotation.samples.simple.ConfigurationOne;
 import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
+import org.springframework.context.annotation.samples.simple.SimpleComponent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -89,7 +97,8 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 				ConfigurationOne.class.getName(), "beanOne", ConfigurationTwo.class.getName(), "beanTwo");
 	}
 
-	@Test // gh-953
+	@Test
+		// gh-953
 	void processBeanDefinitionsWithCustomClasspathScanningAndNullBeanRegistry() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), CustomClasspathScanningConfiguration.class);
@@ -121,6 +130,17 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 					assertThat(bd.getBeanMethod().getConfigurationClass().getBeanMethods())
 							.singleElement().isEqualTo(bd.getBeanMethod());
 				});
+	}
+
+	// Bean definitions post processing
+
+	@Test
+	void postProcessBeanDefinitionsInvokeBeanFactoryAwareOnBeanDefinitionPostProcessors() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, SimpleComponent.class);
+		context.getBeanFactory().setBeanClassLoader(new CustomSpringFactoriesClassLoader("bean-factory-aware.factories"));
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		assertThat(beanFactory.getMergedBeanDefinition(SimpleComponent.class.getName())
+				.getAttribute("beanFactory")).isEqualTo(beanFactory);
 	}
 
 
@@ -157,6 +177,40 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 			}
 		}
 
+	}
+
+	static class CustomSpringFactoriesClassLoader extends ClassLoader {
+
+		private final String factoriesName;
+
+		CustomSpringFactoriesClassLoader(String factoriesName) {
+			super(CustomSpringFactoriesClassLoader.class.getClassLoader());
+			this.factoriesName = factoriesName;
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if ("META-INF/spring.factories".equals(name)) {
+				return super.getResources("bean-definition-tests/" + this.factoriesName);
+			}
+			return super.getResources(name);
+		}
+
+	}
+
+	static class BeanFactoryAwareBeanDefinitionPostProcessor implements BeanDefinitionPostProcessor, BeanFactoryAware {
+
+		private BeanFactory beanFactory;
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public void postProcessBeanDefinition(String beanName, RootBeanDefinition beanDefinition) {
+			beanDefinition.setAttribute("beanFactory", this.beanFactory);
+		}
 	}
 
 }

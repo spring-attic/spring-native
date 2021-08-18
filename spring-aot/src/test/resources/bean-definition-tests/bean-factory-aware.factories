@@ -1,0 +1,2 @@
+org.springframework.context.annotation.BeanDefinitionPostProcessor=\
+org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrarTests.BeanFactoryAwareBeanDefinitionPostProcessor
