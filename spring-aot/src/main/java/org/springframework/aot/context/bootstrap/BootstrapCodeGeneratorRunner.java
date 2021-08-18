@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.Assert;
@@ -40,19 +41,20 @@ public class BootstrapCodeGeneratorRunner {
 	 * 	<li>[2] resourcesFolders
 	 * 	<li>[3] classesFolder
 	 * 	<li>[4] classPathElements
-	 * 	<li>[5] Application main class
+	 * 	<li>[5] logLevel
+	 * 	<li>[6] Application main class
 	 * </ul>
 	 */
 	public static void main(String[] args) throws IOException {
-		Assert.state(args.length >= 4, "Missing argument");
+		Assert.state(args.length >= 5, "Missing argument");
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode("native");
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-		// TODO Manage properly logging, for now just avoid debug logging by default (with Logback)
 		LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
 		loggingSystem.beforeInitialize();
+		loggingSystem.setLogLevel("", LogLevel.valueOf(args[5]));
 
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		Path sourcesPath = Paths.get(args[0]);
@@ -61,7 +63,7 @@ public class BootstrapCodeGeneratorRunner {
 		Set<Path> resourceFolders = Arrays.stream(folders).map(Paths::get).collect(Collectors.toSet());
 		Path classesPath = Paths.get(args[3]);
 		String[] classPath = StringUtils.tokenizeToStringArray(args[4], File.pathSeparator);
-		String mainClass = args.length >= 6 ? args[5] : null;
+		String mainClass = args.length >= 7 ? args[6] : null;
 
 		ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
 				classesPath, mainClass, Arrays.asList(classPath), classLoader);

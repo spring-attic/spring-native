@@ -115,7 +115,9 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				args.add(project.getBuild().getOutputDirectory());
 				// [4] classPathElements
 				args.add(StringUtils.collectionToDelimitedString(runtimeClasspathElements, File.pathSeparator));
-				// [5] Application main class
+				// [5] log level
+				args.add(getLogLevel());
+				// [6] Application main class
 				if (this.mainClass != null) {
 					args.add(this.mainClass);
 				}
@@ -136,6 +138,18 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			getLog().error(exc);
 			getLog().error(Arrays.toString(exc.getStackTrace()));
 			throw new MojoFailureException("Build failed during Spring AOT code generation", exc);
+		}
+	}
+
+	private String getLogLevel() {
+		if (getLog().isDebugEnabled()) {
+			return "DEBUG";
+		} else if (getLog().isInfoEnabled()) {
+			return "INFO";
+		} else if (getLog().isWarnEnabled()) {
+			return "WARN";
+		} else {
+			return "ERROR";
 		}
 	}
 
