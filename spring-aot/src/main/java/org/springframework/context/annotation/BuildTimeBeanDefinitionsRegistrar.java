@@ -16,11 +16,16 @@
 
 package org.springframework.context.annotation;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 
 /**
@@ -51,9 +56,10 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Resolving types for " + beanFactory.getBeanDefinitionCount() + " bean definitions");
 		}
-		for (String beanDefinitionName : beanFactory.getBeanDefinitionNames()) {
-			beanFactory.getType(beanDefinitionName);
+		for (String name : beanFactory.getBeanDefinitionNames()) {
+			beanFactory.getType(name);
 		}
+		postProcessBeanDefinitions(beanFactory);
 		return beanFactory;
 	}
 
@@ -64,6 +70,20 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		configurationClassPostProcessor.setEnvironment(context.getEnvironment());
 		configurationClassPostProcessor.setResourceLoader(context);
 		configurationClassPostProcessor.postProcessBeanFactory(context.getBeanFactory());
+	}
+
+	private void postProcessBeanDefinitions(ConfigurableListableBeanFactory beanFactory) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Post processing " + beanFactory.getBeanDefinitionCount() + " bean definitions");
+		}
+		List<BeanDefinitionPostProcessor> postProcessors = SpringFactoriesLoader.loadFactories(
+				BeanDefinitionPostProcessor.class, beanFactory.getBeanClassLoader());
+		postProcessors.stream().filter(BeanFactoryAware.class::isInstance)
+				.map(BeanFactoryAware.class::cast).forEach((aca) -> aca.setBeanFactory(beanFactory));
+		for (String beanName : beanFactory.getBeanDefinitionNames()) {
+			RootBeanDefinition bd = (RootBeanDefinition) beanFactory.getMergedBeanDefinition(beanName);
+			postProcessors.forEach((postProcessor) -> postProcessor.postProcessBeanDefinition(beanName, bd));
+		}
 	}
 
 }
