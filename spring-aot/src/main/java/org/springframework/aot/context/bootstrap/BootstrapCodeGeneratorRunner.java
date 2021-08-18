@@ -52,9 +52,10 @@ public class BootstrapCodeGeneratorRunner {
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-		LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
-		loggingSystem.beforeInitialize();
-		loggingSystem.setLogLevel("", LogLevel.valueOf(args[5]));
+		if (!args[5].equals("DEBUG")) {
+			LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
+			loggingSystem.beforeInitialize();
+		}
 
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		Path sourcesPath = Paths.get(args[0]);
