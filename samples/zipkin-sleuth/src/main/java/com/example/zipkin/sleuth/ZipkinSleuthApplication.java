@@ -1,6 +1,6 @@
 package com.example.zipkin.sleuth;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.NativeHint;
 
@@ -9,7 +9,7 @@ import org.springframework.nativex.hint.NativeHint;
 public class ZipkinSleuthApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ZipkinSleuthApplication.class, args);
+		SpringAotApplication.run(ZipkinSleuthApplication.class, args);
 	}
 
 }

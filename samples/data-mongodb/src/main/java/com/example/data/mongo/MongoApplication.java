@@ -19,7 +19,7 @@ package com.example.data.mongo;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
@@ -34,7 +34,7 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 public class MongoApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(MongoApplication.class);
+		SpringAotApplication.run(MongoApplication.class);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

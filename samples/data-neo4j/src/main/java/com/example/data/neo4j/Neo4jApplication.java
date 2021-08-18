@@ -16,7 +16,7 @@
 
 package com.example.data.neo4j;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class Neo4jApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(Neo4jApplication.class, args);
+		SpringAotApplication.run(Neo4jApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

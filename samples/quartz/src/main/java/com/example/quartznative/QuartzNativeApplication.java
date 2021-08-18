@@ -17,7 +17,7 @@ package com.example.quartznative;
 
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -32,7 +32,7 @@ import java.time.Instant;
 public class QuartzNativeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(QuartzNativeApplication.class, args);
+		SpringAotApplication.run(QuartzNativeApplication.class, args);
 	}
 
 	@Bean
