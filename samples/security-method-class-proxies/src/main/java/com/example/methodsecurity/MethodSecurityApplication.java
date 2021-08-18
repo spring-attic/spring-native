@@ -1,6 +1,6 @@
 package com.example.methodsecurity;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.hint.ProxyBits;
@@ -10,7 +10,7 @@ import org.springframework.nativex.hint.ProxyBits;
 public class MethodSecurityApplication {
 
 	public static void main(String[] args) throws Throwable {
-		SpringApplication.run(MethodSecurityApplication.class, args);
+		SpringAotApplication.run(MethodSecurityApplication.class, args);
 	}
 
 }

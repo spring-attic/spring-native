@@ -19,7 +19,7 @@ import app.main.model.Flurb;
 import app.main.model.Foo;
 import app.main.model.FooRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
@@ -74,6 +74,6 @@ public class SampleApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleApplication.class, args);
+		SpringAotApplication.run(SampleApplication.class, args);
 	}
 }

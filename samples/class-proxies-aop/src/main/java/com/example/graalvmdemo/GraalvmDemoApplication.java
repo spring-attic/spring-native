@@ -1,6 +1,6 @@
 package com.example.graalvmdemo;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.hint.ProxyBits;
@@ -10,7 +10,7 @@ import org.springframework.nativex.hint.ProxyBits;
 public class GraalvmDemoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GraalvmDemoApplication.class, args);
+		SpringAotApplication.run(GraalvmDemoApplication.class, args);
 	}
 
 }

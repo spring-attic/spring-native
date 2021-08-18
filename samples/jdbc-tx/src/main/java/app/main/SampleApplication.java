@@ -2,7 +2,7 @@ package app.main;
 
 import app.main.model.Foo;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -20,7 +20,7 @@ public class SampleApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleApplication.class, args);
+		SpringAotApplication.run(SampleApplication.class, args);
 	}
 
 }

@@ -11,7 +11,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
@@ -45,7 +45,7 @@ public class BatchApplication {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(BatchApplication.class, args);
+		SpringAotApplication.run(BatchApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 
