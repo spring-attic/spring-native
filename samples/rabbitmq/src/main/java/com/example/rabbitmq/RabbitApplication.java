@@ -4,7 +4,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -13,7 +13,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 public class RabbitApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(RabbitApplication.class, args).close();
+		SpringAotApplication.run(RabbitApplication.class, args).close();
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

@@ -1,7 +1,7 @@
 package com.example.batch;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.AotProxyHint;
 
@@ -11,7 +11,7 @@ import org.springframework.nativex.hint.AotProxyHint;
 public class BatchApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(BatchApplication.class, args);
+		SpringAotApplication.run(BatchApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

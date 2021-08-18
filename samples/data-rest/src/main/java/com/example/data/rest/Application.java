@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
@@ -32,7 +32,7 @@ public class Application {
 	@Autowired OrderRepository orders;
 
 	public static void main(String... args) {
-		SpringApplication.run(Application.class, args);
+		SpringAotApplication.run(Application.class, args);
 	}
 
 	public @PostConstruct

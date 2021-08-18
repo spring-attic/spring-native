@@ -15,7 +15,7 @@
  */
 package org.springframework.hateoas.examples;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.aot.SpringAotApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
@@ -25,6 +25,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringHateoasHypermediaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringHateoasHypermediaApplication.class, args);
+		SpringAotApplication.run(SpringHateoasHypermediaApplication.class, args);
 	}
 }
