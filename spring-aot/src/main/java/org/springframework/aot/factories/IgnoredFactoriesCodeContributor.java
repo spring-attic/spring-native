@@ -37,7 +37,8 @@ public class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor
 	private static List<String> IGNORED_FACTORY_TYPES = Arrays.asList(
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportListener",
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportFilter",
-			"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+			"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
+			"org.springframework.context.annotation.BeanDefinitionPostProcessor");
 
 	private final Log logger = LogFactory.getLog(IgnoredFactoriesCodeContributor.class);
 

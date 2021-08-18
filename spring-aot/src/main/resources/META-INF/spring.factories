@@ -1,3 +1,6 @@
+org.springframework.context.annotation.BeanDefinitionPostProcessor=\
+org.springframework.data.RepositoryFactoryBeanPostProcessor
+
 org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier=\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanValueWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanValueWriterSupplier,\
