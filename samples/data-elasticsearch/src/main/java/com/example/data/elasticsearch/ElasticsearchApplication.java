@@ -28,7 +28,7 @@ public class ElasticsearchApplication {
 
 	public static void main(String[] args) throws Exception {
 
-		SpringApplication app = new SpringApplication(ElasticsearchApplication.class);
+		SpringAotApplication app = new SpringAotApplication(ElasticsearchApplication.class);
 		app.setWebApplicationType(WebApplicationType.NONE);
 		app.run();
 		Thread.currentThread().join(); // To be able to measure memory consumption
