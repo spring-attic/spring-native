@@ -37,7 +37,7 @@ class DefaultBeanValueWriterSupplierTests {
 		BeanValueWriter writer = getBeanValueWriter(beanFactory, BeanDefinitionBuilder.rootBeanDefinition(
 				DefaultBeanValueWriterTests.class).getBeanDefinition());
 		assertThat(writer).isNotNull().isInstanceOf(DefaultBeanValueWriter.class);
-		assertThat(writer.getDescriptor().getBeanType()).isEqualTo(DefaultBeanValueWriterTests.class);
+		assertThat(writer.getDescriptor().getUserBeanClass()).isEqualTo(DefaultBeanValueWriterTests.class);
 	}
 
 	@Test

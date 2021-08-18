@@ -26,6 +26,7 @@ import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalysis;
 import org.springframework.context.bootstrap.generator.bean.support.MultiStatement;
 import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.context.bootstrap.generator.bean.support.TypeWriter;
@@ -63,12 +64,12 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
 		registerReflectionMetadata(context.getRuntimeReflectionRegistry(), descriptor);
 
-		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
-		if (isAccessibleFrom(descriptor, context.getPackageName())) {
+		ProtectedAccessAnalysis analysis = context.getProtectedAccessAnalyzer().analyze(descriptor);
+		if (analysis.isAccessible()) {
 			writeBeanRegistration(code);
 		}
 		else {
-			String protectedPackageName = instanceCreator.getMember().getDeclaringClass().getPackageName();
+			String protectedPackageName = analysis.getPrivilegedPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
 			MethodSpec method = addBeanRegistrationMethod(descriptor, this::writeBeanRegistration);
 			javaFile.addMethod(method);
@@ -149,18 +150,6 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		return code.build();
 	}
 
-	private boolean isAccessibleFrom(BeanInstanceDescriptor descriptor, String packageName) {
-		if (!descriptor.getInstanceCreator().isAccessibleFrom(packageName)) {
-			return false;
-		}
-		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
-			if (!injectionPoint.isAccessibleFrom(packageName)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	private void writeBeanType(Builder code) {
 		ResolvableType resolvableType = this.beanDefinition.getResolvableType();
 		if (resolvableType.hasGenerics()) {
@@ -189,12 +178,12 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 			return String.format("register%s_%s", member.getDeclaringClass().getSimpleName(), target);
 		}
 		else if (member.getDeclaringClass().getEnclosingClass() != null) {
-			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();
+			String target = (isValidName(beanName)) ? beanName : descriptor.getUserBeanClass().getSimpleName();
 			Class<?> enclosingClass = member.getDeclaringClass().getEnclosingClass();
 			return String.format("register%s_%s", enclosingClass.getSimpleName(), target);
 		}
 		else {
-			String target = (isValidName(beanName)) ? beanName : descriptor.getBeanType().getSimpleName();
+			String target = (isValidName(beanName)) ? beanName : descriptor.getUserBeanClass().getSimpleName();
 			return "register" + StringUtils.capitalize(target);
 		}
 	}
