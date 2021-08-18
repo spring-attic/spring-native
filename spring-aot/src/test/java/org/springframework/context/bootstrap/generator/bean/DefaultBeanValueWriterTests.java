@@ -134,7 +134,7 @@ class DefaultBeanValueWriterTests {
 			context.registerBeanDefinition("test", beanDefinition);
 			context.getBeanFactory().getType("test");
 			BeanDefinition resolvedBeanDefinition = context.getBeanFactory().getMergedBeanDefinition("test");
-			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(resolvedBeanDefinition.getResolvableType().toClass(),
+			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(resolvedBeanDefinition.getResolvableType(),
 					executable, Arrays.asList(injectionPoints));
 			new DefaultBeanValueWriter(descriptor, resolvedBeanDefinition).writeValueSupplier(code);
 		});

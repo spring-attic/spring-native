@@ -16,17 +16,11 @@
 
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
@@ -39,29 +33,41 @@ import org.springframework.util.ClassUtils;
  */
 public final class BeanInstanceDescriptor {
 
-	private final Class<?> beanType;
+	private final ResolvableType beanType;
 
 	private final MemberDescriptor<Executable> instanceCreator;
 
 	private final List<MemberDescriptor<?>> injectionPoints;
 
-	public BeanInstanceDescriptor(Class<?> beanType, Executable instanceCreator, List<MemberDescriptor<?>> injectionPoints) {
+	public BeanInstanceDescriptor(ResolvableType beanType, Executable instanceCreator, List<MemberDescriptor<?>> injectionPoints) {
 		Assert.notNull(beanType, "BeanType must not be null");
-		this.beanType = ClassUtils.getUserClass(beanType);
+		this.beanType = beanType;
 		this.instanceCreator = (instanceCreator != null) ? new MemberDescriptor<>(instanceCreator, true) : null;
 		this.injectionPoints = new ArrayList<>(injectionPoints);
 	}
 
-	public BeanInstanceDescriptor(Class<?> beanType, Executable instanceCreator) {
+	public BeanInstanceDescriptor(ResolvableType beanType, Executable instanceCreator) {
 		this(beanType, instanceCreator, Collections.emptyList());
 	}
 
+	public BeanInstanceDescriptor(Class<?> beanType, Executable instanceCreator) {
+		this(ResolvableType.forClass(beanType), instanceCreator);
+	}
+
 	/**
-	 * Return the {@link Class type} of the bean.
+	 * Return the {@link ResolvableType type} of the bean.
 	 * @return the type of the bean
 	 */
-	public Class<?> getBeanType() {
+	public ResolvableType getBeanType() {
 		return this.beanType;
+	}
+
+	/**
+	 * Return the bean type {@link Class}.
+	 * @return the class of the bean, as defined by the user
+	 */
+	public Class<?> getUserBeanClass() {
+		return ClassUtils.getUserClass(beanType.resolve(Object.class));
 	}
 
 	/**
@@ -81,7 +87,6 @@ public final class BeanInstanceDescriptor {
 	public List<MemberDescriptor<?>> getInjectionPoints() {
 		return this.injectionPoints;
 	}
-
 
 	/**
 	 * Describe a {@link Member} that is used to initialize a Bean instance.
@@ -104,80 +109,6 @@ public final class BeanInstanceDescriptor {
 
 		public boolean isRequired() {
 			return this.required;
-		}
-
-		/**
-		 * Specify if accessing this member to instantiate the bean instance is allowed
-		 * from the specified {@code packageName}.
-		 * @param packageName the package name to use to instantiate the bean
-		 * @return {@link true} if this member and its dependencies can be accessed from the specified package
-		 */
-		public boolean isAccessibleFrom(String packageName) {
-			if (!isAccessibleFrom(ResolvableType.forClass(this.member.getDeclaringClass()), packageName)) {
-				return false;
-			}
-			return isAccessibleFrom(this.member, packageName);
-		}
-
-		private static boolean isAccessibleFrom(Member member, String packageName) {
-			if (!isAccessibleFrom(member.getModifiers(), member.getDeclaringClass().getPackageName(), packageName)) {
-				return false;
-			}
-			if (member instanceof Constructor) {
-				Constructor<?> constructor = (Constructor<?>) member;
-				return isAccessibleFrom(constructor.getParameters(), (i) -> ResolvableType.forConstructorParameter(constructor, i), packageName);
-			}
-			else if (member instanceof Field) {
-				return isAccessibleFrom(ResolvableType.forField((Field) member), packageName);
-			}
-			else if (member instanceof Method) {
-				Method method = (Method) member;
-				if (!isAccessibleFrom(method.getReturnType(), packageName)) {
-					return false;
-				}
-				return isAccessibleFrom(method.getParameters(), (i) -> ResolvableType.forMethodParameter(method, i), packageName);
-			}
-			return true;
-		}
-
-		private static boolean isAccessibleFrom(Parameter[] parameters, Function<Integer, ResolvableType> parameterTypeFactory, String packageName) {
-			for (int i = 0; i < parameters.length; i++) {
-				if (!isAccessibleFrom(parameterTypeFactory.apply(i), packageName)) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		private static boolean isAccessibleFrom(ResolvableType target, String packageName) {
-			// resolve to the actual class as the proxy won't have the same characteristics
-			ResolvableType nonProxyTarget = target.as(ClassUtils.getUserClass(target.toClass()));
-			if (!isAccessibleFrom(nonProxyTarget.toClass(), packageName)) {
-				return false;
-			}
-			Class<?> declaringClass = nonProxyTarget.toClass().getDeclaringClass();
-			if (declaringClass != null) {
-				if (!isAccessibleFrom(declaringClass, packageName)) {
-					return false;
-				}
-			}
-			if (nonProxyTarget.hasGenerics()) {
-				for (ResolvableType generic : nonProxyTarget.getGenerics()) {
-					if (!isAccessibleFrom(generic, packageName)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		private static boolean isAccessibleFrom(Class<?> target, String packageName) {
-			Class<?> candidate = ClassUtils.getUserClass(target);
-			return isAccessibleFrom(candidate.getModifiers(), candidate.getPackageName(), packageName);
-		}
-
-		private static boolean isAccessibleFrom(int modifiers, String actualPackageName, String targetPackageName) {
-			return Modifier.isPublic(modifiers) || targetPackageName.equals(actualPackageName);
 		}
 
 	}

@@ -10,6 +10,7 @@ import javax.lang.model.element.Modifier;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
+import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalyzer;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 
 /**
@@ -23,12 +24,15 @@ public class BootstrapWriterContext {
 
 	private final String packageName;
 
+	private final ProtectedAccessAnalyzer protectedAccessAnalyzer;
+
 	private final Map<String, BootstrapClass> bootstrapClasses = new HashMap<>();
 
 	private final RuntimeReflectionRegistry runtimeReflectionRegistry = new RuntimeReflectionRegistry();
 
 	public BootstrapWriterContext(BootstrapClass defaultJavaFile) {
 		this.packageName = defaultJavaFile.getClassName().packageName();
+		this.protectedAccessAnalyzer = new ProtectedAccessAnalyzer(this.packageName);
 		this.bootstrapClasses.put(packageName, defaultJavaFile);
 	}
 
@@ -38,6 +42,14 @@ public class BootstrapWriterContext {
 	 */
 	public String getPackageName() {
 		return this.packageName;
+	}
+
+	/**
+	 * Return the {@link ProtectedAccessAnalyzer} to use.
+	 * @return the protected access analyzer
+	 */
+	public ProtectedAccessAnalyzer getProtectedAccessAnalyzer() {
+		return this.protectedAccessAnalyzer;
 	}
 
 	/**

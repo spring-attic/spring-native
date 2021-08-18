@@ -54,7 +54,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 	}
 
 	private void writeBeanInstantiation(Builder code, Constructor<?> constructor, List<MemberDescriptor<?>> injectionPoints) {
-		Class<?> declaringType = getDescriptor().getBeanType();
+		Class<?> declaringType = getDescriptor().getUserBeanClass();
 		boolean innerClass = isInnerClass(declaringType);
 		List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(constructor.getParameterTypes()));
 		if (innerClass) { // Remove the implicit argument
@@ -63,7 +63,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 		boolean multiStatements = !injectionPoints.isEmpty();
 		// Shortcut for common case
 		if (!multiStatements && !innerClass && parameterTypes.isEmpty()) {
-			code.add("$T::new", getDescriptor().getBeanType());
+			code.add("$T::new", getDescriptor().getUserBeanClass());
 			return;
 		}
 		code.add("(instanceContext) ->");
@@ -106,7 +106,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 		code.add("(instanceContext) ->");
 		branch(multiStatements, () -> code.beginControlFlow(""), () -> code.add(" "));
 		if (!injectionPoints.isEmpty()) {
-			code.add("$T bean = ", getDescriptor().getBeanType());
+			code.add("$T bean = ", getDescriptor().getUserBeanClass());
 		}
 		code.add(this.injectionPointWriter.writeInstantiation(method));
 		if (multiStatements) {

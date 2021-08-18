@@ -39,7 +39,7 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class).getBeanDefinition());
 		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
-		assertThat(descriptor.getBeanType()).isEqualTo(SimpleConfiguration.class);
+		assertThat(descriptor.getUserBeanClass()).isEqualTo(SimpleConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(SimpleConfiguration.class.getDeclaredConstructors()[0]);
 		assertThat(descriptor.getInjectionPoints()).isEmpty();
@@ -50,7 +50,7 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class).getBeanDefinition());
 		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
-		assertThat(descriptor.getBeanType()).isEqualTo(InjectionConfiguration.class);
+		assertThat(descriptor.getUserBeanClass()).isEqualTo(InjectionConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(InjectionConfiguration.class.getDeclaredConstructors()[0]);
 		assertThat(descriptor.getInjectionPoints()).hasSize(2);
