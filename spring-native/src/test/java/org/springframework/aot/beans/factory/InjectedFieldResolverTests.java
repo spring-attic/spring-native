@@ -50,7 +50,7 @@ class InjectedFieldResolverTests {
 	}
 
 	private InjectedFieldResolver createResolver(Class<?> beanType, String fieldName, Class<?> fieldType) {
-		return new InjectedFieldResolver("test", ReflectionUtils.findField(beanType, fieldName, fieldType));
+		return new InjectedFieldResolver(ReflectionUtils.findField(beanType, fieldName, fieldType), "test");
 	}
 
 	private void assertAttributes(GenericApplicationContext context, InjectedFieldResolver resolver, boolean required,

@@ -5,9 +5,12 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -121,6 +124,47 @@ class InjectedConstructorResolverTests {
 	}
 
 	@Test
+	void resolveUserValueWithBeanReference() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("stringBean", String.class, () -> "string");
+		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
+				.addConstructorArgReference("stringBean").getBeanDefinition());
+		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isEqualTo("string");
+		});
+	}
+
+	@Test
+	void resolveUserValueWithBeanDefinition() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		AbstractBeanDefinition userValue = BeanDefinitionBuilder.rootBeanDefinition(String.class, () -> "string").getBeanDefinition();
+		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
+				.addConstructorArgValue(userValue).getBeanDefinition());
+		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isEqualTo("string");
+		});
+	}
+
+	@Test
+	void resolveUserValueThatIsAlreadyResolved() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class).getBeanDefinition();
+		ValueHolder valueHolder = new ValueHolder('a');
+		valueHolder.setConvertedValue("this is an a");
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, valueHolder);
+		context.registerBeanDefinition("test", beanDefinition);
+		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isEqualTo("this is an a");
+		});
+	}
+
+	@Test
 	void resolveQualifiedDependency() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
@@ -145,10 +189,19 @@ class InjectedConstructorResolverTests {
 	private InjectedConstructorResolver createResolver(Class<?> beanType, Class<?>... parameterTypes) {
 		try {
 			Constructor<?> constructor = beanType.getDeclaredConstructor(parameterTypes);
-			return new InjectedConstructorResolver("test", beanType, constructor);
+			return new InjectedConstructorResolver(constructor, beanType, "test", this::safeGetBeanDefinition);
 		}
 		catch (NoSuchMethodException ex) {
 			throw new IllegalStateException(ex);
+		}
+	}
+
+	private BeanDefinition safeGetBeanDefinition(GenericApplicationContext context) {
+		try {
+			return context.getBeanDefinition("test");
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return null;
 		}
 	}
 

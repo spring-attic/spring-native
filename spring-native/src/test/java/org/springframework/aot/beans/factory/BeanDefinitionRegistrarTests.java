@@ -1,10 +1,12 @@
 package org.springframework.aot.beans.factory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -12,11 +14,14 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -49,7 +54,15 @@ class BeanDefinitionRegistrarTests {
 				}).register(context);
 		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
 				.hasMessageContaining("testBean").hasMessageContaining("test exception");
-		;
+	}
+
+	@Test
+	void registerWithoutBeanNameFails() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		BeanDefinitionRegistrar registrar = BeanDefinitionRegistrar.inner(InjectionSample.class)
+				.instanceSupplier(InjectionSample::new);
+		assertThatIllegalStateException().isThrownBy(() -> registrar.register(context))
+				.withMessageContaining("Bean name not set.");
 	}
 
 	@Test
@@ -223,6 +236,37 @@ class BeanDefinitionRegistrarTests {
 			assertThat(bean.name).isEqualTo("test");
 			assertThat(bean.counter).isEqualTo(12);
 		});
+	}
+
+	@Test
+	void innerBeanDefinitionWithClass() {
+		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.inner(ConfigurationSample.class)
+				.customize((bd) -> bd.setSynthetic(true)).toBeanDefinition();
+		assertThat(beanDefinition).isNotNull();
+		assertThat(beanDefinition.getResolvableType().resolve()).isEqualTo(ConfigurationSample.class);
+		assertThat(beanDefinition.isSynthetic()).isTrue();
+	}
+
+	@Test
+	void innerBeanDefinitionWithResolvableType() {
+		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.inner(ResolvableType.forClass(ConfigurationSample.class))
+				.customize((bd) -> bd.setDescription("test")).toBeanDefinition();
+		assertThat(beanDefinition).isNotNull();
+		assertThat(beanDefinition.getResolvableType().resolve()).isEqualTo(ConfigurationSample.class);
+		assertThat(beanDefinition.getDescription()).isEqualTo("test");
+	}
+
+	@Test
+	void innerBeanDefinitionHasInnerBeanNameInInstanceSupplier() {
+		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.inner(String.class)
+				.instanceSupplier((instanceContext) -> {
+					Field field = ReflectionUtils.findField(InstanceSupplierContext.class, "beanName", String.class);
+					ReflectionUtils.makeAccessible(field);
+					return ReflectionUtils.getField(field, instanceContext);
+				}).toBeanDefinition();
+		assertThat(beanDefinition).isNotNull();
+		String beanName = (String) beanDefinition.getInstanceSupplier().get();
+		assertThat(beanName).isNotNull().startsWith("(inner bean)#");
 	}
 
 	private void assertContext(GenericApplicationContext context, Runnable assertions) {

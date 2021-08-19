@@ -2,11 +2,9 @@ package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
@@ -103,7 +101,7 @@ class InjectedMethodResolverTests {
 	}
 
 	private InjectedMethodResolver createResolver(Class<?> beanType, String methodName, Class<?>... parameterTypes) {
-		return new InjectedMethodResolver("test", beanType, ReflectionUtils.findMethod(beanType, methodName, parameterTypes));
+		return new InjectedMethodResolver(ReflectionUtils.findMethod(beanType, methodName, parameterTypes), beanType, "test");
 	}
 
 	private void assertAttributes(GenericApplicationContext context, InjectedMethodResolver resolver, boolean required,

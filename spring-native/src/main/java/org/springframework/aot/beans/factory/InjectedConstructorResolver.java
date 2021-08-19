@@ -4,18 +4,21 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.InjectionPoint;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
+import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor;
+import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor.ValueResolver;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.MethodParameter;
 
@@ -26,16 +29,27 @@ import org.springframework.core.MethodParameter;
  */
 class InjectedConstructorResolver implements InjectedElementResolver {
 
-	private final String beanName;
+	private final Constructor<?> constructor;
 
 	private final Class<?> beanType;
 
-	private final Constructor<?> constructor;
+	private final String beanName;
 
-	InjectedConstructorResolver(String beanName, Class<?> beanType, Constructor<?> constructor) {
-		this.beanName = beanName;
-		this.beanType = beanType;
+	private final Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver;
+
+	/**
+	 * Create a new instance.
+	 * @param constructor the constructor to handle
+	 * @param beanType the type of the bean
+	 * @param beanName the name of the bean, or {@code null}
+	 * @param beanDefinitionResolver the bean definition resolver to use
+	 */
+	InjectedConstructorResolver(Constructor<?> constructor, Class<?> beanType, String beanName,
+			Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver) {
 		this.constructor = constructor;
+		this.beanType = beanType;
+		this.beanName = beanName;
+		this.beanDefinitionResolver = beanDefinitionResolver;
 	}
 
 	@Override
@@ -45,11 +59,19 @@ class InjectedConstructorResolver implements InjectedElementResolver {
 		List<Object> arguments = new ArrayList<>();
 		Set<String> autowiredBeans = new LinkedHashSet<>(argumentCount);
 		TypeConverter typeConverter = beanFactory.getTypeConverter();
+		ConstructorArgumentValues argumentValues = resolveArgumentValues(context);
 		for (int i = 0; i < argumentCount; i++) {
 			MethodParameter methodParam = new MethodParameter(this.constructor, i);
-			Object userValue = resolveUserArgument(context, methodParam);
-			if (userValue != null) {
-				arguments.add(userValue);
+			ValueHolder valueHolder = argumentValues.getIndexedArgumentValue(i, null);
+			if (valueHolder != null) {
+				if (valueHolder.isConverted()) {
+					arguments.add(valueHolder.getConvertedValue());
+				}
+				else {
+					Object userValue = context.getBeanFactory().getTypeConverter()
+							.convertIfNecessary(valueHolder.getValue(), methodParam.getParameterType());
+					arguments.add(userValue);
+				}
 			}
 			else {
 				DependencyDescriptor depDescriptor = new DependencyDescriptor(methodParam, true);
@@ -66,33 +88,30 @@ class InjectedConstructorResolver implements InjectedElementResolver {
 		return new InjectedElementAttributes(arguments);
 	}
 
-	private Object resolveUserArgument(GenericApplicationContext context, MethodParameter parameter) {
-		BeanDefinition beanDefinition = safeGetBeanDefinition(context);
+	private ConstructorArgumentValues resolveArgumentValues(GenericApplicationContext context) {
+		ConstructorArgumentValues resolvedValues = new ConstructorArgumentValues();
+		BeanDefinition beanDefinition = this.beanDefinitionResolver.apply(context);
 		if (beanDefinition == null || !beanDefinition.hasConstructorArgumentValues()) {
-			return null;
+			return resolvedValues;
 		}
-		ValueHolder userValue = beanDefinition.getConstructorArgumentValues().getIndexedArgumentValue(
-				parameter.getParameterIndex(), parameter.getParameterType());
-		if (userValue != null) {
-			Object value = userValue.getValue();
-			if (value instanceof BeanReference) {
-				return context.getBean(((BeanReference) value).getBeanName(), parameter.getParameterType());
+		ConstructorArgumentValues argumentValues = beanDefinition.getConstructorArgumentValues();
+		ValueResolver valueResolver = BeanDefinitionValueResolverAccessor.get(context, this.beanName, beanDefinition);
+		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : argumentValues.getIndexedArgumentValues().entrySet()) {
+			int index = entry.getKey();
+			ConstructorArgumentValues.ValueHolder valueHolder = entry.getValue();
+			if (valueHolder.isConverted()) {
+				resolvedValues.addIndexedArgumentValue(index, valueHolder);
 			}
 			else {
-				return context.getBeanFactory().getTypeConverter()
-						.convertIfNecessary(value, parameter.getParameterType());
+				Object resolvedValue =
+						valueResolver.resolveValueIfNecessary("constructor argument", valueHolder.getValue());
+				ConstructorArgumentValues.ValueHolder resolvedValueHolder =
+						new ConstructorArgumentValues.ValueHolder(resolvedValue, valueHolder.getType(), valueHolder.getName());
+				resolvedValueHolder.setSource(valueHolder);
+				resolvedValues.addIndexedArgumentValue(index, resolvedValueHolder);
 			}
 		}
-		return null;
+		return resolvedValues;
 	}
-
-	private BeanDefinition safeGetBeanDefinition(GenericApplicationContext context) {
-		try {
-			return context.getBeanDefinition(this.beanName);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return null;
-		}
-	}
-
 }
+
