@@ -22,16 +22,22 @@ import org.springframework.core.MethodParameter;
  */
 class InjectedMethodResolver implements InjectedElementResolver {
 
-	private final String beanName;
+	private final Method method;
 
 	private final Class<?> target;
 
-	private final Method method;
+	private final String beanName;
 
-	InjectedMethodResolver(String beanName, Class<?> target, Method method) {
-		this.beanName = beanName;
-		this.target = target;
+	/**
+	 * Create a new instance.
+	 * @param method the method to handle
+	 * @param target the type on which the method is declared
+	 * @param beanName the name of the bean, or {@code null}
+	 */
+	InjectedMethodResolver(Method method, Class<?> target, String beanName) {
 		this.method = method;
+		this.target = target;
+		this.beanName = beanName;
 	}
 
 	@Override

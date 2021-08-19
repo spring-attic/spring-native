@@ -10,10 +10,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -27,16 +30,15 @@ public class BeanDefinitionRegistrar {
 
 	private final ResolvableType beanType;
 
-	private final InstanceSupplierContext context;
-
 	private final BeanDefinitionBuilder builder;
 
 	private final List<Consumer<RootBeanDefinition>> customizers;
 
+	private RootBeanDefinition beanDefinition;
+
 	private BeanDefinitionRegistrar(String beanName, ResolvableType beanType) {
 		this.beanName = beanName;
 		this.beanType = beanType;
-		this.context = new InstanceSupplierContext(beanName, beanType.toClass());
 		this.builder = BeanDefinitionBuilder.rootBeanDefinition(beanType.toClass());
 		this.customizers = new ArrayList<>();
 	}
@@ -49,27 +51,58 @@ public class BeanDefinitionRegistrar {
 		return of(beanName, ResolvableType.forClass(beanType));
 	}
 
+	public static BeanDefinitionRegistrar inner(ResolvableType beanType) {
+		return of(null, beanType);
+	}
+
+	public static BeanDefinitionRegistrar inner(Class<?> beanType) {
+		return of(null, beanType);
+	}
+
 	public BeanDefinitionRegistrar customize(SmartConsumer<RootBeanDefinition> beanDefinition) {
 		this.customizers.add(beanDefinition);
 		return this;
 	}
 
 	public BeanDefinitionRegistrar instanceSupplier(SmartFunction<InstanceSupplierContext, ?> instanceContext) {
-		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(() -> instanceContext.apply(this.context)));
+		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(() ->
+				instanceContext.apply(createInstanceSupplierContext())));
 	}
 
 	public BeanDefinitionRegistrar instanceSupplier(SmartSupplier<?> instanceSupplier) {
 		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(instanceSupplier));
 	}
 
+	public RootBeanDefinition toBeanDefinition() {
+		this.beanDefinition = (RootBeanDefinition) builder.getBeanDefinition();
+		this.beanDefinition.setTargetType(this.beanType);
+		this.customizers.forEach((customizer) -> customizer.accept(this.beanDefinition));
+		return this.beanDefinition;
+	}
+
 	public void register(GenericApplicationContext context) {
-		RootBeanDefinition beanDefinition = (RootBeanDefinition) builder.getBeanDefinition();
-		beanDefinition.setTargetType(this.beanType);
-		this.customizers.forEach((customizer) -> customizer.accept(beanDefinition));
+		BeanDefinition beanDefinition = toBeanDefinition();
+		if (this.beanName == null) {
+			throw new IllegalStateException("Bean name not set. Could not register " + beanDefinition);
+		}
 		context.registerBeanDefinition(this.beanName, beanDefinition);
 	}
 
-	public static class InstanceSupplierContext {
+	private InstanceSupplierContext createInstanceSupplierContext() {
+		String resolvedBeanName = this.beanName != null ? this.beanName : createInnerBeanName();
+		return new InstanceSupplierContext(resolvedBeanName, this.beanType.toClass());
+	}
+
+	private String createInnerBeanName() {
+		return "(inner bean)" + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR +
+				ObjectUtils.getIdentityHexString(this.beanDefinition);
+	}
+
+	private BeanDefinition resolveBeanDefinition(GenericApplicationContext context) {
+		return this.beanDefinition;
+	}
+
+	public class InstanceSupplierContext {
 
 		private final String beanName;
 
@@ -80,7 +113,7 @@ public class BeanDefinitionRegistrar {
 		 * @param beanName the name of the bean
 		 * @param beanType the type of the bean
 		 */
-		public InstanceSupplierContext(String beanName, Class<?> beanType) {
+		private InstanceSupplierContext(String beanName, Class<?> beanType) {
 			this.beanName = beanName;
 			this.beanType = beanType;
 		}
@@ -91,7 +124,8 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified constructor
 		 */
 		public InjectedElementResolver constructor(Class<?>... parameterTypes) {
-			return new InjectedConstructorResolver(this.beanName, this.beanType, getConstructor(parameterTypes));
+			return new InjectedConstructorResolver(getConstructor(parameterTypes), this.beanType, this.beanName,
+					BeanDefinitionRegistrar.this::resolveBeanDefinition);
 		}
 
 		/**
@@ -101,7 +135,7 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified field
 		 */
 		public InjectedElementResolver field(String name, Class<?> type) {
-			return new InjectedFieldResolver(this.beanName, getField(name, type));
+			return new InjectedFieldResolver(getField(name, type), this.beanName);
 		}
 
 		/**
@@ -112,7 +146,7 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified factory method
 		 */
 		public InjectedElementResolver method(Class<?> declaredType, String name, Class<?>... parameterTypes) {
-			return new InjectedMethodResolver(this.beanName, declaredType, getMethod(declaredType, name, parameterTypes));
+			return new InjectedMethodResolver(getMethod(declaredType, name, parameterTypes), declaredType, this.beanName);
 		}
 
 		/**

@@ -20,13 +20,18 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 class InjectedFieldResolver implements InjectedElementResolver {
 
-	private final String beanName;
-
 	private final Field field;
 
-	InjectedFieldResolver(String beanName, Field field) {
-		this.beanName = beanName;
+	private final String beanName;
+
+	/**
+	 * Create a new instance.
+	 * @param field the field to handle
+	 * @param beanName the name of the bean, or {@code null}
+	 */
+	InjectedFieldResolver(Field field, String beanName) {
 		this.field = field;
+		this.beanName = beanName;
 	}
 
 	@Override
