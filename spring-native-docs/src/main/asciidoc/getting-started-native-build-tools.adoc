@@ -209,7 +209,11 @@ plugins {
 }
 
 nativeBuild {
-    classpath(processAotResources.outputs, aotClasses.outputs)
+	classpath(processAotResources.outputs, compileAotJava.outputs)
+}
+
+nativeTest {
+	classpath(processAotTestResources.outputs, compileAotTestJava.outputs)
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
@@ -221,8 +225,11 @@ plugins {
 }
 
 nativeBuild {
-    classpath(tasks.named("processAotResources").get().outputs,
-    		tasks.named("aotClasses").get().outputs)
+    classpath(tasks.named("processAotResources").get().outputs, tasks.named("compileAotJava").get().outputs)
+}
+
+nativeTest {
+    classpath(tasks.named("processAotTestResources").get().outputs, tasks.named("compileAotTestJava").get().outputs)
 }
 ----
 

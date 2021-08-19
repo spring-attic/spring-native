@@ -18,7 +18,7 @@ if [ -f pom.xml ]; then
   EXECUTABLE_DIR=target
   REPORT_DIR=target/native
 else
-  EXECUTABLE_DIR=build/native
+  EXECUTABLE_DIR=build/native/nativeBuild
   REPORT_DIR=build/native
 fi
 

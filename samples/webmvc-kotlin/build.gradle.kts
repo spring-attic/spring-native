@@ -7,7 +7,7 @@ plugins {
     id("org.springframework.experimental.aot") version "0.10.3-SNAPSHOT"
     kotlin("jvm") version "1.5.21"
     kotlin("plugin.spring") version "1.5.21"
-    id("org.graalvm.buildtools.native") version "0.9.1"
+    id("org.graalvm.buildtools.native") version "0.9.3"
 }
 
 group = "com.example"
@@ -62,6 +62,9 @@ tasks.withType<KotlinCompile> {
 }
 
 nativeBuild {
-		classpath(tasks.named("processAotResources").get().outputs, 
-		    tasks.named("aotClasses").get().outputs)
+    classpath(tasks.named("processAotResources").get().outputs, tasks.named("compileAotJava").get().outputs)
+}
+
+nativeTest {
+    classpath(tasks.named("processAotTestResources").get().outputs, tasks.named("compileAotTestJava").get().outputs)
 }

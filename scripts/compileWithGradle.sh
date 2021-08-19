@@ -20,7 +20,7 @@ else
   ./gradlew nativeBuild &> build/native/output.txt
 fi
 
-if [[ -f build/native/${PWD##*/} ]]
+if [[ -f build/native/nativeBuild/${PWD##*/} ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
 else
