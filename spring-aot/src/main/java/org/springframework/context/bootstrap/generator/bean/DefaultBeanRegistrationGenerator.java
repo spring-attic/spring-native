@@ -130,7 +130,7 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 			statements.add(writeArgumentValue("bd.getConstructorArgumentValues().", entry.getKey(), entry.getValue()));
 		}
 		else {
-			statements.add("ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues()");
+			statements.add("$T argumentValues = bd.getConstructorArgumentValues()", ConstructorArgumentValues.class);
 			statements.addAll(values.entrySet(), (entry) -> writeArgumentValue("argumentValues.", entry.getKey(), entry.getValue()));
 		}
 	}

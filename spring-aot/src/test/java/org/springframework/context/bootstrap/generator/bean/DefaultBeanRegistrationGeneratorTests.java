@@ -30,6 +30,7 @@ import com.squareup.javapoet.CodeBlock.Builder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -144,13 +145,15 @@ class DefaultBeanRegistrationGeneratorTests {
 				.rootBeanDefinition(SampleFactory.class.getName(), "create").getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, new RuntimeBeanReference("test"));
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(2, 42);
-		assertThat(generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+		CodeSnippet generateCode = generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
+		assertThat(generateCode).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
 								+ ".customize((bd) -> {",
 						"  ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues();",
 						"  argumentValues.addIndexedArgumentValue(0, new RuntimeBeanReference(\"test\"));",
 						"  argumentValues.addIndexedArgumentValue(2, 42);",
 						"}).register(context);");
+		assertThat(generateCode).hasImport(ConstructorArgumentValues.class);
 	}
 
 	@Test
