@@ -37,8 +37,9 @@ class ConfigurationPropertiesBeanValueWriterSupplier implements BeanValueWriterS
 	@Override
 	public BeanValueWriter get(BeanDefinition beanDefinition) {
 		if (MethodValidationExcludeFilter.class.getName().equals(beanDefinition.getBeanClassName())) {
-			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(MethodValidationExcludeFilter.class,
-					ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class));
+			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(MethodValidationExcludeFilter.class)
+					.withInstanceCreator(ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class))
+					.build();
 			return new SimpleBeanValueWriter(descriptor, (code) ->
 					code.add("() -> $T.byAnnotation($T.class)", MethodValidationExcludeFilter.class, ConfigurationProperties.class));
 		}
