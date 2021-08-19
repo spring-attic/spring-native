@@ -72,26 +72,6 @@ public class SpringAotApplication extends SpringApplication {
 	}
 
 	@Override
-	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
-		if (springAot) {
-			throw new UnsupportedOperationException("Sources can't be set.");
-		}
-		else {
-			super.addPrimarySources(additionalPrimarySources);
-		}
-	}
-
-	@Override
-	public void setSources(Set<String> sources) {
-		if (springAot) {
-			throw new UnsupportedOperationException("Sources can't be set.");
-		}
-		else {
-			super.setSources(sources);
-		}
-	}
-
-	@Override
 	protected void load(ApplicationContext context, Object[] sources) {
 		if (!springAot) {
 			super.load(context, sources);
