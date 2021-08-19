@@ -216,6 +216,21 @@ about specifying properties that activate configurations. (This is a work-in-pro
 by a comma separated list of prefixes to explicitly include or exclude (for example `default-include-all,!spring.dont.include.these.,!or.these` or `default-exclude-all,spring.include.this.one.though.,and.this.one`). When considering a property the
 longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
 
+==== Debugging the source generation
+
+The Spring AOT plugins spawn a new process to perform the source generation. To remote debug this process, set the `codeGenDebugPort` parameter in the command line argument; then, the source generation process launches with a listener accepting a remote debugger on the specified port.
+
+[source,bash,role="primary"]
+.Maven
+----
+$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.codeGenDebugPort=9000
+----
+[source,bash,role="secondary"]
+.Gradle
+----
+$ gradle generateAot -PcodeGenDebugPort=9000
+----
+
 
 [[spring-aot-modes]]
 === AOT Modes

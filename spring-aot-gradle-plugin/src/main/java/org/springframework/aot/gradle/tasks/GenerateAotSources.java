@@ -19,8 +19,6 @@ package org.springframework.aot.gradle.tasks;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
-import org.springframework.aot.gradle.SpringAotGradlePlugin;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +66,6 @@ public class GenerateAotSources extends JavaExec {
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
 		setMain(BootstrapCodeGeneratorRunner.class.getCanonicalName());
 		getArgumentProviders().add(new BootstrapGeneratorArgumentProvider());
-		getJvmArgumentProviders().add(new BootstrapGeneratorJvmArgumentProvider());
 	}
 
 	@InputFiles
@@ -143,34 +139,6 @@ public class GenerateAotSources extends JavaExec {
 			List<String> paths = files.stream().map(File::toPath).map(Path::toString).collect(Collectors.toList());
 			return StringUtils.collectionToDelimitedString(paths, File.pathSeparator);
 		}
-	}
-
-	private class BootstrapGeneratorJvmArgumentProvider implements CommandLineArgumentProvider {
-
-		@Override
-		public Iterable<String> asArguments() {
-			Integer debugPort = getDebugPort();
-			if (debugPort != null) {
-				return Arrays.asList("-Xdebug",
-						     "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address="
-						     + debugPort);
-			}
-			return Collections.emptyList();
-		}
-
-		private Integer getDebugPort() {
-			Object debugPortProperty =
-					getProject().findProperty(SpringAotGradlePlugin.CODE_GEN_DEBUG_PORT_PROPERTY);
-			if (debugPortProperty != null) {
-				try {
-					return Integer.parseInt(debugPortProperty.toString());
-				} catch (NumberFormatException exception) {
-					// ignore
-				}
-			}
-			return GenerateAotSources.this.aotOptions.getCodeGenDebugPort().getOrNull();
-		}
-
 	}
 
 }
