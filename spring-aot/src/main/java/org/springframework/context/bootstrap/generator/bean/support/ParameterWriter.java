@@ -73,6 +73,10 @@ public final class ParameterWriter {
 		else if (value instanceof String) {
 			code.add("$S", value);
 		}
+		else if (value instanceof Enum) {
+			Enum<?> enumValue = (Enum<?>) value;
+			code.add("$T.$N", enumValue.getClass(), enumValue.name());
+		}
 		else if (value instanceof Class) {
 			code.add("$T.class", value);
 		}
