@@ -6,6 +6,8 @@ import java.util.List;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.ListAssert;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Assertions for a {@link CodeSnippet code snippet}.
  *
@@ -13,8 +15,11 @@ import org.assertj.core.api.ListAssert;
  */
 public class CodeSnippetAssert extends AbstractStringAssert<CodeSnippetAssert> {
 
+	private final List<String> file;
+
 	public CodeSnippetAssert(CodeSnippet codeSnippet) {
 		super(codeSnippet.getSnippet(), CodeSnippetAssert.class);
+		this.file = readAllLines(codeSnippet.getFileContent());
 	}
 
 	/**
@@ -24,6 +29,15 @@ public class CodeSnippetAssert extends AbstractStringAssert<CodeSnippetAssert> {
 	 */
 	public ListAssert<String> lines() {
 		return new ListAssert<>(readAllLines(this.actual));
+	}
+
+	/**
+	 * Assert that the generated content produced an import statement for the specified
+	 * class.
+	 * @param type the class that should be imported
+	 */
+	public void hasImport(Class<?> type) {
+		assertThat(this.file).contains(String.format("import %s;", type.getName()));
 	}
 
 	private static List<String> readAllLines(String source) {
