@@ -3073,8 +3073,12 @@ public class Type {
 		}
 		List<MethodDescriptor> methodDescriptors = new ArrayList<>();
 		for (Method method: methods) {
-			String[] array = method.asConfigurationArray();
-			methodDescriptors.add(MethodDescriptor.of(array));
+			try {
+				String[] array = method.asConfigurationArray();
+				methodDescriptors.add(MethodDescriptor.of(array));
+			} catch (IllegalStateException ex) {
+				logger.debug("Impossible to process method " + method.getName() + " due to missing type", ex);
+			}
 		}
 		return methodDescriptors;
 	}
