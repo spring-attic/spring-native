@@ -16,6 +16,7 @@
 
 package org.springframework.context.bootstrap.generator.bean.support;
 
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -67,16 +68,21 @@ class ParameterWriterTests {
 		assertThat(write(value, ResolvableType.forClass(value.getClass()))).isEqualTo(parameter);
 	}
 
-	@Test
-	void writeClass() {
-		assertThat(write(Integer.class, ResolvableType.forClass(Class.class))).isEqualTo("Integer.class");
-	}
-
-
 	private static Stream<Arguments> primitiveValues() {
 		return Stream.of(Arguments.of((short) 0, "0"), Arguments.of((1), "1"), Arguments.of(2L, "2"),
 				Arguments.of(2.5d, "2.5"), Arguments.of(2.7f, "2.7"), Arguments.of('c', "'c'"),
 				Arguments.of((byte) 1, "1"), Arguments.of(true, "true"));
+	}
+
+	@Test
+	void writeEnum() {
+		assertThat(write(ChronoUnit.DAYS, ResolvableType.forClass(ChronoUnit.class)))
+				.isEqualTo("ChronoUnit.DAYS").hasImport(ChronoUnit.class);
+	}
+
+	@Test
+	void writeClass() {
+		assertThat(write(Integer.class, ResolvableType.forClass(Class.class))).isEqualTo("Integer.class");
 	}
 
 
