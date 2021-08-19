@@ -1,7 +1,6 @@
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedParameter;
 import org.springframework.context.bootstrap.generator.sample.visibility.PublicFactoryBean;
-import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,15 +123,15 @@ class ProtectedAccessAnalyzerTests {
 
 	@Test
 	void analyzeWithPackagePrivateGenericArgument() {
-		ProtectedAccessAnalysis analysis = analyze(new BeanInstanceDescriptor(
-				PublicFactoryBean.resolveToProtectedGenericParameter(), null));
+		ProtectedAccessAnalysis analysis = analyze(BeanInstanceDescriptor
+				.of(PublicFactoryBean.resolveToProtectedGenericParameter()).build());
 		assertThat(analysis.isAccessible()).isFalse();
 		assertThat(analysis.getPrivilegedPackageName()).isEqualTo(PublicFactoryBean.class.getPackageName());
 	}
 
 	@Test
 	void analyzeWithPackagePrivateGenericArgumentInTargetPackage() {
-		assertThat(analyze(new BeanInstanceDescriptor(PublicFactoryBean.resolveToProtectedGenericParameter(), null),
+		assertThat(analyze(BeanInstanceDescriptor.of(PublicFactoryBean.resolveToProtectedGenericParameter()).build(),
 				PublicFactoryBean.class.getPackageName()).isAccessible()).isTrue();
 	}
 
@@ -147,15 +145,15 @@ class ProtectedAccessAnalyzerTests {
 	}
 
 	private static BeanInstanceDescriptor forSingleConstructor(Class<?> type, Member... injectionPoints) {
-		return new BeanInstanceDescriptor(ResolvableType.forClass(type), type.getDeclaredConstructors()[0],
-				Arrays.stream(injectionPoints).map((member) -> new MemberDescriptor<>(member, true))
-						.collect(Collectors.toList()));
+		return BeanInstanceDescriptor.of(type).withInstanceCreator(type.getDeclaredConstructors()[0])
+				.withInjectionPoints(Arrays.stream(injectionPoints).map((member) -> new MemberDescriptor<>(member, true))
+						.collect(Collectors.toList())).build();
 	}
 
 	private static BeanInstanceDescriptor forMethod(Class<?> type, Class<?> declaringType,
 			String methodName, Class<?>... parameterTypes) {
-		Method method = ReflectionUtils.findMethod(declaringType, methodName, parameterTypes);
-		return new BeanInstanceDescriptor(type, method);
+		return BeanInstanceDescriptor.of(type).withInstanceCreator(
+				ReflectionUtils.findMethod(declaringType, methodName, parameterTypes)).build();
 	}
 
 

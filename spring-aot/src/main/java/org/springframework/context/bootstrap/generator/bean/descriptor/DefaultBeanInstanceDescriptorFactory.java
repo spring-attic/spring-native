@@ -48,7 +48,8 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 		if (instanceCreator != null) {
 			Class<?> beanType = beanDefinition.getResolvableType().toClass();
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
-			return new BeanInstanceDescriptor(beanDefinition.getResolvableType(), instanceCreator, injectionPoints);
+			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())
+					.withInstanceCreator(instanceCreator).withInjectionPoints(injectionPoints).build();
 		}
 		return null;
 	}

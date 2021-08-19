@@ -19,7 +19,6 @@ package org.springframework.context.bootstrap.generator.bean.descriptor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.ResolvableType;
@@ -39,19 +38,28 @@ public final class BeanInstanceDescriptor {
 
 	private final List<MemberDescriptor<?>> injectionPoints;
 
-	public BeanInstanceDescriptor(ResolvableType beanType, Executable instanceCreator, List<MemberDescriptor<?>> injectionPoints) {
-		Assert.notNull(beanType, "BeanType must not be null");
-		this.beanType = beanType;
-		this.instanceCreator = (instanceCreator != null) ? new MemberDescriptor<>(instanceCreator, true) : null;
-		this.injectionPoints = new ArrayList<>(injectionPoints);
+	private BeanInstanceDescriptor(Builder builder) {
+		this.beanType = builder.beanType;
+		this.instanceCreator = builder.instanceCreator;
+		this.injectionPoints = new ArrayList<>(builder.injectionPoints);
 	}
 
-	public BeanInstanceDescriptor(ResolvableType beanType, Executable instanceCreator) {
-		this(beanType, instanceCreator, Collections.emptyList());
+	/**
+	 * Create a new builder for the specified bean type.
+	 * @param beanType the type of the bean
+	 * @return a new builder
+	 */
+	public static Builder of(ResolvableType beanType) {
+		return new Builder(beanType);
 	}
 
-	public BeanInstanceDescriptor(Class<?> beanType, Executable instanceCreator) {
-		this(ResolvableType.forClass(beanType), instanceCreator);
+	/**
+	 * Create a new builder for the specified bean type.
+	 * @param beanType the type of the bean
+	 * @return a new builder
+	 */
+	public static Builder of(Class<?> beanType) {
+		return of(ResolvableType.forClass(beanType));
 	}
 
 	/**
@@ -109,6 +117,40 @@ public final class BeanInstanceDescriptor {
 
 		public boolean isRequired() {
 			return this.required;
+		}
+
+	}
+
+	public static class Builder {
+
+		private final ResolvableType beanType;
+
+		private MemberDescriptor<Executable> instanceCreator;
+
+		private final List<MemberDescriptor<?>> injectionPoints = new ArrayList<>();
+
+		Builder(ResolvableType beanType) {
+			Assert.notNull(beanType, "BeanType must not be null");
+			this.beanType = beanType;
+		}
+
+		public Builder withInstanceCreator(Executable executable) {
+			this.instanceCreator = (executable != null) ? new MemberDescriptor<>(executable, true) : null;
+			return this;
+		}
+
+		public Builder withInjectionPoint(Member member, boolean required) {
+			this.injectionPoints.add(new MemberDescriptor<>(member, required));
+			return this;
+		}
+
+		public Builder withInjectionPoints(List<MemberDescriptor<?>> injectionPoints) {
+			this.injectionPoints.addAll(injectionPoints);
+			return this;
+		}
+
+		public BeanInstanceDescriptor build() {
+			return new BeanInstanceDescriptor(this);
 		}
 
 	}

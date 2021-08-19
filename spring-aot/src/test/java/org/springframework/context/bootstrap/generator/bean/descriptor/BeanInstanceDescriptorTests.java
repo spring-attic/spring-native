@@ -17,8 +17,7 @@ class BeanInstanceDescriptorTests {
 
 	@Test
 	void beanInstanceWithSimpleType() {
-		BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(
-				ResolvableType.forClass(String.class), null);
+		BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(String.class).build();
 		assertThat(descriptor.getBeanType().toClass()).isEqualTo(String.class);
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(String.class);
 	}
@@ -26,7 +25,7 @@ class BeanInstanceDescriptorTests {
 	@Test
 	void beanInstanceWithGenericType() {
 		ResolvableType beanType = ResolvableType.forClassWithGenerics(Supplier.class, Integer.class);
-		BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(beanType, null);
+		BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(beanType).build();
 		assertThat(descriptor.getBeanType()).isSameAs(beanType);
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(Supplier.class);
 	}

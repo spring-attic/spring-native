@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 import com.squareup.javapoet.ClassName;
@@ -38,14 +37,12 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedConstructorComponent;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedFactoryMethod;
 import org.springframework.context.bootstrap.generator.sample.visibility.PublicFactoryBean;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
-import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,9 +71,9 @@ class DefaultBeanRegistrationGeneratorTests {
 
 	@Test
 	void writeWithProtectedFactoryMethodWriteToBlessedPackage() {
-		Method instanceCreator = ReflectionUtils.findMethod(ProtectedFactoryMethod.class, "testBean", Integer.class);
-		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
-				String.class, instanceCreator), (code) -> code.add("() -> factory.testBean(42)"));
+		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(String.class)
+				.withInstanceCreator(ReflectionUtils.findMethod(ProtectedFactoryMethod.class, "testBean", Integer.class))
+				.build(), (code) -> code.add("() -> factory.testBean(42)"));
 		BootstrapWriterContext context = createBootstrapContext();
 		Builder code = CodeBlock.builder();
 		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition(),
@@ -159,8 +156,8 @@ class DefaultBeanRegistrationGeneratorTests {
 	@Test
 	void writeBeanDefinitionRegisterReflectionEntriesForInstanceCreator() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
-		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
-				InjectionComponent.class, instanceCreator), (code) -> code.add("test"));
+		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(InjectionComponent.class)
+				.withInstanceCreator(instanceCreator).build(), (code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
 		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
@@ -175,9 +172,9 @@ class DefaultBeanRegistrationGeneratorTests {
 	void writeBeanDefinitionRegisterReflectionEntriesForMethodInjectionPoint() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		Method injectionPoint = ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class);
-		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
-				ResolvableType.forClass(InjectionComponent.class), instanceCreator, Collections.singletonList(
-				new MemberDescriptor<>(injectionPoint, false))), (code) -> code.add("test"));
+		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(InjectionComponent.class)
+				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build(),
+				(code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
 		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
@@ -192,9 +189,9 @@ class DefaultBeanRegistrationGeneratorTests {
 	void writeBeanDefinitionRegisterReflectionEntriesForFieldInjectionPoint() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		Field injectionPoint = ReflectionUtils.findField(InjectionComponent.class, "counter");
-		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
-				ResolvableType.forClass(InjectionComponent.class), instanceCreator, Collections.singletonList(
-				new MemberDescriptor<>(injectionPoint, false))), (code) -> code.add("test"));
+		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(InjectionComponent.class)
+				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build(),
+				(code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
 		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
@@ -217,8 +214,8 @@ class DefaultBeanRegistrationGeneratorTests {
 
 	private CodeSnippet generateCode(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
 		return CodeSnippet.of((code) -> {
-			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(new BeanInstanceDescriptor(
-					beanDefinition.getResolvableType().toClass(), null), instanceSupplier);
+			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor
+					.of(beanDefinition.getResolvableType()).build(), instanceSupplier);
 			new DefaultBeanRegistrationGenerator("test", beanDefinition, beanValueWriter).writeBeanRegistration(code);
 		});
 	}

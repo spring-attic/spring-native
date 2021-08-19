@@ -23,9 +23,9 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.BasePackages;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
 
@@ -42,8 +42,8 @@ class AutoConfigurationPackagesBeanValueWriterSupplier implements BeanValueWrite
 	@Override
 	public BeanValueWriter get(BeanDefinition beanDefinition) {
 		if (BasePackages.class.getName().equals(beanDefinition.getBeanClassName())) {
-			BeanInstanceDescriptor descriptor = new BeanInstanceDescriptor(BasePackages.class,
-					BasePackages.class.getDeclaredConstructors()[0]);
+			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(BasePackages.class)
+					.withInstanceCreator(BasePackages.class.getDeclaredConstructors()[0]).build();
 			return new SimpleBeanValueWriter(descriptor, (code) -> {
 				code.add("() -> new $T(", BasePackages.class);
 				code.add(this.parameterWriter.writeParameterValue(getPackageNames(beanDefinition),
