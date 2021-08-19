@@ -65,7 +65,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 	public static final String GENERATE_TEST_TASK_NAME = "generateTestAot";
 
-	public static final String CODE_GEN_DEBUG_PORT_PROPERTY = "codeGenDebugPort";
+	private static final String CODE_GEN_DEBUG_PORT_PROPERTY = "codeGenDebugPort";
 
 
 	@Override
@@ -173,7 +173,25 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		generate.setResourceInputDirectories(mainSourceSet.getResources());
 		generate.getSourcesOutputDirectory().set(aotSourcesDirectory);
 		generate.getResourcesOutputDirectory().set(aotResourcesDirectory);
+
+		Integer debugPort = getDebugPort(project);
+		if (debugPort != null) {
+			generate.setDebug(true);
+			generate.getDebugOptions().getPort().set(debugPort);
+		}
 		return generate;
+	}
+
+	private Integer getDebugPort(Project project) {
+		Object debugPortProperty = project.findProperty(CODE_GEN_DEBUG_PORT_PROPERTY);
+		if (debugPortProperty != null) {
+			try {
+				return Integer.parseInt(debugPortProperty.toString());
+			} catch (NumberFormatException exception) {
+				// ignore
+			}
+		}
+		return null;
 	}
 
 	private void configureAotTasks(Project project, SourceSet aotSourceSet, GenerateAotSources generateAotSources) {
