@@ -18,9 +18,11 @@ package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.PropertyValue;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -38,10 +40,13 @@ public final class BeanInstanceDescriptor {
 
 	private final List<MemberDescriptor<?>> injectionPoints;
 
+	private final List<PropertyDescriptor> properties;
+
 	private BeanInstanceDescriptor(Builder builder) {
 		this.beanType = builder.beanType;
 		this.instanceCreator = builder.instanceCreator;
 		this.injectionPoints = new ArrayList<>(builder.injectionPoints);
+		this.properties = new ArrayList<>(builder.properties);
 	}
 
 	/**
@@ -97,6 +102,15 @@ public final class BeanInstanceDescriptor {
 	}
 
 	/**
+	 * Return the properties that should be set for the bean. Properties are automatically
+	 * applied by the bean factory.
+	 * @return the properties, if any
+	 */
+	public List<PropertyDescriptor> getProperties() {
+		return this.properties;
+	}
+
+	/**
 	 * Describe a {@link Member} that is used to initialize a Bean instance.
 	 * @param <T> the member type
 	 */
@@ -121,6 +135,30 @@ public final class BeanInstanceDescriptor {
 
 	}
 
+	/**
+	 * Describe a property that is used to initialize a Bean instance.
+	 */
+	public static class PropertyDescriptor {
+
+		private final Method writeMethod;
+
+		private final PropertyValue propertyValue;
+
+		public PropertyDescriptor(Method writeMethod, PropertyValue propertyValue) {
+			this.writeMethod = writeMethod;
+			this.propertyValue = propertyValue;
+		}
+
+		public Method getWriteMethod() {
+			return this.writeMethod;
+		}
+
+		public PropertyValue getPropertyValue() {
+			return this.propertyValue;
+		}
+
+	}
+
 	public static class Builder {
 
 		private final ResolvableType beanType;
@@ -128,6 +166,8 @@ public final class BeanInstanceDescriptor {
 		private MemberDescriptor<Executable> instanceCreator;
 
 		private final List<MemberDescriptor<?>> injectionPoints = new ArrayList<>();
+
+		private final List<PropertyDescriptor> properties = new ArrayList<>();
 
 		Builder(ResolvableType beanType) {
 			Assert.notNull(beanType, "BeanType must not be null");
@@ -146,6 +186,16 @@ public final class BeanInstanceDescriptor {
 
 		public Builder withInjectionPoints(List<MemberDescriptor<?>> injectionPoints) {
 			this.injectionPoints.addAll(injectionPoints);
+			return this;
+		}
+
+		public Builder withProperty(Method writeMethod, PropertyValue propertyValue) {
+			this.properties.add(new PropertyDescriptor(writeMethod, propertyValue));
+			return this;
+		}
+
+		public Builder withProperties(List<PropertyDescriptor> propertyValues) {
+			this.properties.addAll(propertyValues);
 			return this;
 		}
 
