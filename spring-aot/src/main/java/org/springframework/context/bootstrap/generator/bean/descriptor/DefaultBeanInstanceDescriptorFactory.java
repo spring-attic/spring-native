@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -36,9 +37,12 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 
 	private final InjectionPointsSupplier injectionPointsSupplier;
 
+	private final PropertiesSupplier propertiesSupplier;
+
 	public DefaultBeanInstanceDescriptorFactory(ConfigurableBeanFactory beanFactory) {
 		this.instanceCreatorSupplier = new BeanInstanceExecutableSupplier(beanFactory);
 		this.injectionPointsSupplier = new InjectionPointsSupplier(beanFactory.getBeanClassLoader());
+		this.propertiesSupplier = new PropertiesSupplier();
 	}
 
 	@Override
@@ -48,8 +52,10 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 		if (instanceCreator != null) {
 			Class<?> beanType = beanDefinition.getResolvableType().toClass();
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
+			List<PropertyDescriptor> properties = this.propertiesSupplier.detectProperties(beanDefinition);
 			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())
-					.withInstanceCreator(instanceCreator).withInjectionPoints(injectionPoints).build();
+					.withInstanceCreator(instanceCreator).withInjectionPoints(injectionPoints)
+					.withProperties(properties).build();
 		}
 		return null;
 	}

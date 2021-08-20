@@ -43,6 +43,7 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(SimpleConfiguration.class.getDeclaredConstructors()[0]);
 		assertThat(descriptor.getInjectionPoints()).isEmpty();
+		assertThat(descriptor.getProperties()).isEmpty();
 	}
 
 	@Test
@@ -61,6 +62,24 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
 			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setBean", String.class));
 			assertThat(injectionPoint.isRequired()).isFalse();
+		});
+		assertThat(descriptor.getProperties()).isEmpty();
+	}
+
+	@Test
+	void createWithProperties() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
+				.addPropertyValue("name", "Hello").addPropertyValue("counter", 42).getBeanDefinition());
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertThat(descriptor.getProperties()).hasSize(2);
+		assertThat(descriptor.getProperties()).anySatisfy((propertyDescriptor) -> {
+			assertThat(propertyDescriptor.getWriteMethod()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setName", String.class));
+			assertThat(propertyDescriptor.getPropertyValue().getName()).isEqualTo("name");
+		});
+		assertThat(descriptor.getProperties()).anySatisfy((propertyDescriptor) -> {
+			assertThat(propertyDescriptor.getWriteMethod()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class));
+			assertThat(propertyDescriptor.getPropertyValue().getName()).isEqualTo("counter");
 		});
 	}
 

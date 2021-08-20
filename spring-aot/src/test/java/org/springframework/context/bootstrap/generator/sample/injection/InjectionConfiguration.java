@@ -24,4 +24,12 @@ public class InjectionConfiguration {
 
 	}
 
+	public void setName(String name) {
+
+	}
+
+	public void setCounter(Integer counter) {
+
+	}
+
 }
