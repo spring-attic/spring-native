@@ -33,7 +33,9 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import org.springframework.core.NativeDetector;
 import org.springframework.nativex.AotOptions;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -54,6 +56,7 @@ class CodeGenerator {
 
 
 	public CodeGenerator(AotOptions aotOptions) {
+		// System properties related to AOT options
 		if (aotOptions.isRemoveYamlSupport()) {
 			staticBlock.addStatement("System.setProperty(\"spring.native.remove-yaml-support\", \"true\")");
 		}
@@ -63,6 +66,22 @@ class CodeGenerator {
 		if (aotOptions.isRemoveSpelSupport()) {
 			staticBlock.addStatement("System.setProperty(\"spring.spel.ignore\", \"true\")");
 		}
+
+		// Make sure we take the native codepath even on the JVM, can be useful with the tracing agent
+		// TODO Allow to disable it via a flag
+		CodeBlock imageCodeBlock = CodeBlock.builder()
+				.beginControlFlow("if (!$T.inNativeImage())", NativeDetector.class)
+				.addStatement("System.setProperty(\"org.graalvm.nativeimage.imagecode\", \"runtime\")")
+				.endControlFlow()
+				.build();
+		staticBlock.add(imageCodeBlock);
+
+		CodeBlock hibernateBlock = CodeBlock.builder()
+				.beginControlFlow("if ($T.isPresent(\"org.hibernate.Session\", null))", ClassUtils.class)
+				.addStatement("System.setProperty(\"hibernate.bytecode.provider\", \"none\")")
+				.endControlFlow()
+				.build();
+		staticBlock.add(hibernateBlock);
 	}
 
 	public void writeToStaticBlock(Consumer<CodeBlock.Builder> consumer) {
