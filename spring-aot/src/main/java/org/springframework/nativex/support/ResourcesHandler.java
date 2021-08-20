@@ -1613,7 +1613,10 @@ public class ResourcesHandler extends Handler {
 					logger.debug("checking '"+method.getName()+method.getDesc()+"' -> unresolvable parameters, ignoring");
 					continue;
 				}
-				String[] candidate = method.asConfigurationArray();
+				String[] candidate = method.asConfigurationArray(true);
+				if (candidate == null) {
+					continue;
+				}
 				if (method.markedAtBean()) {
 					if (validMethodsSubset != null && !toMatchAgainst.contains(String.join("::", candidate))) {
 						continue;

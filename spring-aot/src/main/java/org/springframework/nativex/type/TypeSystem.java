@@ -1445,7 +1445,7 @@ public class TypeSystem {
 		if (ms.size()!=0) {
 			System.out.println("Found Autowired/Bean stuff on "+t.getDottedName()+": "+ms);
 			for (Method m: ms) {
-				String[] array = m.asConfigurationArray();
+				String[] array = m.asConfigurationArray(true);
 				if (array != null) {
 					// some parts of it could not be resolved, ignore
 					cd.addMethodDescriptor(org.springframework.nativex.domain.reflect.MethodDescriptor.of(array));

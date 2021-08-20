@@ -456,6 +456,12 @@ public class TypeTests {
 		assertEquals("two",array[0]);
 		assertEquals("java.io.Serializable",array[1]);
 		assertEquals("java.lang.String",array[2]);
+		Method goo = t.getMethod("goo").get(0);
+		array = goo.asConfigurationArray();
+		assertEquals(3,array.length);
+		assertEquals("goo",array[0]);
+		assertEquals("int",array[1]);
+		assertEquals("int[]",array[2]);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -464,6 +470,7 @@ public class TypeTests {
 		public void two(java.io.Serializable a,String b) {}
 		public int foo(String s1, String[] s2, List<String> s3) { return 0; }
 		public int bar(String s1, List[] s2, float f) { return 0; }
+		public void goo(int i, int[] is) {}
 		public String boo() { return ""; }
 	}
 	

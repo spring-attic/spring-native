@@ -416,25 +416,22 @@ public class Method {
 	}
 
 	public String[] asConfigurationArray() {
+		return asConfigurationArray(false);
+	}
+
+	public String[] asConfigurationArray(boolean ensureParametersResolvable) {
 		int p = -1;
 		try {
 			List<Type> params = getParameterTypes();
 			String[] output = new String[params.size() + 1];
 			output[0] = getName();
 			for (p = 0; p < params.size(); p++) {
-				Type type = params.get(p);
-				if (type != null) {
-					output[p + 1] = params.get(p).getDottedName();
-				} else {
-					String primitiveId = internalParameterTypes[p].getDescriptor();
-					String name = null;
-					if (primitiveId.length()==1) {
-						name = primitiveToName(primitiveId);
-					}
-					if (name == null) {
-						throw new IllegalStateException("Problem producing array for " + mn.name + mn.desc + "  (param #" + p + ")");
-					} else {
-						output[p+1] = name;
+				output[p+1] = internalParameterTypes[p].getClassName();
+				if (ensureParametersResolvable) {
+					Type type = params.get(p);
+					if (type == null && internalParameterTypes[p].getDescriptor().endsWith(";")) {
+						logger.debug("Problem producing configuration array for " + mn.name + mn.desc + "  (param#"+p+") - cannot resolve "+internalParameterTypes[p].getClassName());
+						return null;
 					}
 				}
 			}
