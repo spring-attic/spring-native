@@ -16,6 +16,8 @@
 
 package org.springframework.aot.context.bootstrap;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +32,8 @@ import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.bootstrap.generator.BootstrapGenerationResult;
 import org.springframework.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
@@ -62,7 +66,14 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		applicationContext.setResourceLoader(typeSystem.getResourceLoader());
 
 		// TODO: pre-compute environment from properties?
-		applicationContext.setEnvironment(new StandardEnvironment());
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		Properties properties = new Properties();
+		properties.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
+		properties.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
+		properties.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
+		properties.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
+		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", properties));
+		applicationContext.setEnvironment(environment);
 
 		// TODO: auto-detect main class
 		String mainClassName = context.getMainClass();
