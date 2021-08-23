@@ -617,6 +617,7 @@ public class ResourcesHandler extends Handler {
 		if (type == null || !visited.add(type)) {
 			return;
 		}
+			if (inferredRequiredAccess.getValue() != 0) {
 		if (type.isCondition()) {
 			if (type.hasOnlySimpleConstructor()) {
 				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
@@ -624,15 +625,16 @@ public class ResourcesHandler extends Handler {
 				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
 			}
 		} else {
-			// TODO we can do better here, why can we not use the inferredRequiredAccess -
-			// it looks like we aren't adding RESOURCE to something when inferring.
-			typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
-					AccessBits.DECLARED_CONSTRUCTORS|
-					AccessBits.RESOURCE|(rootTypeWasConfiguration?AccessBits.DECLARED_METHODS:AccessBits.PUBLIC_METHODS));
-//					inferredRequiredAccess.getValue());
-			// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
-			// Flag.allDeclaredMethods);
+				// TODO we can do better here, why can we not use the inferredRequiredAccess -
+				// it looks like we aren't adding RESOURCE to something when inferring.
+				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
+						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE
+								| (rootTypeWasConfiguration ? AccessBits.DECLARED_METHODS : AccessBits.PUBLIC_METHODS));
+				// inferredRequiredAccess.getValue());
+				// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
+				// Flag.allDeclaredMethods);
 		}
+			}
 		
 		if (rootTypeWasConfiguration && !type.isAtConfiguration()) {
 			// Processing a superclass of a configuration (so may contain @Bean methods)
