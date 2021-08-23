@@ -14,7 +14,6 @@ These options are enabled by default when using Spring Native, since they are ma
 * `--allow-incomplete-classpath` allows image building with an incomplete class path and reports type resolution errors at run time when they are accessed the first time, instead of during image building.
 * `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
 * `--no-fallback` enforces native image only runtime and disable fallback on regular JVM.
-* `--no-server` means do not use the image-build server which can be sometimes unreliable, see https://github.com/oracle/graal/issues/1952[graal#1952] for more details.
 * `--install-exit-handlers` allows to react to a shutdown request from Docker.
 * `-H:+InlineBeforeAnalysis` enables inlining before analysis in order to allow utility methods returning a constant to be taken in account for code removal for example.
 
