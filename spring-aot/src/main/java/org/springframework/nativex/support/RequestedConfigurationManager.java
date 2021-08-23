@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
@@ -40,6 +42,8 @@ import org.springframework.nativex.type.ResourcesDescriptor;
  */
 public class RequestedConfigurationManager {
 
+	private static Log logger = LogFactory.getLog(RequestedConfigurationManager.class);	
+	
 	private Map<String, Integer> requestedTypeAccesses = new HashMap<>();
 	private Map<String, List<MethodDescriptor>> requestedMethodAccesses = new HashMap<>();
 	private Map<String, List<FieldDescriptor>> requestedFieldAccesses = new HashMap<>();
@@ -61,6 +65,10 @@ public class RequestedConfigurationManager {
 	}
 	
 	public void requestTypeAccess(String type, Integer accessRequired, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
+		if (accessRequired == 0 && (mds==null || mds.isEmpty()) && (fds==null || fds.isEmpty())) {
+			logger.debug("requestTypeAccess invoked for "+type+" but no access needed, skipping");
+			return;
+		}
 		if (type.indexOf("/")!=-1) {
 			throw new IllegalStateException("Only pass dotted names to request(), name was: "+type);
 		}
@@ -106,7 +114,8 @@ public class RequestedConfigurationManager {
 		}
 		Integer existsAlready = requestedTypeAccesses.get(type);
 		if (existsAlready==null) {
-			throw new IllegalStateException("Cannot reduce access for "+type+" - it hasn't been previously registered");
+			// Assert: only needs reducing if already registered with more open access
+			return;
 		}
 		requestedTypeAccesses.put(type, newAccess);
 	}
