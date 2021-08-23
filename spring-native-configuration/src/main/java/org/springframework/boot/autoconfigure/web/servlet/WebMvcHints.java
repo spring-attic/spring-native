@@ -38,11 +38,6 @@ import org.springframework.web.servlet.view.InternalResourceView;
 @NativeHint(trigger = WebMvcAutoConfiguration.class,
 	resources = @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties"),
 	types = {
-			@TypeHint(types = {
-				AnnotationConfigServletWebServerApplicationContext.class,
-				ConfigurableWebApplicationContext.class,
-				WebApplicationContext.class,
-			}),
 		@TypeHint(types= {
 				ErrorPage.class,
 				DefaultErrorViewResolver.class,
