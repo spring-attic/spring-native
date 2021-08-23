@@ -16,34 +16,15 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
-import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.context.support.WebApplicationObjectSupport;
+import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=OnWebApplicationCondition.class, types = {
-	@TypeHint(types= {
-			GenericWebApplicationContext.class,
-			WebApplicationObjectSupport.class,
-			ApplicationObjectSupport.class}
-	)
-})
-@NativeHint(trigger=ConditionalOnWebApplication.class,
-	types = {
-		@TypeHint(types = GenericWebApplicationContext.class),
-		@TypeHint(types= ConditionalOnWebApplication.Type.class)
-	}, abortIfTypesMissing = true)
+@NativeHint(trigger=ConditionalOnWebApplication.class, abortIfTypesMissing = true)
 @NativeHint(trigger = ConditionalOnSingleCandidate.class, extractTypesFromAttributes = { "value", "type" }, abortIfTypesMissing = true)
 @NativeHint(trigger = ConditionalOnClass.class, extractTypesFromAttributes = { "value", "name" }, abortIfTypesMissing = true)
 // Here exposing SearchStrategy as it is the type of a field within the annotation. 
 // TODO Feels like all conditions should just get this 'for free'
-@NativeHint(
-		trigger = ConditionalOnMissingBean.class,
-		types = @TypeHint(types= SearchStrategy.class, access = AccessBits.CLASS|AccessBits.DECLARED_FIELDS),
-		abortIfTypesMissing = true)
+@NativeHint( trigger = ConditionalOnMissingBean.class, abortIfTypesMissing = true)
 @NativeHint(trigger = ConditionalOnBean.class, extractTypesFromAttributes = {"value", "type"},abortIfTypesMissing = true)
 public class ConditionalHints implements NativeConfiguration {
 }
