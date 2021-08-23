@@ -843,7 +843,10 @@ public class ResourcesHandler extends Handler {
 					}
 					if (ts.shouldBeProcessed(k)) {
 						for (String v : p.getProperty(k).split(",")) {
-							registerTypeReferencedBySpringFactoriesKey(v);
+							Type resolvedValue = ts.resolveDotted(v, true);
+							if (resolvedValue != null && !resolvedValue.isCondition()) {
+								registerTypeReferencedBySpringFactoriesKey(v);
+							}
 						}
 					} else {
 						logger.debug("Skipping processing spring.factories key " + k + " due to missing guard types");
