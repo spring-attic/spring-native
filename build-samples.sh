@@ -35,7 +35,7 @@ RC=0
 
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
-echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s)" >> samples-summary.csv
+echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s),ReflectConfig (lines)" >> samples-summary.csv
 for d in $(find samples -maxdepth 2 -type d)
 do
   if [[ -f "$d/build.sh" && ! -f "$d/.ignore" ]]; then

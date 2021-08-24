@@ -60,8 +60,12 @@ then
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
     BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
     BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
+    CONFIGLINES=`wc -l target/generated-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | cut -d" " -f1`
     if [ -z "$BUILDMEMORY" ]; then
       BUILDMEMORY="-"
+    fi
+    if [ -z "$CONFIGLINES" ]; then
+      CONFIGLINES="-"
     fi
     echo "Build memory: ${BUILDMEMORY}GB"
     echo "Image build time: ${BUILDTIME}s"
@@ -78,7 +82,8 @@ then
       JTIME=${BASH_REMATCH[2]}
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
-    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME}  > $SUMMARY_CSV_FILE
+    echo "Lines of reflective config: $CONFIGLINES"
+    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME},${CONFIGLINES}  > $SUMMARY_CSV_FILE
   fi
   if ! kill ${PID} > /dev/null 2>&1; then
     echo "Did not kill process, it ended on it's own" >&2
