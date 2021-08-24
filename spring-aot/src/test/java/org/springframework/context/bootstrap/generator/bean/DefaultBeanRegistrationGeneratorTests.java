@@ -28,17 +28,22 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.annotation.samples.simple.SimpleComponent;
 import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
+import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedConstructorComponent;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedFactoryMethod;
 import org.springframework.context.bootstrap.generator.sample.visibility.PublicFactoryBean;
@@ -62,7 +67,7 @@ class DefaultBeanRegistrationGeneratorTests {
 				ProtectedConstructorComponent.class).getBeanDefinition()).writeBeanRegistration(context, code);
 		assertThat(context.hasBootstrapClass(ProtectedConstructorComponent.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(ProtectedConstructorComponent.class.getPackageName());
-		assertThat(generateCode(bootstrapClass)).containsSequence(
+		assertThat(beanRegistration(bootstrapClass)).containsSequence(
 				"  public static void registerTest(GenericApplicationContext context) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ProtectedConstructorComponent.class).instanceSupplier(ProtectedConstructorComponent::new).register(context);\n",
 				"  }");
@@ -76,11 +81,11 @@ class DefaultBeanRegistrationGeneratorTests {
 				.build(), (code) -> code.add("() -> factory.testBean(42)"));
 		BootstrapWriterContext context = createBootstrapContext();
 		Builder code = CodeBlock.builder();
-		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition(),
+		createInstance(BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, code);
 		assertThat(context.hasBootstrapClass(ProtectedFactoryMethod.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(ProtectedFactoryMethod.class.getPackageName());
-		assertThat(generateCode(bootstrapClass)).containsSequence(
+		assertThat(beanRegistration(bootstrapClass)).containsSequence(
 				"  public static void registerProtectedFactoryMethod_test(GenericApplicationContext context) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", String.class).instanceSupplier(() -> factory.testBean(42)).register(context);\n",
 				"  }");
@@ -98,7 +103,7 @@ class DefaultBeanRegistrationGeneratorTests {
 		createInstance(beanDefinition).writeBeanRegistration(context, code);
 		assertThat(context.hasBootstrapClass(PublicFactoryBean.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(PublicFactoryBean.class.getPackageName());
-		assertThat(generateCode(bootstrapClass)).containsSequence(
+		assertThat(beanRegistration(bootstrapClass)).containsSequence(
 				"  public static void registerTest(GenericApplicationContext context) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(PublicFactoryBean.class, ProtectedType.class)).instanceSupplier(PublicFactoryBean::new).register(context);\n",
 				"  }");
@@ -109,7 +114,7 @@ class DefaultBeanRegistrationGeneratorTests {
 	void writeWithSyntheticFlag() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(SampleFactory.class.getName(), "create").setSynthetic(true).getBeanDefinition();
-		assertThat(generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
 						+ ".customize((bd) -> bd.setSynthetic(true)).register(context);");
 	}
@@ -118,7 +123,7 @@ class DefaultBeanRegistrationGeneratorTests {
 	void writeWithMultipleFlags() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(SampleFactory.class.getName(), "create").setSynthetic(true).setPrimary(true).getBeanDefinition();
-		assertThat(generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
 								+ ".customize((bd) -> {",
 						"  bd.setSynthetic(true);",
@@ -131,7 +136,7 @@ class DefaultBeanRegistrationGeneratorTests {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(SampleFactory.class.getName(), "create").getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, "test");
-		assertThat(generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
 						+ ".customize((bd) -> bd.getConstructorArgumentValues().addIndexedArgumentValue(0, \"test\")).register(context);");
 	}
@@ -142,7 +147,7 @@ class DefaultBeanRegistrationGeneratorTests {
 				.rootBeanDefinition(SampleFactory.class.getName(), "create").getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, new RuntimeBeanReference("test"));
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(2, 42);
-		CodeSnippet generateCode = generateCode(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
+		CodeSnippet generateCode = beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
 		assertThat(generateCode).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
 								+ ".customize((bd) -> {",
@@ -154,12 +159,79 @@ class DefaultBeanRegistrationGeneratorTests {
 	}
 
 	@Test
+	void writeSimpleProperty() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class.getName(), "create")
+				.addPropertyValue("test", "Hello").getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
+						+ ".customize((bd) -> bd.getPropertyValues().addPropertyValue(\"test\", \"Hello\")).register(context);");
+	}
+
+	@Test
+	void writeSeveralProperties() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class.getName(), "create")
+				.addPropertyValue("test", "Hello").addPropertyValue("counter", 42).getBeanDefinition();
+		CodeSnippet generateCode = beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
+		assertThat(generateCode).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
+								+ ".customize((bd) -> {",
+						"  MutablePropertyValues propertyValues = bd.getPropertyValues();",
+						"  propertyValues.addPropertyValue(\"test\", \"Hello\");",
+						"  propertyValues.addPropertyValue(\"counter\", 42);",
+						"}).register(context);");
+		assertThat(generateCode).hasImport(MutablePropertyValues.class);
+	}
+
+	@Test
+	void writePropertyReference() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class.getName(), "create")
+				.addPropertyReference("myService", "test").getBeanDefinition();
+		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
+		assertThat(generatedCode).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", Object.class).instanceSupplier(() -> SampleFactory::new)"
+						+ ".customize((bd) -> bd.getPropertyValues().addPropertyValue(\"myService\", new RuntimeBeanReference(\"test\"))).register(context);");
+		assertThat(generatedCode).hasImport(RuntimeBeanReference.class);
+	}
+
+	@Test
+	void writePropertyAsBeanDefinition() {
+		BeanDefinition innerBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class, "stringBean").getBeanDefinition();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
+				.addPropertyValue("name", innerBeanDefinition).getBeanDefinition();
+		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> InjectionConfiguration::new"));
+		assertThat(generatedCode).lines().containsOnly(
+				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class).instanceSupplier(() -> InjectionConfiguration::new)"
+						+ ".customize((bd) -> bd.getPropertyValues().addPropertyValue(\"name\", BeanDefinitionRegistrar.inner(SimpleConfiguration.class)"
+						+ ".instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition())).register(context);");
+		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
+	}
+
+	@Test
+	void writePropertyAsBeanDefinitionUseDedicatedVariableName() {
+		BeanDefinition innerBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class, "stringBean").setRole(2).getBeanDefinition();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
+				.addPropertyValue("name", innerBeanDefinition).getBeanDefinition();
+		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> InjectionConfiguration::new"));
+		assertThat(generatedCode).contains(
+				".addPropertyValue(\"name\", BeanDefinitionRegistrar.inner(SimpleConfiguration.class).instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean())"
+						+ ".customize((bd_) -> bd_.setRole(2))");
+	}
+
+	@Test
+	void writeInnerBeanDefinition() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(SimpleComponent.class).getBeanDefinition();
+		assertThat(beanDefinition(beanDefinition)).lines()
+				.containsOnly("BeanDefinitionRegistrar.inner(SimpleComponent.class).instanceSupplier(SimpleComponent::new).toBeanDefinition()");
+	}
+
+	@Test
 	void writeBeanDefinitionRegisterReflectionEntriesForInstanceCreator() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).build(), (code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
-		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
+		createInstance(BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
 		assertThat(context.getRuntimeReflectionRegistry().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
@@ -176,7 +248,7 @@ class DefaultBeanRegistrationGeneratorTests {
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build(),
 				(code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
-		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
+		createInstance(BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
 		assertThat(context.getRuntimeReflectionRegistry().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
@@ -193,7 +265,7 @@ class DefaultBeanRegistrationGeneratorTests {
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build(),
 				(code) -> code.add("test"));
 		BootstrapWriterContext context = createBootstrapContext();
-		new DefaultBeanRegistrationGenerator("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
+		createInstance(BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class).getBeanDefinition(),
 				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
 		assertThat(context.getRuntimeReflectionRegistry().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
@@ -202,25 +274,68 @@ class DefaultBeanRegistrationGeneratorTests {
 		});
 	}
 
+	@Test
+	void writeBeanDefinitionRegisterReflectionEntriesForProperties() {
+		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
+		Method nameWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setName", String.class);
+		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
+		SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor.of(InjectionComponent.class)
+				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
+				.withProperty(counterWriteMethod, new PropertyValue("counter", 42)).build(),
+				(code) -> code.add("test"));
+		BootstrapWriterContext context = createBootstrapContext();
+		createInstance(BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class).getBeanDefinition(),
+				beanValueWriter).writeBeanRegistration(context, CodeBlock.builder());
+		assertThat(context.getRuntimeReflectionRegistry().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
+			assertThat(entry.getMethods()).containsOnly(instanceCreator, nameWriteMethod, counterWriteMethod);
+			assertThat(entry.getFields()).isEmpty();
+		});
+	}
+
 	private static BootstrapWriterContext createBootstrapContext() {
 		return new BootstrapWriterContext(BootstrapClass.of(ClassName.get("com.example", "Test")));
 	}
 
-	private DefaultBeanRegistrationGenerator createInstance(BeanDefinition beanDefinition) {
+	private BeanValueWriter getBeanValueWriter(BeanDefinition beanDefinition) {
 		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
 		supplier.setBeanFactory(new DefaultListableBeanFactory());
-		return new DefaultBeanRegistrationGenerator("test", beanDefinition, supplier.get(beanDefinition));
+		return supplier.get(beanDefinition);
 	}
 
-	private CodeSnippet generateCode(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
+	private CodeSnippet beanRegistration(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
 		return CodeSnippet.of((code) -> {
 			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor
 					.of(beanDefinition.getResolvableType()).build(), instanceSupplier);
-			new DefaultBeanRegistrationGenerator("test", beanDefinition, beanValueWriter).writeBeanRegistration(code);
+			createInstance(beanDefinition, beanValueWriter).writeBeanRegistration(code);
 		});
 	}
 
-	private String generateCode(BootstrapClass bootstrapClass) {
+	private CodeSnippet beanDefinition(BeanDefinition beanDefinition) {
+		return CodeSnippet.of((code) -> {
+			BeanValueWriter beanValueWriter = getBeanValueWriter(beanDefinition);
+			createInstance(null, beanDefinition, beanValueWriter).writeBeanDefinition(code);
+		});
+	}
+
+	private DefaultBeanRegistrationGenerator createInstance(BeanDefinition beanDefinition) {
+		return createInstance(beanDefinition, getBeanValueWriter(beanDefinition));
+	}
+
+	private DefaultBeanRegistrationGenerator createInstance(BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
+		return createInstance("test", beanDefinition, beanValueWriter);
+	}
+
+	private DefaultBeanRegistrationGenerator createInstance(String beanName,
+			BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
+		return new DefaultBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter, this::inner);
+	}
+
+	private DefaultBeanRegistrationGenerator inner(String beanName, BeanDefinition beanDefinition) {
+		return createInstance(beanName, beanDefinition, getBeanValueWriter(beanDefinition));
+	}
+
+	private String beanRegistration(BootstrapClass bootstrapClass) {
 		try {
 			StringWriter out = new StringWriter();
 			bootstrapClass.toJavaFile().writeTo(out);
