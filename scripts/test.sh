@@ -60,7 +60,7 @@ then
     BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
     BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
     BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
-    CONFIGLINES=`wc -l target/generated-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | cut -d" " -f1`
+    CONFIGLINES=`wc -l target/generated-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
     if [ -z "$BUILDMEMORY" ]; then
       BUILDMEMORY="-"
     fi
