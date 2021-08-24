@@ -1,5 +1,6 @@
 package org.springframework.aot.beans.factory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor;
 import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor.ValueResolver;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.CollectionFactory;
 import org.springframework.core.MethodParameter;
 
 /**
@@ -78,7 +82,8 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 				DependencyDescriptor depDescriptor = new DependencyDescriptor(methodParam, true);
 				depDescriptor.setContainingClass(this.targetType);
 				try {
-					Object arg = beanFactory.resolveDependency(depDescriptor, beanName, autowiredBeans, typeConverter);
+					Object arg = resolveDependency(() -> beanFactory.resolveDependency(
+							depDescriptor, beanName, autowiredBeans, typeConverter), methodParam.getParameterType());
 					arguments.add(arg);
 				}
 				catch (BeansException ex) {
@@ -87,6 +92,26 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 			}
 		}
 		return new InjectedElementAttributes(arguments);
+	}
+
+	private Object resolveDependency(Supplier<Object> resolvedDependency, Class<?> dependencyType) {
+		try {
+			return resolvedDependency.get();
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Single constructor or factory method -> let's return an empty array/collection
+			// for e.g. a vararg or a non-null List/Set/Map parameter.
+			if (dependencyType.isArray()) {
+				return Array.newInstance(dependencyType.getComponentType(), 0);
+			}
+			else if (CollectionFactory.isApproximableCollectionType(dependencyType)) {
+				return CollectionFactory.createCollection(dependencyType, 0);
+			}
+			else if (CollectionFactory.isApproximableMapType(dependencyType)) {
+				return CollectionFactory.createMap(dependencyType, 0);
+			}
+			throw ex;
+		}
 	}
 
 	private ConstructorArgumentValues resolveArgumentValues(GenericApplicationContext context) {
