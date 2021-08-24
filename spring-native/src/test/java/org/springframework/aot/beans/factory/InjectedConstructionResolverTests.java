@@ -2,9 +2,13 @@ package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,6 +33,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link InjectedConstructionResolver}.
@@ -65,6 +70,130 @@ class InjectedConstructionResolverTests {
 					assertThat(ex.getInjectionPoint()).isNotNull();
 					assertThat(ex.getInjectionPoint().getMember()).isEqualTo(resolver.getExecutable());
 				});
+	}
+
+	@ParameterizedTest
+	@MethodSource("arrayOfBeansConstruction")
+	void resolveArrayOfBeans(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", String.class, () -> "1");
+		context.registerBean("two", String.class, () -> "2");
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(Arrays.isArray(attribute)).isTrue();
+			assertThat((Object[]) attribute).containsExactly("1", "2");
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("arrayOfBeansConstruction")
+	void resolveRequiredArrayOfBeansInjectEmptyArray(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(Arrays.isArray(attribute)).isTrue();
+			assertThat((Object[]) attribute).isEmpty();
+		});
+	}
+
+	static Stream<Arguments> arrayOfBeansConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(BeansCollectionConstructor.class, String[].class)),
+				Arguments.of(createResolverForFactoryMethod(BeansCollectionFactory.class, "array", String[].class)));
+	}
+
+	@ParameterizedTest
+	@MethodSource("listOfBeansConstruction")
+	void resolveListOfBeans(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", String.class, () -> "1");
+		context.registerBean("two", String.class, () -> "2");
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(List.class);
+			assertThat((List<String>) attribute).containsExactly("1", "2");
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("listOfBeansConstruction")
+	void resolveRequiredListOfBeansInjectEmptyList(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(List.class);
+			assertThat((List<?>) attribute).isEmpty();
+		});
+	}
+
+	static Stream<Arguments> listOfBeansConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(BeansCollectionConstructor.class, List.class)),
+				Arguments.of(createResolverForFactoryMethod(BeansCollectionFactory.class, "list", List.class)));
+	}
+
+	@ParameterizedTest
+	@MethodSource("setOfBeansConstruction")
+	void resolveSetOfBeans(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", String.class, () -> "1");
+		context.registerBean("two", String.class, () -> "2");
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(Set.class);
+			assertThat((Set<String>) attribute).containsExactly("1", "2");
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("setOfBeansConstruction")
+	void resolveRequiredSetOfBeansInjectEmptySet(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(Set.class);
+			assertThat((Set<?>) attribute).isEmpty();
+		});
+	}
+
+	static Stream<Arguments> setOfBeansConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(BeansCollectionConstructor.class, Set.class)),
+				Arguments.of(createResolverForFactoryMethod(BeansCollectionFactory.class, "set", Set.class)));
+	}
+
+	@ParameterizedTest
+	@MethodSource("mapOfBeansConstruction")
+	void resolveMapOfBeans(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", String.class, () -> "1");
+		context.registerBean("two", String.class, () -> "2");
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(Map.class);
+			assertThat((Map<String, String>) attribute).containsExactly(entry("one", "1"), entry("two", "2"));
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("mapOfBeansConstruction")
+	void resolveRequiredMapOfBeansInjectEmptySet(InjectedConstructionResolver resolver) {
+		GenericApplicationContext context = new GenericApplicationContext();
+		assertAttributes(context, resolver, (attributes) -> {
+			assertThat(attributes.isResolved()).isTrue();
+			Object attribute = attributes.get(0);
+			assertThat(attribute).isInstanceOf(Map.class);
+			assertThat((Map<?, ?>) attribute).isEmpty();
+		});
+	}
+
+	static Stream<Arguments> mapOfBeansConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(BeansCollectionConstructor.class, Map.class)),
+				Arguments.of(createResolverForFactoryMethod(BeansCollectionFactory.class, "map", Map.class)));
 	}
 
 	@ParameterizedTest
@@ -252,6 +381,48 @@ class InjectedConstructionResolverTests {
 
 		String single(String s) {
 			return s;
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	static class BeansCollectionConstructor {
+
+		public BeansCollectionConstructor(String[] beans) {
+
+		}
+
+		public BeansCollectionConstructor(List<String> beans) {
+
+		}
+
+		public BeansCollectionConstructor(Set<String> beans) {
+
+		}
+
+		public BeansCollectionConstructor(Map<String, String> beans) {
+
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	static class BeansCollectionFactory {
+
+		public String array(String[] beans) {
+			return "test";
+		}
+
+		public String list(List<String> beans) {
+			return "test";
+		}
+
+		public String set(Set<String> beans) {
+			return "test";
+		}
+
+		public String map(Map<String, String> beans) {
+			return "test";
 		}
 
 	}
