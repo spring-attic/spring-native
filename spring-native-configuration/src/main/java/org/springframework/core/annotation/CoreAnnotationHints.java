@@ -25,7 +25,8 @@ import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint( types =
 @TypeHint(types= {
-		AliasFor.class
+		AliasFor.class,
+		Order.class
 }, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
 public class CoreAnnotationHints implements NativeConfiguration {
 }
