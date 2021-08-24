@@ -1,9 +1,14 @@
 package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -20,52 +25,54 @@ import org.springframework.context.annotation.ContextAnnotationAutowireCandidate
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Tests for {@link InjectedConstructorResolver}.
+ * Tests for {@link InjectedConstructionResolver}.
  *
  * @author Stephane Nicoll
  */
-class InjectedConstructorResolverTests {
+class InjectedConstructionResolverTests {
 
 	@Test
 	void resolveNoArgConstructor() {
 		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, createResolver(InjectedConstructorResolverTests.class),
+		assertAttributes(context, createResolverForConstructor(InjectedConstructionResolverTests.class),
 				(attributes) -> assertThat(attributes.isResolved()).isTrue());
 	}
 
-	@Test
-	void resolveSingleArgConstructor() {
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void resolveSingleArgConstructor(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("one", String.class, () -> "1");
-		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			assertThat((String) attributes.get(0)).isEqualTo("1");
 		});
 	}
 
-	@Test
-	void resolveRequiredDependencyNotPresentThrowsUnsatisfiedDependencyException() {
-		Constructor<?> constructor = SingleArgConstructor.class.getDeclaredConstructors()[0];
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void resolveRequiredDependencyNotPresentThrowsUnsatisfiedDependencyException(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
-		assertThatThrownBy(() -> createResolver(SingleArgConstructor.class, String.class).resolve(context))
+		assertThatThrownBy(() -> resolver.resolve(context))
 				.isInstanceOfSatisfying(UnsatisfiedDependencyException.class, (ex) -> {
 					assertThat(ex.getBeanName()).isEqualTo("test");
 					assertThat(ex.getInjectionPoint()).isNotNull();
-					assertThat(ex.getInjectionPoint().getMember()).isEqualTo(constructor);
+					assertThat(ex.getInjectionPoint().getMember()).isEqualTo(resolver.getExecutable());
 				});
 	}
 
-	@Test
-	void resolveMultiArgsConstructor() {
+	@ParameterizedTest
+	@MethodSource("multiArgsConstruction")
+	void resolveMultiArgsConstructor(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("one", String.class, () -> "1");
-		assertAttributes(context, createResolver(MultiArgConstructor.class,
-				ResourceLoader.class, Environment.class, ObjectProvider.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			assertThat((ResourceLoader) attributes.get(0)).isEqualTo(context);
 			assertThat((Environment) attributes.get(1)).isEqualTo(context.getEnvironment());
@@ -74,15 +81,15 @@ class InjectedConstructorResolverTests {
 		});
 	}
 
-	@Test
-	void resolveMixedArgsConstructorWithUserValue() {
+	@ParameterizedTest
+	@MethodSource("mixedArgsConstruction")
+	void resolveMixedArgsConstructorWithUserValue(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
-		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgConstructor.class)
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgsConstructor.class)
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, "user-value");
 		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, createResolver(MixedArgConstructor.class,
-				ApplicationContext.class, String.class, Environment.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
 			assertThat((String) attributes.get(1)).isEqualTo("user-value");
@@ -90,17 +97,17 @@ class InjectedConstructorResolverTests {
 		});
 	}
 
-	@Test
-	void resolveMixedArgsConstructorWithUserBeanReference() {
+	@ParameterizedTest
+	@MethodSource("mixedArgsConstruction")
+	void resolveMixedArgsConstructorWithUserBeanReference(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("one", String.class, "1");
 		context.registerBean("two", String.class, "2");
-		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgConstructor.class)
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgsConstructor.class)
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, new RuntimeBeanReference("two"));
 		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, createResolver(MixedArgConstructor.class,
-				ApplicationContext.class, String.class, Environment.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
 			assertThat((String) attributes.get(1)).isEqualTo("2");
@@ -115,7 +122,7 @@ class InjectedConstructorResolverTests {
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, "\\");
 		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, createResolver(CharDependency.class, char.class), (attributes) -> {
+		assertAttributes(context, createResolverForConstructor(CharDependency.class, char.class), (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			Object attribute = attributes.get(0);
 			assertThat(attribute).isInstanceOf(Character.class);
@@ -123,80 +130,102 @@ class InjectedConstructorResolverTests {
 		});
 	}
 
-	@Test
-	void resolveUserValueWithBeanReference() {
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void resolveUserValueWithBeanReference(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("stringBean", String.class, () -> "string");
 		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
 				.addConstructorArgReference("stringBean").getBeanDefinition());
-		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			Object attribute = attributes.get(0);
 			assertThat(attribute).isEqualTo("string");
 		});
 	}
 
-	@Test
-	void resolveUserValueWithBeanDefinition() {
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void resolveUserValueWithBeanDefinition(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		AbstractBeanDefinition userValue = BeanDefinitionBuilder.rootBeanDefinition(String.class, () -> "string").getBeanDefinition();
 		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
 				.addConstructorArgValue(userValue).getBeanDefinition());
-		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			Object attribute = attributes.get(0);
 			assertThat(attribute).isEqualTo("string");
 		});
 	}
 
-	@Test
-	void resolveUserValueThatIsAlreadyResolved() {
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void resolveUserValueThatIsAlreadyResolved(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class).getBeanDefinition();
 		ValueHolder valueHolder = new ValueHolder('a');
 		valueHolder.setConvertedValue("this is an a");
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, valueHolder);
 		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, createResolver(SingleArgConstructor.class, String.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			Object attribute = attributes.get(0);
 			assertThat(attribute).isEqualTo("this is an a");
 		});
 	}
 
-	@Test
-	void resolveQualifiedDependency() {
+	@ParameterizedTest
+	@MethodSource("qualifiedDependencyConstruction")
+	void resolveQualifiedDependency(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
 				new ContextAnnotationAutowireCandidateResolver());
 		context.registerBean("one", String.class, () -> "1");
 		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, createResolver(QualifiedDependency.class, String.class), (attributes) -> {
+		assertAttributes(context, resolver, (attributes) -> {
 			assertThat(attributes.isResolved()).isTrue();
 			assertThat((String) attributes.get(0)).isEqualTo("2");
 		});
 	}
 
-	@Test
-	void createInvokeFactory() {
+	@ParameterizedTest
+	@MethodSource("singleArgConstruction")
+	void createInvokeFactory(InjectedConstructionResolver resolver) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("one", String.class, () -> "1");
-		String instance = createResolver(SingleArgConstructor.class, String.class)
-				.create(context, (attributes) -> attributes.get(0));
+		String instance = resolver.create(context, (attributes) -> attributes.get(0));
 		assertThat(instance).isEqualTo("1");
 	}
 
-	private InjectedConstructorResolver createResolver(Class<?> beanType, Class<?>... parameterTypes) {
+	private void assertAttributes(GenericApplicationContext context, InjectedConstructionResolver resolver,
+			Consumer<InjectedElementAttributes> attributes) {
+		try (context) {
+			if (!context.isRunning()) {
+				context.refresh();
+			}
+			attributes.accept(resolver.resolve(context));
+		}
+	}
+
+	private static InjectedConstructionResolver createResolverForConstructor(Class<?> beanType, Class<?>... parameterTypes) {
 		try {
-			Constructor<?> constructor = beanType.getDeclaredConstructor(parameterTypes);
-			return new InjectedConstructorResolver(constructor, beanType, "test", this::safeGetBeanDefinition);
+			Constructor<?> executable = beanType.getDeclaredConstructor(parameterTypes);
+			return new InjectedConstructionResolver(executable, beanType, "test",
+					InjectedConstructionResolverTests::safeGetBeanDefinition);
 		}
 		catch (NoSuchMethodException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private BeanDefinition safeGetBeanDefinition(GenericApplicationContext context) {
+	private static InjectedConstructionResolver createResolverForFactoryMethod(Class<?> targetType,
+			String methodName, Class<?>... parameterTypes) {
+		Method executable = ReflectionUtils.findMethod(targetType, methodName, parameterTypes);
+		return new InjectedConstructionResolver(executable, targetType, "test",
+				InjectedConstructionResolverTests::safeGetBeanDefinition);
+	}
+
+	private static BeanDefinition safeGetBeanDefinition(GenericApplicationContext context) {
 		try {
 			return context.getBeanDefinition("test");
 		}
@@ -205,14 +234,9 @@ class InjectedConstructorResolverTests {
 		}
 	}
 
-	private void assertAttributes(GenericApplicationContext context, InjectedConstructorResolver resolver,
-			Consumer<InjectedElementAttributes> attributes) {
-		try (context) {
-			if (!context.isRunning()) {
-				context.refresh();
-			}
-			attributes.accept(resolver.resolve(context));
-		}
+	static Stream<Arguments> singleArgConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(SingleArgConstructor.class, String.class)),
+				Arguments.of(createResolverForFactoryMethod(SingleArgFactory.class, "single", String.class)));
 	}
 
 	@SuppressWarnings("unused")
@@ -224,25 +248,75 @@ class InjectedConstructorResolverTests {
 	}
 
 	@SuppressWarnings("unused")
-	static class MultiArgConstructor {
+	static class SingleArgFactory {
 
-		public MultiArgConstructor(ResourceLoader resourceLoader, Environment environment, ObjectProvider<String> provider) {
+		String single(String s) {
+			return s;
+		}
+
+	}
+
+	static Stream<Arguments> multiArgsConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(MultiArgsConstructor.class, ResourceLoader.class, Environment.class, ObjectProvider.class)),
+				Arguments.of(createResolverForFactoryMethod(MultiArgsFactory.class, "multiArgs", ResourceLoader.class, Environment.class, ObjectProvider.class)));
+	}
+
+	@SuppressWarnings("unused")
+	static class MultiArgsConstructor {
+
+		public MultiArgsConstructor(ResourceLoader resourceLoader, Environment environment, ObjectProvider<String> provider) {
 		}
 	}
 
 	@SuppressWarnings("unused")
-	static class MixedArgConstructor {
+	static class MultiArgsFactory {
 
-		public MixedArgConstructor(ApplicationContext context, String test, Environment environment) {
+		String multiArgs(ResourceLoader resourceLoader, Environment environment, ObjectProvider<String> provider) {
+			return "test";
+		}
+	}
+
+	static Stream<Arguments> mixedArgsConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(MixedArgsConstructor.class, ApplicationContext.class, String.class, Environment.class)),
+				Arguments.of(createResolverForFactoryMethod(MixedArgsFactory.class, "mixedArgs", ApplicationContext.class, String.class, Environment.class)));
+	}
+
+	@SuppressWarnings("unused")
+	static class MixedArgsConstructor {
+
+		public MixedArgsConstructor(ApplicationContext context, String test, Environment environment) {
 
 		}
 
+	}
+
+	@SuppressWarnings("unused")
+	static class MixedArgsFactory {
+
+		String mixedArgs(ApplicationContext context, String test, Environment environment) {
+			return "test";
+		}
+
+	}
+
+	static Stream<Arguments> qualifiedDependencyConstruction() {
+		return Stream.of(Arguments.of(createResolverForConstructor(QualifiedDependency.class, String.class)),
+				Arguments.of(createResolverForFactoryMethod(QualifiedDependencyFactory.class, "qualified", String.class)));
 	}
 
 	@SuppressWarnings("unused")
 	static class QualifiedDependency {
 
 		QualifiedDependency(@Qualifier("two") String s) {
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	static class QualifiedDependencyFactory {
+
+		String qualified(@Qualifier("two") String s) {
+			return s;
 		}
 
 	}
