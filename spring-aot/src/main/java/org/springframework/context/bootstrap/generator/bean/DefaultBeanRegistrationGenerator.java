@@ -6,6 +6,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import javax.lang.model.SourceVersion;
@@ -16,6 +17,9 @@ import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.MethodSpec;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -26,6 +30,7 @@ import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalysis;
 import org.springframework.context.bootstrap.generator.bean.support.MultiStatement;
 import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
@@ -52,11 +57,19 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 
 	private final BeanValueWriter beanValueWriter;
 
-	public DefaultBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition,
-			BeanValueWriter beanValueWriter) {
+	private final BiFunction<String, BeanDefinition, DefaultBeanRegistrationGenerator> beanRegistrationGeneratorSupplier;
+
+	private final ParameterWriter parameterWriter;
+
+	private int nesting = 0;
+
+	public DefaultBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter,
+			BiFunction<String, BeanDefinition, DefaultBeanRegistrationGenerator> beanRegistrationGeneratorSupplier) {
 		this.beanName = beanName;
 		this.beanDefinition = beanDefinition;
 		this.beanValueWriter = beanValueWriter;
+		this.beanRegistrationGeneratorSupplier = beanRegistrationGeneratorSupplier;
+		this.parameterWriter = new ParameterWriter();
 	}
 
 	@Override
@@ -77,6 +90,11 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		}
 	}
 
+	void writeBeanRegistration(Builder code) {
+		initializeBeanDefinitionRegistrar(code);
+		code.addStatement(".register(context)");
+	}
+
 	private void registerReflectionMetadata(RuntimeReflectionRegistry registry, BeanInstanceDescriptor descriptor) {
 		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
 		registry.addMethod(instanceCreator.getMember());
@@ -89,49 +107,73 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 				registry.addField((Field) member);
 			}
 		}
+		for (PropertyDescriptor property : descriptor.getProperties()) {
+			Method writeMethod = property.getWriteMethod();
+			if (writeMethod != null) {
+				registry.addMethod(writeMethod);
+			}
+		}
 	}
 
-	public void writeBeanRegistration(Builder code) {
-		code.add("$T.of($S, ", BeanDefinitionRegistrar.class, this.beanName);
+	void writeBeanDefinition(Builder code) {
+		initializeBeanDefinitionRegistrar(code);
+		code.add(".toBeanDefinition()");
+	}
+
+	private void initializeBeanDefinitionRegistrar(Builder code) {
+		code.add("$T", BeanDefinitionRegistrar.class);
+		if (this.beanName != null) {
+			code.add(".of($S, ", this.beanName);
+		}
+		else {
+			code.add(".inner(");
+		}
 		writeBeanType(code);
 		code.add(").instanceSupplier(");
 		this.beanValueWriter.writeValueSupplier(code);
 		code.add(")");
 		handleBeanDefinitionMetadata(code);
-		code.addStatement(".register(context)");
 	}
 
 	private void handleBeanDefinitionMetadata(Builder code) {
+		String bdVariable = determineVariableName("bd");
 		MultiStatement statements = new MultiStatement();
 		if (this.beanDefinition.isPrimary()) {
-			statements.add("bd.setPrimary(true)");
+			statements.add("$L.setPrimary(true)", bdVariable);
 		}
 		if (this.beanDefinition instanceof AbstractBeanDefinition
 				&& ((AbstractBeanDefinition) this.beanDefinition).isSynthetic()) {
-			statements.add("bd.setSynthetic(true)");
+			statements.add("$L.setSynthetic(true)", bdVariable);
 		}
 		if (this.beanDefinition.getRole() != BeanDefinition.ROLE_APPLICATION) {
-			statements.add("bd.setRole($L)", this.beanDefinition.getRole());
+			statements.add("$L.setRole($L)", bdVariable, this.beanDefinition.getRole());
 		}
 		if (this.beanDefinition.hasConstructorArgumentValues()) {
-			handleArgumentValues(statements, this.beanDefinition.getConstructorArgumentValues());
+			handleArgumentValues(statements, bdVariable, this.beanDefinition.getConstructorArgumentValues());
+		}
+		if (this.beanDefinition.hasPropertyValues()) {
+			handlePropertyValues(statements, bdVariable, this.beanDefinition.getPropertyValues());
 		}
 		if (statements.isEmpty()) {
 			return;
 		}
-		code.add(statements.toCodeBlock(".customize((bd) ->"));
+		code.add(statements.toCodeBlock(".customize((" + bdVariable + ") ->"));
 		code.add(")");
 	}
 
-	private void handleArgumentValues(MultiStatement statements, ConstructorArgumentValues constructorArgumentValues) {
+	private void handleArgumentValues(MultiStatement statements, String bdVariable,
+			ConstructorArgumentValues constructorArgumentValues) {
 		Map<Integer, ValueHolder> values = constructorArgumentValues.getIndexedArgumentValues();
 		if (values.size() == 1) {
 			Entry<Integer, ValueHolder> entry = values.entrySet().iterator().next();
-			statements.add(writeArgumentValue("bd.getConstructorArgumentValues().", entry.getKey(), entry.getValue()));
+			statements.add(writeArgumentValue(bdVariable + ".getConstructorArgumentValues().",
+					entry.getKey(), entry.getValue()));
 		}
 		else {
-			statements.add("$T argumentValues = bd.getConstructorArgumentValues()", ConstructorArgumentValues.class);
-			statements.addAll(values.entrySet(), (entry) -> writeArgumentValue("argumentValues.", entry.getKey(), entry.getValue()));
+			String avVariable = determineVariableName("argumentValues");
+			statements.add("$T $L = $L.getConstructorArgumentValues()", ConstructorArgumentValues.class, avVariable, bdVariable);
+			statements.addAll(values.entrySet(), (entry) -> writeArgumentValue(avVariable + ".",
+					entry.getKey(), entry.getValue()));
 		}
 	}
 
@@ -140,14 +182,53 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		code.add(prefix);
 		code.add("addIndexedArgumentValue($L, ", index);
 		Object value = valueHolder.getValue();
+		writeValue(code, value);
+		code.add(")");
+		return code.build();
+	}
+
+	private void handlePropertyValues(MultiStatement statements, String bdVariable,
+			PropertyValues propertyValues) {
+		PropertyValue[] properties = propertyValues.getPropertyValues();
+		if (properties.length == 1) {
+			statements.add(writePropertyValue(bdVariable + ".getPropertyValues().", properties[0]));
+		}
+		else {
+			String pvVariable = determineVariableName("propertyValues");
+			statements.add("$T $L = $L.getPropertyValues()", MutablePropertyValues.class, pvVariable, bdVariable);
+			for (PropertyValue property : properties) {
+				statements.add(writePropertyValue(pvVariable + ".", property));
+			}
+		}
+	}
+
+	private CodeBlock writePropertyValue(String prefix, PropertyValue property) {
+		Builder code = CodeBlock.builder();
+		code.add(prefix);
+		code.add("addPropertyValue($S, ", property.getName());
+		Object value = property.getValue();
+		writeValue(code, value);
+		code.add(")");
+		return code.build();
+	}
+
+	private void writeValue(Builder code, Object value) {
+		if (value instanceof BeanDefinition) {
+			DefaultBeanRegistrationGenerator nestedGenerator = writeNestedBeanDefinition((BeanDefinition) value);
+			nestedGenerator.writeBeanDefinition(code);
+		}
 		if (value instanceof BeanReference) {
 			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
 		}
 		else {
-			code.add(new ParameterWriter().writeParameterValue(value, ResolvableType.forInstance(value)));
+			code.add(this.parameterWriter.writeParameterValue(value, ResolvableType.forInstance(value)));
 		}
-		code.add(")");
-		return code.build();
+	}
+
+	private DefaultBeanRegistrationGenerator writeNestedBeanDefinition(BeanDefinition value) {
+		DefaultBeanRegistrationGenerator generator = this.beanRegistrationGeneratorSupplier.apply(null, value);
+		generator.nesting = this.nesting + 1;
+		return generator;
 	}
 
 	private void writeBeanType(Builder code) {
@@ -188,8 +269,12 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		}
 	}
 
-	private boolean isValidName(String className) {
-		return SourceVersion.isIdentifier(className) && !SourceVersion.isKeyword(className);
+	private boolean isValidName(String name) {
+		return name != null && SourceVersion.isIdentifier(name) && !SourceVersion.isKeyword(name);
+	}
+
+	private String determineVariableName(String name) {
+		return name + "_".repeat(this.nesting);
 	}
 
 }

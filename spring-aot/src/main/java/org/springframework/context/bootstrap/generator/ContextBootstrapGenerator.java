@@ -134,9 +134,10 @@ public class ContextBootstrapGenerator {
 		code.add("\n");
 	}
 
-	private BeanRegistrationGenerator getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
+	private DefaultBeanRegistrationGenerator getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
 		BeanValueWriter beanValueWriter = getBeanValueSupplier(beanDefinition);
-		return (beanValueWriter != null) ? new DefaultBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter) : null;
+		return (beanValueWriter != null) ? new DefaultBeanRegistrationGenerator(beanName, beanDefinition,
+				beanValueWriter, this::getBeanRegistrationGenerator) : null;
 	}
 
 	private BeanValueWriter getBeanValueSupplier(BeanDefinition beanDefinition) {
