@@ -16,10 +16,17 @@
 
 package org.springframework.context.bootstrap.generator.bean.support;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Support for writing parameters.
@@ -43,25 +50,32 @@ public final class ParameterWriter {
 	private void writeParameterValue(Builder code, Object value, ResolvableType parameterType) {
 		if (parameterType.isArray()) {
 			code.add("new $T { ", parameterType.toClass());
-			if (value instanceof char[]) {
-				char[] array = (char[]) value;
-				for (int i = 0; i < array.length; i++) {
-					writeParameterValue(code, array[i], ResolvableType.forClass(char.class));
-					if (i < array.length - 1) {
-						code.add(", ");
-					}
-				}
-			}
-			else if (value instanceof String[]) {
-				String[] array = (String[]) value;
-				for (int i = 0; i < array.length; i++) {
-					writeParameterValue(code, array[i], ResolvableType.forClass(String.class));
-					if (i < array.length - 1) {
-						code.add(", ");
-					}
-				}
-			}
+			writeAll(code, Arrays.asList(ObjectUtils.toObjectArray(value)), parameterType.getComponentType());
 			code.add(" }");
+		}
+		else if (value instanceof List) {
+			List<?> list = (List<?>) value;
+			if (list.isEmpty()) {
+				code.add("$T.emptyList()", Collections.class);
+			}
+			else {
+				code.add("$T.of(", List.class);
+				ResolvableType collectionType = parameterType.as(List.class).getGenerics()[0];
+				writeAll(code, list, collectionType);
+				code.add(")");
+			}
+		}
+		else if (value instanceof Set) {
+			Set<?> set = (Set<?>) value;
+			if (set.isEmpty()) {
+				code.add("$T.emptySet()", Collections.class);
+			}
+			else {
+				code.add("$T.of(", Set.class);
+				ResolvableType collectionType = parameterType.as(Set.class).getGenerics()[0];
+				writeAll(code, set, collectionType);
+				code.add(")");
+			}
 		}
 		else if (value instanceof Character) {
 			String result = '\'' + characterLiteralWithoutSingleQuotes((Character) value) + '\'';
@@ -79,6 +93,16 @@ public final class ParameterWriter {
 		}
 		else if (value instanceof Class) {
 			code.add("$T.class", value);
+		}
+	}
+
+	private void writeAll(Builder code, Iterable<?> items, ResolvableType elementType) {
+		Iterator<?> it = items.iterator();
+		while (it.hasNext()) {
+			writeParameterValue(code, it.next(), elementType);
+			if (it.hasNext()) {
+				code.add(", ");
+			}
 		}
 	}
 

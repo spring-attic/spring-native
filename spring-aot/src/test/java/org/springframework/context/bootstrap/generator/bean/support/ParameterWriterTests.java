@@ -17,6 +17,11 @@
 package org.springframework.context.bootstrap.generator.bean.support;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -50,6 +55,34 @@ class ParameterWriterTests {
 		String[] value = new String[] { "a", "test" };
 		assertThat(write(value, ResolvableType.forArrayComponent(ResolvableType.forClass(String.class))))
 				.isEqualTo("new String[] { \"a\", \"test\" }");
+	}
+
+	@Test
+	void writeStringList() {
+		List<String> value = List.of("a", "test");
+		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
+				.isEqualTo("List.of(\"a\", \"test\")").hasImport(List.class);
+	}
+
+	@Test
+	void writeEmptyList() {
+		List<String> value = List.of();
+		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
+				.isEqualTo("Collections.emptyList()").hasImport(Collections.class);
+	}
+
+	@Test
+	void writeStringSet() {
+		Set<String> value = new LinkedHashSet<>(Arrays.asList("a", "test"));
+		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
+				.isEqualTo("Set.of(\"a\", \"test\")").hasImport(Set.class);
+	}
+
+	@Test
+	void writeEmptySet() {
+		Set<String> value = Set.of();
+		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
+				.isEqualTo("Collections.emptySet()").hasImport(Collections.class);
 	}
 
 	@Test
