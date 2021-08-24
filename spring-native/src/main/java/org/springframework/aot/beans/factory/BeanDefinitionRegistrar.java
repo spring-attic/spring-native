@@ -124,7 +124,7 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified constructor
 		 */
 		public InjectedElementResolver constructor(Class<?>... parameterTypes) {
-			return new InjectedConstructorResolver(getConstructor(parameterTypes), this.beanType, this.beanName,
+			return new InjectedConstructionResolver(getConstructor(parameterTypes), this.beanType, this.beanName,
 					BeanDefinitionRegistrar.this::resolveBeanDefinition);
 		}
 
@@ -146,7 +146,8 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified factory method
 		 */
 		public InjectedElementResolver method(Class<?> declaredType, String name, Class<?>... parameterTypes) {
-			return new InjectedMethodResolver(getMethod(declaredType, name, parameterTypes), declaredType, this.beanName);
+			return new InjectedConstructionResolver(getMethod(declaredType, name, parameterTypes), declaredType, this.beanName,
+					BeanDefinitionRegistrar.this::resolveBeanDefinition);
 		}
 
 		/**
@@ -156,7 +157,7 @@ public class BeanDefinitionRegistrar {
 		 * @return a resolved for the specified bean method
 		 */
 		public InjectedElementResolver method(String name, Class<?>... parameterTypes) {
-			return method(this.beanType, name, parameterTypes);
+			return new InjectedMethodResolver(getMethod(this.beanType, name, parameterTypes), this.beanType, this.beanName);
 		}
 
 		private Constructor<?> getConstructor(Class<?>... parameterTypes) {

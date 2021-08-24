@@ -1,11 +1,14 @@
 package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
@@ -23,45 +26,43 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.MethodParameter;
 
 /**
- * An {@link InjectedElementResolver} for a {@link Constructor}.
+ * An {@link InjectedElementResolver} for an {@link Executable} that creates a bean
+ * instance.
  *
  * @author Stephane Nicoll
  */
-class InjectedConstructorResolver implements InjectedElementResolver {
+class InjectedConstructionResolver implements InjectedElementResolver {
 
-	private final Constructor<?> constructor;
+	private final Executable executable;
 
-	private final Class<?> beanType;
+	private final Class<?> targetType;
 
 	private final String beanName;
 
 	private final Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver;
 
-	/**
-	 * Create a new instance.
-	 * @param constructor the constructor to handle
-	 * @param beanType the type of the bean
-	 * @param beanName the name of the bean, or {@code null}
-	 * @param beanDefinitionResolver the bean definition resolver to use
-	 */
-	InjectedConstructorResolver(Constructor<?> constructor, Class<?> beanType, String beanName,
+	InjectedConstructionResolver(Executable executable, Class<?> targetType, String beanName,
 			Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver) {
-		this.constructor = constructor;
-		this.beanType = beanType;
+		this.executable = executable;
+		this.targetType = targetType;
 		this.beanName = beanName;
 		this.beanDefinitionResolver = beanDefinitionResolver;
+	}
+
+	Executable getExecutable() {
+		return this.executable;
 	}
 
 	@Override
 	public InjectedElementAttributes resolve(GenericApplicationContext context, boolean required) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		int argumentCount = this.constructor.getParameterCount();
+		int argumentCount = this.executable.getParameterCount();
 		List<Object> arguments = new ArrayList<>();
 		Set<String> autowiredBeans = new LinkedHashSet<>(argumentCount);
 		TypeConverter typeConverter = beanFactory.getTypeConverter();
 		ConstructorArgumentValues argumentValues = resolveArgumentValues(context);
 		for (int i = 0; i < argumentCount; i++) {
-			MethodParameter methodParam = new MethodParameter(this.constructor, i);
+			MethodParameter methodParam = createMethodParameter(i);
 			ValueHolder valueHolder = argumentValues.getIndexedArgumentValue(i, null);
 			if (valueHolder != null) {
 				if (valueHolder.isConverted()) {
@@ -75,7 +76,7 @@ class InjectedConstructorResolver implements InjectedElementResolver {
 			}
 			else {
 				DependencyDescriptor depDescriptor = new DependencyDescriptor(methodParam, true);
-				depDescriptor.setContainingClass(this.beanType);
+				depDescriptor.setContainingClass(this.targetType);
 				try {
 					Object arg = beanFactory.resolveDependency(depDescriptor, beanName, autowiredBeans, typeConverter);
 					arguments.add(arg);
@@ -113,5 +114,21 @@ class InjectedConstructorResolver implements InjectedElementResolver {
 		}
 		return resolvedValues;
 	}
-}
 
+	private MethodParameter createMethodParameter(int index) {
+		if (this.executable instanceof Constructor) {
+			return new MethodParameter((Constructor<?>) this.executable, index);
+		}
+		else {
+			return new MethodParameter((Method) this.executable, index);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", InjectedConstructionResolver.class.getSimpleName() + "[", "]")
+				.add("executable=" + executable)
+				.toString();
+	}
+
+}
