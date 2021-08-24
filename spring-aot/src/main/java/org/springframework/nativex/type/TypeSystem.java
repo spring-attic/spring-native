@@ -764,7 +764,7 @@ public class TypeSystem {
 					reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 					AnnotationInfo ai = new AnnotationInfo(this, node);
 					if (ai.hasData()) {
-						logger.debug("From " + entry.toString() + " got " + ai.toAnnotationString());
+//						logger.debug("From " + entry.toString() + " got " + ai.toAnnotationString());
 						annotatedTypes.put(node.name, ai);
 					}
 				}
@@ -789,7 +789,7 @@ public class TypeSystem {
 				reader.accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 				AnnotationInfo ai = new AnnotationInfo(this, node);
 				if (ai.hasData()) {
-					logger.debug("From " + file.getName() + " got " + ai.toAnnotationString());
+//					logger.debug("From " + file.getName() + " got " + ai.toAnnotationString());
 					annotatedTypes.put(node.name, ai);
 				}
 			} catch (IOException ioe) {
