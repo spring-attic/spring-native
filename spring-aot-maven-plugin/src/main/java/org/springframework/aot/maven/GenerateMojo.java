@@ -36,8 +36,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
+import org.springframework.aot.context.bootstrap.GenerateBootstrap;
 import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.support.Mode;
 import org.springframework.util.StringUtils;
 
@@ -87,10 +88,13 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 			findJarFile(this.pluginArtifacts, "com.squareup", "javapoet")
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+			findJarFile(this.pluginArtifacts, "info.picocli", "picocli")
+					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 
-			if (getAotOptions().toMode().equals(Mode.NATIVE)) {
+			AotOptions aotOptions = getAotOptions();
+			if (aotOptions.toMode().equals(Mode.NATIVE)) {
 				RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
 				Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 
@@ -100,24 +104,31 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 					args.add("-Xdebug");
 					args.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + this.codeGenDebugPort);
 				}
-				// plugin classpath
 				args.add("-cp");
 				args.add(asClasspathArgument(runtimeClasspathElements));
-				// main class
-				args.add(BootstrapCodeGeneratorRunner.class.getCanonicalName());
-				// [0] sourcesPath
-				args.add(sourcesPath.toAbsolutePath().toString());
-				// [1] resourcesPath
-				args.add(resourcesPath.toAbsolutePath().toString());
-				// [2] resourcesFolders
-				args.add(StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
-				// [3] classesFolder
-				args.add(project.getBuild().getOutputDirectory());
-				// [4] classPathElements
-				args.add(StringUtils.collectionToDelimitedString(runtimeClasspathElements, File.pathSeparator));
-				// [5] log level
-				args.add(getLogLevel());
-				// [6] Application main class
+				args.add(GenerateBootstrap.class.getCanonicalName());
+				args.add("--sources-out=" + sourcesPath.toAbsolutePath());
+				args.add("--resources-out=" + resourcesPath.toAbsolutePath());
+				args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
+				args.add("--classes=" + project.getBuild().getOutputDirectory());
+				if (aotOptions.isRemoveXmlSupport()) {
+					args.add("--remove-xml");
+				}
+				if (aotOptions.isRemoveJmxSupport()) {
+					args.add("--remove-jmx");
+				}
+				if (aotOptions.isRemoveSpelSupport()) {
+					args.add("--remove-spel");
+				}
+				if (aotOptions.isRemoveYamlSupport()) {
+					args.add("--remove-yaml");
+				}
+				if (aotOptions.isBuildTimePropertyChecking()) {
+					args.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
+				}
+				if (getLogLevel().equals("DEBUG")) {
+					args.add("--debug");
+				}
 				if (this.mainClass != null) {
 					args.add(this.mainClass);
 				}
@@ -144,11 +155,14 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 	private String getLogLevel() {
 		if (getLog().isDebugEnabled()) {
 			return "DEBUG";
-		} else if (getLog().isInfoEnabled()) {
+		}
+		else if (getLog().isInfoEnabled()) {
 			return "INFO";
-		} else if (getLog().isWarnEnabled()) {
+		}
+		else if (getLog().isWarnEnabled()) {
 			return "WARN";
-		} else {
+		}
+		else {
 			return "ERROR";
 		}
 	}
