@@ -62,11 +62,7 @@ import org.springframework.nativex.hint.AccessBits;
 			LogManager.class,
 			JavaLoggingSystem.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
-//		,@TypeHint(types = {
-//				java.util.LinkedHashSet.class,
-//				Set.class
-//		}
-//	)
+		,@TypeHint(types = { java.util.LinkedHashSet.class }, access=AccessBits.LOAD_AND_CONSTRUCT) // configclient-new - can it be inferred?
 	},
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
