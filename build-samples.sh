@@ -45,7 +45,7 @@ do
     if [ -f "$d/target/native/summary.csv" ]; then
       cat $d/target/native/summary.csv >> samples-summary.csv
     else
-     echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,-,,,, >> samples-summary.csv
+     echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,-,,,,, >> samples-summary.csv
     fi
   fi
 done
