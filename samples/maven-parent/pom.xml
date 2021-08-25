@@ -24,7 +24,7 @@
 		<builder>paketobuildpacks/builder:tiny</builder>
 
 		<wavefront.version>2.2.0</wavefront.version>
-
+		<spring-data-bom.version>2021.0.5-SNAPSHOT</spring-data-bom.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 	</properties>
 
