@@ -34,11 +34,11 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.process.CommandLineArgumentProvider;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.aot.BootstrapCodeGenerator;
-import org.springframework.aot.context.bootstrap.BootstrapCodeGeneratorRunner;
+import org.springframework.aot.context.bootstrap.GenerateBootstrap;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
+import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
 /**
@@ -64,7 +64,7 @@ public class GenerateAotSources extends JavaExec {
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
-		setMain(BootstrapCodeGeneratorRunner.class.getCanonicalName());
+		setMain(GenerateBootstrap.class.getCanonicalName());
 		getArgumentProviders().add(new BootstrapGeneratorArgumentProvider());
 	}
 
@@ -102,19 +102,29 @@ public class GenerateAotSources extends JavaExec {
 		@Override
 		public Iterable<String> asArguments() {
 			List<String> arguments = new ArrayList<>();
-			// path to generated sources
-			arguments.add(GenerateAotSources.this.sourcesOutputDirectory.get().getAsFile().toPath().toString());
-			// path to generated resources
-			arguments.add(GenerateAotSources.this.resourcesOutputDirectory.get().getAsFile().toPath().toString());
-			// application resources locations
-			arguments.add(toPathArgument(GenerateAotSources.this.resourceDirectories.getSrcDirs()));
-			// application classes locations
-			arguments.add(GenerateAotSources.this.mainSourceSetOutputDirectory.get().getAsFile().toPath().toString());
-			// application classpath
-			arguments.add(toPathArgument(getClasspath().getFiles()));
-			// log level
-			arguments.add(getLogLevel());
-
+			AotOptions aotOptions = getAotOptions().toAotOptions();
+			arguments.add("--sources-out=" + GenerateAotSources.this.sourcesOutputDirectory.get().getAsFile().toPath());
+			arguments.add("--resources-out=" + GenerateAotSources.this.resourcesOutputDirectory.get().getAsFile().toPath());
+			arguments.add("--resources=" + toPathArgument(GenerateAotSources.this.resourceDirectories.getSrcDirs()));
+			arguments.add("--classes=" + GenerateAotSources.this.mainSourceSetOutputDirectory.get().getAsFile().toPath());
+			if (aotOptions.isRemoveXmlSupport()) {
+				arguments.add("--remove-xml");
+			}
+			if (aotOptions.isRemoveJmxSupport()) {
+				arguments.add("--remove-jmx");
+			}
+			if (aotOptions.isRemoveSpelSupport()) {
+				arguments.add("--remove-spel");
+			}
+			if (aotOptions.isRemoveYamlSupport()) {
+				arguments.add("--remove-yaml");
+			}
+			if (aotOptions.isBuildTimePropertyChecking()) {
+				arguments.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
+			}
+			if (getLogLevel().equals("DEBUG")) {
+				arguments.add("--debug");
+			}
 			// main application class
 			if (GenerateAotSources.this.aotOptions.getMainClass().isPresent()) {
 				arguments.add(GenerateAotSources.this.aotOptions.getMainClass().get());
@@ -126,11 +136,14 @@ public class GenerateAotSources extends JavaExec {
 			Logger rootLogger = Logging.getLogger(Logger.ROOT_LOGGER_NAME);
 			if (rootLogger.isDebugEnabled()) {
 				return "DEBUG";
-			} else if (rootLogger.isInfoEnabled()) {
+			}
+			else if (rootLogger.isInfoEnabled()) {
 				return "INFO";
-			} else if (rootLogger.isWarnEnabled()) {
+			}
+			else if (rootLogger.isWarnEnabled()) {
 				return "WARN";
-			} else {
+			}
+			else {
 				return "ERROR";
 			}
 		}
