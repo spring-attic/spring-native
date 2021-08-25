@@ -94,7 +94,7 @@ else
   cat $TEST_OUTPUT_FILE
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
   if [ $SILENT == 'false' ]; then
-    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,-,,,, > $SUMMARY_CSV_FILE
+    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,-,,,,, > $SUMMARY_CSV_FILE
   fi
   if ! kill ${PID} > /dev/null 2>&1; then
     echo "Did not kill process, it ended on it's own" >&2
