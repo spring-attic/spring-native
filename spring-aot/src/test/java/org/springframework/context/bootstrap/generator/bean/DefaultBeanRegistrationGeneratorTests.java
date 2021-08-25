@@ -300,7 +300,7 @@ class DefaultBeanRegistrationGeneratorTests {
 	private BeanValueWriter getBeanValueWriter(BeanDefinition beanDefinition) {
 		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
 		supplier.setBeanFactory(new DefaultListableBeanFactory());
-		return supplier.get(beanDefinition);
+		return supplier.get("test", beanDefinition);
 	}
 
 	private CodeSnippet beanRegistration(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {

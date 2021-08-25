@@ -135,19 +135,19 @@ public class ContextBootstrapGenerator {
 	}
 
 	private DefaultBeanRegistrationGenerator getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
-		BeanValueWriter beanValueWriter = getBeanValueSupplier(beanDefinition);
+		BeanValueWriter beanValueWriter = getBeanValueSupplier(beanName, beanDefinition);
 		return (beanValueWriter != null) ? new DefaultBeanRegistrationGenerator(beanName, beanDefinition,
 				beanValueWriter, this::getBeanRegistrationGenerator) : null;
 	}
 
-	private BeanValueWriter getBeanValueSupplier(BeanDefinition beanDefinition) {
+	private BeanValueWriter getBeanValueSupplier(String beanName, BeanDefinition beanDefinition) {
 		for (BeanValueWriterSupplier supplier : this.beanValueWriterSuppliers) {
-			BeanValueWriter writer = supplier.get(beanDefinition);
+			BeanValueWriter writer = supplier.get(beanName, beanDefinition);
 			if (writer != null) {
 				return writer;
 			}
 		}
-		logger.error("Failed to handle bean with definition " + beanDefinition);
+		logger.error("Failed to handle bean " + beanName + " with definition " + beanDefinition);
 		return null;
 	}
 

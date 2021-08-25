@@ -17,6 +17,7 @@
 package org.springframework.context.bootstrap.generator.bean;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 /**
  * Strategy interface to write the bean value supplier of a {@link BeanDefinition}.
@@ -27,10 +28,13 @@ import org.springframework.beans.factory.config.BeanDefinition;
 public interface BeanValueWriterSupplier {
 
 	/**
-	 * Return the {@link BeanValueWriter} to use for the specified {@link BeanDefinition}.
-	 * @param beanDefinition the bean definition to handle
+	 * Return the {@link BeanValueWriter} to use for the specified merged
+	 * {@link BeanDefinition}.
+	 * @param beanName the name of the bean definition to handle
+	 * @param beanDefinition the merged bean definition to handle
 	 * @return the {@link BeanValueWriter} to use, or {@code null}
+	 * @see ConfigurableBeanFactory#getMergedBeanDefinition(String)
 	 */
-	BeanValueWriter get(BeanDefinition beanDefinition);
+	BeanValueWriter get(String beanName, BeanDefinition beanDefinition);
 
 }

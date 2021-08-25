@@ -51,7 +51,7 @@ class DefaultBeanValueWriterSupplierTests {
 	private BeanValueWriter getBeanValueWriter(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
 		supplier.setBeanFactory(beanFactory);
-		return supplier.get(beanDefinition);
+		return supplier.get("test", beanDefinition);
 	}
 
 }
