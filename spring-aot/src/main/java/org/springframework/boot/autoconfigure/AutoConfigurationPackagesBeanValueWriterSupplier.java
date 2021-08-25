@@ -40,7 +40,7 @@ class AutoConfigurationPackagesBeanValueWriterSupplier implements BeanValueWrite
 	private final ParameterWriter parameterWriter = new ParameterWriter();
 
 	@Override
-	public BeanValueWriter get(BeanDefinition beanDefinition) {
+	public BeanValueWriter get(String beanName, BeanDefinition beanDefinition) {
 		if (BasePackages.class.getName().equals(beanDefinition.getBeanClassName())) {
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(BasePackages.class)
 					.withInstanceCreator(BasePackages.class.getDeclaredConstructors()[0]).build();
