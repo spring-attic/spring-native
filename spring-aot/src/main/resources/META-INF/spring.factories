@@ -5,6 +5,7 @@ org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor
 org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
 org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
 
 org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
