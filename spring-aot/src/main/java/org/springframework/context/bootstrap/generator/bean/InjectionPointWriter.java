@@ -17,6 +17,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -56,7 +57,7 @@ class InjectionPointWriter {
 
 	private CodeBlock write(Constructor<?> creator) {
 		CodeBlock.Builder code = CodeBlock.builder();
-		Class<?> declaringType = creator.getDeclaringClass();
+		Class<?> declaringType = ClassUtils.getUserClass(creator.getDeclaringClass());
 		boolean innerClass = isInnerClass(declaringType);
 		Class<?>[] parameterTypes = Arrays.stream(creator.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
 		// Shortcut for common case
