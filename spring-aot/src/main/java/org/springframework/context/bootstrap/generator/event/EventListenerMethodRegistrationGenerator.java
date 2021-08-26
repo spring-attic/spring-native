@@ -18,6 +18,7 @@ package org.springframework.context.bootstrap.generator.event;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -149,7 +150,7 @@ public class EventListenerMethodRegistrationGenerator {
 				}
 			}
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	private List<EventListenerMetadataGenerator> processBean(String beanName, Class<?> targetType) {

@@ -11,7 +11,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.bootstrap.generator.BootstrapClass;
 import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionEntry;
@@ -19,6 +21,7 @@ import org.springframework.context.bootstrap.generator.sample.SimpleConfiguratio
 import org.springframework.context.bootstrap.generator.sample.event.AnotherEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleTransactionalEventListener;
+import org.springframework.context.bootstrap.generator.sample.scope.SimpleServiceImpl;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.transaction.event.TransactionalEventListenerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -73,6 +76,18 @@ class EventListenerMethodRegistrationGeneratorTests {
 		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
 				"    EventListenerMetadata.forBean(\"simple\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
 				"    EventListenerMetadata.forBean(\"transactional\", SingleTransactionalEventListener.class).eventListenerFactoryBeanName(\"internalTxEventListenerFactory\").annotatedMethod(\"onEvent\", ApplicationEvent.class)",
+				"));");
+	}
+
+	@Test
+	void writeEventListenersRegistrationWithScopedProxy() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(SimpleServiceImpl.class);
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
+		assertThat(generateCode(beanFactory)).lines().containsExactly(
+				"context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
+				"    EventListenerMetadata.forBean(\"simpleServiceImpl\", SimpleServiceImpl.class).annotatedMethod(\"onContextRefresh\")",
 				"));");
 	}
 
