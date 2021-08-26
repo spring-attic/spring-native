@@ -16,7 +16,7 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.nativex.json.JSONArray;
 
@@ -37,7 +37,7 @@ class ProxiesDescriptorJsonConverter {
 
 	public JSONArray toJsonArray(JdkProxyDescriptor pd) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<String> interfaces = pd.getTypes();
+		Collection<String> interfaces = pd.getTypes();
 		for (String intface: interfaces) {
 			jsonArray.put(intface);
 		}

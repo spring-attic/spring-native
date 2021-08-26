@@ -16,8 +16,9 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Describes a proxy via a set of types it should implement.
@@ -26,13 +27,13 @@ import java.util.List;
  */
 public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
-	protected List<String> types; // e.g. java.io.Serializable
+	protected Set<String> types; // e.g. java.io.Serializable
 
 	JdkProxyDescriptor() {
 	}
 
-	public JdkProxyDescriptor(List<String> types) {
-		this.types = new ArrayList<>(types);
+	public JdkProxyDescriptor(Collection<String> types) {
+		this.types = new HashSet<>(types);
 	}
 
 	@Override
@@ -84,36 +85,29 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
 	@Override
 	public int compareTo(JdkProxyDescriptor o) {
-		List<String> l = this.types;
-		List<String> r = o.types;
+		Set<String> l = this.types;
+		Set<String> r = o.types;
 		if (l.size() != r.size()) {
 			return l.size() - r.size();
 		}
-		for (int i = 0; i < l.size(); i++) {
-			int cmpTo = l.get(i).compareTo(r.get(i));
-			if (cmpTo != 0) {
-				return cmpTo;
-			}
-		}
-		return 0; // equal!
+		return l.containsAll(r) ? 0 : 1; // equal!
 	}
 
-	public static JdkProxyDescriptor of(List<String> interfaces) {
+	public static JdkProxyDescriptor of(Collection<String> interfaces) {
 		JdkProxyDescriptor pd = new JdkProxyDescriptor();
 		pd.setInterfaces(interfaces);
 		return pd;
 	}
 
-	public void setInterfaces(List<String> interfaces) {
-		this.types = new ArrayList<>();
-		this.types.addAll(interfaces);
+	public void setInterfaces(Collection<String> interfaces) {
+		this.types = new HashSet<>(interfaces);
 	}
 
 	public boolean containsInterface(String intface) {
 		return types.contains(intface);
 	}
 
-	public List<String> getTypes() {
+	public Collection<String> getTypes() {
 		return types;
 	}
 

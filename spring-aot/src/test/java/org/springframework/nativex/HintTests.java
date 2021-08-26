@@ -260,7 +260,7 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
-		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.io.Serializable");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.io.Serializable");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
@@ -281,7 +281,7 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
-		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
@@ -312,12 +312,12 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.Integer");
-		assertThat(cpd.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd2 = (AotProxyDescriptor)proxyDescriptors.get(1);
 		assertThat(cpd2.getTargetClassType()).isEqualTo("java.lang.Number");
-		assertThat(cpd2.getInterfaceTypes().get(0)).isEqualTo("java.util.List");
+		assertThat(cpd2.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd2.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 	

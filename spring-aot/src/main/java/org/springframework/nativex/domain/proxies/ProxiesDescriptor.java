@@ -16,28 +16,29 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * https://github.com/oracle/graal/blob/master/substratevm/REFLECTION.md
+ * https://github.com/oracle/graal/blob/master/docs/reference-manual/native-image/Reflection.md
  * 
  * @author Andy Clement
  */
 public class ProxiesDescriptor {
 
-	private final List<JdkProxyDescriptor> proxyDescriptors;
+	private final Set<JdkProxyDescriptor> proxyDescriptors;
 
 	public ProxiesDescriptor() {
-		this.proxyDescriptors = new ArrayList<>();
+		this.proxyDescriptors = new HashSet<>();
 	}
 
 	public ProxiesDescriptor(ProxiesDescriptor metadata) {
-		this.proxyDescriptors = new ArrayList<>(metadata.proxyDescriptors);
+		this.proxyDescriptors = new HashSet<>(metadata.proxyDescriptors);
 	}
 
-	public List<JdkProxyDescriptor> getProxyDescriptors() {
+	public Collection<JdkProxyDescriptor> getProxyDescriptors() {
 		return this.proxyDescriptors;
 	}
 
@@ -75,7 +76,7 @@ public class ProxiesDescriptor {
 		}
 	}
 
-	public void consume(Consumer<List<String>> consumer) {
+	public void consume(Consumer<Collection<String>> consumer) {
 		proxyDescriptors.stream().forEach(pd -> consumer.accept(pd.getTypes()));
 	}
 

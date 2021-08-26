@@ -16,7 +16,7 @@
 
 package org.springframework.nativex.support;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
@@ -39,12 +39,12 @@ public class DynamicProxiesHandler extends Handler {
 		}
 	}
 	
-	public boolean addClassProxy(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
+	public boolean addClassProxy(String targetClassName, Collection<String> interfaceNames, int proxyFeatures) {
 		AotProxyDescriptor cpd = new AotProxyDescriptor(targetClassName, interfaceNames, proxyFeatures);
 		return collector.addClassProxy(cpd, true);
 	}
 
-	public boolean addProxy(List<String> interfaceNames) {
+	public boolean addProxy(Collection<String> interfaceNames) {
 		return collector.addProxy(interfaceNames, true);
 	}
 }

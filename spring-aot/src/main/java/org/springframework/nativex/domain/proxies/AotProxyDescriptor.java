@@ -16,8 +16,9 @@
 
 package org.springframework.nativex.domain.proxies;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.aop.framework.BuildTimeProxyDescriptor;
 import org.springframework.nativex.hint.ProxyBits;
@@ -32,7 +33,7 @@ public class AotProxyDescriptor extends JdkProxyDescriptor {
 
 	private final int proxyFeatures;
 	
-	public AotProxyDescriptor(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
+	public AotProxyDescriptor(String targetClassName, Collection<String> interfaceNames, int proxyFeatures) {
 		super(interfaceNames);
 		this.targetClassName = targetClassName;
 		this.proxyFeatures = proxyFeatures;
@@ -42,11 +43,11 @@ public class AotProxyDescriptor extends JdkProxyDescriptor {
 		return targetClassName;
 	}
 
-	public List<String> getInterfaceTypes() {
+	public Collection<String> getInterfaceTypes() {
 		return types;
 	}
 
-	public List<String> getTypes() {
+	public Collection<String> getTypes() {
 		throw new IllegalStateException();
 	}
 	
@@ -96,6 +97,6 @@ public class AotProxyDescriptor extends JdkProxyDescriptor {
 	}
 
 	public BuildTimeProxyDescriptor asCPDescriptor() {
-		return new BuildTimeProxyDescriptor(targetClassName, types, proxyFeatures);
+		return new BuildTimeProxyDescriptor(targetClassName, new ArrayList<>(types), proxyFeatures);
 	}
 }

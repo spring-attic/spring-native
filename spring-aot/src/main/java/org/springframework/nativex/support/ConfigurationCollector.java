@@ -17,9 +17,6 @@
 package org.springframework.nativex.support;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -146,9 +143,8 @@ public class ConfigurationCollector {
 		this.ts = ts;
 	}
 
-	private boolean checkTypes(List<String> types, Predicate<Type> test) {
-		for (int i = 0; i < types.size(); i++) {
-			String className = types.get(i);
+	private boolean checkTypes(Collection<String> types, Predicate<Type> test) {
+		for (String className : types) {
 			Type clazz = ts.resolveDotted(className, true);
 			if (!test.test(clazz)) {
 				return false;
@@ -157,7 +153,7 @@ public class ConfigurationCollector {
 		return true;
 	}
 
-	public boolean addProxy(List<String> interfaceNames, boolean verify) {
+	public boolean addProxy(Collection<String> interfaceNames, boolean verify) {
 		if (verify) {
 			if (!checkTypes(interfaceNames, t -> t!=null && t.isInterface())) {
 				return false;
@@ -185,13 +181,6 @@ public class ConfigurationCollector {
 			return null;
 		} else {
 			return Arrays.copyOfRange(array, 1, array.length);
-		}
-	}
-	
-	private void writeNativeImageProperties(File file) throws IOException {
-		String content = getNativeImagePropertiesContent();
-		try (FileOutputStream fos = new FileOutputStream(file)) {
-			fos.write(content.getBytes());
 		}
 	}
 	
@@ -304,7 +293,6 @@ public class ConfigurationCollector {
 			if (areMembersSpecified(classDescriptor)) {
 				if (!verifyMembers(classDescriptor)) {
 					logger.debug("Stripped down to a base class descriptor for "+classDescriptor.getName());
-					Set<Flag> existingFlags = classDescriptor.getFlags();
 					classDescriptor = ClassDescriptor.of(classDescriptor.getName());
 					// TODO should set some flags here?
 					anyFailed=true;
@@ -345,7 +333,6 @@ public class ConfigurationCollector {
 		}
 		if (areMembersSpecified(classDescriptor)) {
 			if (!verifyMembers(classDescriptor)) {
-				Set<Flag> existingFlags = classDescriptor.getFlags();
 				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
 				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
 			}
@@ -359,7 +346,6 @@ public class ConfigurationCollector {
 		}
 		if (areMembersSpecified(classDescriptor)) {
 			if (!verifyMembers(classDescriptor)) {
-				Set<Flag> existingFlags = classDescriptor.getFlags();
 				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
 				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
 			}
