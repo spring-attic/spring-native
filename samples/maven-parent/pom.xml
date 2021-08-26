@@ -175,7 +175,7 @@
 				<!-- Avoid a clash between Spring Boot repackaging and native-maven-plugin -->
 				<repackage.classifier>exec</repackage.classifier>
 
-				<native.buildtools.version>0.9.1</native.buildtools.version>
+				<native.buildtools.version>0.9.3</native.buildtools.version>
 			</properties>
 			<dependencies>
 				<!-- Won't be needed as of JUnit 5.8, see https://github.com/junit-team/junit5/issues/2619 -->
