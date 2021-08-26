@@ -162,13 +162,13 @@
 								</goals>
 								<phase>prepare-package</phase>
 								<configuration>
-									<source>${java.version}</source>
 									<doctitle>Spring Native ${project.version} API</doctitle>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
 									<sourceFileIncludes>org/springframework/nativex/hint/*.java</sourceFileIncludes>
+									<detectJavaApiLink>false</detectJavaApiLink>
 									<detectOfflineLinks>false</detectOfflineLinks>
 									<attach>false</attach>
 									<quiet>true</quiet>
