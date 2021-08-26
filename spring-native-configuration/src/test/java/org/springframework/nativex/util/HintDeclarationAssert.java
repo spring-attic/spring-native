@@ -56,7 +56,7 @@ public class HintDeclarationAssert extends AbstractAssert<HintDeclarationAssert,
 	public HintDeclarationAssert containsProxyFor(Class<?> type) {
 
 		if (!actual.getProxyDescriptors().stream().map(JdkProxyDescriptor::getTypes)
-				.anyMatch(types -> type.getName().equals(types.get(0)))) {
+				.anyMatch(types -> type.getName().equals(types.first()))) {
 
 			failWithMessage("Expected HintDeclaration to contain proxy config for %s but was not in %s",
 					type.getName(), actual.getProxyDescriptors());

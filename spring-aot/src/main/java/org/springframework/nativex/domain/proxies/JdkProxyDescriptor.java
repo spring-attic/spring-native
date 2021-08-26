@@ -16,23 +16,25 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Describes a proxy via a set of types it should implement.
  *
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
-	protected List<String> types; // e.g. java.io.Serializable
+	protected SortedSet<String> types; // e.g. java.io.Serializable
 
 	JdkProxyDescriptor() {
 	}
 
-	public JdkProxyDescriptor(List<String> types) {
-		this.types = new ArrayList<>(types);
+	public JdkProxyDescriptor(Collection<String> types) {
+		this.types = new TreeSet<>(types);
 	}
 
 	@Override
@@ -84,28 +86,22 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
 	@Override
 	public int compareTo(JdkProxyDescriptor o) {
-		List<String> l = this.types;
-		List<String> r = o.types;
+		SortedSet<String> l = this.types;
+		SortedSet<String> r = o.types;
 		if (l.size() != r.size()) {
 			return l.size() - r.size();
 		}
-		for (int i = 0; i < l.size(); i++) {
-			int cmpTo = l.get(i).compareTo(r.get(i));
-			if (cmpTo != 0) {
-				return cmpTo;
-			}
-		}
-		return 0; // equal!
+		return l.containsAll(r) ? 0 : 1; // equal!
 	}
 
-	public static JdkProxyDescriptor of(List<String> interfaces) {
+	public static JdkProxyDescriptor of(Collection<String> interfaces) {
 		JdkProxyDescriptor pd = new JdkProxyDescriptor();
 		pd.setInterfaces(interfaces);
 		return pd;
 	}
 
-	public void setInterfaces(List<String> interfaces) {
-		this.types = new ArrayList<>();
+	public void setInterfaces(Collection<String> interfaces) {
+		this.types = new TreeSet<>();
 		this.types.addAll(interfaces);
 	}
 
@@ -113,7 +109,7 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 		return types.contains(intface);
 	}
 
-	public List<String> getTypes() {
+	public SortedSet<String> getTypes() {
 		return types;
 	}
 
