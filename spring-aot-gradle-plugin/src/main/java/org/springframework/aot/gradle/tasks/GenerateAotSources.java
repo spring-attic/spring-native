@@ -64,7 +64,7 @@ public class GenerateAotSources extends JavaExec {
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
-		setMain(GenerateBootstrap.class.getCanonicalName());
+		getMainClass().set(GenerateBootstrap.class.getCanonicalName());
 		getArgumentProviders().add(new BootstrapGeneratorArgumentProvider());
 	}
 
