@@ -218,7 +218,7 @@ longest matching prefix in this setting will apply (in cases where a property ma
 
 ==== Debugging the source generation
 
-The Spring AOT plugins spawn a new process to perform the source generation. To remote debug this process, set the `codeGenDebugPort` parameter in the command line argument; then, the source generation process launches with a listener accepting a remote debugger on the specified port.
+The Spring AOT plugins spawns a new process to perform the source generation. To remote debug this process, you can set a debug System property on the command line; then, the source generation process launches with a listener accepting a remote debugger on the specified port.
 
 [source,bash,role="primary"]
 .Maven
@@ -228,7 +228,10 @@ $ mvn -Pnative spring-aot:generate@generate -Dspring.aot.codeGenDebugPort=9000
 [source,bash,role="secondary"]
 .Gradle
 ----
-$ gradle generateAot -PcodeGenDebugPort=9000
+$ # use the port 5005 by default
+$ ./gradlew generateAot -Pspring.aot.debug=true
+$ # configure a custom port
+$ ./gradlew generateAot -Pspring.aot.debug=true -Dspring.aot.debug.port=9000
 ----
 
 
