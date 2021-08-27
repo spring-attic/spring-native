@@ -37,6 +37,9 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
@@ -221,7 +224,20 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		generate.setResourceInputDirectories(testSourceSet.getResources());
 		generate.getSourcesOutputDirectory().set(aotTestSourcesDirectory);
 		generate.getResourcesOutputDirectory().set(aotTestResourcesDirectory);
+		configureToolchainConvention(project, generate);
 		return generate;
+	}
+
+	private void configureToolchainConvention(Project project, GenerateAotSources generateAotSources) {
+		if (isGradle67OrLater()) {
+			JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+			JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+			generateAotSources.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
+		}
+	}
+
+	private boolean isGradle67OrLater() {
+		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.7")) >= 0;
 	}
 
 	private void configureAotTestTasks(TaskContainer tasks, SourceSetContainer sourceSets, SourceSet aotSourceSet,
