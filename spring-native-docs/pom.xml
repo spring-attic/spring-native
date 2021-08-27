@@ -162,6 +162,7 @@
 								</goals>
 								<phase>prepare-package</phase>
 								<configuration>
+									<source>1.8</source>
 									<doctitle>Spring Native ${project.version} API</doctitle>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
