@@ -3,6 +3,7 @@ org.springframework.data.SpringDataComponentProcessor
 org.springframework.data.JpaComponentProcessor
 org.springframework.web.WebComponentProcessor
 org.springframework.AotProxyComponentProcessor
+org.springframework.AotProxyRepositoryComponentProcessor
 org.springframework.SynthesizerComputationComponentProcessor
 org.springframework.TransactionalComponentProcessor
 org.springframework.TransactionalEventListenerComponentProcessor
