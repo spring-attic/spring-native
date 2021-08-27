@@ -17,8 +17,8 @@
 package org.springframework.nativex.domain.proxies;
 
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -29,17 +29,17 @@ import java.util.function.Consumer;
  */
 public class ProxiesDescriptor {
 
-	private final SortedSet<JdkProxyDescriptor> proxyDescriptors;
+	private final Set<JdkProxyDescriptor> proxyDescriptors;
 
 	public ProxiesDescriptor() {
-		this.proxyDescriptors = new TreeSet<>();
+		this.proxyDescriptors = new LinkedHashSet<>();
 	}
 
 	public ProxiesDescriptor(ProxiesDescriptor metadata) {
-		this.proxyDescriptors = new TreeSet<>(metadata.proxyDescriptors);
+		this.proxyDescriptors = new LinkedHashSet<>(metadata.proxyDescriptors);
 	}
 
-	public SortedSet<JdkProxyDescriptor> getProxyDescriptors() {
+	public Set<JdkProxyDescriptor> getProxyDescriptors() {
 		return this.proxyDescriptors;
 	}
 

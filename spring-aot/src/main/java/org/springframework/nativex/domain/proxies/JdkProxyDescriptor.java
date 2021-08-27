@@ -17,8 +17,9 @@
 package org.springframework.nativex.domain.proxies;
 
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Describes a proxy via a set of types it should implement.
@@ -28,13 +29,13 @@ import java.util.TreeSet;
  */
 public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
-	protected SortedSet<String> types; // e.g. java.io.Serializable
+	protected Set<String> types; // e.g. java.io.Serializable
 
 	JdkProxyDescriptor() {
 	}
 
 	public JdkProxyDescriptor(Collection<String> types) {
-		this.types = new TreeSet<>(types);
+		this.types = new LinkedHashSet<>(types);
 	}
 
 	@Override
@@ -86,12 +87,21 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 
 	@Override
 	public int compareTo(JdkProxyDescriptor o) {
-		SortedSet<String> l = this.types;
-		SortedSet<String> r = o.types;
+		Set<String> l = this.types;
+		Set<String> r = o.types;
 		if (l.size() != r.size()) {
 			return l.size() - r.size();
 		}
-		return l.containsAll(r) ? 0 : 1; // equal!
+		if (l.isEmpty()) return 0;
+		
+		Iterator<String> iterator1 = l.iterator();
+		Iterator<String> iterator2 = r.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int value = iterator1.next().compareTo(iterator2.next());
+			if (value != 0)
+				return value;
+		}
+		return 0; // equal!
 	}
 
 	public static JdkProxyDescriptor of(Collection<String> interfaces) {
@@ -101,15 +111,14 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 	}
 
 	public void setInterfaces(Collection<String> interfaces) {
-		this.types = new TreeSet<>();
-		this.types.addAll(interfaces);
+		this.types = new LinkedHashSet<>(interfaces);
 	}
 
 	public boolean containsInterface(String intface) {
 		return types.contains(intface);
 	}
 
-	public SortedSet<String> getTypes() {
+	public Set<String> getTypes() {
 		return types;
 	}
 

@@ -18,7 +18,7 @@ package org.springframework.nativex.domain.proxies;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.Set;
 
 import org.springframework.aop.framework.BuildTimeProxyDescriptor;
 import org.springframework.nativex.hint.ProxyBits;
@@ -44,11 +44,11 @@ public class AotProxyDescriptor extends JdkProxyDescriptor {
 		return targetClassName;
 	}
 
-	public SortedSet<String> getInterfaceTypes() {
+	public Set<String> getInterfaceTypes() {
 		return types;
 	}
 
-	public SortedSet<String> getTypes() {
+	public Set<String> getTypes() {
 		throw new IllegalStateException();
 	}
 	

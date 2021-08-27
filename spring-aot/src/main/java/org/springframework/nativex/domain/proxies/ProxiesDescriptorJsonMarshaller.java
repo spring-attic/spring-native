@@ -23,8 +23,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.springframework.nativex.json.JSONArray;
 
@@ -91,7 +91,7 @@ public class ProxiesDescriptorJsonMarshaller {
 	
 	private static JdkProxyDescriptor toProxyDescriptor(JSONArray array) throws Exception {
 		JdkProxyDescriptor pd = new JdkProxyDescriptor();
-		Set<String> interfaces = new HashSet<>();
+		Collection<String> interfaces = new ArrayList<>();
 		for (int i=0;i<array.length();i++) {
 			interfaces.add(array.getString(i));
 		}

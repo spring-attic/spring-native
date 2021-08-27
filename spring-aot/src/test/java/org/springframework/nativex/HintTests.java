@@ -115,8 +115,8 @@ public class HintTests {
 		List<JdkProxyDescriptor> proxies= hint.getProxyDescriptors();
 		assertEquals(1,proxies.size());
 		String[] types = proxies.get(0).getTypes().toArray(new String[] {}); 
-		assertEquals("java.lang.Integer",types[0]);
-		assertEquals("java.lang.String",types[1]);
+		assertEquals("java.lang.String",types[0]);
+		assertEquals("java.lang.Integer",types[1]);
 	}
 
 	@NativeHint(jdkProxies = { @JdkProxyHint(types = { String.class,Integer.class }) })
@@ -260,7 +260,7 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
-		assertThat(cpd.getInterfaceTypes().first()).isEqualTo("java.io.Serializable");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.io.Serializable");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
@@ -281,7 +281,7 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.String");
-		assertThat(cpd.getInterfaceTypes().first()).isEqualTo("java.util.List");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 
@@ -312,12 +312,12 @@ public class HintTests {
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd = (AotProxyDescriptor)proxyDescriptors.get(0);
 		assertThat(cpd.getTargetClassType()).isEqualTo("java.lang.Integer");
-		assertThat(cpd.getInterfaceTypes().first()).isEqualTo("java.util.List");
+		assertThat(cpd.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 		assertThat(proxyDescriptors.get(0).isClassProxy()).isTrue();
 		AotProxyDescriptor cpd2 = (AotProxyDescriptor)proxyDescriptors.get(1);
 		assertThat(cpd2.getTargetClassType()).isEqualTo("java.lang.Number");
-		assertThat(cpd2.getInterfaceTypes().first()).isEqualTo("java.util.List");
+		assertThat(cpd2.getInterfaceTypes().iterator().next()).isEqualTo("java.util.List");
 		assertThat(cpd2.getProxyFeatures()).isEqualTo(ProxyBits.EXPOSE_PROXY);
 	}
 	

@@ -90,8 +90,8 @@ public class DescriptorTests {
 		ProxiesDescriptor pd2 = ProxiesDescriptor.fromJSON(json);
 		assertThat(pd.toString()).isEqualTo(pd2.toString());
 		assertThat(d.containsInterface("java.io.Serializable")).isTrue();
-		assertThat(d.compareTo(pd2.getProxyDescriptors().first())).isEqualTo(0);
-		assertThat(d.equals(pd2.getProxyDescriptors().first())).isTrue();
+		assertThat(d.compareTo(pd2.getProxyDescriptors().iterator().next())).isEqualTo(0);
+		assertThat(d.equals(pd2.getProxyDescriptors().iterator().next())).isTrue();
 	}
 
 	@Test

@@ -17,8 +17,9 @@
 package org.springframework.aop.framework;
 
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 
 /**
  * 
@@ -29,13 +30,13 @@ public class BuildTimeProxyDescriptor {
 
 	private final String targetClassName;
 	
-	private final SortedSet<String> interfaceNames;
+	private final Set<String> interfaceNames;
 
 	private final int proxyFeatures; // ProxyBits
 	
 	public BuildTimeProxyDescriptor(String targetClassName, Collection<String> interfaceNames, int proxyFeatures) {
 		this.targetClassName = targetClassName;
-		this.interfaceNames = new TreeSet<String>(interfaceNames);
+		this.interfaceNames = new LinkedHashSet<String>(interfaceNames);
 		this.proxyFeatures = proxyFeatures;
 	}
 
@@ -43,7 +44,7 @@ public class BuildTimeProxyDescriptor {
 		return (proxyFeatures&bit)!=0;
 	}
 
-	public SortedSet<String> getInterfaceTypes() {
+	public Set<String> getInterfaceTypes() {
 		return interfaceNames;
 	}
 
