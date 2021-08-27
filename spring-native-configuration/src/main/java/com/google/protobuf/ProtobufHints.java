@@ -18,12 +18,13 @@ package com.google.protobuf;
 
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@InitializationHint(types = {
+@NativeHint(trigger = com.google.protobuf.Extension.class, initialization = @InitializationHint(types = {
 		com.google.protobuf.Extension.class,
 		com.google.protobuf.ExtensionLite.class,
 		com.google.protobuf.ExtensionRegistry.class
-}, initTime = InitializationTime.BUILD)
+}, initTime = InitializationTime.BUILD))
 public class ProtobufHints implements NativeConfiguration {
 }
