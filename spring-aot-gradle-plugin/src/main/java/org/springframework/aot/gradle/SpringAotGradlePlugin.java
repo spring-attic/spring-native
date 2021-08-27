@@ -55,6 +55,10 @@ import org.springframework.util.FileSystemUtils;
  */
 public class SpringAotGradlePlugin implements Plugin<Project> {
 
+	public static final String DEBUG_SYSTEM_PROPERTY = "spring.aot.debug";
+
+	public static final String DEBUG_PORT_SYSTEM_PROPERTY = "spring.aot.debug.port";
+
 	public static final String EXTENSION_NAME = "springAot";
 
 	public static final String AOT_SOURCE_SET_NAME = "aot";
@@ -64,8 +68,6 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 	public static final String AOT_TEST_SOURCE_SET_NAME = "aotTest";
 
 	public static final String GENERATE_TEST_TASK_NAME = "generateTestAot";
-
-	private static final String CODE_GEN_DEBUG_PORT_PROPERTY = "codeGenDebugPort";
 
 
 	@Override
@@ -173,25 +175,21 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		generate.setResourceInputDirectories(mainSourceSet.getResources());
 		generate.getSourcesOutputDirectory().set(aotSourcesDirectory);
 		generate.getResourcesOutputDirectory().set(aotResourcesDirectory);
-
-		Integer debugPort = getDebugPort(project);
-		if (debugPort != null) {
-			generate.setDebug(true);
-			generate.getDebugOptions().getPort().set(debugPort);
-		}
+		generate.setDebug(isDebug());
+		generate.getDebugOptions().getPort().set(getDebugPort());
 		return generate;
 	}
 
-	private Integer getDebugPort(Project project) {
-		Object debugPortProperty = project.findProperty(CODE_GEN_DEBUG_PORT_PROPERTY);
-		if (debugPortProperty != null) {
-			try {
-				return Integer.parseInt(debugPortProperty.toString());
-			} catch (NumberFormatException exception) {
-				// ignore
-			}
+	private boolean isDebug() {
+		return Boolean.parseBoolean(System.getProperty(DEBUG_SYSTEM_PROPERTY));
+	}
+
+	private Integer getDebugPort() {
+		try {
+			return Integer.parseInt(System.getProperty(DEBUG_PORT_SYSTEM_PROPERTY));
+		} catch (NumberFormatException exc) {
+			return 5005;
 		}
-		return null;
 	}
 
 	private void configureAotTasks(Project project, SourceSet aotSourceSet, GenerateAotSources generateAotSources) {
