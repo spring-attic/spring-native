@@ -223,15 +223,19 @@ The Spring AOT plugins spawns a new process to perform the source generation. To
 [source,bash,role="primary"]
 .Maven
 ----
-$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.codeGenDebugPort=9000
+$ # use the port 5005 by default
+$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug=true
+$ # configure custom debug options
+$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
+$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9000 -Xnoagent"
 ----
 [source,bash,role="secondary"]
 .Gradle
 ----
 $ # use the port 5005 by default
-$ ./gradlew generateAot -Pspring.aot.debug=true
+$ ./gradlew generateAot -Dspring.aot.debug=true
 $ # configure a custom port
-$ ./gradlew generateAot -Pspring.aot.debug=true -Dspring.aot.debug.port=9000
+$ ./gradlew generateAot -Dspring.aot.debug=true -Dspring.aot.debug.port=9000
 ----
 
 
