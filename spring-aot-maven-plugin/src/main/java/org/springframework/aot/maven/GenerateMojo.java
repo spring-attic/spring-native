@@ -33,6 +33,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
@@ -100,9 +101,10 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 
 				List<String> args = new ArrayList<>();
 				// remote debug
-				if (this.codeGenDebugPort != null) {
-					args.add("-Xdebug");
-					args.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + this.codeGenDebugPort);
+				if ("true".equals(this.debug)) {
+					args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
+				} else {
+					args.addAll(Arrays.asList(CommandLineUtils.translateCommandline(this.debug)));
 				}
 				args.add("-cp");
 				args.add(asClasspathArgument(runtimeClasspathElements));
