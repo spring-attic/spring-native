@@ -1,7 +1,7 @@
 package com.example.discoveryclient;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ public class DiscoveryClientApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(DiscoveryClientApplication.class, args);
+		SpringApplication.run(DiscoveryClientApplication.class, args);
 		try { Thread.sleep(20000); } catch (Exception e) {}
 	}
 

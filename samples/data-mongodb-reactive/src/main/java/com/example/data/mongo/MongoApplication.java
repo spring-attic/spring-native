@@ -15,7 +15,7 @@
  */
 package com.example.data.mongo;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class MongoApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringAotApplication.run(MongoApplication.class);
+		SpringApplication.run(MongoApplication.class);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

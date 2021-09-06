@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.annotation.Id;
@@ -78,7 +78,7 @@ public class WebfluxWebsocketApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(WebfluxWebsocketApplication.class, args);
+		SpringApplication.run(WebfluxWebsocketApplication.class, args);
 	}
 
 }

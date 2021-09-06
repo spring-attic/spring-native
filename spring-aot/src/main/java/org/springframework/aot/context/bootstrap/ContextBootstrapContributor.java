@@ -114,7 +114,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", properties));
 	}
 
-	// TODO Avoid duplication with WebApplicationType and SpringAotApplication.AOT_FACTORY
+	// TODO Avoid duplication with WebApplicationType and SpringApplicationAotUtils.AOT_FACTORY
 	private GenericApplicationContext createApplicationContext(WebApplicationType webApplicationType) {
 		switch (webApplicationType) {
 			case REACTIVE:
