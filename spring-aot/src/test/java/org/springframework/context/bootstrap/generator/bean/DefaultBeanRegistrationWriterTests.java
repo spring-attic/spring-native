@@ -365,7 +365,7 @@ class DefaultBeanRegistrationWriterTests {
 	private DefaultBeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition) {
 		DefaultBeanRegistrationWriterSupplier supplier = new DefaultBeanRegistrationWriterSupplier();
 		supplier.setBeanFactory(new DefaultListableBeanFactory());
-		return supplier.get(beanName, beanDefinition);
+		return (DefaultBeanRegistrationWriter) supplier.get(beanName, beanDefinition);
 	}
 
 	private DefaultBeanRegistrationWriter createInstance(BeanDefinition beanDefinition) {
