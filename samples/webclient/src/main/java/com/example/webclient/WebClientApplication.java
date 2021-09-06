@@ -1,6 +1,6 @@
 package com.example.webclient;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.nativex.hint.TypeHint;
 
@@ -9,7 +9,7 @@ import org.springframework.nativex.hint.TypeHint;
 public class WebClientApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringAotApplication.run(WebClientApplication.class, args);
+		SpringApplication.run(WebClientApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 	

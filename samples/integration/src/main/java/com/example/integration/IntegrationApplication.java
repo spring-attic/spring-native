@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +47,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 public class IntegrationApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		ApplicationContext context = SpringAotApplication.run(IntegrationApplication.class, args);
+		ApplicationContext context = SpringApplication.run(IntegrationApplication.class, args);
 
 		WebClient webClient =
 				context.getBean(WebClient.Builder.class)

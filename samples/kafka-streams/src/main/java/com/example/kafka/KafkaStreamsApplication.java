@@ -6,7 +6,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
@@ -19,7 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class KafkaStreamsApplication {
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(KafkaStreamsApplication.class, args).close();
+		SpringApplication.run(KafkaStreamsApplication.class, args).close();
 	}
 
 	@Bean

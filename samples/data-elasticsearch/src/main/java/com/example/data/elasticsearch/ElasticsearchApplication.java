@@ -15,7 +15,7 @@
  */
 package com.example.data.elasticsearch;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,7 @@ public class ElasticsearchApplication {
 
 	public static void main(String[] args) throws Exception {
 
-		SpringAotApplication app = new SpringAotApplication(ElasticsearchApplication.class);
+		SpringApplication app = new SpringApplication(ElasticsearchApplication.class);
 		app.setWebApplicationType(WebApplicationType.NONE);
 		app.run();
 		Thread.currentThread().join(); // To be able to measure memory consumption

@@ -1,7 +1,7 @@
 package com.example.task;
 
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.task.configuration.EnableTask;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ public class TaskApplication {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringAotApplication.run(TaskApplication.class, args);
+		SpringApplication.run(TaskApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 

@@ -15,14 +15,14 @@
  */
 package com.example.data.redis;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class RedisApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringAotApplication.run(RedisApplication.class);
+		SpringApplication.run(RedisApplication.class);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 }

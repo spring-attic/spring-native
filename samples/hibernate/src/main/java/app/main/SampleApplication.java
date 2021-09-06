@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import app.main.Foo;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class SampleApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(SampleApplication.class, args);
+		SpringApplication.run(SampleApplication.class, args);
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.example.validator;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class ValidatorApplication {
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(ValidatorApplication.class, args);
+		SpringApplication.run(ValidatorApplication.class, args);
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ public class SpringCloudStreamKafkaApplication {
 	StreamBridge streamBridge;
 
 	public static void main(String[] args) {
-		SpringAotApplication.run(SpringCloudStreamKafkaApplication.class, args);
+		SpringApplication.run(SpringCloudStreamKafkaApplication.class, args);
 	}
 
 	@Bean

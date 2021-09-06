@@ -16,11 +16,9 @@
 
 package org.springframework.samples.petclinic;
 
-import org.springframework.aot.SpringAotApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.SerializationHint;
-import org.springframework.nativex.hint.TypeHint;
 
 /**
  * PetClinic Spring Boot Application.
@@ -38,7 +36,7 @@ import org.springframework.nativex.hint.TypeHint;
 public class PetClinicApplication {
 
     public static void main(String[] args) {
-        SpringAotApplication.run(PetClinicApplication.class, args);
+        SpringApplication.run(PetClinicApplication.class, args);
     }
 
 }
