@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
@@ -36,6 +37,7 @@ import org.springframework.context.bootstrap.generator.bean.support.ParameterWri
 import org.springframework.context.bootstrap.generator.bean.support.TypeWriter;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.AttributeAccessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -71,6 +73,10 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		this.parameterWriter = new ParameterWriter();
 	}
 
+	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
+		this(beanName, beanDefinition, beanValueWriter, BeanRegistrationWriterOptions.DEFAULTS);
+	}
+
 	@Override
 	public void writeBeanRegistration(BootstrapWriterContext context, Builder code) {
 		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
@@ -87,6 +93,15 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 			javaFile.addMethod(method);
 			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
 		}
+	}
+
+	/**
+	 * Return the predicate to use to include Bean Definition
+	 * {@link AttributeAccessor attributes}.
+	 * @return the bean definition's attributes include filter
+	 */
+	protected Predicate<String> getAttributeFilter() {
+		return (candidate) -> false;
 	}
 
 	void writeBeanRegistration(Builder code) {
@@ -153,6 +168,9 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		if (this.beanDefinition.hasPropertyValues()) {
 			handlePropertyValues(statements, bdVariable, this.beanDefinition.getPropertyValues());
 		}
+		if (this.beanDefinition.attributeNames().length > 0) {
+			handleAttributes(statements, bdVariable);
+		}
 		if (statements.isEmpty()) {
 			return;
 		}
@@ -209,6 +227,21 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		writeValue(code, value);
 		code.add(")");
 		return code.build();
+	}
+
+	private void handleAttributes(MultiStatement statements, String bdVariable) {
+		String[] attributeNames = this.beanDefinition.attributeNames();
+		Predicate<String> filter = getAttributeFilter();
+		for (String attributeName : attributeNames) {
+			if (filter.test(attributeName)) {
+				Object value = this.beanDefinition.getAttribute(attributeName);
+				Builder code = CodeBlock.builder();
+				code.add("$L.setAttribute($S, ", bdVariable, attributeName);
+				code.add((this.parameterWriter.writeParameterValue(value, ResolvableType.forInstance(value))));
+				code.add(")");
+				statements.add(code.build());
+			}
+		}
 	}
 
 	private void writeValue(Builder code, Object value) {
