@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.BasePackages;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterOptions;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
@@ -48,8 +47,7 @@ class AutoConfigurationPackagesBeanRegistrationWriterSupplier implements BeanReg
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(BasePackages.class)
 					.withInstanceCreator(BasePackages.class.getDeclaredConstructors()[0]).build();
 			BeanValueWriter valueWriter = createBeanValueWriter(beanDefinition, descriptor);
-			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, valueWriter,
-					BeanRegistrationWriterOptions.DEFAULTS);
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, valueWriter);
 		}
 		return null;
 	}

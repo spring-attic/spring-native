@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -213,11 +214,36 @@ class DefaultBeanRegistrationWriterTests {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
 				.addPropertyValue("name", innerBeanDefinition).getBeanDefinition();
 		DefaultBeanRegistrationWriter writer = new DefaultBeanRegistrationWriter("test", beanDefinition,
-				new SimpleBeanValueWriter(BeanInstanceDescriptor.of(beanDefinition.getResolvableType()).build(),
-						(code) -> code.add("() -> InjectionConfiguration::new")),
+				beanValueWriter(beanDefinition, (code) -> code.add("() -> InjectionConfiguration::new")),
 				BeanRegistrationWriterOptions.DEFAULTS);
 		assertThatIllegalStateException().isThrownBy(() -> writer.writeBeanRegistration(CodeBlock.builder()))
 				.withMessageContaining("No bean registration writer available for nested bean definition");
+	}
+
+	@Test
+	void writeAttributesIsOptIn() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class).getBeanDefinition();
+		beanDefinition.setAttribute("yes-1", 1);
+		beanDefinition.setAttribute("yes-2", 2);
+		beanDefinition.setAttribute("no-1", -1);
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).doesNotContain("setAttribute");
+	}
+
+	@Test
+	void writeAttributesUseFilter() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class).getBeanDefinition();
+		beanDefinition.setAttribute("yes-1", 1);
+		beanDefinition.setAttribute("yes-2", 2);
+		beanDefinition.setAttribute("no-1", -1);
+		BeanValueWriter beanValueWriter = beanValueWriter(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"));
+		DefaultBeanRegistrationWriter writer = new DefaultBeanRegistrationWriter("test", beanDefinition, beanValueWriter) {
+			@Override
+			protected Predicate<String> getAttributeFilter() {
+				return (candidate) -> candidate.startsWith("yes");
+			}
+		};
+		assertThat(CodeSnippet.of(writer::writeBeanRegistration)).contains("bd.setAttribute(\"yes-1\", 1)")
+				.contains("bd.setAttribute(\"yes-2\", 2)").doesNotContain("bd.setAttribute(\"no-1\", -1)");
 	}
 
 	@Test
@@ -235,7 +261,7 @@ class DefaultBeanRegistrationWriterTests {
 	void writeInnerBeanDefinition() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(SimpleComponent.class).getBeanDefinition();
-		assertThat(beanDefinition(beanDefinition)).lines()
+		assertThat(inner(beanDefinition)).lines()
 				.containsOnly("BeanDefinitionRegistrar.inner(SimpleComponent.class).instanceSupplier(SimpleComponent::new).toBeanDefinition()");
 	}
 
@@ -313,14 +339,17 @@ class DefaultBeanRegistrationWriterTests {
 
 	private CodeSnippet beanRegistration(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
 		return CodeSnippet.of((code) -> {
-			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor
-					.of(beanDefinition.getResolvableType()).build(), instanceSupplier);
+			BeanValueWriter beanValueWriter = beanValueWriter(beanDefinition, instanceSupplier);
 			createInstance(beanDefinition, beanValueWriter).writeBeanRegistration(code);
 		});
 	}
 
-	private CodeSnippet beanDefinition(BeanDefinition beanDefinition) {
+	private CodeSnippet inner(BeanDefinition beanDefinition) {
 		return CodeSnippet.of((code) -> createInstance(null, beanDefinition).writeBeanDefinition(code));
+	}
+
+	private BeanValueWriter beanValueWriter(BeanDefinition beanDefinition, Consumer<Builder> code) {
+		return new SimpleBeanValueWriter(BeanInstanceDescriptor.of(beanDefinition.getResolvableType()).build(), code);
 	}
 
 	private DefaultBeanRegistrationWriter createInstance(BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {

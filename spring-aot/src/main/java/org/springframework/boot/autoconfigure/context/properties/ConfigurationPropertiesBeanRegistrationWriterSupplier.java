@@ -20,7 +20,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterOptions;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
@@ -42,8 +41,7 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplier implements BeanRegis
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(MethodValidationExcludeFilter.class)
 					.withInstanceCreator(ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class))
 					.build();
-			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor),
-					BeanRegistrationWriterOptions.DEFAULTS);
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor));
 		}
 		return null;
 	}
