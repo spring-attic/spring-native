@@ -26,7 +26,7 @@ import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface BeanRegistrationGenerator {
+public interface BeanRegistrationWriter {
 
 	/**
 	 * Generate the necessary {@code statements} to register a bean in the context.

@@ -6,8 +6,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
@@ -37,17 +37,18 @@ import org.springframework.context.bootstrap.generator.bean.support.ParameterWri
 import org.springframework.context.bootstrap.generator.bean.support.TypeWriter;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.AttributeAccessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Base {@link BeanRegistrationGenerator} that determines if the registration code has
+ * Base {@link BeanRegistrationWriter} that determines if the registration code has
  * to be written in a separate class due to protected access.
  *
  * @author Stephane Nicoll
  */
-public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerator {
+public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	private static final TypeWriter typeWriter = new TypeWriter();
 
@@ -57,19 +58,23 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 
 	private final BeanValueWriter beanValueWriter;
 
-	private final BiFunction<String, BeanDefinition, DefaultBeanRegistrationGenerator> beanRegistrationGeneratorSupplier;
+	private final BeanRegistrationWriterOptions options;
 
 	private final ParameterWriter parameterWriter;
 
 	private int nesting = 0;
 
-	public DefaultBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter,
-			BiFunction<String, BeanDefinition, DefaultBeanRegistrationGenerator> beanRegistrationGeneratorSupplier) {
+	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter,
+			BeanRegistrationWriterOptions options) {
 		this.beanName = beanName;
 		this.beanDefinition = beanDefinition;
 		this.beanValueWriter = beanValueWriter;
-		this.beanRegistrationGeneratorSupplier = beanRegistrationGeneratorSupplier;
+		this.options = options;
 		this.parameterWriter = new ParameterWriter();
+	}
+
+	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
+		this(beanName, beanDefinition, beanValueWriter, BeanRegistrationWriterOptions.DEFAULTS);
 	}
 
 	@Override
@@ -88,6 +93,15 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 			javaFile.addMethod(method);
 			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
 		}
+	}
+
+	/**
+	 * Return the predicate to use to include Bean Definition
+	 * {@link AttributeAccessor attributes}.
+	 * @return the bean definition's attributes include filter
+	 */
+	protected Predicate<String> getAttributeFilter() {
+		return (candidate) -> false;
 	}
 
 	void writeBeanRegistration(Builder code) {
@@ -154,6 +168,9 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		if (this.beanDefinition.hasPropertyValues()) {
 			handlePropertyValues(statements, bdVariable, this.beanDefinition.getPropertyValues());
 		}
+		if (this.beanDefinition.attributeNames().length > 0) {
+			handleAttributes(statements, bdVariable);
+		}
 		if (statements.isEmpty()) {
 			return;
 		}
@@ -212,9 +229,24 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		return code.build();
 	}
 
+	private void handleAttributes(MultiStatement statements, String bdVariable) {
+		String[] attributeNames = this.beanDefinition.attributeNames();
+		Predicate<String> filter = getAttributeFilter();
+		for (String attributeName : attributeNames) {
+			if (filter.test(attributeName)) {
+				Object value = this.beanDefinition.getAttribute(attributeName);
+				Builder code = CodeBlock.builder();
+				code.add("$L.setAttribute($S, ", bdVariable, attributeName);
+				code.add((this.parameterWriter.writeParameterValue(value, ResolvableType.forInstance(value))));
+				code.add(")");
+				statements.add(code.build());
+			}
+		}
+	}
+
 	private void writeValue(Builder code, Object value) {
 		if (value instanceof BeanDefinition) {
-			DefaultBeanRegistrationGenerator nestedGenerator = writeNestedBeanDefinition((BeanDefinition) value);
+			DefaultBeanRegistrationWriter nestedGenerator = writeNestedBeanDefinition((BeanDefinition) value);
 			nestedGenerator.writeBeanDefinition(code);
 		}
 		if (value instanceof BeanReference) {
@@ -225,10 +257,14 @@ public class DefaultBeanRegistrationGenerator implements BeanRegistrationGenerat
 		}
 	}
 
-	private DefaultBeanRegistrationGenerator writeNestedBeanDefinition(BeanDefinition value) {
-		DefaultBeanRegistrationGenerator generator = this.beanRegistrationGeneratorSupplier.apply(null, value);
-		generator.nesting = this.nesting + 1;
-		return generator;
+	private DefaultBeanRegistrationWriter writeNestedBeanDefinition(BeanDefinition value) {
+		// TODO: stop assuming default implementation
+		DefaultBeanRegistrationWriter writer = (DefaultBeanRegistrationWriter) this.options.getWriterFor(null, value);
+		if (writer == null) {
+			throw new IllegalStateException("No bean registration writer available for nested bean definition " + value);
+		}
+		writer.nesting = this.nesting + 1;
+		return writer;
 	}
 
 	private void writeBeanType(Builder code) {

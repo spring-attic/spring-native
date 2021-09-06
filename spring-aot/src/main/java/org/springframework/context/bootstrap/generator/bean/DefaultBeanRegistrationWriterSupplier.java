@@ -17,24 +17,22 @@
 package org.springframework.context.bootstrap.generator.bean;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
- * Strategy interface to write the bean value supplier of a {@link BeanDefinition}.
+ * Default {@link BeanRegistrationWriterSupplier} implementation, providing an instance
+ * based on the actual class and resolved factory method.
  *
  * @author Stephane Nicoll
  */
-@FunctionalInterface
-public interface BeanValueWriterSupplier {
+@Order(Ordered.LOWEST_PRECEDENCE - 5)
+class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrationWriterSupplier {
 
-	/**
-	 * Return the {@link BeanValueWriter} to use for the specified merged
-	 * {@link BeanDefinition}.
-	 * @param beanName the name of the bean definition to handle
-	 * @param beanDefinition the merged bean definition to handle
-	 * @return the {@link BeanValueWriter} to use, or {@code null}
-	 * @see ConfigurableBeanFactory#getMergedBeanDefinition(String)
-	 */
-	BeanValueWriter get(String beanName, BeanDefinition beanDefinition);
+	@Override
+	protected BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,
+			BeanValueWriter beanValueWriter) {
+		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter, initializeOptions().build());
+	}
 
 }
