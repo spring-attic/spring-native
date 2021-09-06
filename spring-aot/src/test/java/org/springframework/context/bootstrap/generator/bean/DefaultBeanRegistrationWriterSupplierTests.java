@@ -25,31 +25,29 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DefaultBeanValueWriterSupplier}.
+ * Tests for {@link DefaultBeanRegistrationWriterSupplier}.
  *
  * @author Stephane Nicoll
  */
-class DefaultBeanValueWriterSupplierTests {
+class DefaultBeanRegistrationWriterSupplierTests {
 
 	@Test
 	void getWithRootBeanDefinitionProvideDefaultWriter() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		BeanValueWriter writer = getBeanValueWriter(beanFactory, BeanDefinitionBuilder.rootBeanDefinition(
+		BeanRegistrationWriter writer = getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder.rootBeanDefinition(
 				DefaultBeanValueWriterTests.class).getBeanDefinition());
-		assertThat(writer).isNotNull().isInstanceOf(DefaultBeanValueWriter.class);
-		assertThat(writer.getDescriptor().getUserBeanClass()).isEqualTo(DefaultBeanValueWriterTests.class);
+		assertThat(writer).isNotNull().isInstanceOf(DefaultBeanRegistrationWriter.class);
 	}
 
 	@Test
 	void getWithIncompatibleBeanDefinitionReturnNull() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		BeanValueWriter writer = getBeanValueWriter(beanFactory, BeanDefinitionBuilder
-				.genericBeanDefinition("com.example.Test").getBeanDefinition());
-		assertThat(writer).isNull();
+		assertThat(getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder
+				.genericBeanDefinition("com.example.Test").getBeanDefinition())).isNull();
 	}
 
-	private BeanValueWriter getBeanValueWriter(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
-		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
+	private BeanRegistrationWriter getBeanRegistrationWriter(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
+		DefaultBeanRegistrationWriterSupplier supplier = new DefaultBeanRegistrationWriterSupplier();
 		supplier.setBeanFactory(beanFactory);
 		return supplier.get("test", beanDefinition);
 	}

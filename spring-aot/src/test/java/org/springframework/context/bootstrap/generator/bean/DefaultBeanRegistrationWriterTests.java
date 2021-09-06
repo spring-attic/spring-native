@@ -51,13 +51,14 @@ import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link DefaultBeanRegistrationGenerator}.
+ * Tests for {@link DefaultBeanRegistrationWriter}.
  *
  * @author Stephane Nicoll
  */
-class DefaultBeanRegistrationGeneratorTests {
+class DefaultBeanRegistrationWriterTests {
 
 	@Test
 	void writeWithProtectedConstructorWriteToBlessedPackage() {
@@ -207,6 +208,19 @@ class DefaultBeanRegistrationGeneratorTests {
 	}
 
 	@Test
+	void writePropertyAsBeanDefinitionWithNoFactory() {
+		BeanDefinition innerBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class, "stringBean").getBeanDefinition();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
+				.addPropertyValue("name", innerBeanDefinition).getBeanDefinition();
+		DefaultBeanRegistrationWriter writer = new DefaultBeanRegistrationWriter("test", beanDefinition,
+				new SimpleBeanValueWriter(BeanInstanceDescriptor.of(beanDefinition.getResolvableType()).build(),
+						(code) -> code.add("() -> InjectionConfiguration::new")),
+				BeanRegistrationWriterOptions.DEFAULTS);
+		assertThatIllegalStateException().isThrownBy(() -> writer.writeBeanRegistration(CodeBlock.builder()))
+				.withMessageContaining("No bean registration writer available for nested bean definition");
+	}
+
+	@Test
 	void writePropertyAsBeanDefinitionUseDedicatedVariableName() {
 		BeanDefinition innerBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class, "stringBean").setRole(2).getBeanDefinition();
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
@@ -297,12 +311,6 @@ class DefaultBeanRegistrationGeneratorTests {
 		return new BootstrapWriterContext(BootstrapClass.of(ClassName.get("com.example", "Test")));
 	}
 
-	private BeanValueWriter getBeanValueWriter(BeanDefinition beanDefinition) {
-		DefaultBeanValueWriterSupplier supplier = new DefaultBeanValueWriterSupplier();
-		supplier.setBeanFactory(new DefaultListableBeanFactory());
-		return supplier.get("test", beanDefinition);
-	}
-
 	private CodeSnippet beanRegistration(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {
 		return CodeSnippet.of((code) -> {
 			SimpleBeanValueWriter beanValueWriter = new SimpleBeanValueWriter(BeanInstanceDescriptor
@@ -312,27 +320,27 @@ class DefaultBeanRegistrationGeneratorTests {
 	}
 
 	private CodeSnippet beanDefinition(BeanDefinition beanDefinition) {
-		return CodeSnippet.of((code) -> {
-			BeanValueWriter beanValueWriter = getBeanValueWriter(beanDefinition);
-			createInstance(null, beanDefinition, beanValueWriter).writeBeanDefinition(code);
-		});
+		return CodeSnippet.of((code) -> createInstance(null, beanDefinition).writeBeanDefinition(code));
 	}
 
-	private DefaultBeanRegistrationGenerator createInstance(BeanDefinition beanDefinition) {
-		return createInstance(beanDefinition, getBeanValueWriter(beanDefinition));
-	}
-
-	private DefaultBeanRegistrationGenerator createInstance(BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
+	private DefaultBeanRegistrationWriter createInstance(BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
 		return createInstance("test", beanDefinition, beanValueWriter);
 	}
 
-	private DefaultBeanRegistrationGenerator createInstance(String beanName,
+	private DefaultBeanRegistrationWriter createInstance(String beanName,
 			BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
-		return new DefaultBeanRegistrationGenerator(beanName, beanDefinition, beanValueWriter, this::inner);
+		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter,
+				BeanRegistrationWriterOptions.builder().withWriterFactory(this::createInstance).build());
 	}
 
-	private DefaultBeanRegistrationGenerator inner(String beanName, BeanDefinition beanDefinition) {
-		return createInstance(beanName, beanDefinition, getBeanValueWriter(beanDefinition));
+	private DefaultBeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition) {
+		DefaultBeanRegistrationWriterSupplier supplier = new DefaultBeanRegistrationWriterSupplier();
+		supplier.setBeanFactory(new DefaultListableBeanFactory());
+		return supplier.get(beanName, beanDefinition);
+	}
+
+	private DefaultBeanRegistrationWriter createInstance(BeanDefinition beanDefinition) {
+		return createInstance("test", beanDefinition);
 	}
 
 	private String beanRegistration(BootstrapClass bootstrapClass) {

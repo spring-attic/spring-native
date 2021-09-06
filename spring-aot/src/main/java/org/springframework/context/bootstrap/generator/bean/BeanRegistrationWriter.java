@@ -16,25 +16,23 @@
 
 package org.springframework.context.bootstrap.generator.bean;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import com.squareup.javapoet.CodeBlock;
+
+import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 
 /**
- * Strategy interface to write the bean value supplier of a {@link BeanDefinition}.
+ * Abstract how to register a bean in the context.
  *
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface BeanValueWriterSupplier {
+public interface BeanRegistrationWriter {
 
 	/**
-	 * Return the {@link BeanValueWriter} to use for the specified merged
-	 * {@link BeanDefinition}.
-	 * @param beanName the name of the bean definition to handle
-	 * @param beanDefinition the merged bean definition to handle
-	 * @return the {@link BeanValueWriter} to use, or {@code null}
-	 * @see ConfigurableBeanFactory#getMergedBeanDefinition(String)
+	 * Generate the necessary {@code statements} to register a bean in the context.
+	 * @param context the writer context
+	 * @param code the builder to use to add the registration statement(s)
 	 */
-	BeanValueWriter get(String beanName, BeanDefinition beanDefinition);
+	void writeBeanRegistration(BootstrapWriterContext context, CodeBlock.Builder code);
 
 }
