@@ -28,13 +28,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * Default {@link BeanValueWriterSupplier} implementation, providing an instance based on
- * the actual class and resolved factory method.
+ * Default {@link BeanRegistrationWriterSupplier} implementation, providing an instance
+ * based on the actual class and resolved factory method.
  *
  * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 5)
-class DefaultBeanValueWriterSupplier implements BeanValueWriterSupplier, BeanFactoryAware {
+class DefaultBeanRegistrationWriterSupplier implements BeanRegistrationWriterSupplier, BeanFactoryAware {
 
 	private BeanInstanceDescriptorFactory beanInstanceDescriptorFactory;
 
@@ -44,9 +44,20 @@ class DefaultBeanValueWriterSupplier implements BeanValueWriterSupplier, BeanFac
 	}
 
 	@Override
-	public BeanValueWriter get(String beanName, BeanDefinition beanDefinition) {
+	public DefaultBeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
+		BeanValueWriter beanValueWriter = createBeanValueWriter(beanDefinition);
+		return (beanValueWriter != null)
+				? new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter, createOptions())
+				: null;
+	}
+
+	private BeanValueWriter createBeanValueWriter(BeanDefinition beanDefinition) {
 		BeanInstanceDescriptor descriptor = this.beanInstanceDescriptorFactory.create(beanDefinition);
 		return (descriptor != null) ? new DefaultBeanValueWriter(descriptor, beanDefinition) : null;
+	}
+
+	private BeanRegistrationWriterOptions createOptions() {
+		return BeanRegistrationWriterOptions.builder().withWriterFactory(this::get).build();
 	}
 
 }

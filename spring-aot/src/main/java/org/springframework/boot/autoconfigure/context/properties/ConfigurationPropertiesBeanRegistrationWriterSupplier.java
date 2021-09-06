@@ -19,31 +19,38 @@ package org.springframework.boot.autoconfigure.context.properties;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
-import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
-import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
+import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
+import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterOptions;
+import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
+import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * {@link BeanValueWriterSupplier} for {@link ConfigurationProperties} support.
+ * {@link BeanRegistrationWriterSupplier} for {@link ConfigurationProperties} support.
  *
  * @author Stephane Nicoll
  */
 @Order(0)
-class ConfigurationPropertiesBeanValueWriterSupplier implements BeanValueWriterSupplier {
+class ConfigurationPropertiesBeanRegistrationWriterSupplier implements BeanRegistrationWriterSupplier {
 
 	@Override
-	public BeanValueWriter get(String beanName, BeanDefinition beanDefinition) {
+	public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
 		if (MethodValidationExcludeFilter.class.getName().equals(beanDefinition.getBeanClassName())) {
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(MethodValidationExcludeFilter.class)
 					.withInstanceCreator(ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class))
 					.build();
-			return new SimpleBeanValueWriter(descriptor, (code) ->
-					code.add("() -> $T.byAnnotation($T.class)", MethodValidationExcludeFilter.class, ConfigurationProperties.class));
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor),
+					BeanRegistrationWriterOptions.DEFAULTS);
 		}
 		return null;
+	}
+
+	private SimpleBeanValueWriter createBeanValueWriter(BeanInstanceDescriptor descriptor) {
+		return new SimpleBeanValueWriter(descriptor, (code) -> code.add("() -> $T.byAnnotation($T.class)",
+				MethodValidationExcludeFilter.class, ConfigurationProperties.class));
 	}
 
 }

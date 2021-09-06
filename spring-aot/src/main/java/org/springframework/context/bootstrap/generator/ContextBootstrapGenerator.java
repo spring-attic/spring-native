@@ -38,10 +38,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationGenerator;
-import org.springframework.context.bootstrap.generator.bean.BeanValueWriter;
-import org.springframework.context.bootstrap.generator.bean.BeanValueWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationGenerator;
+import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
+import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
 import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
@@ -58,14 +56,14 @@ public class ContextBootstrapGenerator {
 
 	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
 
-	private final List<BeanValueWriterSupplier> beanValueWriterSuppliers;
+	private final List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers;
 
 	public ContextBootstrapGenerator(ClassLoader classLoader) {
-		this(SpringFactoriesLoader.loadFactories(BeanValueWriterSupplier.class, classLoader));
+		this(SpringFactoriesLoader.loadFactories(BeanRegistrationWriterSupplier.class, classLoader));
 	}
 
-	ContextBootstrapGenerator(List<BeanValueWriterSupplier> beanValueWriterSuppliers) {
-		this.beanValueWriterSuppliers = beanValueWriterSuppliers;
+	ContextBootstrapGenerator(List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers) {
+		this.beanRegistrationWriterSuppliers = beanRegistrationWriterSuppliers;
 	}
 
 	/**
@@ -81,7 +79,7 @@ public class ContextBootstrapGenerator {
 		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
 		registerDependencyResolutionReflectionEntries(writerContext.getRuntimeReflectionRegistry());
-		this.beanValueWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
+		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
@@ -113,10 +111,10 @@ public class ContextBootstrapGenerator {
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (selector.select(beanName, beanDefinition)) {
-				BeanRegistrationGenerator beanRegistrationGenerator = getBeanRegistrationGenerator(
+				BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationGenerator(
 						beanName, beanDefinition);
-				if (beanRegistrationGenerator != null) {
-					beanRegistrationGenerator.writeBeanRegistration(writerContext, code);
+				if (beanRegistrationWriter != null) {
+					beanRegistrationWriter.writeBeanRegistration(writerContext, code);
 				}
 			}
 		}
@@ -134,15 +132,9 @@ public class ContextBootstrapGenerator {
 		code.add("\n");
 	}
 
-	private DefaultBeanRegistrationGenerator getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
-		BeanValueWriter beanValueWriter = getBeanValueSupplier(beanName, beanDefinition);
-		return (beanValueWriter != null) ? new DefaultBeanRegistrationGenerator(beanName, beanDefinition,
-				beanValueWriter, this::getBeanRegistrationGenerator) : null;
-	}
-
-	private BeanValueWriter getBeanValueSupplier(String beanName, BeanDefinition beanDefinition) {
-		for (BeanValueWriterSupplier supplier : this.beanValueWriterSuppliers) {
-			BeanValueWriter writer = supplier.get(beanName, beanDefinition);
+	private BeanRegistrationWriter getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
+		for (BeanRegistrationWriterSupplier supplier : this.beanRegistrationWriterSuppliers) {
+			BeanRegistrationWriter writer = supplier.get(beanName, beanDefinition);
 			if (writer != null) {
 				return writer;
 			}
