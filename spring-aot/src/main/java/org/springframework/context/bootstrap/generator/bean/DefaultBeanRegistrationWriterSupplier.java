@@ -16,14 +16,7 @@
 
 package org.springframework.context.bootstrap.generator.bean;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptorFactory;
-import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBeanInstanceDescriptorFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -34,30 +27,12 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 5)
-class DefaultBeanRegistrationWriterSupplier implements BeanRegistrationWriterSupplier, BeanFactoryAware {
-
-	private BeanInstanceDescriptorFactory beanInstanceDescriptorFactory;
+class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrationWriterSupplier {
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanInstanceDescriptorFactory = new DefaultBeanInstanceDescriptorFactory((ConfigurableBeanFactory) beanFactory);
-	}
-
-	@Override
-	public DefaultBeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
-		BeanValueWriter beanValueWriter = createBeanValueWriter(beanDefinition);
-		return (beanValueWriter != null)
-				? new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter, createOptions())
-				: null;
-	}
-
-	private BeanValueWriter createBeanValueWriter(BeanDefinition beanDefinition) {
-		BeanInstanceDescriptor descriptor = this.beanInstanceDescriptorFactory.create(beanDefinition);
-		return (descriptor != null) ? new DefaultBeanValueWriter(descriptor, beanDefinition) : null;
-	}
-
-	private BeanRegistrationWriterOptions createOptions() {
-		return BeanRegistrationWriterOptions.builder().withWriterFactory(this::get).build();
+	protected BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,
+			BeanValueWriter beanValueWriter) {
+		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter, initializeOptions().build());
 	}
 
 }
