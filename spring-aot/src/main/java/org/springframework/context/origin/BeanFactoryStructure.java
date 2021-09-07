@@ -16,14 +16,11 @@
 
 package org.springframework.context.origin;
 
-import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.origin.BeanDefinitionDescriptor.Type;
 
 /**
  * A hierarchical structure of a {@link BeanFactory}.
@@ -35,23 +32,17 @@ public final class BeanFactoryStructure {
 
 	private final Map<String, BeanDefinitionDescriptor> descriptors;
 
-	BeanFactoryStructure(Map<String, BeanDefinitionDescriptor> descriptors) {
+	public BeanFactoryStructure(Map<String, BeanDefinitionDescriptor> descriptors) {
 		this.descriptors = new LinkedHashMap<>(descriptors);
 	}
 
-	public void writeReport(PrintWriter writer) {
-		writer.println(String.format("%s configuration classes found", this.descriptors.values().stream().filter((descriptor) ->
-				descriptor.getType().equals(Type.CONFIGURATION)).count()));
-		writer.println(String.format("%s components found", this.descriptors.values().stream().filter((descriptor) ->
-				descriptor.getType().equals(Type.COMPONENT)).count()));
-		writer.println(String.format("%s infrastructure found", this.descriptors.values().stream().filter((descriptor) ->
-				descriptor.getType().equals(Type.INFRASTRUCTURE)).count()));
-		List<BeanDefinitionDescriptor> others = this.descriptors.values().stream().filter((descriptor) ->
-				descriptor.getType().equals(Type.UNKNOWN)).collect(Collectors.toList());
-		writer.println(String.format("%s bean definitions that have not been identified", others.size()));
-		for (BeanDefinitionDescriptor descriptor : others) {
-			writer.println("\t" + descriptor.getBeanDefinition());
-		}
+	/**
+	 * Return an immutable view of the {@link BeanDefinitionDescriptor descriptors}
+	 * identified by their bean name.
+	 * @return the descriptors
+	 */
+	public Map<String, BeanDefinitionDescriptor> getDescriptors() {
+		return Collections.unmodifiableMap(this.descriptors);
 	}
 
 }

@@ -19,7 +19,7 @@ package org.springframework.context.bootstrap.generator.sample.visibility;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Import(PublicInnerClassConfiguration.class)
 public class PublicInnerClassConfigurationImport {
 
