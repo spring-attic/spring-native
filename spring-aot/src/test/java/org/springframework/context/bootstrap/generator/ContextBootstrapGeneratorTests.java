@@ -25,7 +25,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
-import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
 import org.springframework.context.bootstrap.generator.sample.generic.GenericConfiguration;
@@ -71,10 +70,7 @@ class ContextBootstrapGeneratorTests {
 	@Test
 	void bootstrapClassRegisterInfrastructure() {
 		ContextBootstrapStructure structure = this.generatorTester.generate();
-		assertThat(structure).contextBootstrapInitializer().lines().containsSubsequence("    // infrastructure",
-				"    context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());",
-				"");
-		assertThat(structure).contextBootstrapInitializer().contains("import " + ContextAnnotationAutowireCandidateResolver.class.getName() + ";");
+		assertThat(structure).contextBootstrapInitializer().contains("// infrastructure");
 	}
 
 	@Test
@@ -158,13 +154,14 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerInnerConfiguration(GenericApplicationContext context) {",
+				"public static void registerPublicInnerClassConfiguration_InnerConfiguration(",
+				"    GenericApplicationContext context) {",
 				"  BeanDefinitionRegistrar.of(\"org.springframework.context.bootstrap.generator.sample.visibility.PublicInnerClassConfiguration$InnerConfiguration\", PublicInnerClassConfiguration.InnerConfiguration.class)",
 				"      .instanceSupplier(() -> new PublicInnerClassConfiguration.InnerConfiguration()).register(context);",
 				"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration(context);",
-				"ContextBootstrapInitializer.registerInnerConfiguration(context);",
+				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration_InnerConfiguration(context);",
 				"ContextBootstrapInitializer.registerInnerConfiguration_innerBean(context);");
 	}
 
@@ -182,7 +179,7 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"publicOuterClassConfiguration\", PublicOuterClassConfiguration.class)",
 				"    .instanceSupplier(() -> new PublicOuterClassConfiguration()).register(context);",
-				"ContextBootstrapInitializer.registerProtectedInnerConfiguration(context);",
+				"ContextBootstrapInitializer.registerPublicOuterClassConfiguration_ProtectedInnerConfiguration(context);",
 				"ContextBootstrapInitializer.registerProtectedInnerConfiguration_anotherInnerBean(context);");
 	}
 
@@ -196,7 +193,7 @@ class ContextBootstrapGeneratorTests {
 				"  BeanDefinitionRegistrar.of(\"org.springframework.context.bootstrap.generator.sample.visibility.ProtectedType\", ProtectedType.class)",
 				"      .instanceSupplier(() -> new ProtectedType()).register(context);",
 				"}");
-		assertThat(structure).contextBootstrapInitializer().contains(
+  		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedConstructorParameterConfiguration\", ProtectedConstructorParameterConfiguration.class)",
 				"    .instanceSupplier(() -> new ProtectedConstructorParameterConfiguration()).register(context);",
 				"ContextBootstrapInitializer.registerProtectedParameter(context);");

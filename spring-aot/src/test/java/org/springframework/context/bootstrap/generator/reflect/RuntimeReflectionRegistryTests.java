@@ -19,6 +19,7 @@ package org.springframework.context.bootstrap.generator.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -76,6 +77,26 @@ class RuntimeReflectionRegistryTests {
 					assertThat(methodDescriptor.getName()).isEqualTo("decode"));
 			assertThat(descriptor.getFields()).isNull();
 		});
+	}
+
+	@Test
+	void addResource() {
+		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
+		assertThat(registry.getResourcesDescriptor().getPatterns()).singleElement().satisfies((pattern) ->
+				assertThat(pattern).isEqualTo("java/lang/String.class"));
+	}
+
+	@Test
+	void addSeveralResources() {
+		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
+		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.Integer"));
+		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
+		Set<String> patterns = registry.getResourcesDescriptor().getPatterns();
+		assertThat(patterns).anySatisfy((pattern) ->
+				assertThat(pattern).isEqualTo("java/lang/String.class"));
+		assertThat(patterns).anySatisfy((pattern) ->
+				assertThat(pattern).isEqualTo("java/lang/Integer.class"));
+		assertThat(patterns).hasSize(2);
 	}
 
 

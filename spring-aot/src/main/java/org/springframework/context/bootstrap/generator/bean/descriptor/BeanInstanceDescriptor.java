@@ -21,6 +21,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
+import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.beans.PropertyValue;
 import org.springframework.core.ResolvableType;
@@ -38,6 +41,8 @@ public final class BeanInstanceDescriptor {
 
 	private final MemberDescriptor<Executable> instanceCreator;
 
+	private final List<InstanceCallback> instanceCallbacks;
+
 	private final List<MemberDescriptor<?>> injectionPoints;
 
 	private final List<PropertyDescriptor> properties;
@@ -45,6 +50,7 @@ public final class BeanInstanceDescriptor {
 	private BeanInstanceDescriptor(Builder builder) {
 		this.beanType = builder.beanType;
 		this.instanceCreator = builder.instanceCreator;
+		this.instanceCallbacks = new ArrayList<>(builder.instanceCallbacks);
 		this.injectionPoints = new ArrayList<>(builder.injectionPoints);
 		this.properties = new ArrayList<>(builder.properties);
 	}
@@ -93,6 +99,15 @@ public final class BeanInstanceDescriptor {
 	}
 
 	/**
+	 * Return the callbacks that should be honored after the instance is created but
+	 * before injection points apply.
+	 * @return the instance callbacks, if any.
+	 */
+	public List<InstanceCallback> getInstanceCallbacks() {
+		return this.instanceCallbacks;
+	}
+
+	/**
 	 * Return the injection points to invoke to populate extra dependencies for the bean,
 	 * in the order they should be invoked.
 	 * @return the injection points, if any
@@ -136,6 +151,22 @@ public final class BeanInstanceDescriptor {
 	}
 
 	/**
+	 * Wraps the code that's necessary to honor instance callbacks if any.
+	 */
+	public static class InstanceCallback {
+
+		private final Function<String, CodeBlock> code;
+
+		public InstanceCallback(Function<String, CodeBlock> code) {
+			this.code = code;
+		}
+
+		public CodeBlock write(String beanVariable) {
+			return this.code.apply(beanVariable);
+		}
+	}
+
+	/**
 	 * Describe a property that is used to initialize a Bean instance.
 	 */
 	public static class PropertyDescriptor {
@@ -165,6 +196,8 @@ public final class BeanInstanceDescriptor {
 
 		private MemberDescriptor<Executable> instanceCreator;
 
+		private final List<InstanceCallback> instanceCallbacks = new ArrayList<>();
+
 		private final List<MemberDescriptor<?>> injectionPoints = new ArrayList<>();
 
 		private final List<PropertyDescriptor> properties = new ArrayList<>();
@@ -176,6 +209,16 @@ public final class BeanInstanceDescriptor {
 
 		public Builder withInstanceCreator(Executable executable) {
 			this.instanceCreator = (executable != null) ? new MemberDescriptor<>(executable, true) : null;
+			return this;
+		}
+
+		public Builder withInstanceCallback(Function<String, CodeBlock> code) {
+			this.instanceCallbacks.add(new InstanceCallback(code));
+			return this;
+		}
+
+		public Builder withInstanceCallbacks(List<InstanceCallback> instanceCallbacks) {
+			this.instanceCallbacks.addAll(instanceCallbacks);
 			return this;
 		}
 

@@ -19,10 +19,10 @@ package org.springframework.context.bootstrap.generator.sample.visibility;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class PublicOuterClassConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class ProtectedInnerConfiguration {
 
 		@Bean

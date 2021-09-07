@@ -22,6 +22,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.origin.BeanDefinitionDescriptor;
 import org.springframework.context.origin.BeanDefinitionDescriptor.Type;
@@ -40,6 +43,8 @@ import org.springframework.util.ClassUtils;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class CoreBeanDefinitionOriginAnalyzer implements BeanDefinitionOriginAnalyzer {
+
+	private static final Log logger = LogFactory.getLog(CoreBeanDefinitionOriginAnalyzer.class);
 
 	@Override
 	public void analyze(BeanFactoryStructureAnalysis analysis) {
@@ -62,9 +67,10 @@ public class CoreBeanDefinitionOriginAnalyzer implements BeanDefinitionOriginAna
 		for (ConfigurationClass parentConfigurationClass : configurationClass.getImportedBy()) {
 			String parentName = findBeanDefinitionName(analysis, parentConfigurationClass);
 			if (parentName == null) {
-				throw new IllegalStateException("No bean definition found for " + parentConfigurationClass);
+				logger.error("No bean definition found for " + parentConfigurationClass);
+			} else {
+				origins.add(parentName);
 			}
-			origins.add(parentName);
 		}
 		return descriptor.resolve(Type.CONFIGURATION, origins);
 	}

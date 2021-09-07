@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import org.junit.jupiter.api.Disabled;
@@ -8,7 +24,9 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
+import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
+import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
@@ -44,8 +62,18 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(SimpleConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(SimpleConfiguration.class.getDeclaredConstructors()[0]);
+		assertThat(descriptor.getInstanceCallbacks()).isEmpty();
 		assertThat(descriptor.getInjectionPoints()).isEmpty();
 		assertThat(descriptor.getProperties()).isEmpty();
+	}
+
+	@Test
+	void createWithInstanceCallback() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(ImportAwareConfiguration.class).getBeanDefinition());
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertThat(descriptor.getInstanceCallbacks()).singleElement().satisfies((callback) -> assertThat(CodeSnippet.of(callback.write("b")))
+				.isEqualTo("ImportAwareInvoker.get(context).setAnnotationMetadata(b)"));
 	}
 
 	@Test
@@ -56,6 +84,7 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(InjectionConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(InjectionConfiguration.class.getDeclaredConstructors()[0]);
+		assertThat(descriptor.getInstanceCallbacks()).isEmpty();
 		assertThat(descriptor.getInjectionPoints()).hasSize(2);
 		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
 			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setEnvironment", Environment.class));

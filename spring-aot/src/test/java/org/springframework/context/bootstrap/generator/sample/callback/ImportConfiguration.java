@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.sample.visibility;
+package org.springframework.context.bootstrap.generator.sample.callback;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration(proxyBeanMethods = false)
-class PublicInnerClassConfiguration {
-
-	@Configuration(proxyBeanMethods = false)
-	public static class InnerConfiguration {
-
-		@Bean
-		public String innerBean() {
-			return "inner";
-		}
-
-	}
-
+@Import(ImportAwareConfiguration.class)
+public class ImportConfiguration {
 }

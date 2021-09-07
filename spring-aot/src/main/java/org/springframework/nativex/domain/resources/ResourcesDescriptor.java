@@ -47,6 +47,10 @@ public class ResourcesDescriptor {
 		this.patterns.add(pattern);
 	}
 
+	public void addClass(String className) {
+		add(className.replace(".", "/").replace("$", "\\$") + ".class");
+	}
+
 	public Set<String> getBundles() {
 		return this.bundles;
 	}

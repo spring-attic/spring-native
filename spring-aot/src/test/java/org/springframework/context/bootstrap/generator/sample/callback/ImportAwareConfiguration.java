@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.sample.visibility;
+package org.springframework.context.bootstrap.generator.sample.callback;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotationMetadata;
 
 @Configuration(proxyBeanMethods = false)
-class PublicInnerClassConfiguration {
+@SuppressWarnings("unused")
+public class ImportAwareConfiguration implements ImportAware, EnvironmentAware {
 
-	@Configuration(proxyBeanMethods = false)
-	public static class InnerConfiguration {
+	private AnnotationMetadata annotationMetadata;
 
-		@Bean
-		public String innerBean() {
-			return "inner";
-		}
+	@Override
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
+		this.annotationMetadata = importMetadata;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
 
 	}
 

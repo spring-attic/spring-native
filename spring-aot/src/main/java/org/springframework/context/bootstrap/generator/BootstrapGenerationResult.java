@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import com.squareup.javapoet.JavaFile;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
 
 /**
@@ -32,11 +33,15 @@ public class BootstrapGenerationResult {
 
 	private final List<JavaFile> sourceFiles;
 
-	private final List<ClassDescriptor> ClassDescriptor;
+	private final List<ClassDescriptor> classDescriptors;
 
-	BootstrapGenerationResult(List<JavaFile> sourceFiles, List<ClassDescriptor> classDescriptors) {
+	private final ResourcesDescriptor resourcesDescriptor;
+
+	BootstrapGenerationResult(List<JavaFile> sourceFiles, List<ClassDescriptor> classDescriptors,
+			ResourcesDescriptor resourcesDescriptor) {
 		this.sourceFiles = sourceFiles;
-		this.ClassDescriptor = classDescriptors;
+		this.classDescriptors = classDescriptors;
+		this.resourcesDescriptor = resourcesDescriptor;
 	}
 
 	/**
@@ -53,7 +58,16 @@ public class BootstrapGenerationResult {
 	 * @return the reflection entries
 	 */
 	public List<ClassDescriptor> getClassDescriptors() {
-		return this.ClassDescriptor;
+		return this.classDescriptors;
+	}
+
+	/**
+	 * Return the {@link ResourcesDescriptor resources} that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the resources
+	 */
+	public ResourcesDescriptor getResourcesDescriptor() {
+		return this.resourcesDescriptor;
 	}
 
 }

@@ -35,10 +35,10 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
+import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -75,13 +75,15 @@ public class ContextBootstrapGenerator {
 			Class<?>... excludeTypes) {
 		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
+		RuntimeReflectionRegistry runtimeReflectionRegistry = writerContext.getRuntimeReflectionRegistry();
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
 				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
 		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
 		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
-				writerContext.getRuntimeReflectionRegistry().getClassDescriptors());
+				runtimeReflectionRegistry.getClassDescriptors(),
+				runtimeReflectionRegistry.getResourcesDescriptor());
 	}
 
 	public BootstrapClass createDefaultBoostrapJavaFile(String packageName) {
@@ -97,7 +99,7 @@ public class ContextBootstrapGenerator {
 		MethodSpec.Builder method = MethodSpec.methodBuilder("initialize").addModifiers(Modifier.PUBLIC)
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
-		registerApplicationContextInfrastructure(code);
+		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
@@ -116,10 +118,11 @@ public class ContextBootstrapGenerator {
 		return method.build();
 	}
 
-	private void registerApplicationContextInfrastructure(CodeBlock.Builder code) {
+	private void registerApplicationContextInfrastructure(ConfigurableListableBeanFactory beanFactory,
+			BootstrapWriterContext writerContext, CodeBlock.Builder code) {
+		BootstrapInfrastructureWriter writer = new BootstrapInfrastructureWriter(beanFactory, writerContext);
 		code.add("// infrastructure\n");
-		code.addStatement("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new $T())",
-				ContextAnnotationAutowireCandidateResolver.class);
+		writer.writeInfrastructure(code);
 		code.add("\n");
 	}
 

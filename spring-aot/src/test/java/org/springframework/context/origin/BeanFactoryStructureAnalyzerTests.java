@@ -37,6 +37,9 @@ class BeanFactoryStructureAnalyzerTests {
 		context.registerBean(ConfigurationOne.class);
 		BeanFactoryStructure structure = analyze(context);
 		assertThat(structure).isNotNull();
+		assertThat(structure.getDescriptors()).containsOnlyKeys("beanOne", ConfigurationOne.class.getName());
+		assertThat(structure.getDescriptors().get("beanOne").getOrigins())
+				.containsOnly(ConfigurationOne.class.getName());
 	}
 
 	private BeanFactoryStructure analyze(GenericApplicationContext context) {
