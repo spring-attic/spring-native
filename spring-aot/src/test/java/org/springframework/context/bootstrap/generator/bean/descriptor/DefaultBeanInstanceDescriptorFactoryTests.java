@@ -1,5 +1,6 @@
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -28,6 +29,7 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 	}
 
 	@Test
+	@Disabled("Ignored for gh-1015")
 	void createWithUnsupportedBeanDefinition() {
 		BeanDefinition beanDefinition = new GenericBeanDefinition();
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
