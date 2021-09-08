@@ -21,6 +21,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
  * Provide the {@link Executable} to use for a particular {@link BeanDefinition}.
  *
  * @author Stephane Nicoll
+ * @see {@link org.springframework.beans.factory.support.ConstructorResolver}
  */
 class BeanInstanceExecutableSupplier {
 
@@ -59,24 +61,21 @@ class BeanInstanceExecutableSupplier {
 	}
 
 	Executable detectBeanInstanceExecutable(BeanDefinition beanDefinition) {
-		if (beanDefinition instanceof RootBeanDefinition) {
-			RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) beanDefinition;
-			Supplier<Class<?>> beanClass = () -> getBeanClass(rootBeanDefinition);
-			List<Class<?>> parameterTypes = determineParameterTypes(beanDefinition);
-			Method resolvedFactoryMethod = resolveFactoryMethod(rootBeanDefinition, beanClass, parameterTypes);
-			if (resolvedFactoryMethod != null) {
-				return resolvedFactoryMethod;
-			}
-			Executable resolvedConstructor = resolveConstructor(beanClass);
-			if (resolvedConstructor != null) {
-				return resolvedConstructor;
-			}
-			Executable resolvedConstructorOrFactoryMethod = getField(beanDefinition,
-					"resolvedConstructorOrFactoryMethod", Executable.class);
-			if (resolvedConstructorOrFactoryMethod != null) {
-				logger.error("resolvedConstructorOrFactoryMethod required for " + beanDefinition);
-				return resolvedConstructorOrFactoryMethod;
-			}
+		Supplier<Class<?>> beanClass = () -> getBeanClass(beanDefinition);
+		List<Class<?>> parameterTypes = determineParameterTypes(beanDefinition);
+		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanClass, parameterTypes);
+		if (resolvedFactoryMethod != null) {
+			return resolvedFactoryMethod;
+		}
+		Executable resolvedConstructor = resolveConstructor(beanClass, beanDefinition.getConstructorArgumentValues());
+		if (resolvedConstructor != null) {
+			return resolvedConstructor;
+		}
+		Executable resolvedConstructorOrFactoryMethod = getField(beanDefinition,
+				"resolvedConstructorOrFactoryMethod", Executable.class);
+		if (resolvedConstructorOrFactoryMethod != null) {
+			logger.error("resolvedConstructorOrFactoryMethod required for " + beanDefinition);
+			return resolvedConstructorOrFactoryMethod;
 		}
 		return null;
 	}
@@ -104,11 +103,14 @@ class BeanInstanceExecutableSupplier {
 		return parameterTypes;
 	}
 
-	private Method resolveFactoryMethod(RootBeanDefinition beanDefinition, Supplier<Class<?>> beanClass,
+	private Method resolveFactoryMethod(BeanDefinition beanDefinition, Supplier<Class<?>> beanClass,
 			List<Class<?>> parameterTypes) {
-		Method resolvedFactoryMethod = beanDefinition.getResolvedFactoryMethod();
-		if (resolvedFactoryMethod != null) {
-			return resolvedFactoryMethod;
+		if (beanDefinition instanceof RootBeanDefinition) {
+			RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) beanDefinition;
+			Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
+			if (resolvedFactoryMethod != null) {
+				return resolvedFactoryMethod;
+			}
 		}
 		String factoryMethodName = beanDefinition.getFactoryMethodName();
 		if (factoryMethodName != null) {
@@ -122,7 +124,7 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private Executable resolveConstructor(Supplier<Class<?>> beanClass) {
+	private Executable resolveConstructor(Supplier<Class<?>> beanClass, ConstructorArgumentValues argumentValues) {
 		Class<?> type = beanClass.get();
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		if (constructors.length == 1) {
@@ -132,8 +134,24 @@ class BeanInstanceExecutableSupplier {
 			if (MergedAnnotations.from(constructor).isPresent(Autowired.class)) {
 				return constructor;
 			}
+			if (constructorMatchesArguments(constructor, argumentValues)) {
+				return constructor;
+			}
 		}
 		return null;
+	}
+
+	private boolean constructorMatchesArguments(Constructor<?> constructor, ConstructorArgumentValues argumentValues) {
+		if (constructor.getParameterTypes().length != argumentValues.getArgumentCount()) {
+			return false;
+		}
+		return Arrays.stream(constructor.getParameterTypes()).allMatch(paramType -> {
+			for (int index = 0; index < argumentValues.getArgumentCount(); index++) {
+				if (argumentValues.getArgumentValue(index, paramType) != null)
+					return true;
+			}
+			return false;
+		});
 	}
 
 	private Executable filter(List<? extends Executable> executables, List<Class<?>> parameterTypes) {
@@ -158,7 +176,7 @@ class BeanInstanceExecutableSupplier {
 		return true;
 	}
 
-	private Class<?> getBeanClass(RootBeanDefinition beanDefinition) {
+	private Class<?> getBeanClass(BeanDefinition beanDefinition) {
 		ResolvableType resolvableType = beanDefinition.getResolvableType();
 		if (resolvableType != ResolvableType.NONE) {
 			return resolvableType.toClass();
