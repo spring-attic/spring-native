@@ -51,4 +51,8 @@ public class InjectedElementAttributes {
 		return (T) attributes.get(index);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> T get(int index, Class<T> type) {
+		return (T) attributes.get(index);
+	}
 }
