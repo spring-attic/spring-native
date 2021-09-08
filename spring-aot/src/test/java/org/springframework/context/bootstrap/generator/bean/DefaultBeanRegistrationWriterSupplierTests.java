@@ -16,6 +16,7 @@
 
 package org.springframework.context.bootstrap.generator.bean;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -40,6 +41,7 @@ class DefaultBeanRegistrationWriterSupplierTests {
 	}
 
 	@Test
+	@Disabled("Ignored for gh-1015")
 	void getWithIncompatibleBeanDefinitionReturnNull() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		assertThat(getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder

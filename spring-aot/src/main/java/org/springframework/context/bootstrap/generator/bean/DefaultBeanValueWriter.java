@@ -68,7 +68,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 			}
 			else {
-				code.add("$T::new", getDescriptor().getUserBeanClass());
+				code.add("() -> new $T()", getDescriptor().getUserBeanClass());
 			}
 			return;
 		}

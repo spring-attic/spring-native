@@ -43,7 +43,7 @@ class DefaultBeanValueWriterTests {
 	void writeConstructorWithNoParameterUseShortcut() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, SimpleConfiguration.class.getDeclaredConstructors()[0]))
-				.isEqualTo("SimpleConfiguration::new");
+				.isEqualTo("() -> new SimpleConfiguration()");
 	}
 
 	@Test
