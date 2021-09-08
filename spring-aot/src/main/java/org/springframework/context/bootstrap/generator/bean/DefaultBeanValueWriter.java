@@ -61,9 +61,15 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 			parameterTypes.remove(0);
 		}
 		boolean multiStatements = !injectionPoints.isEmpty();
+		int minArgs = isInnerClass(declaringType) ? 2 : 1;
 		// Shortcut for common case
-		if (!multiStatements && !innerClass && parameterTypes.isEmpty()) {
-			code.add("$T::new", getDescriptor().getUserBeanClass());
+		if (!multiStatements && constructor.getParameterTypes().length < minArgs) {
+			if (innerClass) {
+				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
+			}
+			else {
+				code.add("$T::new", getDescriptor().getUserBeanClass());
+			}
 			return;
 		}
 		code.add("(instanceContext) ->");

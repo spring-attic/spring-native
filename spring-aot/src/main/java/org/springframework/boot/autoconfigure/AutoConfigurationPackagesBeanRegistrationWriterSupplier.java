@@ -47,7 +47,12 @@ class AutoConfigurationPackagesBeanRegistrationWriterSupplier implements BeanReg
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(BasePackages.class)
 					.withInstanceCreator(BasePackages.class.getDeclaredConstructors()[0]).build();
 			BeanValueWriter valueWriter = createBeanValueWriter(beanDefinition, descriptor);
-			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, valueWriter);
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, valueWriter) {
+				@Override
+				protected boolean shouldDeclareCreator(BeanInstanceDescriptor descriptor) {
+					return false;
+				}
+			};
 		}
 		return null;
 	}

@@ -84,9 +84,9 @@ class BeanDefinitionRegistrarTests {
 	@Test
 	void registerWithConstructorInstantiation() {
 		GenericApplicationContext context = new GenericApplicationContext();
-		BeanDefinitionRegistrar.of("test", ConstructorSample.class)
-				.instanceSupplier((instanceContext) -> instanceContext.constructor(ResourceLoader.class)
-						.create(context, (attributes) -> new ConstructorSample(attributes.get(0)))).register(context);
+		BeanDefinitionRegistrar.of("test", ConstructorSample.class).withConstructor(ResourceLoader.class)
+				.instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) ->
+						new ConstructorSample(attributes.get(0)))).register(context);
 		assertContext(context, () -> {
 			assertThat(context.containsBean("test")).isTrue();
 			assertThat(context.getBean(ConstructorSample.class).resourceLoader).isEqualTo(context);
@@ -100,9 +100,9 @@ class BeanDefinitionRegistrarTests {
 				new ContextAnnotationAutowireCandidateResolver());
 		context.registerBean("testBean", String.class, "test");
 		context.registerBean("anotherBean", String.class, "another");
-		BeanDefinitionRegistrar.of("test", MultiArgConstructorSample.class)
-				.instanceSupplier((instanceContext) -> instanceContext.constructor(String.class, Integer.class)
-						.create(context, (attributes) -> new MultiArgConstructorSample(attributes.get(0), attributes.get(1))))
+		BeanDefinitionRegistrar.of("test", MultiArgConstructorSample.class).withConstructor(String.class, Integer.class)
+				.instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) ->
+						new MultiArgConstructorSample(attributes.get(0), attributes.get(1))))
 				.customize((bd) -> {
 					ConstructorArgumentValues constructorArgumentValues = bd.getConstructorArgumentValues();
 					constructorArgumentValues.addIndexedArgumentValue(0, new RuntimeBeanReference("anotherBean"));
@@ -121,9 +121,9 @@ class BeanDefinitionRegistrarTests {
 	void registerWithConstructorOnInnerClass() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(InnerClassSample.class);
-		BeanDefinitionRegistrar.of("test", InnerClassSample.Inner.class)
-				.instanceSupplier((instanceContext) -> instanceContext.constructor(InnerClassSample.class, Environment.class)
-						.create(context, (attributes) -> context.getBean(InnerClassSample.class).new Inner(attributes.get(1))))
+		BeanDefinitionRegistrar.of("test", InnerClassSample.Inner.class).withConstructor(InnerClassSample.class, Environment.class)
+				.instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) ->
+						context.getBean(InnerClassSample.class).new Inner(attributes.get(1))))
 				.register(context);
 		assertContext(context, () -> {
 			assertThat(context.containsBean("test")).isTrue();
@@ -134,32 +134,43 @@ class BeanDefinitionRegistrarTests {
 
 	@Test
 	void registerWithInvalidConstructor() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertThatThrownBy(() -> {
-					BeanDefinitionRegistrar.of("test", ConstructorSample.class)
-							.instanceSupplier((instanceContext) -> instanceContext.constructor(Object.class).resolve(context)).register(context);
-					context.refresh();
-					context.getBean(ConstructorSample.class);
-				}
-		).isInstanceOf(BeanCreationException.class)
+		assertThatThrownBy(() -> BeanDefinitionRegistrar.of("test", ConstructorSample.class).withConstructor(Object.class))
+				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("No constructor with type(s) [java.lang.Object] found on")
-				.hasMessageContaining(ConstructorSample.class.getName())
-				.getCause().hasCauseInstanceOf(NoSuchMethodException.class);
+				.hasMessageContaining(ConstructorSample.class.getName());
 	}
 
 	@Test
-	void registerWithMethodInstantiation() {
+	void registerWithFactoryMethod() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		BeanDefinitionRegistrar.of("configuration", ConfigurationSample.class).instanceSupplier(ConfigurationSample::new)
 				.register(context);
 		BeanDefinitionRegistrar.of("test", ConstructorSample.class)
-				.instanceSupplier((instanceContext) -> instanceContext.method(ConfigurationSample.class, "sampleBean", ResourceLoader.class)
-						.create(context, (attributes) -> context.getBean(ConfigurationSample.class).sampleBean(attributes.get(0)))).register(context);
+				.withFactoryMethod(ConfigurationSample.class, "sampleBean", ResourceLoader.class)
+				.instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes)
+						-> context.getBean(ConfigurationSample.class).sampleBean(attributes.get(0))))
+				.register(context);
 		assertContext(context, () -> {
 			assertThat(context.containsBean("configuration")).isTrue();
 			assertThat(context.containsBean("test")).isTrue();
 			assertThat(context.getBean(ConstructorSample.class).resourceLoader).isEqualTo(context);
+			RootBeanDefinition bd = (RootBeanDefinition) context.getBeanDefinition("test");
+			assertThat(bd.getResolvedFactoryMethod()).isNotNull().isEqualTo(
+					ReflectionUtils.findMethod(ConfigurationSample.class, "sampleBean", ResourceLoader.class));
 		});
+	}
+
+	@Test
+	void registerWithCreateShortcutWithoutFactoryMethod() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		BeanDefinitionRegistrar.of("configuration", ConfigurationSample.class).instanceSupplier(ConfigurationSample::new)
+				.register(context);
+		BeanDefinitionRegistrar.of("test", ConstructorSample.class)
+				.instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes)
+						-> context.getBean(ConfigurationSample.class).sampleBean(attributes.get(0))))
+				.register(context);
+		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
+				.hasMessageContaining("No factory method or constructor is set");
 	}
 
 	@Test

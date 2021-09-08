@@ -1,5 +1,6 @@
 package org.springframework.context.bootstrap.generator.bean;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -104,6 +105,26 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		return (candidate) -> false;
 	}
 
+	/**
+	 * Specify if the creator {@link Executable} should be defined. By default, a creator
+	 * is specified if the {@code instanceSupplier} callback is used with an
+	 * {@code instanceContext} callback.
+	 * @param descriptor the bean descriptor
+	 * @return {@code true} to declare the creator
+	 */
+	protected boolean shouldDeclareCreator(BeanInstanceDescriptor descriptor) {
+		Executable executable = (descriptor.getInstanceCreator() != null)
+				? descriptor.getInstanceCreator().getMember() : null;
+		if (executable instanceof Method) {
+			return true;
+		}
+		if (executable instanceof Constructor) {
+			int minArgs = isInnerClass(descriptor.getUserBeanClass()) ? 2 : 1;
+			return executable.getParameterCount() >= minArgs;
+		}
+		return false;
+	}
+
 	void writeBeanRegistration(Builder code) {
 		initializeBeanDefinitionRegistrar(code);
 		code.addStatement(".register(context)");
@@ -143,10 +164,35 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 			code.add(".inner(");
 		}
 		writeBeanType(code);
-		code.add(").instanceSupplier(");
-		this.beanValueWriter.writeValueSupplier(code);
 		code.add(")");
+		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
+		boolean shouldDeclareCreator = shouldDeclareCreator(descriptor);
+		if (shouldDeclareCreator) {
+			handleCreatorReference(code, descriptor.getInstanceCreator().getMember());
+		}
+		code.add("\n").indent().indent();
+		code.add(".instanceSupplier(");
+		this.beanValueWriter.writeValueSupplier(code);
+		code.add(")").unindent().unindent(); ;
 		handleBeanDefinitionMetadata(code);
+	}
+
+	private static boolean isInnerClass(Class<?> type) {
+		return type.isMemberClass() && !java.lang.reflect.Modifier.isStatic(type.getModifiers());
+	}
+
+	private void handleCreatorReference(Builder code, Executable creator) {
+		if (creator instanceof Method) {
+			code.add(".withFactoryMethod($T.class, $S", creator.getDeclaringClass(), creator.getName());
+			if (creator.getParameterCount() > 0) {
+				code.add(", ");
+			}
+		}
+		else {
+			code.add(".withConstructor(");
+		}
+		code.add(this.parameterWriter.writeExecutableParameterTypes(creator));
+		code.add(")");
 	}
 
 	private void handleBeanDefinitionMetadata(Builder code) {

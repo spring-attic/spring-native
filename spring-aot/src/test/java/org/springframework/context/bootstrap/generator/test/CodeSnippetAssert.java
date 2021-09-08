@@ -36,8 +36,9 @@ public class CodeSnippetAssert extends AbstractStringAssert<CodeSnippetAssert> {
 	 * class.
 	 * @param type the class that should be imported
 	 */
-	public void hasImport(Class<?> type) {
+	public CodeSnippetAssert hasImport(Class<?> type) {
 		assertThat(this.file).contains(String.format("import %s;", type.getName()));
+		return this;
 	}
 
 	private static List<String> readAllLines(String source) {

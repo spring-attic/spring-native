@@ -50,24 +50,21 @@ class DefaultBeanValueWriterTests {
 	void writeConstructorWithParameter() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, InjectionComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"(instanceContext) -> instanceContext.constructor(String.class)",
-				"    .create(context, (attributes) -> new InjectionComponent(attributes.get(0)))");
+				"(instanceContext) -> instanceContext.create(context, (attributes) -> new InjectionComponent(attributes.get(0)))");
 	}
 
 	@Test
 	void writeConstructorWithInnerClassAndNoExtraArg() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(NoDependencyComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, NoDependencyComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"(instanceContext) -> instanceContext.constructor(InnerComponentConfiguration.class)",
-				"    .create(context, (attributes) -> context.getBean(InnerComponentConfiguration.class).new NoDependencyComponent())");
+				"() -> context.getBean(InnerComponentConfiguration.class).new NoDependencyComponent()");
 	}
 
 	@Test
 	void writeConstructorWithInnerClassAndExtraArg() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(EnvironmentAwareComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, EnvironmentAwareComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"(instanceContext) -> instanceContext.constructor(InnerComponentConfiguration.class, Environment.class)",
-				"    .create(context, (attributes) -> context.getBean(InnerComponentConfiguration.class).new EnvironmentAwareComponent(attributes.get(1)))");
+				"(instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(InnerComponentConfiguration.class).new EnvironmentAwareComponent(attributes.get(1)))");
 	}
 
 	@Test

@@ -16,11 +16,14 @@
 
 package org.springframework.context.bootstrap.generator.bean.support;
 
+import java.lang.reflect.Executable;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
@@ -45,6 +48,18 @@ public final class ParameterWriter {
 		Builder code = CodeBlock.builder();
 		writeParameterValue(code, value, parameterType);
 		return code.build();
+	}
+
+	/**
+	 * Write the parameter types of the specified {@link Executable}.
+	 * @param executable the executable
+	 * @return the parameter types of the executable as a comma separated list
+	 */
+	public CodeBlock writeExecutableParameterTypes(Executable executable) {
+		Class<?>[] parameterTypes = Arrays.stream(executable.getParameters())
+				.map(Parameter::getType).toArray(Class<?>[]::new);
+		return CodeBlock.of(Arrays.stream(parameterTypes).map((d) -> "$T.class")
+				.collect(Collectors.joining(", ")), (Object[]) parameterTypes);
 	}
 
 	private void writeParameterValue(Builder code, Object value, ResolvableType parameterType) {
