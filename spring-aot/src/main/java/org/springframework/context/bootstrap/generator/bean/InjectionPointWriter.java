@@ -32,6 +32,7 @@ import org.springframework.util.ReflectionUtils;
  * </ul>
  *
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
 class InjectionPointWriter {
 
@@ -71,8 +72,10 @@ class InjectionPointWriter {
 			code.add("new $T()", declaringType);
 			return code.build();
 		}
+		boolean isAmbiguous = Arrays.stream(creator.getDeclaringClass().getDeclaredConstructors())
+				.filter(constructor -> constructor.getParameterCount() == parameterTypes.length).count() > 1;
 		code.add("instanceContext.create(context, (attributes) ->");
-		List<CodeBlock> parameters = resolveParameters(creator.getParameters());
+		List<CodeBlock> parameters = resolveParameters(creator.getParameters(), isAmbiguous);
 		if (innerClass) { // Remove the implicit argument
 			parameters.remove(0);
 		}
@@ -136,7 +139,7 @@ class InjectionPointWriter {
 			code.add(")\n").indent().indent();
 		}
 		attributesResolver.accept(code);
-		List<CodeBlock> parameters = resolveParameters(injectionPoint.getParameters());
+		List<CodeBlock> parameters = resolveParameters(injectionPoint.getParameters(), false);
 		code.add(" ");
 		if (instantiation) {
 			if (Modifier.isStatic(injectionPoint.getModifiers())) {
@@ -191,10 +194,15 @@ class InjectionPointWriter {
 		return code.build();
 	}
 
-	private List<CodeBlock> resolveParameters(Parameter[] parameters) {
+	private List<CodeBlock> resolveParameters(Parameter[] parameters, boolean shouldCast) {
 		List<CodeBlock> parameterValues = new ArrayList<>();
 		for (int i = 0; i < parameters.length; i++) {
-			parameterValues.add(CodeBlock.of("attributes.get($L)", i));
+			if (shouldCast) {
+				parameterValues.add(CodeBlock.of("attributes.get($L, $T.class)", i, parameters[i].getType()));
+			}
+			else {
+				parameterValues.add(CodeBlock.of("attributes.get($L)", i));
+			}
 		}
 		return parameterValues;
 	}

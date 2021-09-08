@@ -51,6 +51,12 @@ class InjectionPointWriterTests {
 	}
 
 	@Test
+	void writeInstantiationForAmbiguousConstructor() throws Exception {
+		Constructor<?> constructor = AmbiguousConstructorBean.class.getDeclaredConstructor(String.class, Number.class);
+		assertThat(writeInstantiation(constructor)).lines().containsExactly("instanceContext.create(context, (attributes) -> new InjectionPointWriterTests.AmbiguousConstructorBean(attributes.get(0, String.class), attributes.get(1, Number.class)))");
+	}
+
+	@Test
 	void writeInstantiationForConstructorInInnerClass() {
 		Constructor<?> constructor = InnerClass.class.getDeclaredConstructors()[0];
 		assertThat(writeInstantiation(constructor)).lines().containsExactly("context.getBean(InjectionPointWriterTests.SimpleConstructorBean.class).new InnerClass()");
@@ -210,6 +216,18 @@ class InjectionPointWriterTests {
 
 		GenericConstructorBean(ObjectProvider<Integer> counter) {
 			this.counter = counter;
+		}
+
+	}
+
+	static class AmbiguousConstructorBean {
+
+		AmbiguousConstructorBean(String first, String second) {
+
+		}
+
+		AmbiguousConstructorBean(String first, Number second) {
+
 		}
 
 	}
