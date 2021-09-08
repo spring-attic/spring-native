@@ -18,6 +18,7 @@ package org.springframework.context.bootstrap.generator.test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.ListAssert;
@@ -29,8 +30,19 @@ import org.assertj.core.api.ListAssert;
  */
 public class TextAssert extends AbstractStringAssert<TextAssert> {
 
-	public TextAssert(String actual) {
+	private final String original;
+
+	private final int indent;
+
+	private TextAssert(String original, int indent, String actual) {
 		super(actual, TextAssert.class);
+		this.original = original;
+		this.indent = indent;
+		describedAs("Actual content has %s indent level(s) removed", this.indent);
+	}
+
+	public TextAssert(String actual) {
+		this(actual, 0, actual);
 	}
 
 	/**
@@ -39,12 +51,41 @@ public class TextAssert extends AbstractStringAssert<TextAssert> {
 	 * @return a {@link ListAssert} for the lines that constitutes this text
 	 */
 	public ListAssert<String> lines() {
-		return new ListAssert<>(readAllLines(this.actual));
+		return new IndentAwareStringListAssert(readAllLines(this.original), readAllLines(this.actual), this.indent);
 	}
 
-	public static List<String> readAllLines(String source) {
+	/**
+	 * Return a {@link TextAssert} where the content to assert has the number of specified
+	 * indent levels removed.
+	 * @param indent the number of indent level to remove
+	 * @return a new instance where assertions can rely on the specified of indent levels removed
+	 */
+	public TextAssert removeIndent(int indent) {
+		int charsToRemove = indent * 2;
+		List<String> strings = readAllLines(this.actual);
+		return new TextAssert(this.actual, indent, strings.stream()
+				.map((line) -> (line.length() > charsToRemove) ? line.substring(charsToRemove) : line)
+				.collect(Collectors.joining("\n")));
+	}
+
+	private static List<String> readAllLines(String source) {
 		String[] lines = source.split("\\r?\\n");
 		return Arrays.asList(lines);
+	}
+
+	private static class IndentAwareStringListAssert extends ListAssert<String> {
+
+		private final List<String> original;
+
+		private final int indent;
+
+		public IndentAwareStringListAssert(List<String> original, List<String> actual, int indent) {
+			super(actual);
+			this.original = original;
+			this.indent = indent;
+			describedAs("Actual content has %s indent level(s) removed", this.indent);
+		}
+
 	}
 
 }

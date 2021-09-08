@@ -41,7 +41,12 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplier implements BeanRegis
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(MethodValidationExcludeFilter.class)
 					.withInstanceCreator(ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class))
 					.build();
-			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor));
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor)) {
+				@Override
+				protected boolean shouldDeclareCreator(BeanInstanceDescriptor descriptor) {
+					return false;
+				}
+			};
 		}
 		return null;
 	}

@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
+import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,6 +34,8 @@ import org.springframework.util.ReflectionUtils;
  * @author Stephane Nicoll
  */
 class InjectionPointWriter {
+
+	private final ParameterWriter parameterWriter = new ParameterWriter();
 
 	CodeBlock writeInstantiation(Executable creator) {
 		if (creator instanceof Constructor) {
@@ -61,14 +63,15 @@ class InjectionPointWriter {
 		boolean innerClass = isInnerClass(declaringType);
 		Class<?>[] parameterTypes = Arrays.stream(creator.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
 		// Shortcut for common case
-		if (!innerClass && parameterTypes.length == 0) {
+		if (innerClass && parameterTypes.length == 1) {
+			code.add("context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
+			return code.build();
+		}
+		if (parameterTypes.length == 0) {
 			code.add("new $T()", declaringType);
 			return code.build();
 		}
-		code.add("instanceContext.constructor(");
-		code.add(Arrays.stream(parameterTypes).map((d) -> "$T.class").collect(Collectors.joining(", ")), (Object[]) parameterTypes);
-		code.add(")\n").indent().indent();
-		code.add(".create(context, (attributes) ->");
+		code.add("instanceContext.create(context, (attributes) ->");
 		List<CodeBlock> parameters = resolveParameters(creator.getParameters());
 		if (innerClass) { // Remove the implicit argument
 			parameters.remove(0);
@@ -88,7 +91,7 @@ class InjectionPointWriter {
 			}
 		}
 		code.add(")");
-		code.add(")").unindent().unindent(); // end of invoke
+		code.add(")");
 		return code.build();
 	}
 
@@ -126,14 +129,12 @@ class InjectionPointWriter {
 
 	private CodeBlock write(Method injectionPoint, Consumer<Builder> attributesResolver, boolean instantiation) {
 		CodeBlock.Builder code = CodeBlock.builder();
-		code.add("instanceContext.method(");
-		if (instantiation) {
-			code.add("$T.class, ", injectionPoint.getDeclaringClass());
+		code.add("instanceContext");
+		if (!instantiation) {
+			code.add(".method($S, ", injectionPoint.getName());
+			code.add(this.parameterWriter.writeExecutableParameterTypes(injectionPoint));
+			code.add(")\n").indent().indent();
 		}
-		code.add("$S, ", injectionPoint.getName());
-		Class<?>[] parameterTypes = Arrays.stream(injectionPoint.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
-		code.add(Arrays.stream(parameterTypes).map((d) -> "$T.class").collect(Collectors.joining(", ")), (Object[]) parameterTypes);
-		code.add(")\n").indent().indent();
 		attributesResolver.accept(code);
 		List<CodeBlock> parameters = resolveParameters(injectionPoint.getParameters());
 		code.add(" ");
@@ -156,7 +157,10 @@ class InjectionPointWriter {
 			}
 		}
 		code.add(")");
-		code.add(")").unindent().unindent(); // end of invoke
+		code.add(")");
+		if (!instantiation) {
+			code.unindent().unindent();
+		}
 		return code.build();
 	}
 
