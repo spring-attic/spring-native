@@ -318,7 +318,7 @@ public class ConfigurationCollector {
 	private boolean verifyType(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t == null) {
-			logger.warn("Failed verification check: this type was requested to be added to configuration but is not resolvable: "+classDescriptor.getName()+" it will be skipped");
+			logger.debug("Failed verification check: this type was requested to be added to configuration but is not resolvable: "+classDescriptor.getName()+" it will be skipped");
 			return false;
 		} else {
 			return t.verifyType(aotOptions.isDebugVerify());
@@ -328,7 +328,7 @@ public class ConfigurationCollector {
 	private boolean verifyMembers(ClassDescriptor classDescriptor) {
 		Type t = ts.resolveDotted(classDescriptor.getName(),true);
 		if (t == null) {
-			logger.warn("Failed verification check: this type was requested to be added to configuration but is not resolvable "+classDescriptor.getName()+" it will be skipped");
+			logger.debug("Failed verification check: this type was requested to be added to configuration but is not resolvable "+classDescriptor.getName()+" it will be skipped");
 			return false;
 		} else {
 			return t.verifyMembers(aotOptions.isDebugVerify());
@@ -375,7 +375,7 @@ public class ConfigurationCollector {
 	private boolean verifyBundle(String pattern) {
 		Collection<String> bundles = ts.getBundles(pattern);
 		if (bundles.size()==0) {
-			logger.warn("Failed verification check: Invalid attempt to add bundle to configuration, no bundles found for this pattern: "+pattern);
+			logger.debug("Failed verification check: Invalid attempt to add bundle to configuration, no bundles found for this pattern: "+pattern);
 		}
 		return bundles.size()!=0;
 	}
