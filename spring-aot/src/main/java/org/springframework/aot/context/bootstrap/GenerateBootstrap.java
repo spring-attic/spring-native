@@ -32,7 +32,12 @@ import picocli.CommandLine.Parameters;
 
 import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
@@ -83,13 +88,18 @@ public class GenerateBootstrap implements Callable<Integer> {
 		aotOptions.setRemoveSpelSupport(this.removeSpel);
 		aotOptions.setBuildTimePropertiesChecks(propertiesCheck.toArray(new String[0]));
 
-		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		LogFile logFile = LogFile.get(environment);
+		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		if (!this.isDebug) {
-			LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
-			loggingSystem.beforeInitialize();
+		LoggingSystem loggingSystem = LoggingSystem.get(classLoader);
+		loggingSystem.initialize(initializationContext, null, logFile);
+		if (this.isDebug) {
+			loggingSystem.setLogLevel(null, LogLevel.DEBUG);
 		}
+
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
+		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
 				this.classesPaths.get(0), this.mainClass, Arrays.asList(classPath), classLoader);
 		generator.generate(applicationStructure);
