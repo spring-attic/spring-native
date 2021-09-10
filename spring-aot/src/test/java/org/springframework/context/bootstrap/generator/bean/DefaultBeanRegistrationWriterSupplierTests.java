@@ -36,7 +36,7 @@ class DefaultBeanRegistrationWriterSupplierTests {
 	void getWithRootBeanDefinitionProvideDefaultWriter() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanRegistrationWriter writer = getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder.rootBeanDefinition(
-				DefaultBeanValueWriterTests.class).getBeanDefinition());
+				DefaultBeanInstanceSupplierWriterTests.class).getBeanDefinition());
 		assertThat(writer).isNotNull().isInstanceOf(DefaultBeanRegistrationWriter.class);
 	}
 

@@ -2,8 +2,6 @@ package org.springframework.context.bootstrap.generator.bean;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,15 +26,12 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.context.bootstrap.generator.bean.support.MultiStatement;
 import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.context.bootstrap.generator.bean.support.TypeWriter;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.infrastructure.ProtectedAccessAnalysis;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.AttributeAccessor;
 import org.springframework.core.ResolvableType;
@@ -57,7 +52,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	private final BeanDefinition beanDefinition;
 
-	private final BeanValueWriter beanValueWriter;
+	private final BeanInstanceDescriptor beanInstanceDescriptor;
 
 	private final BeanRegistrationWriterOptions options;
 
@@ -65,32 +60,35 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	private int nesting = 0;
 
-	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter,
-			BeanRegistrationWriterOptions options) {
+	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition,
+			BeanInstanceDescriptor beanInstanceDescriptor, BeanRegistrationWriterOptions options) {
 		this.beanName = beanName;
 		this.beanDefinition = beanDefinition;
-		this.beanValueWriter = beanValueWriter;
+		this.beanInstanceDescriptor = beanInstanceDescriptor;
 		this.options = options;
 		this.parameterWriter = new ParameterWriter();
 	}
 
-	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition, BeanValueWriter beanValueWriter) {
-		this(beanName, beanDefinition, beanValueWriter, BeanRegistrationWriterOptions.DEFAULTS);
+	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition,
+			BeanInstanceDescriptor beanInstanceDescriptor) {
+		this(beanName, beanDefinition, beanInstanceDescriptor, BeanRegistrationWriterOptions.DEFAULTS);
+	}
+
+	@Override
+	public BeanInstanceDescriptor getBeanInstanceDescriptor() {
+		return this.beanInstanceDescriptor;
 	}
 
 	@Override
 	public void writeBeanRegistration(BootstrapWriterContext context, Builder code) {
-		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
-		registerReflectionMetadata(context.getRuntimeReflectionRegistry(), descriptor);
-
-		ProtectedAccessAnalysis analysis = context.getProtectedAccessAnalyzer().analyze(descriptor);
+		ProtectedAccessAnalysis analysis = context.getProtectedAccessAnalyzer().analyze(this.beanInstanceDescriptor);
 		if (analysis.isAccessible()) {
 			writeBeanRegistration(code);
 		}
 		else {
 			String protectedPackageName = analysis.getPrivilegedPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
-			MethodSpec method = addBeanRegistrationMethod(descriptor, this::writeBeanRegistration);
+			MethodSpec method = addBeanRegistrationMethod(this::writeBeanRegistration);
 			javaFile.addMethod(method);
 			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
 		}
@@ -125,29 +123,17 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		return false;
 	}
 
+	/**
+	 * Write the statements to instantiate the bean.
+	 * @param code the code builder to use
+	 */
+	protected void writeInstanceSupplier(Builder code) {
+		new DefaultBeanInstanceSupplierWriter(this.beanInstanceDescriptor, this.beanDefinition).writeInstanceSupplier(code);
+	}
+
 	void writeBeanRegistration(Builder code) {
 		initializeBeanDefinitionRegistrar(code);
 		code.addStatement(".register(context)");
-	}
-
-	private void registerReflectionMetadata(RuntimeReflectionRegistry registry, BeanInstanceDescriptor descriptor) {
-		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
-		registry.addMethod(instanceCreator.getMember());
-		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
-			Member member = injectionPoint.getMember();
-			if (member instanceof Executable) {
-				registry.addMethod((Method) member);
-			}
-			else if (member instanceof Field) {
-				registry.addField((Field) member);
-			}
-		}
-		for (PropertyDescriptor property : descriptor.getProperties()) {
-			Method writeMethod = property.getWriteMethod();
-			if (writeMethod != null) {
-				registry.addMethod(writeMethod);
-			}
-		}
 	}
 
 	void writeBeanDefinition(Builder code) {
@@ -165,14 +151,13 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		}
 		writeBeanType(code);
 		code.add(")");
-		BeanInstanceDescriptor descriptor = this.beanValueWriter.getDescriptor();
-		boolean shouldDeclareCreator = shouldDeclareCreator(descriptor);
+		boolean shouldDeclareCreator = shouldDeclareCreator(this.beanInstanceDescriptor);
 		if (shouldDeclareCreator) {
-			handleCreatorReference(code, descriptor.getInstanceCreator().getMember());
+			handleCreatorReference(code, this.beanInstanceDescriptor.getInstanceCreator().getMember());
 		}
 		code.add("\n").indent().indent();
 		code.add(".instanceSupplier(");
-		this.beanValueWriter.writeValueSupplier(code);
+		writeInstanceSupplier(code);
 		code.add(")").unindent().unindent(); ;
 		handleBeanDefinitionMetadata(code);
 	}
@@ -323,8 +308,8 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		}
 	}
 
-	private MethodSpec addBeanRegistrationMethod(BeanInstanceDescriptor descriptor, Consumer<Builder> code) {
-		String name = registerBeanMethodName(descriptor);
+	private MethodSpec addBeanRegistrationMethod(Consumer<Builder> code) {
+		String name = registerBeanMethodName();
 		MethodSpec.Builder method = MethodSpec.methodBuilder(name)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
 				.addParameter(GenericApplicationContext.class, "context");
@@ -334,19 +319,21 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		return method.build();
 	}
 
-	private String registerBeanMethodName(BeanInstanceDescriptor descriptor) {
-		Executable member = descriptor.getInstanceCreator().getMember();
+	private String registerBeanMethodName() {
+		Executable member = this.beanInstanceDescriptor.getInstanceCreator().getMember();
 		if (member instanceof Method) {
 			String target = (isValidName(beanName)) ? beanName : member.getName();
 			return String.format("register%s_%s", member.getDeclaringClass().getSimpleName(), target);
 		}
 		else if (member.getDeclaringClass().getEnclosingClass() != null) {
-			String target = (isValidName(beanName)) ? beanName : descriptor.getUserBeanClass().getSimpleName();
+			String target = (isValidName(beanName)) ? beanName :
+					this.beanInstanceDescriptor.getUserBeanClass().getSimpleName();
 			Class<?> enclosingClass = member.getDeclaringClass().getEnclosingClass();
 			return String.format("register%s_%s", enclosingClass.getSimpleName(), target);
 		}
 		else {
-			String target = (isValidName(beanName)) ? beanName : descriptor.getUserBeanClass().getSimpleName();
+			String target = (isValidName(beanName)) ? beanName :
+					this.beanInstanceDescriptor.getUserBeanClass().getSimpleName();
 			return "register" + StringUtils.capitalize(target);
 		}
 	}

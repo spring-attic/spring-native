@@ -38,6 +38,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
+import org.springframework.context.bootstrap.generator.infrastructure.BeanRuntimeResourcesRegistrar;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapInfrastructureWriter;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
@@ -103,6 +104,9 @@ public class ContextBootstrapGenerator {
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
 		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
+		BeanRuntimeResourcesRegistrar resourcesRegistrar = new BeanRuntimeResourcesRegistrar();
+		RuntimeReflectionRegistry runtimeReflectionRegistry = writerContext.getRuntimeReflectionRegistry();
+
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
@@ -111,6 +115,8 @@ public class ContextBootstrapGenerator {
 						beanName, beanDefinition);
 				if (beanRegistrationWriter != null) {
 					beanRegistrationWriter.writeBeanRegistration(writerContext, code);
+					resourcesRegistrar.register(runtimeReflectionRegistry,
+							beanRegistrationWriter.getBeanInstanceDescriptor());
 				}
 			}
 		}

@@ -18,6 +18,7 @@ package org.springframework.context.bootstrap.generator.bean;
 
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 
 /**
@@ -25,7 +26,6 @@ import org.springframework.context.bootstrap.generator.infrastructure.BootstrapW
  *
  * @author Stephane Nicoll
  */
-@FunctionalInterface
 public interface BeanRegistrationWriter {
 
 	/**
@@ -34,5 +34,12 @@ public interface BeanRegistrationWriter {
 	 * @param code the builder to use to add the registration statement(s)
 	 */
 	void writeBeanRegistration(BootstrapWriterContext context, CodeBlock.Builder code);
+
+	/**
+	 * Return the {@link BeanInstanceDescriptor descriptor} of the bean instance handled
+	 * by this instance
+	 * @return the bean instance descriptor
+	 */
+	BeanInstanceDescriptor getBeanInstanceDescriptor();
 
 }
