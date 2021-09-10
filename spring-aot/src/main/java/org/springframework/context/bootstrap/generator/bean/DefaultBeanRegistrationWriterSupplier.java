@@ -17,6 +17,7 @@
 package org.springframework.context.bootstrap.generator.bean;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -31,8 +32,8 @@ class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrationWrit
 
 	@Override
 	protected BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,
-			BeanValueWriter beanValueWriter) {
-		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanValueWriter, initializeOptions().build());
+			BeanInstanceDescriptor beanInstanceDescriptor) {
+		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanInstanceDescriptor, initializeOptions().build());
 	}
 
 }

@@ -32,11 +32,11 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 
 /**
- * Default {@link BeanValueWriter} implementation.
+ * Write the necessary statements to instantiate a bean.
  *
  * @author Stephane Nicoll
  */
-public class DefaultBeanValueWriter implements BeanValueWriter {
+class DefaultBeanInstanceSupplierWriter {
 
 	private final BeanInstanceDescriptor descriptor;
 
@@ -44,20 +44,14 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 
 	private final InjectionPointWriter injectionPointWriter;
 
-	public DefaultBeanValueWriter(BeanInstanceDescriptor descriptor, BeanDefinition beanDefinition) {
+	DefaultBeanInstanceSupplierWriter(BeanInstanceDescriptor descriptor, BeanDefinition beanDefinition) {
 		this.descriptor = descriptor;
 		this.beanDefinition = beanDefinition;
 		this.injectionPointWriter = new InjectionPointWriter();
 	}
 
-	@Override
-	public BeanInstanceDescriptor getDescriptor() {
-		return this.descriptor;
-	}
-
-	@Override
-	public void writeValueSupplier(Builder code) {
-		MemberDescriptor<Executable> descriptor = getDescriptor().getInstanceCreator();
+	public void writeInstanceSupplier(Builder code) {
+		MemberDescriptor<Executable> descriptor = this.descriptor.getInstanceCreator();
 		if (descriptor == null) {
 			throw new IllegalStateException("Could not handle " + this.beanDefinition + ": no instance creator available");
 		}
@@ -71,7 +65,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 	}
 
 	private void writeBeanInstantiation(Builder code, Constructor<?> constructor) {
-		Class<?> declaringType = getDescriptor().getUserBeanClass();
+		Class<?> declaringType = this.descriptor.getUserBeanClass();
 		boolean innerClass = isInnerClass(declaringType);
 		List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(constructor.getParameterTypes()));
 		if (innerClass) { // Remove the implicit argument
@@ -86,7 +80,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 			}
 			else {
-				code.add("() -> new $T()", getDescriptor().getUserBeanClass());
+				code.add("() -> new $T()", this.descriptor.getUserBeanClass());
 			}
 			return;
 		}
@@ -132,7 +126,7 @@ public class DefaultBeanValueWriter implements BeanValueWriter {
 		code.add("(instanceContext) ->");
 		branch(multiStatements, () -> code.beginControlFlow(""), () -> code.add(" "));
 		if (multiStatements) {
-			code.add("$T bean = ", getDescriptor().getUserBeanClass());
+			code.add("$T bean = ", this.descriptor.getUserBeanClass());
 		}
 		code.add(this.injectionPointWriter.writeInstantiation(method));
 		if (multiStatements) {

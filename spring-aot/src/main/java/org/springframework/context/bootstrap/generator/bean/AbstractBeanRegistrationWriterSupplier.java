@@ -11,7 +11,7 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBe
 
 /**
  * Base {@link BeanRegistrationWriterSupplier} implementation taking care of locating
- * a suitable {@link BeanValueWriter}.
+ * a suitable {@link BeanInstanceSupplierWriter}.
  *
  * @author Stephane Nicoll
  */
@@ -26,19 +26,19 @@ public abstract class AbstractBeanRegistrationWriterSupplier implements BeanRegi
 
 	@Override
 	public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
-		BeanValueWriter beanValueWriter = createBeanValueWriter(beanDefinition);
-		return (beanValueWriter != null) ? createInstance(beanName, beanDefinition, beanValueWriter) : null;
+		BeanInstanceDescriptor beanInstanceDescriptor = resolveBeanInstanceDescriptor(beanDefinition);
+		return (beanInstanceDescriptor != null) ? createInstance(beanName, beanDefinition, beanInstanceDescriptor) : null;
 	}
 
 	/**
-	 * Create a {@link BeanRegistrationWriter} based on the resolved {@link BeanValueWriter}.
+	 * Create a {@link BeanRegistrationWriter} based on a {@link BeanInstanceDescriptor}.
 	 * @param beanName the name of the bean
 	 * @param beanDefinition the bean definition
-	 * @param beanValueWriter the bean value writer (never {@code null})
+	 * @param beanInstanceDescriptor the bean instance descriptor (never {@code null})
 	 * @return a bean registration writer for the specified bean definition
 	 */
 	protected abstract BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,
-			BeanValueWriter beanValueWriter);
+			BeanInstanceDescriptor beanInstanceDescriptor);
 
 	/**
 	 * Initialize a builder for the {@link BeanRegistrationWriterOptions}.
@@ -48,8 +48,7 @@ public abstract class AbstractBeanRegistrationWriterSupplier implements BeanRegi
 		return BeanRegistrationWriterOptions.builder().withWriterFactory(this::get);
 	}
 
-	private BeanValueWriter createBeanValueWriter(BeanDefinition beanDefinition) {
-		BeanInstanceDescriptor descriptor = this.beanInstanceDescriptorFactory.create(beanDefinition);
-		return (descriptor != null) ? new DefaultBeanValueWriter(descriptor, beanDefinition) : null;
+	private BeanInstanceDescriptor resolveBeanInstanceDescriptor(BeanDefinition beanDefinition) {
+		return this.beanInstanceDescriptorFactory.create(beanDefinition);
 	}
 }

@@ -74,6 +74,12 @@ class ContextBootstrapGeneratorTests {
 	}
 
 	@Test
+	void boostrapClassRegisterReflectionMetadata() {
+		ContextBootstrapStructure structure = this.generatorTester.generate(SimpleConfiguration.class);
+		assertThat(structure).hasClassDescriptor(SimpleConfiguration.class);
+	}
+
+	@Test
 	void bootstrapClassWithBeanMethodAndNoParameter() {
 		ContextBootstrapStructure structure = this.generatorTester.generate(SimpleConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(

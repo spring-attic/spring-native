@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.context.properties;
 
+import com.squareup.javapoet.CodeBlock.Builder;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.bean.SimpleBeanValueWriter;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ReflectionUtils;
@@ -41,19 +42,19 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplier implements BeanRegis
 			BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(MethodValidationExcludeFilter.class)
 					.withInstanceCreator(ReflectionUtils.findMethod(MethodValidationExcludeFilter.class, "byAnnotation", Class.class))
 					.build();
-			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, createBeanValueWriter(descriptor)) {
+			return new DefaultBeanRegistrationWriter(beanName, beanDefinition, descriptor) {
 				@Override
 				protected boolean shouldDeclareCreator(BeanInstanceDescriptor descriptor) {
 					return false;
 				}
+
+				@Override
+				protected void writeInstanceSupplier(Builder code) {
+					code.add("() -> $T.byAnnotation($T.class)", MethodValidationExcludeFilter.class, ConfigurationProperties.class);
+				}
 			};
 		}
 		return null;
-	}
-
-	private SimpleBeanValueWriter createBeanValueWriter(BeanInstanceDescriptor descriptor) {
-		return new SimpleBeanValueWriter(descriptor, (code) -> code.add("() -> $T.byAnnotation($T.class)",
-				MethodValidationExcludeFilter.class, ConfigurationProperties.class));
 	}
 
 }

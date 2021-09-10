@@ -46,11 +46,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link DefaultBeanValueWriter}.
+ * Tests for {@link DefaultBeanInstanceSupplierWriter}.
  *
  * @author Stephane Nicoll
  */
-class DefaultBeanValueWriterTests {
+class DefaultBeanInstanceSupplierWriterTests {
 
 	@Test
 	void writeWithNoInstanceCreator() {
@@ -202,7 +202,7 @@ class DefaultBeanValueWriterTests {
 			context.getBeanFactory().getType("test");
 			BeanDefinition resolvedBeanDefinition = context.getBeanFactory().getMergedBeanDefinition("test");
 			BeanInstanceDescriptor descriptor = descriptorFactory.apply(resolvedBeanDefinition.getResolvableType());
-			new DefaultBeanValueWriter(descriptor, resolvedBeanDefinition).writeValueSupplier(code);
+			new DefaultBeanInstanceSupplierWriter(descriptor, resolvedBeanDefinition).writeInstanceSupplier(code);
 		});
 	}
 
