@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.reflect;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.bootstrap.generator.reflect.RuntimeResourceEntryTests.InnerClassSample.AnotherInner;
+import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeResourceEntryTests.InnerClassSample.AnotherInner;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;

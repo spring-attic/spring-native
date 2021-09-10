@@ -1,4 +1,4 @@
-package org.springframework.context.bootstrap.generator.bean.descriptor;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package org.springframework.context.bootstrap.generator.bean.descriptor;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalysis.ProtectedElement;
+import org.springframework.context.bootstrap.generator.infrastructure.ProtectedAccessAnalysis.ProtectedElement;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 

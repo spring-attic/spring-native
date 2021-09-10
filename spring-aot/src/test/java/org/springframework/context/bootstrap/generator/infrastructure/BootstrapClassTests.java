@@ -1,4 +1,4 @@
-package org.springframework.context.bootstrap.generator;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,7 +25,7 @@ class BootstrapClassTests {
 
 	@Test
 	void className() {
-		BootstrapClass bootstrapClass = BootstrapClass.of(TEST_CLASS_NAME,
+		BootstrapClass bootstrapClass = new BootstrapClass(TEST_CLASS_NAME,
 				(type) -> type.addModifiers(Modifier.STATIC));
 		assertThat(bootstrapClass.getClassName()).isEqualTo(TEST_CLASS_NAME);
 		assertThat(generateCode(bootstrapClass)).contains("static class Test {");
@@ -33,14 +33,14 @@ class BootstrapClassTests {
 
 	@Test
 	void createWithCustomField() {
-		BootstrapClass bootstrapClass = BootstrapClass.of(TEST_CLASS_NAME,
+		BootstrapClass bootstrapClass = new BootstrapClass(TEST_CLASS_NAME,
 				(type) -> type.addField(FieldSpec.builder(TypeName.BOOLEAN, "enabled").build()));
 		assertThat(generateCode(bootstrapClass)).contains("boolean enabled;");
 	}
 
 	@Test
 	void addMethod() {
-		BootstrapClass bootstrapClass = BootstrapClass.of(TEST_CLASS_NAME);
+		BootstrapClass bootstrapClass = BootstrapClass.of("com.example");
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("test").returns(Integer.class).addCode(CodeBlock.of("return 42;")).build());
 		assertThat(generateCode(bootstrapClass)).containsSequence(
 				"  Integer test() {\n",
@@ -50,7 +50,7 @@ class BootstrapClassTests {
 
 	@Test
 	void addMultipleMethods() {
-		BootstrapClass bootstrapClass = BootstrapClass.of(TEST_CLASS_NAME);
+		BootstrapClass bootstrapClass = BootstrapClass.of("com.example");
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("first").build());
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("second").build());
 		assertThat(generateCode(bootstrapClass))

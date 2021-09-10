@@ -18,7 +18,7 @@ package org.springframework.context.bootstrap.generator.bean;
 
 import com.squareup.javapoet.CodeBlock;
 
-import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 
 /**
  * Abstract how to register a bean in the context.

@@ -1,4 +1,4 @@
-package org.springframework.context.bootstrap.generator;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +7,9 @@ import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
-import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalyzer;
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 
 /**
  * Context for components that write code to boostrap the context.
@@ -20,7 +18,6 @@ import org.springframework.context.bootstrap.generator.reflect.RuntimeReflection
  */
 public class BootstrapWriterContext {
 
-	static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
 
 	private final String packageName;
 
@@ -60,8 +57,8 @@ public class BootstrapWriterContext {
 	 */
 	public BootstrapClass getBootstrapClass(String packageName) {
 		return this.bootstrapClasses.computeIfAbsent(packageName, (p) ->
-				BootstrapClass.of(ClassName.get(packageName, BOOTSTRAP_CLASS_NAME),
-						(type) -> type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
+				BootstrapClass.of(packageName, (type) ->
+						type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
 	}
 
 	/**

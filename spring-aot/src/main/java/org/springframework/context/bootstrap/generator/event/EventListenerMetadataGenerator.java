@@ -22,7 +22,7 @@ import java.util.EventListener;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.event.EventListenerMetadata;
 
 /**

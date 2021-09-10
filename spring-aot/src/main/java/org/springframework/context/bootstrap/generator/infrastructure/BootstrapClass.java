@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import com.squareup.javapoet.TypeSpec;
  */
 public class BootstrapClass {
 
-	private final String packageName;
+	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
 
 	private final ClassName className;
 
@@ -43,8 +43,7 @@ public class BootstrapClass {
 
 	private final List<MethodSpec> methods;
 
-	private BootstrapClass(ClassName className, Consumer<TypeSpec.Builder> type) {
-		this.packageName = className.packageName();
+	BootstrapClass(ClassName className, Consumer<TypeSpec.Builder> type) {
 		this.className = className;
 		this.type = TypeSpec.classBuilder(className);
 		type.accept(this.type);
@@ -52,22 +51,22 @@ public class BootstrapClass {
 	}
 
 	/**
-	 * Create an instance for the specified {@link ClassName}.
-	 * @param className the class name
+	 * Create an instance for the specified package.
+	 * @param packageName the package name
 	 * @param type a callback to customize the type, i.e. to change default modifiers
 	 * @return a new {@link BootstrapClass}
 	 */
-	public static BootstrapClass of(ClassName className, Consumer<TypeSpec.Builder> type) {
-		return new BootstrapClass(className, type);
+	public static BootstrapClass of(String packageName, Consumer<TypeSpec.Builder> type) {
+		return new BootstrapClass(ClassName.get(packageName, BOOTSTRAP_CLASS_NAME), type);
 	}
 
 	/**
-	 * Create an instance for the specified {@link ClassName}, as a {@code public} type.
-	 * @param className the class name
+	 * Create an instance for the specified package, as a {@code public} type.
+	 * @param packageName the package name
 	 * @return a new {@link BootstrapClass}
 	 */
-	public static BootstrapClass of(ClassName className) {
-		return of(className, (type) -> type.addModifiers(Modifier.PUBLIC));
+	public static BootstrapClass of(String packageName) {
+		return of(packageName, (type) -> type.addModifiers(Modifier.PUBLIC));
 	}
 
 	/**
@@ -91,7 +90,8 @@ public class BootstrapClass {
 	 * @return a java file
 	 */
 	public JavaFile toJavaFile() {
-		return JavaFile.builder(this.packageName, this.type.addMethods(this.methods).build()).build();
+		return JavaFile.builder(this.className.packageName(),
+				this.type.addMethods(this.methods).build()).build();
 	}
 
 }

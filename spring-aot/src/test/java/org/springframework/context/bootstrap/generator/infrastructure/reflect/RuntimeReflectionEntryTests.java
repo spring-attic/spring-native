@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -44,7 +44,7 @@ class RuntimeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterInnerClassWithDollarSeparator() {
 		ClassDescriptor descriptor = RuntimeReflectionEntry.of(TestClass.class).build().toClassDescriptor();
-		assertThat(descriptor.getName()).isEqualTo("org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionEntryTests$TestClass");
+		assertThat(descriptor.getName()).isEqualTo("org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionEntryTests$TestClass");
 	}
 
 	@Test

@@ -14,40 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
-import com.squareup.javapoet.ClassName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.annotation.ImportAwareInvoker;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
-import org.springframework.context.bootstrap.generator.BootstrapInfrastructureWriter.ImportAwareInfrastructureBuilder;
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
-import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
-import org.springframework.context.origin.BeanDefinitionDescriptor;
-import org.springframework.context.origin.BeanDefinitionDescriptor.Type;
-import org.springframework.context.origin.BeanFactoryStructure;
-import org.springframework.context.origin.BeanFactoryStructureAnalyzer;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link BootstrapInfrastructureWriter}.
@@ -111,16 +95,6 @@ class BootstrapInfrastructureWriterTests {
 	}
 
 	@Test
-	void buildImportAwareLinksWithInnerClassLinkToActualClass() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean(NestedImportConfiguration.class);
-		Map<String, Class<?>> importAwareLinks = createImportAwareInfrastructureBuilder(context)
-				.buildImportAwareLinks(new RuntimeReflectionRegistry());
-		assertThat(importAwareLinks).containsOnly(entry(
-				ImportAwareConfiguration.class.getName(), NestedImportConfiguration.Nested.class));
-	}
-
-	@Test
 	void writeInfrastructureWithNestedClass() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(NestedImportConfiguration.class);
@@ -134,86 +108,6 @@ class BootstrapInfrastructureWriterTests {
 				"  }");
 	}
 
-	@Test
-	void buildImportAwareLinksWithInnerClassRegisterClassResource() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean(NestedImportConfiguration.class);
-		RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
-		createImportAwareInfrastructureBuilder(context).buildImportAwareLinks(registry);
-		assertThat(registry.getResourcesDescriptor().getPatterns()).singleElement().isEqualTo(
-				"org/springframework/context/bootstrap/generator/sample/callback/NestedImportConfiguration\\$Nested.class");
-	}
-
-	@Test
-	void buildImportAwareWithResolvableTypeUseIt() {
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(BeanDefinitionBuilder
-				.rootBeanDefinition(ImportConfiguration.class).getBeanDefinition());
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
-				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
-	}
-
-	@Test
-	void buildImportAwareLinksWithNoImportingBeanDefinitionIgnoreEntry() {
-		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
-		importingBeanDefinition.setBeanClass(ImportConfiguration.class);
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(null);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).isEmpty();
-	}
-
-	@Test
-	void buildImportAwareLinksWithNoResolvableTypeUseBeanClass() {
-		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
-		importingBeanDefinition.setBeanClass(ImportConfiguration.class);
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
-				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
-	}
-
-	@Test
-	void buildImportAwareLinksWithNoResolvableTypeUseClassName() {
-		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
-		importingBeanDefinition.setBeanClassName(ImportConfiguration.class.getName());
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
-				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
-	}
-
-	@Test
-	void buildImportAwareLinksWithNoTypeIsIgnored() {
-		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).isEmpty();
-	}
-
-	@Test
-	void buildImportAwareLinksWithInvalidClassNameThrowsException() {
-		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
-		importingBeanDefinition.setBeanClassName("does-not-exist");
-		ImportAwareInfrastructureBuilder builder = createForImportingCandidate(importingBeanDefinition);
-		assertThatIllegalStateException().isThrownBy(() -> builder.buildImportAwareLinks(new RuntimeReflectionRegistry()))
-				.withMessageContaining("Bean definition refers to invalid class");
-	}
-
-	private ImportAwareInfrastructureBuilder createForImportingCandidate(BeanDefinition importingBeanDefinition) {
-		Map<String, BeanDefinitionDescriptor> structure = new LinkedHashMap<>();
-		if (importingBeanDefinition != null) {
-			structure.put("importing", BeanDefinitionDescriptor.unresolved("importing", importingBeanDefinition)
-					.resolve(Type.CONFIGURATION, Set.of()));
-		}
-		RootBeanDefinition beanDefinition = new RootBeanDefinition();
-		beanDefinition.setBeanClass(ImportAwareConfiguration.class);
-		structure.put("imported", BeanDefinitionDescriptor.unresolved("imported", beanDefinition)
-				.resolve(Type.CONFIGURATION, Set.of("importing")));
-		BeanFactoryStructure beanFactoryStructure = new BeanFactoryStructure(structure);
-		return new ImportAwareInfrastructureBuilder(beanFactoryStructure, getClass().getClassLoader());
-	}
-
-	private ImportAwareInfrastructureBuilder createImportAwareInfrastructureBuilder(GenericApplicationContext context) {
-		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		BeanFactoryStructure structure = new BeanFactoryStructureAnalyzer(context.getClassLoader()).analyze(beanFactory);
-		return new ImportAwareInfrastructureBuilder(structure, context.getClassLoader());
-	}
-
 	private CodeSnippet writeInfrastructure(GenericApplicationContext context, BootstrapWriterContext writerContext) {
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		BootstrapInfrastructureWriter writer = new BootstrapInfrastructureWriter(beanFactory, writerContext);
@@ -221,7 +115,7 @@ class BootstrapInfrastructureWriterTests {
 	}
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of(ClassName.get("com.example", "Test")));
+		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
 	}
 
 	private String generateCode(BootstrapClass bootstrapClass) {

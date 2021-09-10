@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.reflect;
-
+package org.springframework.context.bootstrap.generator.infrastructure.reflect;
 
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.util.Assert;
