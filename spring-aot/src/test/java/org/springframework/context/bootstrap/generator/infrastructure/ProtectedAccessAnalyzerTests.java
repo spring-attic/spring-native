@@ -1,4 +1,4 @@
-package org.springframework.context.bootstrap.generator.bean.descriptor;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.lang.reflect.Member;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedParameter;

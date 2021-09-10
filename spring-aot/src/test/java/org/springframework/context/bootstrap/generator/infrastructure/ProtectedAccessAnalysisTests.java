@@ -1,11 +1,11 @@
-package org.springframework.context.bootstrap.generator.bean.descriptor;
+package org.springframework.context.bootstrap.generator.infrastructure;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.bootstrap.generator.bean.descriptor.ProtectedAccessAnalysis.ProtectedElement;
+import org.springframework.context.bootstrap.generator.infrastructure.ProtectedAccessAnalysis.ProtectedElement;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedConstructorComponent;
 import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedFactoryMethod;
 

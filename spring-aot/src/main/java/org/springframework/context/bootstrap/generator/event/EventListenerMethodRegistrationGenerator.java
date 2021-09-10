@@ -36,7 +36,7 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigUtils;
-import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.EventListenerFactory;
 import org.springframework.context.event.EventListenerMethodProcessor;

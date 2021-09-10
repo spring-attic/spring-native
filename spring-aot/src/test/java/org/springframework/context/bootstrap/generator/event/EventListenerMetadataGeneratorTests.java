@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.bootstrap.generator.sample.event.AnotherEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleEventListener;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;

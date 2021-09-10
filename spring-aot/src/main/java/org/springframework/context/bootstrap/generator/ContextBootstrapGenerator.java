@@ -38,7 +38,10 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapInfrastructureWriter;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -90,8 +93,8 @@ public class ContextBootstrapGenerator {
 		ParameterizedTypeName typeName = ParameterizedTypeName.get(
 				ClassName.get(ApplicationContextInitializer.class),
 				ClassName.get(GenericApplicationContext.class));
-		return BootstrapClass.of(ClassName.get(packageName, BootstrapWriterContext.BOOTSTRAP_CLASS_NAME),
-				(type) -> type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
+		return BootstrapClass.of(packageName, (type) ->
+				type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
 	}
 
 	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,

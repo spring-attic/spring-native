@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 import org.junit.jupiter.api.Test;
@@ -38,9 +37,9 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.samples.simple.SimpleComponent;
-import org.springframework.context.bootstrap.generator.BootstrapClass;
-import org.springframework.context.bootstrap.generator.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.EnvironmentAwareComponent;
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
@@ -393,7 +392,7 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of(ClassName.get("com.example", "Test")));
+		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
 	}
 
 	private CodeSnippet beanRegistration(BeanDefinition beanDefinition, Consumer<Builder> instanceSupplier) {

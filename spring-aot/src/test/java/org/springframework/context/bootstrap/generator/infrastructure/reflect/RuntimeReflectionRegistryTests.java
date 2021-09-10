@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
