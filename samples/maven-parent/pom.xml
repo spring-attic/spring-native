@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.4</version>
+		<version>2.5.5-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 	<groupId>org.springframework.experimental</groupId>
@@ -24,11 +24,7 @@
 		<builder>paketobuildpacks/builder:tiny</builder>
 
 		<wavefront.version>2.2.0</wavefront.version>
-		<spring-data-bom.version>2021.0.5-SNAPSHOT</spring-data-bom.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
-
-		<!-- To benefit from https://github.com/spring-projects/spring-framework/issues/27369 -->
-		<spring-framework.version>5.3.10-SNAPSHOT</spring-framework.version>
 	</properties>
 
 	<build>
