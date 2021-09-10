@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
@@ -119,6 +120,13 @@ public class RuntimeReflectionEntry {
 
 	private FieldDescriptor toFieldDescriptor(Field field) {
 		return FieldDescriptor.of(field.getName(), true, false);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", RuntimeReflectionEntry.class.getSimpleName() + "[", "]")
+				.add("type=" + this.type).add("methods=" + this.methods).add("fields=" + this.fields)
+				.add("flags=" + this.flags).toString();
 	}
 
 	public static class Builder {
