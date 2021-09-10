@@ -17,4 +17,4 @@
 /**
  * Support classes for providing runtime reflection hints.
  */
-package org.springframework.context.bootstrap.generator.infrastructure;
+package org.springframework.context.bootstrap.generator.infrastructure.reflect;

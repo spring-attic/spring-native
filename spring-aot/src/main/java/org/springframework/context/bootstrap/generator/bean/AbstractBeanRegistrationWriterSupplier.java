@@ -10,8 +10,8 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBeanInstanceDescriptorFactory;
 
 /**
- * Base {@link BeanRegistrationWriterSupplier} implementation taking care of locating
- * a suitable {@link BeanInstanceSupplierWriter}.
+ * Base {@link BeanRegistrationWriterSupplier} implementation taking care of creating
+ * a suitable {@link BeanInstanceDescriptor}.
  *
  * @author Stephane Nicoll
  */
