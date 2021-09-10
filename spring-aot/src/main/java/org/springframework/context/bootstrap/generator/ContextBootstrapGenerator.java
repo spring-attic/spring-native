@@ -32,8 +32,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -41,16 +39,15 @@ import org.springframework.context.annotation.ContextAnnotationAutowireCandidate
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
-import org.springframework.context.bootstrap.generator.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.nativex.hint.Flag;
 
 /**
  * A simple experiment to generate a bootstrap class that represents the state of a fully
  * initialized {@link BeanFactory}.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 public class ContextBootstrapGenerator {
 
@@ -78,7 +75,6 @@ public class ContextBootstrapGenerator {
 			Class<?>... excludeTypes) {
 		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
-		registerDependencyResolutionReflectionEntries(writerContext.getRuntimeReflectionRegistry());
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
@@ -94,11 +90,6 @@ public class ContextBootstrapGenerator {
 				ClassName.get(GenericApplicationContext.class));
 		return BootstrapClass.of(ClassName.get(packageName, BootstrapWriterContext.BOOTSTRAP_CLASS_NAME),
 				(type) -> type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
-	}
-
-	private void registerDependencyResolutionReflectionEntries(RuntimeReflectionRegistry reflectionRegistry) {
-		reflectionRegistry.add(Qualifier.class).withFlags(Flag.allDeclaredMethods);
-		reflectionRegistry.add(Value.class).withFlags(Flag.allDeclaredMethods);
 	}
 
 	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,
