@@ -11,6 +11,7 @@ org.apache.logging.Log4jApiHints
 org.apache.logging.log4j.core.Log4jCoreHints
 org.h2.H2Hints
 org.hsqldb.HSQLDBHints
+org.mariadb.MariaDbHints
 com.mysql.cj.MySqlHints
 com.wavefront.spring.actuate.WavefrontEndpointHints
 com.wavefront.spring.actuate.WavefrontHints
