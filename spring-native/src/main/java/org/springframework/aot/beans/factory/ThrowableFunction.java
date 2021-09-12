@@ -8,7 +8,7 @@ import java.util.function.Function;
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface SmartFunction<T, R> extends Function<T, R> {
+public interface ThrowableFunction<T, R> extends Function<T, R> {
 
 	R applyWithException(T t) throws Exception;
 

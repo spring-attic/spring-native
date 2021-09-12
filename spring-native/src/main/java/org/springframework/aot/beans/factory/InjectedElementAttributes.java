@@ -41,7 +41,7 @@ public class InjectedElementAttributes {
 	 * resolved}.
 	 * @param attributes the consumer to invoke if this instance is resolved
 	 */
-	public void ifResolved(SmartConsumer<InjectedElementAttributes> attributes) {
+	public void ifResolved(ThrowableConsumer<InjectedElementAttributes> attributes) {
 		ifResolved(() -> attributes.accept(this));
 	}
 

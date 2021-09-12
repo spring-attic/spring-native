@@ -46,14 +46,27 @@ class BeanDefinitionRegistrarTests {
 	}
 
 	@Test
-	void registerWithSimpleInstanceSupplierThatThrowsException() {
+	void registerWithSimpleInstanceSupplierThatThrowsRuntimeException() {
 		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new IllegalArgumentException("test exception");
 		BeanDefinitionRegistrar.of("testBean", InjectionSample.class)
 				.instanceSupplier(() -> {
-					throw new IOException("test exception");
+					throw exception;
 				}).register(context);
 		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
-				.hasMessageContaining("testBean").hasMessageContaining("test exception");
+				.getRootCause().isEqualTo(exception);
+	}
+
+	@Test
+	void registerWithSimpleInstanceSupplierThatThrowsCheckedException() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new IOException("test exception");
+		BeanDefinitionRegistrar.of("testBean", InjectionSample.class)
+				.instanceSupplier(() -> {
+					throw exception;
+				}).register(context);
+		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
+				.getRootCause().isEqualTo(exception);
 	}
 
 	@Test
@@ -67,10 +80,10 @@ class BeanDefinitionRegistrarTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void registerWithCustomizers() {
+	void registerWithCustomizer() {
 		GenericApplicationContext context = new GenericApplicationContext();
-		SmartConsumer<RootBeanDefinition> first = mock(SmartConsumer.class);
-		SmartConsumer<RootBeanDefinition> second = mock(SmartConsumer.class);
+		ThrowableConsumer<RootBeanDefinition> first = mock(ThrowableConsumer.class);
+		ThrowableConsumer<RootBeanDefinition> second = mock(ThrowableConsumer.class);
 		BeanDefinitionRegistrar.of("test", InjectionSample.class)
 				.instanceSupplier(InjectionSample::new).customize(first).customize(second).register(context);
 		assertContext(context, () -> {
@@ -79,6 +92,29 @@ class BeanDefinitionRegistrarTests {
 			ordered.verify(first).accept(any(RootBeanDefinition.class));
 			ordered.verify(second).accept(any(RootBeanDefinition.class));
 		});
+	}
+
+	@Test
+	void registerWithCustomizerThatThrowsRuntimeException() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new RuntimeException("test exception");
+		BeanDefinitionRegistrar registrar = BeanDefinitionRegistrar.of("test", InjectionSample.class)
+				.instanceSupplier(InjectionSample::new).customize((bd) -> {
+					throw exception;
+				});
+		assertThatThrownBy(() -> registrar.register(context)).isEqualTo(exception);
+	}
+
+	@Test
+	void registerWithCustomizerThatThrowsCheckedException() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new IOException("test exception");
+		BeanDefinitionRegistrar registrar = BeanDefinitionRegistrar.of("test", InjectionSample.class)
+				.instanceSupplier(InjectionSample::new).customize((bd) -> {
+					throw exception;
+				});
+		assertThatThrownBy(() -> registrar.register(context)).isInstanceOf(RuntimeException.class)
+				.hasCause(exception);
 	}
 
 	@Test
@@ -91,6 +127,30 @@ class BeanDefinitionRegistrarTests {
 			assertThat(context.containsBean("test")).isTrue();
 			assertThat(context.getBean(ConstructorSample.class).resourceLoader).isEqualTo(context);
 		});
+	}
+
+	@Test
+	void registerWithConstructorInstantiationThatThrowsRuntimeException() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new RuntimeException("test exception");
+		BeanDefinitionRegistrar.of("test", ConstructorSample.class).withConstructor(ResourceLoader.class)
+				.instanceSupplier((instanceContext) -> {
+					throw exception;
+				}).register(context);
+		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
+				.getRootCause().isEqualTo(exception);
+	}
+
+	@Test
+	void registerWithConstructorInstantiationThatThrowsCheckedException() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		Exception exception = new IOException("test exception");
+		BeanDefinitionRegistrar.of("test", ConstructorSample.class).withConstructor(ResourceLoader.class)
+				.instanceSupplier((instanceContext) -> {
+					throw exception;
+				}).register(context);
+		assertThatThrownBy(context::refresh).isInstanceOf(BeanCreationException.class)
+				.getRootCause().isEqualTo(exception);
 	}
 
 	@Test

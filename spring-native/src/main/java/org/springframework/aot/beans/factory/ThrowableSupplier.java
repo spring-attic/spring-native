@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  *
  * @author Stephane Nicoll
  */
-public interface SmartSupplier<T> extends Supplier<T> {
+public interface ThrowableSupplier<T> extends Supplier<T> {
 
 	T getWithException() throws Exception;
 
