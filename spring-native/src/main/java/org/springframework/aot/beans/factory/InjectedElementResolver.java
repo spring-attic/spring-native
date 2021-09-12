@@ -1,8 +1,5 @@
 package org.springframework.aot.beans.factory;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
@@ -36,7 +33,7 @@ public interface InjectedElementResolver {
 	 * @param context the context to use to resolve the attributes
 	 * @param attributes a consumer of the resolved attributes
 	 */
-	default void invoke(GenericApplicationContext context, SmartConsumer<InjectedElementAttributes> attributes) {
+	default void invoke(GenericApplicationContext context, ThrowableConsumer<InjectedElementAttributes> attributes) {
 		InjectedElementAttributes elements = resolve(context);
 		attributes.accept(elements);
 	}
@@ -49,7 +46,7 @@ public interface InjectedElementResolver {
 	 * @param <T> the type of the instance
 	 * @return a new instance
 	 */
-	default <T> T create(GenericApplicationContext context, SmartFunction<InjectedElementAttributes, T> factory) {
+	default <T> T create(GenericApplicationContext context, ThrowableFunction<InjectedElementAttributes, T> factory) {
 		InjectedElementAttributes attributes = resolve(context);
 		return factory.apply(attributes);
 	}

@@ -47,7 +47,7 @@ class InjectedElementAttributesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void ifResolvedWithUnresolvedAttributesDoesNotInvokeConsumer() {
-		SmartConsumer<InjectedElementAttributes> consumer = mock(SmartConsumer.class);
+		ThrowableConsumer<InjectedElementAttributes> consumer = mock(ThrowableConsumer.class);
 		unresolved.ifResolved(consumer);
 		verifyNoInteractions(consumer);
 	}
@@ -55,7 +55,7 @@ class InjectedElementAttributesTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void ifResolvedWithResolvedAttributesInvokesConsumer() {
-		SmartConsumer<InjectedElementAttributes> consumer = mock(SmartConsumer.class);
+		ThrowableConsumer<InjectedElementAttributes> consumer = mock(ThrowableConsumer.class);
 		resolved.ifResolved(consumer);
 		verify(consumer).accept(resolved);
 	}

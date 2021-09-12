@@ -8,7 +8,7 @@ import java.util.function.Consumer;
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface SmartConsumer<T> extends Consumer<T> {
+public interface ThrowableConsumer<T> extends Consumer<T> {
 
 	void acceptWithException(T t) throws Exception;
 

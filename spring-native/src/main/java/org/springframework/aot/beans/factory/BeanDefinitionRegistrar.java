@@ -62,7 +62,7 @@ public class BeanDefinitionRegistrar {
 		return of(null, beanType);
 	}
 
-	public BeanDefinitionRegistrar customize(SmartConsumer<RootBeanDefinition> beanDefinition) {
+	public BeanDefinitionRegistrar customize(ThrowableConsumer<RootBeanDefinition> beanDefinition) {
 		this.customizers.add(beanDefinition);
 		return this;
 	}
@@ -77,12 +77,12 @@ public class BeanDefinitionRegistrar {
 		return this;
 	}
 
-	public BeanDefinitionRegistrar instanceSupplier(SmartFunction<InstanceSupplierContext, ?> instanceContext) {
+	public BeanDefinitionRegistrar instanceSupplier(ThrowableFunction<InstanceSupplierContext, ?> instanceContext) {
 		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(() ->
 				instanceContext.apply(createInstanceSupplierContext())));
 	}
 
-	public BeanDefinitionRegistrar instanceSupplier(SmartSupplier<?> instanceSupplier) {
+	public BeanDefinitionRegistrar instanceSupplier(ThrowableSupplier<?> instanceSupplier) {
 		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(instanceSupplier));
 	}
 
@@ -164,7 +164,7 @@ public class BeanDefinitionRegistrar {
 			this.beanType = beanType;
 		}
 
-		public <T> T create(GenericApplicationContext context, SmartFunction<InjectedElementAttributes, T> factory) {
+		public <T> T create(GenericApplicationContext context, ThrowableFunction<InjectedElementAttributes, T> factory) {
 			return resolveInstanceCreator(BeanDefinitionRegistrar.this.instanceCreator).create(context, factory);
 		}
 

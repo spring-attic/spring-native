@@ -84,7 +84,7 @@ class InjectedMethodResolverTests {
 	@SuppressWarnings("unchecked")
 	void createWithUnresolvedAttributesDoesNotInvokeCallback() {
 		GenericApplicationContext context = new GenericApplicationContext();
-		SmartFunction<InjectedElementAttributes, ?> callback = mock(SmartFunction.class);
+		ThrowableFunction<InjectedElementAttributes, ?> callback = mock(ThrowableFunction.class);
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> createResolver(TestBean.class, "injectString", String.class)
 				.create(context, callback));
 		verifyNoInteractions(callback);
@@ -94,7 +94,7 @@ class InjectedMethodResolverTests {
 	@SuppressWarnings("unchecked")
 	void invokeWithUnresolvedAttributesDoesNotInvokeCallback() {
 		GenericApplicationContext context = new GenericApplicationContext();
-		SmartConsumer<InjectedElementAttributes> callback = mock(SmartConsumer.class);
+		ThrowableConsumer<InjectedElementAttributes> callback = mock(ThrowableConsumer.class);
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> createResolver(TestBean.class, "injectString", String.class)
 				.invoke(context, callback));
 		verifyNoInteractions(callback);
