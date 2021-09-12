@@ -36,6 +36,7 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -158,36 +159,6 @@ import org.springframework.util.StringUtils;
 public class SpringApplication {
 
 	/**
-	 * The class name of application context that will be used by default for non-web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using a
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
-			+ "annotation.AnnotationConfigApplicationContext";
-
-	/**
-	 * The class name of application context that will be used by default for web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
-			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
-
-	/**
-	 * The class name of application context that will be used by default for reactive web
-	 * environments.
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
-	 * {@link ApplicationContextFactory}
-	 */
-	@Deprecated
-	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
-
-	/**
 	 * Default banner location.
 	 */
 	public static final String BANNER_LOCATION_PROPERTY_VALUE = SpringApplicationBannerPrinter.DEFAULT_BANNER_LOCATION;
@@ -243,6 +214,8 @@ public class SpringApplication {
 
 	private boolean allowBeanDefinitionOverriding;
 
+	private boolean allowCircularReferences;
+
 	private boolean isCustomEnvironment = false;
 
 	private boolean lazyInitialization = false;
@@ -283,7 +256,8 @@ public class SpringApplication {
 		this.primarySources = SpringApplicationAotUtils.SPRING_AOT ?
 				new LinkedHashSet<>(Arrays.asList(Object.class)) : new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
+		this.bootstrapRegistryInitializers = new ArrayList<>(
+				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -296,16 +270,6 @@ public class SpringApplication {
 		else {
 			logger.info("AOT mode disabled");
 		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private List<BootstrapRegistryInitializer> getBootstrapRegistryInitializersFromSpringFactories() {
-		ArrayList<BootstrapRegistryInitializer> initializers = new ArrayList<>();
-		getSpringFactoriesInstances(Bootstrapper.class).stream()
-				.map((bootstrapper) -> ((BootstrapRegistryInitializer) bootstrapper::initialize))
-				.forEach(initializers::add);
-		initializers.addAll(getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
-		return initializers;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -396,12 +360,12 @@ public class SpringApplication {
 
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
 		switch (this.webApplicationType) {
-			case SERVLET:
-				return ApplicationServletEnvironment.class;
-			case REACTIVE:
-				return ApplicationReactiveWebEnvironment.class;
-			default:
-				return ApplicationEnvironment.class;
+		case SERVLET:
+			return ApplicationServletEnvironment.class;
+		case REACTIVE:
+			return ApplicationReactiveWebEnvironment.class;
+		default:
+			return ApplicationEnvironment.class;
 		}
 	}
 
@@ -423,9 +387,12 @@ public class SpringApplication {
 		if (printedBanner != null) {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
-		if (beanFactory instanceof DefaultListableBeanFactory) {
-			((DefaultListableBeanFactory) beanFactory)
-					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
+			((AbstractAutowireCapableBeanFactory) beanFactory).setAllowCircularReferences(this.allowCircularReferences);
+			if (beanFactory instanceof DefaultListableBeanFactory) {
+				((DefaultListableBeanFactory) beanFactory)
+						.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+			}
 		}
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
@@ -493,12 +460,12 @@ public class SpringApplication {
 			return this.environment;
 		}
 		switch (this.webApplicationType) {
-			case SERVLET:
-				return new ApplicationServletEnvironment();
-			case REACTIVE:
-				return new ApplicationReactiveWebEnvironment();
-			default:
-				return new ApplicationEnvironment();
+		case SERVLET:
+			return new ApplicationServletEnvironment();
+		case REACTIVE:
+			return new ApplicationReactiveWebEnvironment();
+		default:
+			return new ApplicationEnvironment();
 		}
 	}
 
@@ -556,7 +523,6 @@ public class SpringApplication {
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
-	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 	}
@@ -599,7 +565,6 @@ public class SpringApplication {
 	 * method will respect any explicitly set application context class or factory before
 	 * falling back to a suitable default.
 	 * @return the application context (not yet refreshed)
-	 * @see #setApplicationContextClass(Class)
 	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
@@ -972,6 +937,17 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets whether to allow circular references between beans and automatically try to
+	 * resolve them. Defaults to {@code false}.
+	 * @param allowCircularReferences if circular references are allowed
+	 * @since 2.6.0
+	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)
+	 */
+	public void setAllowCircularReferences(boolean allowCircularReferences) {
+		this.allowCircularReferences = allowCircularReferences;
+	}
+
+	/**
 	 * Sets if beans should be initialized lazily. Defaults to {@code false}.
 	 * @param lazyInitialization if initialization should be lazy
 	 * @since 2.2
@@ -1045,20 +1021,6 @@ public class SpringApplication {
 	 */
 	public void setAddConversionService(boolean addConversionService) {
 		this.addConversionService = addConversionService;
-	}
-
-	/**
-	 * Adds a {@link Bootstrapper} that can be used to initialize the
-	 * {@link BootstrapRegistry}.
-	 * @param bootstrapper the bootstraper
-	 * @since 2.4.0
-	 * @deprecated since 2.4.5 for removal in 2.6 in favor of
-	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
-	 */
-	@Deprecated
-	public void addBootstrapper(Bootstrapper bootstrapper) {
-		Assert.notNull(bootstrapper, "Bootstrapper must not be null");
-		this.bootstrapRegistryInitializers.add(bootstrapper::initialize);
 	}
 
 	/**
@@ -1221,21 +1183,6 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Sets the type of Spring {@link ApplicationContext} that will be created. If not
-	 * specified defaults to {@link #DEFAULT_SERVLET_WEB_CONTEXT_CLASS} for web based
-	 * applications or {@link AnnotationConfigApplicationContext} for non web based
-	 * applications.
-	 * @param applicationContextClass the context class to set
-	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
-	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
-	 */
-	@Deprecated
-	public void setApplicationContextClass(Class<? extends ConfigurableApplicationContext> applicationContextClass) {
-		this.webApplicationType = WebApplicationType.deduceFromApplicationContext(applicationContextClass);
-		this.applicationContextFactory = ApplicationContextFactory.ofContextClass(applicationContextClass);
-	}
-
-	/**
 	 * Sets the factory that will be called to create the application context. If not set,
 	 * defaults to a factory that will create
 	 * {@link AnnotationConfigServletWebServerApplicationContext} for servlet web
@@ -1379,7 +1326,7 @@ public class SpringApplication {
 	 * {@link ExitCodeGenerator}. In the case of multiple exit codes the highest value
 	 * will be used (or if all values are negative, the lowest value will be used)
 	 * @param context the context to close if possible
-	 * @param exitCodeGenerators exist code generators
+	 * @param exitCodeGenerators exit code generators
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context, ExitCodeGenerator... exitCodeGenerators) {
