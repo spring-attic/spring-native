@@ -100,7 +100,7 @@ final class Target_SpringApplication {
 		this.primarySources = SpringApplicationAotUtils.SPRING_AOT ?
 				new LinkedHashSet<>(Arrays.asList(Object.class)) : new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
+		this.bootstrapRegistryInitializers = (List<BootstrapRegistryInitializer>) getSpringFactoriesInstances(BootstrapRegistryInitializer.class);
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -133,11 +133,6 @@ final class Target_SpringApplication {
 			}
 			loader.load();
 		}
-	}
-
-	@Alias
-	private List<BootstrapRegistryInitializer> getBootstrapRegistryInitializersFromSpringFactories() {
-		return null;
 	}
 
 	@Alias

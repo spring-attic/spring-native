@@ -22,6 +22,7 @@ import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.hibernate.Session;
 import org.hibernate.annotations.Tuplizer;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cache.spi.access.CollectionDataAccess;
 import org.hibernate.dialect.*;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
@@ -112,7 +113,7 @@ import java.util.EventListener;
 						PersisterCreationContext.class,
 
 						// related to Naming.applyNamingStrategies
-						SpringImplicitNamingStrategy.class, SpringPhysicalNamingStrategy.class,
+						SpringImplicitNamingStrategy.class, SpringPhysicalNamingStrategy.class, CamelCaseToUnderscoresNamingStrategy.class,
 
 						//	HikariDataSource.class,HikariConfig.class,	MVTableEngine.class // pushed to datasource hints
 						NoJtaPlatform.class,
