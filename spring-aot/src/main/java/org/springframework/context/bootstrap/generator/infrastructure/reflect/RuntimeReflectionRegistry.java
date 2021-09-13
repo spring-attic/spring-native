@@ -45,8 +45,8 @@ public class RuntimeReflectionRegistry {
 	 * @param executable the executable to register
 	 * @return this for method chaining
 	 */
-	public RuntimeReflectionRegistry addMethod(Executable executable) {
-		add(executable.getDeclaringClass()).withMethods(executable);
+	public RuntimeReflectionRegistry addExecutable(Executable executable) {
+		forType(executable.getDeclaringClass()).withMethods(executable);
 		return this;
 	}
 
@@ -56,7 +56,7 @@ public class RuntimeReflectionRegistry {
 	 * @return this for method chaining
 	 */
 	public RuntimeReflectionRegistry addField(Field field) {
-		add(field.getDeclaringClass()).withFields(field);
+		forType(field.getDeclaringClass()).withFields(field);
 		return this;
 	}
 
@@ -66,7 +66,7 @@ public class RuntimeReflectionRegistry {
 	 * @param type a type to provide runtime reflection for
 	 * @return a builder to further describe the need for runtime reflection
 	 */
-	public RuntimeReflectionEntry.Builder add(Class<?> type) {
+	public RuntimeReflectionEntry.Builder forType(Class<?> type) {
 		return this.classes.computeIfAbsent(type, RuntimeReflectionEntry.Builder::new);
 	}
 

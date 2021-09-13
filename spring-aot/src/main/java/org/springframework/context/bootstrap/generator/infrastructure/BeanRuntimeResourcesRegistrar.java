@@ -99,7 +99,7 @@ public class BeanRuntimeResourcesRegistrar {
 						AccessDescriptor value = entry.getValue();
 						Integer accessBits = value.getAccessBits();
 						if (accessBits != 0) {
-							registry.add(keyClass).withFlags(AccessBits.getFlags(accessBits));
+							registry.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
 						}
 						if ((accessBits & AccessBits.RESOURCE)!=0) {
 							// TODO ... need to check if types flagged with this flow through and get added to resource-config.json
@@ -107,11 +107,11 @@ public class BeanRuntimeResourcesRegistrar {
 						for (MethodDescriptor methodDescriptor: value.getMethodDescriptors()) {
 							// TODO it is such a shame to convert from the methoddescriptor back to a method that will then go back to a methoddescriptor later
 							Executable method = methodDescriptor.findOnClass(keyClass);
-							registry.add(keyClass).withMethods(method);
+							registry.forType(keyClass).withMethods(method);
 						}
 						for (FieldDescriptor fieldDescriptor: value.getFieldDescriptors()) {
 							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());
-							registry.add(keyClass).withFields(field);
+							registry.forType(keyClass).withFields(field);
 						}
 					}
 					// TODO: what about all these from the hints, they need passing back but registry doesn't support these kinds of thing
@@ -134,7 +134,7 @@ public class BeanRuntimeResourcesRegistrar {
 	}
 
 	private void addMethod(RuntimeReflectionRegistry registry, Executable executable) {
-		registry.addMethod(executable);
+		registry.addExecutable(executable);
 		registerAnnotations(registry, MergedAnnotations.from(executable));
 	}
 
@@ -145,7 +145,7 @@ public class BeanRuntimeResourcesRegistrar {
 
 	private void registerAnnotations(RuntimeReflectionRegistry registry, MergedAnnotations annotations) {
 		annotations.stream().filter(this::isRuntimeFrameworkAnnotation)
-				.forEach((ann) -> registry.add(ann.getType()).withFlags(Flag.allDeclaredMethods));
+				.forEach((ann) -> registry.forType(ann.getType()).withFlags(Flag.allDeclaredMethods));
 	}
 
 	private boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {
