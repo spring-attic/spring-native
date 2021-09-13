@@ -11,7 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration;
@@ -39,7 +39,7 @@ class ImportAwareLinksDiscovererTests {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(NestedImportConfiguration.class);
 		Map<String, Class<?>> importAwareLinks = createImportAwareInfrastructureBuilder(context)
-				.buildImportAwareLinks(new RuntimeReflectionRegistry());
+				.buildImportAwareLinks(new NativeConfigurationRegistry());
 		assertThat(importAwareLinks).containsOnly(entry(
 				ImportAwareConfiguration.class.getName(), NestedImportConfiguration.Nested.class));
 	}
@@ -48,9 +48,9 @@ class ImportAwareLinksDiscovererTests {
 	void buildImportAwareLinksWithInnerClassRegisterClassResource() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(NestedImportConfiguration.class);
-		RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
+		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		createImportAwareInfrastructureBuilder(context).buildImportAwareLinks(registry);
-		assertThat(registry.getResourcesDescriptor().getPatterns()).singleElement().isEqualTo(
+		assertThat(registry.resources().toResourcesDescriptor().getPatterns()).singleElement().isEqualTo(
 				"org/springframework/context/bootstrap/generator/sample/callback/NestedImportConfiguration\\$Nested.class");
 	}
 
@@ -58,7 +58,7 @@ class ImportAwareLinksDiscovererTests {
 	void buildImportAwareWithResolvableTypeUseIt() {
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(BeanDefinitionBuilder
 				.rootBeanDefinition(ImportConfiguration.class).getBeanDefinition());
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
+		assertThat(builder.buildImportAwareLinks(new NativeConfigurationRegistry())).containsOnly(entry(
 				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
 	}
 
@@ -67,7 +67,7 @@ class ImportAwareLinksDiscovererTests {
 		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
 		importingBeanDefinition.setBeanClass(ImportConfiguration.class);
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(null);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).isEmpty();
+		assertThat(builder.buildImportAwareLinks(new NativeConfigurationRegistry())).isEmpty();
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class ImportAwareLinksDiscovererTests {
 		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
 		importingBeanDefinition.setBeanClass(ImportConfiguration.class);
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
+		assertThat(builder.buildImportAwareLinks(new NativeConfigurationRegistry())).containsOnly(entry(
 				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
 	}
 
@@ -84,7 +84,7 @@ class ImportAwareLinksDiscovererTests {
 		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
 		importingBeanDefinition.setBeanClassName(ImportConfiguration.class.getName());
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).containsOnly(entry(
+		assertThat(builder.buildImportAwareLinks(new NativeConfigurationRegistry())).containsOnly(entry(
 				ImportAwareConfiguration.class.getName(), ImportConfiguration.class));
 	}
 
@@ -92,7 +92,7 @@ class ImportAwareLinksDiscovererTests {
 	void buildImportAwareLinksWithNoTypeIsIgnored() {
 		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(importingBeanDefinition);
-		assertThat(builder.buildImportAwareLinks(new RuntimeReflectionRegistry())).isEmpty();
+		assertThat(builder.buildImportAwareLinks(new NativeConfigurationRegistry())).isEmpty();
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class ImportAwareLinksDiscovererTests {
 		RootBeanDefinition importingBeanDefinition = new RootBeanDefinition();
 		importingBeanDefinition.setBeanClassName("does-not-exist");
 		ImportAwareLinksDiscoverer builder = createForImportingCandidate(importingBeanDefinition);
-		assertThatIllegalStateException().isThrownBy(() -> builder.buildImportAwareLinks(new RuntimeReflectionRegistry()))
+		assertThatIllegalStateException().isThrownBy(() -> builder.buildImportAwareLinks(new NativeConfigurationRegistry()))
 				.withMessageContaining("Bean definition refers to invalid class");
 	}
 

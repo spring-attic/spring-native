@@ -43,8 +43,8 @@ class BootstrapWriterContextTests {
 	@Test
 	void getRuntimeReflectionRegistry() {
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(BootstrapClass.of("com.acme"));
-		assertThat(writerContext.getRuntimeReflectionRegistry()).isNotNull();
-		assertThat(writerContext.getRuntimeReflectionRegistry().getEntries()).isEmpty();
+		assertThat(writerContext.getNativeConfigurationRegistry()).isNotNull();
+		assertThat(writerContext.getNativeConfigurationRegistry().reflection().getEntries()).isEmpty();
 	}
 
 	@Test

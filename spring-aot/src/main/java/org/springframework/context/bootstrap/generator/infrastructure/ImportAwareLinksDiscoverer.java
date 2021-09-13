@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.annotation.ImportAware;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeResourceEntry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.context.origin.BeanDefinitionDescriptor;
 import org.springframework.context.origin.BeanDefinitionDescriptor.Type;
 import org.springframework.context.origin.BeanFactoryStructure;
@@ -33,11 +33,11 @@ class ImportAwareLinksDiscoverer {
 	/**
 	 * Identify the configuration classes that are {@link ImportAware} and return a
 	 * mapping to their import class.
-	 * @param runtimeReflectionRegistry the registry to use to declare the classes
+	 * @param nativeConfiguration the registry to use to declare the classes
 	 * that should be loadable via ASM
 	 * @return the mapping
 	 */
-	Map<String, Class<?>> buildImportAwareLinks(RuntimeReflectionRegistry runtimeReflectionRegistry) {
+	Map<String, Class<?>> buildImportAwareLinks(NativeConfigurationRegistry nativeConfiguration) {
 		Map<String, Class<?>> result = new LinkedHashMap<>();
 		this.structure.getDescriptors().forEach((beanName, descriptor) -> {
 			if (isImportAwareCandidate(descriptor)) {
@@ -45,7 +45,7 @@ class ImportAwareLinksDiscoverer {
 				if (importingClass != null) {
 					String beanClassName = descriptor.getBeanDefinition().getResolvableType().toClass().getName();
 					result.put(beanClassName, importingClass);
-					runtimeReflectionRegistry.addResource(RuntimeResourceEntry.of(importingClass));
+					nativeConfiguration.resources().add(NativeResourcesEntry.of(importingClass));
 				}
 			}
 		});

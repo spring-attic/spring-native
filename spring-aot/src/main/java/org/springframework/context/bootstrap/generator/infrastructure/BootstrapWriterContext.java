@@ -9,7 +9,7 @@ import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.JavaFile;
 
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 
 /**
  * Context for components that write code to boostrap the context.
@@ -25,7 +25,7 @@ public class BootstrapWriterContext {
 
 	private final Map<String, BootstrapClass> bootstrapClasses = new HashMap<>();
 
-	private final RuntimeReflectionRegistry runtimeReflectionRegistry = new RuntimeReflectionRegistry();
+	private final NativeConfigurationRegistry nativeConfigurationRegistry = new NativeConfigurationRegistry();
 
 	public BootstrapWriterContext(BootstrapClass defaultJavaFile) {
 		this.packageName = defaultJavaFile.getClassName().packageName();
@@ -79,12 +79,12 @@ public class BootstrapWriterContext {
 	}
 
 	/**
-	 * Return a {@link RuntimeReflectionRegistry} for recording the need of runtime reflection
-	 * at runtime for the generated code.
-	 * @return the reflection registry
+	 * Return a {@link NativeConfigurationRegistry} for recording the necessary native
+	 * configuration for this context
+	 * @return the native configuration registry
 	 */
-	public RuntimeReflectionRegistry getRuntimeReflectionRegistry() {
-		return this.runtimeReflectionRegistry;
+	public NativeConfigurationRegistry getNativeConfigurationRegistry() {
+		return this.nativeConfigurationRegistry;
 	}
 
 }

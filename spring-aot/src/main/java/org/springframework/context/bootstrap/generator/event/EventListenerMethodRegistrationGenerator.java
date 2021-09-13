@@ -99,7 +99,7 @@ public class EventListenerMethodRegistrationGenerator {
 		if (eventGenerators.isEmpty()) {
 			return; // No listener detected
 		}
-		eventGenerators.forEach((eventGenerator) -> eventGenerator.registerReflectionMetadata(context.getRuntimeReflectionRegistry()));
+		eventGenerators.forEach((eventGenerator) -> eventGenerator.registerReflectionMetadata(context.getNativeConfigurationRegistry()));
 		code.add("context.registerBean($S, $T.class, () -> new $L(context,\n", REGISTRAR_BEAN_NAME, REGISTRAR, REGISTRAR.simpleName());
 		code.indent().indent();
 		Iterator<EventListenerMetadataGenerator> it = eventGenerators.iterator();

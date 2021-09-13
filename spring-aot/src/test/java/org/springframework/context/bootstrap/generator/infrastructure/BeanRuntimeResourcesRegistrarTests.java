@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionEntry;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
@@ -36,9 +36,9 @@ class BeanRuntimeResourcesRegistrarTests {
 	@Test
 	void registerReflectionEntriesForInstanceCreator() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).build());
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).isEmpty();
@@ -50,25 +50,25 @@ class BeanRuntimeResourcesRegistrarTests {
 	void registerReflectionEntriesForMethodInjectionPoint() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		Method injectionPoint = ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class);
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(injectionPoint);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.getEntries()).anySatisfy(annotation(Autowired.class));
-		assertThat(registry.getEntries()).hasSize(2);
+		assertThat(registry.reflection().getEntries()).anySatisfy(annotation(Autowired.class));
+		assertThat(registry.reflection().getEntries()).hasSize(2);
 	}
 
 	@Test
 	void registerReflectionEntriesForFieldInjectionPoint() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		Field injectionPoint = ReflectionUtils.findField(InjectionComponent.class, "counter");
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).containsOnly(instanceCreator);
 			assertThat(entry.getMethods()).isEmpty();
@@ -81,10 +81,10 @@ class BeanRuntimeResourcesRegistrarTests {
 		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
 		Method nameWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setName", String.class);
 		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
 				.withProperty(counterWriteMethod, new PropertyValue("counter", 42)).build());
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(nameWriteMethod, counterWriteMethod);
@@ -96,33 +96,33 @@ class BeanRuntimeResourcesRegistrarTests {
 	void registerReflectionEntriesForInnerBeanDefinition() {
 		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
 		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withProperty(counterWriteMethod, new PropertyValue("counter",
 						BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())).build());
-		assertThat(registry.getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(counterWriteMethod);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
 			assertThat(entry.getConstructors()).containsOnly(IntegerFactoryBean.class.getDeclaredConstructors()[0]);
 			assertThat(entry.getMethods()).containsOnly(ReflectionUtils.findMethod(
 					IntegerFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.getEntries()).anySatisfy(annotation(Autowired.class));
-		assertThat(registry.getEntries()).hasSize(3);
+		assertThat(registry.reflection().getEntries()).anySatisfy(annotation(Autowired.class));
+		assertThat(registry.reflection().getEntries()).hasSize(3);
 	}
 
 	@Test
 	void registerReflectionEntriesForClassRuntimeAnnotations() {
-		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(AsyncConfiguration.class).build());
-		assertThat(registry.getEntries()).singleElement().satisfies(annotation(EnableAsync.class));
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(AsyncConfiguration.class).build());
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies(annotation(EnableAsync.class));
 	}
 
-	private Consumer<RuntimeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
+	private Consumer<NativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(annotationType);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
@@ -132,8 +132,8 @@ class BeanRuntimeResourcesRegistrarTests {
 		};
 	}
 
-	private RuntimeReflectionRegistry register(BeanInstanceDescriptor descriptor) {
-		RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
+	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
+		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new BeanRuntimeResourcesRegistrar(new DefaultListableBeanFactory()).register(registry, descriptor);
 		return registry;
 	}

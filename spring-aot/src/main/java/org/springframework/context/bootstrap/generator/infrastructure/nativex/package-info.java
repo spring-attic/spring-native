@@ -15,6 +15,6 @@
  */
 
 /**
- * Support classes for providing runtime reflection hints.
+ * Support classes for providing native configuration such as reflection hints.
  */
-package org.springframework.context.bootstrap.generator.infrastructure.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.nativex;

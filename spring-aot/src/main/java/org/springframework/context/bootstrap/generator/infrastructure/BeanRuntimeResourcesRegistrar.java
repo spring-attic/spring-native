@@ -14,7 +14,8 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptorFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBeanInstanceDescriptorFactory;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -50,26 +51,27 @@ public class BeanRuntimeResourcesRegistrar {
 	 * @param registry the registry to use
 	 * @param descriptor the descriptor of the bean instance or handle
 	 */
-	public void register(RuntimeReflectionRegistry registry, BeanInstanceDescriptor descriptor) {
-		addClass(registry, descriptor.getUserBeanClass());
+	public void register(NativeConfigurationRegistry registry, BeanInstanceDescriptor descriptor) {
+		ReflectionConfiguration reflectionConfiguration = registry.reflection();
+		addClass(reflectionConfiguration, descriptor.getUserBeanClass());
 		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
 		if (instanceCreator != null) {
-			addMethod(registry, instanceCreator.getMember());
+			addMethod(reflectionConfiguration, instanceCreator.getMember());
 			findAndRegisterRelevantNativeHints(registry, instanceCreator);
 		}
 		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
 			Member member = injectionPoint.getMember();
 			if (member instanceof Executable) {
-				addMethod(registry, (Method) member);
+				addMethod(reflectionConfiguration, (Method) member);
 			}
 			else if (member instanceof Field) {
-				addField(registry, (Field) member);
+				addField(reflectionConfiguration, (Field) member);
 			}
 		}
 		for (PropertyDescriptor property : descriptor.getProperties()) {
 			Method writeMethod = property.getWriteMethod();
 			if (writeMethod != null) {
-				addMethod(registry, writeMethod);
+				addMethod(reflectionConfiguration, writeMethod);
 			}
 			Object value = property.getPropertyValue().getValue();
 			if (value instanceof BeanDefinition) {
@@ -87,7 +89,8 @@ public class BeanRuntimeResourcesRegistrar {
 	 * @param registry the registry into which hint info should be added
 	 * @param instanceCreator the instance creator whose declaring class will be used for lookup
 	 */
-	private void findAndRegisterRelevantNativeHints(RuntimeReflectionRegistry registry, MemberDescriptor<Executable> instanceCreator) {
+	private void findAndRegisterRelevantNativeHints(NativeConfigurationRegistry registry, MemberDescriptor<Executable> instanceCreator) {
+		ReflectionConfiguration reflectionConfiguration = registry.reflection();
 		try {
 			Class<?> declaringClass = instanceCreator.getMember().getDeclaringClass();
 			List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(declaringClass.getName());
@@ -99,7 +102,7 @@ public class BeanRuntimeResourcesRegistrar {
 						AccessDescriptor value = entry.getValue();
 						Integer accessBits = value.getAccessBits();
 						if (accessBits != 0) {
-							registry.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
+							reflectionConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
 						}
 						if ((accessBits & AccessBits.RESOURCE)!=0) {
 							// TODO ... need to check if types flagged with this flow through and get added to resource-config.json
@@ -107,11 +110,11 @@ public class BeanRuntimeResourcesRegistrar {
 						for (MethodDescriptor methodDescriptor: value.getMethodDescriptors()) {
 							// TODO it is such a shame to convert from the methoddescriptor back to a method that will then go back to a methoddescriptor later
 							Executable method = methodDescriptor.findOnClass(keyClass);
-							registry.forType(keyClass).withMethods(method);
+							reflectionConfiguration.forType(keyClass).withMethods(method);
 						}
 						for (FieldDescriptor fieldDescriptor: value.getFieldDescriptors()) {
 							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());
-							registry.forType(keyClass).withFields(field);
+							reflectionConfiguration.forType(keyClass).withFields(field);
 						}
 					}
 					// TODO: what about all these from the hints, they need passing back but registry doesn't support these kinds of thing
@@ -129,23 +132,24 @@ public class BeanRuntimeResourcesRegistrar {
 		}
 	}
 
-	private void addClass(RuntimeReflectionRegistry registry, Class<?> type) {
-		registerAnnotations(registry, MergedAnnotations.from(type, SearchStrategy.INHERITED_ANNOTATIONS));
+	private void addClass(ReflectionConfiguration reflectionConfiguration, Class<?> type) {
+		registerAnnotations(reflectionConfiguration,
+				MergedAnnotations.from(type, SearchStrategy.INHERITED_ANNOTATIONS));
 	}
 
-	private void addMethod(RuntimeReflectionRegistry registry, Executable executable) {
-		registry.addExecutable(executable);
-		registerAnnotations(registry, MergedAnnotations.from(executable));
+	private void addMethod(ReflectionConfiguration reflectionConfiguration, Executable executable) {
+		reflectionConfiguration.addExecutable(executable);
+		registerAnnotations(reflectionConfiguration, MergedAnnotations.from(executable));
 	}
 
-	private void addField(RuntimeReflectionRegistry registry, Field field) {
-		registry.addField(field);
-		registerAnnotations(registry, MergedAnnotations.from(field));
+	private void addField(ReflectionConfiguration reflectionConfiguration, Field field) {
+		reflectionConfiguration.addField(field);
+		registerAnnotations(reflectionConfiguration, MergedAnnotations.from(field));
 	}
 
-	private void registerAnnotations(RuntimeReflectionRegistry registry, MergedAnnotations annotations) {
-		annotations.stream().filter(this::isRuntimeFrameworkAnnotation)
-				.forEach((ann) -> registry.forType(ann.getType()).withFlags(Flag.allDeclaredMethods));
+	private void registerAnnotations(ReflectionConfiguration reflectionConfiguration, MergedAnnotations annotations) {
+		annotations.stream().filter(this::isRuntimeFrameworkAnnotation).forEach((ann) ->
+				reflectionConfiguration.forType(ann.getType()).withFlags(Flag.allDeclaredMethods));
 	}
 
 	private boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {

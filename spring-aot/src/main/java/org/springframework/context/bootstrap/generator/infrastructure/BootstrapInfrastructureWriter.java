@@ -62,7 +62,7 @@ public class BootstrapInfrastructureWriter {
 	MethodSpec handleImportAwareInvoker() {
 		BeanFactoryStructure structure = createBeanFactoryStructure();
 		Map<String, Class<?>> importLinks = new ImportAwareLinksDiscoverer(structure, this.beanFactory.getBeanClassLoader())
-				.buildImportAwareLinks(writerContext.getRuntimeReflectionRegistry());
+				.buildImportAwareLinks(writerContext.getNativeConfigurationRegistry());
 		if (importLinks.isEmpty()) {
 			return null;
 		}

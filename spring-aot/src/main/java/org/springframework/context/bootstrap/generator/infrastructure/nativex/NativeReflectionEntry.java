@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.infrastructure.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.nativex;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -40,7 +40,7 @@ import org.springframework.nativex.hint.Flag;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
-public class RuntimeReflectionEntry {
+public class NativeReflectionEntry {
 
 	private static final String CONSTRUCTOR_NAME = "<init>";
 
@@ -54,7 +54,7 @@ public class RuntimeReflectionEntry {
 
 	private final Set<Flag> flags;
 
-	private RuntimeReflectionEntry(Builder builder) {
+	private NativeReflectionEntry(Builder builder) {
 		this.type = builder.type;
 		this.constructors = Collections.unmodifiableSet(builder.constructors);
 		this.methods = Collections.unmodifiableSet(builder.methods);
@@ -151,7 +151,7 @@ public class RuntimeReflectionEntry {
 
 	@Override
 	public String toString() {
-		return new StringJoiner(", ", RuntimeReflectionEntry.class.getSimpleName() + "[", "]")
+		return new StringJoiner(", ", NativeReflectionEntry.class.getSimpleName() + "[", "]")
 				.add("type=" + this.type).add("constructors=" + this.constructors)
 				.add("methods=" + this.methods).add("fields=" + this.fields)
 				.add("flags=" + this.flags).toString();
@@ -211,11 +211,11 @@ public class RuntimeReflectionEntry {
 		}
 
 		/**
-		 * Create a {@link RuntimeReflectionEntry} from the state of this builder
+		 * Create a {@link NativeReflectionEntry} from the state of this builder
 		 * @return a new entry
 		 */
-		public RuntimeReflectionEntry build() {
-			return new RuntimeReflectionEntry(this);
+		public NativeReflectionEntry build() {
+			return new NativeReflectionEntry(this);
 		}
 
 	}

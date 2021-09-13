@@ -22,7 +22,7 @@ import java.util.EventListener;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.event.EventListenerMetadata;
 
 /**
@@ -79,8 +79,8 @@ class EventListenerMetadataGenerator {
 	 * Write the necessary reflection metadata for the specified instance.
 	 * @param registry the registry to use
 	 */
-	void registerReflectionMetadata(RuntimeReflectionRegistry registry) {
-		registry.addExecutable(this.method);
+	void registerReflectionMetadata(NativeConfigurationRegistry registry) {
+		registry.reflection().addExecutable(this.method);
 	}
 
 }

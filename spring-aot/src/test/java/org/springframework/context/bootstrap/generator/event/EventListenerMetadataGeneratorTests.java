@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.bootstrap.generator.sample.event.AnotherEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleEventListener;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
@@ -36,10 +36,10 @@ class EventListenerMetadataGeneratorTests {
 
 	@Test
 	void registerEventListenerMetadataUsesMethod() {
-		RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
+		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		Method method = ReflectionUtils.findMethod(AnotherEventListener.class, "onRefresh");
 		new EventListenerMetadataGenerator("test", AnotherEventListener.class, method, null).registerReflectionMetadata(registry);
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(AnotherEventListener.class);
 			assertThat(entry.getMethods()).containsOnly(method);
 			assertThat(entry.getFields()).isEmpty();

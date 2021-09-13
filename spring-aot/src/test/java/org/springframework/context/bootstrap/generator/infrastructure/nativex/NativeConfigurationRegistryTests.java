@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.infrastructure.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.nativex;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,19 +29,19 @@ import org.springframework.util.ReflectionUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RuntimeReflectionRegistry}.
+ * Tests for {@link NativeConfigurationRegistry}.
  *
  * @author Stephane Nicoll
  */
-class RuntimeReflectionRegistryTests {
+class NativeConfigurationRegistryTests {
 
-	private final RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
+	private final NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 
 	@Test
 	void addMethodUseDeclaringClass() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "setName", String.class);
-		registry.addExecutable(method);
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		registry.reflection().addExecutable(method);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
 			assertThat(entry.getMethods()).containsOnly(method);
 			assertThat(entry.getFields()).isEmpty();
@@ -51,8 +51,8 @@ class RuntimeReflectionRegistryTests {
 	@Test
 	void addFieldUseDeclaringClass() {
 		Field field = ReflectionUtils.findField(TestClass.class, "field");
-		registry.addField(field);
-		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
+		registry.reflection().addField(field);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).contains(field);
@@ -61,9 +61,9 @@ class RuntimeReflectionRegistryTests {
 
 	@Test
 	void getClassDescriptorsMapEntries() {
-		registry.forType(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
-		registry.forType(Integer.class).withMethods(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
-		List<ClassDescriptor> classDescriptors = registry.getClassDescriptors();
+		registry.reflection().forType(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
+		registry.reflection().forType(Integer.class).withMethods(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
+		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
 		assertThat(classDescriptors).hasSize(2);
 		assertThat(classDescriptors).anySatisfy((descriptor) -> {
 			assertThat(descriptor.getName()).isEqualTo(String.class.getName());
@@ -81,17 +81,17 @@ class RuntimeReflectionRegistryTests {
 
 	@Test
 	void addResource() {
-		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
-		assertThat(registry.getResourcesDescriptor().getPatterns()).singleElement().satisfies((pattern) ->
+		registry.resources().add(NativeResourcesEntry.ofClassName("java.lang.String"));
+		assertThat(registry.resources().toResourcesDescriptor().getPatterns()).singleElement().satisfies((pattern) ->
 				assertThat(pattern).isEqualTo("java/lang/String.class"));
 	}
 
 	@Test
 	void addSeveralResources() {
-		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
-		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.Integer"));
-		registry.addResource(RuntimeResourceEntry.ofClassName("java.lang.String"));
-		Set<String> patterns = registry.getResourcesDescriptor().getPatterns();
+		registry.resources().add(NativeResourcesEntry.ofClassName("java.lang.String"));
+		registry.resources().add(NativeResourcesEntry.ofClassName("java.lang.Integer"));
+		registry.resources().add(NativeResourcesEntry.ofClassName("java.lang.String"));
+		Set<String> patterns = registry.resources().toResourcesDescriptor().getPatterns();
 		assertThat(patterns).anySatisfy((pattern) ->
 				assertThat(pattern).isEqualTo("java/lang/String.class"));
 		assertThat(patterns).anySatisfy((pattern) ->
