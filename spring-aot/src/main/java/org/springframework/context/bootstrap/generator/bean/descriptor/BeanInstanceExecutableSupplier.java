@@ -45,7 +45,6 @@ import org.springframework.util.ReflectionUtils;
  * Provide the {@link Executable} to use for a particular {@link BeanDefinition}.
  *
  * @author Stephane Nicoll
- * @see {@link org.springframework.beans.factory.support.ConstructorResolver}
  */
 class BeanInstanceExecutableSupplier {
 
