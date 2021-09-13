@@ -31,6 +31,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
@@ -86,7 +87,10 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 			Path generatedSourcesPath = Paths.get(buildPath, "generated", "sources");
 			Path generatedResourcesPath = Paths.get(buildPath, "generated", "resources");
-			SourceSetContainer sourceSets = project.getExtensions().findByType(JavaPluginExtension.class).getSourceSets();
+
+			// deprecation replaced with new API introduced in Gradle 7.1
+			//noinspection deprecation
+			SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 
 			Configuration aotGenerationConfiguration = createAotGenerationConfiguration(project);
 
