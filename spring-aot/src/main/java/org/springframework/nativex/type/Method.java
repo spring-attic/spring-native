@@ -525,7 +525,7 @@ public class Method {
 		return md;
 	}
 	
-	private String primitiveToName(String primitiveDescriptor) {
+	public static String primitiveToName(String primitiveDescriptor) {
 		switch (primitiveDescriptor) {
 		case "I": return "int";  
 		case "Z": return "boolean";  

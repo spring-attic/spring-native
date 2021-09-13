@@ -41,6 +41,7 @@ import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.nativex.domain.serialization.SerializationDescriptorJsonMarshaller;
 import org.springframework.nativex.support.Mode;
+import org.springframework.nativex.type.TypeSystem;
 
 /**
  * Generate code for bootstrapping Spring applications in a GraalVM native environment.
@@ -78,6 +79,8 @@ public class BootstrapCodeGenerator {
 	 */
 	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext) throws IOException {
 		if (this.aotOptions.toMode().equals(Mode.NATIVE)) {
+			// TODO temporary whilst migrating the inferencing to Aot land
+			TypeSystem.setDefaultAotOptions(aotOptions);
 			ContextBootstrapContributor bootstrapContributor = new ContextBootstrapContributor();
 			logger.debug("Executing Contributor: " + bootstrapContributor.getClass().getName());
 			bootstrapContributor.contribute(buildContext, this.aotOptions);

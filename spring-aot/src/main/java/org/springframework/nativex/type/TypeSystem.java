@@ -118,7 +118,19 @@ public class TypeSystem {
 	public AotOptions aotOptions;
 
 	private String mainClass;
-
+	 
+	private static TypeSystem withClassloaderResolution;
+	private static AotOptions defaultAotOptions;
+	
+	// TODO temporary until we switch out the need for TS altogether
+	public static TypeSystem getClassLoaderBasedTypeSystem() {
+		if (withClassloaderResolution== null) {
+			withClassloaderResolution = new TypeSystem(Collections.emptyList());
+			withClassloaderResolution.setAotOptions(defaultAotOptions);
+		}
+		return withClassloaderResolution;
+	}
+	
 	public TypeSystem(List<String> classpath, String mainClass) {
 		this.classpath = classpath;
 		this.mainClass = mainClass;
@@ -132,7 +144,11 @@ public class TypeSystem {
 	public List<String> getClasspath() {
 		return classpath;
 	}
-
+	 
+	public static void setDefaultAotOptions(AotOptions aotOptions) {
+		defaultAotOptions = aotOptions;
+	}
+	
 	/**
 	 * Resolve the {@link Type} from this {@code TypeSystem} classpath,
 	 * returning {@code null} if not found.
@@ -964,8 +980,11 @@ public class TypeSystem {
 		// as discovered hints from separate configuration
 		List<HintDeclaration> results = new ArrayList<>();
 		results.addAll(hintLocator.findProposedHints(typename));
-		List<HintDeclaration> declaredHints = resolveName(typename).getCompilationHints();
-		results.addAll(declaredHints);
+		Type resolvedName = resolveName(typename, true);
+		if (resolvedName != null) {
+			List<HintDeclaration> declaredHints = resolvedName.getCompilationHints();
+			results.addAll(declaredHints);
+		}
 		return results;
 	}
 	
@@ -1795,6 +1814,29 @@ public class TypeSystem {
 	public boolean exists(TypeName typename) {
 		Type resolvedType = resolve(typename);
 		return resolvedType != null;
+	}
+
+	/**
+	 * From [J to long[] and java.lang.String to java.lang.String
+	 */
+	public static String decodeName(String typename) {
+		StringBuilder s = new StringBuilder();
+		int dims = 0;
+		while (typename.charAt(dims)=='[') { dims++; }
+		if (dims>0) {
+			if (typename.endsWith(";")) {
+				s.append(typename.substring(dims+1,typename.length()-1).replace("/", "."));
+			} else {
+				s.append(Method.primitiveToName(typename.substring(dims)));
+			}
+			while (dims>0) {
+				s.append("[]");
+				dims--;
+			}
+		} else {
+			s.append(typename);
+		}
+		return s.toString();
 	}
 
 }

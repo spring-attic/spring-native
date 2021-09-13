@@ -386,7 +386,7 @@ public class ResourcesHandler extends Handler {
 		if (kType.isAtConfiguration()) {
 			// Treat user configuration (from spring.components) the same as configuration
 			// discovered via spring.factories
-			checkAndRegisterConfigurationType(componentTypename,ReachedBy.FromSpringComponent);
+//			checkAndRegisterConfigurationType(componentTypename,ReachedBy.FromSpringComponent);
 		} else {
 			try {
 				// TODO assess which kinds of thing requiring what kind of access - here we see
@@ -872,14 +872,14 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 
-		modified = processConfigurationsWithKey(p, managementContextConfigurationKey) || modified;
+//		modified = processConfigurationsWithKey(p, managementContextConfigurationKey) || modified;
 		
 		// Handle EnableAutoConfiguration
 		// TODO [issue839] sort out method signature, forRemoval not needed, use retval for whether it did anything
-		processFactoriesKey(p, enableAutoconfigurationKey, forRemoval);
-		for (String key: otherAutoConfigurationKeys) {
-			processFactoriesKey(p, key, forRemoval);
-		}
+//		processFactoriesKey(p, enableAutoconfigurationKey, forRemoval);
+//		for (String key: otherAutoConfigurationKeys) {
+//			processFactoriesKey(p, key, forRemoval);
+//		}
 
 		if (forRemoval.size() > 0) {
 			String existingRC = ts.findAnyResourceConfigIncludingSpringFactoriesPattern();
