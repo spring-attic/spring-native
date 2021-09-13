@@ -9,13 +9,17 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
+import org.springframework.core.env.Environment;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.util.ReflectionUtils;
@@ -28,8 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 class BeanRuntimeResourcesRegistrarTests {
-
-	private final BeanRuntimeResourcesRegistrar registrar = new BeanRuntimeResourcesRegistrar();
 
 	@Test
 	void registerReflectionEntriesForInstanceCreator() {
@@ -90,6 +92,28 @@ class BeanRuntimeResourcesRegistrarTests {
 	}
 
 	@Test
+	void registerReflectionEntriesForInnerBeanDefinition() {
+		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
+		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
+		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+				.withInstanceCreator(instanceCreator).withProperty(counterWriteMethod, new PropertyValue("counter",
+						BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())).build());
+		assertThat(registry.getEntries()).anySatisfy((entry) -> {
+			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
+			assertThat(entry.getMethods()).containsOnly(instanceCreator, counterWriteMethod);
+			assertThat(entry.getFields()).isEmpty();
+		});
+		assertThat(registry.getEntries()).anySatisfy((entry) -> {
+			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
+			assertThat(entry.getMethods()).containsOnly(IntegerFactoryBean.class.getDeclaredConstructors()[0],
+					ReflectionUtils.findMethod(IntegerFactoryBean.class, "setNamingStrategy", String.class));
+			assertThat(entry.getFields()).isEmpty();
+		});
+		assertThat(registry.getEntries()).anySatisfy(annotation(Autowired.class));
+		assertThat(registry.getEntries()).hasSize(3);
+	}
+
+	@Test
 	void registerReflectionEntriesForClassRuntimeAnnotations() {
 		RuntimeReflectionRegistry registry = register(BeanInstanceDescriptor.of(AsyncConfiguration.class).build());
 		assertThat(registry.getEntries()).singleElement().satisfies(annotation(EnableAsync.class));
@@ -106,8 +130,32 @@ class BeanRuntimeResourcesRegistrarTests {
 
 	private RuntimeReflectionRegistry register(BeanInstanceDescriptor descriptor) {
 		RuntimeReflectionRegistry registry = new RuntimeReflectionRegistry();
-		this.registrar.register(registry, descriptor);
+		new BeanRuntimeResourcesRegistrar(new DefaultListableBeanFactory()).register(registry, descriptor);
 		return registry;
+	}
+
+	@SuppressWarnings("unused")
+	static class IntegerFactoryBean implements FactoryBean<Integer> {
+
+		public IntegerFactoryBean(Environment environment) {
+
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return Integer.class;
+		}
+
+		@Override
+		public Integer getObject() {
+			return 42;
+		}
+
+		@Autowired
+		void setNamingStrategy(String strategy) {
+
+		}
+
 	}
 
 }
