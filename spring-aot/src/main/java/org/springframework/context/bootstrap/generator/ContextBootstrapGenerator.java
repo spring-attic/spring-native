@@ -104,7 +104,7 @@ public class ContextBootstrapGenerator {
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
 		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
-		BeanRuntimeResourcesRegistrar resourcesRegistrar = new BeanRuntimeResourcesRegistrar();
+		BeanRuntimeResourcesRegistrar resourcesRegistrar = new BeanRuntimeResourcesRegistrar(beanFactory);
 		RuntimeReflectionRegistry runtimeReflectionRegistry = writerContext.getRuntimeReflectionRegistry();
 
 		String[] beanNames = beanFactory.getBeanDefinitionNames();

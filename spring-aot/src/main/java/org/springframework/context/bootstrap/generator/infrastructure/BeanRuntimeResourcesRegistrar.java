@@ -7,9 +7,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptorFactory;
+import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBeanInstanceDescriptorFactory;
 import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionRegistry;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -32,7 +36,13 @@ import org.springframework.util.ClassUtils;
  */
 public class BeanRuntimeResourcesRegistrar {
 
-	private static List<Class<?>> IGNORED_TYPES = List.of(Indexed.class, Component.class);
+	private static final List<Class<?>> IGNORED_TYPES = List.of(Indexed.class, Component.class);
+
+	private final BeanInstanceDescriptorFactory beanInstanceDescriptorFactory;
+
+	public BeanRuntimeResourcesRegistrar(ConfigurableListableBeanFactory beanFactory) {
+		this.beanInstanceDescriptorFactory = new DefaultBeanInstanceDescriptorFactory(beanFactory);
+	}
 
 	/**
 	 * Register the reflection and resources information necessary to instantiate the
@@ -61,11 +71,16 @@ public class BeanRuntimeResourcesRegistrar {
 			if (writeMethod != null) {
 				addMethod(registry, writeMethod);
 			}
+			Object value = property.getPropertyValue().getValue();
+			if (value instanceof BeanDefinition) {
+				register(registry, this.beanInstanceDescriptorFactory.create((BeanDefinition) value));
+			}
 		}
 	}
-	
+
 	// TODO is this code in the right place - if three beans come from three creators in the same declaring class, work will be duplicated (Should be same outcome, but wasteful)
 	// TODO what happens if someone has a hint whose trigger is a configuration that has no beans in it, will that hint be missed? (because no creators are recorded for that configuration)
+
 	/**
 	 * Lookup any native hints that have been declared with the declaring class of the instance creator as a trigger, then register
 	 * information from those hints with the registry.
@@ -112,7 +127,7 @@ public class BeanRuntimeResourcesRegistrar {
 		} catch (Throwable t) {
 			// FIXME would like to log this...
 		}
- 	}
+	}
 
 	private void addClass(RuntimeReflectionRegistry registry, Class<?> type) {
 		registerAnnotations(registry, MergedAnnotations.from(type, SearchStrategy.INHERITED_ANNOTATIONS));
@@ -139,5 +154,5 @@ public class BeanRuntimeResourcesRegistrar {
 				!name.startsWith("org.springframework.context.annotation");
 		return candidate && !IGNORED_TYPES.contains(annotation.getType());
 	}
-	
+
 }
