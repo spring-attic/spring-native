@@ -80,7 +80,7 @@ class EventListenerMetadataGenerator {
 	 * @param registry the registry to use
 	 */
 	void registerReflectionMetadata(RuntimeReflectionRegistry registry) {
-		registry.addMethod(this.method);
+		registry.addExecutable(this.method);
 	}
 
 }

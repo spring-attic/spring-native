@@ -40,7 +40,8 @@ class BeanRuntimeResourcesRegistrarTests {
 				.withInstanceCreator(instanceCreator).build());
 		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
-			assertThat(entry.getMethods()).containsOnly(instanceCreator);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).isEmpty();
 		});
 	}
@@ -53,13 +54,11 @@ class BeanRuntimeResourcesRegistrarTests {
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
 		assertThat(registry.getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
-			assertThat(entry.getMethods()).containsOnly(instanceCreator, injectionPoint);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(injectionPoint);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.getEntries()).anySatisfy((entry) -> {
-			assertThat(entry.getType()).isEqualTo(Autowired.class);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
-		});
+		assertThat(registry.getEntries()).anySatisfy(annotation(Autowired.class));
 		assertThat(registry.getEntries()).hasSize(2);
 	}
 
@@ -71,7 +70,8 @@ class BeanRuntimeResourcesRegistrarTests {
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
 		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
-			assertThat(entry.getMethods()).containsOnly(instanceCreator);
+			assertThat(entry.getConstructors()).containsOnly(instanceCreator);
+			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).containsOnly(injectionPoint);
 		});
 	}
@@ -86,7 +86,8 @@ class BeanRuntimeResourcesRegistrarTests {
 				.withProperty(counterWriteMethod, new PropertyValue("counter", 42)).build());
 		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
-			assertThat(entry.getMethods()).containsOnly(instanceCreator, nameWriteMethod, counterWriteMethod);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(nameWriteMethod, counterWriteMethod);
 			assertThat(entry.getFields()).isEmpty();
 		});
 	}
@@ -100,13 +101,15 @@ class BeanRuntimeResourcesRegistrarTests {
 						BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())).build());
 		assertThat(registry.getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
-			assertThat(entry.getMethods()).containsOnly(instanceCreator, counterWriteMethod);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(counterWriteMethod);
 			assertThat(entry.getFields()).isEmpty();
 		});
 		assertThat(registry.getEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
-			assertThat(entry.getMethods()).containsOnly(IntegerFactoryBean.class.getDeclaredConstructors()[0],
-					ReflectionUtils.findMethod(IntegerFactoryBean.class, "setNamingStrategy", String.class));
+			assertThat(entry.getConstructors()).containsOnly(IntegerFactoryBean.class.getDeclaredConstructors()[0]);
+			assertThat(entry.getMethods()).containsOnly(ReflectionUtils.findMethod(
+					IntegerFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
 		assertThat(registry.getEntries()).anySatisfy(annotation(Autowired.class));
@@ -123,6 +126,7 @@ class BeanRuntimeResourcesRegistrarTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(annotationType);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).isEmpty();
 		};

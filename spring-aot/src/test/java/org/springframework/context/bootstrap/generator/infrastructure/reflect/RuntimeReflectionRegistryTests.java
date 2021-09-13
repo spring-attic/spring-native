@@ -40,7 +40,7 @@ class RuntimeReflectionRegistryTests {
 	@Test
 	void addMethodUseDeclaringClass() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "setName", String.class);
-		registry.addMethod(method);
+		registry.addExecutable(method);
 		assertThat(registry.getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
 			assertThat(entry.getMethods()).containsOnly(method);
@@ -61,8 +61,8 @@ class RuntimeReflectionRegistryTests {
 
 	@Test
 	void getClassDescriptorsMapEntries() {
-		registry.add(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
-		registry.add(Integer.class).withMethods(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
+		registry.forType(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
+		registry.forType(Integer.class).withMethods(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
 		List<ClassDescriptor> classDescriptors = registry.getClassDescriptors();
 		assertThat(classDescriptors).hasSize(2);
 		assertThat(classDescriptors).anySatisfy((descriptor) -> {

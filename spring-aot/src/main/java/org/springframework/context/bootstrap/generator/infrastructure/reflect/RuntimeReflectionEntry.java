@@ -19,11 +19,15 @@ package org.springframework.context.bootstrap.generator.infrastructure.reflect;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
@@ -42,7 +46,9 @@ public class RuntimeReflectionEntry {
 
 	private final Class<?> type;
 
-	private final Set<Executable> methods;
+	private final Set<Constructor<?>> constructors;
+
+	private final Set<Method> methods;
 
 	private final Set<Field> fields;
 
@@ -50,6 +56,7 @@ public class RuntimeReflectionEntry {
 
 	private RuntimeReflectionEntry(Builder builder) {
 		this.type = builder.type;
+		this.constructors = Collections.unmodifiableSet(builder.constructors);
 		this.methods = Collections.unmodifiableSet(builder.methods);
 		this.fields = Collections.unmodifiableSet(builder.fields);
 		this.flags = Collections.unmodifiableSet(builder.flags);
@@ -73,10 +80,18 @@ public class RuntimeReflectionEntry {
 	}
 
 	/**
-	 * Return the {@link Executable methods and constructors}.
-	 * @return the methods and constructors
+	 * Return the {@link Constructor constructor}.
+	 * @return the constructors
 	 */
-	public Set<Executable> getMethods() {
+	public Set<Constructor<?>> getConstructors() {
+		return this.constructors;
+	}
+
+	/**
+	 * Return the {@link Method methods}.
+	 * @return the methods
+	 */
+	public Set<Method> getMethods() {
 		return this.methods;
 	}
 
@@ -102,14 +117,26 @@ public class RuntimeReflectionEntry {
 	 */
 	public ClassDescriptor toClassDescriptor() {
 		ClassDescriptor descriptor = ClassDescriptor.of(this.type.getName());
-		for (Executable method : methods) {
-			descriptor.addMethodDescriptor(toMethodDescriptor(method));
-		}
-		for (Field field : fields) {
-			descriptor.addFieldDescriptor(toFieldDescriptor(field));
-		}
+		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
+				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
+		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
+				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
+		registerIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
+				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
 		descriptor.setFlags(this.flags);
 		return descriptor;
+	}
+
+	private <T extends Member> void registerIfNecessary(Iterable<T> members, Flag allFlag,
+			Flag publicFlag, Consumer<T> memberConsumer) {
+		if (!this.flags.contains(allFlag)) {
+			boolean checkVisibility = this.flags.contains(publicFlag);
+			for (T member : members) {
+				if (!checkVisibility || !Modifier.isPublic(member.getModifiers())) {
+					memberConsumer.accept(member);
+				}
+			}
+		}
 	}
 
 	private MethodDescriptor toMethodDescriptor(Executable method) {
@@ -125,7 +152,8 @@ public class RuntimeReflectionEntry {
 	@Override
 	public String toString() {
 		return new StringJoiner(", ", RuntimeReflectionEntry.class.getSimpleName() + "[", "]")
-				.add("type=" + this.type).add("methods=" + this.methods).add("fields=" + this.fields)
+				.add("type=" + this.type).add("constructors=" + this.constructors)
+				.add("methods=" + this.methods).add("fields=" + this.fields)
 				.add("flags=" + this.flags).toString();
 	}
 
@@ -133,11 +161,13 @@ public class RuntimeReflectionEntry {
 
 		private final Class<?> type;
 
-		private final Set<Executable> methods = new HashSet<>();
+		private final Set<Constructor<?>> constructors = new LinkedHashSet<>();
 
-		private final Set<Field> fields = new HashSet<>();
+		private final Set<Method> methods = new LinkedHashSet<>();
 
-		private final Set<Flag> flags = new HashSet<>();
+		private final Set<Field> fields = new LinkedHashSet<>();
+
+		private final Set<Flag> flags = new LinkedHashSet<>();
 
 		Builder(Class<?> type) {
 			this.type = type;
@@ -149,7 +179,14 @@ public class RuntimeReflectionEntry {
 		 * @return this for method chaining
 		 */
 		public Builder withMethods(Executable... methods) {
-			this.methods.addAll(Arrays.asList(methods));
+			Arrays.stream(methods).forEach((method) -> {
+				if (method instanceof Method) {
+					this.methods.add((Method) method);
+				}
+				else {
+					this.constructors.add((Constructor<?>) method);
+				}
+			});
 			return this;
 		}
 
