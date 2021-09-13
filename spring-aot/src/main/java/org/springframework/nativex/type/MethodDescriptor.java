@@ -16,6 +16,9 @@
 
 package org.springframework.nativex.type;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,5 +99,39 @@ public class MethodDescriptor {
 		}
 		return false;
 	}
+	 
+	public Executable findOnClass(Class<?> clazz) {
+		if (name.equals("<init>")) {
+			for (Constructor<?> constructor: clazz.getConstructors()) {
+				if (parametersMatch(constructor)) {
+					return constructor;
+				}
+			}
+		} else {
+			for (java.lang.reflect.Method method : clazz.getMethods()) {
+				if (method.getName().equals(name) && parametersMatch(method)) {
+					return method;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private boolean parametersMatch(Executable executable) {
+		if (this.parameterTypes.size()==executable.getParameterCount()) {
+			Parameter[] parameters = executable.getParameters();
+			for (int i=0;i<parameterTypes.size();i++) {
+				String expected = parameterTypes.get(i);
+				String actual = parameters[i].getType().getName();
+				actual = TypeSystem.decodeName(actual);
+				if (!expected.equals(actual)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+		
 
 }
