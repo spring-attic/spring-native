@@ -101,7 +101,7 @@ public class GenerateBootstrap implements Callable<Integer> {
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
-				this.classesPaths.get(0), this.mainClass, Arrays.asList(classPath), classLoader);
+				this.classesPaths, this.mainClass, Arrays.asList(classPath), classLoader);
 		generator.generate(applicationStructure);
 		return 0;
 	}

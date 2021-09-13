@@ -173,7 +173,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		SourceSet mainSourceSet = sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		SourceSet aotSourceSet = sourceSets.findByName(AOT_SOURCE_SET_NAME);
 		GenerateAotSources generate = project.getTasks().create(GENERATE_TASK_NAME, GenerateAotSources.class);
-		generate.getMainSourceSetOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
+		generate.setMainSourceSetOutputDirectories(mainSourceSet.getOutput());
 		generate.setClasspath(aotGenerationDependencies.plus(aotSourceSet.getCompileClasspath()));
 		generate.setResourceInputDirectories(mainSourceSet.getResources());
 		generate.getSourcesOutputDirectory().set(aotSourcesDirectory);
@@ -219,7 +219,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		SourceSet mainSourceSet = sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		SourceSet testSourceSet = sourceSets.findByName(SourceSet.TEST_SOURCE_SET_NAME);
 		GenerateAotSources generate = project.getTasks().create(GENERATE_TEST_TASK_NAME, GenerateAotSources.class);
-		generate.getMainSourceSetOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
+		generate.setMainSourceSetOutputDirectories(mainSourceSet.getOutput());
 		generate.setClasspath(aotGenerationDependencies.plus(testSourceSet.getCompileClasspath()).plus(testSourceSet.getOutput()));
 		generate.setResourceInputDirectories(testSourceSet.getResources());
 		generate.getSourcesOutputDirectory().set(aotTestSourcesDirectory);

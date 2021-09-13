@@ -33,6 +33,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 public class ApplicationStructure {
 
@@ -42,7 +43,7 @@ public class ApplicationStructure {
 
 	private final Set<Path> resourceFolders;
 	
-	private final Path classesPath;
+	private final List<Path> classesPaths;
 
 	private final List<String> classpath;
 
@@ -50,13 +51,13 @@ public class ApplicationStructure {
 
 	private ClassLoader classLoader;
 
-	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, Path classesPath,
+	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, List<Path> classesPaths,
 			@Nullable String mainClass, List<String> classpath, @Nullable ClassLoader classLoader) throws IOException {
 		this.sourcesPath = sourcesPath;
 		this.resourcesPath = resourcesPath;
 		this.resourceFolders = resourceFolders;
-		this.classesPath = classesPath;
-		this.mainClass = mainClass != null ? mainClass : detectMainClass(classesPath);
+		this.classesPaths = classesPaths;
+		this.mainClass = mainClass != null ? mainClass : detectMainClass(classesPaths);
 		this.classpath = classpath;
 		this.classLoader = classLoader;
 	}
@@ -73,8 +74,8 @@ public class ApplicationStructure {
 		return this.resourceFolders;
 	}
 
-	public Path getClassesPath() {
-		return this.classesPath;
+	public List<Path> getClassesPath() {
+		return this.classesPaths;
 	}
 
 	public String getMainClass() {
@@ -89,8 +90,14 @@ public class ApplicationStructure {
 		return this.classLoader != null ? this.classLoader : getSyntheticClassLoader();
 	}
 
-	private String detectMainClass(Path classesPath) throws IOException {
-		return MainClassFinder.findSingleMainClass(classesPath.toFile());
+	private String detectMainClass(List<Path> classesPaths) throws IOException {
+		for (Path path : classesPaths) {
+			String mainClass = MainClassFinder.findSingleMainClass(path.toFile());
+			if (StringUtils.hasText(mainClass)) {
+				return mainClass;
+			}
+		}
+		return null;
 	}
 
 	private ClassLoader getSyntheticClassLoader() {

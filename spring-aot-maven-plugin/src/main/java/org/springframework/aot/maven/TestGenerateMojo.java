@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -78,7 +79,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			Path classesPath = Paths.get(project.getBuild().getTestOutputDirectory());
 			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
 			ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
-					classesPath, null, project.getRuntimeClasspathElements(), classLoader);
+					Collections.singletonList(classesPath), null, project.getRuntimeClasspathElements(), classLoader);
 			generator.generate(applicationStructure);
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));

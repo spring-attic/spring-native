@@ -28,11 +28,11 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
 import org.springframework.aot.BootstrapCodeGenerator;
@@ -51,7 +51,7 @@ public class GenerateAotSources extends JavaExec {
 
 	private SourceDirectorySet resourceDirectories;
 
-	private final DirectoryProperty mainSourceSetOutputDirectory;
+	private SourceSetOutput mainSourceSetOutputDirectories;
 
 	private final DirectoryProperty sourcesOutputDirectory;
 
@@ -60,7 +60,6 @@ public class GenerateAotSources extends JavaExec {
 	private final GenerateAotOptions aotOptions;
 
 	public GenerateAotSources() {
-		this.mainSourceSetOutputDirectory = getProject().getObjects().directoryProperty();
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
@@ -77,9 +76,13 @@ public class GenerateAotSources extends JavaExec {
 		this.resourceDirectories = resourceDirectories;
 	}
 
-	@InputDirectory
-	public DirectoryProperty getMainSourceSetOutputDirectory() {
-		return this.mainSourceSetOutputDirectory;
+	@InputFiles
+	public FileCollection getMainSourceSetOutputDirectories() {
+		return this.mainSourceSetOutputDirectories;
+	}
+
+	public void setMainSourceSetOutputDirectories(SourceSetOutput mainSourceSetOutputDirectories) {
+		this.mainSourceSetOutputDirectories = mainSourceSetOutputDirectories;
 	}
 
 	@OutputDirectory
@@ -106,7 +109,7 @@ public class GenerateAotSources extends JavaExec {
 			arguments.add("--sources-out=" + GenerateAotSources.this.sourcesOutputDirectory.get().getAsFile().toPath());
 			arguments.add("--resources-out=" + GenerateAotSources.this.resourcesOutputDirectory.get().getAsFile().toPath());
 			arguments.add("--resources=" + toPathArgument(GenerateAotSources.this.resourceDirectories.getSrcDirs()));
-			arguments.add("--classes=" + GenerateAotSources.this.mainSourceSetOutputDirectory.get().getAsFile().toPath());
+			arguments.add("--classes=" + GenerateAotSources.this.mainSourceSetOutputDirectories.getClassesDirs().getAsPath());
 			if (aotOptions.isRemoveXmlSupport()) {
 				arguments.add("--remove-xml");
 			}
