@@ -47,6 +47,12 @@ public interface BuildContext {
 	String getMainClass();
 
 	/**
+	 * @return The (optional) application class of the application to build if it needs to be specified.
+	 * Can be different from {@link #getMainClass()} for Kotlin applications for example.
+	 */
+	String getApplicationClass();
+
+	/**
 	 * Contribute source files to the application.
 	 * <p>This additional source code will be compiled and packaged with the application by a build plugin.
 	 * @param sourceFile the source files to add

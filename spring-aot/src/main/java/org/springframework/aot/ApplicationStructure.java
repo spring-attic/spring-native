@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.aot.context.bootstrap.AnnotatedClassFinder;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
@@ -47,9 +49,11 @@ public class ApplicationStructure {
 
 	private final List<String> classpath;
 
-	private String mainClass;
+	private final String mainClass;
 
-	private ClassLoader classLoader;
+	private final String applicationClass;
+
+	private final ClassLoader classLoader;
 
 	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, List<Path> classesPaths,
 			@Nullable String mainClass, List<String> classpath, @Nullable ClassLoader classLoader) throws IOException {
@@ -58,6 +62,7 @@ public class ApplicationStructure {
 		this.resourceFolders = resourceFolders;
 		this.classesPaths = classesPaths;
 		this.mainClass = mainClass != null ? mainClass : detectMainClass(classesPaths);
+		this.applicationClass = detectApplicationClass(classesPaths);
 		this.classpath = classpath;
 		this.classLoader = classLoader;
 	}
@@ -82,6 +87,10 @@ public class ApplicationStructure {
 		return this.mainClass;
 	}
 
+	public String getApplicationClass() {
+		return applicationClass;
+	}
+
 	public List<String> getClasspath() {
 		return this.classpath;
 	}
@@ -95,6 +104,16 @@ public class ApplicationStructure {
 			String mainClass = MainClassFinder.findSingleMainClass(path.toFile());
 			if (StringUtils.hasText(mainClass)) {
 				return mainClass;
+			}
+		}
+		return null;
+	}
+
+	private String detectApplicationClass(List<Path> classesPaths) throws IOException {
+		for (Path path : classesPaths) {
+			String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(path.toFile(), SpringBootApplication.class.getName());
+			if (StringUtils.hasText(applicationClass)) {
+				return applicationClass;
 			}
 		}
 		return null;

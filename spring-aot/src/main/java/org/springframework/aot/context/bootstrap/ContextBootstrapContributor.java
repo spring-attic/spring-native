@@ -70,14 +70,14 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 	public void contribute(BuildContext context, AotOptions aotOptions) {
 		ResourceLoader resourceLoader = context.getTypeSystem().getResourceLoader();
 		ClassLoader classLoader = resourceLoader.getClassLoader();
-		Class<?> mainClass;
-		String mainClassName = context.getMainClass();
+		Class<?> applicationClass;
+		String applicationClassName = context.getApplicationClass();
 		try {
-			logger.info("Detected main class: " + mainClassName);
-			mainClass = ClassUtils.forName(mainClassName, classLoader);
+			logger.info("Detected application class: " + applicationClassName);
+			applicationClass = ClassUtils.forName(applicationClassName, classLoader);
 		}
 		catch (ClassNotFoundException exc) {
-			throw new IllegalStateException("Could not load main class" + mainClassName, exc);
+			throw new IllegalStateException("Could not load application class " + applicationClassName, exc);
 		}
 
 		WebApplicationType webApplicationType = deduceWebApplicationType(classLoader);
@@ -85,10 +85,10 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		applicationContext.setResourceLoader(resourceLoader);
 
 		StandardEnvironment environment = createEnvironment(webApplicationType);
-		configureEnvironment(environment, resourceLoader, mainClass);
+		configureEnvironment(environment, resourceLoader, applicationClass);
 
 		applicationContext.setEnvironment(environment);
-		applicationContext.registerBean(mainClass);
+		applicationContext.registerBean(applicationClass);
 
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
@@ -98,13 +98,13 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		context.describeResources((resourcesDescriptor) -> resourcesDescriptor.merge(bootstrapGenerationResult.getResourcesDescriptor()));
 	}
 
-	private void configureEnvironment(StandardEnvironment environment, ResourceLoader resourceLoader, Class<?> mainClass) {
+	private void configureEnvironment(StandardEnvironment environment, ResourceLoader resourceLoader, Class<?> applicationClass) {
 		environment.setConversionService(new ApplicationConversionService());
 		ConfigurationPropertySources.attach(environment);
 		ConfigDataEnvironmentPostProcessor configDataEnvironmentPostProcessor =
 				new ConfigDataEnvironmentPostProcessor(new DeferredLogs(), new DefaultBootstrapContext());
 
-		SpringApplication application = new SpringApplication(resourceLoader, mainClass);
+		SpringApplication application = new SpringApplication(resourceLoader, applicationClass);
 		configDataEnvironmentPostProcessor.postProcessEnvironment(environment, application);
 
 		Properties properties = new Properties();
