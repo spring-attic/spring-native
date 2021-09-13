@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.infrastructure.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.nativex;
 
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.util.Assert;
@@ -24,32 +24,32 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  */
-public class RuntimeResourceEntry {
+public class NativeResourcesEntry {
 
 	private final String className;
 
-	private RuntimeResourceEntry(String className) {
+	private NativeResourcesEntry(String className) {
 		this.className = className;
 	}
 
 	/**
-	 * Create a new {@link RuntimeResourceEntry} for the specified class name. This allows
+	 * Create a new {@link NativeResourcesEntry} for the specified class name. This allows
 	 * reading ASM metadata at runtime.
 	 * @param className the type to consider
 	 * @return a resource entry
 	 */
-	public static RuntimeResourceEntry ofClassName(String className) {
+	public static NativeResourcesEntry ofClassName(String className) {
 		Assert.notNull(className, "ClassName must not be null");
-		return new RuntimeResourceEntry(className);
+		return new NativeResourcesEntry(className);
 	}
 
 	/**
-	 * Create a new {@link RuntimeResourceEntry} for the specified class. This allows
+	 * Create a new {@link NativeResourcesEntry} for the specified class. This allows
 	 * reading ASM metadata at runtime.
 	 * @param type the type to consider
 	 * @return a resource entry
 	 */
-	public static RuntimeResourceEntry of(Class<?> type) {
+	public static NativeResourcesEntry of(Class<?> type) {
 		Assert.notNull(type, "Type must not be null");
 		return ofClassName(type.getName());
 	}

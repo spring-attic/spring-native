@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.context.bootstrap.generator.infrastructure.reflect;
+package org.springframework.context.bootstrap.generator.infrastructure.nativex;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeResourceEntryTests.InnerClassSample.AnotherInner;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntryTests.InnerClassSample.AnotherInner;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link RuntimeResourceEntry}.
+ * Tests for {@link NativeResourcesEntry}.
  *
  * @author Stephane Nicoll
  */
-class RuntimeResourceEntryTests {
+class NativeResourcesEntryTests {
 
 	@Test
 	void ofClassNameWithNull() {
-		assertThatIllegalArgumentException().isThrownBy(() -> RuntimeResourceEntry.ofClassName(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeResourcesEntry.ofClassName(null));
 	}
 
 	@Test
 	void contributeTopLevelClassName() {
 		ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
-		RuntimeResourceEntry.ofClassName("java.lang.String").contribute(resourcesDescriptor);
+		NativeResourcesEntry.ofClassName("java.lang.String").contribute(resourcesDescriptor);
 		assertThat(resourcesDescriptor.getPatterns()).singleElement()
 				.satisfies((pattern) -> assertThat(pattern).isEqualTo("java/lang/String.class"));
 		assertThat(resourcesDescriptor.getBundles()).isEmpty();
@@ -48,9 +48,9 @@ class RuntimeResourceEntryTests {
 	@Test
 	void contributeInnerClass() {
 		ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
-		RuntimeResourceEntry.of(AnotherInner.class).contribute(resourcesDescriptor);
+		NativeResourcesEntry.of(AnotherInner.class).contribute(resourcesDescriptor);
 		assertThat(resourcesDescriptor.getPatterns()).singleElement()
-				.satisfies((pattern) -> assertThat(pattern).endsWith("/RuntimeResourceEntryTests\\$InnerClassSample\\$AnotherInner.class"));
+				.satisfies((pattern) -> assertThat(pattern).endsWith("/NativeResourcesEntryTests\\$InnerClassSample\\$AnotherInner.class"));
 		assertThat(resourcesDescriptor.getBundles()).isEmpty();
 	}
 

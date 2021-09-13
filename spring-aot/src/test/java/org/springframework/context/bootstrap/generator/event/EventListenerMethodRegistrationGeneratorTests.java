@@ -15,7 +15,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
-import org.springframework.context.bootstrap.generator.infrastructure.reflect.RuntimeReflectionEntry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.event.AnotherEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleEventListener;
@@ -100,7 +100,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
 		BootstrapWriterContext context = creteBootstrapContext();
 		processor.writeEventListenersRegistration(context, CodeBlock.builder());
-		List<RuntimeReflectionEntry> entries = context.getRuntimeReflectionRegistry().getEntries();
+		List<NativeReflectionEntry> entries = context.getNativeConfigurationRegistry().reflection().getEntries();
 		assertThat(entries).hasSize(2);
 		assertThat(entries).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(SingleEventListener.class);
