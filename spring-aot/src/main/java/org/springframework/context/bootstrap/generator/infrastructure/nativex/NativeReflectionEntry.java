@@ -39,6 +39,7 @@ import org.springframework.nativex.hint.Flag;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 public class NativeReflectionEntry {
 
@@ -142,7 +143,7 @@ public class NativeReflectionEntry {
 	private MethodDescriptor toMethodDescriptor(Executable method) {
 		String name = (method instanceof Constructor) ? CONSTRUCTOR_NAME : method.getName();
 		return MethodDescriptor.of(name, Arrays.stream(method.getParameterTypes())
-				.map(Class::getCanonicalName).toArray(String[]::new));
+				.map(Class::getName).toArray(String[]::new));
 	}
 
 	private FieldDescriptor toFieldDescriptor(Field field) {
