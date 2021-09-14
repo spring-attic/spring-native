@@ -16,6 +16,7 @@
 
 package org.springframework.context.bootstrap.generator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -37,8 +39,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
-import org.springframework.context.bootstrap.generator.infrastructure.BeanRuntimeResourcesRegistrar;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistrar;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapInfrastructureWriter;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
@@ -104,9 +107,23 @@ public class ContextBootstrapGenerator {
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
 		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
-		BeanRuntimeResourcesRegistrar resourcesRegistrar = new BeanRuntimeResourcesRegistrar(beanFactory);
-		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
+		List<BeanInstanceDescriptor> descriptors = writeBeanDefinitions(beanFactory, writerContext, selector, code);
 
+		NativeConfigurationRegistrar nativeConfigurationRegistrar = new NativeConfigurationRegistrar(beanFactory);
+		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
+		nativeConfigurationRegistrar.processBeanFactory(nativeConfigurationRegistry);
+		nativeConfigurationRegistrar.processBeans(nativeConfigurationRegistry, descriptors);
+
+		// FIXME: provide SPI for this
+		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(writerContext, code);
+
+		method.addCode(code.build());
+		return method.build();
+	}
+
+	private List<BeanInstanceDescriptor> writeBeanDefinitions(ConfigurableListableBeanFactory beanFactory,
+			BootstrapWriterContext writerContext, BeanDefinitionSelector selector, Builder code) {
+		List<BeanInstanceDescriptor> descriptors = new ArrayList<>();
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
@@ -115,16 +132,11 @@ public class ContextBootstrapGenerator {
 						beanName, beanDefinition);
 				if (beanRegistrationWriter != null) {
 					beanRegistrationWriter.writeBeanRegistration(writerContext, code);
-					resourcesRegistrar.register(nativeConfigurationRegistry,
-							beanRegistrationWriter.getBeanInstanceDescriptor());
+					descriptors.add(beanRegistrationWriter.getBeanInstanceDescriptor());
 				}
 			}
 		}
-		// FIXME: provide SPI for this
-		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(writerContext, code);
-
-		method.addCode(code.build());
-		return method.build();
+		return descriptors;
 	}
 
 	private void registerApplicationContextInfrastructure(ConfigurableListableBeanFactory beanFactory,

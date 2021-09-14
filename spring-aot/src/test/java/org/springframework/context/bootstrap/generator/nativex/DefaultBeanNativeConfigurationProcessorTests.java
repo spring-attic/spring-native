@@ -1,10 +1,8 @@
-package org.springframework.context.bootstrap.generator.infrastructure;
+package org.springframework.context.bootstrap.generator.nativex;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,23 +13,20 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
-import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
+import org.springframework.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.core.env.Environment;
-import org.springframework.nativex.hint.Flag;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BeanRuntimeResourcesRegistrar}.
+ * Tests for {@link DefaultBeanNativeConfigurationProcessor}.
  *
  * @author Stephane Nicoll
  */
-class BeanRuntimeResourcesRegistrarTests {
+class DefaultBeanNativeConfigurationProcessorTests {
 
 	@Test
 	void registerReflectionEntriesForInstanceCreator() {
@@ -52,14 +47,12 @@ class BeanRuntimeResourcesRegistrarTests {
 		Method injectionPoint = ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class);
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(injectionPoint);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy(annotation(Autowired.class));
-		assertThat(registry.reflection().getEntries()).hasSize(2);
 	}
 
 	@Test
@@ -112,29 +105,14 @@ class BeanRuntimeResourcesRegistrarTests {
 					IntegerFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy(annotation(Autowired.class));
-		assertThat(registry.reflection().getEntries()).hasSize(3);
-	}
-
-	@Test
-	void registerReflectionEntriesForClassRuntimeAnnotations() {
-		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(AsyncConfiguration.class).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies(annotation(EnableAsync.class));
-	}
-
-	private Consumer<NativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
-		return (entry) -> {
-			assertThat(entry.getType()).isEqualTo(annotationType);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
-			assertThat(entry.getConstructors()).isEmpty();
-			assertThat(entry.getMethods()).isEmpty();
-			assertThat(entry.getFields()).isEmpty();
-		};
+		assertThat(registry.reflection().getEntries()).hasSize(2);
 	}
 
 	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-		new BeanRuntimeResourcesRegistrar(new DefaultListableBeanFactory()).register(registry, descriptor);
+		DefaultBeanNativeConfigurationProcessor processor = new DefaultBeanNativeConfigurationProcessor();
+		processor.setBeanFactory(new DefaultListableBeanFactory());
+		processor.process(descriptor, registry);
 		return registry;
 	}
 
