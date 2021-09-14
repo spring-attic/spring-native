@@ -17,7 +17,7 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.bean.descriptor.DefaultBeanInstanceDescriptorFactory;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry.Builder;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
 
 /**
  * Register the reflection entries for each {@link BeanInstanceDescriptor}.
@@ -36,24 +36,24 @@ class DefaultBeanNativeConfigurationProcessor implements BeanNativeConfiguration
 
 	@Override
 	public void process(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
-		Builder builder = registry.reflection().forType(descriptor.getUserBeanClass());
+		ReflectionConfiguration reflectionConfiguration = registry.reflection();
 		MemberDescriptor<Executable> instanceCreator = descriptor.getInstanceCreator();
 		if (instanceCreator != null) {
-			registry.reflection().addExecutable(instanceCreator.getMember());
+			reflectionConfiguration.addExecutable(instanceCreator.getMember());
 		}
 		for (MemberDescriptor<?> injectionPoint : descriptor.getInjectionPoints()) {
 			Member member = injectionPoint.getMember();
 			if (member instanceof Executable) {
-				builder.withMethods((Method) member);
+				reflectionConfiguration.addExecutable((Method) member);
 			}
 			else if (member instanceof Field) {
-				builder.withFields((Field) member);
+				reflectionConfiguration.addField((Field) member);
 			}
 		}
 		for (PropertyDescriptor property : descriptor.getProperties()) {
 			Method writeMethod = property.getWriteMethod();
 			if (writeMethod != null) {
-				builder.withMethods(writeMethod);
+				reflectionConfiguration.addExecutable(writeMethod);
 			}
 			Object value = property.getPropertyValue().getValue();
 			if (value instanceof BeanDefinition) {
