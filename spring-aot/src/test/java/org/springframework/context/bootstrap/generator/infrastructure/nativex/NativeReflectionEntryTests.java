@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NativeReflectionEntry}.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 class NativeReflectionEntryTests {
 
@@ -59,6 +60,18 @@ class NativeReflectionEntryTests {
 	}
 
 	@Test
+	void toClassDescriptorShouldRegisterMethodWithDollarSeparatorForParameters() {
+		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class, TestClass.class);
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(method)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+			assertThat(methodDescriptor.getName()).isEqualTo("test");
+			assertThat(methodDescriptor.getParameterTypes()).containsExactly("java.lang.String", "java.lang.Integer",
+					"org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntryTests$TestClass");
+		});
+	}
+
+	@Test
 	void toClassDescriptorShouldRegisterConstructor() {
 		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
 		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
@@ -66,6 +79,18 @@ class NativeReflectionEntryTests {
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
 			assertThat(methodDescriptor.getParameterTypes()).isEmpty();
+		});
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterConstructorWithDollarSeparatorForParameters() {
+		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[1];
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
+			assertThat(methodDescriptor.getParameterTypes()).containsExactly(
+					"org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntryTests$TestClass");
 		});
 	}
 
@@ -196,7 +221,14 @@ class NativeReflectionEntryTests {
 		public TestClass() {
 		}
 
+		public TestClass(TestClass testClass) {
+		}
+
 		public void test(String bean, Integer counter) {
+
+		}
+
+		public void test(String bean, Integer counter, TestClass testClass) {
 
 		}
 
