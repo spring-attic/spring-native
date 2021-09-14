@@ -6,6 +6,11 @@ org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistration
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
 org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
 
+org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
+org.springframework.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
+org.springframework.context.bootstrap.generator.nativex.FrameworkAnnotationsBeanNativeConfigurationProcessor,\
+org.springframework.context.bootstrap.generator.nativex.HintsBeanNativeConfigurationProcessor
+
 org.springframework.context.origin.BeanDefinitionOriginAnalyzer=\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanDefinitionOriginAnalyzer,\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionOriginAnalyzer,\

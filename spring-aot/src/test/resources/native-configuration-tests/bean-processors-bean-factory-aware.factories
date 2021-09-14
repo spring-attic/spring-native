@@ -1,0 +1,2 @@
+org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
+org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistrarTests.BeanFactoryAwareBeanNativeConfigurationProcessor
