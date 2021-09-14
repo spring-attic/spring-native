@@ -13,7 +13,6 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.core.env.Environment;
@@ -56,6 +55,20 @@ class DefaultBeanNativeConfigurationProcessorTests {
 	}
 
 	@Test
+	void registerReflectionEntriesForMethodInjectionPointUseTargetClass() {
+		Constructor<?> instanceCreator = IntegerFactoryBean.class.getDeclaredConstructors()[0];
+		Method injectionPoint = ReflectionUtils.findMethod(IntegerFactoryBean.class, "setNamingStrategy", String.class);
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
+				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(injectionPoint);
+			assertThat(entry.getFields()).isEmpty();
+		});
+	}
+
+	@Test
 	void registerReflectionEntriesForFieldInjectionPoint() {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		Field injectionPoint = ReflectionUtils.findField(InjectionComponent.class, "counter");
@@ -70,11 +83,40 @@ class DefaultBeanNativeConfigurationProcessorTests {
 	}
 
 	@Test
+	void registerReflectionEntriesForFieldInjectionPointUseTargetClass() {
+		Constructor<?> instanceCreator = IntegerFactoryBean.class.getDeclaredConstructors()[0];
+		Field injectionPoint = ReflectionUtils.findField(IntegerFactoryBean.class, "strategy");
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
+				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
+			assertThat(entry.getConstructors()).containsOnly(instanceCreator);
+			assertThat(entry.getMethods()).isEmpty();
+			assertThat(entry.getFields()).containsOnly(injectionPoint);
+		});
+	}
+
+	@Test
+	void registerReflectionEntriesForPropertiesUseTargetClass() {
+		Constructor<?> instanceCreator = IntegerFactoryBean.class.getDeclaredConstructors()[0];
+		Method nameWriteMethod = ReflectionUtils.findMethod(IntegerFactoryBean.class, "setName", String.class);
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
+				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
+				.build());
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(IntegerFactoryBean.class);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(nameWriteMethod);
+			assertThat(entry.getFields()).isEmpty();
+		});
+	}
+
+	@Test
 	void registerReflectionEntriesForProperties() {
 		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
 		Method nameWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setName", String.class);
 		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
-		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionConfiguration.class)
 				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
 				.withProperty(counterWriteMethod, new PropertyValue("counter", 42)).build());
 		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
@@ -89,7 +131,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 	void registerReflectionEntriesForInnerBeanDefinition() {
 		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
 		Method counterWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounter", Integer.class);
-		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionConfiguration.class)
 				.withInstanceCreator(instanceCreator).withProperty(counterWriteMethod, new PropertyValue("counter",
 						BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())).build());
 		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
@@ -116,8 +158,23 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		return registry;
 	}
 
+	static abstract class BaseFactoryBean {
+
+		private String strategy;
+
+		@Autowired
+		void setNamingStrategy(String strategy) {
+			this.strategy = strategy;
+		}
+
+		void setName(String name) {
+
+		}
+
+	}
+
 	@SuppressWarnings("unused")
-	static class IntegerFactoryBean implements FactoryBean<Integer> {
+	static class IntegerFactoryBean extends BaseFactoryBean implements FactoryBean<Integer> {
 
 		public IntegerFactoryBean(Environment environment) {
 
@@ -131,11 +188,6 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		@Override
 		public Integer getObject() {
 			return 42;
-		}
-
-		@Autowired
-		void setNamingStrategy(String strategy) {
-
 		}
 
 	}
