@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InstanceCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.util.ClassUtils;
 
 /**
  * Write the necessary statements to instantiate a bean.
@@ -65,7 +66,7 @@ class DefaultBeanInstanceSupplierWriter {
 	}
 
 	private void writeBeanInstantiation(Builder code, Constructor<?> constructor) {
-		Class<?> declaringType = this.descriptor.getUserBeanClass();
+		Class<?> declaringType = ClassUtils.getUserClass(constructor.getDeclaringClass());
 		boolean innerClass = isInnerClass(declaringType);
 		List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(constructor.getParameterTypes()));
 		if (innerClass) { // Remove the implicit argument
@@ -80,7 +81,7 @@ class DefaultBeanInstanceSupplierWriter {
 				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 			}
 			else {
-				code.add("() -> new $T()", this.descriptor.getUserBeanClass());
+				code.add("() -> new $T()", declaringType);
 			}
 			return;
 		}

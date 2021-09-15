@@ -7,11 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.bootstrap.generator.sample.constructor.SampleBeanWithConstructors;
+import org.springframework.context.bootstrap.generator.sample.factory.NumberHolder;
+import org.springframework.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link BeanInstanceExecutableSupplier}.
@@ -64,6 +69,36 @@ class BeanInstanceExecutableSupplierTests {
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
 		assertThat(executable).isNotNull().isEqualTo(SampleBeanWithConstructors.class.getDeclaredConstructor(String.class, Number.class));
+	}
+
+	@Test
+	void detectBeanInstanceExecutableWithFactoryBeanSetInBeanClass() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		RootBeanDefinition beanDefinition = new RootBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class));
+		beanDefinition.setBeanClass(NumberHolderFactoryBean.class);
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(NumberHolderFactoryBean.class.getDeclaredConstructors()[0]);
+	}
+
+	@Test
+	void detectBeanInstanceExecutableWithFactoryBeanSetInBeanClassAndNoResolvableType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		RootBeanDefinition beanDefinition = new RootBeanDefinition();
+		beanDefinition.setBeanClass(NumberHolderFactoryBean.class);
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(NumberHolderFactoryBean.class.getDeclaredConstructors()[0]);
+	}
+
+	@Test
+	void detectBeanInstanceExecutableWithFactoryBeanSetInBeanClassThatDoesNotMatchTargetType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		RootBeanDefinition beanDefinition = new RootBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClassWithGenerics(NumberHolder.class, String.class));
+		beanDefinition.setBeanClass(NumberHolderFactoryBean.class);
+		assertThatIllegalStateException().isThrownBy(() -> detectBeanInstanceExecutable(beanFactory, beanDefinition))
+				.withMessageContaining("Incompatible target type").withMessageContaining(NumberHolder.class.getName())
+				.withMessageContaining(NumberHolderFactoryBean.class.getName());
 	}
 
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {

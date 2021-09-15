@@ -27,12 +27,15 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.EnvironmentAwareComponent;
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
+import org.springframework.context.bootstrap.generator.sample.factory.NumberHolder;
+import org.springframework.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
@@ -85,6 +88,15 @@ class DefaultBeanInstanceSupplierWriterTests {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(EnvironmentAwareComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, EnvironmentAwareComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
 				"(instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(InnerComponentConfiguration.class).new EnvironmentAwareComponent(attributes.get(1)))");
+	}
+
+	@Test
+	void writeConstructorForFactoryBean() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClassWithGenerics(NumberHolder.class, Long.class));
+		assertThat(generateCode(beanDefinition, (type) -> BeanInstanceDescriptor.of(type)
+				.withInstanceCreator(NumberHolderFactoryBean.class.getDeclaredConstructors()[0]).build())
+		).isEqualTo("() -> new NumberHolderFactoryBean()").hasImport(NumberHolderFactoryBean.class);
 	}
 
 	@Test
