@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BuildContext;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.hint.Flag;
 
 import com.squareup.javapoet.ClassName;
 
@@ -53,7 +54,7 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 
 	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
 		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
-		//factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 
