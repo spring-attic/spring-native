@@ -1,5 +1,6 @@
 org.springframework.context.annotation.BeanDefinitionPostProcessor=\
-org.springframework.data.RepositoryFactoryBeanPostProcessor
+org.springframework.data.RepositoryFactoryBeanPostProcessor,\
+org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor
 
 org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
