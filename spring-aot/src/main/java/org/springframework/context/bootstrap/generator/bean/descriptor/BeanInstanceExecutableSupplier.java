@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
@@ -65,6 +66,19 @@ class BeanInstanceExecutableSupplier {
 		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanClass, parameterTypes);
 		if (resolvedFactoryMethod != null) {
 			return resolvedFactoryMethod;
+		}
+		Class<?> factoryBeanClass = getFactoryBeanClass(beanDefinition);
+		if (factoryBeanClass != null && !factoryBeanClass.equals(beanDefinition.getResolvableType().toClass())) {
+			ResolvableType resolvableType = beanDefinition.getResolvableType();
+			boolean isCompatible = ResolvableType.forClass(factoryBeanClass).as(FactoryBean.class)
+					.getGeneric(0).isAssignableFrom(resolvableType);
+			if (isCompatible) {
+				return resolveConstructor(() -> factoryBeanClass, beanDefinition.getConstructorArgumentValues());
+			}
+			else {
+				throw new IllegalStateException(String.format("Incompatible target type '%s' for factory bean '%s'",
+						resolvableType.toClass().getName(), factoryBeanClass.getName()));
+			}
 		}
 		Executable resolvedConstructor = resolveConstructor(beanClass, beanDefinition.getConstructorArgumentValues());
 		if (resolvedConstructor != null) {
@@ -173,6 +187,17 @@ class BeanInstanceExecutableSupplier {
 			}
 		}
 		return true;
+	}
+
+	private Class<?> getFactoryBeanClass(BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof RootBeanDefinition) {
+			RootBeanDefinition rbd = (RootBeanDefinition) beanDefinition;
+			if (rbd.hasBeanClass()) {
+				Class<?> beanClass = rbd.getBeanClass();
+				return FactoryBean.class.isAssignableFrom(beanClass) ? beanClass : null;
+			}
+		}
+		return null;
 	}
 
 	private Class<?> getBeanClass(BeanDefinition beanDefinition) {
