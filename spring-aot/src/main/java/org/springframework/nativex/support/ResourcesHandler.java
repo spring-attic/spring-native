@@ -38,7 +38,6 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,21 +58,13 @@ import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.NativeContext;
-import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.type.TypeUtils;
 
-
 public class ResourcesHandler extends Handler {
 
 	private static Log logger = LogFactory.getLog(ResourcesHandler.class);	
-
-	private final static String enableAutoconfigurationKey = "org.springframework.boot.autoconfigure.EnableAutoConfiguration";
-
-	private final static String propertySourceLoaderKey = "org.springframework.boot.env.PropertySourceLoader";
-
-	private final static String managementContextConfigurationKey = "org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration";
 
 	private final ReflectionHandler reflectionHandler;
 
@@ -564,24 +555,6 @@ public class ResourcesHandler extends Handler {
 	  }
 	}
 
-	// Code from petclinic that ends us up in here:
-	// public interface VisitRepository { ... }
-	// @org.springframework.stereotype.Repository @Transactional public class JpaVisitRepositoryImpl implements VisitRepository { ... }
-	// Need proxy: [org.springframework.samples.petclinic.visit.VisitRepository,org.springframework.aop.SpringProxy,
-	//              org.springframework.aop.framework.Advised,org.springframework.core.DecoratingProxy] 
-	// And entering here with r = JpaVisitRepositoryImpl
-	private void processRepository2(Type r) {
-		logger.debug("Processing @oss.Repository annotated "+r.getDottedName());
-		List<String> repositoryInterfaces = new ArrayList<>();
-		for (String s: r.getInterfacesStrings()) {
-			repositoryInterfaces.add(s.replace("/", "."));
-		}
-		repositoryInterfaces.add("org.springframework.aop.SpringProxy");
-		repositoryInterfaces.add("org.springframework.aop.framework.Advised");
-		repositoryInterfaces.add("org.springframework.core.DecoratingProxy");
-		dynamicProxiesHandler.addProxy(repositoryInterfaces);
-	}
-
 	/**
 	 * Walk a type hierarchy and register them all for reflective access.
 	 * @param pc Processing context
@@ -744,243 +717,8 @@ public class ResourcesHandler extends Handler {
 					"spring.factories processing, problem adding access for key " + s + ": " + ncdfe.getMessage());
 		}
 	}
-
-	private void processSpringFactory(TypeSystem ts, URL springFactory) {
-		logger.debug("processing spring factory file "+springFactory);
-		Properties p = new Properties();
-		loadSpringFactoryFile(springFactory, p);
-		processSpringFactory(ts, p);
-	}
-		
 		
 	private void processSpringFactory(TypeSystem ts, Properties p) {
-		List<SpringFactoriesProcessor> springFactoriesProcessors = ts.getSpringFactoryProcessors();
-		List<String> forRemoval = new ArrayList<>();
-		Enumeration<Object> factoryKeys = p.keys();
-		boolean modified = false;
-		List<String> otherAutoConfigurationKeys = new ArrayList<>(); // e.g. org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-		
-		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
-			Properties filteredProperties = new Properties();
-			for (Map.Entry<Object, Object> factoriesEntry : p.entrySet()) {
-				String key = (String) factoriesEntry.getKey();
-				String valueString = (String) factoriesEntry.getValue();
-				List<String> values = new ArrayList<>();
-				for (String value : valueString.split(",")) {
-					values.add(value);
-				}
-				if (aotOptions.isRemoveUnusedConfig()) {
-					for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
-						int len = values.size();
-						if (springFactoriesProcessor.filter(key, values)) {
-							logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
-							modified = true;
-						}
-					}
-				}
-				if (modified) {
-					filteredProperties.put(key, String.join(",", values));
-				} else {
-					filteredProperties.put(key, valueString);
-				}
-			}
-			p = filteredProperties;
-		}
-
-		factoryKeys = p.keys();
-		// Handle all keys other than EnableAutoConfiguration and PropertySourceLoader
-		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
-			while (factoryKeys.hasMoreElements()) {
-				String k = (String) factoryKeys.nextElement();
-				logger.debug("Adding all the classes for this key: " + k);
-				if (!k.equals(enableAutoconfigurationKey) 
-						&& !k.equals(propertySourceLoaderKey)
-						&& !k.equals(managementContextConfigurationKey) 
-						) {
-					if (k.equals("org.springframework.boot.diagnostics.FailureAnalyzer") ||
-						k.equals("org.springframework.context.ApplicationListener") ||
-						k.equals("org.springframework.context.ApplicationContextInitializer")
-						) {
-						// TODO really needs to register all those values without a no arg ctor (for now)
-						// something like this:
-						/*
-						for (String v: p.getProperty(k).split(",")) {
-							Type t = ts.resolveDotted(v, true);
-							if (t != null) {
-								// This 'name' may not be the same as 'v' if 'v' referred to an inner type -
-								// 'name' will include the right '$' characters.
-								String name = t.getDottedName();
-								if (!t.hasNoArgConstructor()) {
-									reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
-								}
-							}	
-						}
-						*/
-						continue;
-					}
-					if (k.equals("org.springframework.boot.env.EnvironmentPostProcessor")
-						|| k.equals("org.springframework.boot.context.config.ConfigDataLoader")
-						|| k.equals("org.springframework.boot.logging.LoggingSystemFactory")
-//						 || k.equals("org.springframework.boot.env.PropertySourceLoader")
-						) {
-						for (String v: p.getProperty(k).split(",")) {
-							Type t = ts.resolveDotted(v, true);
-							if (t != null) {
-								// This 'name' may not be the same as 'v' if 'v' referred to an inner type -
-								// 'name' will include the right '$' characters.
-								String name = t.getDottedName();
-								Method defaultConstructor = t.getDefaultConstructor();
-								if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
-									reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
-								}
-							}	
-						}
-						continue;
-					} else if (k.startsWith("org.springframework.boot.test.autoconfigure.")) {
-						// TODO [issue839] smarter test, check what kind of thing it points at rather than that prefix
-						otherAutoConfigurationKeys.add(k);
-						continue;
-					}
-					if (ts.shouldBeProcessed(k)) {
-						for (String v : p.getProperty(k).split(",")) {
-							Type resolvedValue = ts.resolveDotted(v, true);
-							if (resolvedValue != null && !resolvedValue.isCondition()) {
-								registerTypeReferencedBySpringFactoriesKey(v);
-							}
-						}
-					} else {
-						logger.debug("Skipping processing spring.factories key " + k + " due to missing guard types");
-					}
-				}
-			}
-		}
-
-		if (!(aotOptions.toMode() == Mode.NATIVE_AGENT)) {
-			// Handle PropertySourceLoader
-			String propertySourceLoaderValues = (String) p.get(propertySourceLoaderKey);
-			if (propertySourceLoaderValues != null) {
-				for (String v: propertySourceLoaderValues.split(",")) {
-					Type t = ts.resolveDotted(v, true);
-					if (t != null) {
-						String name = t.getDottedName();
-						Method defaultConstructor = t.getDefaultConstructor();
-						if (defaultConstructor == null || defaultConstructor.hasAnnotation("Ljava/lang/Deprecated;", false)) {
-							reflectionHandler.addAccess(name, Flag.allDeclaredConstructors);
-						}
-					}
-				}
-			}
-		}
-
-//		modified = processConfigurationsWithKey(p, managementContextConfigurationKey) || modified;
-		
-		// Handle EnableAutoConfiguration
-		// TODO [issue839] sort out method signature, forRemoval not needed, use retval for whether it did anything
-//		processFactoriesKey(p, enableAutoconfigurationKey, forRemoval);
-//		for (String key: otherAutoConfigurationKeys) {
-//			processFactoriesKey(p, key, forRemoval);
-//		}
-
-		if (forRemoval.size() > 0) {
-			String existingRC = ts.findAnyResourceConfigIncludingSpringFactoriesPattern();
-			if (existingRC != null) {
-				logger.debug("WARNING: unable to trim META-INF/spring.factories (for example to disable unused auto configurations)"+
-					" because an existing resource-config is directly including it: "+existingRC);
-				return;
-			}
-		}	
-
-		// Filter spring.factories if necessary
-		try {
-			if (forRemoval.size() == 0 && !modified) {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				p.store(baos, null);
-				byte[] bs = baos.toByteArray();
-				collector.registerResource("META-INF/spring.factories", bs);
-//				Resources.registerResource("META-INF/spring.factories", springFactory.openStream());
-			} else {
-				logger.debug("  removed " + forRemoval.size() + " classes");
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				p.store(baos, "");
-				baos.close();
-				byte[] bs = baos.toByteArray();
-				logger.debug("The new spring.factories is: vvvvvvvvv");
-				logger.debug(new String(bs));
-				logger.debug("^^^^^^^^");
-//				ByteArrayInputStream bais = new ByteArrayInputStream(bs);
-				collector.registerResource("META-INF/spring.factories", bs);
-//				Resources.registerResource("META-INF/spring.factories", bais);
-			}
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void processFactoriesKey(Properties p, String key, List<String> forRemoval) {
-		String enableAutoConfigurationValues = (String) p.get(key);
-		int excludedAutoConfigCount = 0;
-		if (enableAutoConfigurationValues != null) {
-			List<String> configurations = new ArrayList<>();
-			for (String s : enableAutoConfigurationValues.split(",")) {
-				configurations.add(s);
-			}
-			logger.debug("Processing spring.factories - "+key+" lists #" + configurations.size()
-					+ " configurations");
-			for (String config : configurations) {
-				if (!checkAndRegisterConfigurationType(config,ReachedBy.FromSpringFactoriesKey)) {
-					if (aotOptions.isRemoveUnusedConfig()) {
-						excludedAutoConfigCount++;
-						logger.debug("Excluding auto-configuration " + config);
-						forRemoval.add(config);
-					}
-				}
-			}
-			if (aotOptions.isRemoveUnusedConfig()) {
-				logger.debug(
-						"Excluding " + excludedAutoConfigCount + " auto-configurations from spring.factories file");
-				configurations.removeAll(forRemoval);
-				p.put(key, String.join(",", configurations));
-				logger.debug("These configurations are remaining in the "+key+" key value:");
-				for (int c = 0; c < configurations.size(); c++) {
-					logger.debug((c + 1) + ") " + configurations.get(c));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Find the configurations referred to by the specified key in the specified properties object.
-	 * Process each configuration and if it fails conditional checks (e.g. @ConditionalOnClass)
-	 * then it is considered inactive and removed. The key is rewritten with a new list of configurations
-	 * with inactive ones removed.
-	 * @param p the properties object
-	 * @param configurationsKey the key into the properties object whose value is a configurations list
-	 * 
-	 * @return true if inactive configurations were discovered and removed
-	 */
-	private boolean processConfigurationsWithKey(Properties p, String configurationsKey) {
-		boolean modified = false;
-		List<String> inactiveConfigurations = new ArrayList<>();
-		String configurationsValue = (String)p.get(configurationsKey);
-		if (configurationsValue != null) {
-			List<String> configurations = Stream.of(configurationsValue.split(",")).collect(Collectors.toList());
-			for (String configuration: configurations) {
-				if (!checkAndRegisterConfigurationType(configuration,ReachedBy.FromSpringFactoriesKey)) {
-					if (aotOptions.isRemoveUnusedConfig()) {
-						logger.debug("Excluding auto-configuration (key="+configurationsKey+") =" +configuration);
-						inactiveConfigurations.add(configuration);
-					}
-				}
-			}
-			if (aotOptions.isRemoveUnusedConfig() && inactiveConfigurations.size()>0) {
-				int totalConfigurations = configurations.size();
-				configurations.removeAll(inactiveConfigurations);
-				p.put(configurationsKey, String.join(",", configurations));
-				logger.debug("Removed "+inactiveConfigurations.size()+" of the "+totalConfigurations+" configurations specified for the key "+configurationsKey);
-				modified = true;
-			}
-		}
-		return modified;
 	}
 
 	private void loadSpringFactoryFile(URL springFactory, Properties p) {
@@ -989,17 +727,6 @@ public class ResourcesHandler extends Handler {
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to load spring.factories", e);
 		}
-	}
-
-	/**
-	 * For the specified type (dotted name) determine which types must be
-	 * reflectable at runtime. This means looking at annotations and following any
-	 * type references within those. These types will be registered. If there are
-	 * any issues with accessibility of required types this will return false
-	 * indicating it can't be used at runtime.
-	 */
-	private boolean checkAndRegisterConfigurationType(String typename, ReachedBy reachedBy) {
-		return processType(new ProcessingContext(), typename, reachedBy);
 	}
 
 	private boolean processType(ProcessingContext pc, String typename, ReachedBy reachedBy) {
