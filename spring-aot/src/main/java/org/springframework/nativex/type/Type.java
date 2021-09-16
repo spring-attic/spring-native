@@ -51,6 +51,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
@@ -121,7 +124,9 @@ public class Type {
 	public final static String ApplicationListener = "Lorg/springframework/context/ApplicationListener;";
 	public final static String AtAliasFor = "Lorg/springframework/core/annotation/AliasFor;";
 	public final static String Condition = "Lorg/springframework/context/annotation/Condition;";
-	public final static String EnvironmentPostProcessor = "Lorg/springframework/boot/env/EnvironmentPostProcessor";
+	public final static String InitializingBean = "Lorg/springframework/beans/factory/InitializingBean;";
+	public final static String FactoryBean = "Lorg/springframework/beans/factory/FactoryBean;";
+	public final static String EnvironmentPostProcessor = "Lorg/springframework/boot/env/EnvironmentPostProcessor;";
 	public final static String AtPostAuthorize = "Lorg/springframework/security/access/prepost/PostAuthorize;";
 	public final static String AtPostFilter = "Lorg/springframework/security/access/prepost/PostFilter;";
 	public final static String AtPreAuthorize = "Lorg/springframework/security/access/prepost/PreAuthorize;";
@@ -1624,6 +1629,22 @@ public class Type {
 	public boolean isBeanFactoryPostProcessor() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(BeanFactoryPostProcessor));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
+
+	public boolean isFactoryBean() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(FactoryBean));
+		} catch (MissingTypeException mte) {
+			return false;
+		}
+	}
+
+	public boolean isInitializingBean() {
+		try {
+			return implementsInterface(fromLdescriptorToSlashed(InitializingBean));
 		} catch (MissingTypeException mte) {
 			return false;
 		}
