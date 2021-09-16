@@ -17,6 +17,7 @@
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Executable;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,15 @@ class BeanInstanceExecutableSupplierTests {
 	}
 
 	@Test
+	void beanDefinitionWithFactoryMethodNameAndMatchingMethodNamesThatShouldBeIgnored() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(DummySampleFactory.class)
+				.setFactoryMethod("of").addConstructorArgValue(42).getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils.findMethod(DummySampleFactory.class, "of", Integer.class));
+	}
+
+	@Test
 	void beanDefinitionWithConstructorArgsForMultipleConstructors() throws Exception {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("testNumber", 1L);
@@ -95,6 +105,22 @@ class BeanInstanceExecutableSupplierTests {
 				.addConstructorArgValue(42).getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
 		assertThat(executable).isNotNull().isEqualTo(MultiConstructorSample.class.getDeclaredConstructor(Integer.class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndMatchingArrayValue() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorArraySample.class)
+				.addConstructorArgValue(42).getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorArraySample.class.getDeclaredConstructor(Integer[].class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndMatchingListValue() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorListSample.class)
+				.addConstructorArgValue(42).getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorListSample.class.getDeclaredConstructor(List.class));
 	}
 
 	@Test
@@ -180,16 +206,54 @@ class BeanInstanceExecutableSupplierTests {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	static class MultiConstructorSample {
 
 		MultiConstructorSample(String name) {
-
 		}
 
 		MultiConstructorSample(Integer value) {
-
 		}
 
+	}
+
+	@SuppressWarnings("unused")
+	static class MultiConstructorArraySample {
+
+		public MultiConstructorArraySample(String... names) {
+		}
+
+		public MultiConstructorArraySample(Integer... values) {
+		}
+	}
+
+	@SuppressWarnings("unused")
+	static class MultiConstructorListSample {
+
+		public MultiConstructorListSample(String name) {
+		}
+
+		public MultiConstructorListSample(List<Integer> values) {
+		}
+
+	}
+
+	interface DummyInterface {
+
+		static String of(Object o) {
+			return o.toString();
+		}
+	}
+
+	static class DummySampleFactory implements DummyInterface {
+
+		static String of(Integer value) {
+			return value.toString();
+		}
+
+		private String of(String ignored) {
+			return ignored;
+		}
 	}
 
 }
