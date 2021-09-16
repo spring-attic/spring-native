@@ -1,9 +1,27 @@
+/*
+ * Copyright 2019-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Executable;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -56,7 +74,7 @@ class BeanInstanceExecutableSupplierTests {
 				.addConstructorArgReference("testNumber")
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
-		assertThat(executable).isNotNull().isEqualTo(SampleBeanWithConstructors.class.getDeclaredConstructor(String.class, Number.class));
+		assertThat(executable).isNotNull().isEqualTo(SampleBeanWithConstructors.class.getDeclaredConstructor(Number.class, String.class));
 	}
 
 	@Test
@@ -68,7 +86,51 @@ class BeanInstanceExecutableSupplierTests {
 				.addConstructorArgReference("testNumber")
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
-		assertThat(executable).isNotNull().isEqualTo(SampleBeanWithConstructors.class.getDeclaredConstructor(String.class, Number.class));
+		assertThat(executable).isNotNull().isEqualTo(SampleBeanWithConstructors.class.getDeclaredConstructor(Number.class, String.class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndMatchingValue() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorSample.class)
+				.addConstructorArgValue(42).getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorSample.class.getDeclaredConstructor(Integer.class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndMatchingValueAsInnerBean() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorSample.class)
+				.addConstructorArgValue(BeanDefinitionBuilder.rootBeanDefinition(Integer.class, "valueOf")
+						.addConstructorArgValue("42").getBeanDefinition())
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorSample.class.getDeclaredConstructor(Integer.class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndMatchingValueAsInnerBeanFactory() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorSample.class)
+				.addConstructorArgValue(BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorSample.class.getDeclaredConstructor(Integer.class));
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndNonMatchingValue() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorSample.class)
+				.addConstructorArgValue(Locale.ENGLISH).getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNull();
+	}
+
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndNonMatchingValueAsInnerBean() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MultiConstructorSample.class)
+				.addConstructorArgValue(BeanDefinitionBuilder.rootBeanDefinition(Locale.class, "getDefault").getBeanDefinition())
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isNull();
 	}
 
 	@Test
@@ -103,6 +165,31 @@ class BeanInstanceExecutableSupplierTests {
 
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		return new BeanInstanceExecutableSupplier(beanFactory).detectBeanInstanceExecutable(beanDefinition);
+	}
+
+	static class IntegerFactoryBean implements FactoryBean<Integer> {
+
+		@Override
+		public Integer getObject() {
+			return 42;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return Integer.class;
+		}
+	}
+
+	static class MultiConstructorSample {
+
+		MultiConstructorSample(String name) {
+
+		}
+
+		MultiConstructorSample(Integer value) {
+
+		}
+
 	}
 
 }

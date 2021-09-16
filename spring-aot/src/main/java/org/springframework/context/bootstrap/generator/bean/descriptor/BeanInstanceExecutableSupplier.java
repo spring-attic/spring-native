@@ -21,7 +21,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -61,9 +60,10 @@ class BeanInstanceExecutableSupplier {
 	}
 
 	Executable detectBeanInstanceExecutable(BeanDefinition beanDefinition) {
-		Supplier<Class<?>> beanClass = () -> getBeanClass(beanDefinition);
-		List<Class<?>> parameterTypes = determineParameterTypes(beanDefinition);
-		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanClass, parameterTypes);
+		Supplier<ResolvableType> beanType = () -> getBeanType(beanDefinition);
+		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+		List<Class<?>> parameterTypes = determineParameterTypes(constructorArgumentValues);
+		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanType, parameterTypes);
 		if (resolvedFactoryMethod != null) {
 			return resolvedFactoryMethod;
 		}
@@ -73,14 +73,14 @@ class BeanInstanceExecutableSupplier {
 			boolean isCompatible = ResolvableType.forClass(factoryBeanClass).as(FactoryBean.class)
 					.getGeneric(0).isAssignableFrom(resolvableType);
 			if (isCompatible) {
-				return resolveConstructor(() -> factoryBeanClass, beanDefinition.getConstructorArgumentValues());
+				return resolveConstructor(() -> ResolvableType.forClass(factoryBeanClass), parameterTypes);
 			}
 			else {
 				throw new IllegalStateException(String.format("Incompatible target type '%s' for factory bean '%s'",
 						resolvableType.toClass().getName(), factoryBeanClass.getName()));
 			}
 		}
-		Executable resolvedConstructor = resolveConstructor(beanClass, beanDefinition.getConstructorArgumentValues());
+		Executable resolvedConstructor = resolveConstructor(beanType, parameterTypes);
 		if (resolvedConstructor != null) {
 			return resolvedConstructor;
 		}
@@ -93,9 +93,8 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private List<Class<?>> determineParameterTypes(BeanDefinition beanDefinition) {
+	private List<Class<?>> determineParameterTypes(ConstructorArgumentValues constructorArgumentValues) {
 		List<Class<?>> parameterTypes = new ArrayList<>();
-		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 		if (constructorArgumentValues.isEmpty()) {
 			return parameterTypes;
 		}
@@ -108,6 +107,9 @@ class BeanInstanceExecutableSupplier {
 				if (value instanceof BeanReference) {
 					parameterTypes.add(this.beanFactory.getType(((BeanReference) value).getBeanName(), false));
 				}
+				else if (value instanceof BeanDefinition) {
+					parameterTypes.add(extractTypeFromBeanDefinition(getBeanType((BeanDefinition) value)));
+				}
 				else {
 					parameterTypes.add(value.getClass());
 				}
@@ -116,7 +118,15 @@ class BeanInstanceExecutableSupplier {
 		return parameterTypes;
 	}
 
-	private Method resolveFactoryMethod(BeanDefinition beanDefinition, Supplier<Class<?>> beanClass,
+	private Class<?> extractTypeFromBeanDefinition(ResolvableType type) {
+		Class<?> beanClass = type.toClass();
+		if (FactoryBean.class.isAssignableFrom(beanClass)) {
+			return type.as(FactoryBean.class).getGeneric(0).toClass();
+		}
+		return beanClass;
+	}
+
+	private Method resolveFactoryMethod(BeanDefinition beanDefinition, Supplier<ResolvableType> beanType,
 			List<Class<?>> parameterTypes) {
 		if (beanDefinition instanceof RootBeanDefinition) {
 			RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) beanDefinition;
@@ -128,7 +138,7 @@ class BeanInstanceExecutableSupplier {
 		String factoryMethodName = beanDefinition.getFactoryMethodName();
 		if (factoryMethodName != null) {
 			List<Method> methods = new ArrayList<>();
-			ReflectionUtils.doWithMethods(beanClass.get(), methods::add,
+			ReflectionUtils.doWithMethods(beanType.get().toClass(), methods::add,
 					(method) -> method.getName().equals(factoryMethodName));
 			if (methods.size() >= 1) {
 				return (Method) filter(methods, parameterTypes);
@@ -137,8 +147,8 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private Executable resolveConstructor(Supplier<Class<?>> beanClass, ConstructorArgumentValues argumentValues) {
-		Class<?> type = beanClass.get();
+	private Executable resolveConstructor(Supplier<ResolvableType> beanType, List<Class<?>> parameterTypes) {
+		Class<?> type = beanType.get().toClass();
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		if (constructors.length == 1) {
 			return constructors[0];
@@ -147,24 +157,11 @@ class BeanInstanceExecutableSupplier {
 			if (MergedAnnotations.from(constructor).isPresent(Autowired.class)) {
 				return constructor;
 			}
-			if (constructorMatchesArguments(constructor, argumentValues)) {
+			if (match(constructor, parameterTypes)) {
 				return constructor;
 			}
 		}
 		return null;
-	}
-
-	private boolean constructorMatchesArguments(Constructor<?> constructor, ConstructorArgumentValues argumentValues) {
-		if (constructor.getParameterTypes().length != argumentValues.getArgumentCount()) {
-			return false;
-		}
-		return Arrays.stream(constructor.getParameterTypes()).allMatch(paramType -> {
-			for (int index = 0; index < argumentValues.getArgumentCount(); index++) {
-				if (argumentValues.getArgumentValue(index, paramType) != null)
-					return true;
-			}
-			return false;
-		});
 	}
 
 	private Executable filter(List<? extends Executable> executables, List<Class<?>> parameterTypes) {
@@ -200,14 +197,20 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private Class<?> getBeanClass(BeanDefinition beanDefinition) {
+	private ResolvableType getBeanType(BeanDefinition beanDefinition) {
 		ResolvableType resolvableType = beanDefinition.getResolvableType();
 		if (resolvableType != ResolvableType.NONE) {
-			return resolvableType.toClass();
+			return resolvableType;
+		}
+		if (beanDefinition instanceof RootBeanDefinition) {
+			RootBeanDefinition rbd = (RootBeanDefinition) beanDefinition;
+			if (rbd.hasBeanClass()) {
+				return ResolvableType.forClass(rbd.getBeanClass());
+			}
 		}
 		String beanClassName = beanDefinition.getBeanClassName();
 		if (beanClassName != null) {
-			return loadClass(beanClassName);
+			return ResolvableType.forClass(loadClass(beanClassName));
 		}
 		throw new IllegalStateException("Failed to determine bean class of " + beanDefinition);
 	}
