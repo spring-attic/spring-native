@@ -18,11 +18,14 @@ package org.springframework.aot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -41,6 +44,8 @@ class DefaultBuildContext implements BuildContext {
 
 	private final List<String> classpath;
 
+	private final Set<String> options = new LinkedHashSet<>();
+
 	private final List<SourceFile> sourceFiles = new ArrayList<>();
 
 	private final List<ResourceFile> resourceFiles = new ArrayList<>();
@@ -54,6 +59,8 @@ class DefaultBuildContext implements BuildContext {
 	private final SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
 
 	private final ReflectionDescriptor jniReflectionDescriptor = new ReflectionDescriptor();
+
+	private final InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
 	DefaultBuildContext(ApplicationStructure applicationStructure) {
 		this.mainClass = applicationStructure.getMainClass();
@@ -75,6 +82,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public String getMainClass() {
 		return this.mainClass;
+	}
+
+	@Override
+	public Set<String> getOptions() {
+		return this.options;
 	}
 
 	@Override
@@ -105,6 +117,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public void describeSerialization(Consumer<SerializationDescriptor> consumer) {
 		consumer.accept(this.serializationDescriptor);
+	}
+
+	@Override
+	public void describeInitialization(Consumer<InitializationDescriptor> consumer) {
+		consumer.accept(this.initializationDescriptor);
 	}
 
 	@Override
@@ -143,6 +160,10 @@ class DefaultBuildContext implements BuildContext {
 
 	public ResourcesDescriptor getResourcesDescriptor() {
 		return this.resourcesDescriptor;
+	}
+
+	public InitializationDescriptor getInitializationDescriptor() {
+		return this.initializationDescriptor;
 	}
 
 }

@@ -17,9 +17,12 @@
 package org.springframework.context.bootstrap.generator;
 
 import java.util.List;
+import java.util.Set;
 
 import com.squareup.javapoet.JavaFile;
 
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
@@ -37,11 +40,21 @@ public class BootstrapGenerationResult {
 
 	private final ResourcesDescriptor resourcesDescriptor;
 
+	private final ProxiesDescriptor proxiesDescriptor;
+
+	private final InitializationDescriptor initializationDescriptor;
+
+	private final Set<String> options;
+
 	BootstrapGenerationResult(List<JavaFile> sourceFiles, List<ClassDescriptor> classDescriptors,
-			ResourcesDescriptor resourcesDescriptor) {
+			ResourcesDescriptor resourcesDescriptor, ProxiesDescriptor proxiesDescriptor,
+			InitializationDescriptor initializationDescriptor, Set<String> options) {
 		this.sourceFiles = sourceFiles;
 		this.classDescriptors = classDescriptors;
 		this.resourcesDescriptor = resourcesDescriptor;
+		this.proxiesDescriptor = proxiesDescriptor;
+		this.initializationDescriptor = initializationDescriptor;
+		this.options = options;
 	}
 
 	/**
@@ -68,6 +81,33 @@ public class BootstrapGenerationResult {
 	 */
 	public ResourcesDescriptor getResourcesDescriptor() {
 		return this.resourcesDescriptor;
+	}
+
+	/**
+	 * Return the {@link ProxiesDescriptor proxies} that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the proxies
+	 */
+	public ProxiesDescriptor getProxiesDescriptor() {
+		return this.proxiesDescriptor;
+	}
+
+	/**
+	 * Return the {@link InitializationDescriptor initialization entries} that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the initialization entries
+	 */
+	public InitializationDescriptor getInitializationDescriptor() {
+		return this.initializationDescriptor;
+	}
+
+	/**
+	 * Return the native-image options that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the options
+	 */
+	public Set<String> getOptions() {
+		return this.options;
 	}
 
 }

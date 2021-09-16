@@ -17,9 +17,11 @@
 package org.springframework.aot;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
@@ -29,6 +31,7 @@ import org.springframework.nativex.domain.serialization.SerializationDescriptor;
  * Provide build context information.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public interface BuildContext {
 
@@ -51,6 +54,11 @@ public interface BuildContext {
 	 * Can be different from {@link #getMainClass()} for Kotlin applications for example.
 	 */
 	String getApplicationClass();
+
+	/**
+	 * @return the native-image options.
+	 */
+	Set<String> getOptions();
 
 	/**
 	 * Contribute source files to the application.
@@ -95,5 +103,11 @@ public interface BuildContext {
 	 * @param consumer The resources descriptor consumer
 	 */
 	void describeResources(Consumer<ResourcesDescriptor> consumer);
+
+	/**
+	 * Contribute initialization information to the application.
+	 * @param consumer The initialization descriptor consumer
+	 */
+	void describeInitialization(Consumer<InitializationDescriptor> consumer);
 
 }

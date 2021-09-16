@@ -9,13 +9,21 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeInitializationEntry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.MethodDescriptor;
+import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.ClassUtils;
+
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.*;
 
 /**
  *
@@ -40,10 +48,15 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 	 */
 	private void findAndRegisterRelevantNativeHints(Class<?> beanType, NativeConfigurationRegistry registry) {
 		ReflectionConfiguration reflectionConfiguration = registry.reflection();
+		ResourcesConfiguration resourcesConfiguration = registry.resources();
+		ProxyConfiguration proxyConfiguration = registry.proxy();
+		InitializationConfiguration initializationConfiguration = registry.initialization();
+
 		try {
 			List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
 			if (hints != null) {
 				for (HintDeclaration hint : hints) {
+					// Types
 					Map<String, AccessDescriptor> dependantTypes = hint.getDependantTypes();
 					for (Map.Entry<String, AccessDescriptor> entry : dependantTypes.entrySet()) {
 						Class<?> keyClass = ClassUtils.forName(entry.getKey(), null);
@@ -53,10 +66,9 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 							reflectionConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
 						}
 						if ((accessBits & AccessBits.RESOURCE) != 0) {
-							// TODO ... need to check if types flagged with this flow through and get added to resource-config.json
+							registry.resources().add(NativeResourcesEntry.ofClass(keyClass));
 						}
 						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
-							// TODO it is such a shame to convert from the methoddescriptor back to a method that will then go back to a methoddescriptor later
 							Executable method = methodDescriptor.findOnClass(keyClass);
 							reflectionConfiguration.forType(keyClass).withMethods(method);
 						}
@@ -65,15 +77,48 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 							reflectionConfiguration.forType(keyClass).withFields(field);
 						}
 					}
-					// TODO: what about all these from the hints, they need passing back but registry doesn't support these kinds of thing
-					// If this code gets moved maybe it is easier, but if it stays here, augment the registry? (more of a configurationregistry than a reflectionregistry)
-					// hint.getInitializationDescriptors();
+
+					// Resources
+					for (ResourcesDescriptor resourcesDescriptor : hint.getResourcesDescriptors()) {
+						if (resourcesDescriptor.isBundle()) {
+							for (String pattern : resourcesDescriptor.getPatterns()) {
+								resourcesConfiguration.add(NativeResourcesEntry.ofBundle(pattern));
+							}
+						}
+						else {
+							for (String pattern : resourcesDescriptor.getPatterns()) {
+								resourcesConfiguration.add(NativeResourcesEntry.of(pattern));
+							}
+						}
+					}
+
+					// JDK Proxies
+					for (JdkProxyDescriptor proxyDescriptor : hint.getProxyDescriptors()) {
+						proxyConfiguration.add(NativeProxyEntry.ofTypeNames(proxyDescriptor.getTypes().toArray(String[]::new)));
+					}
+
+					// Initialization
+					for (InitializationDescriptor initializationDescriptor : hint.getInitializationDescriptors()) {
+						initializationDescriptor.getBuildtimeClasses().forEach(buildTimeClass ->
+								initializationConfiguration.add(NativeInitializationEntry.ofBuildTimeType(ClassUtils.resolveClassName(buildTimeClass, null))));
+						initializationDescriptor.getRuntimeClasses().forEach(runtimeClass ->
+								initializationConfiguration.add(NativeInitializationEntry.ofRuntimeType(ClassUtils.resolveClassName(runtimeClass, null))));
+						initializationDescriptor.getBuildtimePackages().forEach(buildTimePackage ->
+								initializationConfiguration.add(NativeInitializationEntry.ofBuildTimePackage(buildTimePackage)));
+						initializationDescriptor.getRuntimePackages().forEach(runtimePackage ->
+								initializationConfiguration.add(NativeInitializationEntry.ofRuntimePackage(runtimePackage)));
+					}
+
+					// native-image Options
+					registry.options().addAll(hint.getOptions());
+
 					// hint.getJNITypes();
-					// hint.getProxyDescriptors();
 					// hint.getSerializationTypes();
 					// hint.getOptions();
-					// hint.getResourcesDescriptors();
 				}
+			}
+			if (beanType.getSuperclass() != null) {
+				findAndRegisterRelevantNativeHints(beanType.getSuperclass(), registry);
 			}
 		}
 		catch (Throwable t) {

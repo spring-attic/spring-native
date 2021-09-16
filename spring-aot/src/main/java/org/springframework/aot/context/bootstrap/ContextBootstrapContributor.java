@@ -94,8 +94,11 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
 		BootstrapGenerationResult bootstrapGenerationResult = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
 		bootstrapGenerationResult.getSourceFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
-		context.describeReflection((reflectionDescriptor) -> bootstrapGenerationResult.getClassDescriptors().forEach(reflectionDescriptor::merge));
-		context.describeResources((resourcesDescriptor) -> resourcesDescriptor.merge(bootstrapGenerationResult.getResourcesDescriptor()));
+		context.getOptions().addAll(bootstrapGenerationResult.getOptions());
+		context.describeReflection(reflectionDescriptor -> bootstrapGenerationResult.getClassDescriptors().forEach(reflectionDescriptor::merge));
+		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(bootstrapGenerationResult.getResourcesDescriptor()));
+		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(bootstrapGenerationResult.getProxiesDescriptor()));
+		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(bootstrapGenerationResult.getInitializationDescriptor()));
 	}
 
 	private void configureEnvironment(StandardEnvironment environment, ResourceLoader resourceLoader, Class<?> applicationClass) {

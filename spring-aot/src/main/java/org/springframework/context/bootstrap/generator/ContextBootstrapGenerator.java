@@ -90,7 +90,11 @@ public class ContextBootstrapGenerator {
 		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
 		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
 				nativeConfigurationRegistry.reflection().toClassDescriptors(),
-				nativeConfigurationRegistry.resources().toResourcesDescriptor());
+				nativeConfigurationRegistry.resources().toResourcesDescriptor(),
+				nativeConfigurationRegistry.proxy().toProxiesDescriptor(),
+				nativeConfigurationRegistry.initialization().toInitializationDescriptor(),
+				nativeConfigurationRegistry.options()
+		);
 	}
 
 	public BootstrapClass createDefaultBoostrapJavaFile(String packageName) {

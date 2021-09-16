@@ -23,13 +23,38 @@ import org.springframework.util.Assert;
  * Collect the need for resources at runtime.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Resources/">GraalVM native image resource documentation</a>
  */
 public class NativeResourcesEntry {
 
-	private final String className;
+	private final Kind kind;
 
-	private NativeResourcesEntry(String className) {
-		this.className = className;
+	private final String value;
+
+	private NativeResourcesEntry(Kind kind, String value) {
+		this.kind = kind;
+		this.value = value;
+	}
+
+	/**
+	 * Create a new {@link NativeResourcesEntry} for the specified resource pattern.
+	 * @param resource Java regexp that matches resource(s) to be included
+	 * @return a resource entry
+	 */
+	public static NativeResourcesEntry of(String resource) {
+		Assert.notNull(resource, "Pattern must not be null");
+		return new NativeResourcesEntry(Kind.PATTERN, resource);
+	}
+
+	/**
+	 * Create a new {@link NativeResourcesEntry} for the specified bundle pattern.
+	 * @param bundle Java regexp that matches bundle(s) to be included
+	 * @return a resource entry
+	 */
+	public static NativeResourcesEntry ofBundle(String bundle) {
+		Assert.notNull(bundle, "bundle must not be null");
+		return new NativeResourcesEntry(Kind.BUNDLE, bundle);
 	}
 
 	/**
@@ -40,7 +65,7 @@ public class NativeResourcesEntry {
 	 */
 	public static NativeResourcesEntry ofClassName(String className) {
 		Assert.notNull(className, "ClassName must not be null");
-		return new NativeResourcesEntry(className);
+		return new NativeResourcesEntry(Kind.CLASS, className);
 	}
 
 	/**
@@ -49,13 +74,34 @@ public class NativeResourcesEntry {
 	 * @param type the type to consider
 	 * @return a resource entry
 	 */
-	public static NativeResourcesEntry of(Class<?> type) {
+	public static NativeResourcesEntry ofClass(Class<?> type) {
 		Assert.notNull(type, "Type must not be null");
 		return ofClassName(type.getName());
 	}
 
 	public void contribute(ResourcesDescriptor descriptor) {
-		descriptor.addClass(this.className);
+		switch (this.kind) {
+			case PATTERN:
+				descriptor.add(this.value);
+				break;
+			case BUNDLE:
+				descriptor.addBundle(this.value);
+				break;
+			case CLASS:
+				descriptor.addClass(this.value);
+				break;
+		}
 	}
 
+	enum Kind {
+
+		/** A resource pattern */
+		PATTERN,
+		
+		/** A resource bundle pattern */
+		BUNDLE,
+
+		/** A class that requires access to its *.class resource. This allows reading ASM metadata at runtime. */
+		CLASS
+	}
 }

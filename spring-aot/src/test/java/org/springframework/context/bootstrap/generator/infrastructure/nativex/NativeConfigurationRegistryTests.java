@@ -23,6 +23,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aop.SpringProxy;
+import org.springframework.aop.framework.Advised;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.util.ReflectionUtils;
 
@@ -32,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NativeConfigurationRegistry}.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 class NativeConfigurationRegistryTests {
 
@@ -97,6 +101,55 @@ class NativeConfigurationRegistryTests {
 		assertThat(patterns).anySatisfy((pattern) ->
 				assertThat(pattern).isEqualTo("java/lang/Integer.class"));
 		assertThat(patterns).hasSize(2);
+	}
+
+	@Test
+	void addProxy() {
+		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class, Advised.class));
+		assertThat(registry.proxy().toProxiesDescriptor()).satisfies((proxiesDescriptor) ->
+				assertThat(proxiesDescriptor.getProxyDescriptors()).singleElement().satisfies(jdkProxyDescriptor ->
+						assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName())));
+	}
+
+	@Test
+	void addSeveralProxies() {
+		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class));
+		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class, Advised.class));
+		assertThat(registry.proxy().toProxiesDescriptor()).satisfies((proxiesDescriptor) ->
+			assertThat(proxiesDescriptor.getProxyDescriptors()).anySatisfy(jdkProxyDescriptor ->
+					assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName()))
+					.anySatisfy(jdkProxyDescriptor -> assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName())).hasSize(2)
+		);
+	}
+
+	@Test
+	void addInitialization() {
+		registry.initialization().add(NativeInitializationEntry.ofRuntimeType(String.class));
+		assertThat(registry.initialization().toInitializationDescriptor()).satisfies((initializationDescriptor) ->
+				assertThat(initializationDescriptor.getRuntimeClasses()).singleElement().isEqualTo(String.class.getName()));
+	}
+
+	@Test
+	void addSeveralInitializations() {
+		registry.initialization().add(NativeInitializationEntry.ofRuntimeType(String.class));
+		registry.initialization().add(NativeInitializationEntry.ofBuildTimePackage("foo.bar"));
+		assertThat(registry.initialization().toInitializationDescriptor()).satisfies((initializationDescriptor) -> {
+					assertThat(initializationDescriptor.getRuntimeClasses()).singleElement().isEqualTo(String.class.getName());
+					assertThat(initializationDescriptor.getBuildtimePackages()).singleElement().isEqualTo("foo.bar");
+		});
+	}
+
+	@Test
+	void addOption() {
+		registry.options().add("-H:+PrintAnalysisCallTree");
+		assertThat(registry.options()).containsExactly("-H:+PrintAnalysisCallTree");
+	}
+
+	@Test
+	void addSeveralOptions() {
+		registry.options().add("-H:+PrintAnalysisCallTree");
+		registry.options().add("-H:Log=registerResource:3");
+		assertThat(registry.options()).containsExactly("-H:+PrintAnalysisCallTree", "-H:Log=registerResource:3");
 	}
 
 

@@ -28,8 +28,19 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link NativeResourcesEntry}.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 class NativeResourcesEntryTests {
+
+	@Test
+	void ofWithNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeResourcesEntry.of(null));
+	}
+
+	@Test
+	void ofBundleWithNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeResourcesEntry.ofBundle(null));
+	}
 
 	@Test
 	void ofClassNameWithNull() {
@@ -48,10 +59,28 @@ class NativeResourcesEntryTests {
 	@Test
 	void contributeInnerClass() {
 		ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
-		NativeResourcesEntry.of(AnotherInner.class).contribute(resourcesDescriptor);
+		NativeResourcesEntry.ofClass(AnotherInner.class).contribute(resourcesDescriptor);
 		assertThat(resourcesDescriptor.getPatterns()).singleElement()
 				.satisfies((pattern) -> assertThat(pattern).endsWith("/NativeResourcesEntryTests\\$InnerClassSample\\$AnotherInner.class"));
 		assertThat(resourcesDescriptor.getBundles()).isEmpty();
+	}
+
+	@Test
+	void contributeResource() {
+		ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
+		NativeResourcesEntry.of("foo/bar.txt").contribute(resourcesDescriptor);
+		assertThat(resourcesDescriptor.getPatterns()).singleElement()
+				.satisfies((pattern) -> assertThat(pattern).isEqualTo("foo/bar.txt"));
+		assertThat(resourcesDescriptor.getBundles()).isEmpty();
+	}
+
+	@Test
+	void contributeBundle() {
+		ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
+		NativeResourcesEntry.ofBundle("foo.bar").contribute(resourcesDescriptor);
+		assertThat(resourcesDescriptor.getPatterns()).isEmpty();
+		assertThat(resourcesDescriptor.getBundles()).singleElement()
+				.satisfies((pattern) -> assertThat(pattern).isEqualTo("foo.bar"));;
 	}
 
 	static class InnerClassSample {
