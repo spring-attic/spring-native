@@ -40,6 +40,7 @@ import org.springframework.nativex.hint.Flag;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
+ * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/">GraalVM native image reflection documentation</a>
  */
 public class NativeReflectionEntry {
 

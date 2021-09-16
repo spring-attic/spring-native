@@ -105,7 +105,7 @@ class NativeConfigurationRegistrarTests {
 
 		@Override
 		public void process(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
-			registry.resources().add(NativeResourcesEntry.of(this.beanFactory.getType("testBean")));
+			registry.resources().add(NativeResourcesEntry.ofClass(this.beanFactory.getType("testBean")));
 		}
 
 	}

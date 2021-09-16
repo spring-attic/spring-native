@@ -45,7 +45,7 @@ class ImportAwareLinksDiscoverer {
 				if (importingClass != null) {
 					String beanClassName = descriptor.getBeanDefinition().getResolvableType().toClass().getName();
 					result.put(beanClassName, importingClass);
-					nativeConfiguration.resources().add(NativeResourcesEntry.of(importingClass));
+					nativeConfiguration.resources().add(NativeResourcesEntry.ofClass(importingClass));
 				}
 			}
 		});

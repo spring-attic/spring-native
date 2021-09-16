@@ -18,6 +18,7 @@ package org.springframework.context.bootstrap.generator.infrastructure.nativex;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,6 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
@@ -35,12 +39,19 @@ import org.springframework.nativex.domain.resources.ResourcesDescriptor;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 public class NativeConfigurationRegistry {
 
 	private final ReflectionConfiguration reflection = new ReflectionConfiguration();
 
 	private final ResourcesConfiguration resources = new ResourcesConfiguration();
+
+	private final ProxyConfiguration proxy = new ProxyConfiguration();
+
+	private final InitializationConfiguration initialization = new InitializationConfiguration();
+
+	private final Set<String> options = new LinkedHashSet<>();
 
 	/**
 	 * Access the reflection configuration of this registry.
@@ -56,6 +67,30 @@ public class NativeConfigurationRegistry {
 	 */
 	public ResourcesConfiguration resources() {
 		return this.resources;
+	}
+
+	/**
+	 * Access the proxy configuration of this registry.
+	 * @return the proxy configuration
+	 */
+	public ProxyConfiguration proxy() {
+		return this.proxy;
+	}
+
+	/**
+	 * Access the initialization configuration of this registry.
+	 * @return the initialization configuration
+	 */
+	public InitializationConfiguration initialization() {
+		return this.initialization;
+	}
+
+	/**
+	 * Access the native-image options of this registry.
+	 * @return the proxy configuration
+	 */
+	public Set<String> options() {
+		return this.options;
 	}
 
 	/**
@@ -142,12 +177,78 @@ public class NativeConfigurationRegistry {
 
 		/**
 		 * Return the {@link ResourcesDescriptor} of this registry.
-		 * @return the resources entries in the registry, as {@link ResourcesDescriptor} instances
+		 * @return the resources entries in the registry, as a {@link ResourcesDescriptor} instance
 		 */
 		public ResourcesDescriptor toResourcesDescriptor() {
 			ResourcesDescriptor resourcesDescriptor = new ResourcesDescriptor();
 			this.resources.forEach((resource) -> resource.contribute(resourcesDescriptor));
 			return resourcesDescriptor;
+		}
+
+	}
+
+	/**
+	 * Configure the needs for runtime proxies.
+	 */
+	public static final class ProxyConfiguration {
+
+		private final Set<NativeProxyEntry> proxies;
+
+		private ProxyConfiguration() {
+			this.proxies = new LinkedHashSet<>();
+		}
+
+		/**
+		 * Register the specified {@link NativeProxyEntry proxy}.
+		 * @param proxy the proxy that should be available
+		 * @return this for method chaining
+		 */
+		public ProxyConfiguration add(NativeProxyEntry proxy) {
+			this.proxies.add(proxy);
+			return this;
+		}
+
+		/**
+		 * Return the {@link ProxiesDescriptor} of this registry.
+		 * @return the proxy entries in the registry, as a {@link ProxiesDescriptor} instance
+		 */
+		public ProxiesDescriptor toProxiesDescriptor() {
+			ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
+			this.proxies.forEach((proxy) -> proxy.contribute(proxiesDescriptor));
+			return proxiesDescriptor;
+		}
+
+	}
+
+	/**
+	 * Configure the needs for class initialization.
+	 */
+	public static final class InitializationConfiguration {
+
+		private final Set<NativeInitializationEntry> initialization;
+
+		private InitializationConfiguration() {
+			this.initialization = new LinkedHashSet<>();
+		}
+
+		/**
+		 * Register the specified {@link InitializationConfiguration initialization}.
+		 * @param initialization the initialization that should be configured
+		 * @return this for method chaining
+		 */
+		public InitializationConfiguration add(NativeInitializationEntry initialization) {
+			this.initialization.add(initialization);
+			return this;
+		}
+
+		/**
+		 * Return the {@link InitializationDescriptor} of this registry.
+		 * @return the initialization entries in the registry, as a {@link InitializationDescriptor} instance
+		 */
+		public InitializationDescriptor toInitializationDescriptor() {
+			InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
+			this.initialization.forEach((entry) -> entry.contribute(initializationDescriptor));
+			return initializationDescriptor;
 		}
 
 	}
