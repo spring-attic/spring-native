@@ -13,7 +13,7 @@ do
   if [ -f "samples/$i/target/native/summary.csv" ]; then
     cat samples/$i/target/native/summary.csv >> samples-summary.csv
   else
-    echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,, >> samples-summary.csv
+    echo `date +%Y%m%d-%H%M`,$i,ERROR,,,,,, >> samples-summary.csv
   fi
 
 done
