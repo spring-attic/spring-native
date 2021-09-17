@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
-import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.util.ReflectionUtils;
 
@@ -105,7 +104,7 @@ class NativeConfigurationRegistryTests {
 
 	@Test
 	void addProxy() {
-		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class, Advised.class));
+		registry.proxy().add(NativeProxyEntry.ofInterfaces(SpringProxy.class, Advised.class));
 		assertThat(registry.proxy().toProxiesDescriptor()).satisfies((proxiesDescriptor) ->
 				assertThat(proxiesDescriptor.getProxyDescriptors()).singleElement().satisfies(jdkProxyDescriptor ->
 						assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName())));
@@ -113,8 +112,8 @@ class NativeConfigurationRegistryTests {
 
 	@Test
 	void addSeveralProxies() {
-		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class));
-		registry.proxy().add(NativeProxyEntry.ofTypes(SpringProxy.class, Advised.class));
+		registry.proxy().add(NativeProxyEntry.ofInterfaces(SpringProxy.class));
+		registry.proxy().add(NativeProxyEntry.ofInterfaces(SpringProxy.class, Advised.class));
 		assertThat(registry.proxy().toProxiesDescriptor()).satisfies((proxiesDescriptor) ->
 			assertThat(proxiesDescriptor.getProxyDescriptors()).anySatisfy(jdkProxyDescriptor ->
 					assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName()))

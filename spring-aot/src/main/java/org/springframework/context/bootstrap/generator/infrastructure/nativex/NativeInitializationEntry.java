@@ -22,6 +22,7 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Describe the need for initialization configuration.
@@ -60,6 +61,17 @@ public class NativeInitializationEntry {
 	}
 
 	/**
+	 * Create a new runtime {@link NativeInitializationEntry} for the specified type name.
+	 * @param typeName the related type name
+	 * @return the initialization entry
+	 * @throws IllegalArgumentException when the type can't be found
+	 */
+	public static NativeInitializationEntry ofRuntimeTypeName(String typeName) {
+		Assert.notNull(typeName, "typeName must not be null");
+		return new NativeInitializationEntry(Kind.RUNTIME, ClassUtils.resolveClassName(typeName, null));
+	}
+
+	/**
 	 * Create a new build-time {@link NativeInitializationEntry} for the specified type.
 	 * @param type the related type
 	 * @return an initialization entry
@@ -67,6 +79,17 @@ public class NativeInitializationEntry {
 	public static NativeInitializationEntry ofBuildTimeType(Class<?> type) {
 		Assert.notNull(type, "type must not be null");
 		return new NativeInitializationEntry(Kind.BUILD_TIME, type);
+	}
+
+	/**
+	 * Create a new build-time {@link NativeInitializationEntry} for the specified type name.
+	 * @param typeName the related type name
+	 * @return the initialization entry
+	 * @throws IllegalArgumentException when the type can't be found
+	 */
+	public static NativeInitializationEntry ofBuildTimeTypeName(String typeName) {
+		Assert.notNull(typeName, "typeName must not be null");
+		return new NativeInitializationEntry(Kind.BUILD_TIME, ClassUtils.resolveClassName(typeName, null));
 	}
 
 	/**

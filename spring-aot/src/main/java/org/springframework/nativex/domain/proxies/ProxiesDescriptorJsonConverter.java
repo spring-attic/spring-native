@@ -30,7 +30,9 @@ class ProxiesDescriptorJsonConverter {
 	public JSONArray toJsonArray(ProxiesDescriptor metadata) throws Exception {
 		JSONArray jsonArray = new JSONArray();
 		for (JdkProxyDescriptor cd : metadata.getProxyDescriptors()) {
+			if (!cd.isClassProxy()) {
 				jsonArray.put(toJsonArray(cd));
+			}
 		}
 		return jsonArray;
 	}

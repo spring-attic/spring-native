@@ -45,6 +45,26 @@ public class NativeInitializationEntryTests {
 	}
 
 	@Test
+	void ofRuntimeTypeNameWithNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeInitializationEntry.ofRuntimeTypeName(null));
+	}
+
+	@Test
+	void contributeRuntimeTypeName() {
+		InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
+		NativeInitializationEntry.ofRuntimeTypeName(String.class.getName()).contribute(initializationDescriptor);
+		assertThat(initializationDescriptor.getRuntimeClasses()).singleElement().isEqualTo(String.class.getName());
+		assertThat(initializationDescriptor.getBuildtimeClasses()).isEmpty();
+		assertThat(initializationDescriptor.getRuntimePackages()).isEmpty();
+		assertThat(initializationDescriptor.getBuildtimePackages()).isEmpty();
+	}
+
+	@Test
+	void contributeRuntimeTypeNameWithClassNotFound() {
+		 assertThatIllegalArgumentException().isThrownBy(() -> NativeInitializationEntry.ofRuntimeTypeName("bar.Foo"));
+	}
+
+	@Test
 	void ofBuildTimeTypeWithNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NativeInitializationEntry.ofBuildTimeType(null));
 	}
@@ -57,6 +77,26 @@ public class NativeInitializationEntryTests {
 		assertThat(initializationDescriptor.getBuildtimeClasses()).singleElement().isEqualTo(String.class.getName());
 		assertThat(initializationDescriptor.getRuntimePackages()).isEmpty();
 		assertThat(initializationDescriptor.getBuildtimePackages()).isEmpty();
+	}
+
+	@Test
+	void ofBuildTimeTypeNameWithNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeInitializationEntry.ofBuildTimeTypeName(null));
+	}
+
+	@Test
+	void contributeBuildTimeTypeName() {
+		InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
+		NativeInitializationEntry.ofBuildTimeTypeName(String.class.getName()).contribute(initializationDescriptor);
+		assertThat(initializationDescriptor.getRuntimeClasses()).isEmpty();
+		assertThat(initializationDescriptor.getBuildtimeClasses()).singleElement().isEqualTo(String.class.getName());
+		assertThat(initializationDescriptor.getRuntimePackages()).isEmpty();
+		assertThat(initializationDescriptor.getBuildtimePackages()).isEmpty();
+	}
+
+	@Test
+	void contributeBuildTimeTypeNameWithClassNotFound() {
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeInitializationEntry.ofBuildTimeTypeName("bar.Foo"));
 	}
 
 	@Test
