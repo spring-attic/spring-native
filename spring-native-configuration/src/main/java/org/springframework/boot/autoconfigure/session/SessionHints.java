@@ -16,41 +16,10 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ReactiveSessionConfigurationImportSelector;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.ServletSessionConfigurationImportSelector;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger = ReactiveSessionConfigurationImportSelector.class, types =
-	@TypeHint(types = {
-			RedisReactiveSessionConfiguration.class,
-			MongoReactiveSessionConfiguration.class,
-			NoOpReactiveSessionConfiguration.class})
-, abortIfTypesMissing = true)
-@NativeHint(trigger = SessionConfigurationImportSelector.class, types =
-	@TypeHint(types = {
-			RedisSessionConfiguration.class,
-			RedisReactiveSessionConfiguration.class,
-			MongoSessionConfiguration.class,
-			MongoReactiveSessionConfiguration.class,
-			JdbcSessionConfiguration.class,
-			HazelcastSessionConfiguration.class,
-			NoOpSessionConfiguration.class,
-			NoOpReactiveSessionConfiguration.class
-	})
-, abortIfTypesMissing = true, follow = true)
-@NativeHint(trigger=ServletSessionConfigurationImportSelector.class, types = {
-	@TypeHint(types= {
-			RedisSessionConfiguration.class,
-			MongoSessionConfiguration.class,
-			JdbcSessionConfiguration.class,
-			HazelcastSessionConfiguration.class,
-			NoOpSessionConfiguration.class
-	})
-}, abortIfTypesMissing = true)
 @NativeHint(trigger = JdbcSessionConfiguration.class,
 		resources = @ResourceHint(patterns = {
 				"org/springframework/session/jdbc/schema-db2.sql",

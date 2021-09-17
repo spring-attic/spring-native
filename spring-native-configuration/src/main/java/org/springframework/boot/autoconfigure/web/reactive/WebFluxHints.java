@@ -39,7 +39,7 @@ import reactor.netty.DisposableServer;
 		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 })
-@NativeHint(trigger = BeanPostProcessorsRegistrar.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
+@NativeHint(trigger = WebServerFactoryCustomizerBeanPostProcessor.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
 @NativeHint(trigger = ReactiveWebServerFactoryAutoConfiguration.class, types = {
 		@TypeHint(
 				types= {

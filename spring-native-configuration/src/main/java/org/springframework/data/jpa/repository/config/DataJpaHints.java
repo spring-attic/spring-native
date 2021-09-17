@@ -27,7 +27,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @Import(DataAuditingHints.class)
 @NativeHint(
-		trigger = JpaAuditingRegistrar.class,
+		trigger = AuditingBeanFactoryPostProcessor.class,
 		types = @TypeHint(types = {
 				AnnotationBeanConfigurerAspect.class,
 				AuditingBeanFactoryPostProcessor.class,

@@ -30,6 +30,7 @@ import org.springframework.hateoas.Affordance;
 import org.springframework.hateoas.AffordanceModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.hateoas.mediatype.hal.HalConfiguration;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
@@ -58,25 +59,9 @@ import org.springframework.nativex.type.TypeSystem;
 import org.springframework.plugin.PluginHints;
 import org.springframework.util.StringUtils;
 
-
-@NativeHint(trigger = WebStackImportSelector.class, types = {
-		@TypeHint(types = {
-				WebMvcHateoasConfiguration.class,
-				WebFluxHateoasConfiguration.class
-		})
-})
-@NativeHint(trigger = HypermediaConfigurationImportSelector.class, types =
-@TypeHint(types = {
-		HypermediaConfigurationImportSelector.class,
-		EnableHypermediaSupport.class,
-		HypermediaType.class,
-		HypermediaType[].class,
-		MediaTypeConfigurationProvider.class
-}))
-@NativeHint(trigger = HypermediaAutoConfiguration.class,
+@NativeHint(trigger = HalConfiguration.class,
 		types = {
 				@TypeHint(types = {
-
 						org.springframework.stereotype.Controller.class,
 						HypermediaType.class,
 						ExposesResourceFor.class,

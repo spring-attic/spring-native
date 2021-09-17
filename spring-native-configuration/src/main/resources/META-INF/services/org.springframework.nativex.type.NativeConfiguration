@@ -43,11 +43,9 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.Prometh
 org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.startup.StartupEndpointAutoConfigurationHints
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfigurationHints
-org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextConfigurationImportSelectorHints
 org.springframework.boot.autoconfigure.AutoConfigurationHints
 org.springframework.boot.autoconfigure.aop.AopHints
 org.springframework.boot.autoconfigure.cache.CacheHints
-org.springframework.boot.autoconfigure.condition.ConditionalHints
 org.springframework.boot.autoconfigure.context.MessageSourceHints
 org.springframework.boot.autoconfigure.data.RepositoriesHints
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints
@@ -83,7 +81,6 @@ org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientHints
 org.springframework.boot.test.web.client.WebClientTestHints
 org.springframework.boot.test.web.reactive.server.ReactiveServerTestHints
 org.springframework.boot.web.client.ClientHttpRequestFactoryHints
-org.springframework.cache.annotation.CachingHints
 org.springframework.cloud.bootstrap.BootstrapHints
 org.springframework.cloud.client.FeaturesEndpointHints
 org.springframework.cloud.client.discovery.DiscoveryClientHints
@@ -110,7 +107,6 @@ org.springframework.data.neo4j.config.Neo4jHints
 org.springframework.data.r2dbc.config.DataR2dbcHints
 org.springframework.data.rest.webmvc.config.RestControllerHints
 org.springframework.data.web.config.DataRestHints
-org.springframework.data.web.config.SpringDataWebHints
 org.springframework.hateoas.config.HateoasHints
 org.springframework.integration.IntegrationHints
 org.springframework.kafka.annotation.KafkaHints

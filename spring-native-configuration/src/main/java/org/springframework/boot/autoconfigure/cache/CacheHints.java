@@ -34,7 +34,7 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger = CacheConfigurationImportSelector.class, follow = true,
+@NativeHint(trigger = GenericCacheConfiguration.class, follow = true,
 		types = {
 				@TypeHint(types = { GenericCacheConfiguration.class, SimpleCacheConfiguration.class, NoOpCacheConfiguration.class }, access = AccessBits.ALL),
 				@TypeHint(types = { EhCacheCacheConfiguration.class, HazelcastCacheConfiguration.class, InfinispanCacheConfiguration.class, JCacheCacheConfiguration.class, RedisCacheConfiguration.class, CaffeineCacheConfiguration.class }, typeNames = "org.springframework.boot.autoconfigure.cache.CouchbaseCacheConfiguration", access = AccessBits.RESOURCE),
