@@ -29,7 +29,7 @@ import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
 
-@NativeHint(trigger = EnableConfigurationPropertiesRegistrar.class, types = {
+@NativeHint(trigger = ConfigurationPropertiesBindingPostProcessor.class, types = {
 		@TypeHint(types = {
 				BoundConfigurationProperties.class,
 				ConfigurationPropertiesBindingPostProcessor.class
@@ -40,13 +40,9 @@ import org.springframework.nativex.type.TypeSystem;
 				}, typeNames = {
 				"java.lang.CharSequence[]",
 				"java.lang.String[]"
-				})
-})
-@NativeHint(trigger = EnableConfigurationProperties.class,
-	types = @TypeHint(types= ConstructorBinding.class)
-)
-@NativeHint(types = {
-		@TypeHint(types= ArrayList.class, access=AccessBits.LOAD_AND_CONSTRUCT )
+				}),
+		@TypeHint(types= ConstructorBinding.class),
+		@TypeHint(types= ArrayList.class)
 })
 public class ConfigurationPropertiesHints implements NativeConfiguration {
 

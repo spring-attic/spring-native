@@ -45,7 +45,7 @@ import org.springframework.nativex.type.TypeSystem;
 @NativeHint(trigger=Hikari.class, types = {
 		@TypeHint(types=DatabaseMetaData.class, methods= @MethodHint(name="getDatabaseProductName")),
 		@TypeHint(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
-		@TypeHint(types = {HikariDataSource.class}),
+		@TypeHint(types = HikariDataSource.class),
 	@TypeHint(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = AccessBits.FULL_REFLECTION)})
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
 		@ResourceHint(patterns = { "schema.sql","data.sql" })

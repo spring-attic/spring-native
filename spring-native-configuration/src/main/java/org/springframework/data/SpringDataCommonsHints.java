@@ -24,8 +24,10 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.jpa.repository.support.EntityManagerBeanDefinitionRegistrarPostProcessor;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.mapping.context.AbstractMappingContext;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.model.AbstractPersistentProperty;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.PropertiesBasedNamedQueries;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
@@ -33,6 +35,7 @@ import org.springframework.data.repository.core.support.RepositoryFragment;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -41,7 +44,7 @@ import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
-@NativeHint(trigger = AbstractRepositoryConfigurationSourceSupport.class,
+@NativeHint(trigger = RepositoryFactoryBeanSupport.class,
 		types = {
 				@TypeHint(types = {
 						RepositoryFactoryBeanSupport.class,
@@ -66,9 +69,5 @@ import org.springframework.nativex.hint.AccessBits;
 		),
 		initialization = @InitializationHint(types = AbstractMappingContext.class, initTime = InitializationTime.BUILD)
 )
-@TypeHint(types= {
-		EntityManagerBeanDefinitionRegistrarPostProcessor.class
-}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS)
 public class SpringDataCommonsHints implements NativeConfiguration {
-
 }

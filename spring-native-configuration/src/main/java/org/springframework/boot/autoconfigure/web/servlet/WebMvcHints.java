@@ -53,6 +53,6 @@ import org.springframework.web.servlet.view.InternalResourceView;
 		@TypeHint(types = InternalResourceView.class)
 }, abortIfTypesMissing = true)
 // TODO this is an interesting one as it is hinted at by both flavours of BeanPostProcessorsRegistrar (reactive and servlet)
-@NativeHint(trigger = BeanPostProcessorsRegistrar.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
+@NativeHint(trigger = WebServerFactoryCustomizerBeanPostProcessor.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
 public class WebMvcHints implements NativeConfiguration {
 }

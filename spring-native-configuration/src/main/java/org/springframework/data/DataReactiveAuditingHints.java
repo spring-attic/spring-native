@@ -42,7 +42,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 		Advised.class,
 		DecoratingProxy.class
 })
-
 public class DataReactiveAuditingHints implements NativeConfiguration {
 
 }
