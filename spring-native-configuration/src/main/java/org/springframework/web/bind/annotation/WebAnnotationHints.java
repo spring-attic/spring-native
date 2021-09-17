@@ -21,12 +21,9 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.stereotype.Controller;
 
-// TODO do these need to be more conditional? The triggers are either of the web stack configurations - do those
-// autoconfigs share a common ancestor that these could trigger off? Although, of course these will only be exposed
-// if they are on the classpath - why would you have the web jar on the classpath if not using these?
-@NativeHint(types = {
+
+@NativeHint(trigger = Mapping.class, types = {
 		// TODO What about some way to say "all annotations in this package"
 		@TypeHint(types= {
 				ExceptionHandler.class,
@@ -37,14 +34,13 @@ import org.springframework.stereotype.Controller;
 				ResponseBody.class,
 				RequestBody.class,
 				RequestHeader.class,
-				Controller.class,
 				RestController.class,
 				RequestParam.class,
 				RequestPart.class,
 				PathVariable.class,
 				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
 				ResponseStatus.class, HttpStatus.class
-		}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
+		}, access = AccessBits.ANNOTATION)
 	})
 public class WebAnnotationHints implements NativeConfiguration {
 }

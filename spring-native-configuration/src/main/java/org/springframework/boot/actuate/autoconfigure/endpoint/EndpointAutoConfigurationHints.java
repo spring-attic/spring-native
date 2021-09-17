@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -42,18 +43,11 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 
 @NativeHint(trigger = EndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
-			Endpoint.class,
-			EndpointExtension.class,
-			ReadOperation.class,
-			WriteOperation.class,
-			DeleteOperation.class,
-			Selector.class,
 			Match.class,
 			EndpointFilter.class,
 			Link.class,
 			BeanSerializer.class,
 			ApiVersion.class,
-			org.reactivestreams.Publisher.class,
 			ShutdownEndpoint.class,
 			CloudPlatform.class,
 			OperationInvokerAdvisor.class,
@@ -63,10 +57,16 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 			ScheduledTasksEndpoint.class,
 			DiskSpaceHealthIndicator.class,
 	}, typeNames = {
-		// TODO this next one, actuator looks like the first thing pushing on it but surely it isn't the only user and this should have a different trigger?
-		"org.springframework.context.annotation.ConfigurationClassParser$DefaultDeferredImportSelectorGroup",
 		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
-	})
+	}),
+		@TypeHint(types = {
+				Endpoint.class,
+				EndpointExtension.class,
+				ReadOperation.class,
+				WriteOperation.class,
+				DeleteOperation.class,
+				Selector.class,
+		}, access = AccessBits.ANNOTATION)
 })
 public class EndpointAutoConfigurationHints implements NativeConfiguration {
 }

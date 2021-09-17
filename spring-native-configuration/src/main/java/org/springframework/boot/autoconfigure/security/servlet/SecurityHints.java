@@ -86,8 +86,9 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 public class SecurityHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		boolean javaxServletFilterAround = typeSystem.resolveDotted("javax.servlet.Filter",true)!=null;
-		if (javaxServletFilterAround) {
+		boolean javaxServletFilterAround = typeSystem.resolveDotted("javax.servlet.Filter",true) != null;
+		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = typeSystem.resolveDotted("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",true) != null;
+		if (javaxServletFilterAround && autowiredWebSecurityConfigurersIgnoreParentsAround) {
 			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
 			HintDeclaration hd = new HintDeclaration();
 			hd.addDependantType("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",

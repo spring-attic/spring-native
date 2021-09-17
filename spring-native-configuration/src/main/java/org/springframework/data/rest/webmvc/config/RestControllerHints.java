@@ -15,11 +15,12 @@
  */
 package org.springframework.data.rest.webmvc.config;
 
+import org.springframework.data.rest.webmvc.RestControllerConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger = org.springframework.data.rest.webmvc.config.RestControllerImportSelector.class, types = {
+@NativeHint(trigger = RestControllerConfiguration.class, types = {
 		@TypeHint(typeNames = {
 				"org.springframework.data.rest.webmvc.RestControllerConfiguration",
 				"org.springframework.data.rest.webmvc.halexplorer.HalExplorerConfiguration"
