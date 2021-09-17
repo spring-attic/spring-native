@@ -54,6 +54,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 		ProxyConfiguration proxyConfiguration = registry.proxy();
 		InitializationConfiguration initializationConfiguration = registry.initialization();
 		SerializationConfiguration serializationConfiguration = registry.serialization();
+		ReflectionConfiguration jniConfiguration = registry.jni();
 
 		try {
 			List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
@@ -118,7 +119,24 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 					// Serialization
 					hint.getSerializationTypes().forEach(typeName -> serializationConfiguration.add(NativeSerializationEntry.ofTypeName(typeName)));
 
-					// TODO JNI
+					// JNI
+					Map<String, AccessDescriptor> jniTypes = hint.getJNITypes();
+					for (Map.Entry<String, AccessDescriptor> entry : jniTypes.entrySet()) {
+						Class<?> keyClass = ClassUtils.forName(entry.getKey(), null);
+						AccessDescriptor value = entry.getValue();
+						Integer accessBits = value.getAccessBits();
+						if (accessBits != 0) {
+							jniConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
+						}
+						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
+							Executable method = methodDescriptor.findOnClass(keyClass);
+							jniConfiguration.forType(keyClass).withMethods(method);
+						}
+						for (FieldDescriptor fieldDescriptor : value.getFieldDescriptors()) {
+							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());
+							jniConfiguration.forType(keyClass).withFields(field);
+						}
+					}
 				}
 			}
 			if (beanType.getSuperclass() != null) {

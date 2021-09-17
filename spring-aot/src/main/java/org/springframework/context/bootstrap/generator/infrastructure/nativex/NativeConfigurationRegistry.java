@@ -46,6 +46,8 @@ public class NativeConfigurationRegistry {
 
 	private final ReflectionConfiguration reflection = new ReflectionConfiguration();
 
+	private final ReflectionConfiguration jni = new ReflectionConfiguration();
+
 	private final ResourcesConfiguration resources = new ResourcesConfiguration();
 
 	private final ProxyConfiguration proxy = new ProxyConfiguration();
@@ -62,6 +64,14 @@ public class NativeConfigurationRegistry {
 	 */
 	public ReflectionConfiguration reflection() {
 		return this.reflection;
+	}
+
+	/**
+	 * Access the JNI reflection configuration of this registry.
+	 * @return the JNI reflection configuration
+	 */
+	public ReflectionConfiguration jni() {
+		return this.jni;
 	}
 
 	/**
