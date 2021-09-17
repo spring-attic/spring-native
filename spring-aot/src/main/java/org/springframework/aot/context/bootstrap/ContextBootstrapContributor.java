@@ -99,6 +99,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(bootstrapGenerationResult.getResourcesDescriptor()));
 		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(bootstrapGenerationResult.getProxiesDescriptor()));
 		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(bootstrapGenerationResult.getInitializationDescriptor()));
+		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(bootstrapGenerationResult.getSerializationDescriptor()));
 	}
 
 	private void configureEnvironment(StandardEnvironment environment, ResourceLoader resourceLoader, Class<?> applicationClass) {

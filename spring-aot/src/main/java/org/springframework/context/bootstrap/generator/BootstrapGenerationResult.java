@@ -25,6 +25,7 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 
 
 /**
@@ -44,16 +45,20 @@ public class BootstrapGenerationResult {
 
 	private final InitializationDescriptor initializationDescriptor;
 
+	private final SerializationDescriptor serializationDescriptor;
+
 	private final Set<String> options;
 
 	BootstrapGenerationResult(List<JavaFile> sourceFiles, List<ClassDescriptor> classDescriptors,
 			ResourcesDescriptor resourcesDescriptor, ProxiesDescriptor proxiesDescriptor,
-			InitializationDescriptor initializationDescriptor, Set<String> options) {
+			InitializationDescriptor initializationDescriptor, SerializationDescriptor serializationDescriptor,
+			Set<String> options) {
 		this.sourceFiles = sourceFiles;
 		this.classDescriptors = classDescriptors;
 		this.resourcesDescriptor = resourcesDescriptor;
 		this.proxiesDescriptor = proxiesDescriptor;
 		this.initializationDescriptor = initializationDescriptor;
+		this.serializationDescriptor = serializationDescriptor;
 		this.options = options;
 	}
 
@@ -99,6 +104,15 @@ public class BootstrapGenerationResult {
 	 */
 	public InitializationDescriptor getInitializationDescriptor() {
 		return this.initializationDescriptor;
+	}
+
+	/**
+	 * Return the {@link SerializationDescriptor serialization entries} that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the serialization entries
+	 */
+	public SerializationDescriptor getSerializationDescriptor() {
+		return this.serializationDescriptor;
 	}
 
 	/**

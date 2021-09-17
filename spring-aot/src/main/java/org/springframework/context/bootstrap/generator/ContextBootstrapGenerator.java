@@ -93,6 +93,7 @@ public class ContextBootstrapGenerator {
 				nativeConfigurationRegistry.resources().toResourcesDescriptor(),
 				nativeConfigurationRegistry.proxy().toProxiesDescriptor(),
 				nativeConfigurationRegistry.initialization().toInitializationDescriptor(),
+				nativeConfigurationRegistry.serialization().toSerializationDescriptor(),
 				nativeConfigurationRegistry.options()
 		);
 	}
