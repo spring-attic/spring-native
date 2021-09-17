@@ -12,9 +12,11 @@ import org.springframework.context.bootstrap.generator.infrastructure.nativex.Na
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeInitializationEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeSerializationEntry;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -51,6 +53,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 		ResourcesConfiguration resourcesConfiguration = registry.resources();
 		ProxyConfiguration proxyConfiguration = registry.proxy();
 		InitializationConfiguration initializationConfiguration = registry.initialization();
+		SerializationConfiguration serializationConfiguration = registry.serialization();
 
 		try {
 			List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
@@ -112,9 +115,10 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 					// native-image Options
 					registry.options().addAll(hint.getOptions());
 
-					// hint.getJNITypes();
-					// hint.getSerializationTypes();
-					// hint.getOptions();
+					// Serialization
+					hint.getSerializationTypes().forEach(typeName -> serializationConfiguration.add(NativeSerializationEntry.ofTypeName(typeName)));
+
+					// TODO JNI
 				}
 			}
 			if (beanType.getSuperclass() != null) {

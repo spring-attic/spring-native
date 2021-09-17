@@ -31,6 +31,7 @@ import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
+import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 
 /**
  * Collect the required native configuration, such as the need for
@@ -50,6 +51,8 @@ public class NativeConfigurationRegistry {
 	private final ProxyConfiguration proxy = new ProxyConfiguration();
 
 	private final InitializationConfiguration initialization = new InitializationConfiguration();
+
+	private final SerializationConfiguration serialization = new SerializationConfiguration();
 
 	private final Set<String> options = new LinkedHashSet<>();
 
@@ -83,6 +86,14 @@ public class NativeConfigurationRegistry {
 	 */
 	public InitializationConfiguration initialization() {
 		return this.initialization;
+	}
+
+	/**
+	 * Access the serialization configuration of this registry.
+	 * @return the serialization configuration
+	 */
+	public SerializationConfiguration serialization() {
+		return this.serialization;
 	}
 
 	/**
@@ -249,6 +260,39 @@ public class NativeConfigurationRegistry {
 			InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 			this.initialization.forEach((entry) -> entry.contribute(initializationDescriptor));
 			return initializationDescriptor;
+		}
+
+	}
+
+	/**
+	 * Configure the needs for serialization.
+	 */
+	public static final class SerializationConfiguration {
+
+		private final Set<NativeSerializationEntry> serialization;
+
+		private SerializationConfiguration() {
+			this.serialization = new LinkedHashSet<>();
+		}
+
+		/**
+		 * Register the specified {@link NativeSerializationEntry proxy}.
+		 * @param serialization the proxy for entry that should be available
+		 * @return this for method chaining
+		 */
+		public SerializationConfiguration add(NativeSerializationEntry serialization) {
+			this.serialization.add(serialization);
+			return this;
+		}
+
+		/**
+		 * Return the {@link SerializationDescriptor} of this registry.
+		 * @return the serialization entries in the registry, as a {@link SerializationDescriptor} instance
+		 */
+		public SerializationDescriptor toSerializationDescriptor() {
+			SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
+			this.serialization.forEach((serialization) -> serialization.contribute(serializationDescriptor));
+			return serializationDescriptor;
 		}
 
 	}

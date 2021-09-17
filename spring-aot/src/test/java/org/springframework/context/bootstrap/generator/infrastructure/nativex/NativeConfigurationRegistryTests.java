@@ -140,6 +140,21 @@ class NativeConfigurationRegistryTests {
 	}
 
 	@Test
+	void addSerialization() {
+		registry.serialization().add(NativeSerializationEntry.ofType(String.class));
+		assertThat(registry.serialization().toSerializationDescriptor()).satisfies((serializationDescriptor) ->
+				assertThat(serializationDescriptor.getSerializableTypes()).singleElement().isEqualTo(String.class.getName()));
+	}
+
+	@Test
+	void addSeveralSerializations() {
+		registry.serialization().add(NativeSerializationEntry.ofType(String.class));
+		registry.serialization().add(NativeSerializationEntry.ofType(Long.class));
+		assertThat(registry.serialization().toSerializationDescriptor()).satisfies((serializationDescriptor) ->
+				assertThat(serializationDescriptor.getSerializableTypes()).containsOnly(String.class.getName(), Long.class.getName()));
+	}
+
+	@Test
 	void addOption() {
 		registry.options().add("-H:+PrintAnalysisCallTree");
 		assertThat(registry.options()).containsExactly("-H:+PrintAnalysisCallTree");
