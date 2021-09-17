@@ -20,7 +20,6 @@ import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.target.AbstractBeanFactoryBasedTargetSource;
 import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean;
-import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.AuditingHandlerSupport;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -31,7 +30,7 @@ import org.springframework.nativex.type.NativeConfiguration;
  * Hints required for all auditing.
  */
 @NativeHint(
-		trigger = AuditingHandler.class,
+		trigger = AuditingHandlerSupport.class,
 		types = {
 				@TypeHint(types = {LazyInitTargetSource.class,
 						ObjectFactoryCreatingFactoryBean.class,
