@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.DateConverter;
 import ch.qos.logback.classic.pattern.LevelConverter;
 import ch.qos.logback.classic.pattern.LineSeparatorConverter;
@@ -37,7 +38,7 @@ import org.springframework.nativex.hint.TypeHint;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 // TODO Initialize ch.qos.logback.classic.PatternLayout at build time?
-@NativeHint(types = @TypeHint(types= {
+@NativeHint(trigger = Level.class, types = @TypeHint(types= {
 		DateConverter.class,
 		LevelConverter.class,
 		LoggerConverter.class,

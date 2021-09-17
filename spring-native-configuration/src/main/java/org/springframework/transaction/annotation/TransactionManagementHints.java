@@ -28,17 +28,20 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 @NativeHint(trigger = ProxyTransactionManagementConfiguration.class, types = {
 	@TypeHint(types= {
 			AutoProxyRegistrar.class,
-			ProxyTransactionManagementConfiguration.class,
-			AspectJJtaTransactionManagementConfiguration.class,
-			AspectJTransactionManagementConfiguration.class
+			ProxyTransactionManagementConfiguration.class
 	}, typeNames = "org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor$1")
 })
-@NativeHint(types = {
+@NativeHint(trigger = Transactional.class, types = {
 		@TypeHint(types= {
 				Transactional.class,
 				javax.transaction.Transactional.class
-		}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
+		}, access = AccessBits.ANNOTATION),
 		@TypeHint(types = Propagation.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_FIELDS) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
+@NativeHint(trigger = AspectJJtaTransactionManagementConfiguration.class,
+		types = @TypeHint(types = {
+				AspectJJtaTransactionManagementConfiguration.class,
+				AspectJTransactionManagementConfiguration.class
+}))
 public class TransactionManagementHints implements NativeConfiguration {
 }

@@ -23,11 +23,13 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortT
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 
@@ -43,11 +45,9 @@ import org.springframework.nativex.hint.AccessBits;
 		ManagementContextType.class,
 		EndpointMediaTypes.class,
 		WebEndpointsSupplier.class,
-		EndpointWebExtension.class,
-		WebEndpoint.class,
+		WebEndpointResponse.class,
 		WebEndpointDiscoverer.class,
 		// web package
-		ManagementContextConfiguration.class,
 		ManagementContextFactory.class,
 		ManagementContextType.class,
 		PathMapper.class,
@@ -56,6 +56,11 @@ import org.springframework.nativex.hint.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableChildManagementContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-	},access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
+	}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
+@TypeHint(types = {
+		EndpointWebExtension.class,
+		WebEndpoint.class,
+		ManagementContextConfiguration.class
+}, access = AccessBits.ANNOTATION)
 public class CommonWebActuatorTypes {
 }

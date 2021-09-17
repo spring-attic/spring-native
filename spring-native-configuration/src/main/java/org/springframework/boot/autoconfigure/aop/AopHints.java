@@ -29,13 +29,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.weaver.reflect.Java15AnnotationFinder;
 import org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider;
 import org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate;
-import org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor;
+
 import org.springframework.aop.framework.ProxyConfig;
 import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -50,24 +49,25 @@ import org.springframework.nativex.type.TypeSystem;
 	types = {
 		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class}, access=AccessBits.DECLARED_FIELDS|AccessBits.PUBLIC_METHODS),
 		@TypeHint(types = {	AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access=AccessBits.PUBLIC_METHODS),
-		@TypeHint(types= {
-				InfrastructureAdvisorAutoProxyCreator.class,
-				Aspect.class,
-				Pointcut.class,
-				Before.class,
-				AfterReturning.class,
-				After.class,
-				Around.class},
+		@TypeHint(types= InfrastructureAdvisorAutoProxyCreator.class,
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = {
-				Java15AnnotationFinder.class, 
-				Java15GenericSignatureInformationProvider.class,
-				Java15ReflectionBasedReferenceTypeDelegate.class},
-			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS),
 		@TypeHint(types = Proxy.class, access = AccessBits.DECLARED_METHODS) // aspect on proxied bean such as repository
 	},
 	resources = @ResourceHint(patterns = "org.aspectj.weaver.weaver-messages", isBundle = true) // messages in debug log
 )
+@NativeHint(trigger = Aspect.class, types = @TypeHint(types = {
+		Aspect.class,
+		Pointcut.class,
+		Before.class,
+		AfterReturning.class,
+		After.class,
+		Around.class
+}, access = AccessBits.ANNOTATION))
+@NativeHint(trigger = Java15AnnotationFinder.class, types = @TypeHint(types = {
+		Java15AnnotationFinder.class,
+		Java15GenericSignatureInformationProvider.class,
+		Java15ReflectionBasedReferenceTypeDelegate.class}
+))
 public class AopHints implements NativeConfiguration { 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {

@@ -15,6 +15,8 @@
  */
 package org.springframework.data.mongodb.config;
 
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.DataReactiveAuditingHints;
 import org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback;
@@ -28,7 +30,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHints({
 		// Auditing
 		@NativeHint(
-				trigger = MongoAuditingRegistrar.class,
+				trigger = MongoDataAutoConfiguration.class,
 				types = @TypeHint(types = {
 						PersistentEntitiesFactoryBean.class,
 						AuditingEntityCallback.class,
@@ -38,7 +40,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 		// Reactive Auditing
 		@NativeHint(
-				trigger = ReactiveMongoAuditingRegistrar.class,
+				trigger = MongoReactiveAutoConfiguration.class,
 				types = {@TypeHint(types = {
 						PersistentEntitiesFactoryBean.class,
 						ReactiveAuditingEntityCallback.class

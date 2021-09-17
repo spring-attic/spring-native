@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=BatchConfigurationSelector.class,
+@NativeHint(trigger = AbstractBatchConfiguration.class,
 		resources = @ResourceHint(patterns = {"org/springframework/batch/core/schema-h2.sql",
 				"org/springframework/batch/core/schema-db2.sql",
 				"org/springframework/batch/core/schema-derby.sql",
