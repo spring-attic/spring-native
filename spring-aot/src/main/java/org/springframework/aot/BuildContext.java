@@ -61,6 +61,11 @@ public interface BuildContext {
 	Set<String> getOptions();
 
 	/**
+	 * @return the AOT proxies.
+	 */
+	ProxiesDescriptor getProxiesDescriptor();
+
+	/**
 	 * Contribute source files to the application.
 	 * <p>This additional source code will be compiled and packaged with the application by a build plugin.
 	 * @param sourceFile the source files to add

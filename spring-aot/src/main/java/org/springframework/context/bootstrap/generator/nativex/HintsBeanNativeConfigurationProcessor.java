@@ -5,6 +5,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
@@ -14,9 +17,9 @@ import org.springframework.context.bootstrap.generator.infrastructure.nativex.Na
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeSerializationEntry;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
+import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
-import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
@@ -25,21 +28,27 @@ import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.ClassUtils;
 
-import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.*;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.InitializationConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ProxyConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ResourcesConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.SerializationConfiguration;
 
 /**
+ * Add bean level hints to the generated native configuration.
+ *
+ * TODO what happens if someone has a hint whose trigger is a configuration that has no beans in it, will that hint be missed? (because no creators are recorded for that configuration)
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationProcessor {
+
+	private static final Log logger = LogFactory.getLog(HintsBeanNativeConfigurationProcessor.class);
 
 	@Override
 	public void process(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
 		findAndRegisterRelevantNativeHints(descriptor.getUserBeanClass(), registry);
 	}
-
-	// TODO is this code in the right place - if three beans come from three creators in the same declaring class, work will be duplicated (Should be same outcome, but wasteful)
-	// TODO what happens if someone has a hint whose trigger is a configuration that has no beans in it, will that hint be missed? (because no creators are recorded for that configuration)
 
 	/**
 	 * Lookup any native hints that have been declared with the declaring class of the
@@ -56,10 +65,10 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 		SerializationConfiguration serializationConfiguration = registry.serialization();
 		ReflectionConfiguration jniConfiguration = registry.jni();
 
-		try {
-			List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
-			if (hints != null) {
-				for (HintDeclaration hint : hints) {
+		List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
+		if (hints != null) {
+			for (HintDeclaration hint : hints) {
+				try {
 					// Types
 					Map<String, AccessDescriptor> dependantTypes = hint.getDependantTypes();
 					for (Map.Entry<String, AccessDescriptor> entry : dependantTypes.entrySet()) {
@@ -96,17 +105,36 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						}
 					}
 
-					// JDK Proxies
+					// Proxies
 					for (JdkProxyDescriptor proxyDescriptor : hint.getProxyDescriptors()) {
-						proxyConfiguration.add(NativeProxyEntry.ofTypeNames(proxyDescriptor.getTypes().toArray(String[]::new)));
+						if (proxyDescriptor.isClassProxy()) {
+							AotProxyDescriptor aotProxyDescriptor = (AotProxyDescriptor) proxyDescriptor;
+							proxyConfiguration.add(NativeProxyEntry.ofClassName(
+									aotProxyDescriptor.getTargetClassType(),
+									aotProxyDescriptor.getProxyFeatures(),
+									aotProxyDescriptor.getInterfaceTypes().toArray(String[]::new)));
+						}
+						else {
+							proxyConfiguration.add(NativeProxyEntry.ofInterfaceNames(proxyDescriptor.getTypes().toArray(String[]::new)));
+						}
 					}
 
 					// Initialization
 					for (InitializationDescriptor initializationDescriptor : hint.getInitializationDescriptors()) {
-						initializationDescriptor.getBuildtimeClasses().forEach(buildTimeClass ->
-								initializationConfiguration.add(NativeInitializationEntry.ofBuildTimeType(ClassUtils.resolveClassName(buildTimeClass, null))));
-						initializationDescriptor.getRuntimeClasses().forEach(runtimeClass ->
-								initializationConfiguration.add(NativeInitializationEntry.ofRuntimeType(ClassUtils.resolveClassName(runtimeClass, null))));
+						initializationDescriptor.getBuildtimeClasses().forEach(buildTimeClass -> {
+							try {
+								initializationConfiguration.add(NativeInitializationEntry.ofBuildTimeTypeName(buildTimeClass));
+							} catch (IllegalArgumentException ex) {
+								logger.debug("Type " + buildTimeClass + " not found in the classpath while processing build-time initialization hint hint with trigger" + beanType.getName());
+							}
+						});
+						initializationDescriptor.getRuntimeClasses().forEach(runtimeClass -> {
+							try {
+								initializationConfiguration.add(NativeInitializationEntry.ofRuntimeTypeName(runtimeClass));
+							} catch (IllegalArgumentException ex) {
+								logger.debug("Type " + runtimeClass + " not found in the classpath while processing runtime initialization hint with trigger" + beanType.getName());
+							}
+						});
 						initializationDescriptor.getBuildtimePackages().forEach(buildTimePackage ->
 								initializationConfiguration.add(NativeInitializationEntry.ofBuildTimePackage(buildTimePackage)));
 						initializationDescriptor.getRuntimePackages().forEach(runtimePackage ->
@@ -138,13 +166,13 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						}
 					}
 				}
-			}
-			if (beanType.getSuperclass() != null) {
-				findAndRegisterRelevantNativeHints(beanType.getSuperclass(), registry);
+				catch (Throwable t) {
+					logger.error("Error while processing hint with trigger " + beanType.getName() + " : " +  t.getMessage());
+				}
 			}
 		}
-		catch (Throwable t) {
-			// FIXME would like to log this...
+		if (beanType.getSuperclass() != null) {
+			findAndRegisterRelevantNativeHints(beanType.getSuperclass(), registry);
 		}
 	}
 }

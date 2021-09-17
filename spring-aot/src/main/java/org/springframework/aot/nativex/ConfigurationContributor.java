@@ -41,6 +41,7 @@ import org.springframework.aot.ResourceFile;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
+import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.hint.Flag;
@@ -152,8 +153,13 @@ public class ConfigurationContributor implements BootstrapContributor {
 	}
 	
 	public List<String> generateBuildTimeClassProxies(ConfigurationCollector configurationCollector, BuildContext context) {
-		Set<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
 		List<String> classProxyNames = new ArrayList<>();
+		Set<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
+		for (JdkProxyDescriptor proxyDescriptor : context.getProxiesDescriptor().getProxyDescriptors()) {
+			if (proxyDescriptor.isClassProxy()) {
+				classProxyDescriptors.add((AotProxyDescriptor) proxyDescriptor);
+			}
+		}
 		for (AotProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
 			if(context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {
 				logger.debug("Cannot reach class proxy target type of: "+classProxyDescriptor);
