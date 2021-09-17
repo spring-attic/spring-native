@@ -96,7 +96,7 @@ public class AccessBits {
 	/**
 	 * Predefined set of access suitable for annotations.
 	 */
-	public static final int ANNOTATION = (RESOURCE | CLASS | DECLARED_METHODS);
+	public static final int ANNOTATION = (CLASS | DECLARED_METHODS);
 
 	/**
 	 * Class and declared constructor access (default).
