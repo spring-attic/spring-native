@@ -100,6 +100,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(bootstrapGenerationResult.getProxiesDescriptor()));
 		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(bootstrapGenerationResult.getInitializationDescriptor()));
 		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(bootstrapGenerationResult.getSerializationDescriptor()));
+		context.describeJNIReflection(reflectionDescriptor -> bootstrapGenerationResult.getJniClassDescriptors().forEach(reflectionDescriptor::merge));
 	}
 
 	private void configureEnvironment(StandardEnvironment environment, ResourceLoader resourceLoader, Class<?> applicationClass) {

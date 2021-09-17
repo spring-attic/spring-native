@@ -39,6 +39,8 @@ public class BootstrapGenerationResult {
 
 	private final List<ClassDescriptor> classDescriptors;
 
+	private final List<ClassDescriptor> jniClassDescriptors;
+
 	private final ResourcesDescriptor resourcesDescriptor;
 
 	private final ProxiesDescriptor proxiesDescriptor;
@@ -52,13 +54,14 @@ public class BootstrapGenerationResult {
 	BootstrapGenerationResult(List<JavaFile> sourceFiles, List<ClassDescriptor> classDescriptors,
 			ResourcesDescriptor resourcesDescriptor, ProxiesDescriptor proxiesDescriptor,
 			InitializationDescriptor initializationDescriptor, SerializationDescriptor serializationDescriptor,
-			Set<String> options) {
+			List<ClassDescriptor> jniClassDescriptors, Set<String> options) {
 		this.sourceFiles = sourceFiles;
 		this.classDescriptors = classDescriptors;
 		this.resourcesDescriptor = resourcesDescriptor;
 		this.proxiesDescriptor = proxiesDescriptor;
 		this.initializationDescriptor = initializationDescriptor;
 		this.serializationDescriptor = serializationDescriptor;
+		this.jniClassDescriptors = jniClassDescriptors;
 		this.options = options;
 	}
 
@@ -113,6 +116,15 @@ public class BootstrapGenerationResult {
 	 */
 	public SerializationDescriptor getSerializationDescriptor() {
 		return this.serializationDescriptor;
+	}
+
+	/**
+	 * Return the {@link ClassDescriptor JNI reflection entries} that are necessary to process
+	 * the bootstrap of the context.
+	 * @return the JNI reflection entries
+	 */
+	public List<ClassDescriptor> getJniClassDescriptors() {
+		return this.jniClassDescriptors;
 	}
 
 	/**
