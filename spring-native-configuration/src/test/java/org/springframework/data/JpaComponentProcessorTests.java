@@ -35,6 +35,7 @@ import org.springframework.data.jpa.entities.Order;
 import org.springframework.data.jpa.entities.SomeAnnotation;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
 
@@ -155,7 +156,10 @@ public class JpaComponentProcessorTests {
 
 		assertThat(nativeContext.getReflectionEntry(AuditingListener.class))
 				.satisfies(config -> {
-					assertThat(config.getAccessBits()).isEqualTo(AccessBits.FULL_REFLECTION);
+					assertThat(config.getAccessBits()).isEqualTo(AccessBits.LOAD_AND_CONSTRUCT);
+
+					MethodDescriptor methodDescriptor = config.getMethodDescriptors().iterator().next();
+					assertThat(methodDescriptor.getName()).isEqualTo("beforeAnyOperation");
 				});
 	}
 

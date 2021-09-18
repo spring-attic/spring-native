@@ -15,6 +15,7 @@
  */
 package org.springframework.data;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.Field;
+import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
@@ -75,7 +77,14 @@ public class JpaComponentProcessor implements ComponentProcessor {
 
 		for (String listener : domainType.findAnnotationValue(ENTITY_LISTENERS, false, false)) {
 			Type listenerType = imageContext.getTypeSystem().Lresolve(listener);
-			imageContext.addReflectiveAccess(listenerType.getDottedName(), AccessBits.FULL_REFLECTION);
+			List<MethodDescriptor> methodDescriptors = listenerType
+					.getMethods(method -> method.getAnnotationTypes().stream().anyMatch(
+							type -> type.getDottedName().startsWith("javax.persistence")))
+					.stream()
+					.map(it -> new MethodDescriptor(it.getName(), Arrays.asList(it.asConfigurationArray())))
+					.collect(Collectors.toList());
+
+			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList()));
 		}
 	}
 
