@@ -363,4 +363,53 @@ public final class ClassDescriptor {
 		return null;
 	}
 
+	public static ClassDescriptor of(Class<?> type) {
+		return of(computeClassname(type));
+	}
+	
+	// TODO Move to TypeSystem, maybe TypeName? (Although TypeName is not currently used for anything primitive).
+	//      This code overlaps with code in TypeName.fromTypeSignature() but that code isn't for primitive arrays
+	/**
+	 * Convert from a class to a String signature. This copes with the special handling for arrays (and
+	 * primitive arrays)
+	 * @param type the type for which to create a class name
+	 * @return the class name
+	 */
+	private static String computeClassname(Class<?> type) {
+		StringBuilder result = new StringBuilder();
+		String typename = type.getName();
+		int dims = 0;
+		while (typename.charAt(dims)=='[') {
+			dims++;
+		}
+		if (dims > 0) {
+			if (typename.endsWith(";")) {
+				result.append(typename.substring(dims+1, typename.length()-1).replace("/", "."));
+			} else {
+				result.append(primitiveToName(typename.substring(dims)));
+			}
+		} else {
+			result.append(typename);
+		}
+		while (dims > 0) {
+			result.append("[]");
+			dims--;
+		}
+		return result.toString();
+	}
+
+	private static String primitiveToName(String primitiveDescriptor) {
+		switch (primitiveDescriptor) {
+		case "I": return "int";
+		case "Z": return "boolean";
+		case "J": return "long";
+		case "B": return "byte";
+		case "C": return "char";
+		case "S": return "short";
+		case "F": return "float";
+		case "D": return "double";
+		default: throw new IllegalStateException(primitiveDescriptor);
+		}
+	}
+
 }

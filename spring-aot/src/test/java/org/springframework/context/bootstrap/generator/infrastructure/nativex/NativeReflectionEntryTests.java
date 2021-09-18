@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Sebastien Deleuze
+ * @author Andy Clement
  */
 class NativeReflectionEntryTests {
 
@@ -40,6 +41,18 @@ class NativeReflectionEntryTests {
 	void toClassDescriptorShouldRegisterClassName() {
 		ClassDescriptor descriptor = NativeReflectionEntry.of(String.class).build().toClassDescriptor();
 		assertThat(descriptor.getName()).isEqualTo("java.lang.String");
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterClassNameForArray() {
+		ClassDescriptor descriptor = NativeReflectionEntry.of(String[].class).build().toClassDescriptor();
+		assertThat(descriptor.getName()).isEqualTo("java.lang.String[]");
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterClassNameForPrimitiveArray() {
+		ClassDescriptor descriptor = NativeReflectionEntry.of(int[][].class).build().toClassDescriptor();
+		assertThat(descriptor.getName()).isEqualTo("int[][]");
 	}
 
 	@Test

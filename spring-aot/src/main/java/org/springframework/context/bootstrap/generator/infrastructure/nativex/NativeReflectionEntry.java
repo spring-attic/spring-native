@@ -118,7 +118,7 @@ public class NativeReflectionEntry {
 	 * @return a class descriptor describing this entry
 	 */
 	public ClassDescriptor toClassDescriptor() {
-		ClassDescriptor descriptor = ClassDescriptor.of(this.type.getName());
+		ClassDescriptor descriptor = ClassDescriptor.of(this.type);
 		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
 				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
 		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
