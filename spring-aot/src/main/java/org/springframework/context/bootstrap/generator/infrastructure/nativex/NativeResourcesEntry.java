@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
+ * @author Andy Clement
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Resources/">GraalVM native image resource documentation</a>
  */
 public class NativeResourcesEntry {
@@ -76,6 +77,9 @@ public class NativeResourcesEntry {
 	 */
 	public static NativeResourcesEntry ofClass(Class<?> type) {
 		Assert.notNull(type, "Type must not be null");
+		if (type.isArray()) {
+			throw new IllegalStateException("There is no .class resource for an array type: "+type.getName());
+		}
 		return ofClassName(type.getName());
 	}
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.context.bootstrap.generator.nativex;
 
 import java.lang.reflect.Executable;
@@ -35,8 +51,6 @@ import static org.springframework.context.bootstrap.generator.infrastructure.nat
 
 /**
  * Add bean level hints to the generated native configuration.
- *
- * TODO what happens if someone has a hint whose trigger is a configuration that has no beans in it, will that hint be missed? (because no creators are recorded for that configuration)
  *
  * @author Andy Clement
  * @author Sebastien Deleuze
@@ -79,7 +93,12 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 							reflectionConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
 						}
 						if ((accessBits & AccessBits.RESOURCE) != 0) {
-							registry.resources().add(NativeResourcesEntry.ofClass(keyClass));
+							if (keyClass.isArray()) {
+								// This could be more strongly enforced if perfect hints are desired
+								logger.debug("Skipping resource access specified in hint for array class "+keyClass);
+							} else {
+								registry.resources().add(NativeResourcesEntry.ofClass(keyClass));
+							}
 						}
 						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
 							Executable method = methodDescriptor.findOnClass(keyClass);
