@@ -338,7 +338,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 		}),
-				@TypeHint(typeNames = "java.lang.Module", access = AccessBits.DECLARED_METHODS),
+				@TypeHint(
+					types = javax.validation.Validator.class,
+					typeNames = "java.lang.Module",
+					access = AccessBits.DECLARED_METHODS),
 				@TypeHint(types = {
 						ValidatorFactory.class,
 						Pattern.class,
