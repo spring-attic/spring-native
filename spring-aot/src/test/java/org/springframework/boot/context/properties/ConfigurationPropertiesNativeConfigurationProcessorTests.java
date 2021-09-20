@@ -16,20 +16,19 @@
 
 package org.springframework.boot.context.properties;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.hint.Flag;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesNativeConfigurationProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
@@ -45,6 +44,16 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		});
 	}
 
+	@Test // GH-1041
+	void processConfigurationPropertiesWithMemberTypes() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SampleWithNested.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).hasSize(2).satisfies(entries -> {
+			assertThat(entries.stream().map(it -> it.getType().getSimpleName() + ":" + it.getFlags())).containsExactlyInAnyOrder("SampleWithNested:[allDeclaredMethods]", "OneLevelDown:[allDeclaredMethods]");
+		});
+	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
@@ -52,11 +61,17 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return registry;
 	}
 
-
 	@ConfigurationProperties("test")
 	static class SampleProperties {
 
 	}
 
+	@ConfigurationProperties("with-nested")
+	static class SampleWithNested {
+
+		static class OneLevelDown {
+
+		}
+	}
 
 }
