@@ -51,6 +51,7 @@ import reactor.core.publisher.Mono;
 		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor", access = AccessBits.FULL_REFLECTION),
 		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryConfigurations$PooledConnectionFactoryCondition"),
 		@TypeHint(types = {
+				io.r2dbc.spi.Connection.class,
 				R2dbcConverter.class, FluentR2dbcOperations.class, R2dbcEntityOperations.class,
 				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
 				ReactiveSelectOperation.class, ReactiveUpdateOperation.class, AfterConvertCallback.class,
