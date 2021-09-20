@@ -2,7 +2,7 @@
 
 RC=0
 
-docker-compose up -d lambda
+docker-compose up -d
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh
 AWS_LAMBDA_RUNTIME_API=localhost:9001 _HANDLER=foobar ${PWD%/*samples/*}/scripts/test.sh || RC=$?
 docker-compose down

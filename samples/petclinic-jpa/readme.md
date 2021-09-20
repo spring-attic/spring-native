@@ -1,11 +1,5 @@
 Spring Boot famous Petclinic sample with JPA persistence.
 
-To build and run the native application packaged in a lightweight container with `default` mode:
-```
-mvn spring-boot:build-image
-docker-compose up
-```
-
 To test h2 or hsqldb database:
 
  * update *pom.xml*, set scope of h2 or hsqldb dependency as runtime

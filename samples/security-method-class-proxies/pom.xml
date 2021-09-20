@@ -15,7 +15,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<main.class>com.example.methodsecurity.MethodSecurityApplication</main.class>
 	</properties>
 
 	<dependencies>

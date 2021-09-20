@@ -2,7 +2,7 @@
 
 RC=0
 
-docker-compose up -d zipkin
+docker-compose up -d
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh && ${PWD%/*samples/*}/scripts/test.sh
 docker-compose down
 

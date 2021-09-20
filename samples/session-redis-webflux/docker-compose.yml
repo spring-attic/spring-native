@@ -9,12 +9,7 @@ services:
       - '6379:6379'
     volumes:
       - 'redis_data:/bitnami/redis/data'
-  session-redis-webflux:
-    image: session-redis-webflux:0.0.1-SNAPSHOT
-    ports:
-      - "8080:8080"
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+
 volumes:
   redis_data:
     driver: local
