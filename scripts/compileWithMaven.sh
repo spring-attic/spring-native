@@ -5,27 +5,47 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+AOT_ONLY=false
+
+while test $# -gt 0; do
+  case "$1" in
+    -a)
+      export AOT_ONLY=true
+      shift
+      ;;
+    --aot-only)
+      export AOT_ONLY=true
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
 
 rm -rf target
 mkdir -p target/native
 
-echo "Packaging ${PWD##*/} with Maven"
-# Only run Petclinic tests to speedup the full build while still testing a complex testing scenario
-#if [[ ${PWD##*/} == petclinic* || ${PWD##*/} == *agent* ]]
-#then
-#  echo "Performing native testing for ${PWD##*/}"
-#  mvn -ntp -Pnative package $* &> target/native/output.txt
-#else
-mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
-#fi
+if [ "$AOT_ONLY" = false ] ; then
+  echo "Packaging ${PWD##*/} with Maven (native)"
+  mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
 
-
-if [[ -f target/${PWD##*/} ]]
-then
-  printf "${GREEN}SUCCESS${NC}\n"
+  if [[ -f target/${PWD##*/} ]]; then
+    printf "${GREEN}SUCCESS${NC}\n"
+  else
+    cat target/native/output.txt
+    printf "${RED}FAILURE${NC}: an error occurred when compiling the native image.\n"
+    exit 1
+  fi
 else
-  cat target/native/output.txt
-  printf "${RED}FAILURE${NC}: an error occurred when compiling the native image.\n"
-  exit 1
+  echo "Packaging ${PWD##*/} with Maven (AOT only)'"
+  if mvn -ntp -DskipTests package $* &> target/native/output.txt; then
+    printf "${GREEN}SUCCESS${NC}\n"
+  else
+    cat target/native/output.txt
+    printf "${RED}FAILURE${NC}: an error occurred when building the JAR in AOT mode.\n"
+    exit 1
+  fi
 fi

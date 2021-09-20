@@ -4,9 +4,3 @@ services:
     image: openzipkin/zipkin:latest
     ports:
       - "9411:9411"
-  sleuth-zipkin:
-    image: zipkin-sleuth:0.0.1-SNAPSHOT
-    volumes:
-      - ${HOME}:/home/cnb
-    ports:
-      - "8080:8080"

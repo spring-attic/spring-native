@@ -8,13 +8,13 @@ cd ../configserver
 ./build.sh
 cd ../configclient-new
 
-${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
+${PWD%/*samples/*}/scripts/compileWithMaven.sh $* || exit 1
 
 ../configserver/target/configserver 2>&1 > target/native/server-output.txt &
 SERVERPID=$!
 sleep 10 
 
-${PWD%/*samples/*}/scripts/test.sh
+ ${PWD%/*samples/*}/scripts/test.sh $*
 
 kill ${SERVERPID}
 

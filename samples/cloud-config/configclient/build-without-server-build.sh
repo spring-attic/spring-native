@@ -10,7 +10,7 @@ ${PWD%/*samples/*}/scripts/compileWithMaven.sh || exit 1
 SERVERPID=$!
 sleep 10 
 
-${PWD%/*samples/*}/scripts/test.sh
+ ${PWD%/*samples/*}/scripts/test.sh $*
 
 kill ${SERVERPID}
 
