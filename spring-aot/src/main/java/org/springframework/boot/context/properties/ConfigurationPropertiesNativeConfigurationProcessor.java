@@ -29,6 +29,7 @@ import org.springframework.util.ClassUtils;
  * annotated types.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
@@ -38,8 +39,15 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
-			registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
+			registerWithMembersIfNecessary(type, registry);
 		}
 	}
 
+	private void registerWithMembersIfNecessary(Class<?> type, NativeConfigurationRegistry registry) {
+
+		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
+		for (Class<?> nested : type.getDeclaredClasses()) {
+			registerWithMembersIfNecessary(nested, registry);
+		}
+	}
 }
