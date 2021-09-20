@@ -16,7 +16,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<main.class>com.example.batch.BatchApplication</main.class>
 	</properties>
 	<dependencies>
 		<dependency>

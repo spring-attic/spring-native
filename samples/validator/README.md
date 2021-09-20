@@ -1,11 +1,5 @@
 Very basic Spring Boot project using a `@Validated` `@ConfigurationProperties` bean.
 
-To build and run the native application packaged in a lightweight container:
-```
-mvn spring-boot:build-image
-docker-compose up
-```
-
 ## Validator Usage in Spring Boot Applications
 
 There are three main ways that users plug `javax.validation` (and the Spring flavours of the same thing) into their applications:

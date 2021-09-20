@@ -12,9 +12,3 @@ services:
     volumes:
       - ./src/main/resources/db/mysql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
       - ./src/main/resources/db/mysql/data.sql:/docker-entrypoint-initdb.d/2-data.sql
-  petclinic-jdbc:
-    image: petclinic-jdbc:0.0.1-SNAPSHOT
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql-server

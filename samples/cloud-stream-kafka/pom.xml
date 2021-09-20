@@ -18,7 +18,6 @@
 	<properties>
 		<spring-integration.version>5.5.0-SNAPSHOT</spring-integration.version>
 		<java.version>11</java.version>
-		<main.class>com.example.demo.SpringCloudStreamKafkaApplication</main.class>
 	</properties>
 
 	<dependencies>

@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<main.class>com.example.graalvmdemo.GraalvmDemoApplication</main.class>
 	</properties>
 
 	<dependencies>
