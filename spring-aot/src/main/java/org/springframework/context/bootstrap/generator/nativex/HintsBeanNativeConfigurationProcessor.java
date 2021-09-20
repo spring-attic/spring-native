@@ -86,6 +86,9 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 					// Types
 					Map<String, AccessDescriptor> dependantTypes = hint.getDependantTypes();
 					for (Map.Entry<String, AccessDescriptor> entry : dependantTypes.entrySet()) {
+						if(!ClassUtils.isPresent(entry.getKey(), null)) {
+							continue;
+						}
 						Class<?> keyClass = ClassUtils.forName(entry.getKey(), null);
 						AccessDescriptor value = entry.getValue();
 						Integer accessBits = value.getAccessBits();
