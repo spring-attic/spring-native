@@ -5,9 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
-		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.10.3-SNAPSHOT</version>
-		<relativePath>../../maven-parent/pom.xml</relativePath>
+		<artifactId>cloud-discovery-parent</artifactId>
+		<version>0.10.4-SNAPSHOT</version>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>discoveryclient</artifactId>
@@ -16,8 +15,6 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
 	</properties>
 

@@ -6,8 +6,8 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.10.3-SNAPSHOT</version>
-		<relativePath>../maven-parent/pom.xml</relativePath>
+		<version>0.10.4-SNAPSHOT</version>
+
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>webmvc-tomcat</artifactId>
@@ -27,21 +27,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-websocket</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.experimental</groupId>
-			<artifactId>tomcat-embed-programmatic</artifactId>
-			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

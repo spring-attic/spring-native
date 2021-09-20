@@ -1,31 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-		xmlns="http://maven.apache.org/POM/4.0.0"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.4</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-native-sample-parent</artifactId>
 	<name>Spring Native sample parent</name>
-	<version>0.10.3-SNAPSHOT</version>
+	<version>0.10.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<properties>
-		<!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
-		<repackage.classifier/>
+	<modules>
+		<module>actuator-webflux</module>
+		<module>actuator-webmvc</module>
+		<module>async</module>
+		<module>batch</module>
+		<module>batch-io</module>
+		<module>boot-features</module>
+		<module>class-proxies-aop</module>
+		<module>cloud</module>
+		<module>cloud-config</module>
+		<module>cloud-discovery</module>
+		<module>cloud-function-netty</module>
+		<module>cloud-function-netty-fun</module>
+		<module>cloud-stream-kafka</module>
+		<module>cloud-task</module>
+		<module>commandlinerunner</module>
+		<module>commandlinerunner-agent</module>
+		<module>commandlinerunner-log4j2</module>
+		<module>data-elasticsearch</module>
+		<module>data-rest</module>
+		<module>data-jdbc</module>
+		<module>data-jpa</module>
+		<module>data-mongodb</module>
+		<module>data-mongodb-reactive</module>
+		<module>data-neo4j</module>
+		<module>data-r2dbc</module>
+		<module>data-r2dbc-kotlin</module>
+		<module>data-redis</module>
+		<module>events</module>
+		<module>features</module>
+		<module>grpc</module>
+		<module>hateoas</module>
+		<module>hibernate</module>
+		<module>integration</module>
+		<module>javamail</module>
+		<module>jdbc-tx</module>
+		<module>kafka</module>
+		<module>kafka-avro</module>
+		<module>kafka-streams</module>
+		<module>logger</module>
+		<module>lombok</module>
+		<module>multi-modules</module>
+		<module>petclinic-jdbc</module>
+		<module>petclinic-jpa</module>
+		<module>quartz</module>
+		<module>rabbitmq</module>
+		<module>rsocket</module>
+		<module>security-method-class-proxies</module>
+		<module>security-thymeleaf</module>
+		<module>security-webflux</module>
+		<module>session-jdbc</module>
+		<module>session-redis-webflux</module>
+		<module>scheduling-tasks</module>
+		<module>security</module>
+		<module>security-method</module>
+		<module>validator</module>
+		<module>wavefront</module>
+		<module>wavefront-sleuth</module>
+		<module>webclient</module>
+		<module>webflux-kotlin</module>
+		<module>webflux-netty</module>
+		<module>webflux-thymeleaf</module>
+		<module>webflux-websocket</module>
+		<module>webmvc-tomcat</module>
+		<module>webmvc-tomcat-agent</module>
+		<module>websocket</module>
+		<module>zipkin-sleuth</module>
+		<!-- failing tests -->
+		<module>cloud-function-aws</module>
+	</modules>
 
-		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<!-- Customize Spring Boot classifier, useful in order to avoid a clash 
+			between Spring Boot repackaging and native-image-maven-plugin -->
+		<repackage.classifier />
+
+		<!-- `tiny` builder allows small footprint and reduced surface attack, 
+			you can also use `base` (the default) or `full` builders to have more tooling 
+			available in the image for an improved developer experience -->
 		<builder>paketobuildpacks/builder:tiny</builder>
 
 		<wavefront.version>2.2.0</wavefront.version>
 
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
+		<spring-aot-maven-plugin.version>0.10.4-SNAPSHOT</spring-aot-maven-plugin.version>
+		<spring-aot.version>0.10.4-SNAPSHOT</spring-aot.version>
 	</properties>
 
 	<build>
@@ -48,7 +126,7 @@
 				<plugin>
 					<groupId>org.springframework.experimental</groupId>
 					<artifactId>spring-aot-maven-plugin</artifactId>
-					<version>0.10.3-SNAPSHOT</version>
+					<version>${spring-aot-maven-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>test-generate</id>
@@ -146,7 +224,12 @@
 			<dependency>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-native</artifactId>
-				<version>0.10.3-SNAPSHOT</version>
+				<version>0.10.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot</artifactId>
+				<version>${spring-aot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
@@ -166,7 +249,8 @@
 	</dependencyManagement>
 
 	<profiles>
-		<!-- Enable building a native image using a local installation of native-image with GraalVM native-maven-plugin -->
+		<!-- Enable building a native image using a local installation of native-image 
+			with GraalVM native-maven-plugin -->
 		<profile>
 			<id>native</id>
 			<properties>

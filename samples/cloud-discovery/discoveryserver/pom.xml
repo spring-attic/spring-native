@@ -6,9 +6,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
-		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.10.3-SNAPSHOT</version>
-		<relativePath>../../maven-parent/pom.xml</relativePath>
+		<artifactId>cloud-discovery-parent</artifactId>
+		<version>0.10.4-SNAPSHOT</version>
 	</parent>
 	<groupId>org.demo</groupId>
 	<artifactId>discoveryserver</artifactId>
@@ -18,7 +17,6 @@
 	<description>Service Discovery demo project</description>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<docker.image.prefix>springcloud</docker.image.prefix>
 	</properties>
@@ -34,18 +32,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>2020.0.3</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>

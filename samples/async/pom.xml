@@ -7,8 +7,8 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.10.3-SNAPSHOT</version>
-		<relativePath>../maven-parent/pom.xml</relativePath>
+		<version>0.10.4-SNAPSHOT</version>
+
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>async</artifactId>
