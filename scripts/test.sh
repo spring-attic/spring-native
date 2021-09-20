@@ -7,30 +7,55 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-if [[ "$1" == "-s" ]]; then
-  SILENT=true
-  shift 1
-else
-  SILENT=false
-fi
+AOT_ONLY=false
+SILENT=false
+
+while test $# -gt 0; do
+  case "$1" in
+    -a)
+      export AOT_ONLY=true
+      shift
+      ;;
+    --aot-only)
+      export AOT_ONLY=true
+      shift
+      ;;
+    -s)
+      export SILENT=true
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 if [ -f pom.xml ]; then
   EXECUTABLE_DIR=target
+  JAR_DIR=target
+  GENERATED_DIR=target/generated-sources/spring-aot/src/main/resources
   REPORT_DIR=target/native
 else
   EXECUTABLE_DIR=build/native/nativeBuild
+  JAR_DIR=build/libs
+  GENERATED_DIR=build/generated/resources/aot
   REPORT_DIR=build/native
 fi
 
-if ! [ -z "$1" ]; then
-	if [[ "$1" != "--"* ]]; then
-		EXECUTABLE=${1}
-		shift 1
-	else
-		EXECUTABLE=${EXECUTABLE_DIR}/${PWD##*/}
-	fi
+if [[ "$AOT_ONLY" == true ]]; then
+  EXECUTABLE="java -jar $JAR_DIR/*.jar"
 else
-	EXECUTABLE=${1:-${EXECUTABLE_DIR}/${PWD##*/}}
+  if ! [ -z "$1" ]; then
+    if [[ "$1" != "--"* ]]; then
+      EXECUTABLE=${1}
+      shift 1
+    else
+      EXECUTABLE=${EXECUTABLE_DIR}/${PWD##*/}
+    fi
+  else
+    EXECUTABLE=${1:-${EXECUTABLE_DIR}/${PWD##*/}}
+  fi
+  chmod +x ${EXECUTABLE}
 fi
 
 if [ -z "$1" ] || [[ "$1" == "--"* ]]; then
@@ -43,10 +68,13 @@ else
   SUMMARY_CSV_FILE=$1/summary.csv
   shift 1
 fi
-echo "Testing executable '`basename $EXECUTABLE`'"
+echo "Testing `basename ${PWD##*/}`"
 
-chmod +x ${EXECUTABLE}
-./${EXECUTABLE} "$@" > $TEST_OUTPUT_FILE 2>&1 &
+if [[ "$AOT_ONLY" == true ]]; then
+  ${EXECUTABLE} "$@" > $TEST_OUTPUT_FILE 2>&1 &
+else
+  ./${EXECUTABLE} "$@" > $TEST_OUTPUT_FILE 2>&1 &
+fi
 PID=$!
 sleep 3
 
@@ -56,25 +84,27 @@ if [[ $RC == 0 ]]
 then
   printf "${GREEN}SUCCESS${NC}\n"
   if [ $SILENT == 'false' ]; then
-    TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
-    BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
-    BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
-    BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
-    CONFIGLINES=`wc -l target/generated-sources/spring-aot/src/main/resources/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
-    if [ -z "$BUILDMEMORY" ]; then
-      BUILDMEMORY="-"
+    if [[ "$AOT_ONLY" == false ]]; then
+      TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
+      BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
+      BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
+      BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
     fi
-    if [ -z "$CONFIGLINES" ]; then
-      CONFIGLINES="-"
+    CONFIGLINES=`wc -l $GENERATED_DIR/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
+    if [ ! -z "$BUILDMEMORY" ]; then
+      echo "Build memory: ${BUILDMEMORY}GB"
     fi
-    echo "Build memory: ${BUILDMEMORY}GB"
-    echo "Image build time: ${BUILDTIME}s"
+    if [ ! -z "$BUILDTIME" ]; then
+      echo "Image build time: ${BUILDTIME}s"
+    fi
     RSS=`ps -o rss ${PID} | tail -n1`
     RSS=`bc <<< "scale=1; ${RSS}/1024"`
     echo "RSS memory: ${RSS}M"
-    SIZE=`wc -c <"${EXECUTABLE}"`/1024
-    SIZE=`bc <<< "scale=1; ${SIZE}/1024"`
-    echo "Image size: ${SIZE}M"
+    if [[ "$AOT_ONLY" == false ]]; then
+      SIZE=`wc -c <"${EXECUTABLE}"`/1024
+      SIZE=`bc <<< "scale=1; ${SIZE}/1024"`
+      echo "Image size: ${SIZE}M"
+    fi
     STARTUP=`cat $TEST_OUTPUT_FILE | grep "JVM running for"`
     REGEXP="Started .* in ([0-9\.]*) seconds \(JVM running for ([0-9\.]*)\).*$"
     if [[ ${STARTUP} =~ ${REGEXP} ]]; then
@@ -83,7 +113,7 @@ then
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
     echo "Lines of reflective config: $CONFIGLINES"
-    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME},${CONFIGLINES}  > $SUMMARY_CSV_FILE
+    echo `date +%Y%m%d-%H%M`,`basename ${PWD##*/}`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME},${CONFIGLINES}  > $SUMMARY_CSV_FILE
   fi
   if ! kill ${PID} > /dev/null 2>&1; then
     echo "Did not kill process, it ended on it's own" >&2
@@ -94,7 +124,7 @@ else
   cat $TEST_OUTPUT_FILE
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
   if [ $SILENT == 'false' ]; then
-    echo `date +%Y%m%d-%H%M`,`basename $EXECUTABLE`,ERROR,-,,,,, > $SUMMARY_CSV_FILE
+    echo `date +%Y%m%d-%H%M`,`basename ${PWD##*/}`,ERROR,-,,,,, > $SUMMARY_CSV_FILE
   fi
   if ! kill ${PID} > /dev/null 2>&1; then
     echo "Did not kill process, it ended on it's own" >&2

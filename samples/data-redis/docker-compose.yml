@@ -9,8 +9,6 @@ services:
       - '6379:6379'
     volumes:
       - 'redis_data:/bitnami/redis/data'
-  data-redis:
-    image: data-redis:0.0.1-SNAPSHOT
 volumes:
   redis_data:
     driver: local

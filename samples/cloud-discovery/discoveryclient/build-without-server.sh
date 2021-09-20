@@ -6,7 +6,7 @@ java -jar ../discoveryserver/target/discoveryserver-0.0.1-SNAPSHOT.jar &
 SERVERPID=$!
 sleep 10 
 
-${PWD%/*samples/*}/scripts/test.sh
+ ${PWD%/*samples/*}/scripts/test.sh $*
 
 kill ${SERVERPID}
 

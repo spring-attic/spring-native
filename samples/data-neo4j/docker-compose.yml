@@ -6,9 +6,4 @@ services:
       - NEO4J_AUTH=neo4j/secret
     ports:
       - 7687:7687
-  data-neo4j:
-    depends_on:
-      - neo4j
-    environment:
-      - SPRING_NEO4J_URI=bolt://neo4j:7687
-    image: data-neo4j:0.0.1-SNAPSHOT
+

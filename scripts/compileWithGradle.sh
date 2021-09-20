@@ -5,26 +5,41 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+AOT_ONLY=false
+
+while test $# -gt 0; do
+  case "$1" in
+    -a)
+      export AOT_ONLY=true
+      shift
+      ;;
+    --aot-only)
+      export AOT_ONLY=true
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
 
 rm -rf build
 mkdir -p build/native
 
-echo "Packaging ${PWD##*/} with Gradle"
-# Only run security-kotlin tests to speedup the full build while still testing a Gradle project
-if [[ ${PWD##*/} == "security-kotlin" ]]
-then
-  echo "Performing native testing for ${PWD##*/}"
-  ./gradlew nativeTest nativeBuild &> build/native/output.txt
-else
+if [ "$AOT_ONLY" = false ] ; then
+  echo "Packaging ${PWD##*/} with Gradle (native)"
   ./gradlew nativeBuild &> build/native/output.txt
-fi
 
-if [[ -f build/native/nativeBuild/${PWD##*/} ]]
-then
-  printf "${GREEN}SUCCESS${NC}\n"
+  if [[ -f build/native/nativeBuild/${PWD##*/} ]]; then
+    printf "${GREEN}SUCCESS${NC}\n"
+  else
+    cat build/native/output.txt
+    printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
+    exit 1
+  fi
 else
-  cat build/native/output.txt
-  printf "${RED}FAILURE${NC}: an error occurred when compiling the native-image.\n"
-  exit 1
+  echo "Packaging ${PWD##*/} with Gradle (AOT only)'"
+  ./gradlew bootJar &> build/native/output.txt
 fi
