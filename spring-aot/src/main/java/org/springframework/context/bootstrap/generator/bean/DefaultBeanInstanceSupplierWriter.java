@@ -28,6 +28,7 @@ import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InitializationCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InstanceCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.util.ClassUtils;
@@ -36,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * Write the necessary statements to instantiate a bean.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class DefaultBeanInstanceSupplierWriter {
 
@@ -100,6 +102,9 @@ class DefaultBeanInstanceSupplierWriter {
 		for (MemberDescriptor<?> injectionPoint : this.descriptor.getInjectionPoints()) {
 			code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
 		}
+		for(InitializationCallback initializationCallback : this.descriptor.getInitializationCallbacks()) {
+			code.addStatement(initializationCallback.write("bean"));
+		}
 		if (multiStatements) {
 			code.add("return bean;\n");
 			code.unindent().add("}");
@@ -138,6 +143,9 @@ class DefaultBeanInstanceSupplierWriter {
 		}
 		for (MemberDescriptor<?> injectionPoint : this.descriptor.getInjectionPoints()) {
 			code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
+		}
+		for(InitializationCallback initializationCallback : this.descriptor.getInitializationCallbacks()) {
+			code.addStatement(initializationCallback.write("bean"));
 		}
 		if (multiStatements) {
 			code.add("return bean;\n");
