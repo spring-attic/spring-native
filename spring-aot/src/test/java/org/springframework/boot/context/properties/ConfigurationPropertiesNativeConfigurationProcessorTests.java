@@ -46,14 +46,24 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		assertThat(registry.reflection().getEntries()).singleElement().satisfies(allDeclaredMethods(SampleProperties.class));
 	}
 
-	@Test // GH-1041
-	void processConfigurationPropertiesWithMemberTypes() {
+	@Test
+	void processConfigurationPropertiesWithNestedType() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithNested.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		assertThat(registry.reflection().getEntries()).anySatisfy(allDeclaredMethods(SamplePropertiesWithNested.class))
 				.anySatisfy(allDeclaredMethods(OneLevelDown.class)).hasSize(2);
+	}
+
+	@Test
+	void processConfigurationPropertiesWithNestedExternalType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithExternalNested.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).anySatisfy(allDeclaredMethods(SamplePropertiesWithExternalNested.class))
+				.anySatisfy(allDeclaredMethods(SampleType.class)).anySatisfy(allDeclaredMethods(SampleType.Nested.class)).hasSize(3);
 	}
 
 	private Consumer<NativeReflectionEntry> allDeclaredMethods(Class<?> type) {
@@ -81,6 +91,40 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		static class OneLevelDown {
 
 		}
+	}
+
+	@ConfigurationProperties("nested")
+	static class SamplePropertiesWithExternalNested {
+
+		private String name;
+
+		@NestedConfigurationProperty
+		private SampleType sampleType;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public SampleType getSampleType() {
+			return this.sampleType;
+		}
+
+		public void setSampleType(SampleType sampleType) {
+			this.sampleType = sampleType;
+		}
+
+	}
+
+	static class SampleType {
+
+		static class Nested {
+
+		}
+
 	}
 
 }
