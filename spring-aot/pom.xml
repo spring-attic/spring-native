@@ -63,6 +63,12 @@
 			<artifactId>asm-tree</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>jsr250-api</artifactId>
+			<version>1.0</version>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
