@@ -51,7 +51,7 @@ class ConfigurationPropertiesBeanDefinitionOriginAnalyzerTests {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));
 		this.analyzer.analyze(analysis);
-		assertThat(analysis.resolved()).hasSize(4);
+		assertThat(analysis.resolved()).hasSize(5);
 		HashSet<String> parents = analysis.resolved().map(BeanDefinitionDescriptor::getOrigins)
 				.collect(HashSet::new, Set::addAll, Set::addAll);
 		assertThat(parents).singleElement().satisfies((parent) -> assertThat(parent)
