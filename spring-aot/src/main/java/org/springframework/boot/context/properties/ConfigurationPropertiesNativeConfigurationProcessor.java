@@ -26,7 +26,7 @@ import org.springframework.util.ClassUtils;
 /**
  * A {@link BeanFactoryNativeConfigurationProcessor} that allows reflection access on
  * all declared methods of {@link ConfigurationProperties @ConfigurationProperties}
- * annotated types.
+ * annotated types and their nested types.
  *
  * @author Stephane Nicoll
  * @author Christoph Strobl
@@ -44,7 +44,6 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 	}
 
 	private void registerWithMembersIfNecessary(Class<?> type, NativeConfigurationRegistry registry) {
-
 		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
 		for (Class<?> nested : type.getDeclaredClasses()) {
 			registerWithMembersIfNecessary(nested, registry);

@@ -16,13 +16,18 @@
 
 package org.springframework.boot.context.properties;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessorTests.SamplePropertiesWithNested.OneLevelDown;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.nativex.hint.Flag;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationPropertiesNativeConfigurationProcessor}.
@@ -38,21 +43,24 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SampleProperties.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
-			assertThat(entry.getType()).isEqualTo(SampleProperties.class);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
-		});
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies(allDeclaredMethods(SampleProperties.class));
 	}
 
 	@Test // GH-1041
 	void processConfigurationPropertiesWithMemberTypes() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SampleWithNested.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithNested.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).hasSize(2).satisfies(entries -> {
-			assertThat(entries.stream().map(it -> it.getType().getSimpleName() + ":" + it.getFlags())).containsExactlyInAnyOrder("SampleWithNested:[allDeclaredMethods]", "OneLevelDown:[allDeclaredMethods]");
-		});
+		assertThat(registry.reflection().getEntries()).anySatisfy(allDeclaredMethods(SamplePropertiesWithNested.class))
+				.anySatisfy(allDeclaredMethods(OneLevelDown.class)).hasSize(2);
+	}
+
+	private Consumer<NativeReflectionEntry> allDeclaredMethods(Class<?> type) {
+		return (entry) -> {
+			assertThat(entry.getType()).isEqualTo(type);
+			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+		};
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
@@ -61,13 +69,14 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return registry;
 	}
 
+
 	@ConfigurationProperties("test")
 	static class SampleProperties {
 
 	}
 
-	@ConfigurationProperties("with-nested")
-	static class SampleWithNested {
+	@ConfigurationProperties("nested")
+	static class SamplePropertiesWithNested {
 
 		static class OneLevelDown {
 
