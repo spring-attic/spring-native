@@ -4,6 +4,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -23,6 +24,7 @@ import org.springframework.context.bootstrap.generator.infrastructure.nativex.Na
  * Register the reflection entries for each {@link BeanInstanceDescriptor}.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class DefaultBeanNativeConfigurationProcessor implements BeanNativeConfigurationProcessor, BeanFactoryAware {
 
@@ -58,6 +60,16 @@ class DefaultBeanNativeConfigurationProcessor implements BeanNativeConfiguration
 			Object value = property.getPropertyValue().getValue();
 			if (value instanceof BeanDefinition) {
 				processInnerBeanDefinition((BeanDefinition) value, registry);
+			}
+		}
+		/*
+		 * Register required reflection configuration for private bean initialization (post construct) methods
+		 * that need to be called via ReflectionUtils.
+		 */
+		for (MemberDescriptor<Method> callback : descriptor.getInitializationMethods()) {
+			Method targetMethod = callback.getMember();
+			if (Modifier.isPrivate(targetMethod.getModifiers())) {
+				registry.reflection().forType(targetMethod.getDeclaringClass()).withMethods(targetMethod);
 			}
 		}
 	}

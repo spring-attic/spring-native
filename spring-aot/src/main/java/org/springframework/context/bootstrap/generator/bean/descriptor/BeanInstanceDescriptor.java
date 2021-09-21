@@ -34,6 +34,7 @@ import org.springframework.util.ClassUtils;
  * Describe how an instance of a bean can be supplied.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 public final class BeanInstanceDescriptor {
 
@@ -47,12 +48,15 @@ public final class BeanInstanceDescriptor {
 
 	private final List<PropertyDescriptor> properties;
 
+	private final List<MemberDescriptor<Method>> initializationMethods;
+
 	private BeanInstanceDescriptor(Builder builder) {
 		this.beanType = builder.beanType;
 		this.instanceCreator = builder.instanceCreator;
 		this.instanceCallbacks = new ArrayList<>(builder.instanceCallbacks);
 		this.injectionPoints = new ArrayList<>(builder.injectionPoints);
 		this.properties = new ArrayList<>(builder.properties);
+		this.initializationMethods = new ArrayList<>(builder.initializationMethods);
 	}
 
 	/**
@@ -123,6 +127,14 @@ public final class BeanInstanceDescriptor {
 	 */
 	public List<PropertyDescriptor> getProperties() {
 		return this.properties;
+	}
+
+	/**
+	 * Return the {@link MemberDescriptor methods} that should be honored once to initialize the bean after creation.
+	 * @return the initialization callbacks, if any. Never {@literal null}.
+	 */
+	public List<MemberDescriptor<Method>> getInitializationMethods() {
+		return initializationMethods;
 	}
 
 	/**
@@ -202,6 +214,8 @@ public final class BeanInstanceDescriptor {
 
 		private final List<PropertyDescriptor> properties = new ArrayList<>();
 
+		private final List<MemberDescriptor<Method>> initializationMethods = new ArrayList<>();
+
 		Builder(ResolvableType beanType) {
 			Assert.notNull(beanType, "BeanType must not be null");
 			this.beanType = beanType;
@@ -239,6 +253,16 @@ public final class BeanInstanceDescriptor {
 
 		public Builder withProperties(List<PropertyDescriptor> propertyValues) {
 			this.properties.addAll(propertyValues);
+			return this;
+		}
+
+		public Builder withInitMethods(List<MemberDescriptor<Method>> initMethods) {
+			this.initializationMethods.addAll(initMethods);
+			return this;
+		}
+
+		public Builder withInitMethod(MemberDescriptor<Method> initMethod) {
+			this.initializationMethods.add(initMethod);
 			return this;
 		}
 
