@@ -72,6 +72,10 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		ClassLoader classLoader = resourceLoader.getClassLoader();
 		Class<?> applicationClass;
 		String applicationClassName = context.getApplicationClass();
+		if (applicationClassName == null) {
+			logger.warn("No application class detected, skipping context bootstrap generation");
+			return;
+		}
 		try {
 			logger.info("Detected application class: " + applicationClassName);
 			applicationClass = ClassUtils.forName(applicationClassName, classLoader);
