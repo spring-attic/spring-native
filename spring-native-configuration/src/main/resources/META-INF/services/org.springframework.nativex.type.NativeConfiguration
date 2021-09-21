@@ -115,7 +115,6 @@ org.springframework.nativex.SpringNativeHints
 org.springframework.scheduling.annotation.SchedulingHints
 org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityHints
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints
-org.springframework.security.config.annotation.web.reactive.ReactiveSecurityHints
 org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
 org.springframework.session.servlet.HttpSessionHints
 org.springframework.session.server.WebSessionHints

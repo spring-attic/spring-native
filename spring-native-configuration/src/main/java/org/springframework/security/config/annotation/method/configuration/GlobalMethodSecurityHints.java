@@ -16,29 +16,15 @@
 
 package org.springframework.security.config.annotation.method.configuration;
 
-import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.JdkProxyHint;
-import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor;
+import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=GlobalMethodSecuritySelector.class, types = {
-		@TypeHint(types= {
-				EnableGlobalMethodSecurity.class,
-				GlobalMethodSecurityConfiguration.class,
-				AutoProxyRegistrar.class,
-				GlobalMethodSecurityAspectJAutoProxyRegistrar.class,
-				MethodSecurityMetadataSourceAdvisorRegistrar.class,
-				Jsr250MetadataSourceConfiguration.class,
-		}),
-		@TypeHint(types = MethodSecurityMetadataSourceAdvisor.class, access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS | AccessBits.DECLARED_CONSTRUCTORS),
+@NativeHint(trigger=GlobalMethodSecurityConfiguration.class, types = {
 		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access = AccessBits.DECLARED_CONSTRUCTORS),
 })
-@NativeHint(trigger = ReactiveMethodSecuritySelector.class, types = @TypeHint(types= {
-		AutoProxyRegistrar.class,
-		ReactiveMethodSecurityConfiguration.class}))
 @NativeHint(jdkProxies = @JdkProxyHint(types = {
 		org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,
 		org.springframework.core.annotation.SynthesizedAnnotation.class
