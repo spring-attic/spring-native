@@ -23,10 +23,9 @@ import org.springframework.util.ClassUtils;
  * Detects whether the application should be using AOT-generated classes at runtime.
  * 
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public abstract class AotModeDetector {
-
-	private static final boolean AOT_MODE_PROPERTY = System.getProperty("springAot") != null;
 
 	private static final String GENERATED_CLASS = "org.springframework.aot.StaticSpringFactories";
 
@@ -41,7 +40,7 @@ public abstract class AotModeDetector {
 	 * </ul>
 	 */
 	public static boolean isAotModeEnabled() {
-		if (AOT_MODE_PROPERTY || NativeDetector.inNativeImage()) {
+		if ("true".equals(System.getProperty("springAot")) || NativeDetector.inNativeImage()) {
 			if (!generatedClassPresent) {
 				throw new GeneratedClassNotFoundException(GENERATED_CLASS);
 			}
