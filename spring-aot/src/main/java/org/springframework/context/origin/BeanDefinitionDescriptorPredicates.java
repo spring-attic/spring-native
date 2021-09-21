@@ -56,7 +56,13 @@ public class BeanDefinitionDescriptorPredicates {
 	 * @return a predicate to filter based on bean class name
 	 */
 	public Predicate<BeanDefinitionDescriptor> ofBeanClassName(String className) {
-		return (candidate) -> className.equals(candidate.getBeanDefinition().getBeanClassName());
+		return (candidate) -> {
+			BeanDefinition beanDefinition = candidate.getBeanDefinition();
+			if (beanDefinition.getBeanClassName() != null) {
+				return className.equals(beanDefinition.getBeanClassName());
+			}
+			return className.equals(beanDefinition.getResolvableType().toClass().getName());
+		};
 	}
 
 	/**

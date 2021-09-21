@@ -36,11 +36,11 @@ class ConfigurationPropertiesBeanDefinitionOriginAnalyzer implements BeanDefinit
 		});
 		// See EnableConfigurationPropertiesRegistrar - let's bind that to the auto-configuration
 		analysis.beanDefinitions().filter(predicates
-				.ofBeanClassName(ConfigurationPropertiesAutoConfiguration.class.getName())).findFirst().ifPresent((parent) ->
+				.ofBeanClassName(ConfigurationPropertiesAutoConfiguration.class)).findFirst().ifPresent((parent) ->
 				analysis.unresolved().filter(predicates.ofBeanClassName(ConfigurationPropertiesBindingPostProcessor.class)
 						.or(predicates.ofBeanClassName(MethodValidationExcludeFilter.class).or(predicates.ofBeanClassName(BoundConfigurationProperties.class)
-								.or(predicates.ofBeanClassName(ConfigurationPropertiesBinder.Factory.class.getName())
-										.or(predicates.ofBeanClassName(ConfigurationPropertiesBinder.class.getName()))))))
+								.or(predicates.ofBeanClassName(ConfigurationPropertiesBinder.Factory.class)
+										.or(predicates.ofBeanClassName(ConfigurationPropertiesBinder.class))))))
 						.forEach((descriptor) -> analysis.markAsResolved(
 								descriptor.resolve(Type.INFRASTRUCTURE, Collections.singleton(parent.getBeanName())))));
 	}
