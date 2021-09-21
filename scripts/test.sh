@@ -43,7 +43,7 @@ else
 fi
 
 if [[ "$AOT_ONLY" == true ]]; then
-  EXECUTABLE="java -jar $JAR_DIR/*.jar"
+  EXECUTABLE="java -DspringAot=true -jar $JAR_DIR/*.jar"
 else
   if ! [ -z "$1" ]; then
     if [[ "$1" != "--"* ]]; then
