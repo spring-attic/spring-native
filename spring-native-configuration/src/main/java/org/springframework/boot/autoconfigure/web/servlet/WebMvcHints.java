@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorViewResolver;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.view.InternalResourceView;
 	types = {
 		@TypeHint(types= {
 				ErrorPage.class,
+				BasicErrorController.class, // TODO review why this is required given where it is created
 				DefaultErrorViewResolver.class,
 				BeanNameViewResolver.class,
 				ErrorPageRegistrarBeanPostProcessor.class}
