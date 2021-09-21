@@ -21,6 +21,7 @@ import org.springframework.cloud.stream.binder.kafka.config.KafkaBinderHealthInd
 import org.springframework.cloud.stream.binder.kafka.properties.KafkaBindingProperties;
 import org.springframework.cloud.stream.binder.kafka.properties.KafkaExtendedBindingProperties;
 import org.springframework.cloud.stream.function.FunctionConfiguration;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -33,7 +34,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 						KafkaBinderHealthIndicatorConfiguration.class,
 						KafkaExtendedBindingProperties.class,
 						KafkaBindingProperties.class
-				})
+				}, access = AccessBits.FULL_REFLECTION)
 		})
 @TypeHint(typeNames = {
 		"org.springframework.cloud.stream.function.BindableFunctionProxyFactory",

@@ -41,7 +41,10 @@ public class SpringCloudStreamKafkaApplication {
 			String woodchuck = "How much wood a woodchuck chuck if a woodchuck could chuck wood?";
 			final String[] splitWoodchuck = woodchuck.split(" ");
 			Random random = new Random();
-			return splitWoodchuck[random.nextInt(splitWoodchuck.length)];
+
+			final String s = splitWoodchuck[random.nextInt(splitWoodchuck.length)];
+			System.out.println("From Supplier: " + s);
+			return s;
 		};
 	}
 
