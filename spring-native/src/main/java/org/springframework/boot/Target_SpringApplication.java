@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.metrics.ApplicationStartup;
+import org.springframework.nativex.AotModeDetector;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.util.StringUtils;
 
@@ -97,7 +98,7 @@ final class Target_SpringApplication {
 	@Substitute
 	public Target_SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
-		this.primarySources = SpringApplicationAotUtils.SPRING_AOT ?
+		this.primarySources = AotModeDetector.isAotModeEnabled() ?
 				new LinkedHashSet<>(Arrays.asList(Object.class)) : new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = (List<BootstrapRegistryInitializer>) getSpringFactoriesInstances(BootstrapRegistryInitializer.class);
@@ -105,7 +106,7 @@ final class Target_SpringApplication {
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 
-		if (SpringApplicationAotUtils.SPRING_AOT) {
+		if (AotModeDetector.isAotModeEnabled()) {
 			logger.info("AOT mode enabled");
 			setApplicationContextFactory(SpringApplicationAotUtils.AOT_FACTORY);
 			setInitializers(Arrays.asList(SpringApplicationAotUtils.getBootstrapInitializer(), new ConditionEvaluationReportLoggingListener()));
@@ -117,7 +118,7 @@ final class Target_SpringApplication {
 
 	@Substitute
 	protected void load(ApplicationContext context, Object[] sources) {
-		if (!SpringApplicationAotUtils.SPRING_AOT) {
+		if (!AotModeDetector.isAotModeEnabled()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 			}

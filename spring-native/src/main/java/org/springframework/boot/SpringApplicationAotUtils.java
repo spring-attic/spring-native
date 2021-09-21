@@ -6,7 +6,6 @@ import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicatio
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.NativeDetector;
 
 /**
  * Additional methods and fields required for {@link SpringApplication} substitution.
@@ -14,9 +13,6 @@ import org.springframework.core.NativeDetector;
  * @author Sebastien Deleuze
  */
 class SpringApplicationAotUtils {
-
-	public static final boolean SPRING_AOT = "true".equals(System.getProperty("springAot"))
-			|| NativeDetector.inNativeImage();
 
 	public static ApplicationContextFactory AOT_FACTORY = (webApplicationType) -> {
 		try {
