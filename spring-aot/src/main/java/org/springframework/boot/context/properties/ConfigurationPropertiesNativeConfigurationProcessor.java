@@ -16,17 +16,21 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Field;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * A {@link BeanFactoryNativeConfigurationProcessor} that allows reflection access on
  * all declared methods of {@link ConfigurationProperties @ConfigurationProperties}
- * annotated types and their nested types.
+ * annotated types, their nested types and any complex types that are exposed as a sub-
+ * namespace.
  *
  * @author Stephane Nicoll
  * @author Christoph Strobl
@@ -37,16 +41,26 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
 		for (String beanName : beanNames) {
-			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-			Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
-			registerWithMembersIfNecessary(type, registry);
+			processConfigurationProperties(registry, beanFactory.getMergedBeanDefinition(beanName));
 		}
 	}
 
-	private void registerWithMembersIfNecessary(Class<?> type, NativeConfigurationRegistry registry) {
+	private void processConfigurationProperties(NativeConfigurationRegistry registry, BeanDefinition beanDefinition) {
+		Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
+		registerWithNestedMembersIfNecessary(registry, type);
+		ReflectionUtils.doWithFields(type, (field) -> registerWithNestedMembersIfNecessary(registry, field.getType()),
+				this::isNestedConfigurationProperties);
+	}
+
+	private void registerWithNestedMembersIfNecessary(NativeConfigurationRegistry registry, Class<?> type) {
 		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
 		for (Class<?> nested : type.getDeclaredClasses()) {
-			registerWithMembersIfNecessary(nested, registry);
+			registerWithNestedMembersIfNecessary(registry, nested);
 		}
 	}
+
+	private boolean isNestedConfigurationProperties(Field field) {
+		return (field.getAnnotation(NestedConfigurationProperty.class) != null);
+	}
+
 }
