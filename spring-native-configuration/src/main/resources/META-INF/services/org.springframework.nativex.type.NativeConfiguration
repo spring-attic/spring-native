@@ -81,9 +81,7 @@ org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientHints
 org.springframework.boot.test.web.client.WebClientTestHints
 org.springframework.boot.test.web.reactive.server.ReactiveServerTestHints
 org.springframework.boot.web.client.ClientHttpRequestFactoryHints
-org.springframework.cloud.bootstrap.BootstrapHints
 org.springframework.cloud.client.FeaturesEndpointHints
-org.springframework.cloud.client.discovery.DiscoveryClientHints
 org.springframework.cloud.commons.util.CloudCommonsHints
 org.springframework.cloud.config.client.ConfigClientHints
 org.springframework.cloud.config.server.ConfigServerHints
