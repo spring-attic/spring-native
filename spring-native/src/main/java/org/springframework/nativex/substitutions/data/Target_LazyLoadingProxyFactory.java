@@ -18,7 +18,6 @@ package org.springframework.nativex.substitutions.data;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import com.mongodb.DBRef;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
@@ -27,25 +26,27 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.mongodb.core.convert.DbRefProxyHandler;
 import org.springframework.data.mongodb.core.convert.DbRefResolverCallback;
 import org.springframework.data.mongodb.core.convert.LazyLoadingProxy;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
-import org.springframework.lang.Nullable;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
-@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
-public final class Target_DefaultDbRefResolver {
+/**
+ * @author Christoph Strobl
+ * @since 0.11
+ */
+@TargetClass(className = "org.springframework.data.mongodb.core.convert.LazyLoadingProxyFactory", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
+public final class Target_LazyLoadingProxyFactory {
 
 	@Alias
 	private PersistenceExceptionTranslator exceptionTranslator = null;
 
 	@Substitute
-	private Object createLazyLoadingProxy(MongoPersistentProperty property, @Nullable DBRef dbref,
-			DbRefResolverCallback callback, DbRefProxyHandler handler) {
+	public Object createLazyLoadingProxy(MongoPersistentProperty property, DbRefResolverCallback callback,
+			Object source) {
 
 		Class<?> propertyType = property.getType();
-		LazyLoadingInterceptor interceptor = new LazyLoadingInterceptor(property, dbref, exceptionTranslator, callback);
+		LazyLoadingInterceptor interceptor = new LazyLoadingInterceptor(property, callback, source, exceptionTranslator);
 
 		if (!propertyType.isInterface()) {
 
@@ -67,15 +68,16 @@ public final class Target_DefaultDbRefResolver {
 		proxyFactory.addInterface(propertyType);
 		proxyFactory.addAdvice(interceptor);
 
-		return handler.populateId(property, dbref, proxyFactory.getProxy(LazyLoadingProxy.class.getClassLoader()));
+		return proxyFactory.getProxy(LazyLoadingProxy.class.getClassLoader());
 	}
 
-	@TargetClass(className = "org.springframework.data.mongodb.core.convert.DefaultDbRefResolver", innerClass = "LazyLoadingInterceptor", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
-	static final class LazyLoadingInterceptor implements MethodInterceptor, org.springframework.cglib.proxy.MethodInterceptor, Serializable {
+	@TargetClass(className = "org.springframework.data.mongodb.core.convert.LazyLoadingProxyFactory", innerClass = "LazyLoadingInterceptor", onlyWith = {OnlyIfPresent.class, OnlyIfImperativeMongoClient.class})
+	static final class LazyLoadingInterceptor
+			implements MethodInterceptor, org.springframework.cglib.proxy.MethodInterceptor, Serializable {
 
 		@Alias
-		public LazyLoadingInterceptor(MongoPersistentProperty property, @Nullable DBRef dbref,
-				PersistenceExceptionTranslator exceptionTranslator, DbRefResolverCallback callback) {
+		public LazyLoadingInterceptor(MongoPersistentProperty property, DbRefResolverCallback callback, Object source,
+				PersistenceExceptionTranslator exceptionTranslator) {
 		}
 
 		@Alias
