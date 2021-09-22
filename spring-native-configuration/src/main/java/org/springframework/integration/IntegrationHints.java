@@ -40,7 +40,7 @@ import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger = JdbcMessageStore.class,
 		resources = @ResourceHint(patterns = "org/springframework/integration/jdbc/schema-.*.sql"))
-@NativeHint(trigger = org.springframework.integration.config.EnableIntegration.class,
+@NativeHint(trigger = org.springframework.integration.config.IntegrationManagementConfiguration.class,
 		initialization =
 		@InitializationHint(initTime = InitializationTime.BUILD,
 				types = {
