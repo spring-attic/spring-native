@@ -2941,6 +2941,9 @@ public class Type {
 		return this.typeSystem;
 	}
 
+	/**
+	 * The callback string will be of the dotted form, for example: javax.persistence.PersistenceContext
+	 */
 	public boolean hasAnnotatedField(Predicate<String> annotationCheck) {
 		if (node.fields != null) {
 			for (FieldNode fieldNode : node.fields) {
