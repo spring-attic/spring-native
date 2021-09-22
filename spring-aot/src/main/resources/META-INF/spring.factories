@@ -9,6 +9,7 @@ org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrat
 org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
 
 org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
+org.springframework.boot.actuate.endpoint.annotation.EndpointNativeConfigurationProcessor,\
 org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor
 
 org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
