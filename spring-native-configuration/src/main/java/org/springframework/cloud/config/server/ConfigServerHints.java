@@ -70,6 +70,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 						CoreConfig.AutoCRLF.class,
 						CoreConfig.CheckStat.class,
 						CoreConfig.EOL.class,
+						CoreConfig.LogRefUpdates.class,
 						CoreConfig.HideDotFiles.class,
 						CoreConfig.SymLinks.class,
 						PropertyValueDescriptor.class,
