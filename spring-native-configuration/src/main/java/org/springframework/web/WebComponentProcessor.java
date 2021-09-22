@@ -17,11 +17,15 @@
 package org.springframework.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.ComponentProcessor;
+import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.Field;
@@ -50,6 +54,8 @@ public class WebComponentProcessor implements ComponentProcessor {
 		List<Method> mappings = controllerType.getMethods(m -> m.isAtMapping());
 		imageContext.log("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
 		for (Method mapping: mappings) {
+			MethodDescriptor methodDescriptor = new MethodDescriptor(mapping.getName(), mapping.getParameterTypes().stream().map(t -> t.getName()).collect(Collectors.toList()));
+			imageContext.addReflectiveAccess(controllerType, new AccessDescriptor(AccessBits.NONE, Collections.singletonList(methodDescriptor), Collections.emptyList()));
 			List<Type> toProcess = new ArrayList<>();
 			toProcess.addAll(mapping.getParameterTypes());
 			toProcess.addAll(mapping.getSignatureTypes(true));
