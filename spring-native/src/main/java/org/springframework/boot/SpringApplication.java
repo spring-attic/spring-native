@@ -329,7 +329,7 @@ public class SpringApplication {
 
 		try {
 			stopWatch.stop();
-			listeners.running(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
+			listeners.ready(context, Duration.ofMillis(stopWatch.getTotalTimeMillis()));
 		}
 		catch (Throwable ex) {
 			handleRunFailure(context, ex, null);
