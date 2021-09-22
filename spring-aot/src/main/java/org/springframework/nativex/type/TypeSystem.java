@@ -949,7 +949,7 @@ public class TypeSystem {
 			}
 			Type type = resolveDotted(keytype,true);
 			if (type != null) {
-				if (type.isAtConfiguration() || type.isFactoryBean() || type.isInitializingBean()) {
+				if (type.isAtConfiguration() || type.isFactoryBean() || type.isInitializingBean() || type.isBeanPostProcessor()) {
 					logger.debug("Skip " + type.getShortName() + " processing since it will be processed on AOT side");
 				}
 				else if (type.isImportRegistrar() || type.isImportSelector() ||
