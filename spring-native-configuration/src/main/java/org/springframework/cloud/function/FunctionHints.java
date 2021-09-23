@@ -16,14 +16,20 @@
 
 package org.springframework.cloud.function;
 
+import org.springframework.cloud.function.context.FunctionalSpringApplication;
 import org.springframework.cloud.function.context.config.KotlinLambdaToFunctionAutoConfiguration;
+import org.springframework.cloud.function.web.source.RequestBuilder;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-@InitializationHint(typeNames = "org.springframework.cloud.function.web.function.FunctionEndpointInitializer", initTime = InitializationTime.BUILD)
+@NativeHint(trigger = FunctionalSpringApplication.class, types =
+		@TypeHint(types = GenericApplicationContext.class))
+@NativeHint(trigger = RequestBuilder.class, initialization =
+	@InitializationHint(typeNames = "org.springframework.cloud.function.web.function.FunctionEndpointInitializer", initTime = InitializationTime.BUILD))
 @NativeHint(trigger = KotlinLambdaToFunctionAutoConfiguration.class, types =
 	@TypeHint(typeNames = "org.springframework.cloud.function.context.config.KotlinLambdaToFunctionAutoConfiguration$KotlinFunctionWrapper"))
 public class FunctionHints implements NativeConfiguration {
