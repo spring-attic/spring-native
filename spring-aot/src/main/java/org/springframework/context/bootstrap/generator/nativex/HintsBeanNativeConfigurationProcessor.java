@@ -18,22 +18,16 @@ package org.springframework.context.bootstrap.generator.nativex;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InitializationCallback;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.InitializationConfiguration;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ProxyConfiguration;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ResourcesConfiguration;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.SerializationConfiguration;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeInitializationEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
@@ -50,12 +44,16 @@ import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.util.ClassUtils;
 
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.InitializationConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ProxyConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ResourcesConfiguration;
+import static org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.SerializationConfiguration;
+
 /**
  * Add bean level hints to the generated native configuration.
  *
  * @author Andy Clement
  * @author Sebastien Deleuze
- * @author Christoph Strobl
  */
 class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationProcessor {
 
@@ -64,7 +62,6 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 	@Override
 	public void process(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
 		findAndRegisterRelevantNativeHints(descriptor.getUserBeanClass(), registry);
-		registerReflectionForInitializtionMethodsIfNecessary(descriptor, registry);
 	}
 
 	/**
@@ -198,23 +195,6 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 		}
 		if (beanType.getSuperclass() != null) {
 			findAndRegisterRelevantNativeHints(beanType.getSuperclass(), registry);
-		}
-	}
-
-	/**
-	 * Register required reflection configuration for private bean initialization (post construct) methods
-	 * that need to be called via {@link org.springframework.util.ReflectionUtils}.
-	 *
-	 * @param descriptor the descriptor to inspect.
-	 * @param registry the registry to add hints to.
-	 */
-	private void registerReflectionForInitializtionMethodsIfNecessary(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
-
-		for (InitializationCallback callback : descriptor.getInitializationCallbacks()) {
-			Method targetMethod = callback.getTargetMethod();
-			if (Modifier.isPrivate(targetMethod.getModifiers())) {
-				registry.reflection().forType(targetMethod.getDeclaringClass()).withMethods(targetMethod);
-			}
 		}
 	}
 }

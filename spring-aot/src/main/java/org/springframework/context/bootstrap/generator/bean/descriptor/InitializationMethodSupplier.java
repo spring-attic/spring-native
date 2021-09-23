@@ -16,37 +16,34 @@
 
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.squareup.javapoet.CodeBlock;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InitializationCallback;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Provide the {@link InitializationCallback initialization (post construct) callbacks} of a given class.
+ * Provide the {@link MemberDescriptor initialization (post construct) methods} of a given class.
  *
  * @author Christoph Strobl
  */
-class InitializationCallbacksSupplier {
+class InitializationMethodSupplier {
 
 	private static final Field EXTERNALLY_MANAGED_INIT_METHODS;
 
-	static {
+	static { // TODO: remove once https://github.com/spring-projects/spring-framework/issues/27449 is resolved
 
 		EXTERNALLY_MANAGED_INIT_METHODS = ReflectionUtils.findField(RootBeanDefinition.class, "externallyManagedInitMethods");
 		ReflectionUtils.makeAccessible(EXTERNALLY_MANAGED_INIT_METHODS);
 	}
 
-	List<InitializationCallback> detectInstanceCallbacks(BeanDefinition beanDefinition) {
+	List<MemberDescriptor<Method>> getInstanceCallbacks(BeanDefinition beanDefinition) {
 
 		if(!(beanDefinition instanceof RootBeanDefinition)) {
 			return Collections.emptyList();
@@ -59,45 +56,20 @@ class InitializationCallbacksSupplier {
 			return Collections.emptyList();
 		}
 
-		List<InitializationCallback> callbacks = new ArrayList<>();
+		List<MemberDescriptor<Method>> callbacks = new ArrayList<>();
 		Class<?> targetType = beanDefinition.getResolvableType().toClass();
 		for (Object initMethodName : (Iterable<? extends Object>) field) {
-			callbacks.add(getInitMethodCallback(initMethodName.toString(), targetType));
+			callbacks.add(getInitMethodDescriptor(initMethodName.toString(), targetType));
 		}
 		return callbacks;
 	}
 
-	List<InitializationCallback> detectInstanceCallbacks(Class<?> type) {
-
-		List<InitializationCallback> callbacks = new ArrayList<>();
-		ReflectionUtils.doWithMethods(type, method -> callbacks.add(getInitMethodCallback(method)), method -> !ObjectUtils.isEmpty(method.getAnnotationsByType(PostConstruct.class)));
-		return callbacks;
+	private MemberDescriptor<Method> getInitMethodDescriptor(Method method) {
+		return new MemberDescriptor<>(method, true);
 	}
 
-	private InitializationCallback getInitMethodCallback(Method initMethod) {
-
-		return new InitializationCallback(initMethod, (variable) -> {
-
-			if(!Modifier.isPrivate(initMethod.getModifiers())) {
-				return CodeBlock.of("$L.$L()", variable, initMethod.getName());
-			}
-
-			String initMethodName = initMethod.getName();
-			String targetMethodNameName = String.format("%sMethod", initMethodName);
-
-			CodeBlock.Builder code = CodeBlock.builder();
-			code.add("$T $L = $T.findMethod($T.class, $S);\n", Method.class, targetMethodNameName, ReflectionUtils.class,
-					initMethod.getDeclaringClass(), initMethod.getName());
-
-			code.add("$T.makeAccessible($L);\n", ReflectionUtils.class, targetMethodNameName);
-			code.add("$T.invokeMethod($L, $L)", ReflectionUtils.class, targetMethodNameName, variable);
-
-			return code.build();
-		});
-	}
-
-	private InitializationCallback getInitMethodCallback(String initMethod, Class<?> targetType) {
-		return getInitMethodCallback(ReflectionUtils.findMethod(targetType, extractInitMethodName(initMethod, targetType)));
+	private MemberDescriptor<Method>  getInitMethodDescriptor(String initMethod, Class<?> targetType) {
+		return getInitMethodDescriptor(ReflectionUtils.findMethod(targetType, extractInitMethodName(initMethod, targetType)));
 	}
 
 	private String extractInitMethodName(Object initMethodName, Class<?> targetType) {

@@ -17,11 +17,11 @@
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InitializationCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InstanceCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
@@ -44,14 +44,14 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 
 	private final PropertiesSupplier propertiesSupplier;
 
-	private final InitializationCallbacksSupplier initializationCallbacksSupplier;
+	private final InitializationMethodSupplier initializationMethodSupplier;
 
 	public DefaultBeanInstanceDescriptorFactory(ConfigurableBeanFactory beanFactory) {
 		this.instanceCreatorSupplier = new BeanInstanceExecutableSupplier(beanFactory);
 		this.instanceCallbacksSupplier = new InstanceCallbacksSupplier();
 		this.injectionPointsSupplier = new InjectionPointsSupplier(beanFactory.getBeanClassLoader());
 		this.propertiesSupplier = new PropertiesSupplier();
-		this.initializationCallbacksSupplier = new InitializationCallbacksSupplier();
+		this.initializationMethodSupplier = new InitializationMethodSupplier();
 	}
 
 	@Override
@@ -63,11 +63,11 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 			List<InstanceCallback> instanceCallbacks = this.instanceCallbacksSupplier.detectInstanceCallbacks(beanType);
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
 			List<PropertyDescriptor> properties = this.propertiesSupplier.detectProperties(beanDefinition);
-			List<InitializationCallback> initializationCallbacks = this.initializationCallbacksSupplier.detectInstanceCallbacks(beanDefinition);
+			List<MemberDescriptor<Method>> initializationCallbacks = this.initializationMethodSupplier.getInstanceCallbacks(beanDefinition);
 			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())
 					.withInstanceCreator(instanceCreator).withInstanceCallbacks(instanceCallbacks)
 					.withInjectionPoints(injectionPoints).withProperties(properties)
-					.withInitializationCallbacks(initializationCallbacks)
+					.withInitMethods(initializationCallbacks)
 					.build();
 		}
 		return null;

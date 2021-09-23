@@ -48,7 +48,7 @@ public final class BeanInstanceDescriptor {
 
 	private final List<PropertyDescriptor> properties;
 
-	private final List<InitializationCallback> initializationCallbacks;
+	private final List<MemberDescriptor<Method>> initializationMethods;
 
 	private BeanInstanceDescriptor(Builder builder) {
 		this.beanType = builder.beanType;
@@ -56,7 +56,7 @@ public final class BeanInstanceDescriptor {
 		this.instanceCallbacks = new ArrayList<>(builder.instanceCallbacks);
 		this.injectionPoints = new ArrayList<>(builder.injectionPoints);
 		this.properties = new ArrayList<>(builder.properties);
-		this.initializationCallbacks = new ArrayList<>(builder.initializationCallbacks);
+		this.initializationMethods = new ArrayList<>(builder.initializationMethods);
 	}
 
 	/**
@@ -130,11 +130,11 @@ public final class BeanInstanceDescriptor {
 	}
 
 	/**
-	 * Return the callbacks that should be honored once to initialize the bean after creation.
+	 * Return the {@link MemberDescriptor methods} that should be honored once to initialize the bean after creation.
 	 * @return the initialization callbacks, if any. Never {@literal null}.
 	 */
-	public List<InitializationCallback> getInitializationCallbacks() {
-		return initializationCallbacks;
+	public List<MemberDescriptor<Method>> getInitializationMethods() {
+		return initializationMethods;
 	}
 
 	/**
@@ -179,37 +179,6 @@ public final class BeanInstanceDescriptor {
 	}
 
 	/**
-	 * Wraps the code that's necessary to invoce initialization (post construct) methods if any.
-	 */
-	public static class InitializationCallback {
-
-		private final Function<String, CodeBlock> code;
-		private final Method targetMethod;
-
-		/**
-		 * @param targetMethod the method to be invoked after bean creation.
-		 * @param code the function providing the code that actually does the invocation.
-		 */
-		public InitializationCallback(Method targetMethod, Function<String, CodeBlock> code) {
-
-			this.targetMethod = targetMethod;
-			this.code = code;
-		}
-
-		public CodeBlock write(String beanVariable) {
-			return this.code.apply(beanVariable);
-		}
-
-		/**
-		 * Obtain the method to be called in order to initialize the bean.
-		 * @return never {@literal null}.
-		 */
-		public Method getTargetMethod() {
-			return targetMethod;
-		}
-	}
-
-	/**
 	 * Describe a property that is used to initialize a Bean instance.
 	 */
 	public static class PropertyDescriptor {
@@ -245,7 +214,7 @@ public final class BeanInstanceDescriptor {
 
 		private final List<PropertyDescriptor> properties = new ArrayList<>();
 
-		private final List<InitializationCallback> initializationCallbacks = new ArrayList<>();
+		private final List<MemberDescriptor<Method>> initializationMethods = new ArrayList<>();
 
 		Builder(ResolvableType beanType) {
 			Assert.notNull(beanType, "BeanType must not be null");
@@ -287,8 +256,13 @@ public final class BeanInstanceDescriptor {
 			return this;
 		}
 
-		public Builder withInitializationCallbacks(List<InitializationCallback> instanceCallbacks) {
-			this.initializationCallbacks.addAll(instanceCallbacks);
+		public Builder withInitMethods(List<MemberDescriptor<Method>> initMethods) {
+			this.initializationMethods.addAll(initMethods);
+			return this;
+		}
+
+		public Builder withInitMethod(MemberDescriptor<Method> initMethod) {
+			this.initializationMethods.add(initMethod);
 			return this;
 		}
 

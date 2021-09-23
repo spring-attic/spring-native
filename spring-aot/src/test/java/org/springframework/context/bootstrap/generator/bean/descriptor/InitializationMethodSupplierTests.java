@@ -18,59 +18,64 @@ package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InitializationCallback;
+import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
+import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.HavingPublicExternallyManagedInitMethodInParent;
 import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.NoInitMethod;
 import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.PrivateExternallyManagedInitMethod;
 import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.PublicExternallyManagedInitMethod;
-import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 
 /**
- * Tests for {@link InitializationCallbacksSupplier}.
+ * Tests for {@link InitializationMethodSupplier}.
  *
  * @author Christoph Strobl
  */
-class InitializationCallbacksSupplierTests {
+class InitializationMethodSupplierTests {
 
-	private final InitializationCallbacksSupplier supplier = new InitializationCallbacksSupplier();
+	private final InitializationMethodSupplier supplier = new InitializationMethodSupplier();
 	private final CommonAnnotationBeanPostProcessor postProcessor = new CommonAnnotationBeanPostProcessor();
 
 	@Test // GH-1048
 	void emptyCallbacksForTypesThatDoNotDefineAnInitMethod() {
 
-		List<InitializationCallback> callbacks = computeCallbacks(NoInitMethod.class);
+		List<MemberDescriptor<Method>> callbacks = computeCallbacks(NoInitMethod.class);
 		assertThat(callbacks).isEmpty();
 	}
 
 	@Test // GH-1048
 	void publicInitMethod() {
 
-		List<InitializationCallback> callbacks = computeCallbacks(PublicExternallyManagedInitMethod.class);
+		List<MemberDescriptor<Method>> callbacks = computeCallbacks(PublicExternallyManagedInitMethod.class);
 
-		assertThat(callbacks).singleElement().satisfies((callback) -> assertThat(CodeSnippet.of(callback.write("bean")))
-				.isEqualTo("bean.publicInit()"));
+		assertThat(callbacks).singleElement().satisfies((callback) -> assertThat(callback.getMember().getName()).isEqualTo("publicInit"));
 	}
 
 	@Test // GH-1048
 	void privateInitMethod() {
 
-		List<InitializationCallback> callbacks = computeCallbacks(PrivateExternallyManagedInitMethod.class);
+		List<MemberDescriptor<Method>> callbacks = computeCallbacks(PrivateExternallyManagedInitMethod.class);
 
-		assertThat(callbacks).singleElement().satisfies((callback) -> assertThat(CodeSnippet.of(callback.write("bean")))
-				.contains("ReflectionUtils.findMethod(ConfigHavingBeansWithInitMethod.PrivateExternallyManagedInitMethod.class, \"privateInit\")")
-				.contains("ReflectionUtils.makeAccessible(privateInitMethod)")
-				.contains("ReflectionUtils.invokeMethod(privateInitMethod, bean)"));
+		assertThat(callbacks).singleElement().satisfies((callback) -> assertThat(callback.getMember().getName()).isEqualTo("privateInit"));
 	}
 
-	private List<InitializationCallback> computeCallbacks(Class<?> beanTargetType) {
+	@Test // GH-1048
+	void inheritedInitMethod() {
+
+		List<MemberDescriptor<Method>> callbacks = computeCallbacks(HavingPublicExternallyManagedInitMethodInParent.class);
+
+		assertThat(callbacks).singleElement().satisfies((callback) -> assertThat(callback.getMember().getName()).isEqualTo("publicInit"));
+	}
+
+	private List<MemberDescriptor<Method>> computeCallbacks(Class<?> beanTargetType) {
 
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanTargetType);
 		postProcessor.postProcessMergedBeanDefinition(beanDefinition, beanDefinition.getResolvableType().toClass(), "targetBeanName");
 
-		return supplier.detectInstanceCallbacks(beanDefinition);
+		return supplier.getInstanceCallbacks(beanDefinition);
 	}
 }

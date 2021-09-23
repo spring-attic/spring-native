@@ -42,4 +42,8 @@ public class ConfigHavingBeansWithInitMethod {
 		@PostConstruct
 		private void privateInit() { }
 	}
+
+	public static class HavingPublicExternallyManagedInitMethodInParent extends PublicExternallyManagedInitMethod {
+
+	}
 }
