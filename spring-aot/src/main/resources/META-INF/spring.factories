@@ -15,6 +15,7 @@ org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigu
 org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
 org.springframework.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
 org.springframework.context.bootstrap.generator.nativex.FrameworkAnnotationsBeanNativeConfigurationProcessor,\
+org.springframework.context.bootstrap.generator.nativex.FrameworkMethodsBeanNativeConfigurationProcessor,\
 org.springframework.context.bootstrap.generator.nativex.HintsBeanNativeConfigurationProcessor
 
 org.springframework.context.origin.BeanDefinitionOriginAnalyzer=\

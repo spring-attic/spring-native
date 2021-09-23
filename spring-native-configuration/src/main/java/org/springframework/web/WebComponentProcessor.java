@@ -54,8 +54,6 @@ public class WebComponentProcessor implements ComponentProcessor {
 		List<Method> mappings = controllerType.getMethods(m -> m.isAtMapping());
 		imageContext.log("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
 		for (Method mapping: mappings) {
-			MethodDescriptor methodDescriptor = new MethodDescriptor(mapping.getName(), mapping.getParameterTypes().stream().map(t -> t.getName()).collect(Collectors.toList()));
-			imageContext.addReflectiveAccess(controllerType, new AccessDescriptor(AccessBits.NONE, Collections.singletonList(methodDescriptor), Collections.emptyList()));
 			List<Type> toProcess = new ArrayList<>();
 			toProcess.addAll(mapping.getParameterTypes());
 			toProcess.addAll(mapping.getSignatureTypes(true));
