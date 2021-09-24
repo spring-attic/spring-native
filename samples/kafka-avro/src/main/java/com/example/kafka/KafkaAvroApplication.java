@@ -35,17 +35,17 @@ public class KafkaAvroApplication {
 	}
 
 	@Bean
-	public ConcurrentMessageListenerContainer<String, Thing3> manualListenerContainer(MyMessageListener listener,
-			ConcurrentKafkaListenerContainerFactory<String, Thing3> factory) {
+	public ConcurrentMessageListenerContainer<Object, Object> manualListenerContainer(MyMessageListener listener,
+			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 
-		ConcurrentMessageListenerContainer<String, Thing3> container = factory.createContainer("graal");
+		ConcurrentMessageListenerContainer<Object, Object> container = factory.createContainer("graal");
 		container.getContainerProperties().setGroupId("graal3");
 		container.getContainerProperties().setMessageListener(listener);
 		return container;
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, Thing> template) {
+	public ApplicationRunner runner(KafkaTemplate<Object, Object> template) {
 		return args -> {
 			Thing thing = Thing.newBuilder().setStringField("someValue").setIntField(42).build();
 			template.send("graal", thing);

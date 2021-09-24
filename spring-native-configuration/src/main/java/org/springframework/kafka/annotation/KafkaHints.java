@@ -72,7 +72,7 @@ import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 
-@NativeHint(trigger=KafkaListenerConfigurationSelector.class,
+@NativeHint(trigger=KafkaListenerAnnotationBeanPostProcessor.class,
 	types = {
 		@TypeHint(types= {
 				PartitionOffset.class,
