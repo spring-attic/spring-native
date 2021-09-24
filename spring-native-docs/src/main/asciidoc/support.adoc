@@ -88,7 +88,6 @@ Group ID is `org.springframework.cloud`.
 
 NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false` for compatibility and footprint reasons. `spring.sleuth.async.enabled` is also set to `false` since this feature leads to too much proxies created for a reasonable footprint.
 
-* `spring-cloud-starter-bootstrap`
 * `spring-cloud-starter-config`
 * `spring-cloud-config-client`
 * `spring-cloud-config-server`
@@ -100,6 +99,8 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-starter-function-webflux`
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-cloud-starter-sleuth`
+
+NOTE: Spring Cloud Bootstrap is no longer supported.
 
 [[support-spring-data]]
 === Spring Data
