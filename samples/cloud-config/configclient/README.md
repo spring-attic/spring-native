@@ -1,5 +1,8 @@
 # configclient
 
-This sample is Boot 2.4 but using the bootstrap dependency to load 
-configuration data 'the old way'
+This config client is using the new Boot 2.4 configuration loading scheme
+
+```
+spring.config.import=configserver:http://localhost:8888
+```
 
