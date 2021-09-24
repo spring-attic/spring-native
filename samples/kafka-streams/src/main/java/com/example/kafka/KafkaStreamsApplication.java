@@ -46,7 +46,7 @@ public class KafkaStreamsApplication {
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, String> template) {
+	public ApplicationRunner runner(KafkaTemplate<Object, Object> template) {
 		return args -> {
 			template.send("graalStreamsIn", "foo");
 			System.out.println("++++++Sent:foo");

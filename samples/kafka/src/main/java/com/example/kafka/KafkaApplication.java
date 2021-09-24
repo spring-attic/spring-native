@@ -34,12 +34,10 @@ public class KafkaApplication {
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, Greeting> template,
-			ConsumerFactory<String, Greeting> cf) {
+	public ApplicationRunner runner(KafkaTemplate<Object, Object> template,
+			ConsumerFactory<Object, Object> cf) {
 
-		cf.addListener(new ConsumerFactory.Listener<String, Greeting>() {
-
-		});
+		cf.addListener(new ConsumerFactory.Listener<>() { });
 		return args -> {
 			Greeting data = new Greeting("Hello from GraalVM!");
 			template.send("graal", data);
