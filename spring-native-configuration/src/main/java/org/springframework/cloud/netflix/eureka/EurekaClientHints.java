@@ -64,5 +64,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"com.netflix.appinfo.InstanceInfo$PortWrapper"
 		}, access = AccessBits.ALL)
 })
+@NativeHint(trigger = EurekaDiscoveryClientConfiguration.class,
+		options = "--enable-http")
 public class EurekaClientHints implements NativeConfiguration {
 }
