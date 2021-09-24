@@ -29,8 +29,8 @@ public class KafkaApplication {
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, String> template,
-				ConsumerFactory<String, String> cf) {
+	public ApplicationRunner runner(KafkaTemplate<Object, Object> template,
+				ConsumerFactory<Object, Object> cf) {
 
 		cf.addListener(new ConsumerFactory.Listener() { });
 		return args -> {
