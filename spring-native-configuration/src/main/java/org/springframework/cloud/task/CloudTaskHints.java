@@ -70,7 +70,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types= {DatabaseMetaData.class})},
 		jdkProxies = {
 		@JdkProxyHint(typeNames = {
-				"org.springframework.cloud.task.batch.configuration.TaskBatchExecutionListenerBeanPostProcessor",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
 				"org.springframework.core.DecoratingProxy"}),
