@@ -1,7 +1,7 @@
 [[tracing-agent]]
 == Tracing agent
 
-The GraalVM native image tracing agent allows to intercept reflection, resources or proxy usage on the JVM in order to generate the related native configuration. Spring Native should generate most of this native configuration automatically, but the tracing agent can be used to quickly identify the missing entries.
+The GraalVM native image https://www.graalvm.org/reference-manual/native-image/Agent/[tracing agent] allows to intercept reflection, resources or proxy usage on the JVM in order to generate the related native configuration. Spring Native should generate most of this native configuration automatically, but the tracing agent can be used to quickly identify the missing entries.
 
 When using the agent to compute configuration for native-image, there are a couple of approaches:
 
@@ -14,6 +14,17 @@ NOTE: See this related https://github.com/oracle/graal/issues/3283[graal#3283] i
 
 The second option sounds more appealing for a repeatable setup but by default the generated configuration will include anything required by the test infrastructure, which is unnecessary when the application runs for real.
 To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
+
+[[tracing-agent-running]]
+=== Running the application with the agent to compute configuration
+
+It is possible to use the tracing agent to run the application in AOT mode in order to compute the native configuration.
+That can be useful to find the missing native configuration, for example:
+
+ - Build the Spring Boot application with the AOT plugin enabled.
+ - Run the app with the tracing agent and generate the config temporarily in `src/main/resources` with for example `java -DspringAot=true -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/myapp-0.0.1-SNAPSHOT.jar`.
+ - Check if the sample is now working fine on native.
+ - Reduce the configuration in `src/main/resources/META-INF/native-image` to the minimal working set.
 
 [[tracing-agent-testing]]
 === Testing with the agent to compute configuration
