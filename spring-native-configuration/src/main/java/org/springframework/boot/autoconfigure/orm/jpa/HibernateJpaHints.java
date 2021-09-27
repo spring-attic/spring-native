@@ -125,6 +125,7 @@ import java.util.EventListener;
 						InheritanceType.class,
 
 				}, typeNames = {
+						"org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger",
 						"org.hibernate.internal.EntityManagerMessageLogger_$logger",
 						"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
