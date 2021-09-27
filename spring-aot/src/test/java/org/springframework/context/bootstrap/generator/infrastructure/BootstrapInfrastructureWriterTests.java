@@ -22,11 +22,13 @@ import java.io.StringWriter;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.annotation.ImportAwareInvoker;
+import org.springframework.aot.context.annotation.InitDestroyBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration;
+import org.springframework.context.bootstrap.generator.sample.callback.InitDestroySampleBean;
 import org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.context.support.GenericApplicationContext;
@@ -106,6 +108,37 @@ class BootstrapInfrastructureWriterTests {
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration$Nested\");",
 				"    return new ImportAwareInvoker(mappings);",
 				"  }");
+	}
+
+	@Test
+	void writeInfrastructureWithNoLifecycleMethodsDoesNotRegisterBean() {
+		assertThat(writeInfrastructure(new GenericApplicationContext(), createBootstrapContext()))
+				.doesNotContain(InitDestroyBeanPostProcessor.class.getSimpleName())
+				.doesNotContain("createInitDestroyBeanPostProcessor");
+	}
+
+	@Test
+	void writeInfrastructureWithLifecycleMethodsRegisterCreateMethod() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("testBean", InitDestroySampleBean.class);
+		BootstrapWriterContext bootstrapContext = createBootstrapContext();
+		writeInfrastructure(context, bootstrapContext);
+		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
+				"  private InitDestroyBeanPostProcessor createInitDestroyBeanPostProcessor() {",
+				"    Map<String, List<String>> initMethods = new LinkedHashMap<>();",
+				"    initMethods.put(\"testBean\", List.of(\"start\"));",
+				"    Map<String, List<String>> destroyMethods = new LinkedHashMap<>();",
+				"    destroyMethods.put(\"testBean\", List.of(\"stop\"));",
+				"    return new InitDestroyBeanPostProcessor(initMethods, destroyMethods);",
+				"  }").contains("import " + InitDestroyBeanPostProcessor.class.getName() + ";");
+	}
+
+	@Test
+	void writeInfrastructureWithLifecycleMethodsRegisterBean() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("testBean", InitDestroySampleBean.class);
+		assertThat(writeInfrastructure(context, createBootstrapContext()))
+				.contains("context.getBeanFactory().addBeanPostProcessor(createInitDestroyBeanPostProcessor());");
 	}
 
 	private CodeSnippet writeInfrastructure(GenericApplicationContext context, BootstrapWriterContext writerContext) {

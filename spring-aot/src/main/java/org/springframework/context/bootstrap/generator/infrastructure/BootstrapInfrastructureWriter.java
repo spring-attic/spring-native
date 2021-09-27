@@ -16,21 +16,28 @@
 
 package org.springframework.context.bootstrap.generator.infrastructure;
 
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 
 import org.springframework.aot.context.annotation.ImportAwareInvoker;
+import org.springframework.aot.context.annotation.InitDestroyBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
+import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.context.origin.BeanFactoryStructure;
 import org.springframework.context.origin.BeanFactoryStructureAnalyzer;
+import org.springframework.core.ResolvableType;
 
 /**
  * Write the necessary code to prepare the infrastructure so that the application
@@ -44,9 +51,12 @@ public class BootstrapInfrastructureWriter {
 
 	private final BootstrapWriterContext writerContext;
 
+	private final ParameterWriter parameterWriter;
+
 	public BootstrapInfrastructureWriter(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext) {
 		this.beanFactory = beanFactory;
 		this.writerContext = writerContext;
+		this.parameterWriter = new ParameterWriter();
 	}
 
 	public void writeInfrastructure(CodeBlock.Builder code) {
@@ -57,9 +67,14 @@ public class BootstrapInfrastructureWriter {
 			this.writerContext.getBootstrapClass(this.writerContext.getPackageName()).addMethod(importAwareInvokerMethod);
 			code.addStatement("$T.register(context, this::createImportAwareInvoker)", ImportAwareInvoker.class);
 		}
+		MethodSpec initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
+		if (initDestroyBeanPostProcessorMethod != null) {
+			this.writerContext.getBootstrapClass(this.writerContext.getPackageName()).addMethod(initDestroyBeanPostProcessorMethod);
+			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", initDestroyBeanPostProcessorMethod);
+		}
 	}
 
-	MethodSpec handleImportAwareInvoker() {
+	private MethodSpec handleImportAwareInvoker() {
 		BeanFactoryStructure structure = createBeanFactoryStructure();
 		Map<String, Class<?>> importLinks = new ImportAwareLinksDiscoverer(structure, this.beanFactory.getBeanClassLoader())
 				.buildImportAwareLinks(writerContext.getNativeConfigurationRegistry());
@@ -74,6 +89,32 @@ public class BootstrapInfrastructureWriter {
 		code.addStatement("return new $T($L)", ImportAwareInvoker.class, "mappings");
 		return MethodSpec.methodBuilder("createImportAwareInvoker").returns(ImportAwareInvoker.class)
 				.addModifiers(Modifier.PRIVATE).addCode(code.build()).build();
+	}
+
+	private MethodSpec handleInitDestroyBeanPostProcessor() {
+		InitDestroyMethodsDiscoverer initDestroyMethodsDiscoverer = new InitDestroyMethodsDiscoverer(this.beanFactory);
+		Map<String, List<Method>> initMethods = initDestroyMethodsDiscoverer.registerInitMethods(
+				this.writerContext.getNativeConfigurationRegistry());
+		Map<String, List<Method>> destroyMethods = initDestroyMethodsDiscoverer.registerDestroyMethods(
+				this.writerContext.getNativeConfigurationRegistry());
+		if (initMethods.isEmpty() && destroyMethods.isEmpty()) {
+			return null;
+		}
+		Builder code = CodeBlock.builder();
+		writeLifecycleMethods(code, initMethods, "initMethods");
+		writeLifecycleMethods(code, destroyMethods, "destroyMethods");
+		code.addStatement("return new $T($L, $L)", InitDestroyBeanPostProcessor.class, "initMethods", "destroyMethods");
+		return MethodSpec.methodBuilder("createInitDestroyBeanPostProcessor").returns(InitDestroyBeanPostProcessor.class)
+				.addModifiers(Modifier.PRIVATE).addCode(code.build()).build();
+	}
+
+	private void writeLifecycleMethods(Builder code, Map<String, List<Method>> lifecycleMethods, String variableName) {
+		code.addStatement("$T $L = new $T<>()", ParameterizedTypeName.get(ClassName.get(Map.class),
+				ClassName.get(String.class), ParameterizedTypeName.get(List.class, String.class)), variableName, LinkedHashMap.class);
+		lifecycleMethods.forEach((key, value) -> {
+			code.addStatement("$L.put($S, $L)", variableName, key, this.parameterWriter.writeParameterValue(
+					value.stream().map(Method::getName).collect(Collectors.toList()), ResolvableType.forClassWithGenerics(List.class, String.class)));
+		});
 	}
 
 	private BeanFactoryStructure createBeanFactoryStructure() {

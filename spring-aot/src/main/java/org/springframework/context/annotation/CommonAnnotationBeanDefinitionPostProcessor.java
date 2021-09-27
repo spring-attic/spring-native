@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,56 @@
  */
 package org.springframework.context.annotation;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.ClassUtils;
 
 /**
- * {@link BeanDefinitionPostProcessor} that makes sure to post process merged {@link org.springframework.beans.factory.config.BeanDefinition}
- * that contains information about {@literal externallyManagedInitMethods}.
+ * {@link BeanDefinitionPostProcessor} that makes sure to identify custom init and destroy
+ * methods.
  *
  * @author Christoph Strobl
- * @since 0.11
+ * @author Stephane Nicoll
  */
-public class CommonAnnotationBeanDefinitionPostProcessor implements BeanDefinitionPostProcessor {
+class CommonAnnotationBeanDefinitionPostProcessor implements BeanDefinitionPostProcessor, BeanFactoryAware {
 
 	private final CommonAnnotationBeanPostProcessor postProcessor = new CommonAnnotationBeanPostProcessor();
 
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) {
+		this.postProcessor.setBeanFactory(beanFactory);
+		this.classLoader = ((ConfigurableBeanFactory) beanFactory).getBeanClassLoader();
+	}
+
 	@Override
 	public void postProcessBeanDefinition(String beanName, RootBeanDefinition beanDefinition) {
-		postProcessor.postProcessMergedBeanDefinition(
-				beanDefinition, beanDefinition.getResolvableType().toClass(), beanName);
+		postProcessor.postProcessMergedBeanDefinition(beanDefinition, getBeanType(beanDefinition), beanName);
 	}
+
+	private Class<?> getBeanType(RootBeanDefinition beanDefinition) {
+		ResolvableType resolvableType = beanDefinition.getResolvableType();
+		if (resolvableType != ResolvableType.NONE) {
+			return resolvableType.toClass();
+		}
+		if (beanDefinition.getBeanClassName() != null) {
+			return loadBeanClassName(beanDefinition.getBeanClassName());
+		}
+		return Object.class;
+	}
+
+	private Class<?> loadBeanClassName(String className) {
+		try {
+			return ClassUtils.forName(className, this.classLoader);
+		}
+		catch (ClassNotFoundException ex) {
+			throw new IllegalStateException(
+					"Bean definition refers to invalid class '" + className + "'", ex);
+		}
+	}
+
 }
