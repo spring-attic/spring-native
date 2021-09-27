@@ -16,28 +16,30 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
  * https://github.com/oracle/graal/blob/master/substratevm/REFLECTION.md
  * 
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 public class ProxiesDescriptor {
 
-	private final List<JdkProxyDescriptor> proxyDescriptors;
+	private final Set<JdkProxyDescriptor> proxyDescriptors;
 
 	public ProxiesDescriptor() {
-		this.proxyDescriptors = new ArrayList<>();
+		this.proxyDescriptors = new LinkedHashSet<>();
 	}
 
 	public ProxiesDescriptor(ProxiesDescriptor metadata) {
-		this.proxyDescriptors = new ArrayList<>(metadata.proxyDescriptors);
+		this.proxyDescriptors = new LinkedHashSet<>(metadata.proxyDescriptors);
 	}
 
-	public List<JdkProxyDescriptor> getProxyDescriptors() {
+	public Set<JdkProxyDescriptor> getProxyDescriptors() {
 		return this.proxyDescriptors;
 	}
 
@@ -75,7 +77,7 @@ public class ProxiesDescriptor {
 		}
 	}
 
-	public void consume(Consumer<List<String>> consumer) {
+	public void consume(Consumer<Collection<String>> consumer) {
 		proxyDescriptors.stream().forEach(pd -> consumer.accept(pd.getTypes()));
 	}
 

@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.nativex.json.JSONArray;
 
@@ -32,6 +32,7 @@ import org.springframework.nativex.json.JSONArray;
  * Marshaller to write {@link ProxiesDescriptor} as JSON.
  *
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 public class ProxiesDescriptorJsonMarshaller {
 
@@ -90,7 +91,7 @@ public class ProxiesDescriptorJsonMarshaller {
 	
 	private static JdkProxyDescriptor toProxyDescriptor(JSONArray array) throws Exception {
 		JdkProxyDescriptor pd = new JdkProxyDescriptor();
-		List<String> interfaces = new ArrayList<>();
+		Collection<String> interfaces = new ArrayList<>();
 		for (int i=0;i<array.length();i++) {
 			interfaces.add(array.getString(i));
 		}

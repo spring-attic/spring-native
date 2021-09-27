@@ -16,7 +16,7 @@
 
 package org.springframework.nativex.domain.proxies;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.nativex.json.JSONArray;
 
@@ -24,6 +24,7 @@ import org.springframework.nativex.json.JSONArray;
  * Converter to change reflection descriptor objects into JSON objects
  *
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 class ProxiesDescriptorJsonConverter {
 
@@ -37,7 +38,7 @@ class ProxiesDescriptorJsonConverter {
 
 	public JSONArray toJsonArray(JdkProxyDescriptor pd) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<String> interfaces = pd.getTypes();
+		Set<String> interfaces = pd.getTypes();
 		for (String intface: interfaces) {
 			jsonArray.put(intface);
 		}

@@ -54,6 +54,7 @@ import org.springframework.nativex.type.TypeSystem;
  * Centralized collector of all computed configuration, can be used to produce JSON files.
  * 
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 public class ConfigurationCollector {
 
@@ -146,9 +147,8 @@ public class ConfigurationCollector {
 		this.ts = ts;
 	}
 
-	private boolean checkTypes(List<String> types, Predicate<Type> test) {
-		for (int i = 0; i < types.size(); i++) {
-			String className = types.get(i);
+	private boolean checkTypes(Collection<String> types, Predicate<Type> test) {
+		for (String className : types) {
 			Type clazz = ts.resolveDotted(className, true);
 			if (!test.test(clazz)) {
 				return false;
@@ -157,7 +157,7 @@ public class ConfigurationCollector {
 		return true;
 	}
 
-	public boolean addProxy(List<String> interfaceNames, boolean verify) {
+	public boolean addProxy(Collection<String> interfaceNames, boolean verify) {
 		if (verify) {
 			if (!checkTypes(interfaceNames, t -> t!=null && t.isInterface())) {
 				return false;

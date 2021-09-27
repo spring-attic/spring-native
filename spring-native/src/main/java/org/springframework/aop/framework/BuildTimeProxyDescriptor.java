@@ -16,23 +16,27 @@
 
 package org.springframework.aop.framework;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 
 /**
  * 
  * @author Andy Clement
+ * @author Ariel Carrera
  */
 public class BuildTimeProxyDescriptor {
 
 	private final String targetClassName;
 	
-	private final List<String> interfaceNames;
+	private final Set<String> interfaceNames;
 
 	private final int proxyFeatures; // ProxyBits
 	
-	public BuildTimeProxyDescriptor(String targetClassName, List<String> interfaceNames, int proxyFeatures) {
+	public BuildTimeProxyDescriptor(String targetClassName, Collection<String> interfaceNames, int proxyFeatures) {
 		this.targetClassName = targetClassName;
-		this.interfaceNames = interfaceNames;
+		this.interfaceNames = new LinkedHashSet<String>(interfaceNames);
 		this.proxyFeatures = proxyFeatures;
 	}
 
@@ -40,7 +44,7 @@ public class BuildTimeProxyDescriptor {
 		return (proxyFeatures&bit)!=0;
 	}
 
-	public List<String> getInterfaceTypes() {
+	public Set<String> getInterfaceTypes() {
 		return interfaceNames;
 	}
 
