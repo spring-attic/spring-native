@@ -305,6 +305,7 @@ jobs:
         image: spring-native-dev-java11-image
         file: git-repo/ci/tasks/build-samples.yml
         params:
+          AOT_ONLY: false
           <<: *docker-hub-task-params
   - name: deploy
     public: true
