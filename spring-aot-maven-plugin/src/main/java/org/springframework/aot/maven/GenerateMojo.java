@@ -102,7 +102,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				List<String> args = new ArrayList<>();
 				// remote debug
 				if ("true".equals(this.debug)) {
-					args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
+					args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
 				} else {
 					args.addAll(Arrays.asList(CommandLineUtils.translateCommandline(this.debug)));
 				}
