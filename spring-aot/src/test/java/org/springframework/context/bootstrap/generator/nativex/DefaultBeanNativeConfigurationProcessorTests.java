@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.PrivateExternallyManagedInitMethod;
-import org.springframework.context.bootstrap.generator.sample.callback.ConfigHavingBeansWithInitMethod.PublicExternallyManagedInitMethod;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.core.env.Environment;
@@ -28,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
- * @author Christoph Strobl
  */
 class DefaultBeanNativeConfigurationProcessorTests {
 
@@ -170,33 +166,6 @@ class DefaultBeanNativeConfigurationProcessorTests {
 			assertThat(entry.getFields()).isEmpty();
 		});
 		assertThat(registry.reflection().getEntries()).hasSize(3);
-	}
-
-	@Test // GH-1048
-	void registerReflectionEntriesPrivateInitMethod() {
-
-		Method initMethod = ReflectionUtils.findMethod(PrivateExternallyManagedInitMethod.class, "privateInit");
-		MemberDescriptor<Method> initMethodDescription = new MemberDescriptor<>(initMethod, true);
-		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(PrivateExternallyManagedInitMethod.class)
-				.withInitMethod(initMethodDescription).build());
-
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
-			assertThat(entry.getType()).isEqualTo(PrivateExternallyManagedInitMethod.class);
-			assertThat(entry.getMethods()).contains(initMethod);
-			assertThat(entry.getConstructors()).isEmpty();
-			assertThat(entry.getFields()).isEmpty();
-		});
-	}
-
-	@Test // GH-1048
-	void doesNotRegisterReflectionEntriesPublicInitMethod() {
-
-		Method initMethod = ReflectionUtils.findMethod(PublicExternallyManagedInitMethod.class, "publicInit");
-		MemberDescriptor<Method> initMethodDescription = new MemberDescriptor<>(initMethod, true);
-		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(PublicExternallyManagedInitMethod.class)
-				.withInitMethod(initMethodDescription).build());
-
-		assertThat(registry.reflection().getEntries()).isEmpty();
 	}
 
 	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
