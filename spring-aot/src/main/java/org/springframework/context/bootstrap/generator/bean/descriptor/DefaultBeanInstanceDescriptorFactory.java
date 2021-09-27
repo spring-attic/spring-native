@@ -17,7 +17,6 @@
 package org.springframework.context.bootstrap.generator.bean.descriptor;
 
 import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -32,7 +31,6 @@ import org.springframework.util.Assert;
  * framework contract to detect the members to use to fully instantiate a bean.
  *
  * @author Stephane Nicoll
- * @author Christoph Strobl
  */
 public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescriptorFactory {
 
@@ -44,14 +42,11 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 
 	private final PropertiesSupplier propertiesSupplier;
 
-	private final InitializationMethodSupplier initializationMethodSupplier;
-
 	public DefaultBeanInstanceDescriptorFactory(ConfigurableBeanFactory beanFactory) {
 		this.instanceCreatorSupplier = new BeanInstanceExecutableSupplier(beanFactory);
 		this.instanceCallbacksSupplier = new InstanceCallbacksSupplier();
 		this.injectionPointsSupplier = new InjectionPointsSupplier(beanFactory.getBeanClassLoader());
 		this.propertiesSupplier = new PropertiesSupplier();
-		this.initializationMethodSupplier = new InitializationMethodSupplier();
 	}
 
 	@Override
@@ -63,12 +58,9 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 			List<InstanceCallback> instanceCallbacks = this.instanceCallbacksSupplier.detectInstanceCallbacks(beanType);
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
 			List<PropertyDescriptor> properties = this.propertiesSupplier.detectProperties(beanDefinition);
-			List<MemberDescriptor<Method>> initializationCallbacks = this.initializationMethodSupplier.getInstanceCallbacks(beanDefinition);
 			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())
 					.withInstanceCreator(instanceCreator).withInstanceCallbacks(instanceCallbacks)
-					.withInjectionPoints(injectionPoints).withProperties(properties)
-					.withInitMethods(initializationCallbacks)
-					.build();
+					.withInjectionPoints(injectionPoints).withProperties(properties).build();
 		}
 		return null;
 	}
