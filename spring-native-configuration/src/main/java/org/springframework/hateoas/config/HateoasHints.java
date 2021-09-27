@@ -19,6 +19,7 @@ package org.springframework.hateoas.config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -234,6 +235,7 @@ public class HateoasHints implements NativeConfiguration {
 					return Stream.concat(Stream.of(type), type.getMethods().stream().filter(Method::isAtMapping).map(Method::getReturnType));
 				})
 				.distinct()
+				.filter(Objects::nonNull)
 				.map(type -> {
 
 					HintDeclaration hint = new HintDeclaration();
