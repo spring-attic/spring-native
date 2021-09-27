@@ -53,8 +53,11 @@ import org.springframework.kafka.listener.ConsumerProperties;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -118,6 +121,7 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 				DefaultPartitioner.class,
 				StringDeserializer.class,
 				StringSerializer.class,
+				JsonDeserializer.class,
 				JsonSerializer.class,
 				ByteArrayDeserializer.class,
 				ByteArraySerializer.class
@@ -173,5 +177,13 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 		})
 	}
 )
+@NativeHint(trigger = org.springframework.kafka.support.KafkaUtils.class,
+		initialization =
+		@InitializationHint(initTime = InitializationTime.BUILD,
+				types = {
+				org.springframework.kafka.support.JacksonUtils.class,
+						org.springframework.kafka.support.KafkaUtils.class,
+						org.springframework.kafka.support.JacksonPresent.class
+		}))
 public class KafkaHints implements NativeConfiguration {
 }

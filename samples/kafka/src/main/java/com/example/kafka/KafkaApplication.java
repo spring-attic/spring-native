@@ -10,7 +10,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.nativex.hint.TypeHint;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@TypeHint(types = KafkaApplication.Greeting.class)
 @SpringBootApplication
 public class KafkaApplication {
 
@@ -19,8 +24,8 @@ public class KafkaApplication {
 	}
 
 	@KafkaListener(id = "graal", topics = "graal")
-	public void listen(String in) {
-		System.out.println("++++++Received:" + in);
+	public void listen(Greeting in) {
+		System.out.println("++++++Received: " + in);
 	}
 
 	@Bean
@@ -29,15 +34,39 @@ public class KafkaApplication {
 	}
 
 	@Bean
-	public ApplicationRunner runner(KafkaTemplate<String, String> template,
-				ConsumerFactory<String, String> cf) {
+	public ApplicationRunner runner(KafkaTemplate<String, Greeting> template,
+			ConsumerFactory<String, Greeting> cf) {
 
-		cf.addListener(new ConsumerFactory.Listener() { });
+		cf.addListener(new ConsumerFactory.Listener<String, Greeting>() {
+
+		});
 		return args -> {
-			template.send("graal", "foo");
-			System.out.println("++++++Sent:foo");
+			Greeting data = new Greeting("Hello from GraalVM!");
+			template.send("graal", data);
+			System.out.println("++++++Sent: " + data);
 			Thread.sleep(5000);
 		};
+	}
+
+	public static class Greeting {
+
+		private final String message;
+
+		@JsonCreator
+		public Greeting(@JsonProperty("message") String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
+		@Override public String toString() {
+			return "Greeting{" +
+					"message='" + this.message + '\'' +
+					'}';
+		}
+
 	}
 
 }
