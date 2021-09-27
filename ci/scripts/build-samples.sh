@@ -10,7 +10,13 @@ cd git-repo
 if ! (./build.sh); then
     RC=1
 fi
-if ! (./build-samples.sh); then
+if [ "$AOT_ONLY" = false ] ; then
+  if ! (./build-samples.sh); then
     RC=1
+  fi
+else
+  if ! (./build-samples-aot-only.sh); then
+      RC=1
+  fi
 fi
 exit $RC

@@ -263,7 +263,7 @@ jobs:
         file: git-repo/ci/tasks/build-key-samples.yml
         params:
           <<: *docker-hub-task-params
-  - name: build-samples-stable-java11
+  - name: build-samples-aot-stable-java11
     public: true
     plan:
       - get: spring-native-stable-java11-image
@@ -276,7 +276,23 @@ jobs:
           image: spring-native-stable-java11-image
           file: git-repo/ci/tasks/build-samples.yml
           params:
+            AOT_ONLY: true
             <<: *docker-hub-task-params
+  - name: build-samples-stable-java11
+    public: true
+    plan:
+      - get: spring-native-stable-java11-image
+      - get: git-repo
+      - get: every-day
+        trigger: true
+      - do:
+          - task: build
+            privileged: true
+            image: spring-native-stable-java11-image
+            file: git-repo/ci/tasks/build-samples.yml
+            params:
+              AOT_ONLY: false
+              <<: *docker-hub-task-params
   - name: build-samples-dev-java11
     public: true
     plan:
@@ -396,7 +412,7 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "builds"
-    jobs: ["build-key-samples-java11", "deploy", "build-samples-stable-java11", "build-samples-dev-java11"]
+    jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-stable-java11", "build-samples-stable-java11", "build-samples-dev-java11"]
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
