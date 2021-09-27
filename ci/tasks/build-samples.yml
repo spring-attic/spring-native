@@ -6,5 +6,7 @@ outputs:
   - name: git-repo
 caches:
   - path: maven
+params:
+  AOT_ONLY:
 run:
   path: git-repo/ci/scripts/build-samples.sh
