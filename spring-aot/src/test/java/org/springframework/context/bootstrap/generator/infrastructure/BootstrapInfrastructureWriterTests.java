@@ -21,11 +21,12 @@ import java.io.StringWriter;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.context.annotation.ImportAwareInvoker;
+import org.springframework.aot.context.annotation.ImportAwareBeanPostProcessor;
 import org.springframework.aot.context.annotation.InitDestroyBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
+import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
 import org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration;
 import org.springframework.context.bootstrap.generator.sample.callback.InitDestroySampleBean;
@@ -54,7 +55,15 @@ class BootstrapInfrastructureWriterTests {
 	@Test
 	void writeInfrastructureWithNoImportAwareCandidateDoesNotRegisterBean() {
 		assertThat(writeInfrastructure(new GenericApplicationContext(), createBootstrapContext()))
-				.doesNotContain(ImportAwareInvoker.class.getSimpleName());
+				.doesNotContain(ImportAwareBeanPostProcessor.class.getSimpleName());
+	}
+
+	@Test
+	void writeInfrastructureWithNoImportAwareMappingDoesNotRegisterBean() {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean(ConfigurationTwo.class);
+		assertThat(writeInfrastructure(context, createBootstrapContext()))
+				.doesNotContain(ImportAwareBeanPostProcessor.class.getSimpleName());
 	}
 
 	@Test
@@ -62,8 +71,7 @@ class BootstrapInfrastructureWriterTests {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(ImportConfiguration.class);
 		assertThat(writeInfrastructure(context, createBootstrapContext()))
-				.contains("ImportAwareInvoker.register(context, this::createImportAwareInvoker);")
-				.hasImport(ImportAwareInvoker.class);
+				.contains("context.getBeanFactory().addBeanPostProcessor(createImportAwareBeanPostProcessor());");
 	}
 
 	@Test
@@ -73,11 +81,11 @@ class BootstrapInfrastructureWriterTests {
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
 		writeInfrastructure(context, bootstrapContext);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
-				"  private ImportAwareInvoker createImportAwareInvoker() {",
+				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration\");",
-				"    return new ImportAwareInvoker(mappings);",
-				"  }");
+				"    return new ImportAwareBeanPostProcessor(mappings);",
+				"  }").contains("import " + ImportAwareBeanPostProcessor.class.getName() + ";");
 		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
 				"org/springframework/context/bootstrap/generator/sample/callback/ImportConfiguration.class");
 	}
@@ -90,11 +98,11 @@ class BootstrapInfrastructureWriterTests {
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
 		writeInfrastructure(context, bootstrapContext);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
-				"  private ImportAwareInvoker createImportAwareInvoker() {",
+				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration\");",
 				"    mappings.put(\"org.springframework.scheduling.annotation.ProxyAsyncConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration\");",
-				"    return new ImportAwareInvoker(mappings);",
+				"    return new ImportAwareBeanPostProcessor(mappings);",
 				"  }");
 		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
 				"org/springframework/context/bootstrap/generator/sample/callback/ImportConfiguration.class",
@@ -108,10 +116,10 @@ class BootstrapInfrastructureWriterTests {
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
 		writeInfrastructure(context, bootstrapContext);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
-				"  private ImportAwareInvoker createImportAwareInvoker() {",
+				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration$Nested\");",
-				"    return new ImportAwareInvoker(mappings);",
+				"    return new ImportAwareBeanPostProcessor(mappings);",
 				"  }");
 		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
 				"org/springframework/context/bootstrap/generator/sample/callback/NestedImportConfiguration\\$Nested.class");

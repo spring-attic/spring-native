@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import com.squareup.javapoet.CodeBlock;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -33,7 +32,6 @@ import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInsta
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.EnvironmentAwareComponent;
 import org.springframework.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
-import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
 import org.springframework.context.bootstrap.generator.sample.factory.NumberHolder;
 import org.springframework.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.context.bootstrap.generator.sample.factory.SampleFactory;
@@ -100,34 +98,6 @@ class DefaultBeanInstanceSupplierWriterTests {
 	}
 
 	@Test
-	void writeConstructorWithInstanceCallback() {
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(ImportAwareConfiguration.class).getBeanDefinition();
-		assertThat(generateCode(beanDefinition, (type) -> BeanInstanceDescriptor.of(type)
-				.withInstanceCreator(ImportAwareConfiguration.class.getDeclaredConstructors()[0])
-				.withInstanceCallback((name) -> CodeBlock.of("$L.setImportMetadata(metadata)", name)).build()))
-				.lines().containsExactly("(instanceContext) -> {",
-				"  ImportAwareConfiguration bean = new ImportAwareConfiguration();",
-				"  bean.setImportMetadata(metadata);",
-				"  return bean;",
-				"}");
-	}
-
-	@Test
-	void writeConstructorWithInstanceCallbacks() {
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(ImportAwareConfiguration.class).getBeanDefinition();
-		assertThat(generateCode(beanDefinition, (type) -> BeanInstanceDescriptor.of(type)
-				.withInstanceCreator(ImportAwareConfiguration.class.getDeclaredConstructors()[0])
-				.withInstanceCallback((name) -> CodeBlock.of("$L.setImportMetadata(metadata)", name))
-				.withInstanceCallback((name) -> CodeBlock.of("$L.setImportMetadata(anotherMetadata)", name)).build()))
-				.lines().containsExactly("(instanceContext) -> {",
-				"  ImportAwareConfiguration bean = new ImportAwareConfiguration();",
-				"  bean.setImportMetadata(metadata);",
-				"  bean.setImportMetadata(anotherMetadata);",
-				"  return bean;",
-				"}");
-	}
-
-	@Test
 	void writeConstructorWithInjectionPoints() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class).getBeanDefinition();
 		Constructor<?> creator = InjectionConfiguration.class.getDeclaredConstructors()[0];
@@ -144,22 +114,6 @@ class DefaultBeanInstanceSupplierWriterTests {
 				"  return bean;",
 				"}");
 
-	}
-
-	@Test
-	void writeConstructorWithInstanceCallbackAndInjectionPoint() {
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(ImportAwareConfiguration.class).getBeanDefinition();
-		assertThat(generateCode(beanDefinition, (type) -> BeanInstanceDescriptor.of(type)
-				.withInstanceCreator(ImportAwareConfiguration.class.getDeclaredConstructors()[0])
-				.withInjectionPoint(ReflectionUtils.findMethod(ImportAwareConfiguration.class, "setEnvironment", Environment.class), true)
-				.withInstanceCallback((name) -> CodeBlock.of("$L.setImportMetadata(metadata)", name)).build())).lines().containsOnly(
-				"(instanceContext) -> {",
-				"  ImportAwareConfiguration bean = new ImportAwareConfiguration();",
-				"  bean.setImportMetadata(metadata);",
-				"  instanceContext.method(\"setEnvironment\", Environment.class)",
-				"      .invoke(context, (attributes) -> bean.setEnvironment(attributes.get(0)));",
-				"  return bean;",
-				"}");
 	}
 
 	@Test

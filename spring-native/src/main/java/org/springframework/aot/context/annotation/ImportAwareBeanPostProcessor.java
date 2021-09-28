@@ -18,12 +18,8 @@ package org.springframework.aot.context.annotation;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.function.Supplier;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -31,37 +27,31 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
 /**
- * Utility class to invoke an {@link ImportAware} callback using a mapping computed
- * at build time.
+ * A {@link BeanPostProcessor} that honours {@link ImportAware} callback using a mapping
+ * computed at build time.
  *
  * @author Stephane Nicoll
  */
-public final class ImportAwareInvoker {
-
-	public static final String BEAN_NAME = "org.springframework.aot.ImportAwareInvoker";
+public class ImportAwareBeanPostProcessor implements BeanPostProcessor {
 
 	private final MetadataReaderFactory metadataReaderFactory;
 
 	private final Map<String, String> importsMapping;
 
-	public ImportAwareInvoker(Map<String, String> importsMapping) {
+	public ImportAwareBeanPostProcessor(Map<String, String> importsMapping) {
 		this.metadataReaderFactory = new CachingMetadataReaderFactory();
 		this.importsMapping = importsMapping;
 	}
 
-	public static ImportAwareInvoker get(BeanFactory beanFactory) {
-		return beanFactory.getBean(BEAN_NAME, ImportAwareInvoker.class);
-	}
-
-	public static void register(BeanDefinitionRegistry registry, Supplier<ImportAwareInvoker> instanceSupplier) {
-		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			registry.registerBeanDefinition(BEAN_NAME, BeanDefinitionBuilder
-					.rootBeanDefinition(ImportAwareInvoker.class, instanceSupplier)
-					.setRole(BeanDefinition.ROLE_INFRASTRUCTURE).getBeanDefinition());
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) {
+		if (bean instanceof ImportAware) {
+			setAnnotationMetadata((ImportAware) bean);
 		}
+		return bean;
 	}
 
-	public void setAnnotationMetadata(ImportAware instance) {
+	private void setAnnotationMetadata(ImportAware instance) {
 		String importingClass = getImportingClassFor(instance);
 		if (importingClass == null) {
 			return; // import aware configuration class not imported
