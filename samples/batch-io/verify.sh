@@ -1,6 +1,3 @@
 #!/usr/bin/env bash
-if [[ `cat target/native/test-output.txt | grep "Batch IO ran!"` ]]; then
-  exit 0
-else
-  exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_log target/native/test-output.txt "Batch IO ran!"

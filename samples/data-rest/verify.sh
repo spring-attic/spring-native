@@ -1,8 +1,3 @@
 #!/usr/bin/env bash
-RESPONSE=`curl -s localhost:8080/api/customers/1`
-if [[ "$RESPONSE" == *"Matthews"* ]]; then
-  exit 0
-else
-  exit 1
-fi
-
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_http localhost:8080/api/customers/1 "Matthews"

@@ -1,8 +1,3 @@
 #!/usr/bin/env bash
-sleep 6
-if [[ `cat target/native/test-output.txt | grep -E "DONE"` ]]
-then
-  exit 0
-else 
-  exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_log target/native/test-output.txt "DONE"

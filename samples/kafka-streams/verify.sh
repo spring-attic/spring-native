@@ -1,7 +1,3 @@
 #!/usr/bin/env bash
-sleep 2
-if [[ `cat target/native/test-output.txt | grep "++++++Received:FOO"` ]]; then
-	exit 0
-else
-	exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_log target/native/test-output.txt "++++++Received:FOO"

@@ -76,7 +76,6 @@ else
   ./${EXECUTABLE} "$@" > $TEST_OUTPUT_FILE 2>&1 &
 fi
 PID=$!
-sleep 3
 
 ./verify.sh
 RC=$?

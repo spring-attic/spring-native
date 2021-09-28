@@ -37,24 +37,24 @@ public class QuartzNativeApplication {
 
 	@Bean
 	JobDetail sampleJobDetail(@Value("${greetings.name:World}") String name) {
-		return JobBuilder.newJob(SampleJob.class) //
-				.withIdentity("sampleJob") //
-				.usingJobData("name", name) //
-				.storeDurably() //
+		return JobBuilder.newJob(SampleJob.class)
+				.withIdentity("sampleJob")
+				.usingJobData("name", name)
+				.storeDurably()
 				.build();
 	}
 
 	@Bean
 	Trigger sampleJobTrigger(JobDetail sampleJobDetail) {
-		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule() //
-				.withIntervalInSeconds(2) //
+		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+				.withIntervalInSeconds(1)
 				.withRepeatCount(5);
 
-		return TriggerBuilder//
-				.newTrigger()//
-				.forJob(sampleJobDetail)//
-				.withIdentity("sampleTrigger") //
-				.withSchedule(scheduleBuilder) //
+		return TriggerBuilder
+				.newTrigger()
+				.forJob(sampleJobDetail)
+				.withIdentity("sampleTrigger")
+				.withSchedule(scheduleBuilder)
 				.build();
 	}
 

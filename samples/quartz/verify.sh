@@ -1,8 +1,3 @@
 #!/usr/bin/env bash
-sleep 15
-RESPONSE=`grep World target/native/test-output.txt | wc -l`
-if [[ "$RESPONSE" == *"6"* ]]; then
-  exit 0
-else
-  exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_log target/native/test-output.txt "Hello World"

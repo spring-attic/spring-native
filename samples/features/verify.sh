@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-if [[ `cat target/native/test-output.txt | grep "commandlinerunner running!"` ]]; then
-  if [[ `cat target/native/test-output.txt | grep "ApplicationContextAware callback invoked"` ]]; then
-    exit 0
-  else
-    exit 1
-  fi
-else
-  exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+trap 'wait_log target/native/test-output.txt "commandlinerunner running!"' ERR
+wait_log target/native/test-output.txt "ApplicationContextAware callback invoked"

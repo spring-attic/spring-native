@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-RESPONSE=`curl -s localhost:8080/actuator/health`
-if [[ "$RESPONSE" == *"UP"* ]]; then
-  exit 0
-else
-  exit 1
-fi
+source ${PWD%/*samples/*}/scripts/wait.sh
+trap 'wait_log target/native/test-output.txt "Started ActuatorApplication in"' ERR
+wait_http localhost:8080/actuator/health "UP"

@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-if [[ `cat target/native/test-output.txt | grep "The number is now 6"` ]]; then
-  if [[ `cat target/native/test-output.txt | grep "The other number is now 6"` ]]; then
-    exit 0
-  fi
-fi
-exit 1
+source ${PWD%/*samples/*}/scripts/wait.sh
+trap 'wait_log target/native/test-output.txt "The number is now 6"' ERR
+wait_log target/native/test-output.txt "The other number is now 6"

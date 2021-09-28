@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-if [[ `cat target/native/test-output.txt | grep "EL: Received hello event: andy"` ]]; then
-  if [[ `cat target/native/test-output.txt | grep "TEL: Received hello event: andy"` ]]; then
-    if [[ `cat target/native/test-output.txt | grep "EL: Received hello event: sebastien"` ]]; then
-	    exit 0
-    fi
-  fi
-fi
-exit 1
+source ${PWD%/*samples/*}/scripts/wait.sh
+trap 'wait_log target/native/test-output.txt "EL: Received hello event: andy"' ERR
+wait_log target/native/test-output.txt "EL: Received hello event: sebastien"
