@@ -1,4 +1,4 @@
-// package org.demo;
+// package org.demo.configserver;
 
 // import static org.junit.Assert.assertEquals;
 
