@@ -34,9 +34,10 @@ import org.springframework.aot.context.annotation.ImportAwareInvoker;
 import org.springframework.aot.context.annotation.InitDestroyBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
+import org.springframework.context.annotation.ImportOriginRegistry;
 import org.springframework.context.bootstrap.generator.bean.support.ParameterWriter;
-import org.springframework.context.origin.BeanFactoryStructure;
-import org.springframework.context.origin.BeanFactoryStructureAnalyzer;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ResourcesConfiguration;
+import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -75,14 +76,18 @@ public class BootstrapInfrastructureWriter {
 	}
 
 	private MethodSpec handleImportAwareInvoker() {
-		BeanFactoryStructure structure = createBeanFactoryStructure();
-		Map<String, Class<?>> importLinks = new ImportAwareLinksDiscoverer(structure, this.beanFactory.getBeanClassLoader())
-				.buildImportAwareLinks(writerContext.getNativeConfigurationRegistry());
-		if (importLinks.isEmpty()) {
+		ImportOriginRegistry importOriginRegistry = ImportOriginRegistry.get(this.beanFactory);
+		if (importOriginRegistry == null) {
 			return null;
 		}
+		Map<String, Class<?>> importLinks = importOriginRegistry.getImportOrigins();
+		ResourcesConfiguration resourcesConfiguration = this.writerContext.getNativeConfigurationRegistry().resources();
+		importLinks.values().forEach((importingClass) -> resourcesConfiguration.add(
+				NativeResourcesEntry.ofClass(importingClass)));
+
 		Builder code = CodeBlock.builder();
-		code.addStatement("$T mappings = new $T<>()", ParameterizedTypeName.get(Map.class, String.class, String.class), LinkedHashMap.class);
+		code.addStatement("$T mappings = new $T<>()", ParameterizedTypeName.get(Map.class, String.class, String.class),
+				LinkedHashMap.class);
 		importLinks.forEach((key, value) -> {
 			code.addStatement("mappings.put($S, $S)", key, value.getName());
 		});
@@ -115,12 +120,6 @@ public class BootstrapInfrastructureWriter {
 			code.addStatement("$L.put($S, $L)", variableName, key, this.parameterWriter.writeParameterValue(
 					value.stream().map(Method::getName).collect(Collectors.toList()), ResolvableType.forClassWithGenerics(List.class, String.class)));
 		});
-	}
-
-	private BeanFactoryStructure createBeanFactoryStructure() {
-		BeanFactoryStructureAnalyzer analyzer = new BeanFactoryStructureAnalyzer(
-				this.beanFactory.getBeanClassLoader());
-		return analyzer.analyze(this.beanFactory);
 	}
 
 }

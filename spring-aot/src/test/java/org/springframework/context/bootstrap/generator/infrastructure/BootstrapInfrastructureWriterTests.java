@@ -78,6 +78,8 @@ class BootstrapInfrastructureWriterTests {
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.ImportConfiguration\");",
 				"    return new ImportAwareInvoker(mappings);",
 				"  }");
+		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
+				"org/springframework/context/bootstrap/generator/sample/callback/ImportConfiguration.class");
 	}
 
 	@Test
@@ -94,6 +96,9 @@ class BootstrapInfrastructureWriterTests {
 				"    mappings.put(\"org.springframework.scheduling.annotation.ProxyAsyncConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.AsyncConfiguration\");",
 				"    return new ImportAwareInvoker(mappings);",
 				"  }");
+		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
+				"org/springframework/context/bootstrap/generator/sample/callback/ImportConfiguration.class",
+				"org/springframework/context/bootstrap/generator/sample/callback/AsyncConfiguration.class");
 	}
 
 	@Test
@@ -108,6 +113,8 @@ class BootstrapInfrastructureWriterTests {
 				"    mappings.put(\"org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration\", \"org.springframework.context.bootstrap.generator.sample.callback.NestedImportConfiguration$Nested\");",
 				"    return new ImportAwareInvoker(mappings);",
 				"  }");
+		assertThat(bootstrapContext.getNativeConfigurationRegistry().resources().toResourcesDescriptor().getPatterns()).containsOnly(
+				"org/springframework/context/bootstrap/generator/sample/callback/NestedImportConfiguration\\$Nested.class");
 	}
 
 	@Test

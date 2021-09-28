@@ -63,6 +63,9 @@ public final class ImportAwareInvoker {
 
 	public void setAnnotationMetadata(ImportAware instance) {
 		String importingClass = getImportingClassFor(instance);
+		if (importingClass == null) {
+			return; // import aware configuration class not imported
+		}
 		try {
 			MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(importingClass);
 			instance.setImportMetadata(metadataReader.getAnnotationMetadata());
@@ -74,11 +77,7 @@ public final class ImportAwareInvoker {
 
 	private String getImportingClassFor(ImportAware instance) {
 		String target = ClassUtils.getUserClass(instance).getName();
-		String importingClass = importsMapping.get(target);
-		if (importingClass == null) {
-			throw new IllegalArgumentException(String.format("No import information available for '%s'", target));
-		}
-		return importingClass;
+		return importsMapping.get(target);
 	}
 
 }
