@@ -24,9 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
-import org.springframework.context.bootstrap.generator.sample.callback.ImportAwareConfiguration;
 import org.springframework.context.bootstrap.generator.sample.injection.InjectionConfiguration;
-import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
@@ -62,18 +60,8 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(SimpleConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(SimpleConfiguration.class.getDeclaredConstructors()[0]);
-		assertThat(descriptor.getInstanceCallbacks()).isEmpty();
 		assertThat(descriptor.getInjectionPoints()).isEmpty();
 		assertThat(descriptor.getProperties()).isEmpty();
-	}
-
-	@Test
-	void createWithInstanceCallback() {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(ImportAwareConfiguration.class).getBeanDefinition());
-		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
-		assertThat(descriptor.getInstanceCallbacks()).singleElement().satisfies((callback) -> assertThat(CodeSnippet.of(callback.write("b")))
-				.isEqualTo("ImportAwareInvoker.get(context).setAnnotationMetadata(b)"));
 	}
 
 	@Test
@@ -84,7 +72,6 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(InjectionConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(InjectionConfiguration.class.getDeclaredConstructors()[0]);
-		assertThat(descriptor.getInstanceCallbacks()).isEmpty();
 		assertThat(descriptor.getInjectionPoints()).hasSize(2);
 		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
 			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setEnvironment", Environment.class));

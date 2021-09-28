@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InstanceCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.util.Assert;
@@ -36,15 +35,12 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 
 	private final BeanInstanceExecutableSupplier instanceCreatorSupplier;
 
-	private final InstanceCallbacksSupplier instanceCallbacksSupplier;
-
 	private final InjectionPointsSupplier injectionPointsSupplier;
 
 	private final PropertiesSupplier propertiesSupplier;
 
 	public DefaultBeanInstanceDescriptorFactory(ConfigurableBeanFactory beanFactory) {
 		this.instanceCreatorSupplier = new BeanInstanceExecutableSupplier(beanFactory);
-		this.instanceCallbacksSupplier = new InstanceCallbacksSupplier();
 		this.injectionPointsSupplier = new InjectionPointsSupplier(beanFactory.getBeanClassLoader());
 		this.propertiesSupplier = new PropertiesSupplier();
 	}
@@ -55,12 +51,11 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 		Executable instanceCreator = this.instanceCreatorSupplier.detectBeanInstanceExecutable(beanDefinition);
 		if (instanceCreator != null) {
 			Class<?> beanType = beanDefinition.getResolvableType().toClass();
-			List<InstanceCallback> instanceCallbacks = this.instanceCallbacksSupplier.detectInstanceCallbacks(beanType);
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
 			List<PropertyDescriptor> properties = this.propertiesSupplier.detectProperties(beanDefinition);
 			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())
-					.withInstanceCreator(instanceCreator).withInstanceCallbacks(instanceCallbacks)
-					.withInjectionPoints(injectionPoints).withProperties(properties).build();
+					.withInstanceCreator(instanceCreator).withInjectionPoints(injectionPoints)
+					.withProperties(properties).build();
 		}
 		return null;
 	}

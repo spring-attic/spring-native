@@ -28,7 +28,6 @@ import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.InstanceCallback;
 import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.MemberDescriptor;
 import org.springframework.util.ClassUtils;
 
@@ -72,8 +71,7 @@ class DefaultBeanInstanceSupplierWriter {
 		if (innerClass) { // Remove the implicit argument
 			parameterTypes.remove(0);
 		}
-		boolean multiStatements = !this.descriptor.getInstanceCallbacks().isEmpty() ||
-				!this.descriptor.getInjectionPoints().isEmpty();
+		boolean multiStatements = !this.descriptor.getInjectionPoints().isEmpty();
 		int minArgs = isInnerClass(declaringType) ? 2 : 1;
 		// Shortcut for common case
 		if (!multiStatements && constructor.getParameterTypes().length < minArgs) {
@@ -94,9 +92,6 @@ class DefaultBeanInstanceSupplierWriter {
 		if (multiStatements) {
 			code.add(";\n");
 		}
-		for (InstanceCallback instanceCallback : this.descriptor.getInstanceCallbacks()) {
-			code.addStatement(instanceCallback.write("bean"));
-		}
 		for (MemberDescriptor<?> injectionPoint : this.descriptor.getInjectionPoints()) {
 			code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
 		}
@@ -112,8 +107,7 @@ class DefaultBeanInstanceSupplierWriter {
 
 	private void writeBeanInstantiation(Builder code, Method method) {
 		List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
-		boolean multiStatements = !this.descriptor.getInstanceCallbacks().isEmpty() ||
-				!this.descriptor.getInjectionPoints().isEmpty();
+		boolean multiStatements = !this.descriptor.getInjectionPoints().isEmpty();
 		Class<?> declaringType = method.getDeclaringClass();
 		// Shortcut for common case
 		if (!multiStatements && parameterTypes.isEmpty()) {
@@ -132,9 +126,6 @@ class DefaultBeanInstanceSupplierWriter {
 		code.add(this.injectionPointWriter.writeInstantiation(method));
 		if (multiStatements) {
 			code.add(";\n");
-		}
-		for (InstanceCallback instanceCallback : this.descriptor.getInstanceCallbacks()) {
-			code.addStatement(instanceCallback.write("bean"));
 		}
 		for (MemberDescriptor<?> injectionPoint : this.descriptor.getInjectionPoints()) {
 			code.add(this.injectionPointWriter.writeInjection(injectionPoint.getMember(), injectionPoint.isRequired())).add(";\n");
