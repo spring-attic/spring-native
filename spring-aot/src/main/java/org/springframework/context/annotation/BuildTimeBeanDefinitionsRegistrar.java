@@ -16,7 +16,9 @@
 
 package org.springframework.context.annotation;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +28,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Parse the {@link Configuration @Configuration classes} and provide the bean definitions
@@ -53,13 +57,9 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		}
 		parseConfigurationClasses(context);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Resolving types for " + beanFactory.getBeanDefinitionCount() + " bean definitions");
-		}
-		for (String name : beanFactory.getBeanDefinitionNames()) {
-			beanFactory.getType(name);
-		}
+		resolveBeanDefinitionTypes(beanFactory);
 		postProcessBeanDefinitions(beanFactory);
+		registerImportOriginRegistryIfNecessary(beanFactory);
 		return beanFactory;
 	}
 
@@ -70,6 +70,15 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		configurationClassPostProcessor.setEnvironment(context.getEnvironment());
 		configurationClassPostProcessor.setResourceLoader(context);
 		configurationClassPostProcessor.postProcessBeanFactory(context.getBeanFactory());
+	}
+
+	private void resolveBeanDefinitionTypes(ConfigurableListableBeanFactory beanFactory) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Resolving types for " + beanFactory.getBeanDefinitionCount() + " bean definitions");
+		}
+		for (String name : beanFactory.getBeanDefinitionNames()) {
+			beanFactory.getType(name);
+		}
 	}
 
 	private void postProcessBeanDefinitions(ConfigurableListableBeanFactory beanFactory) {
@@ -83,6 +92,41 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			RootBeanDefinition bd = (RootBeanDefinition) beanFactory.getMergedBeanDefinition(beanName);
 			postProcessors.forEach((postProcessor) -> postProcessor.postProcessBeanDefinition(beanName, bd));
+		}
+	}
+
+	private void registerImportOriginRegistryIfNecessary(ConfigurableListableBeanFactory beanFactory) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Retrieving import origins if necessary");
+		}
+		String importRegistryBeanName = ConfigurationClassPostProcessor.class.getName() + ".importRegistry";
+		if (!beanFactory.containsBean(importRegistryBeanName)) {
+			// No configuration classes were processed
+			return;
+		}
+		ImportRegistry importRegistry = beanFactory.getBean(importRegistryBeanName, ImportRegistry.class);
+		Map<String, Class<?>> origins = new LinkedHashMap<>();
+		for (String name : beanFactory.getBeanDefinitionNames()) {
+			Class<?> beanType = beanFactory.getType(name);
+			if (beanType != null && ImportAware.class.isAssignableFrom(beanType)) {
+				String type = ClassUtils.getUserClass(beanType).getName();
+				AnnotationMetadata importingClassMetadata = importRegistry.getImportingClassFor(type);
+				if (importingClassMetadata != null) {
+					Class<?> importingClass = loadClass(importingClassMetadata.getClassName(),
+							beanFactory.getBeanClassLoader());
+					origins.put(type, importingClass);
+				}
+			}
+		}
+		ImportOriginRegistry.register(beanFactory, origins);
+	}
+
+	private Class<?> loadClass(String beanClassName, ClassLoader classLoader) {
+		try {
+			return ClassUtils.forName(beanClassName, classLoader);
+		}
+		catch (ClassNotFoundException ex) {
+			throw new IllegalStateException("Failed to load class " + beanClassName);
 		}
 	}
 

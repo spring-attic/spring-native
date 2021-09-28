@@ -46,6 +46,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link BuildTimeBeanDefinitionsRegistrar}.
@@ -98,7 +99,6 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 	}
 
 	@Test
-		// gh-953
 	void processBeanDefinitionsWithCustomClasspathScanningAndNullBeanRegistry() {
 		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), CustomClasspathScanningConfiguration.class);
@@ -143,6 +143,50 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 				.getAttribute("beanFactory")).isEqualTo(beanFactory);
 	}
 
+	// Import Aware
+
+	@Test
+	void processContextWithoutConfigurationClassesDoesNotCreateImportOriginRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		assertThat(ImportOriginRegistry.get(beanFactory)).isNull();
+	}
+
+	@Test
+	void processContextWithNoInstanceAwareConfigurationClassesCreateEmptyImportOriginRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConfigurationOne.class);
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
+		assertThat(registry).isNotNull();
+		assertThat(registry.getImportOrigins()).isEmpty();
+	}
+
+	@Test
+	void processContextWithInstanceAwareConfigurationClassImportedCreateMatchingImportOriginRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
+		assertThat(registry).isNotNull();
+		assertThat(registry.getImportOrigins()).containsOnly(entry(ConfigurationTwo.class.getName(),
+				ImportConfiguration.class));
+	}
+
+	@Test
+	void processContextWithInstanceAwareConfigurationClassNotImportedCreateMatchingImportOriginRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConfigurationTwo.class);
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
+		assertThat(registry).isNotNull();
+		assertThat(registry.getImportOrigins()).isEmpty();
+	}
+
+	@Test
+	void processContextWithNullBeanDefinitionTypeIsIgnoredByImportOriginRegistry() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		context.registerBeanDefinition("test", new RootBeanDefinition());
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		assertThat(ImportOriginRegistry.get(beanFactory)).isNull();
+	}
 
 	private <T extends GenericApplicationContext> T createApplicationContext(
 			Supplier<T> contextFactory, Class<?>... componentClasses) {

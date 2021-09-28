@@ -18,13 +18,19 @@ package org.springframework.context.annotation.samples.simple;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.type.AnnotationMetadata;
 
 @Configuration(proxyBeanMethods = false)
-public class ConfigurationTwo {
+public class ConfigurationTwo implements ImportAware {
+
+	@Override
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
+
+	}
 
 	@Bean
 	String beanTwo() {
 		return "two";
 	}
-
 }

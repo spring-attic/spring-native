@@ -16,16 +16,22 @@
 
 package org.springframework.aot.context.annotation;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ImportAwareInvoker}.
@@ -33,6 +39,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  */
 class ImportAwareInvokerTests {
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void registerInvokeSupplier() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		ImportAwareInvoker importAwareInvoker = new ImportAwareInvoker(Collections.emptyMap());
+		Supplier<ImportAwareInvoker> supplier = mock(Supplier.class);
+		given(supplier.get()).willReturn(importAwareInvoker);
+		ImportAwareInvoker.register(beanFactory, supplier);
+		verifyNoInteractions(supplier);
+		ImportAwareInvoker invoker = ImportAwareInvoker.get(beanFactory);
+		assertThat(invoker).isSameAs(importAwareInvoker);
+		verify(supplier).get();
+	}
+
+	@Test
+	void registerOnExistingInstanceDoesNotRegister() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		ImportAwareInvoker importAwareInvoker = new ImportAwareInvoker(Collections.emptyMap());
+		ImportAwareInvoker.register(beanFactory, () -> importAwareInvoker);
+		ImportAwareInvoker.register(beanFactory, () -> {
+			throw new IllegalStateException("test");
+		});
+		assertThat(ImportAwareInvoker.get(beanFactory)).isSameAs(importAwareInvoker);
+	}
 
 	@Test
 	void setAnnotationMetadataOnMatchingCandidate() {
@@ -57,12 +88,12 @@ class ImportAwareInvokerTests {
 	}
 
 	@Test
-	void setAnnotationMetadataOnNonMatchingCandidate() {
+	void setAnnotationMetadataOnNoCandidateDoesNotInvokeCallback() {
 		ImportAwareInvoker invoker = new ImportAwareInvoker(Map.of(String.class.getName(),
 				ImportAwareInvokerTests.class.getName()));
 		TestImportAware importAware = new TestImportAware();
-		assertThatIllegalArgumentException().isThrownBy(() -> invoker.setAnnotationMetadata(importAware))
-				.withMessageContaining("No import information available for '%s'", TestImportAware.class.getName());
+		invoker.setAnnotationMetadata(importAware);
+		assertThat(importAware.importMetadata).isNull();
 	}
 
 	@Test
