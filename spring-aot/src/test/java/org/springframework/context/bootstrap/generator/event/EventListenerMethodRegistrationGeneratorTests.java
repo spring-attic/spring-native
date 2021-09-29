@@ -1,8 +1,12 @@
 package org.springframework.context.bootstrap.generator.event;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.CodeBlock.Builder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -21,7 +25,10 @@ import org.springframework.context.bootstrap.generator.sample.event.AnotherEvent
 import org.springframework.context.bootstrap.generator.sample.event.SingleEventListener;
 import org.springframework.context.bootstrap.generator.sample.event.SingleTransactionalEventListener;
 import org.springframework.context.bootstrap.generator.sample.scope.SimpleServiceImpl;
+import org.springframework.context.bootstrap.generator.sample.visibility.ProtectedEventListenerConfiguration;
 import org.springframework.context.bootstrap.generator.test.CodeSnippet;
+import org.springframework.context.bootstrap.generator.test.TextAssert;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.transaction.event.TransactionalEventListenerFactory;
 import org.springframework.util.ReflectionUtils;
 
@@ -39,7 +46,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 		DefaultListableBeanFactory beanFactory = prepareBeanFactory();
 		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class)
 				.getBeanDefinition());
-		assertThat(generateCode(beanFactory)).isEmpty();
+		assertGeneratedCode(beanFactory, (code, writerContext) -> assertThat(code).isEmpty());
 	}
 
 	@Test
@@ -47,8 +54,16 @@ class EventListenerMethodRegistrationGeneratorTests {
 		DefaultListableBeanFactory beanFactory = prepareBeanFactory();
 		beanFactory.registerBeanDefinition("single", BeanDefinitionBuilder.rootBeanDefinition(SingleEventListener.class)
 				.getBeanDefinition());
-		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"single\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)", "));");
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			assertThat(code).lines().contains("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, "
+					+ "() -> new EventListenerRegistrar(context, ContextBootstrapInitializer.getEventListenersMetadata()));");
+			assertGeneratedCode(writerContext.getMainBootstrapClass()).removeIndent(1).lines().containsSequence(
+					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+					"  return List.of(",
+					"    EventListenerMetadata.forBean(\"single\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)",
+					"  );",
+					"}");
+		});
 	}
 
 	@Test
@@ -58,9 +73,35 @@ class EventListenerMethodRegistrationGeneratorTests {
 				.getBeanDefinition());
 		beanFactory.registerBeanDefinition("another", BeanDefinitionBuilder.rootBeanDefinition(AnotherEventListener.class)
 				.getBeanDefinition());
-		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"test\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
-				"    EventListenerMetadata.forBean(\"another\", AnotherEventListener.class).annotatedMethod(\"onRefresh\")", "));");
+		assertGeneratedCode(beanFactory, (code, writerContext) -> assertGeneratedCode(writerContext.getMainBootstrapClass())
+				.removeIndent(1).lines().containsSequence(
+						"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+						"  return List.of(",
+						"    EventListenerMetadata.forBean(\"test\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
+						"    EventListenerMetadata.forBean(\"another\", AnotherEventListener.class).annotatedMethod(\"onRefresh\")",
+						"  );",
+						"}"));
+	}
+
+	@Test
+	void writeEventListenersRegistrationWithPackageProtectedEventListener() {
+		GenericApplicationContext context = new GenericApplicationContext(prepareBeanFactory());
+		context.registerBeanDefinition("configuration", BeanDefinitionBuilder.rootBeanDefinition(ProtectedEventListenerConfiguration.class)
+				.getBeanDefinition());
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			assertThat(code).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", "
+					+ "EventListenerRegistrar.class, () -> new EventListenerRegistrar(context, ContextBootstrapInitializer.getEventListenersMetadata()));");
+			BootstrapClass bootstrapClass = writerContext.getBootstrapClass(ProtectedEventListenerConfiguration.class.getPackageName());
+			assertGeneratedCode(bootstrapClass).removeIndent(1).lines().containsSequence(
+					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+					"  return List.of(",
+					"    EventListenerMetadata.forBean(\"protectedEventListener\", ProtectedEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class)",
+					"  );",
+					"}"
+			);
+		});
 	}
 
 	@Test
@@ -72,10 +113,15 @@ class EventListenerMethodRegistrationGeneratorTests {
 				.getBeanDefinition());
 		beanFactory.registerBeanDefinition("transactional", BeanDefinitionBuilder.rootBeanDefinition(SingleTransactionalEventListener.class)
 				.getBeanDefinition());
-		assertThat(generateCode(beanFactory)).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"simple\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
-				"    EventListenerMetadata.forBean(\"transactional\", SingleTransactionalEventListener.class).eventListenerFactoryBeanName(\"internalTxEventListenerFactory\").annotatedMethod(\"onEvent\", ApplicationEvent.class)",
-				"));");
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			assertGeneratedCode(writerContext.getMainBootstrapClass()).removeIndent(1).lines().containsSequence(
+					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+					"  return List.of(",
+					"    EventListenerMetadata.forBean(\"simple\", SingleEventListener.class).annotatedMethod(\"onStartup\", ApplicationStartedEvent.class),",
+					"    EventListenerMetadata.forBean(\"transactional\", SingleTransactionalEventListener.class).eventListenerFactoryBeanName(\"internalTxEventListenerFactory\").annotatedMethod(\"onEvent\", ApplicationEvent.class)",
+					"  );",
+					"}");
+		});
 	}
 
 	@Test
@@ -84,10 +130,14 @@ class EventListenerMethodRegistrationGeneratorTests {
 		context.register(SimpleServiceImpl.class);
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
-		assertThat(generateCode(beanFactory)).lines().containsExactly(
-				"context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, () -> new EventListenerRegistrar(context,",
-				"    EventListenerMetadata.forBean(\"simpleServiceImpl\", SimpleServiceImpl.class).annotatedMethod(\"onContextRefresh\")",
-				"));");
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			assertGeneratedCode(writerContext.getMainBootstrapClass()).removeIndent(1).lines().containsSequence(
+					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+					"  return List.of(",
+					"    EventListenerMetadata.forBean(\"simpleServiceImpl\", SimpleServiceImpl.class).annotatedMethod(\"onContextRefresh\")",
+					"  );",
+					"}");
+		});
 	}
 
 	@Test
@@ -97,22 +147,21 @@ class EventListenerMethodRegistrationGeneratorTests {
 				.getBeanDefinition());
 		beanFactory.registerBeanDefinition("another", BeanDefinitionBuilder.rootBeanDefinition(AnotherEventListener.class)
 				.getBeanDefinition());
-		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		BootstrapWriterContext context = creteBootstrapContext();
-		processor.writeEventListenersRegistration(context, CodeBlock.builder());
-		List<NativeReflectionEntry> entries = context.getNativeConfigurationRegistry().reflection().getEntries();
-		assertThat(entries).hasSize(2);
-		assertThat(entries).anySatisfy((entry) -> {
-			assertThat(entry.getType()).isEqualTo(SingleEventListener.class);
-			assertThat(entry.getMethods()).containsOnly(
-					ReflectionUtils.findMethod(SingleEventListener.class, "onStartup", ApplicationStartedEvent.class));
-			assertThat(entry.getFields()).isEmpty();
-		});
-		assertThat(entries).anySatisfy((entry) -> {
-			assertThat(entry.getType()).isEqualTo(AnotherEventListener.class);
-			assertThat(entry.getMethods()).containsOnly(
-					ReflectionUtils.findMethod(AnotherEventListener.class, "onRefresh"));
-			assertThat(entry.getFields()).isEmpty();
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			List<NativeReflectionEntry> entries = writerContext.getNativeConfigurationRegistry().reflection().getEntries();
+			assertThat(entries).hasSize(2);
+			assertThat(entries).anySatisfy((entry) -> {
+				assertThat(entry.getType()).isEqualTo(SingleEventListener.class);
+				assertThat(entry.getMethods()).containsOnly(
+						ReflectionUtils.findMethod(SingleEventListener.class, "onStartup", ApplicationStartedEvent.class));
+				assertThat(entry.getFields()).isEmpty();
+			});
+			assertThat(entries).anySatisfy((entry) -> {
+				assertThat(entry.getType()).isEqualTo(AnotherEventListener.class);
+				assertThat(entry.getMethods()).containsOnly(
+						ReflectionUtils.findMethod(AnotherEventListener.class, "onRefresh"));
+				assertThat(entry.getFields()).isEmpty();
+			});
 		});
 	}
 
@@ -122,13 +171,23 @@ class EventListenerMethodRegistrationGeneratorTests {
 		return beanFactory;
 	}
 
-	private CodeSnippet generateCode(ConfigurableListableBeanFactory beanFactory) {
+	void assertGeneratedCode(ConfigurableListableBeanFactory beanFactory, BiConsumer<CodeSnippet, BootstrapWriterContext> generatedContent) {
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		return CodeSnippet.of((code) -> processor.writeEventListenersRegistration(creteBootstrapContext(), code));
+		BootstrapWriterContext writerContext = new BootstrapWriterContext(BootstrapClass.of("com.example"));
+		Builder code = CodeBlock.builder();
+		processor.writeEventListenersRegistration(writerContext, code);
+		generatedContent.accept(CodeSnippet.of(code.build()), writerContext);
 	}
 
-	private static BootstrapWriterContext creteBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
+	private TextAssert assertGeneratedCode(BootstrapClass bootstrapClass) {
+		try {
+			StringWriter out = new StringWriter();
+			bootstrapClass.toJavaFile().writeTo(out);
+			return new TextAssert(out.toString());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }

@@ -16,8 +16,9 @@
 
 package org.springframework.context.event;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationListener;
@@ -40,9 +41,9 @@ public class EventListenerRegistrar implements SmartInitializingSingleton {
 	private final Collection<EventListenerMetadata> eventListenersMetadata;
 
 	public EventListenerRegistrar(GenericApplicationContext context,
-			EventListenerMetadata... eventListenersMetadata) {
+			List<EventListenerMetadata> eventListenersMetadata) {
 		this.context = context;
-		this.eventListenersMetadata = Arrays.asList(eventListenersMetadata);
+		this.eventListenersMetadata = new ArrayList<>(eventListenersMetadata);
 	}
 
 	@Override

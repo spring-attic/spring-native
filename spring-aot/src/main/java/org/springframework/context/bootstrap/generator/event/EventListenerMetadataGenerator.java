@@ -53,6 +53,10 @@ class EventListenerMetadataGenerator {
 		this.eventListenerFactoryBeanName = eventListenerFactoryBeanName;
 	}
 
+	Class<?> getBeanType() {
+		return this.beanType;
+	}
+
 	/**
 	 * Write an {@link EventListenerMetadata} registration.
 	 */

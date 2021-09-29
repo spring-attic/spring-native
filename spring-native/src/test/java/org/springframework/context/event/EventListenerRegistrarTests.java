@@ -1,6 +1,7 @@
 package org.springframework.context.event;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,8 @@ class EventListenerRegistrarTests {
 		TestComponent testComponent = mock(TestComponent.class);
 		context.registerBean("test", TestComponent.class, () -> testComponent);
 		context.registerBean("infrastructure", EventListenerRegistrar.class,
-				() -> new EventListenerRegistrar(context, EventListenerMetadata.forBean("test", TestComponent.class).annotatedMethod("onRefresh")));
+				() -> new EventListenerRegistrar(context, List.of(EventListenerMetadata.forBean(
+						"test", TestComponent.class).annotatedMethod("onRefresh"))));
 		context.refresh();
 		verify(testComponent).onRefresh();
 		context.close();
@@ -42,7 +44,8 @@ class EventListenerRegistrarTests {
 		TestComponent testComponent = mock(TestComponent.class);
 		context.registerBean("test", TestComponent.class, () -> testComponent);
 		context.registerBean("infrastructure", EventListenerRegistrar.class,
-				() -> new EventListenerRegistrar(context, EventListenerMetadata.forBean("test", TestComponent.class).annotatedMethod("onClosed", ContextClosedEvent.class)));
+				() -> new EventListenerRegistrar(context, List.of(EventListenerMetadata.forBean(
+						"test", TestComponent.class).annotatedMethod("onClosed", ContextClosedEvent.class))));
 		context.refresh();
 		verifyNoInteractions(testComponent);
 		context.close();
@@ -59,8 +62,8 @@ class EventListenerRegistrarTests {
 		context.registerBean("testFactory", EventListenerFactory.class, () -> factory);
 		context.registerBean("test", TestComponent.class, TestComponent::new);
 		context.registerBean("infrastructure", EventListenerRegistrar.class,
-				() -> new EventListenerRegistrar(context, EventListenerMetadata.forBean("test", TestComponent.class)
-						.eventListenerFactoryBeanName("testFactory").annotatedMethod("onRefresh")));
+				() -> new EventListenerRegistrar(context, List.of(EventListenerMetadata.forBean("test", TestComponent.class)
+						.eventListenerFactoryBeanName("testFactory").annotatedMethod("onRefresh"))));
 		assertThat(context.getApplicationListeners()).doesNotContain(applicationListener);
 		context.refresh();
 		assertThat(context.getApplicationListeners()).contains(applicationListener);

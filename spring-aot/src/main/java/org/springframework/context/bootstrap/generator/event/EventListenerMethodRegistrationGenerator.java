@@ -18,15 +18,21 @@ package org.springframework.context.bootstrap.generator.event;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import com.squareup.javapoet.ClassName;
+import javax.lang.model.element.Modifier;
+
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.CodeBlock.Builder;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,15 +42,20 @@ import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.EventListenerFactory;
+import org.springframework.context.event.EventListenerMetadata;
 import org.springframework.context.event.EventListenerMethodProcessor;
+import org.springframework.context.event.EventListenerRegistrar;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Detect beans with methods annotated with {@link EventListener} and write the code
@@ -54,9 +65,6 @@ import org.springframework.util.CollectionUtils;
  * @author Stephane Nicoll
  */
 public class EventListenerMethodRegistrationGenerator {
-
-	private static final ClassName REGISTRAR = ClassName.get("org.springframework.context.event",
-			"EventListenerRegistrar");
 
 	private static final String REGISTRAR_BEAN_NAME = "org.springframework.aot.EventListenerRegistrar";
 
@@ -100,16 +108,71 @@ public class EventListenerMethodRegistrationGenerator {
 			return; // No listener detected
 		}
 		eventGenerators.forEach((eventGenerator) -> eventGenerator.registerReflectionMetadata(context.getNativeConfigurationRegistry()));
-		code.add("context.registerBean($S, $T.class, () -> new $L(context,\n", REGISTRAR_BEAN_NAME, REGISTRAR, REGISTRAR.simpleName());
-		code.indent().indent();
-		Iterator<EventListenerMetadataGenerator> it = eventGenerators.iterator();
+		code.add("context.registerBean($S, $T.class, () -> new $L(context, ", REGISTRAR_BEAN_NAME,
+				EventListenerRegistrar.class, EventListenerRegistrar.class.getSimpleName());
+		code.add(writeEventListenersMetadataRegistration(context, eventGenerators));
+		code.addStatement("))");
+	}
+
+	private CodeBlock writeEventListenersMetadataRegistration(BootstrapWriterContext context,
+			List<EventListenerMetadataGenerator> eventGenerators) {
+		String targetPackageName = context.getPackageName();
+		MultiValueMap<String, EventListenerMetadataGenerator> generatorsPerPackage =
+				indexEventListeners(eventGenerators, targetPackageName);
+		Builder registrations = CodeBlock.builder();
+		boolean multipleMethods = generatorsPerPackage.size() > 1;
+		if (multipleMethods) {
+			registrations.add("$T.of(\n", List.class).indent().indent();
+		}
+		Iterator<Entry<String, List<EventListenerMetadataGenerator>>> it =
+				generatorsPerPackage.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, List<EventListenerMetadataGenerator>> entry = it.next();
+			MethodSpec method = createEventListenersMetadataMethod(entry.getValue());
+			BootstrapClass bootstrapClass = context.getBootstrapClass(entry.getKey());
+			bootstrapClass.addMethod(method);
+			registrations.add("$T.$N()", bootstrapClass.getClassName(), method);
+			if (it.hasNext()) {
+				registrations.add(",\n");
+			}
+		}
+		if (multipleMethods) {
+			registrations.add("\n").unindent().unindent();
+			registrations.add(").stream().flatMap($T::stream).collect($T.toList())",
+					Collection.class, Collectors.class);
+		}
+		return registrations.build();
+	}
+
+	private MultiValueMap<String, EventListenerMetadataGenerator> indexEventListeners(List<EventListenerMetadataGenerator> eventGenerators,
+			String targetPackageName) {
+		MultiValueMap<String, EventListenerMetadataGenerator> generatorsPerPackage = new LinkedMultiValueMap<>();
+		for (EventListenerMetadataGenerator eventGenerator : eventGenerators) {
+			if (isAccessibleFrom(eventGenerator.getBeanType(), targetPackageName)) {
+				generatorsPerPackage.add(targetPackageName, eventGenerator);
+			}
+			else {
+				generatorsPerPackage.add(eventGenerator.getBeanType().getPackageName(), eventGenerator);
+			}
+		}
+		return generatorsPerPackage;
+	}
+
+	private MethodSpec createEventListenersMetadataMethod(List<EventListenerMetadataGenerator> generators) {
+		Builder code = CodeBlock.builder();
+		code.add("return $T.of(", List.class);
+		code.add("\n").indent();
+		Iterator<EventListenerMetadataGenerator> it = generators.iterator();
 		while (it.hasNext()) {
 			it.next().writeEventListenerMetadata(code); ;
 			if (it.hasNext()) {
 				code.add(",\n");
 			}
 		}
-		code.add("\n").unindent().unindent().addStatement("))");
+		code.add("\n").unindent().addStatement(")");
+		return MethodSpec.methodBuilder("getEventListenersMetadata")
+				.returns(ParameterizedTypeName.get(List.class, EventListenerMetadata.class))
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build()).build();
 	}
 
 	public List<EventListenerMetadataGenerator> process(String beanName) {
@@ -196,6 +259,15 @@ public class EventListenerMethodRegistrationGenerator {
 			}
 		}
 		return result;
+	}
+
+	private static boolean isAccessibleFrom(Class<?> beanType, String packageName) {
+		return isAccessible(packageName, beanType.getModifiers(),
+				beanType.getPackageName());
+	}
+
+	private static boolean isAccessible(String packageName, int modifiers, String actualPackageName) {
+		return java.lang.reflect.Modifier.isPublic(modifiers) || packageName.equals(actualPackageName);
 	}
 
 }
