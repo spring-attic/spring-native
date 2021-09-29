@@ -131,6 +131,9 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 				MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 				modifyLoadMethod = new ModifyLoadMethod(mv);
 				return modifyLoadMethod;
+			// To avoid "Unable to find a single main class" errors
+			} else if (name.equals("main")) {
+				return null;
 			} else {
 				return super.visitMethod(access, name, desc, signature, exceptions);
 			}
