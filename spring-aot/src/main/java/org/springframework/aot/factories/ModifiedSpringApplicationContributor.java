@@ -220,7 +220,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 					mv.visitMethodInsn(INVOKEINTERFACE, "org/apache/commons/logging/Log", "info",
 							"(Ljava/lang/Object;)V", true);
 					mv.visitVarInsn(ALOAD, 0);
-					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplicationAotUtils", "AOT_FACTORY",
+					mv.visitFieldInsn(GETSTATIC, "org/springframework/aot/SpringApplicationAotUtils", "AOT_FACTORY",
 							"Lorg/springframework/boot/ApplicationContextFactory;");
 					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication",
 							"setApplicationContextFactory", "(Lorg/springframework/boot/ApplicationContextFactory;)V",
@@ -230,7 +230,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 					mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
 					mv.visitVarInsn(ASTORE, 3);
 					mv.visitVarInsn(ALOAD, 3);
-					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/boot/SpringApplicationAotUtils", "getBootstrapInitializer", "()Lorg/springframework/context/ApplicationContextInitializer;", false);
+					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/aot/SpringApplicationAotUtils", "getBootstrapInitializer", "()Lorg/springframework/context/ApplicationContextInitializer;", false);
 					mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
 					mv.visitInsn(POP);
 					mv.visitVarInsn(ALOAD, 3);

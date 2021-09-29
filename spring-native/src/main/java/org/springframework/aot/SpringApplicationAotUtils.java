@@ -1,4 +1,4 @@
-package org.springframework.nativex.substitutions.boot;
+package org.springframework.aot;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -14,7 +14,7 @@ import org.springframework.context.support.GenericApplicationContext;
  *
  * @author Sebastien Deleuze
  */
-class SpringApplicationAotUtils {
+public class SpringApplicationAotUtils {
 
 	public static ApplicationContextFactory AOT_FACTORY = (webApplicationType) -> {
 		try {
