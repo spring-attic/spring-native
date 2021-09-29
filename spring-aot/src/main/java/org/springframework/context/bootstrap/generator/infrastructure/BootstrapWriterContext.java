@@ -18,7 +18,6 @@ import org.springframework.context.bootstrap.generator.infrastructure.nativex.Na
  */
 public class BootstrapWriterContext {
 
-
 	private final String packageName;
 
 	private final ProtectedAccessAnalyzer protectedAccessAnalyzer;
@@ -59,6 +58,15 @@ public class BootstrapWriterContext {
 		return this.bootstrapClasses.computeIfAbsent(packageName, (p) ->
 				BootstrapClass.of(packageName, (type) ->
 						type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
+	}
+
+	/**
+	 * Return the default {@link BootstrapClass}.
+	 * @return the bootstrap class for the target package
+	 * @see #getPackageName()
+	 */
+	public BootstrapClass getMainBootstrapClass() {
+		return getBootstrapClass(this.packageName);
 	}
 
 	/**

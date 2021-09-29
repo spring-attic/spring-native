@@ -19,6 +19,7 @@ class BootstrapWriterContextTests {
 		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
 		assertThat(writerContext.getPackageName()).isEqualTo("com.acme");
+		assertThat(writerContext.getMainBootstrapClass()).isSameAs(defaultBootstrapClass);
 		assertThat(writerContext.getBootstrapClass("com.acme")).isSameAs(defaultBootstrapClass);
 	}
 

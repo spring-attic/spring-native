@@ -65,12 +65,12 @@ public class BootstrapInfrastructureWriter {
 				ContextAnnotationAutowireCandidateResolver.class);
 		MethodSpec importAwareBeanPostProcessorMethod = handleImportAwareBeanPostProcessor();
 		if (importAwareBeanPostProcessorMethod != null) {
-			this.writerContext.getBootstrapClass(this.writerContext.getPackageName()).addMethod(importAwareBeanPostProcessorMethod);
+			this.writerContext.getMainBootstrapClass().addMethod(importAwareBeanPostProcessorMethod);
 			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", importAwareBeanPostProcessorMethod);
 		}
 		MethodSpec initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
 		if (initDestroyBeanPostProcessorMethod != null) {
-			this.writerContext.getBootstrapClass(this.writerContext.getPackageName()).addMethod(initDestroyBeanPostProcessorMethod);
+			this.writerContext.getMainBootstrapClass().addMethod(initDestroyBeanPostProcessorMethod);
 			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", initDestroyBeanPostProcessorMethod);
 		}
 	}
