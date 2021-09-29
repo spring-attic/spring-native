@@ -54,6 +54,7 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 			props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
 			props.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
 			props.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
+			props.put("spring.cloud.compatibility-verifier.enabled", "false"); // To avoid false positive due to SpringApplication patched copy
 			props.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
 			environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
 		}
