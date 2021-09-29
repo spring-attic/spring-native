@@ -15,6 +15,7 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<spring-session-bom.version>2021.1.0-SNAPSHOT</spring-session-bom.version>
 	</properties>
 
 	<dependencies>
