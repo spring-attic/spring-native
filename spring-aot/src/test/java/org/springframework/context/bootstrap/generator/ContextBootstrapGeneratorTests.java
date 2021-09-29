@@ -25,6 +25,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.context.annotation.samples.scope.ScopeConfiguration;
 import org.springframework.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
 import org.springframework.context.bootstrap.generator.sample.generic.GenericConfiguration;
@@ -199,7 +200,7 @@ class ContextBootstrapGeneratorTests {
 				"  BeanDefinitionRegistrar.of(\"org.springframework.context.bootstrap.generator.sample.visibility.ProtectedType\", ProtectedType.class)",
 				"      .instanceSupplier(() -> new ProtectedType()).register(context);",
 				"}");
-  		assertThat(structure).contextBootstrapInitializer().contains(
+		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedConstructorParameterConfiguration\", ProtectedConstructorParameterConfiguration.class)",
 				"    .instanceSupplier(() -> new ProtectedConstructorParameterConfiguration()).register(context);",
 				"ContextBootstrapInitializer.registerProtectedParameter(context);");
@@ -254,6 +255,26 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"repositoryId\", String.class).withFactoryMethod(GenericObjectProviderConfiguration.class, \"repositoryId\", ObjectProvider.class)",
 				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(GenericObjectProviderConfiguration.class).repositoryId(attributes.get(0)))).register(context);");
+	}
+
+	@Test
+	void bootstrapClassWithPrototypeScope() {
+		ContextBootstrapStructure structure = this.generatorTester.generate(ScopeConfiguration.class);
+		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
+				"BeanDefinitionRegistrar.of(\"counterBean\", ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class)).withFactoryMethod(ScopeConfiguration.class, \"counterBean\")",
+				"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).counterBean()).customize((bd) -> bd.setScope(\"prototype\")).register(context);");
+	}
+
+	@Test
+	void bootstrapClassWithPrototypeScopeAndProxy() {
+		ContextBootstrapStructure structure = this.generatorTester.generate(ScopeConfiguration.class);
+		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines()
+				.contains(
+						"BeanDefinitionRegistrar.of(\"scopedTarget.timeBean\", StringHolder.class).withFactoryMethod(ScopeConfiguration.class, \"timeBean\")",
+						"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).timeBean()).customize((bd) -> bd.setScope(\"prototype\")).register(context);")
+				.contains(
+						"BeanDefinitionRegistrar.of(\"timeBean\", ScopedProxyFactoryBean.class)",
+						"    .instanceSupplier(() -> new ScopedProxyFactoryBean()).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"targetBeanName\", \"scopedTarget.timeBean\")).register(context);");
 	}
 
 	@Test

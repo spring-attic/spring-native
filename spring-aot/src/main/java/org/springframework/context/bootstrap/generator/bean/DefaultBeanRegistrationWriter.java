@@ -21,6 +21,7 @@ import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -185,6 +186,10 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		MultiStatement statements = new MultiStatement();
 		if (this.beanDefinition.isPrimary()) {
 			statements.add("$L.setPrimary(true)", bdVariable);
+		}
+		String scope = this.beanDefinition.getScope();
+		if (StringUtils.hasText(scope) && !ConfigurableBeanFactory.SCOPE_SINGLETON.equals(scope)) {
+			statements.add("$L.setScope($S)", bdVariable, scope);
 		}
 		if (this.beanDefinition instanceof AbstractBeanDefinition
 				&& ((AbstractBeanDefinition) this.beanDefinition).isSynthetic()) {

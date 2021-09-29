@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -183,6 +184,31 @@ class DefaultBeanRegistrationWriterTests {
 						"  bd.setSynthetic(true);",
 						"  bd.setPrimary(true);",
 						"}).register(context);");
+	}
+
+	@Test
+	void writeWithPrototypeScope() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.setScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE).getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setScope(\"prototype\")).register(context);");
+	}
+
+	@Test
+	void writeWithDefaultScopeDoesNotCustomizeBeanDefinition() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.setScope(ConfigurableBeanFactory.SCOPE_SINGLETON).getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new")))
+				.doesNotContain("bd.setScope(");
+	}
+
+	@Test
+	void writeWithNoScopeDoesNotCustomizeBeanDefinition() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.setScope("").getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new")))
+				.doesNotContain("bd.setScope(");
 	}
 
 	@Test
