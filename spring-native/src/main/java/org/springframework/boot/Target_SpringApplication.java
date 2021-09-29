@@ -1,5 +1,6 @@
 package org.springframework.boot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,17 +103,21 @@ final class Target_SpringApplication {
 				new LinkedHashSet<>(Arrays.asList(Object.class)) : new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = (List<BootstrapRegistryInitializer>) getSpringFactoriesInstances(BootstrapRegistryInitializer.class);
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 
 		if (AotModeDetector.isAotModeEnabled()) {
 			logger.info("AOT mode enabled");
 			setApplicationContextFactory(SpringApplicationAotUtils.AOT_FACTORY);
-			setInitializers(Arrays.asList(SpringApplicationAotUtils.getBootstrapInitializer(), new ConditionEvaluationReportLoggingListener()));
+			List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
+			initializers.add(SpringApplicationAotUtils.getBootstrapInitializer());
+			initializers.add(new ConditionEvaluationReportLoggingListener());
+			initializers.addAll((Collection)getSpringFactoriesInstances(ApplicationContextInitializer.class));
+			setInitializers(initializers);
 		}
 		else {
 			logger.info("AOT mode disabled");
+			setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		}
 	}
 
