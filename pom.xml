@@ -11,6 +11,7 @@
 
 	<properties>
 		<revision>0.11.0-SNAPSHOT</revision>
+		<asm.version>9.2</asm.version>
 		<graalvm.version>21.2.0</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
 		<spring.boot.version>2.6.0-M3</spring.boot.version>
@@ -140,8 +141,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
 				<artifactId>asm-tree</artifactId>
-				<version>9.0</version>
+				<version>${asm.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.twdata.maven</groupId>
