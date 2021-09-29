@@ -6,13 +6,14 @@ NC='\033[0m'
 # Build the server
 cd ../configserver
 ./build.sh
+./target/configserver 2>&1 > target/native/server-output.txt &
+SERVERPID=$!
+
 cd ../configclient
 
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh $* || exit 1
 
-../configserver/target/configserver 2>&1 > target/native/server-output.txt &
-SERVERPID=$!
-sleep 10 
+sleep 10
 
  ${PWD%/*samples/*}/scripts/test.sh $*
 
