@@ -30,6 +30,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
+// TODO Not sure AccessBits.ALL is needed on these, to be checked
 @NativeHint(trigger = LoadBalancerEurekaAutoConfiguration.class, types = {
 		@TypeHint(types = {
 				EurekaLoadBalancerClientConfiguration.class,
