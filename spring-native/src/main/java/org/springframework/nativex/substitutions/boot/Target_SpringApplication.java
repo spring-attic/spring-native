@@ -1,4 +1,4 @@
-package org.springframework.boot;
+package org.springframework.nativex.substitutions.boot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +16,10 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.Banner;
+import org.springframework.boot.BootstrapRegistryInitializer;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -104,7 +108,7 @@ final class Target_SpringApplication {
 		this.resourceLoader = resourceLoader;
 		this.primarySources = AotModeDetector.isAotModeEnabled() ?
 				new LinkedHashSet<>(Arrays.asList(Object.class)) : new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		this.webApplicationType = Target_WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = (List<BootstrapRegistryInitializer>) getSpringFactoriesInstances(BootstrapRegistryInitializer.class);
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -130,7 +134,7 @@ final class Target_SpringApplication {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 			}
-			BeanDefinitionLoader loader = createBeanDefinitionLoader(getBeanDefinitionRegistry(context), sources);
+			Target_BeanDefinitionLoader loader = createBeanDefinitionLoader(getBeanDefinitionRegistry(context), sources);
 			if (this.beanNameGenerator != null) {
 				loader.setBeanNameGenerator(this.beanNameGenerator);
 			}
@@ -194,7 +198,7 @@ final class Target_SpringApplication {
 	}
 
 	@Alias
-	protected BeanDefinitionLoader createBeanDefinitionLoader(BeanDefinitionRegistry registry, Object[] sources) {
+	protected Target_BeanDefinitionLoader createBeanDefinitionLoader(BeanDefinitionRegistry registry, Object[] sources) {
 		return null;
 	}
 

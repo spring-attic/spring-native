@@ -1,7 +1,9 @@
-package org.springframework.boot;
+package org.springframework.nativex.substitutions.boot;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
