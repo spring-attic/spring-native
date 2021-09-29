@@ -18,8 +18,6 @@ package org.springframework.aot.factories;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +39,6 @@ import org.springframework.asm.Type;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.AotOptions;
 
 /**
@@ -104,6 +101,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 
 		ModifyConstructor modifyConstructor = null;
 		ModifyLoadMethod modifyLoadMethod = null;
+		ModifyGetSpringFactoriesInstances modifyGetSpringFactoriesInstances = null;
 		boolean mainRemoved = false;
 
 		public byte[] getBytes() {
@@ -122,6 +120,11 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			} else {
 				modifyLoadMethod.assertSuccessful();
 			}
+			if (modifyGetSpringFactoriesInstances == null) {
+				throw new IllegalStateException("Unable to find getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) method to modify");
+			} else {
+				modifyGetSpringFactoriesInstances.assertSuccessful();
+			}
 			return ((ClassWriter) cv).toByteArray();
 		}
 
@@ -138,8 +141,12 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 				MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 				modifyLoadMethod = new ModifyLoadMethod(mv);
 				return modifyLoadMethod;
-			// To avoid "Unable to find a single main class" errors
-			} else if (name.equals("main")) {
+			} else if (name.equals("getSpringFactoriesInstances")
+					&& desc.equals("(Ljava/lang/Class;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/util/Collection;")) {
+				MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+				modifyGetSpringFactoriesInstances = new ModifyGetSpringFactoriesInstances(mv);
+				return modifyGetSpringFactoriesInstances;
+			} else if (name.equals("main")) { // To avoid "Unable to find a single main class" errors
 				mainRemoved = true;
 				return null;
 			} else {
@@ -307,6 +314,51 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			}
 
 		}
-	}
+
+		class ModifyGetSpringFactoriesInstances extends MethodVisitor implements Opcodes {
+
+			private boolean successfulPatch = false;
+
+			public ModifyGetSpringFactoriesInstances(MethodVisitor mv) {
+				super(ASM5, mv);
+			}
+
+			public void assertSuccessful() {
+				if (!successfulPatch) {
+					throw new IllegalStateException("Unable to patch on SpringApplication getSpringFactoriesInstances method");
+				}
+			}
+
+			@Override
+			public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+				if (name.equals("createSpringFactoriesInstances")) {
+					mv.visitInsn(POP2);
+					mv.visitInsn(POP2);
+					mv.visitInsn(POP2);
+					mv.visitVarInsn(ALOAD, 3);
+					mv.visitInsn(ARRAYLENGTH);
+					Label argsNotEmptyLabel = new Label();
+					mv.visitJumpInsn(IFNE, argsNotEmptyLabel);
+					mv.visitVarInsn(ALOAD, 1);
+					mv.visitVarInsn(ALOAD, 4);
+					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/core/io/support/SpringFactoriesLoader", "loadFactories", "(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/List;", false);
+					Label endOfIf = new Label();
+					mv.visitJumpInsn(GOTO,endOfIf);
+					mv.visitLabel(argsNotEmptyLabel);
+					mv.visitVarInsn(ALOAD,0); // this
+					mv.visitVarInsn(ALOAD,1); // Class type
+					mv.visitVarInsn(ALOAD,2); // parameterTypes
+					mv.visitVarInsn(ALOAD,4); // classLoader
+					mv.visitVarInsn(ALOAD,3); // args
+					mv.visitVarInsn(ALOAD,5); // names
+					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "createSpringFactoriesInstances", "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/ClassLoader;[Ljava/lang/Object;Ljava/util/Set;)Ljava/util/List;", false);
+					mv.visitLabel(endOfIf);
+					successfulPatch = true;
+				} else {
+					super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+				}
+			}
+		}
+	}	
 
 }
