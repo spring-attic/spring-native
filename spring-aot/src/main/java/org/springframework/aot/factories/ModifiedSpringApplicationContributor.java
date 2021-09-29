@@ -49,6 +49,7 @@ import org.springframework.nativex.AotOptions;
  * Aot and put the result in the project output folder.
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public class ModifiedSpringApplicationContributor implements BootstrapContributor {
 
@@ -221,28 +222,29 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication",
 							"setApplicationContextFactory", "(Lorg/springframework/boot/ApplicationContextFactory;)V",
 							false);
+					mv.visitTypeInsn(NEW, "java/util/ArrayList");
+					mv.visitInsn(DUP);
+					mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+					mv.visitVarInsn(ASTORE, 3);
+					mv.visitVarInsn(ALOAD, 3);
+					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/boot/SpringApplicationAotUtils", "getBootstrapInitializer", "()Lorg/springframework/context/ApplicationContextInitializer;", false);
+					mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
+					mv.visitInsn(POP);
+					mv.visitVarInsn(ALOAD, 3);
+					mv.visitTypeInsn(NEW, "org/springframework/boot/autoconfigure/logging/ConditionEvaluationReportLoggingListener");
+					mv.visitInsn(DUP);
+					mv.visitMethodInsn(INVOKESPECIAL, "org/springframework/boot/autoconfigure/logging/ConditionEvaluationReportLoggingListener", "<init>", "()V", false);
+					mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
+					mv.visitInsn(POP);
+					mv.visitVarInsn(ALOAD, 3);
 					mv.visitVarInsn(ALOAD, 0);
-					mv.visitInsn(ICONST_2);
-					mv.visitTypeInsn(ANEWARRAY, "org/springframework/context/ApplicationContextInitializer");
-					mv.visitInsn(DUP);
-					mv.visitInsn(ICONST_0);
-					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/boot/SpringApplicationAotUtils",
-							"getBootstrapInitializer", "()Lorg/springframework/context/ApplicationContextInitializer;",
-							false);
-					mv.visitInsn(AASTORE);
-					mv.visitInsn(DUP);
-					mv.visitInsn(ICONST_1);
-					mv.visitTypeInsn(NEW,
-							"org/springframework/boot/autoconfigure/logging/ConditionEvaluationReportLoggingListener");
-					mv.visitInsn(DUP);
-					mv.visitMethodInsn(INVOKESPECIAL,
-							"org/springframework/boot/autoconfigure/logging/ConditionEvaluationReportLoggingListener",
-							"<init>", "()V", false);
-					mv.visitInsn(AASTORE);
-					mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "asList",
-							"([Ljava/lang/Object;)Ljava/util/List;", false);
-					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "setInitializers",
-							"(Ljava/util/Collection;)V", false);
+					mv.visitLdcInsn(Type.getType("Lorg/springframework/context/ApplicationContextInitializer;"));
+					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "getSpringFactoriesInstances", "(Ljava/lang/Class;)Ljava/util/Collection;", false);
+					mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "addAll", "(Ljava/util/Collection;)Z", true);
+					mv.visitInsn(POP);
+					mv.visitVarInsn(ALOAD, 0);
+					mv.visitVarInsn(ALOAD, 3);
+					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "setInitializers", "(Ljava/util/Collection;)V", false);
 					mv.visitJumpInsn(GOTO, end);
 					mv.visitLabel(elseClause);
 					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplication", "logger",
