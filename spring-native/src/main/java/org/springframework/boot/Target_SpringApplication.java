@@ -20,14 +20,17 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportL
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.nativex.AotModeDetector;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.WithAot;
 import org.springframework.util.StringUtils;
 
-@TargetClass(className = "org.springframework.boot.SpringApplication", onlyWith = { OnlyIfPresent.class })
+@TargetClass(className = "org.springframework.boot.SpringApplication", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_SpringApplication {
 
 	@Alias
@@ -139,6 +142,33 @@ final class Target_SpringApplication {
 			}
 			loader.load();
 		}
+	}
+
+	@Substitute
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
+		ClassLoader classLoader = getClassLoader();
+		// Use names and ensure unique to protect against duplicates
+		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		List<T> instances;
+		if (args.length == 0) {
+			instances = SpringFactoriesLoader.loadFactories(type, classLoader);
+		} else {
+			// TODO generate reflection data when args are passed
+			instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+		}
+		AnnotationAwareOrderComparator.sort(instances);
+		return instances;
+	}
+
+	@Alias
+	public ClassLoader getClassLoader() {
+		return null;
+	}
+
+	@Alias
+	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
+			ClassLoader classLoader, Object[] args, Set<String> names) {
+		return null;
 	}
 
 	@Alias
