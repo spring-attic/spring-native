@@ -66,20 +66,22 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 				.getResource("org/springframework/boot/SpringApplication.class");
 		SpringApplicationClassRewriter ca = modify(resource);
 		byte[] bytes = ca.getBytes();
-		Path path = Paths.get("org/springframework/boot/SpringApplication.class");
-		context.addResources(new ResourceFile() {
-			@Override
-			public void writeTo(Path resourcesPath) throws IOException {
-				Path relativeFolder = path.getParent();
-				Path filename = path.getFileName();
-				Path absoluteFolder = resourcesPath.resolve(relativeFolder);
-				Files.createDirectories(absoluteFolder);
-				Path absolutePath = absoluteFolder.resolve(filename);
-				try (FileOutputStream fos = new FileOutputStream(absolutePath.toFile())) {
-					fos.write(bytes);
+		if (bytes != null) {
+			Path path = Paths.get("org/springframework/boot/SpringApplication.class");
+			context.addResources(new ResourceFile() {
+				@Override
+				public void writeTo(Path resourcesPath) throws IOException {
+					Path relativeFolder = path.getParent();
+					Path filename = path.getFileName();
+					Path absoluteFolder = resourcesPath.resolve(relativeFolder);
+					Files.createDirectories(absoluteFolder);
+					Path absolutePath = absoluteFolder.resolve(filename);
+					try (FileOutputStream fos = new FileOutputStream(absolutePath.toFile())) {
+						fos.write(bytes);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private SpringApplicationClassRewriter modify(Resource resource) {
@@ -102,8 +104,13 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 
 		ModifyConstructor modifyConstructor = null;
 		ModifyLoadMethod modifyLoadMethod = null;
+		boolean mainRemoved = false;
 
 		public byte[] getBytes() {
+			if (!mainRemoved) {
+				// Class was already patched
+				return null;
+			}
 			if (modifyConstructor == null) {
 				throw new IllegalStateException(
 						"Unable to find SpringApplication(ResourceLoader, Class[]) constructor to modify");
@@ -133,6 +140,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 				return modifyLoadMethod;
 			// To avoid "Unable to find a single main class" errors
 			} else if (name.equals("main")) {
+				mainRemoved = true;
 				return null;
 			} else {
 				return super.visitMethod(access, name, desc, signature, exceptions);
