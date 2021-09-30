@@ -32,10 +32,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 
@@ -43,6 +39,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 @SerializationHint(types = {
+        String.class,
         ArrayList.class,
         TreeSet.class,
         SecurityContextImpl.class,
@@ -51,9 +48,6 @@ import java.util.TreeSet;
         Number.class,
         AbstractAuthenticationToken.class,
         UsernamePasswordAuthenticationToken.class,
-        OAuth2AuthenticationToken.class,
-        OAuth2LoginAuthenticationToken.class,
-        OAuth2AuthorizationCodeAuthenticationToken.class,
         StackTraceElement.class,
         Throwable.class,
         Exception.class,
@@ -69,9 +63,12 @@ import java.util.TreeSet;
         CredentialsExpiredException.class,
         InsufficientAuthenticationException.class,
         SessionAuthenticationException.class,
-        RememberMeAuthenticationException.class,
-        OAuth2AuthenticationException.class
+        RememberMeAuthenticationException.class
 }, typeNames = {
+        "org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken",
+        "org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken",
+        "org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken",
+        "org.springframework.security.oauth2.core.OAuth2AuthenticationException",
         "org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
         "org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken",
         "java.util.Collections$UnmodifiableCollection",
