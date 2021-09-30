@@ -16,27 +16,25 @@
 
 package org.springframework.boot;
 
-import java.util.Set;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.boot.origin.OriginProvider;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.hint.MethodHint;
-import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.MethodHint;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.type.NativeConfiguration;
 
 
-@NativeHint(
+@NativeHint(trigger = SpringApplication.class,
 	resources = {
 		@ResourceHint(patterns = {
 			"META-INF/MANIFEST.MF",
-			"db/.*", // TODO should be conditional on database active?
+			"db/.*",
 			"messages/.*",
 			"banner.txt",
 			"META-INF/spring.components",
@@ -44,12 +42,8 @@ import org.springframework.nativex.hint.AccessBits;
 			"application.*.yaml",
 			"^git.properties",
 			"^META-INF/build-info.properties",
-			"^META-INF/spring-configuration-metadata.json",
-			"^META-INF/additional-spring-configuration-metadata.json",
 			"application.*.properties",
-			// This one originally added for kotlin but covers many other scenarios too - is it too many files?
 			"META-INF/services/.*",
-			// Do these two catch the logging/<eachDirectory>/*.properties?
 			"org/springframework/boot/logging/.*.properties",
 			"org/springframework/boot/logging/.*.xml",
 			"logging.properties",
@@ -58,11 +52,14 @@ import org.springframework.nativex.hint.AccessBits;
 	},
 	types = {
 		@TypeHint(types = {
-			SpringBootConfiguration.class,
 			LogManager.class,
 			JavaLoggingSystem.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
-		,@TypeHint(types = { java.util.LinkedHashSet.class }, access=AccessBits.LOAD_AND_CONSTRUCT) // configclient - can it be inferred?
+		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
+			@TypeHint(types = java.util.LinkedHashSet.class), // Required for Profiles.class
+			@TypeHint(types= SpringApplication.class, methods = {
+				@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class), // Enables property control of banner mode
+				@MethodHint(name="setWebApplicationType",parameterTypes = WebApplicationType.class)
+			}, access = AccessBits.CLASS)
 	},
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,
@@ -82,14 +79,5 @@ import org.springframework.nativex.hint.AccessBits;
 			})
 		}
 )
-@NativeHint(
-		types = {
-				@TypeHint(types= SpringApplication.class, methods = {
-						@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class), // Enables property control of banner mode
-						@MethodHint(name="setWebApplicationType",parameterTypes = WebApplicationType.class)
-				},access=AccessBits.CLASS),
-				@TypeHint(types = OriginProvider[].class)
-		})
-//@NativeHint(types = @TypeHint(types = org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor.class, access=AccessBits.LOAD_AND_CONSTRUCT))
 public class SpringBootHints implements NativeConfiguration {
 }
