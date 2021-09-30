@@ -22,21 +22,10 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.converters.jackson.DataCenterTypeInfoResolver;
 import com.netflix.discovery.converters.jackson.builder.ApplicationsJacksonBuilder;
 
-import org.springframework.cloud.netflix.eureka.loadbalancer.EurekaLoadBalancerClientConfiguration;
-import org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.reactive.EurekaReactiveDiscoveryClientConfiguration;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-// TODO Not sure AccessBits.ALL is needed on these, to be checked
-@NativeHint(trigger = LoadBalancerEurekaAutoConfiguration.class, types = {
-		@TypeHint(types = {
-				EurekaLoadBalancerClientConfiguration.class,
-				EurekaReactiveDiscoveryClientConfiguration.class
-		}, access = AccessBits.ALL)
-})
 @NativeHint(trigger = EurekaClientAutoConfiguration.class, types = {
 		@TypeHint(types = {
 				DiscoveryClient.class,
@@ -44,7 +33,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				InstanceInfo.class,
 				DataCenterTypeInfoResolver.class,
 				LeaseInfo.class
-		}, access = AccessBits.ALL)
+		})
 })
 @NativeHint(trigger = EurekaDiscoveryClientConfiguration.class,
 		options = "--enable-http")
