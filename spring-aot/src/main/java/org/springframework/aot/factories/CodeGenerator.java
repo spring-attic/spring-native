@@ -66,6 +66,9 @@ class CodeGenerator {
 		if (aotOptions.isRemoveSpelSupport()) {
 			staticBlock.addStatement("System.setProperty(\"spring.spel.ignore\", \"true\")");
 		}
+		if (!aotOptions.isRemoveJmxSupport()) {
+			staticBlock.addStatement("System.setProperty(\"spring.jmx.ignore\", \"false\")");
+		}
 
 		// Make sure we take the native codepath even on the JVM, can be useful with the tracing agent
 		// TODO Allow to disable it via a flag

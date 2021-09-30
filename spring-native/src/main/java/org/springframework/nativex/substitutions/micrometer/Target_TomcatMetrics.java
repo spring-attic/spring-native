@@ -18,6 +18,7 @@ package org.springframework.nativex.substitutions.micrometer;
 
 import org.springframework.nativex.substitutions.CatalinaManagerIsAround;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveJmxSupport;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
@@ -30,7 +31,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * @author Andy Clement
  */
 @TargetClass(className = "io.micrometer.core.instrument.binder.tomcat.TomcatMetrics", 
-    onlyWith = {OnlyIfPresent.class, CatalinaManagerIsAround.class})
+    onlyWith = {OnlyIfPresent.class, CatalinaManagerIsAround.class, RemoveJmxSupport.class})
 final class Target_TomcatMetrics {
 
 	@Substitute

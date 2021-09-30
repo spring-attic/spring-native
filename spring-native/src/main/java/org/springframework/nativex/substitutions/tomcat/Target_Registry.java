@@ -22,9 +22,10 @@ import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.tomcat.util.modeler.Registry;
 
 import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.RemoveJmxSupport;
 
 // To avoid Registry instantiation and JmxMBeanServer usage
-@TargetClass(className = "org.apache.tomcat.util.modeler.Registry", onlyWith = { OnlyIfPresent.class })
+@TargetClass(className = "org.apache.tomcat.util.modeler.Registry", onlyWith = { OnlyIfPresent.class, RemoveJmxSupport.class })
 final class Target_Registry {
 
 	@Alias
