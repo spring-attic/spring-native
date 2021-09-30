@@ -7,11 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class ConfigclientApplication {
-
+public class ConfigClientApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ConfigclientApplication.class, args);
+		SpringApplication.run(ConfigClientApplication.class, args);
 		try { Thread.sleep(20000); } catch (Exception e) {}
 	}
 
