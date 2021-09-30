@@ -85,6 +85,16 @@ class InitDestroyMethodsDiscovererTests {
 	}
 
 	@Test
+	void processWithInitMethodNameOnParentRegisterAppropriateReflectionHint() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleExtensionSample.class);
+		beanDefinition.setInitMethodName("start");
+		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerInitMethods(registry);
+		assertThat(methods).containsOnlyKeys("test");
+		assertThat(methods.get("test")).containsExactly(START_METHOD);
+		hasSingleNativeReflectionEntry(LifecycleSample.class, START_METHOD);
+	}
+
+	@Test
 	void processWithNoInitMethodDoesNotRegisterBean() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerInitMethods(registry);
@@ -123,6 +133,16 @@ class InitDestroyMethodsDiscovererTests {
 		assertThat(methods).containsOnlyKeys("test");
 		assertThat(methods.get("test")).containsExactlyInAnyOrder(STOP_METHOD, TEST_METHOD, TEST2_METHOD);
 		hasSingleNativeReflectionEntry(LifecycleSample.class, STOP_METHOD, TEST_METHOD, TEST2_METHOD);
+	}
+
+	@Test
+	void processWithDestroyMethodNameOnParentRegisterAppropriateReflectionHint() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleExtensionSample.class);
+		beanDefinition.setDestroyMethodName("stop");
+		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
+		assertThat(methods).containsOnlyKeys("test");
+		assertThat(methods.get("test")).containsExactly(STOP_METHOD);
+		hasSingleNativeReflectionEntry(LifecycleSample.class, STOP_METHOD);
 	}
 
 	@Test
@@ -228,6 +248,10 @@ class InitDestroyMethodsDiscovererTests {
 
 		public void stop() {
 		}
+
+	}
+
+	static class LifecycleExtensionSample extends LifecycleSample {
 
 	}
 

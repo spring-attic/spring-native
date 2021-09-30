@@ -110,7 +110,7 @@ class InitDestroyMethodsDiscoverer {
 			Set<Method> methods = lifecycleMethodsFactory.apply(beanDefinition, beanType);
 			if (!ObjectUtils.isEmpty(methods)) {
 				lifecycleMethods.put(beanName, new ArrayList<>(methods));
-				registry.reflection().forType(beanType).withMethods(methods.toArray(new Method[0]));
+				methods.forEach((method) -> registry.reflection().addExecutable(method));
 			}
 		}
 		return lifecycleMethods;
