@@ -19,7 +19,6 @@ package org.springframework.cloud.config.server;
 import javax.el.ListELResolver;
 import javax.el.MapELResolver;
 
-import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.attributes.AttributesHandler;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -41,50 +40,36 @@ import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.treewalk.WorkingTreeIterator;
 import org.eclipse.jgit.util.RawParseUtils;
 
-import org.springframework.boot.origin.OriginLookup;
-import org.springframework.boot.origin.TextResourceOrigin;
-import org.springframework.cloud.config.environment.PropertyValueDescriptor;
 import org.springframework.cloud.config.server.config.ConfigServerAutoConfiguration;
 import org.springframework.cloud.config.server.ssh.HostKeyAlgoSupportedValidator;
 import org.springframework.cloud.config.server.ssh.HostKeyAndAlgoBothExistValidator;
 import org.springframework.cloud.config.server.ssh.KnownHostsFileValidator;
 import org.springframework.cloud.config.server.ssh.PrivateKeyValidator;
 import org.springframework.core.annotation.SynthesizedAnnotation;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @NativeHint(trigger = ConfigServerAutoConfiguration.class,
-		options = { "--enable-https", "--enable-http" }, types =
-		{
-				@TypeHint(types = {
-						MergeCommand.FastForwardMode.Merge.class,
-						JGitText.class,
-						CoreConfig.class,
-						CoreConfig.AutoCRLF.class,
-						CoreConfig.CheckStat.class,
-						CoreConfig.EOL.class,
-						CoreConfig.LogRefUpdates.class,
-						CoreConfig.HideDotFiles.class,
-						CoreConfig.SymLinks.class,
-						PropertyValueDescriptor.class,
-						TextResourceOrigin.class,
-						OriginLookup.class
-				}, access = AccessBits.ALL),
-				@TypeHint(types = {
-						PrivateKeyValidator.class,
-						KnownHostsFileValidator.class,
-						HostKeyAlgoSupportedValidator.class,
-						HostKeyAndAlgoBothExistValidator.class
-				})
-		}
-, initialization = {
+		options = {"--enable-https", "--enable-http"}, types = {
+		@TypeHint(types = {
+				JGitText.class,
+				CoreConfig.AutoCRLF.class,
+				CoreConfig.CheckStat.class,
+				CoreConfig.EOL.class,
+				CoreConfig.LogRefUpdates.class,
+				CoreConfig.HideDotFiles.class,
+				CoreConfig.SymLinks.class,
+				PrivateKeyValidator.class,
+				KnownHostsFileValidator.class,
+				HostKeyAlgoSupportedValidator.class,
+				HostKeyAndAlgoBothExistValidator.class
+		})}, initialization = {
 		@InitializationHint(types = {
 				AttributesHandler.class,
 				DiffEntry.class,
