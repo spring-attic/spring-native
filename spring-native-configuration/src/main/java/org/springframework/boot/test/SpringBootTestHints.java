@@ -195,13 +195,6 @@ public class SpringBootTestHints implements NativeConfiguration {
 				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
 				hints.add(hintDeclaration);
 			}
-			if (typeSystem.resolve("reactor/core/publisher/Traces", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("reactor.core.publisher.Traces$StackWalkerCallSiteSupplierFactory", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("reactor.core.publisher.Traces$SharedSecretsCallSiteSupplierFactory", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("reactor.core.publisher.Traces$ExceptionCallSiteSupplierFactory", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
 		}
 		List<HintDeclaration> testHints = TypeProcessor.namedProcessor("Tests")
 				.skipTypesMatching(type -> type.getMethodsWithAnnotationName("org.junit.jupiter.api.Test", false).isEmpty())
