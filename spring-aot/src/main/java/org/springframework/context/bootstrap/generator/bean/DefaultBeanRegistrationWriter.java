@@ -191,6 +191,9 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		if (StringUtils.hasText(scope) && !ConfigurableBeanFactory.SCOPE_SINGLETON.equals(scope)) {
 			statements.add("$L.setScope($S)", bdVariable, scope);
 		}
+		if (!this.beanDefinition.isAutowireCandidate()) {
+			statements.add("$L.setAutowireCandidate(false)", bdVariable);
+		}
 		if (this.beanDefinition instanceof AbstractBeanDefinition
 				&& ((AbstractBeanDefinition) this.beanDefinition).isSynthetic()) {
 			statements.add("$L.setSynthetic(true)", bdVariable);

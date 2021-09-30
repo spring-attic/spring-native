@@ -271,10 +271,17 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines()
 				.contains(
 						"BeanDefinitionRegistrar.of(\"scopedTarget.timeBean\", StringHolder.class).withFactoryMethod(ScopeConfiguration.class, \"timeBean\")",
-						"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).timeBean()).customize((bd) -> bd.setScope(\"prototype\")).register(context);")
+						"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).timeBean()).customize((bd) -> {",
+						"  bd.setScope(\"prototype\");",
+						"  bd.setAutowireCandidate(false);")
 				.contains(
-						"BeanDefinitionRegistrar.of(\"timeBean\", ScopedProxyFactoryBean.class)",
-						"    .instanceSupplier(() -> new ScopedProxyFactoryBean()).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"targetBeanName\", \"scopedTarget.timeBean\")).register(context);");
+						"BeanDefinitionRegistrar.of(\"timeBean\", StringHolder.class)",
+						"    .instanceSupplier(() ->  {",
+						"      ScopedProxyFactoryBean factory = new ScopedProxyFactoryBean();",
+						"      factory.setTargetBeanName(\"scopedTarget.timeBean\");",
+						"      factory.setBeanFactory(context.getBeanFactory());",
+						"      return factory.getObject();",
+						"    }).register(context);");
 	}
 
 	@Test

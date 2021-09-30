@@ -4,6 +4,7 @@ org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor,\
 org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcessor
 
 org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
+org.springframework.aop.scope.ScopedProxyBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\

@@ -204,6 +204,25 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 	@Test
+	void writeWithAutowireCandidateDisabled() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.getBeanDefinition();
+		beanDefinition.setAutowireCandidate(false);
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setAutowireCandidate(false)).register(context);");
+	}
+
+	@Test
+	void writeWithDefaultAutowireCandidateDoesNotCustomizeBeanDefinition() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.getBeanDefinition();
+		beanDefinition.setAutowireCandidate(true);
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new")))
+				.doesNotContain("bd.setAutowireCandidate(");
+	}
+
+	@Test
 	void writeWithNoScopeDoesNotCustomizeBeanDefinition() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
 				.setScope("").getBeanDefinition();
