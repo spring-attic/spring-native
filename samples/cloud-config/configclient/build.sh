@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source ${PWD%/*samples/*}/scripts/wait.sh
 
 BLUE='\033[0;34m'
 NC='\033[0m'
@@ -19,11 +20,11 @@ else
 fi
 SERVERPID=$!
 
+wait_log target/native/server-output.txt "Started ConfigServerApplication"
+
 cd ../configclient
 
 ${PWD%/*samples/*}/scripts/compileWithMaven.sh $* || exit 1
-
-sleep 10
 
 ${PWD%/*samples/*}/scripts/test.sh $*
 
