@@ -35,6 +35,7 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StopWatch;
 
 /**
  * @author Brian Clozel
@@ -63,12 +64,18 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 			throw new IllegalStateException("Could not load application class " + applicationClassName, exc);
 		}
 
+		StopWatch watch = new StopWatch();
+		logger.info("Processing application context");
+		watch.start();
 		GenericApplicationContext applicationContext = new AotApplicationContextFactory(resourceLoader)
 				.createApplicationContext(applicationClass);
 		configureEnvironment(applicationContext.getEnvironment());
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
 		BootstrapGenerationResult bootstrapGenerationResult = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
+		watch.stop();
+		logger.info("Processed " + beanFactory.getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");
+
 		bootstrapGenerationResult.getSourceFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
 		context.getOptions().addAll(bootstrapGenerationResult.getOptions());
 		context.describeReflection(reflectionDescriptor -> bootstrapGenerationResult.getClassDescriptors().forEach(reflectionDescriptor::merge));
