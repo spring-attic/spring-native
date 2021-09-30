@@ -40,6 +40,9 @@ import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.treewalk.WorkingTreeIterator;
 import org.eclipse.jgit.util.RawParseUtils;
 
+import org.springframework.cloud.config.environment.Environment;
+import org.springframework.cloud.config.environment.PropertySource;
+import org.springframework.cloud.config.environment.PropertyValueDescriptor;
 import org.springframework.cloud.config.server.config.ConfigServerAutoConfiguration;
 import org.springframework.cloud.config.server.ssh.HostKeyAlgoSupportedValidator;
 import org.springframework.cloud.config.server.ssh.HostKeyAndAlgoBothExistValidator;
@@ -56,8 +59,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @NativeHint(trigger = ConfigServerAutoConfiguration.class,
-		options = {"--enable-https", "--enable-http"}, types = {
-		@TypeHint(types = {
+		options = {"--enable-https", "--enable-http"},
+		types = @TypeHint(types = {
+				Environment.class,
+				PropertySource.class,
 				JGitText.class,
 				CoreConfig.AutoCRLF.class,
 				CoreConfig.CheckStat.class,
@@ -68,8 +73,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 				PrivateKeyValidator.class,
 				KnownHostsFileValidator.class,
 				HostKeyAlgoSupportedValidator.class,
-				HostKeyAndAlgoBothExistValidator.class
-		})}, initialization = {
+				HostKeyAndAlgoBothExistValidator.class,
+				PropertyValueDescriptor.class}),
+		initialization = {
 		@InitializationHint(types = {
 				AttributesHandler.class,
 				DiffEntry.class,
