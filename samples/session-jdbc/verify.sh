@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 source ${PWD%/*samples/*}/scripts/wait.sh
-wait_log target/native/test-output.txt "Started SessionJdbcApplication"
+wait_http user:password@localhost:8080 "This page is secured"
