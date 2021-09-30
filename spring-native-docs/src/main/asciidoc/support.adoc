@@ -102,7 +102,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 
 NOTE: Spring Cloud Bootstrap is no longer supported.
 
-NOTE: While building a project that contains Spring Cloud Config Client, it is necessary to make sure that the configuration data source that it connects to (such as, Spring Cloud Config Server, Consul, Zookeeper, Vault, etc.) is available. For example, if you retrieve configuration data from Spring Cloud Config Server, make sure you have its instance running and available at the port indicated in the Config Client setup.
+NOTE: While building a project that contains Spring Cloud Config Client, it is necessary to make sure that the configuration data source that it connects to (such as, Spring Cloud Config Server, Consul, Zookeeper, Vault, etc.) is available. For example, if you retrieve configuration data from Spring Cloud Config Server, make sure you have its instance running and available at the port indicated in the Config Client setup. This is necessary because the application context is being optimized at build time and requires the target environment to be resolved.
 
 [[support-spring-data]]
 === Spring Data
