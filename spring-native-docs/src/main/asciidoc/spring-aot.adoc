@@ -225,10 +225,10 @@ To remote debug this process, you can set a debug System property on the command
 .Maven
 ----
 $ # use the port 8000 by default
-$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug=true
+$ mvn -Pnative spring-aot:generate -Dspring.aot.debug=true
 $ # configure custom debug options
-$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
-$ mvn -Pnative spring-aot:generate@generate -Dspring.aot.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9000 -Xnoagent"
+$ mvn -Pnative spring-aot:generate -Dspring.aot.debug=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
+$ mvn -Pnative spring-aot:generate -Dspring.aot.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9000 -Xnoagent"
 ----
 [source,bash,role="secondary"]
 .Gradle
