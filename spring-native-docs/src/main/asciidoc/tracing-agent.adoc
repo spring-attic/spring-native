@@ -18,13 +18,12 @@ To address this problem the agent supports an access-filter file that will cause
 [[tracing-agent-running]]
 === Running the application with the agent to compute configuration
 
-It is possible to use the tracing agent to run the application in AOT mode in order to compute the native configuration.
-That can be useful to find the missing native configuration, for example:
+It is possible to use the tracing agent to run the application in AOT mode in order to compute the native configuration:
 
+ - Configure the AOT plugin to use the `native-agent` mode.
  - Build the Spring Boot application with the AOT plugin enabled.
  - Run the app with the tracing agent and generate the config temporarily in `src/main/resources` with for example `java -DspringAot=true -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar target/myapp-0.0.1-SNAPSHOT.jar`.
- - Check if the sample is now working fine on native.
- - Reduce the configuration in `src/main/resources/META-INF/native-image` to the minimal working set.
+ - Check if the application is now working fine on native.
 
 [[tracing-agent-testing]]
 === Testing with the agent to compute configuration

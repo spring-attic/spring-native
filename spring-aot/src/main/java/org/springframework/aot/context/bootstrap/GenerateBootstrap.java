@@ -48,6 +48,9 @@ public class GenerateBootstrap implements Callable<Integer> {
 	@Parameters(index = "0", arity = "0..1", description = "The main application class, auto-detected if not provided.")
 	private String mainClass;
 
+	@Option(names = "--mode", required = true, description = "The mode which could be native or native-agent")
+	private String mode;
+
 	@Option(names = {"--sources-out"}, required = true, description = "Output path for the generated sources.")
 	private Path sourceOutputPath;
 
@@ -81,6 +84,7 @@ public class GenerateBootstrap implements Callable<Integer> {
 	@Override
 	public Integer call() throws Exception {
 		AotOptions aotOptions = new AotOptions();
+		aotOptions.setMode(this.mode);
 		aotOptions.setDebugVerify(this.isDebug);
 		aotOptions.setRemoveYamlSupport(this.removeYaml);
 		aotOptions.setRemoveJmxSupport(this.removeJmx);

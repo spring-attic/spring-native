@@ -110,6 +110,7 @@ public class GenerateAotSources extends JavaExec {
 			arguments.add("--resources-out=" + GenerateAotSources.this.resourcesOutputDirectory.get().getAsFile().toPath());
 			arguments.add("--resources=" + toPathArgument(GenerateAotSources.this.resourceDirectories.getSrcDirs()));
 			arguments.add("--classes=" + GenerateAotSources.this.mainSourceSetOutputDirectories.getClassesDirs().getAsPath());
+			arguments.add("--mode=" + aotOptions.toMode());
 			if (aotOptions.isRemoveXmlSupport()) {
 				arguments.add("--remove-xml");
 			}

@@ -95,54 +95,52 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
 
 			AotOptions aotOptions = getAotOptions();
-			if (aotOptions.toMode().equals(Mode.NATIVE)) {
-				RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
-				Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 
-				List<String> args = new ArrayList<>();
-				// remote debug
-				if ("true".equals(this.debug)) {
-					args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
-				} else {
-					args.addAll(Arrays.asList(CommandLineUtils.translateCommandline(this.debug)));
-				}
-				args.add("-cp");
-				args.add(asClasspathArgument(runtimeClasspathElements));
-				args.add(GenerateBootstrap.class.getCanonicalName());
-				args.add("--sources-out=" + sourcesPath.toAbsolutePath());
-				args.add("--resources-out=" + resourcesPath.toAbsolutePath());
-				args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
-				args.add("--classes=" + project.getBuild().getOutputDirectory());
-				if (aotOptions.isRemoveXmlSupport()) {
-					args.add("--remove-xml");
-				}
-				if (aotOptions.isRemoveJmxSupport()) {
-					args.add("--remove-jmx");
-				}
-				if (aotOptions.isRemoveSpelSupport()) {
-					args.add("--remove-spel");
-				}
-				if (aotOptions.isRemoveYamlSupport()) {
-					args.add("--remove-yaml");
-				}
-				if (aotOptions.isBuildTimePropertyChecking()) {
-					args.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
-				}
-				if (getLogLevel().equals("DEBUG")) {
-					args.add("--debug");
-				}
-				if (this.mainClass != null) {
-					args.add(this.mainClass);
-				}
+			RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
+			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 
-				int exitCode = runProcess.run(true, args, Collections.emptyMap());
-				if (exitCode != 0 && exitCode != 130) {
-					throw new IllegalStateException("Bootstrap code generator finished with exit code: " + exitCode);
-				}
+			List<String> args = new ArrayList<>();
+			// remote debug
+			if ("true".equals(this.debug)) {
+				args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
+			} else {
+				args.addAll(Arrays.asList(CommandLineUtils.translateCommandline(this.debug)));
 			}
-			else {
-				throw new IllegalStateException("Non NATIVE mode are not implemented");
+			args.add("-cp");
+			args.add(asClasspathArgument(runtimeClasspathElements));
+			args.add(GenerateBootstrap.class.getCanonicalName());
+			args.add("--mode=" + aotOptions.toMode());
+			args.add("--sources-out=" + sourcesPath.toAbsolutePath());
+			args.add("--resources-out=" + resourcesPath.toAbsolutePath());
+			args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
+			args.add("--classes=" + project.getBuild().getOutputDirectory());
+			if (aotOptions.isRemoveXmlSupport()) {
+				args.add("--remove-xml");
 			}
+			if (aotOptions.isRemoveJmxSupport()) {
+				args.add("--remove-jmx");
+			}
+			if (aotOptions.isRemoveSpelSupport()) {
+				args.add("--remove-spel");
+			}
+			if (aotOptions.isRemoveYamlSupport()) {
+				args.add("--remove-yaml");
+			}
+			if (aotOptions.isBuildTimePropertyChecking()) {
+				args.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
+			}
+			if (getLogLevel().equals("DEBUG")) {
+				args.add("--debug");
+			}
+			if (this.mainClass != null) {
+				args.add(this.mainClass);
+			}
+
+			int exitCode = runProcess.run(true, args, Collections.emptyMap());
+			if (exitCode != 0 && exitCode != 130) {
+				throw new IllegalStateException("Bootstrap code generator finished with exit code: " + exitCode);
+			}
+
 			compileGeneratedSources(sourcesPath, runtimeClasspathElements);
 			processGeneratedResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));
 			this.buildContext.refresh(this.buildDir);

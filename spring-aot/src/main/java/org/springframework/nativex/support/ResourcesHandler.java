@@ -100,13 +100,11 @@ public class ResourcesHandler extends Handler {
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
 	 */
 	public void register() {
-		if (aotOptions.toMode() == Mode.NATIVE ||
-				aotOptions.toMode() == Mode.NATIVE_AGENT) {
+		if (aotOptions.toMode() == Mode.NATIVE) {
 			processSpringFactories();
 		}
-		handleConstantHints(aotOptions.toMode() == Mode.NATIVE_INIT);
-		if (aotOptions.toMode() == Mode.NATIVE ||
-				aotOptions.toMode() == Mode.NATIVE_AGENT) {
+		handleConstantHints(aotOptions.toMode() == Mode.NATIVE_AGENT);
+		if (aotOptions.toMode() == Mode.NATIVE) {
 			handleSpringComponents();
 		}
 	}
@@ -138,11 +136,11 @@ public class ResourcesHandler extends Handler {
 	 * registered in regular analysis, here we explicitly register those. Initialization hints are handled
 	 * separately.
 	 */
-	private void handleConstantHints(boolean isInitMode) {
+	private void handleConstantHints(boolean isAgentMode) {
 		List<HintDeclaration> constantHints = ts.findActiveDefaultHints();
 		logger.debug("> Registering fixed hints: " + constantHints);
 		for (HintDeclaration ch : constantHints) {
-			if (!isInitMode) {
+			if (!isAgentMode) {
 				Map<String, AccessDescriptor> dependantTypes = ch.getDependantTypes();
 				for (Map.Entry<String, AccessDescriptor> dependantType : dependantTypes.entrySet()) {
 					String typename = dependantType.getKey();

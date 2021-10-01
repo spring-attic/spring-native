@@ -227,11 +227,9 @@ public class AotOptions {
 			return Mode.NATIVE;
 		} else if (this.mode.equals(Mode.NATIVE_AGENT.toString())) {
 			return Mode.NATIVE_AGENT;
-		} else if (this.mode.equals(Mode.NATIVE_INIT.toString())) {
-			return Mode.NATIVE_INIT;
 		}
 		throw new IllegalStateException(this.mode + " is not a valid mode. Valid modes are: "
-				+ Mode.NATIVE + ", " + Mode.NATIVE_AGENT + ", " + Mode.NATIVE_INIT);
+				+ Mode.NATIVE + ", " + Mode.NATIVE_AGENT);
 	}
 
 	/**

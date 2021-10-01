@@ -50,6 +50,7 @@ import org.springframework.nativex.type.TypeSystem;
  * and let them contribute to the bootstrap code.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public class BootstrapCodeGenerator {
 
@@ -79,31 +80,14 @@ public class BootstrapCodeGenerator {
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
 	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext) throws IOException {
-		if (this.aotOptions.toMode().equals(Mode.NATIVE)) {
-			// TODO temporary whilst migrating the inferencing to Aot land
-			TypeSystem.setDefaultAotOptions(aotOptions);
-			ContextBootstrapContributor bootstrapContributor = new ContextBootstrapContributor();
-			logger.debug("Executing Contributor: " + bootstrapContributor.getClass().getName());
-			bootstrapContributor.contribute(buildContext, this.aotOptions);
 
-			SpringFactoriesContributor factoriesContributor = new SpringFactoriesContributor();
-			logger.debug("Executing Contributor: " + factoriesContributor.getClass().getName());
-			factoriesContributor.contribute(buildContext, this.aotOptions);
-			
-			ConfigurationContributor configurationContributor = new ConfigurationContributor();
-			logger.debug("Executing Contributor: " + factoriesContributor.getClass().getName());
-			configurationContributor.contribute(buildContext, this.aotOptions);		
+		// TODO temporary whilst migrating the inferencing to Aot land
+		TypeSystem.setDefaultAotOptions(aotOptions);
 
-            ModifiedSpringApplicationContributor contributor = new ModifiedSpringApplicationContributor();
-            logger.debug("Executing Contributor: " + contributor.getClass().getName());
-            contributor.contribute(buildContext, this.aotOptions);
-		}
-		else {
-			ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
-			for (BootstrapContributor contributor : contributors) {
-				logger.debug("Executing Contributor: " + contributor.getClass().getName());
-				contributor.contribute(buildContext, this.aotOptions);
-			}
+		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
+		for (BootstrapContributor contributor : contributors) {
+			logger.debug("Executing Contributor: " + contributor.getClass().getName());
+			contributor.contribute(buildContext, this.aotOptions);
 		}
 
 		buildResourcePatternCache(buildContext.getResourcesDescriptor());
@@ -141,35 +125,37 @@ public class BootstrapCodeGenerator {
 
 		Path graalVMConfigPath = resourcesPath.resolve(ResourceFile.NATIVE_CONFIG_PATH);
 		Files.createDirectories(graalVMConfigPath);
-		// reflect-config.json
-		ReflectionDescriptor reflectionDescriptor = buildContext.getReflectionDescriptor();
-		if (!reflectionDescriptor.isEmpty()) {
-			Path reflectConfigPath = graalVMConfigPath.resolve(Paths.get("reflect-config.json"));
-			JsonMarshaller.write(reflectionDescriptor, Files.newOutputStream(reflectConfigPath));
-		}
-		// proxy-config.json
-		ProxiesDescriptor proxiesDescriptor = buildContext.getProxiesDescriptor();
-		if (!proxiesDescriptor.isEmpty()) {
-			Path proxiesConfigPath = graalVMConfigPath.resolve(Paths.get("proxy-config.json"));
-			ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor, Files.newOutputStream(proxiesConfigPath));
-		}
-		// resource-config.json
-		ResourcesDescriptor resourcesDescriptor = buildContext.getResourcesDescriptor();
-		if (!resourcesDescriptor.isEmpty()) {
-			Path resourceConfigPath = graalVMConfigPath.resolve(Paths.get("resource-config.json"));
-			ResourcesJsonMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
-		}
-		// serialization-config.json
-		SerializationDescriptor serializationDescriptor = buildContext.getSerializationDescriptor();
-		if (!serializationDescriptor.isEmpty()) {
-			Path serializationConfigPath = graalVMConfigPath.resolve(Paths.get("serialization-config.json"));
-			SerializationDescriptorJsonMarshaller.write(serializationDescriptor, Files.newOutputStream(serializationConfigPath));
-		}
-		// jni-config.json
-		ReflectionDescriptor jniReflectionDescriptor = buildContext.getJNIReflectionDescriptor();
-		if (!jniReflectionDescriptor.isEmpty()) {
-			Path jniReflectionConfigPath = graalVMConfigPath.resolve(Paths.get("jni-config.json"));
-			JsonMarshaller.write(jniReflectionDescriptor, Files.newOutputStream(jniReflectionConfigPath));
+		if (this.aotOptions.toMode() == Mode.NATIVE) {
+			// reflect-config.json
+			ReflectionDescriptor reflectionDescriptor = buildContext.getReflectionDescriptor();
+			if (!reflectionDescriptor.isEmpty()) {
+				Path reflectConfigPath = graalVMConfigPath.resolve(Paths.get("reflect-config.json"));
+				JsonMarshaller.write(reflectionDescriptor, Files.newOutputStream(reflectConfigPath));
+			}
+			// proxy-config.json
+			ProxiesDescriptor proxiesDescriptor = buildContext.getProxiesDescriptor();
+			if (!proxiesDescriptor.isEmpty()) {
+				Path proxiesConfigPath = graalVMConfigPath.resolve(Paths.get("proxy-config.json"));
+				ProxiesDescriptorJsonMarshaller.write(proxiesDescriptor, Files.newOutputStream(proxiesConfigPath));
+			}
+			// resource-config.json
+			ResourcesDescriptor resourcesDescriptor = buildContext.getResourcesDescriptor();
+			if (!resourcesDescriptor.isEmpty()) {
+				Path resourceConfigPath = graalVMConfigPath.resolve(Paths.get("resource-config.json"));
+				ResourcesJsonMarshaller.write(resourcesDescriptor, Files.newOutputStream(resourceConfigPath));
+			}
+			// serialization-config.json
+			SerializationDescriptor serializationDescriptor = buildContext.getSerializationDescriptor();
+			if (!serializationDescriptor.isEmpty()) {
+				Path serializationConfigPath = graalVMConfigPath.resolve(Paths.get("serialization-config.json"));
+				SerializationDescriptorJsonMarshaller.write(serializationDescriptor, Files.newOutputStream(serializationConfigPath));
+			}
+			// jni-config.json
+			ReflectionDescriptor jniReflectionDescriptor = buildContext.getJNIReflectionDescriptor();
+			if (!jniReflectionDescriptor.isEmpty()) {
+				Path jniReflectionConfigPath = graalVMConfigPath.resolve(Paths.get("jni-config.json"));
+				JsonMarshaller.write(jniReflectionDescriptor, Files.newOutputStream(jniReflectionConfigPath));
+			}
 		}
 	}
 

@@ -1,3 +1,4 @@
+org.springframework.aot.context.bootstrap.ContextBootstrapContributor
 org.springframework.aot.factories.SpringFactoriesContributor
 org.springframework.aot.nativex.ConfigurationContributor
 org.springframework.aot.factories.ModifiedSpringApplicationContributor
