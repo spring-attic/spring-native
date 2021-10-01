@@ -21,13 +21,17 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.core.Ordered;
@@ -39,7 +43,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Stephane Nicoll
  */
-public class InitDestroyBeanPostProcessor implements BeanPostProcessor, DestructionAwareBeanPostProcessor, Ordered {
+public class InitDestroyBeanPostProcessor implements BeanPostProcessor, DestructionAwareBeanPostProcessor, BeanFactoryAware, Ordered {
 
 	private static final Log logger = LogFactory.getLog(InitDestroyBeanPostProcessor.class);
 
@@ -47,10 +51,17 @@ public class InitDestroyBeanPostProcessor implements BeanPostProcessor, Destruct
 
 	private final Map<String, List<String>> destroyMethods;
 
+	private ConfigurableBeanFactory beanFactory;
+
 	public InitDestroyBeanPostProcessor(Map<String, List<String>> initMethods,
 			Map<String, List<String>> destroyMethods) {
 		this.initMethods = initMethods;
 		this.destroyMethods = destroyMethods;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = (ConfigurableBeanFactory) beanFactory;
 	}
 
 	@Override
@@ -63,7 +74,7 @@ public class InitDestroyBeanPostProcessor implements BeanPostProcessor, Destruct
 	}
 
 	private void invokeInitMethod(Object bean, String beanName, String methodName) {
-		Method method = findMethod(bean, methodName);
+		Method method = findMethod(bean, methodName, () -> getBeanType(beanName));
 		if (logger.isTraceEnabled()) {
 			logger.trace("Invoking init method on bean '" + beanName + "': " + method);
 		}
@@ -87,7 +98,7 @@ public class InitDestroyBeanPostProcessor implements BeanPostProcessor, Destruct
 	}
 
 	private void invokeDestroyMethod(Object bean, String beanName, String methodName) {
-		Method method = findMethod(bean, methodName);
+		Method method = findMethod(bean, methodName, () -> getBeanType(beanName));
 		if (logger.isTraceEnabled()) {
 			logger.trace("Invoking destroy method on bean '" + beanName + "': " + method);
 		}
@@ -108,13 +119,24 @@ public class InitDestroyBeanPostProcessor implements BeanPostProcessor, Destruct
 		}
 	}
 
+	private Class<?> getBeanType(String beanName) {
+		if (this.beanFactory != null && this.beanFactory.containsBean(beanName)) {
+			return this.beanFactory.getMergedBeanDefinition(beanName).getResolvableType().toClass();
+		}
+		return Object.class;
+	}
+
 	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
-	private Method findMethod(Object bean, String methodName) {
-		return ReflectionUtils.findMethod(bean.getClass(), methodName);
+	private Method findMethod(Object bean, String methodName, Supplier<Class<?>> beanTypeSupplier) {
+		Method method = ReflectionUtils.findMethod(bean.getClass(), methodName);
+		if (method != null) {
+			return method;
+		}
+		return ReflectionUtils.findMethod(beanTypeSupplier.get(), methodName);
 	}
 
 	private void invokeMethod(Object target, Method method) throws InvocationTargetException, IllegalAccessException {
