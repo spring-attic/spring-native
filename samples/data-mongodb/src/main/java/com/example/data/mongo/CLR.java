@@ -1,8 +1,10 @@
 package com.example.data.mongo;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,20 @@ public class CLR implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		{
+			// prepare collections to avoid timeouts on slow ci/docker/...
+			template.execute(db -> {
+				Set<String> collections = db.listCollectionNames().into(new HashSet<>());
+				if(!collections.contains("order")) {
+					db.createCollection("order");
+				}
+				if(!collections.contains("coupon")) {
+					db.createCollection("coupon");
+				}
+				return "ok";
+			});
+		}
 
 		LineItem product1 = new LineItem("p1", 1.23);
 		LineItem product2 = new LineItem("p2", 0.87, 2);
