@@ -94,6 +94,7 @@ NOTE: When using Spring Native, `spring.cloud.refresh.enabled` is set to `false`
 * `spring-cloud-starter-netflix-eureka-client`
 *  `spring-cloud-starter-task`
 * `spring-cloud-function-web`
+** `FunctionalSpringApplication` is not supported
 ** `--enable-https` flag is required for HTTPS support.
 * `spring-cloud-function-adapter-aws`
 * `spring-cloud-starter-function-webflux`

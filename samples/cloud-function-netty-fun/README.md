@@ -1,1 +1,0 @@
-Spring Boot project with Spring Cloud Function and Netty.
