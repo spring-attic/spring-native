@@ -99,7 +99,16 @@ class InitDestroyMethodsDiscoverer {
 	 * @return the mapping
 	 */
 	Map<String, List<Method>> registerDestroyMethods(NativeConfigurationRegistry nativeConfiguration) {
-		return processLifecycleMethods(nativeConfiguration, this::processDestroyMethods);
+		Map<String, List<Method>> methods = processLifecycleMethods(nativeConfiguration, this::processDestroyMethods);
+		// TODO: required as framework calls this using reflection, see spring-projects/spring-framework#27504
+		for (String beanName : this.beanFactory.getBeanDefinitionNames()) {
+			BeanDefinition beanDefinition = this.beanFactory.getMergedBeanDefinition(beanName);
+			Class<?> beanType = getBeanType(beanDefinition);
+			if (AutoCloseable.class.isAssignableFrom(beanType)) {
+				nativeConfiguration.reflection().addExecutable(ReflectionUtils.findMethod(beanType, "close"));
+			}
+		}
+		return methods;
 	}
 
 	Map<String, List<Method>> processLifecycleMethods(NativeConfigurationRegistry registry, BiFunction<BeanDefinition, Class<?>, Set<Method>> lifecycleMethodsFactory) {
@@ -119,11 +128,13 @@ class InitDestroyMethodsDiscoverer {
 	private Set<Method> processDestroyMethods(BeanDefinition beanDefinition, Class<?> beanType) {
 		Set<Method> methods = new LinkedHashSet<>();
 		String destroyMethodName = beanDefinition.getDestroyMethodName();
-		if (AbstractBeanDefinition.INFER_METHOD.equals(destroyMethodName) ||
-				(destroyMethodName == null && AutoCloseable.class.isAssignableFrom(beanType))) {
-			Method method = detectInferredDestroyMethod(beanType);
-			if (method != null) {
-				methods.add(method);
+		if (AbstractBeanDefinition.INFER_METHOD.equals(destroyMethodName)) {
+			// AutoCloseable is handled explicitly, no need to infer
+			if (!AutoCloseable.class.isAssignableFrom(beanType)) {
+				Method method = detectInferredDestroyMethod(beanType);
+				if (method != null) {
+					methods.add(method);
+				}
 			}
 		}
 		else if (StringUtils.hasText(destroyMethodName)) {

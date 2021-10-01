@@ -185,7 +185,7 @@ public class NativeReflectionEntry {
 				if (method instanceof Method) {
 					this.methods.add((Method) method);
 				}
-				else {
+				else if (method instanceof Constructor) {
 					this.constructors.add((Constructor<?>) method);
 				}
 			});

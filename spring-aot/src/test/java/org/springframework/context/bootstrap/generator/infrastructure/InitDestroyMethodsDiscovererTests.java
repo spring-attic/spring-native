@@ -155,6 +155,16 @@ class InitDestroyMethodsDiscovererTests {
 	}
 
 	@Test
+	void processWithInferredDestroyMethodNameOnAutoCloseable() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(AutoClosableSample.class);
+		beanDefinition.setDestroyMethodName("(inferred)");
+		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
+		assertThat(methods).isEmpty();
+		Method closeMethod = ReflectionUtils.findMethod(AutoClosableSample.class, "close");
+		hasSingleNativeReflectionEntry(AutoClosableSample.class, closeMethod);
+	}
+
+	@Test
 	void processWithInferredDestroyMethodNameWithCloseMatch() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(CloseSample.class);
 		beanDefinition.setDestroyMethodName("(inferred)");
@@ -184,11 +194,11 @@ class InitDestroyMethodsDiscovererTests {
 	}
 
 	@Test
-	void processWithoutInferredDestroyMethodNameWithAutoClosable() {
+	void processWithoutInferredDestroyMethodNameWithAutoClosableIsIgnored() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(AutoClosableSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
+		assertThat(methods).isEmpty();
 		Method closeMethod = ReflectionUtils.findMethod(AutoClosableSample.class, "close");
-		assertThat(methods.get("test")).containsExactly(closeMethod);
 		hasSingleNativeReflectionEntry(AutoClosableSample.class, closeMethod);
 	}
 
