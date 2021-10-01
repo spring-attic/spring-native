@@ -42,7 +42,8 @@ class InitDestroyBeanPostProcessorTests {
 	@Test
 	void initMethodIsInvoked() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(Map.of("test", List.of("start")), Collections.emptyMap()));
+		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(beanFactory,
+				Map.of("test", List.of("start")), Collections.emptyMap()));
 		beanFactory.registerBeanDefinition("test", mockBeanDefinition(LifecycleSampleBean.class));
 		LifecycleSampleBean bean = beanFactory.getBean("test", LifecycleSampleBean.class);
 		verify(bean).start();
@@ -52,7 +53,8 @@ class InitDestroyBeanPostProcessorTests {
 	@Test
 	void initMethodIsInvokedInOrder() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(Map.of("test", List.of("start", "start2")), Collections.emptyMap()));
+		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(beanFactory,
+				Map.of("test", List.of("start", "start2")), Collections.emptyMap()));
 		beanFactory.registerBeanDefinition("test", mockBeanDefinition(LifecycleSampleBean.class));
 		LifecycleSampleBean bean = beanFactory.getBean("test", LifecycleSampleBean.class);
 		InOrder inOrder = inOrder(bean);
@@ -64,7 +66,8 @@ class InitDestroyBeanPostProcessorTests {
 	@Test
 	void destroyMethodIsInvoked() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(Collections.emptyMap(), Map.of("test", List.of("stop"))));
+		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(beanFactory,
+				Collections.emptyMap(), Map.of("test", List.of("stop"))));
 		beanFactory.registerBeanDefinition("test", mockBeanDefinition(LifecycleSampleBean.class));
 		LifecycleSampleBean bean = beanFactory.getBean("test", LifecycleSampleBean.class);
 		verifyNoInteractions(bean);
@@ -76,8 +79,8 @@ class InitDestroyBeanPostProcessorTests {
 	@Test
 	void destroyMethodIsInvokedInOrder() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(Collections.emptyMap(),
-				Map.of("test", List.of("stop", "stop2"))));
+		beanFactory.addBeanPostProcessor(new InitDestroyBeanPostProcessor(beanFactory,
+				Collections.emptyMap(), Map.of("test", List.of("stop", "stop2"))));
 		beanFactory.registerBeanDefinition("test", mockBeanDefinition(LifecycleSampleBean.class));
 		LifecycleSampleBean bean = beanFactory.getBean("test", LifecycleSampleBean.class);
 		beanFactory.destroySingletons();

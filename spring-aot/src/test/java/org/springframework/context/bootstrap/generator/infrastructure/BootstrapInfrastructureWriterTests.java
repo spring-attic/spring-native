@@ -139,12 +139,13 @@ class BootstrapInfrastructureWriterTests {
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
 		writeInfrastructure(context, bootstrapContext);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
-				"  private InitDestroyBeanPostProcessor createInitDestroyBeanPostProcessor() {",
+				"  private InitDestroyBeanPostProcessor createInitDestroyBeanPostProcessor(",
+				"      ConfigurableBeanFactory beanFactory) {",
 				"    Map<String, List<String>> initMethods = new LinkedHashMap<>();",
 				"    initMethods.put(\"testBean\", List.of(\"start\"));",
 				"    Map<String, List<String>> destroyMethods = new LinkedHashMap<>();",
 				"    destroyMethods.put(\"testBean\", List.of(\"stop\"));",
-				"    return new InitDestroyBeanPostProcessor(initMethods, destroyMethods);",
+				"    return new InitDestroyBeanPostProcessor(beanFactory, initMethods, destroyMethods);",
 				"  }").contains("import " + InitDestroyBeanPostProcessor.class.getName() + ";");
 	}
 
@@ -152,8 +153,8 @@ class BootstrapInfrastructureWriterTests {
 	void writeInfrastructureWithLifecycleMethodsRegisterBean() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean("testBean", InitDestroySampleBean.class);
-		assertThat(writeInfrastructure(context, createBootstrapContext()))
-				.contains("context.getBeanFactory().addBeanPostProcessor(createInitDestroyBeanPostProcessor());");
+		assertThat(writeInfrastructure(context, createBootstrapContext())).contains(
+				"context.getBeanFactory().addBeanPostProcessor(createInitDestroyBeanPostProcessor(context.getBeanFactory()));");
 	}
 
 	private CodeSnippet writeInfrastructure(GenericApplicationContext context, BootstrapWriterContext writerContext) {

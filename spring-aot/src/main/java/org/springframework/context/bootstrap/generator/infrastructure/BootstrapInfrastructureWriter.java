@@ -32,6 +32,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 
 import org.springframework.aot.context.annotation.ImportAwareBeanPostProcessor;
 import org.springframework.aot.context.annotation.InitDestroyBeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.ImportOriginRegistry;
@@ -71,7 +72,7 @@ public class BootstrapInfrastructureWriter {
 		MethodSpec initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
 		if (initDestroyBeanPostProcessorMethod != null) {
 			this.writerContext.getMainBootstrapClass().addMethod(initDestroyBeanPostProcessorMethod);
-			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", initDestroyBeanPostProcessorMethod);
+			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N(context.getBeanFactory()))", initDestroyBeanPostProcessorMethod);
 		}
 	}
 
@@ -108,8 +109,9 @@ public class BootstrapInfrastructureWriter {
 		Builder code = CodeBlock.builder();
 		writeLifecycleMethods(code, initMethods, "initMethods");
 		writeLifecycleMethods(code, destroyMethods, "destroyMethods");
-		code.addStatement("return new $T($L, $L)", InitDestroyBeanPostProcessor.class, "initMethods", "destroyMethods");
-		return MethodSpec.methodBuilder("createInitDestroyBeanPostProcessor").returns(InitDestroyBeanPostProcessor.class)
+		code.addStatement("return new $T($L, $L, $L)", InitDestroyBeanPostProcessor.class, "beanFactory", "initMethods", "destroyMethods");
+		return MethodSpec.methodBuilder("createInitDestroyBeanPostProcessor").addParameter(ConfigurableBeanFactory.class, "beanFactory")
+				.returns(InitDestroyBeanPostProcessor.class)
 				.addModifiers(Modifier.PRIVATE).addCode(code.build()).build();
 	}
 

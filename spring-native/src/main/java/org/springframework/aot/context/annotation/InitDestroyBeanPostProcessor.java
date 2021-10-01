@@ -28,8 +28,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
@@ -43,25 +41,21 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Stephane Nicoll
  */
-public class InitDestroyBeanPostProcessor implements BeanPostProcessor, DestructionAwareBeanPostProcessor, BeanFactoryAware, Ordered {
+public class InitDestroyBeanPostProcessor implements BeanPostProcessor, DestructionAwareBeanPostProcessor, Ordered {
 
 	private static final Log logger = LogFactory.getLog(InitDestroyBeanPostProcessor.class);
+
+	private final ConfigurableBeanFactory beanFactory;
 
 	private final Map<String, List<String>> initMethods;
 
 	private final Map<String, List<String>> destroyMethods;
 
-	private ConfigurableBeanFactory beanFactory;
-
-	public InitDestroyBeanPostProcessor(Map<String, List<String>> initMethods,
-			Map<String, List<String>> destroyMethods) {
+	public InitDestroyBeanPostProcessor(ConfigurableBeanFactory beanFactory,
+			Map<String, List<String>> initMethods, Map<String, List<String>> destroyMethods) {
+		this.beanFactory = beanFactory;
 		this.initMethods = initMethods;
 		this.destroyMethods = destroyMethods;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = (ConfigurableBeanFactory) beanFactory;
 	}
 
 	@Override
@@ -120,10 +114,9 @@ public class InitDestroyBeanPostProcessor implements BeanPostProcessor, Destruct
 	}
 
 	private Class<?> getBeanType(String beanName) {
-		if (this.beanFactory != null && this.beanFactory.containsBean(beanName)) {
-			return this.beanFactory.getMergedBeanDefinition(beanName).getResolvableType().toClass();
-		}
-		return Object.class;
+		return (this.beanFactory.containsBean(beanName))
+				? this.beanFactory.getMergedBeanDefinition(beanName).getResolvableType().toClass()
+				: Object.class;
 	}
 
 	@Override
