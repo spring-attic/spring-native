@@ -18,18 +18,14 @@ package org.springframework.aot.factories;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.CodeGenerationException;
@@ -41,8 +37,6 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.support.Mode;
-import org.springframework.nativex.type.SpringFactoriesProcessor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -55,8 +49,6 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 
 	private static final Log logger = LogFactory.getLog(SpringFactoriesContributor.class);
 	
-	private List<SpringFactoriesProcessor> springFactoriesProcessors;
-
 	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 1;
@@ -90,7 +82,6 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 			URL url = factoriesLocations.nextElement();
 			UrlResource resource = new UrlResource(url);
 			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-			properties = filterProperties(properties);
 			for (Map.Entry<?, ?> entry : properties.entrySet()) {
 				String factoryTypeName = ((String) entry.getKey()).trim();
 				logger.debug("Loading factory Type:" + factoryTypeName);
@@ -113,43 +104,6 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		}
 		return factories;
 	}
-	
-	private List<SpringFactoriesProcessor> getSpringFactoriesProcessors() {
-		if (springFactoriesProcessors == null) {
-			springFactoriesProcessors = new ArrayList<>();
-			ServiceLoader<SpringFactoriesProcessor> sfps = ServiceLoader.load(SpringFactoriesProcessor.class);
-			for (SpringFactoriesProcessor springFactoryProcessor: sfps) {
-				springFactoriesProcessors.add(springFactoryProcessor);
-			}
-		}
-		return springFactoriesProcessors;
-	}
-	
-	private Properties filterProperties(Properties properties) {
-		List<SpringFactoriesProcessor> springFactoriesProcessors = getSpringFactoriesProcessors();
-		boolean modified = false;
-		Properties filteredProperties = new Properties();
-		for (Map.Entry<Object, Object> factoriesEntry : properties.entrySet()) {
-			String key = (String) factoriesEntry.getKey();
-			String valueString = (String) factoriesEntry.getValue();
-			List<String> values = new ArrayList<>();
-			for (String value : valueString.split(",")) {
-				values.add(value);
-			}
-			for (SpringFactoriesProcessor springFactoriesProcessor : springFactoriesProcessors) {
-				int len = values.size();
-				if (springFactoriesProcessor.filter(key, values)) {
-					logger.debug("Spring factory filtered by "+springFactoriesProcessor.getClass().getName()+" removing "+(len-values.size())+" entries");
-					modified = true;
-				}
-			}
-			if (modified) {
-				filteredProperties.put(key, String.join(",", values));
-			} else {
-				filteredProperties.put(key, valueString);
-			}
-		}
-		return filteredProperties;
-	}
+
 }
 

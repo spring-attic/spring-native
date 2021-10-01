@@ -1305,11 +1305,6 @@ public class TypeSystem {
 		return hintLocator.getAccessVerifiers();
 	}
 	
-	public List<SpringFactoriesProcessor> getSpringFactoryProcessors() {
-		ensureSpringConfigurationDiscovered();
-		return hintLocator.getSpringFactoriesProcessors();
-	}
-
 	public synchronized Map<String,List<String>> getSpringClassesMakingIsPresentChecks() {
 		if (typesMakingIsPresentChecksInStaticInitializers == null) {
 			for (String classpathentry : classpath) {

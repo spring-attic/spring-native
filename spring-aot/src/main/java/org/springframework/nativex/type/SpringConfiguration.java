@@ -41,8 +41,6 @@ public class SpringConfiguration {
 	
 	private final List<ComponentProcessor> processors = new ArrayList<>();
 
-	private final List<SpringFactoriesProcessor> springFactoriesProcessors = new ArrayList<>();
-	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
@@ -84,12 +82,6 @@ public class SpringConfiguration {
 			logger.debug("SpringConfiguration: found component processor: "+componentProcessor.getClass().getName());
 			processors.add(componentProcessor);
 		}
-		logger.debug("Discovering spring.factories processors...");
-		ServiceLoader<SpringFactoriesProcessor> sfps = ServiceLoader.load(SpringFactoriesProcessor.class);
-		for (SpringFactoriesProcessor springFactoryProcessor: sfps) {
-			logger.debug("SpringConfiguration: found spring.factories processor: "+springFactoryProcessor.getClass().getName());
-			springFactoriesProcessors.add(springFactoryProcessor);
-		}
 		logger.debug("Discovering access verifiers...");
 		ServiceLoader<AccessChecker> avs = ServiceLoader.load(AccessChecker.class);
 		for (AccessChecker av: avs) {
@@ -127,10 +119,6 @@ public class SpringConfiguration {
 		return accessVerifiers;
 	}
 	
-	public List<SpringFactoriesProcessor> getSpringFactoriesProcessors() {
-		return springFactoriesProcessors;
-	}
-
 	public static String[] findProposedFactoryGuards(String key) {
 		return proposedFactoryGuards.get(key);
 	}
