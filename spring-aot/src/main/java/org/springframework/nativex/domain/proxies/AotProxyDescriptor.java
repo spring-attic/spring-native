@@ -18,6 +18,7 @@ package org.springframework.nativex.domain.proxies;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.aop.framework.BuildTimeProxyDescriptor;
@@ -81,14 +82,29 @@ public class AotProxyDescriptor extends JdkProxyDescriptor {
 	
 	public boolean equals(Object other) {
 		if (other instanceof AotProxyDescriptor) {
-			AotProxyDescriptor that = (AotProxyDescriptor)other;
-			if (!that.getTargetClassType().equals(getTargetClassType())) {
+			AotProxyDescriptor o = (AotProxyDescriptor)other;
+			Set<String> l = this.types;
+			Set<String> r = o.types;
+			if (l.size() != r.size()) {
 				return false;
 			}
-			if (that.getProxyFeatures()!=getProxyFeatures()) {
+			if (!targetClassName.equals(o.targetClassName)) {
 				return false;
 			}
-			return getInterfaceTypes().equals(that.getInterfaceTypes());
+			if (proxyFeatures!=o.proxyFeatures) {
+				return false;
+			}
+			if (l.isEmpty()) {
+				return true;
+			}
+			Iterator<String> iterator1 = l.iterator();
+			Iterator<String> iterator2 = r.iterator();
+			while (iterator1.hasNext() && iterator2.hasNext()) {
+				boolean matchingInterfaces = iterator1.next().equals(iterator2.next());
+				if (!matchingInterfaces)
+					return false;
+			}
+			return true;
 		}
 		return false;
 	}

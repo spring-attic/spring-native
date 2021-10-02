@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Andy Clement
  * @author Ariel Carrera
  */
-public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
+public class JdkProxyDescriptor {
 
 	protected Set<String> types; // e.g. java.io.Serializable
 
@@ -39,37 +39,41 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object other) {
+		if (this == other) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (other == null || getClass() != other.getClass()) {
 			return false;
 		}
-		JdkProxyDescriptor other = (JdkProxyDescriptor) o;
-		boolean result = true;
-		result = result && nullSafeEquals(this.types, other.types);
-		return result;
+		JdkProxyDescriptor o = (JdkProxyDescriptor) other;
+		Set<String> l = this.types;
+		Set<String> r = o.types;
+		if (l.size() != r.size()) {
+			return false;
+		}
+		if (l.isEmpty()) {
+			return true;
+		}
+		Iterator<String> iterator1 = l.iterator();
+		Iterator<String> iterator2 = r.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			boolean matchingInterfaces = iterator1.next().equals(iterator2.next());
+			if (!matchingInterfaces) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = nullSafeHashCode(this.types);
+		int result = 17;
+		Iterator<String> iterator = types.iterator();
+		while (iterator.hasNext()) {
+			result = result+iterator.next().hashCode()*37;
+		}
 		return result;
-	}
-
-	private boolean nullSafeEquals(Object o1, Object o2) {
-		if (o1 == o2) {
-			return true;
-		}
-		if (o1 == null || o2 == null) {
-			return false;
-		}
-		return o1.equals(o2);
-	}
-
-	private int nullSafeHashCode(Object o) {
-		return (o != null) ? o.hashCode() : 0;
 	}
 
 	@Override
@@ -83,25 +87,6 @@ public class JdkProxyDescriptor implements Comparable<JdkProxyDescriptor> {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
-	}
-
-	@Override
-	public int compareTo(JdkProxyDescriptor o) {
-		Set<String> l = this.types;
-		Set<String> r = o.types;
-		if (l.size() != r.size()) {
-			return l.size() - r.size();
-		}
-		if (l.isEmpty()) return 0;
-		
-		Iterator<String> iterator1 = l.iterator();
-		Iterator<String> iterator2 = r.iterator();
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			int value = iterator1.next().compareTo(iterator2.next());
-			if (value != 0)
-				return value;
-		}
-		return 0; // equal!
 	}
 
 	public static JdkProxyDescriptor of(Collection<String> interfaces) {
