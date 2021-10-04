@@ -2,6 +2,10 @@
 
 RC=0
 
+if [ -f samples-summary.csv ]; then
+  rm samples-summary.csv
+fi
+
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s),ReflectConfig (lines)" >> samples-summary.csv
 for d in $(find samples -maxdepth 2 -type d | sort -n)
 do
@@ -9,19 +13,23 @@ do
     if ! (cd "$d" && ./build.sh --aot-only); then
       RC=1
     fi
-    if [ -f "$d/target/native/summary.csv" ]; then
-      cat $d/target/native/summary.csv >> samples-summary.csv
+    if [ -f "$d/pom.xml" ]; then
+      REPORT_DIR="$d/target/native"
+    else
+      REPORT_DIR="$d/build/native"
+    fi
+    if [ -f "$REPORT_DIR/summary.csv" ]; then
+      cat $REPORT_DIR/summary.csv >> samples-summary.csv
     else
      echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,-,,,,, >> samples-summary.csv
     fi
   fi
 done
 
-head -1 samples-summary.csv
 if ! [ -x "$(command -v tty-table)" ]; then
-  tail -n +2 samples-summary.csv | perl -pe 's/((?<=,)|(?<=^)),/ ,/g;'  | column -t -s,
+  tail -n +1 samples-summary.csv | perl -pe 's/((?<=,)|(?<=^)),/ ,/g;'  | column -t -s,
 else
-  tail -n +2 samples-summary.csv | tty-table
+  tail -n +1 samples-summary.csv | tty-table
 fi
 
 exit $RC
