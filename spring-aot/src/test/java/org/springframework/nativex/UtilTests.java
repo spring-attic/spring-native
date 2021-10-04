@@ -18,46 +18,21 @@ package org.springframework.nativex;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.Collections;
+import java.net.URL;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.nativex.support.Utils;
-import org.springframework.nativex.type.ConstantPoolScanner;
-import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.NameDiscoverer;
 
 public class UtilTests {
 
-	static TypeSystem typeSystem;
-
-	@BeforeAll
-	public static void setup() throws Exception {
-		File file = new File("./target/test-classes");
-		typeSystem = new TypeSystem(Collections.singletonList(file.toString()));
-	}
-
 	@Test
-	public void superclass() {
-		ConstantPoolScanner s = Utils.scanClass(typeSystem.find(Foo.class.getName().replace(".", "/")));
-		assertThat(s.getSuperclassname()).isEqualTo("java/lang/Object");
-		String[] ifs = s.getInterfacenames();
-		assertThat(ifs.length).isEqualTo(0);
+	public void classnameDiscovery() {
+		URL resource = UtilTests.class.getClassLoader().getResource(Inner.class.getName().replace(".","/")+".class");
+		String name = NameDiscoverer.getClassName(resource);
+		assertThat(name).isEqualTo("org/springframework/nativex/UtilTests$Inner");
 	}
 	
-	static class Foo extends Object {}
-	
-	@Test
-	public void interfaces() {
-		ConstantPoolScanner s = Utils.scanClass(typeSystem.find(Bar.class.getName().replace(".", "/")));
-		assertThat(s.getSuperclassname()).isEqualTo("java/lang/Object");
-		String[] ifs = s.getInterfacenames();
-		assertThat(ifs.length).isEqualTo(1);
-		assertThat(ifs[0]).isEqualTo("java/io/Serializable");
+	static class Inner {
 	}
-
-	@SuppressWarnings("serial")
-	static class Bar implements Serializable {}
-
+	
 }
