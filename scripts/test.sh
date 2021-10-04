@@ -46,7 +46,7 @@ if [[ "$AOT_ONLY" == true ]]; then
   EXECUTABLE="java -DspringAot=true -jar $JAR_DIR/*-SNAPSHOT.jar"
 else
   if ! [ -z "$1" ]; then
-    if [[ "$1" != "--"* && "$1" != "-D"* ]]; then
+    if [[ "$1" != "--"* ]]; then
       EXECUTABLE=${1}
       shift 1
     else
@@ -58,7 +58,7 @@ else
   chmod +x ${EXECUTABLE}
 fi
 
-if [ -z "$1" ] || [[ "$1" == "--"* ]] || [[ "$1" == "-D"* ]]; then
+if [ -z "$1" ] || [[ "$1" == "--"* ]]; then
   TEST_OUTPUT_FILE=${REPORT_DIR}/test-output.txt
   BUILD_OUTPUT_FILE=${REPORT_DIR}/output.txt
   SUMMARY_CSV_FILE=${REPORT_DIR}/summary.csv

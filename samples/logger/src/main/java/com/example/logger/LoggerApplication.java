@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 public class LoggerApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(LoggerApplication.class);
+		SpringApplication.run(LoggerApplication.class, args);
 		Thread.currentThread().join(); // To be able to measure memory consumption
 	}
 
