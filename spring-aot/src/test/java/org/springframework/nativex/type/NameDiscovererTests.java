@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.nativex;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package org.springframework.nativex.type;
 
 import java.net.URL;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.nativex.type.NameDiscoverer;
 
-public class UtilTests {
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests for {@link NameDiscoverer}.
+ *
+ * @author Andy Clement
+ */
+class NameDiscovererTests {
 
 	@Test
-	public void classnameDiscovery() {
-		URL resource = UtilTests.class.getClassLoader().getResource(Inner.class.getName().replace(".","/")+".class");
+	void classNameDiscovery() {
+		URL resource = getClass().getClassLoader().getResource(Inner.class.getName().replace(".", "/") + ".class");
 		String name = NameDiscoverer.getClassName(resource);
-		assertThat(name).isEqualTo("org/springframework/nativex/UtilTests$Inner");
+		assertThat(name).isEqualTo("org/springframework/nativex/type/NameDiscovererTests$Inner");
 	}
-	
+
 	static class Inner {
 	}
-	
+
 }
