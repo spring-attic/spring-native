@@ -20,8 +20,6 @@ import java.beans.Introspector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.squareup.javapoet.JavaFile;
@@ -32,7 +30,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * A tester for {@link ContextBootstrapGenerator}.
@@ -45,28 +42,21 @@ public class ContextBootstrapGeneratorTester {
 
 	private final String packageName;
 
-	private final List<Class<?>> excludeTypes;
-
-	public ContextBootstrapGeneratorTester(Path directory, String packageName, List<Class<?>> excludeTypes) {
+	public ContextBootstrapGeneratorTester(Path directory, String packageName) {
 		this.directory = directory;
 		this.packageName = packageName;
-		this.excludeTypes = (!ObjectUtils.isEmpty(excludeTypes)) ? new ArrayList<>(excludeTypes) : new ArrayList<>();
 	}
 
 	public ContextBootstrapGeneratorTester(Path directory) {
-		this(directory, "com.example", null);
+		this(directory, "com.example");
 	}
 
 	public ContextBootstrapGeneratorTester withDirectory(Path directory) {
-		return new ContextBootstrapGeneratorTester(directory, this.packageName, this.excludeTypes);
+		return new ContextBootstrapGeneratorTester(directory, this.packageName);
 	}
 
 	public ContextBootstrapGeneratorTester withPackage(String packageName) {
-		return new ContextBootstrapGeneratorTester(this.directory, packageName, this.excludeTypes);
-	}
-
-	public ContextBootstrapGeneratorTester withExcludeTypes(Class<?>... excludeTypes) {
-		return new ContextBootstrapGeneratorTester(this.directory, this.packageName, Arrays.asList(excludeTypes));
+		return new ContextBootstrapGeneratorTester(this.directory, packageName);
 	}
 
 	public ContextBootstrapStructure generate(Class<?>... candidates) {
@@ -77,9 +67,8 @@ public class ContextBootstrapGeneratorTester {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		Path srcDirectory = generateSrcDirectory();
-		BootstrapGenerationResult result = new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(
-				beanFactory, this.packageName,
-				this.excludeTypes.toArray(new Class<?>[0]));
+		BootstrapGenerationResult result = new ContextBootstrapGenerator(context.getClassLoader())
+				.generateBootstrapClass(beanFactory, this.packageName);
 		writeSources(srcDirectory, result.getSourceFiles());
 		return new ContextBootstrapStructure(srcDirectory, this.packageName, result.getClassDescriptors());
 	}

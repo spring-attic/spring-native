@@ -27,8 +27,6 @@ import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfigur
 import org.springframework.aot.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericObjectProviderConfiguration;
-import org.springframework.aot.context.bootstrap.generator.sample.generic.Repository;
-import org.springframework.aot.context.bootstrap.generator.sample.generic.RepositoryHolder;
 import org.springframework.aot.context.bootstrap.generator.sample.infrastructure.ArgumentValueRegistrarConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.metadata.MetadataConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedConfigurationImport;
@@ -62,9 +60,12 @@ class ContextBootstrapGeneratorTests {
 	@Test
 	void bootstrapClassGeneratesStructure() {
 		ContextBootstrapStructure structure = this.generatorTester.generate();
-		assertThat(structure).contextBootstrapInitializer().lines().containsSubsequence("public class ContextBootstrapInitializer implements ApplicationContextInitializer<GenericApplicationContext> {",
+		assertThat(structure).contextBootstrapInitializer().lines().containsSubsequence(
+				"public class ContextBootstrapInitializer implements ApplicationContextInitializer<GenericApplicationContext> {",
 				"  @Override",
-				"  public void initialize(GenericApplicationContext context) {", "  }", "}");
+				"  public void initialize(GenericApplicationContext context) {",
+				"  }",
+				"}");
 		assertThat(structure).contextBootstrapInitializer().contains("import " + GenericApplicationContext.class.getName() + ";");
 	}
 
@@ -145,11 +146,11 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerProtectedConfiguration_anotherStringBean(",
-				"    GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"anotherStringBean\", String.class).withFactoryMethod(ProtectedConfiguration.class, \"anotherStringBean\")",
-				"      .instanceSupplier(() -> context.getBean(ProtectedConfiguration.class).anotherStringBean()).register(context);",
-				"}");
+						"public static void registerProtectedConfiguration_anotherStringBean(",
+						"    GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"anotherStringBean\", String.class).withFactoryMethod(ProtectedConfiguration.class, \"anotherStringBean\")",
+						"      .instanceSupplier(() -> context.getBean(ProtectedConfiguration.class).anotherStringBean()).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"ContextBootstrapInitializer.registerProtectedConfiguration(context);",
 				"ContextBootstrapInitializer.registerProtectedConfiguration_anotherStringBean(context);");
@@ -161,11 +162,11 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerPublicInnerClassConfiguration_InnerConfiguration(",
-				"    GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicInnerClassConfiguration$InnerConfiguration\", PublicInnerClassConfiguration.InnerConfiguration.class)",
-				"      .instanceSupplier(() -> new PublicInnerClassConfiguration.InnerConfiguration()).register(context);",
-				"}");
+						"public static void registerPublicInnerClassConfiguration_InnerConfiguration(",
+						"    GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicInnerClassConfiguration$InnerConfiguration\", PublicInnerClassConfiguration.InnerConfiguration.class)",
+						"      .instanceSupplier(() -> new PublicInnerClassConfiguration.InnerConfiguration()).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration(context);",
 				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration_InnerConfiguration(context);",
@@ -178,11 +179,11 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerProtectedInnerConfiguration_anotherInnerBean(",
-				"    GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"anotherInnerBean\", String.class).withFactoryMethod(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class, \"anotherInnerBean\")",
-				"      .instanceSupplier(() -> context.getBean(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class).anotherInnerBean()).register(context);",
-				"}");
+						"public static void registerProtectedInnerConfiguration_anotherInnerBean(",
+						"    GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"anotherInnerBean\", String.class).withFactoryMethod(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class, \"anotherInnerBean\")",
+						"      .instanceSupplier(() -> context.getBean(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class).anotherInnerBean()).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"publicOuterClassConfiguration\", PublicOuterClassConfiguration.class)",
 				"    .instanceSupplier(() -> new PublicOuterClassConfiguration()).register(context);",
@@ -196,10 +197,10 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerProtectedType(GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedType\", ProtectedType.class)",
-				"      .instanceSupplier(() -> new ProtectedType()).register(context);",
-				"}");
+						"public static void registerProtectedType(GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedType\", ProtectedType.class)",
+						"      .instanceSupplier(() -> new ProtectedType()).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedConstructorParameterConfiguration\", ProtectedConstructorParameterConfiguration.class)",
 				"    .instanceSupplier(() -> new ProtectedConstructorParameterConfiguration()).register(context);",
@@ -212,11 +213,11 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerProtectedMethodParameterConfiguration_protectedParameter(",
-				"    GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"protectedParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedParameter\", ProtectedType.class)",
-				"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedParameter(attributes.get(0)))).register(context);",
-				"}");
+						"public static void registerProtectedMethodParameterConfiguration_protectedParameter(",
+						"    GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"protectedParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedParameter\", ProtectedType.class)",
+						"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedParameter(attributes.get(0)))).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedMethodParameterConfiguration\", ProtectedMethodParameterConfiguration.class)",
 				"    .instanceSupplier(() -> new ProtectedMethodParameterConfiguration()).register(context);",
@@ -229,11 +230,11 @@ class ContextBootstrapGeneratorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-				"public static void registerProtectedMethodParameterConfiguration_protectedGenericParameter(",
-				"    GenericApplicationContext context) {",
-				"  BeanDefinitionRegistrar.of(\"protectedGenericParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedGenericParameter\", ObjectProvider.class)",
-				"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedGenericParameter(attributes.get(0)))).register(context);",
-				"}");
+						"public static void registerProtectedMethodParameterConfiguration_protectedGenericParameter(",
+						"    GenericApplicationContext context) {",
+						"  BeanDefinitionRegistrar.of(\"protectedGenericParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedGenericParameter\", ObjectProvider.class)",
+						"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedGenericParameter(attributes.get(0)))).register(context);",
+						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedMethodParameterConfiguration\", ProtectedMethodParameterConfiguration.class)",
 				"    .instanceSupplier(() -> new ProtectedMethodParameterConfiguration()).register(context);",
@@ -290,15 +291,6 @@ class ContextBootstrapGeneratorTests {
 		ContextBootstrapStructure structure = this.generatorTester.generate(ArgumentValueRegistrarConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"argumentValueString\", String.class, () -> new String(new char[] { 'a', ' ', 't', 'e', 's', 't' }, 2, 4));");
-	}
-
-	@Test
-	void bootstrapClassWithExcludeDoesNotRegisterExcludedType() {
-		ContextBootstrapStructure structure = this.generatorTester.withExcludeTypes(RepositoryHolder.class)
-				.generate(Repository.class, RepositoryHolder.class);
-		assertThat(structure).contextBootstrapInitializer()
-				.contains("BeanDefinitionRegistrar.of(\"repository\"")
-				.doesNotContain("RepositoryHolder");
 	}
 
 }

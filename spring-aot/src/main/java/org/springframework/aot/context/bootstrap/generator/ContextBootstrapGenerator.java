@@ -17,16 +17,14 @@
 package org.springframework.aot.context.bootstrap.generator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import org.apache.commons.logging.Log;
@@ -50,11 +48,13 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * A simple experiment to generate a bootstrap class that represents the state of a fully
- * initialized {@link BeanFactory}.
+ * Translate a {@link BeanFactory} to generated code that represents the state of the
+ * factory, as well as the necessary configuration to run in a native image.
  *
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
+ * @see BeanRegistrationWriterSupplier
+ * @see NativeConfigurationRegistry
  */
 public class ContextBootstrapGenerator {
 
@@ -75,18 +75,15 @@ public class ContextBootstrapGenerator {
 	 * {@link BeanFactory}.
 	 * @param beanFactory the bean factory state to replicate in code
 	 * @param packageName the root package for the main {@code ContextBoostrap} class
-	 * @param excludeTypes the types to exclude
-	 * @return a list of {@linkplain JavaFile java source files}
+	 * @return the {@link BootstrapGenerationResult generation result}
 	 */
-	public BootstrapGenerationResult generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName,
-			Class<?>... excludeTypes) {
+	public BootstrapGenerationResult generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName) {
 		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
 		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
-		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(
-				Arrays.stream(excludeTypes).map(Class::getName).collect(Collectors.toList()));
+		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
 		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
 		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
 				nativeConfigurationRegistry.reflection().toClassDescriptors(),
