@@ -1700,10 +1700,6 @@ public class TypeSystem {
 		return aotOptions.isRemoveXmlSupport();
 	}
 
-	public boolean failOnMissingSelectorHint() {
-		return aotOptions.isFailOnMissingSelectorHint();
-	}
-
 	public void setAotOptions(AotOptions aotOptions) {
 		this.aotOptions = aotOptions;
 	}
