@@ -21,7 +21,7 @@ do
     if [ -f "$REPORT_DIR/summary.csv" ]; then
       cat $REPORT_DIR/summary.csv >> samples-summary.csv
     else
-     echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,-,,,,, >> samples-summary.csv
+     echo `date +%Y%m%d-%H%M`,`basename $d`,ERROR,,,,,, >> samples-summary.csv
     fi
   fi
 done
