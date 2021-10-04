@@ -77,6 +77,16 @@ public class BootstrapClass {
 	}
 
 	/**
+	 * Customize the type of this instance.
+	 * @param type the consumer of the type builder
+	 * @return this for method chaining
+	 */
+	public BootstrapClass customizeType(Consumer<TypeSpec.Builder> type) {
+		type.accept(this.type);
+		return this;
+	}
+
+	/**
 	 * Add the specified {@link MethodSpec method}.
 	 * @param method the method to add
 	 */

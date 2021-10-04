@@ -55,6 +55,17 @@ class BootstrapClassTests {
 	}
 
 	@Test
+	void customizeType() {
+		BootstrapClass bootstrapClass = createTestBootstrapClass();
+		bootstrapClass.customizeType((type) -> type.addJavadoc("Test javadoc."))
+				.customizeType((type) -> type.addJavadoc(" Another test javadoc"));
+		assertThat(generateCode(bootstrapClass)).containsSequence(
+				"/**\n",
+				" * Test javadoc. Another test javadoc\n",
+				" */");
+	}
+
+	@Test
 	void addMethod() {
 		BootstrapClass bootstrapClass = createTestBootstrapClass();
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("test").returns(Integer.class)

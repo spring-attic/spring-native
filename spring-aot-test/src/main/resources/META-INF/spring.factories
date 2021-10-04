@@ -1,0 +1,2 @@
+org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor=\
+org.springframework.aot.test.boot.SpringBootAotTestContextProcessor
