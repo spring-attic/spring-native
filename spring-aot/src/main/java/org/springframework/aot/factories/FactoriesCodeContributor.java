@@ -18,17 +18,12 @@ package org.springframework.aot.factories;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.aot.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
-import org.springframework.aot.BuildContext;
-import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeUtils;
 
 /**
  * Contribute code for instantiating Spring Factories.
@@ -82,63 +77,5 @@ interface FactoriesCodeContributor {
 		}
 		return true;
 	}
-	
-	/**
-	 * It is possible to ask for property checks to be done at build time - this enables chunks of code to be discarded early
-	 * and not included in the image. 
-	 * 
-	 * The format is of this style (which you specify with the call to mvn):
-	 * <ul>
-	 * <li> {@code -Dspring.native.build-time-properties-checks=} switches on build time evaluation of some configuration
-	 * conditions related to properties. It must include at least an initial setting of {@code default-include-all} or
-	 * {@code default-exclude-all} and that may be followed by a comma separated list of prefixes to explicitly include
-	 * or exclude (for example {@code =default-include-all,!spring.dont.include.these.,!or.these} or
-	 * {@code =default-exclude-all,spring.include.this.one.though.,and.this.one}).
-	 * When considering a property the longest matching prefix in this setting will apply (in cases where a property matches 
-	 * multiple prefixes).
-	 * 
-	 * <li> {@code -Dspring.native.build-time-properties-match-if-missing=false} means for any properties specifying
-	 * {@code matchIfMissing=true} that will be overridden and not respected. This does flip the application into a
-	 * mode where it needs to be much more explicit about specifying properties that activate configurations. 
-	 * </ul>
-	 * 
-	 * @return true if checks pass, false if one fails and the type should be considered inactive, in which case failedPropertyChecks
-	 * includes information on what check failed
-	 */
-	default boolean passesAnyPropertyRelatedConditions(List<String> classpath, TypeSystem typeSystem, SpringFactory factory, List<String> failedPropertyChecks, AotOptions aotOptions) {
-		ClassDescriptor resolvedFactory = factory.getFactory();
-		String factoryName = resolvedFactory.getClassName();
-		// Problems observed discarding inner configurations due to eager property checks
-		// (configserver sample). Too aggressive, hence the $ check
-		if (aotOptions.isBuildTimePropertyChecking() && !factoryName.contains("$")) {
-			org.springframework.nativex.type.TypeSystem legacyTypeSystem = new org.springframework.nativex.type.TypeSystem(classpath);
-			Type legacyResolvedFactory = legacyTypeSystem.resolve(resolvedFactory);
-			String testResult = TypeUtils.testAnyConditionalOnProperty(legacyResolvedFactory, aotOptions);
-			if (testResult != null) {
-				String message = factoryName+" FAILED ConditionalOnProperty property check: "+testResult;
-				failedPropertyChecks.add(message);
-				return false;
-			}
-			// These are like a ConditionalOnProperty check but using a special condition to check the property
-			testResult = TypeUtils.testAnyConditionalOnAvailableEndpoint(legacyResolvedFactory, aotOptions);
-			if (testResult != null) {
-				String message = factoryName+" FAILED ConditionalOnAvailableEndpoint property check: "+testResult;
-				failedPropertyChecks.add(message);
-				return false;
-			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledMetricsExport(legacyResolvedFactory, aotOptions);
-			if (testResult != null) {
-				String message = factoryName+" FAILED ConditionalOnEnabledMetricsExport property check: "+testResult;
-				failedPropertyChecks.add(message);
-				return false;
-			}
-			testResult = TypeUtils.testAnyConditionalOnEnabledHealthIndicator(legacyResolvedFactory, aotOptions);
-			if (testResult != null) {
-				String message = factoryName+" FAILED ConditionalOnEnabledHealthIndicator property check: "+testResult;
-				failedPropertyChecks.add(message);
-				return false;
-			}
-		}
-		return true;
-	}
+
 }

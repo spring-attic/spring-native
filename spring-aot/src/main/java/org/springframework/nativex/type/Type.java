@@ -1366,34 +1366,6 @@ public class Type {
 			Type type = typeSystem.Lresolve(propertiesType, true);
 			if (type != null) {
 				boolean shouldWalk = true;
-				// TODO Uncomment when we know how to pass AotConfiguration here
-				if (typeSystem.isBuildTimePropertyChecking()) {
-					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-						logger.debug("Build time property checking for "+type.getDottedName());
-					}
-					String prefix = type.getConfigurationPropertiesPrefix();
-					if (prefix!=null && typeSystem.buildTimeCheckableProperty(prefix)) {
-						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-							logger.debug("found "+prefix+" is checkable at build time");
-						}
-						boolean foundSomethingToBindInThatConfigProps = false;
-						Map<String, String> activeProperties = typeSystem.getActiveProperties();
-						if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-							logger.debug("Comparing prefix "+prefix+" against entries: "+activeProperties);
-						}
-						for (Map.Entry<String,String> activeProperty: activeProperties.entrySet()) {
-							if (activeProperty.getKey().startsWith(prefix)) {
-								if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-									logger.debug("found something binding to that prefix in specified set of active properties");
-								}
-								foundSomethingToBindInThatConfigProps = true;
-							}
-						}
-						if (!foundSomethingToBindInThatConfigProps) {
-							shouldWalk=false;
-						}
-					}
-				}
 				if (shouldWalk) {
 					walkPropertyType(propertiesType, collector);
 				} else {

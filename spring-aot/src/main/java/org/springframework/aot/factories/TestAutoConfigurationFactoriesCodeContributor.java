@@ -78,8 +78,7 @@ public class TestAutoConfigurationFactoriesCodeContributor implements FactoriesC
 				passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
 				passesConditionalOnBean(typeSystem, factory) &&
 				passesIgnoreJmxConstraint(typeSystem, factory) &&
-				passesConditionalOnWebApplication(typeSystem, factory) &&
-				passesAnyPropertyRelatedConditions(context.getClasspath(), typeSystem, factory, failedPropertyChecks, aotOptions);
+				passesConditionalOnWebApplication(typeSystem, factory);
 		if (!failedPropertyChecks.isEmpty()) {
 			logger.debug("Following property checks failed on "+factory.getFactory().getClassName()+": "+failedPropertyChecks);
 		}

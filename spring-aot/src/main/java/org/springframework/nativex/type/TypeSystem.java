@@ -1688,14 +1688,6 @@ public class TypeSystem {
 		return resolveDotted(classDescriptor.getClassName());
 	}
 
-	public boolean isBuildTimePropertyChecking() {
-		return aotOptions.isBuildTimePropertyChecking();
-	}
-
-	public boolean buildTimeCheckableProperty(String prefix) {
-		return aotOptions.buildTimeCheckableProperty(prefix);
-	}
-
 	public boolean shouldRemoveXmlSupport() {
 		return aotOptions.isRemoveXmlSupport();
 	}
