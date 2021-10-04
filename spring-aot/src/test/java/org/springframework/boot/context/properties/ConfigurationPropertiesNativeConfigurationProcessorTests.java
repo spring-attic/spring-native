@@ -20,11 +20,11 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessorTests.SamplePropertiesWithNested.OneLevelDown;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.nativex.hint.Flag;
 
 import static org.assertj.core.api.Assertions.assertThat;

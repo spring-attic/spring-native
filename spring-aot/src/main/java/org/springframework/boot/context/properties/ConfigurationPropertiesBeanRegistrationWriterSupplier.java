@@ -21,13 +21,13 @@ import java.util.function.Predicate;
 
 import com.squareup.javapoet.CodeBlock.Builder;
 
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
+import org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
+import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
-import org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.core.annotation.Order;
 
 /**

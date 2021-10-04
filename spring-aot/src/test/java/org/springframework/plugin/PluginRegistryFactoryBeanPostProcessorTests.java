@@ -20,9 +20,9 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.BeanDefinitionPostProcessor;
-import org.springframework.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.core.ResolvableType;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.plugin.core.PluginRegistry;

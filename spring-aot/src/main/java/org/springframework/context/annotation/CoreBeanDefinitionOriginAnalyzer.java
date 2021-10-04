@@ -25,11 +25,11 @@ import java.util.function.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.context.origin.BeanDefinitionDescriptor;
+import org.springframework.aot.context.origin.BeanDefinitionDescriptor.Type;
+import org.springframework.aot.context.origin.BeanDefinitionOriginAnalyzer;
+import org.springframework.aot.context.origin.BeanFactoryStructureAnalysis;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.origin.BeanDefinitionDescriptor;
-import org.springframework.context.origin.BeanDefinitionDescriptor.Type;
-import org.springframework.context.origin.BeanDefinitionOriginAnalyzer;
-import org.springframework.context.origin.BeanFactoryStructureAnalysis;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.Nullable;

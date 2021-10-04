@@ -18,10 +18,10 @@ package org.springframework.boot.context.properties;
 
 import java.lang.reflect.Field;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
-import org.springframework.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
+import org.springframework.aot.context.bootstrap.generator.BootstrapGenerationResult;
+import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.AotApplicationContextFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
-import org.springframework.context.bootstrap.generator.BootstrapGenerationResult;
-import org.springframework.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;

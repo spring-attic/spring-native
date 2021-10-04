@@ -18,15 +18,15 @@ package org.springframework.boot.context.properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.sample.context.properties.JavaBeanSampleBean;
+import org.springframework.aot.context.bootstrap.generator.sample.context.properties.ValueObjectSampleBean;
+import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
-import org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.context.bootstrap.generator.infrastructure.BootstrapClass;
-import org.springframework.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
-import org.springframework.context.bootstrap.generator.sample.context.properties.JavaBeanSampleBean;
-import org.springframework.context.bootstrap.generator.sample.context.properties.ValueObjectSampleBean;
-import org.springframework.context.bootstrap.generator.test.CodeSnippet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

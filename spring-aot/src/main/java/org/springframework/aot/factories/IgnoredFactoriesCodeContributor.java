@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.aot.BuildContext;
 public class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private static List<String> IGNORED_FACTORY_PACKAGES = Arrays.asList(
-			"org.springframework.context.bootstrap", "org.springframework.context.origin");
+			"org.springframework.aot.context.bootstrap", "org.springframework.aot.context.origin");
 
 	private static List<String> IGNORED_FACTORY_TYPES = Arrays.asList(
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportListener",

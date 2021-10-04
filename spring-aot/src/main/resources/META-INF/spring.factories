@@ -3,24 +3,24 @@ org.springframework.data.RepositoryFactoryBeanPostProcessor,\
 org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor,\
 org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcessor
 
-org.springframework.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
+org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.aop.scope.ScopedProxyBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
-org.springframework.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
+org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
 
-org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
+org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
 org.springframework.boot.actuate.endpoint.annotation.EndpointNativeConfigurationProcessor,\
 org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor
 
-org.springframework.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
-org.springframework.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
-org.springframework.context.bootstrap.generator.nativex.FrameworkAnnotationsBeanNativeConfigurationProcessor,\
-org.springframework.context.bootstrap.generator.nativex.FrameworkMethodsBeanNativeConfigurationProcessor,\
-org.springframework.context.bootstrap.generator.nativex.HintsBeanNativeConfigurationProcessor
+org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
+org.springframework.aot.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
+org.springframework.aot.context.bootstrap.generator.nativex.FrameworkAnnotationsBeanNativeConfigurationProcessor,\
+org.springframework.aot.context.bootstrap.generator.nativex.FrameworkMethodsBeanNativeConfigurationProcessor,\
+org.springframework.aot.context.bootstrap.generator.nativex.HintsBeanNativeConfigurationProcessor
 
-org.springframework.context.origin.BeanDefinitionOriginAnalyzer=\
+org.springframework.aot.context.origin.BeanDefinitionOriginAnalyzer=\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanDefinitionOriginAnalyzer,\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionOriginAnalyzer,\
 org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyBeanDefinitionOriginAnalyzer,\
