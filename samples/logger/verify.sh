@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-<<<<<<< HEAD
+OUTPUT_FILE="target/native/test-output.txt"
 source ${PWD%/*samples/*}/scripts/wait.sh
+
 RC=0
 
-wait_log target/native/test-output.txt "INFO com.example.logger.LoggerApplication - info" || RC=$?
-wait_log target/native/test-output.txt "ERROR com.example.logger.LoggerApplication - ouch" || RC=$?
-wait_log target/native/test-output.txt "java.lang.RuntimeException" || RC=$?
+wait_log "$OUTPUT_FILE" "java.lang.RuntimeException" || RC=$?
+grep -q -E -e "[0-9]+ \[           main\] INFO  com.example.logger.LoggerApplication     - info" "$OUTPUT_FILE" || RC=$?
+grep -q -E -e "[0-9]+ \[           main\] ERROR com.example.logger.LoggerApplication     - ouch" "$OUTPUT_FILE" || RC=$?
 
 exit $RC
