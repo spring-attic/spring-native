@@ -70,8 +70,6 @@ import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
-import org.springframework.nativex.support.Utils;
-
 
 /**
  * Simple type system with some rudimentary caching.
@@ -1462,7 +1460,7 @@ public class TypeSystem {
 	}
 
 	public String typenameOfClass(Path p) {
-		return Utils.scanClass(p).getClassname();
+		return NameDiscoverer.getClassName(p);
 	}
 
 	public List<Entry<Type, List<Type>>> scanForSpringComponents() {
