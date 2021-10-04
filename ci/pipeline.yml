@@ -24,6 +24,9 @@ anchors:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
+  wavefront-params: &wavefront-params
+    MANAGEMENT_METRICS_EXPORT_WAVEFRONT_APITOKEN: ((wavefront.api-token))
+    MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI: ((wavefront.uri))
   slack-fail-params: &slack-fail-params
     text: >
       :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
@@ -278,6 +281,7 @@ jobs:
           params:
             AOT_ONLY: true
             <<: *docker-hub-task-params
+            <<: *wavefront-params
   - name: build-samples-stable-java11
     public: true
     plan:
@@ -293,6 +297,7 @@ jobs:
             params:
               AOT_ONLY: false
               <<: *docker-hub-task-params
+              <<: *wavefront-params
   - name: build-samples-dev-java11
     public: true
     plan:
@@ -307,6 +312,7 @@ jobs:
         params:
           AOT_ONLY: false
           <<: *docker-hub-task-params
+          <<: *wavefront-params
   - name: deploy
     public: true
     plan:
@@ -343,6 +349,7 @@ jobs:
           file: git-repo/ci/tasks/build-pr-project.yml
           params:
             <<: *docker-hub-task-params
+            <<: *wavefront-params
         on_success:
           put: git-pull-request
           params:
