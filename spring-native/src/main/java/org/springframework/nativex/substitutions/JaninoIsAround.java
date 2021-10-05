@@ -16,17 +16,15 @@
 
 package org.springframework.nativex.substitutions;
 
+import org.springframework.util.ClassUtils;
+
 import java.util.function.BooleanSupplier;
 
 public class JaninoIsAround implements BooleanSupplier {
 
 	@Override
 	public boolean getAsBoolean() {
-		try {
-			return Class.forName("org.codehaus.janino.ScriptEvaluator", false, getClass().getClassLoader()) != null;
-		} catch (ClassNotFoundException | NoClassDefFoundError ex) {
-			return false;
-		}
+		return ClassUtils.isPresent("org.codehaus.janino.ScriptEvaluator", getClass().getClassLoader());
 	}
 
 }
