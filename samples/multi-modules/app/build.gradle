@@ -2,7 +2,6 @@ plugins {
 	id 'org.springframework.boot'
 	id 'org.springframework.experimental.aot'
 	id 'application'
-	id 'org.graalvm.buildtools.native'
 }
 
 dependencies {

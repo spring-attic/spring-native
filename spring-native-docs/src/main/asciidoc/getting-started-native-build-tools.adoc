@@ -190,26 +190,12 @@ The following example adds a `native` profile that triggers the plugin during th
 [source,subs="attributes,verbatim",role="secondary"]
 .Gradle Groovy
 ----
-plugins {
-    // ...
-    id 'org.graalvm.buildtools.native' version '{graalvm-native-buildtools-version}'
-}
-
-nativeBuild {
-	classpath(processAotResources.outputs, compileAotJava.outputs)
-}
+// The GraalVM native build tools plugin is applied and configured automatically
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
-plugins {
-    // ...
-    id("org.graalvm.buildtools.native") version "{graalvm-native-buildtools-version}"
-}
-
-nativeBuild {
-    classpath(tasks.named("processAotResources").get().outputs, tasks.named("compileAotJava").get().outputs)
-}
+// The GraalVM native build tools plugin is applied automatically
 ----
 
 

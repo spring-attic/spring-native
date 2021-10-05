@@ -30,9 +30,9 @@ mkdir -p build/native
 
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Gradle (native)"
-  ./gradlew nativeBuild &> build/native/output.txt
+  ./gradlew nativeCompile &> build/native/output.txt
 
-  if [[ -f build/native/nativeBuild/${PWD##*/} ]]; then
+  if [[ -f build/native/nativeCompile/${PWD##*/} ]]; then
     printf "${GREEN}SUCCESS${NC}\n"
   else
     cat build/native/output.txt

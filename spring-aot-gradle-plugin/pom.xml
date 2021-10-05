@@ -32,6 +32,11 @@
 			<artifactId>spring-boot-gradle-plugin</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.graalvm.buildtools</groupId>
+			<artifactId>native-gradle-plugin</artifactId>
+			<version>0.9.5</version>
+		</dependency>
+		<dependency>
 			<groupId>io.spring.gradle</groupId>
 			<artifactId>dependency-management-plugin</artifactId>
 			<scope>test</scope>

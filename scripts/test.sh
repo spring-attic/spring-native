@@ -36,7 +36,7 @@ if [ -f pom.xml ]; then
   GENERATED_DIR=target/generated-sources/spring-aot/src/main/resources
   REPORT_DIR=target/native
 else
-  EXECUTABLE_DIR=build/native/nativeBuild
+  EXECUTABLE_DIR=build/native/nativeCompile
   JAR_DIR=build/libs
   GENERATED_DIR=build/generated/resources/aot
   REPORT_DIR=build/native
