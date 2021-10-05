@@ -24,7 +24,7 @@ wait_http() {
   local timeout="${1:-30}"; shift # 30 seconds as default timeout
 
   for ((i=0; i<=timeout; i++)); do
-    RESPONSE=`curl -s $url`
+    RESPONSE=`curl --max-time 2 -s $url`
     if [[ "$RESPONSE" == *"$search_term"* ]]; then
       return 0
     fi
