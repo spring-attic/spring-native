@@ -281,20 +281,6 @@ jobs:
           params:
             <<: *docker-hub-task-params
             <<: *wavefront-params
-  - name: build-samples-dev-java11
-    public: true
-    plan:
-      - get: spring-native-dev-java11-image
-      - get: git-repo
-      - get: every-day
-        trigger: true
-      - task: build
-        privileged: true
-        image: spring-native-dev-java11-image
-        file: git-repo/ci/tasks/build-samples.yml
-        params:
-          <<: *docker-hub-task-params
-          <<: *wavefront-params
   - name: deploy
     public: true
     plan:
@@ -402,7 +388,7 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "builds"
-    jobs: ["build-key-samples-java11", "deploy", "build-samples-stable-java11", "build-samples-dev-java11"]
+    jobs: ["build-key-samples-java11", "deploy", "build-samples-stable-java11"]
   - name: "releases"
     jobs: ["stage-release", "promote-release", "create-github-release"]
   - name: "ci-images"
