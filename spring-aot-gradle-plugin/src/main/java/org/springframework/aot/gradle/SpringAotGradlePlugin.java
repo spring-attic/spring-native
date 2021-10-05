@@ -100,11 +100,12 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			GenerateAotSources generateAotSources = createGenerateAotSourcesTask(project, sourceSets, aotSourcesDirectory, aotResourcesDirectory, aotGenerationConfiguration);
 			configureAotTasks(project, aotSourceSet, generateAotSources);
 
-			File aotTestSourcesDirectory = generatedSourcesPath.resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
-			File aotTestResourcesDirectory = generatedResourcesPath.resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
-			SourceSet aotTestSourceSet = createAotTestSourceSet(sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
-			GenerateAotSources generateAotTestSources = createGenerateAotTestSourcesTask(project, sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory, aotGenerationConfiguration);
-			configureAotTestTasks(project.getTasks(), sourceSets, aotSourceSet, aotTestSourceSet, generateAotTestSources);
+			// TODO Uncomment when supported
+			// File aotTestSourcesDirectory = generatedSourcesPath.resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
+			// File aotTestResourcesDirectory = generatedResourcesPath.resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
+			// SourceSet aotTestSourceSet = createAotTestSourceSet(sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory);
+			// GenerateAotSources generateAotTestSources = createGenerateAotTestSourcesTask(project, sourceSets, aotTestSourcesDirectory, aotTestResourcesDirectory, aotGenerationConfiguration);
+			// configureAotTestTasks(project.getTasks(), sourceSets, aotSourceSet, aotTestSourceSet, generateAotTestSources);
 
 			// Generated+compiled sources must be used by 'bootRun' and packaged by 'bootJar'
 			project.getPlugins().withType(SpringBootPlugin.class, springBootPlugin -> {
@@ -118,8 +119,9 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			project.getPlugins().withId("org.jetbrains.kotlin.jvm", kotlinPlugin -> {
 				project.getTasks().named("compileAotKotlin")
 						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TASK_NAME)));
-				project.getTasks().named("compileAotTestKotlin")
-						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TEST_TASK_NAME)));
+				// TODO Uncomment when supported
+				//project.getTasks().named("compileAotTestKotlin")
+				//		.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(GENERATE_TEST_TASK_NAME)));
 			});
 		});
 	}

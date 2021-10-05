@@ -8,6 +8,8 @@ By looking at your application classpath and configuration, Spring AOT brings so
 The following sections will show you how to configure Spring AOT for <<spring-aot-maven,Maven>> or <<spring-aot-gradle,Gradle>>.
 You'll also learn more about <<spring-aot-modes,the types of sources generated and how they're used>>
 
+WARNING: Spring AOT test code generation is not supported yet in this version.
+
 [[spring-aot-maven]]
 === Maven
 
@@ -29,12 +31,6 @@ The plugin should be declared in your `pom.xml` file:
             <artifactId>spring-aot-maven-plugin</artifactId>
             <version>{version}</version>
             <executions>
-                <execution>
-                    <id>test-generate</id>
-                    <goals>
-                        <goal>test-generate</goal>
-                    </goals>
-                </execution>
                 <execution>
                     <id>generate</id>
                     <goals>

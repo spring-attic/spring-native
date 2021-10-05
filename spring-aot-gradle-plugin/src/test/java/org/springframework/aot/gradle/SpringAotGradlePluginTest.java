@@ -30,6 +30,7 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
@@ -80,6 +81,7 @@ public class SpringAotGradlePluginTest {
 
 
 	@Test
+	@Disabled("Disabled until supported again")
 	void pluginRegistersAotTestSourceSet() {
 		Project project = createTestProject();
 
@@ -98,6 +100,7 @@ public class SpringAotGradlePluginTest {
 	}
 
 	@Test
+	@Disabled("Disabled until supported again")
 	void pluginRegistersAotTestTasks() {
 		Project project = createTestProject();
 
@@ -151,9 +154,9 @@ public class SpringAotGradlePluginTest {
 		TaskProvider<Task> compileAotKotlin = project.getTasks().named("compileAotKotlin");
 		assertThat(compileAotKotlin.get().getDependsOn()).extracting("name")
 				.contains(SpringAotGradlePlugin.GENERATE_TASK_NAME);
-		TaskProvider<Task> compileAotTestKotlin = project.getTasks().named("compileAotTestKotlin");
-		assertThat(compileAotTestKotlin.get().getDependsOn()).extracting("name")
-				.contains(SpringAotGradlePlugin.GENERATE_TEST_TASK_NAME);
+		// TaskProvider<Task> compileAotTestKotlin = project.getTasks().named("compileAotTestKotlin");
+		// assertThat(compileAotTestKotlin.get().getDependsOn()).extracting("name")
+		// 		.contains(SpringAotGradlePlugin.GENERATE_TEST_TASK_NAME);
 	}
 
 

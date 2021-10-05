@@ -65,31 +65,32 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		Set<Path> resourceFolders = new HashSet<>();
-		for (Resource r: project.getTestResources()) {
-			// TODO respect includes/excludes
-			resourceFolders.add(new File(r.getDirectory()).toPath());
-		}
-		recreateGeneratedSourcesFolder(this.generatedTestSourcesDirectory);
-		Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
-		Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		try {
-			List<String> testClasspathElements = this.project.getTestClasspathElements();
-			Path classesPath = Paths.get(project.getBuild().getTestOutputDirectory());
-			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-			ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
-					Collections.singletonList(classesPath), null, project.getRuntimeClasspathElements(), classLoader);
-			generator.generate(applicationStructure);
-			compileGeneratedTestSources(sourcesPath, testClasspathElements);
-			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
-			this.buildContext.refresh(this.buildDir);
-		}
-		catch (Throwable exc) {
-			getLog().error(exc);
-			getLog().error(Arrays.toString(exc.getStackTrace()));
-			throw new MojoFailureException("Build failed during Spring AOT test code generation", exc);
-		}
+		throw new MojoFailureException("Spring AOT test code generation is not supported yet in this version, please remove 'test-generate' execution from your pom.xml and use -DskipTests to build the project.");
+//		Set<Path> resourceFolders = new HashSet<>();
+//		for (Resource r: project.getTestResources()) {
+//			// TODO respect includes/excludes
+//			resourceFolders.add(new File(r.getDirectory()).toPath());
+//		}
+//		recreateGeneratedSourcesFolder(this.generatedTestSourcesDirectory);
+//		Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
+//		Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
+//		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//		try {
+//			List<String> testClasspathElements = this.project.getTestClasspathElements();
+//			Path classesPath = Paths.get(project.getBuild().getTestOutputDirectory());
+//			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
+//			ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
+//					Collections.singletonList(classesPath), null, project.getRuntimeClasspathElements(), classLoader);
+//			generator.generate(applicationStructure);
+//			compileGeneratedTestSources(sourcesPath, testClasspathElements);
+//			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
+//			this.buildContext.refresh(this.buildDir);
+//		}
+//		catch (Throwable exc) {
+//			getLog().error(exc);
+//			getLog().error(Arrays.toString(exc.getStackTrace()));
+//			throw new MojoFailureException("Build failed during Spring AOT test code generation", exc);
+//		}
 	}
 
 	protected void compileGeneratedTestSources(Path sourcesPath, List<String> testClasspathElements) throws MojoExecutionException {
