@@ -189,6 +189,34 @@ class BeanInstanceExecutableSupplierTests {
 				.withMessageContaining(NumberHolderFactoryBean.class.getName());
 	}
 
+	@Test
+	void beanDefinitionWithClassArrayConstructorArgAndStringArrayValueType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayConstructorSample.class.getName())
+				.addConstructorArgValue("test")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ClassArrayConstructorSample.class
+				.getDeclaredConstructors()[0]);
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayConstructorArgAndAnotherMatchingConstructor() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayTwoConstructorsSample.class.getName())
+				.addConstructorArgValue("test")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ClassArrayTwoConstructorsSample.class
+				.getDeclaredConstructors()[1]);
+	}
+
+	// TODO: also test for factory methods and other executables
+
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		return new BeanInstanceExecutableSupplier(beanFactory).detectBeanInstanceExecutable(beanDefinition);
 	}
@@ -256,4 +284,18 @@ class BeanInstanceExecutableSupplierTests {
 		}
 	}
 
+	static class ClassArrayConstructorSample {
+
+		ClassArrayConstructorSample(String stringArg, Class<?>[] classArrayArg) {
+		}
+	}
+
+	static class ClassArrayTwoConstructorsSample {
+
+		ClassArrayTwoConstructorsSample(String stringArg, Class<?>[] classArrayArg) {
+		}
+
+		ClassArrayTwoConstructorsSample(String stringArg, String[] stringArrayArg) {
+		}
+	}
 }

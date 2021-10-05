@@ -229,13 +229,25 @@ class BeanInstanceExecutableSupplier {
 		}
 		if (fallback) {
 			if (parameterType.isArray()) {
-				return parameterType.getComponentType().isAssignableFrom(valueType);
+				return parameterType.getComponentType().isAssignableFrom(valueType)
+						|| isStringForClassSubstitution(parameterType, valueType);
+
 			}
 			if (Collection.class.isAssignableFrom(parameterType.toClass())) {
-				return parameterType.as(Collection.class).getGeneric(0).isAssignableFrom(valueType);
+				return parameterType.as(Collection.class).getGeneric(0)
+						.isAssignableFrom(valueType);
 			}
 		}
 		return false;
+	}
+
+	private boolean isStringForClassSubstitution(ResolvableType parameterType, Class<?> valueType) {
+		Class<?> arrayComponentRawClass = parameterType.getComponentType().getRawClass();
+		if (arrayComponentRawClass == null || !arrayComponentRawClass
+				.equals(Class.class)) {
+			return false;
+		}
+		return valueType.equals(String[].class);
 	}
 
 	private Class<?> getFactoryBeanClass(BeanDefinition beanDefinition) {
