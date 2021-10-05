@@ -7,6 +7,7 @@
 
 :buildpacks: https://buildpacks.io/
 :buildpacks-docs: {buildpacks}/docs
+:buildpacks-java-native-image-version: 5.5.0
 
 :paketo: https://paketo.io/
 :paketo-docs: {paketo}/docs
