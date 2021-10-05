@@ -123,9 +123,6 @@ public class GenerateAotSources extends JavaExec {
 			if (aotOptions.isRemoveYamlSupport()) {
 				arguments.add("--remove-yaml");
 			}
-			if (aotOptions.isBuildTimePropertyChecking()) {
-				arguments.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
-			}
 			if (getLogLevel().equals("DEBUG")) {
 				arguments.add("--debug");
 			}

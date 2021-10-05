@@ -44,18 +44,11 @@
 				<version>@project.version@</version>
 				<configuration>
 					<debugVerify>true</debugVerify>
-					<ignoreHintsOnExcludedConfig>true</ignoreHintsOnExcludedConfig>
-					<removeUnusedConfig>true</removeUnusedConfig>
 					<verify>true</verify>
 					<removeYamlSupport>true</removeYamlSupport>
 					<removeJmxSupport>true</removeJmxSupport>
 					<removeXmlSupport>true</removeXmlSupport>
 					<removeSpelSupport>true</removeSpelSupport>
-					<buildTimePropertiesMatchIfMissing>true</buildTimePropertiesMatchIfMissing>
-					<buildTimePropertiesChecks>
-						<buildTimePropertiesCheck>foo</buildTimePropertiesCheck>
-						<buildTimePropertiesCheck>bar</buildTimePropertiesCheck>
-					</buildTimePropertiesChecks>
 				</configuration>
 				<executions>
 					<!--

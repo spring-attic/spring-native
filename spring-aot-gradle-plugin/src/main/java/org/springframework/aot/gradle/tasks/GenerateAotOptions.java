@@ -47,15 +47,7 @@ public class GenerateAotOptions implements Serializable {
 
 	private final Property<Boolean> verify;
 
-	private final Property<Boolean> removeUnusedConfig;
-
-	private final Property<Boolean> failOnMissingSelectorHint;
-
 	private final Property<String> mainClass;
-
-	private final Property<Boolean> buildTimePropertiesMatchIfMissing;
-
-	private final Property<String[]> buildTimePropertiesChecks;
 
 	public GenerateAotOptions(SpringAotExtension extension) {
 		this.mode = extension.getMode().map(aotMode -> aotMode.getSlug());
@@ -65,11 +57,7 @@ public class GenerateAotOptions implements Serializable {
 		this.removeYamlSupport = extension.getRemoveYamlSupport();
 		this.removeJmxSupport = extension.getRemoveJmxSupport();
 		this.verify = extension.getVerify();
-		this.removeUnusedConfig = extension.getRemoveUnusedConfig();
-		this.failOnMissingSelectorHint = extension.getFailOnMissingSelectorHint();
 		this.mainClass = extension.getMainClass();
-		this.buildTimePropertiesMatchIfMissing = extension.getBuildTimePropertiesMatchIfMissing();
-		this.buildTimePropertiesChecks = extension.getBuildTimePropertiesChecks();
 	}
 
 	@Input
@@ -108,29 +96,9 @@ public class GenerateAotOptions implements Serializable {
 	}
 
 	@Input
-	public Property<Boolean> getRemoveUnusedConfig() {
-		return this.removeUnusedConfig;
-	}
-
-	@Input
-	public Property<Boolean> getFailOnMissingSelectorHint() {
-		return this.failOnMissingSelectorHint;
-	}
-
-	@Input
 	@Optional
 	public Property<String> getMainClass() {
 		return this.mainClass;
-	}
-
-	@Input
-	public Property<Boolean> getBuildTimePropertiesMatchIfMissing() {
-		return this.buildTimePropertiesMatchIfMissing;
-	}
-
-	@Input
-	public Property<String[]> getBuildTimePropertiesChecks() {
-		return this.buildTimePropertiesChecks;
 	}
 
 	AotOptions toAotOptions() {
@@ -142,10 +110,6 @@ public class GenerateAotOptions implements Serializable {
 		options.setRemoveYamlSupport(this.removeYamlSupport.get());
 		options.setRemoveJmxSupport(this.removeJmxSupport.get());
 		options.setVerify(this.verify.get());
-		options.setRemoveUnusedConfig(this.removeUnusedConfig.get());
-		options.setFailOnMissingSelectorHint(this.failOnMissingSelectorHint.get());
-		options.setBuildTimePropertiesMatchIfMissing(this.buildTimePropertiesMatchIfMissing.get());
-		options.setBuildTimePropertiesChecks(this.buildTimePropertiesChecks.get());
 		return options;
 	}
 }

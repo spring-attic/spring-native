@@ -16,7 +16,6 @@
 
 package org.springframework.aot.gradle.dsl;
 
-import org.gradle.api.Incubating;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 
@@ -41,14 +40,6 @@ public class SpringAotExtension {
 
 	private final Property<Boolean> verify;
 
-	private final Property<Boolean> removeUnusedConfig;
-
-	private final Property<Boolean> failOnMissingSelectorHint;
-
-	private final Property<Boolean> buildTimePropertiesMatchIfMissing;
-
-	private final Property<String[]> buildTimePropertiesChecks;
-
 	private final Property<String> mainClass;
 
 	public SpringAotExtension(ObjectFactory objectFactory) {
@@ -59,10 +50,6 @@ public class SpringAotExtension {
 		this.removeYamlSupport = objectFactory.property(Boolean.class).convention(false);
 		this.removeJmxSupport = objectFactory.property(Boolean.class).convention(true);
 		this.verify = objectFactory.property(Boolean.class).convention(true);
-		this.removeUnusedConfig = objectFactory.property(Boolean.class).convention(true);
-		this.failOnMissingSelectorHint = objectFactory.property(Boolean.class).convention(true);
-		this.buildTimePropertiesMatchIfMissing = objectFactory.property(Boolean.class).convention(true);
-		this.buildTimePropertiesChecks = objectFactory.property(String[].class).convention(new String[0]);
 		this.mainClass = objectFactory.property(String.class).convention((String)null);
 	}
 
@@ -116,47 +103,10 @@ public class SpringAotExtension {
 	}
 
 	/**
-	 * Remove unused application configuration (true by default).
-	 */
-	public Property<Boolean> getRemoveUnusedConfig() {
-		return this.removeUnusedConfig;
-	}
-
-	/**
-	 * Whether to throw an error when no hint is provided for an active selector (simply logs a warning if disabled).
-	 */
-	public Property<Boolean> getFailOnMissingSelectorHint() {
-		return this.failOnMissingSelectorHint;
-	}
-
-	/**
 	 * Allows to specify a main class, useful when multiple ones are present.
 	 */
 	public Property<String> getMainClass() {
 		return this.mainClass;
-	}
-
-	/**
-	 * Whether AOT should honor the {@code matchIfMissing} directive in configuration properties.
-	 * If disabled, the application needs to explicitly activate {@code *.enable} configuration properties
-	 * since {@code matchIfMissing} is not respected.
-	 * This is enabled by default.
-	 */
-	@Incubating
-	public Property<Boolean> getBuildTimePropertiesMatchIfMissing() {
-		return this.buildTimePropertiesMatchIfMissing;
-	}
-
-	/**
-	 * Switches on build time evaluation of some configuration conditions related to properties.
-	 * <p>It must include at least an initial setting of {@code default-include-all} or {@code default-exclude-all}
-	 * and that may be followed by a comma separated list of prefixes to explicitly include or exclude.
-	 * For example {@code VersionExtractor}.
-	 * When considering a property the longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
-	 */
-	@Incubating
-	public Property<String[]> getBuildTimePropertiesChecks() {
-		return this.buildTimePropertiesChecks;
 	}
 
 }

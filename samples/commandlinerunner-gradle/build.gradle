@@ -38,6 +38,3 @@ nativeBuild {
 	classpath(processAotResources.outputs, compileAotJava.outputs)
 }
 
-nativeTest {
-	classpath(processAotTestResources.outputs, compileAotTestJava.outputs)
-}

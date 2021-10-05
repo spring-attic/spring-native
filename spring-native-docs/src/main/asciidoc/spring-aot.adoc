@@ -142,10 +142,6 @@ springAot {
 	removeYamlSupport = false
 	removeJmxSupport = true
 	verify = true
-	removeUnusedConfig = true
-	failOnMissingSelectorHint = true
-	buildTimePropertiesMatchIfMissing = true
-	buildTimePropertiesChecks = ["default-include-all","!spring.dont.include.these.","!or.these"]
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
@@ -163,10 +159,6 @@ springAot {
 	removeYamlSupport.set(false)
 	removeJmxSupport.set(true)
 	verify.set(true)
-	removeUnusedConfig.set(true)
-	failOnMissingSelectorHint.set(true)
-	buildTimePropertiesMatchIfMissing.set(true)
-	buildTimePropertiesChecks.set(arrayOf("default-include-all","!spring.dont.include.these.","!or.these"))
 }
 ----
 
@@ -198,18 +190,7 @@ Here are all the options available:
 
 * `debugVerify` is set to `false` by default and enables verification debug when set to `true`.
 
-* `removeUnusedConfig` is set to `true` by default, setting it to `false` disables the removal of unused configurations.
-
-* `failOnMissingSelectorHint` is set to `true` by default and throw an error if no hint is provided for an active selector, setting it to `false` switches the plugin from a hard error to a warning. See the Troubleshooting section for more details on this.
-
 * `mainClass` allows to specify a main class, useful when multiple ones are present.
-
-* [Experimental] `buildTimePropertiesMatchIfMissing` is set to `true` by default. Setting it to `false` means for any properties specifying `matchIfMissing=true` that will be overridden and not respected. This does flip the application into a mode where it needs to be much more explicit
-about specifying properties that activate configurations. (This is a work-in-progress option really for experimenting with image size vs explicit property trade offs).
-
-* [Experimental] `buildTimePropertiesChecks` (experimental) switches on build time evaluation of some configuration conditions related to properties. It must include at least an initial setting of `default-include-all` or `default-exclude-all` and that may be followed
-by a comma separated list of prefixes to explicitly include or exclude (for example `default-include-all,!spring.dont.include.these.,!or.these` or `default-exclude-all,spring.include.this.one.though.,and.this.one`). When considering a property the
-longest matching prefix in this setting will apply (in cases where a property matches multiple prefixes).
 
 ==== Debugging the source generation
 

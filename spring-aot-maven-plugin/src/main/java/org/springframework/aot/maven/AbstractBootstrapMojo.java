@@ -76,12 +76,6 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	private boolean debugVerify;
 
 	@Parameter
-	private boolean ignoreHintsOnExcludedConfig;
-
-	@Parameter
-	private boolean removeUnusedConfig = true;
-
-	@Parameter
 	private boolean verify = true;
 
 	@Parameter
@@ -96,15 +90,6 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter
 	private boolean removeSpelSupport;
 
-	@Parameter
-	private boolean buildTimePropertiesMatchIfMissing;
-
-	@Parameter
-	private String[] buildTimePropertiesChecks;
-
-	@Parameter
-	private boolean failOnMissingSelectorHint;
-
 	@Parameter(property = "spring.aot.mainClass")
 	protected String mainClass;
 
@@ -115,16 +100,11 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		AotOptions aotOptions = new AotOptions();
 		aotOptions.setMode(mode);
 		aotOptions.setDebugVerify(debugVerify);
-		aotOptions.setIgnoreHintsOnExcludedConfig(ignoreHintsOnExcludedConfig);
-		aotOptions.setRemoveUnusedConfig(removeUnusedConfig);
 		aotOptions.setVerify(verify);
 		aotOptions.setRemoveYamlSupport(removeYamlSupport);
 		aotOptions.setRemoveJmxSupport(removeJmxSupport);
 		aotOptions.setRemoveXmlSupport(removeXmlSupport);
 		aotOptions.setRemoveSpelSupport(removeSpelSupport);
-		aotOptions.setBuildTimePropertiesMatchIfMissing(buildTimePropertiesMatchIfMissing);
-		aotOptions.setBuildTimePropertiesChecks(buildTimePropertiesChecks);
-		aotOptions.setFailOnMissingSelectorHint(failOnMissingSelectorHint);
 		return aotOptions;
 	}
 

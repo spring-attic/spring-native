@@ -78,9 +78,6 @@ public class GenerateBootstrap implements Callable<Integer> {
 	@Option(names = {"--remove-spel"}, description = "Remove SpEL support.")
 	private boolean removeSpel;
 
-	@Option(names = {"--props"}, split = ",", description = "Build time properties checks.")
-	private List<String> propertiesCheck = Collections.emptyList();
-
 	@Override
 	public Integer call() throws Exception {
 		AotOptions aotOptions = new AotOptions();
@@ -90,7 +87,6 @@ public class GenerateBootstrap implements Callable<Integer> {
 		aotOptions.setRemoveJmxSupport(this.removeJmx);
 		aotOptions.setRemoveXmlSupport(this.removeXml);
 		aotOptions.setRemoveSpelSupport(this.removeSpel);
-		aotOptions.setBuildTimePropertiesChecks(propertiesCheck.toArray(new String[0]));
 
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		LogFile logFile = LogFile.get(environment);

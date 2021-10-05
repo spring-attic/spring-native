@@ -86,8 +86,6 @@ For this reason, Spring Native analysis fails early and fast, indicating that it
 To fix it, you should add a hint with the related import selector specified as trigger.
 See for example {github-tree}/spring-native-configuration/src/main/java/org/springframework/security/config/annotation/web/reactive/ReactiveSecurityHints.java[this hint] and the {github-tree}/spring-native-configuration/src/main/resources/META-INF/services/org.springframework.nativex.type.NativeConfiguration#L104[related service loader entry].
 
-You can temporarily turn this hard error into a warning by setting the `failOnMissingSelectorHint` option to `false` in <<spring-aot-configuration>>.
-
 [[how-to-contribute-new-hints]]
 === Contributing new hints
 

@@ -126,9 +126,6 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			if (aotOptions.isRemoveYamlSupport()) {
 				args.add("--remove-yaml");
 			}
-			if (aotOptions.isBuildTimePropertyChecking()) {
-				args.add("--props=" + StringUtils.arrayToCommaDelimitedString(aotOptions.getBuildTimePropertiesChecks()));
-			}
 			if (getLogLevel().equals("DEBUG")) {
 				args.add("--debug");
 			}
