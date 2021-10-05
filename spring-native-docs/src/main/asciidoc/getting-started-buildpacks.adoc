@@ -107,12 +107,6 @@ TIP: The transformations also apply to the JVM so this can be applied regardless
             <version>{version}</version>
             <executions>
                 <execution>
-                    <id>test-generate</id>
-                    <goals>
-                        <goal>test-generate</goal>
-                    </goals>
-                </execution>
-                <execution>
                     <id>generate</id>
                     <goals>
                         <goal>generate</goal>
