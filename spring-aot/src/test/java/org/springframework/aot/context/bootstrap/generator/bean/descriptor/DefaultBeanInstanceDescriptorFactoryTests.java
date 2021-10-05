@@ -16,7 +16,6 @@
 
 package org.springframework.aot.context.bootstrap.generator.bean.descriptor;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
@@ -25,6 +24,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ReflectionUtils;
 
@@ -45,11 +45,21 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 	}
 
 	@Test
-	@Disabled("Ignored for gh-1015")
-	void createWithUnsupportedBeanDefinition() {
-		BeanDefinition beanDefinition = new GenericBeanDefinition();
+	void createWithNoMatchingInstanceCreator() {
+		BeanDefinition beanDefinition = new RootBeanDefinition(String.class);
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, new Object());
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		assertThat(new DefaultBeanInstanceDescriptorFactory(beanFactory).create(beanDefinition)).isNull();
+	}
+
+	@Test
+	void createWithNonRootBeanDefinition() {
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(SimpleConfiguration.class);
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", beanDefinition);
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertSimpleConfigurationDescriptor(descriptor);
 	}
 
 	@Test
@@ -57,6 +67,11 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class).getBeanDefinition());
 		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertSimpleConfigurationDescriptor(descriptor);
+	}
+
+	private void assertSimpleConfigurationDescriptor(BeanInstanceDescriptor descriptor) {
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(SimpleConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(SimpleConfiguration.class.getDeclaredConstructors()[0]);

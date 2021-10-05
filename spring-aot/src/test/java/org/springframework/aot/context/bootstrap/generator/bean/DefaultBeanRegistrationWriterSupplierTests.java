@@ -16,12 +16,12 @@
 
 package org.springframework.aot.context.bootstrap.generator.bean;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,11 +41,20 @@ class DefaultBeanRegistrationWriterSupplierTests {
 	}
 
 	@Test
-	@Disabled("Ignored for gh-1015")
-	void getWithIncompatibleBeanDefinitionReturnNull() {
+	void getWithGenericBeanDefinitionProvideDefaultWriter() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		assertThat(getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder
-				.genericBeanDefinition("com.example.Test").getBeanDefinition())).isNull();
+		BeanRegistrationWriter writer = getBeanRegistrationWriter(beanFactory, BeanDefinitionBuilder.genericBeanDefinition(
+				DefaultBeanInstanceSupplierWriterTests.class).getBeanDefinition());
+		assertThat(writer).isNotNull().isInstanceOf(DefaultBeanRegistrationWriter.class);
+	}
+
+	@Test
+	void getWithNoBeanDescriptorReturnNull() {
+		BeanDefinition beanDefinition = new RootBeanDefinition(String.class);
+		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, new Object());
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanRegistrationWriter writer = getBeanRegistrationWriter(beanFactory, beanDefinition);
+		assertThat(writer).isNull();
 	}
 
 	private BeanRegistrationWriter getBeanRegistrationWriter(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {

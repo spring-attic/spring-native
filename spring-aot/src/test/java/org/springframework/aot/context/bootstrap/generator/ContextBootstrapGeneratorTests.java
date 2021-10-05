@@ -19,7 +19,6 @@ package org.springframework.aot.context.bootstrap.generator;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -286,11 +285,17 @@ class ContextBootstrapGeneratorTests {
 	}
 
 	@Test
-	@Disabled("Need to resolve constructor based on argument values")
 	void bootstrapClassWithArgumentValue() {
 		ContextBootstrapStructure structure = this.generatorTester.generate(ArgumentValueRegistrarConfiguration.class);
-		assertThat(structure).contextBootstrapInitializer().contains(
-				"BeanDefinitionRegistrar.of(\"argumentValueString\", String.class, () -> new String(new char[] { 'a', ' ', 't', 'e', 's', 't' }, 2, 4));");
+		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
+				"BeanDefinitionRegistrar.of(\"argumentValueString\", String.class).withConstructor(char[].class, int.class, int.class)",
+				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new String(attributes.get(0, char[].class), attributes.get(1, int.class), attributes.get(2, int.class)))).customize((bd) -> {",
+				"  ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues();",
+				"  argumentValues.addIndexedArgumentValue(0, new char[] { 'a', ' ', 't', 'e', 's', 't' });",
+				"  argumentValues.addIndexedArgumentValue(1, 2);",
+				"  argumentValues.addIndexedArgumentValue(2, 4);",
+				"}).register(context);"
+		);
 	}
 
 }
