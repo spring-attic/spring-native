@@ -52,8 +52,6 @@ springAot {
     removeYamlSupport.set(true)
 }
 
-// TODO Remove SpEL and Yaml when supported with Gradle
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -63,8 +61,4 @@ tasks.withType<KotlinCompile> {
 
 nativeBuild {
     classpath(tasks.named("processAotResources").get().outputs, tasks.named("compileAotJava").get().outputs)
-}
-
-nativeTest {
-    classpath(tasks.named("processAotTestResources").get().outputs, tasks.named("compileAotTestJava").get().outputs)
 }
