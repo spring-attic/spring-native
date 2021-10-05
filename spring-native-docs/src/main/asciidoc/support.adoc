@@ -74,7 +74,7 @@ RSocket security is also supported.
 * `com.wavefront:wavefront-spring-boot-starter`
 * `spring-boot-starter-quartz`: supports the http://www.quartz-scheduler.org/[Quartz Job Scheduling] engine. It adds types required by Quartz, and automatically registers any `Job` subclasses for reflection.
 
-WARNING: Spring Integration and testing are not supported in the version.
+WARNING: Spring Integration and testing are not supported in this version.
 
 [[support-spring-cloud]]
 === Spring Cloud
