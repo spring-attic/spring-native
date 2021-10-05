@@ -197,7 +197,7 @@ TIP: Additional `native-image` arguments can be added using the `BP_NATIVE_IMAGE
 
 By default, GraalVM versions will be upgraded automatically by Buildpacks to the latest release.
 You can explicitly configure Spring Boot {spring-boot-maven-plugin-docs}#build-image-example-buildpacks[Maven] or {spring-boot-gradle-plugin-docs}#build-image-example-buildpacks[Gradle] plugins with a specific version of `java-native-image` buildpack which will freeze GraalVM version, see {paketo-docs}/howto/java/#configure-the-graalvm-version[related versions mapping].
-For example, if you want to force using GraalVM `21.0`, you can configure:
+For example, if you want to force using GraalVM `{graalvm-version}`, you can configure:
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
@@ -209,7 +209,7 @@ For example, if you want to force using GraalVM `21.0`, you can configure:
         <!-- ... -->
         <image>
             <buildpacks>
-                <buildpack>gcr.io/paketo-buildpacks/java-native-image:5.3.0</buildpack>
+                <buildpack>gcr.io/paketo-buildpacks/java-native-image:{buildpacks-java-native-image-version}</buildpack>
             </buildpacks>
         </image>
     </configuration>
@@ -220,7 +220,7 @@ For example, if you want to force using GraalVM `21.0`, you can configure:
 ----
 bootBuildImage {
     // ...
-    buildpacks = ["gcr.io/paketo-buildpacks/java-native-image:5.3.0"]
+    buildpacks = ["gcr.io/paketo-buildpacks/java-native-image:{buildpacks-java-native-image-version}"]
 }
 ----
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
@@ -228,7 +228,7 @@ bootBuildImage {
 ----
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     // ...
-    buildpacks = listOf("gcr.io/paketo-buildpacks/java-native-image:5.3.0")
+    buildpacks = listOf("gcr.io/paketo-buildpacks/java-native-image:{buildpacks-java-native-image-version}")
 }
 ----
 
