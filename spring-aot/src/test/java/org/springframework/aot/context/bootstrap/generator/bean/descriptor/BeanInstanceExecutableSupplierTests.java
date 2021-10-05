@@ -189,6 +189,59 @@ class BeanInstanceExecutableSupplierTests {
 				.withMessageContaining(NumberHolderFactoryBean.class.getName());
 	}
 
+	@Test
+	void beanDefinitionWithClassArrayConstructorArgAndStringArrayValueType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayConstructorSample.class.getName())
+				.addConstructorArgValue("test")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ClassArrayConstructorSample.class
+				.getDeclaredConstructors()[0]);
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayConstructorArgAndAnotherMatchingConstructor() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayTwoConstructorsSample.class.getName())
+				.addConstructorArgValue("test")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ClassArrayTwoConstructorsSample.class
+				.getDeclaredConstructors()[1]);
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayFactoryMethodArgAndStringArrayValueType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayFactoryMethodSample.class.getName())
+				.setFactoryMethod("of")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
+				.findMethod(ClassArrayFactoryMethodSample.class, "of", Class[].class));
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayFactoryMethodArgAndAnotherMatchingConstructor() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class
+						.getName())
+				.setFactoryMethod("of")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
+				.findMethod(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class, "of", String[].class));
+	}
+
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		return new BeanInstanceExecutableSupplier(beanFactory).detectBeanInstanceExecutable(beanDefinition);
 	}
@@ -256,4 +309,38 @@ class BeanInstanceExecutableSupplierTests {
 		}
 	}
 
+	static class ClassArrayConstructorSample {
+
+		ClassArrayConstructorSample(String stringArg, Class<?>[] classArrayArg) {
+		}
+	}
+
+	static class ClassArrayTwoConstructorsSample {
+
+		ClassArrayTwoConstructorsSample(String stringArg, Class<?>[] classArrayArg) {
+		}
+
+		ClassArrayTwoConstructorsSample(String stringArg, String[] stringArrayArg) {
+		}
+	}
+
+	static class ClassArrayFactoryMethodSample {
+
+		static String of(Class<?>[] classArrayArg) {
+			return "test";
+		}
+
+	}
+
+	static class ClassArrayFactoryMethodSampleWithAnotherFactoryMethod {
+
+		static String of(Class<?>[] classArrayArg) {
+			return "test";
+		}
+
+		static String of(String[] classArrayArg) {
+			return "test";
+		}
+
+	}
 }
