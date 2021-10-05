@@ -121,7 +121,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(beanRegistration(bootstrapClass)).containsSequence(
 				"  public static void registerTest(GenericApplicationContext context) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ProtectedConstructorComponent.class)\n",
-				"        .instanceSupplier(() -> new ProtectedConstructorComponent()).register(context);\n",
+				"        .instanceSupplier(ProtectedConstructorComponent::new).register(context);\n",
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo("ContextBootstrapInitializer.registerTest(context);\n");
 	}
@@ -159,7 +159,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(beanRegistration(bootstrapClass)).containsSequence(
 				"  public static void registerTest(GenericApplicationContext context) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(PublicFactoryBean.class, ProtectedType.class))\n",
-				"        .instanceSupplier(() -> new PublicFactoryBean()).register(context);\n",
+				"        .instanceSupplier(PublicFactoryBean::new).register(context);\n",
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo("ContextBootstrapInitializer.registerTest(context);\n");
 	}
@@ -374,7 +374,7 @@ class DefaultBeanRegistrationWriterTests {
 				.rootBeanDefinition(SimpleComponent.class).getBeanDefinition();
 		assertThat(inner(beanDefinition)).lines().containsOnly(
 				"BeanDefinitionRegistrar.inner(SimpleComponent.class)",
-				"    .instanceSupplier(() -> new SimpleComponent()).toBeanDefinition()");
+				"    .instanceSupplier(SimpleComponent::new).toBeanDefinition()");
 	}
 
 

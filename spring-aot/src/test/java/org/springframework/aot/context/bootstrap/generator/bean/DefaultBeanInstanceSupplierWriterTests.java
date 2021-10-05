@@ -29,6 +29,7 @@ import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanI
 import org.springframework.aot.context.bootstrap.generator.sample.InnerComponentConfiguration.EnvironmentAwareComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
+import org.springframework.aot.context.bootstrap.generator.sample.constructor.SampleBeanWithConstructors;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.NumberHolder;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.NumberHolderFactoryBean;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.SampleFactory;
@@ -64,7 +65,14 @@ class DefaultBeanInstanceSupplierWriterTests {
 	void writeConstructorWithNoParameterUseShortcut() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, SimpleConfiguration.class.getDeclaredConstructors()[0]))
-				.isEqualTo("() -> new SimpleConfiguration()");
+				.isEqualTo("SimpleConfiguration::new");
+	}
+
+	@Test
+	void writeConstructorWithNoParameterAndMultipleConstructorDoesNotUseMethodReference() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleBeanWithConstructors.class).getBeanDefinition();
+		assertThat(generateCode(beanDefinition, SampleBeanWithConstructors.class.getConstructor()))
+				.isEqualTo("() -> new SampleBeanWithConstructors()");
 	}
 
 	@Test
@@ -94,7 +102,7 @@ class DefaultBeanInstanceSupplierWriterTests {
 		beanDefinition.setTargetType(ResolvableType.forClassWithGenerics(NumberHolder.class, Long.class));
 		assertThat(generateCode(beanDefinition, (type) -> BeanInstanceDescriptor.of(type)
 				.withInstanceCreator(NumberHolderFactoryBean.class.getDeclaredConstructors()[0]).build())
-		).isEqualTo("() -> new NumberHolderFactoryBean()").hasImport(NumberHolderFactoryBean.class);
+		).isEqualTo("NumberHolderFactoryBean::new").hasImport(NumberHolderFactoryBean.class);
 	}
 
 	@Test

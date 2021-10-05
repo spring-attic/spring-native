@@ -79,7 +79,13 @@ class DefaultBeanInstanceSupplierWriter {
 				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 			}
 			else {
-				code.add("() -> new $T()", declaringType);
+				// Only apply the shortcut if there's one candidate
+				if (declaringType.getDeclaredConstructors().length > 1) {
+					code.add("() -> new $T()", declaringType);
+				}
+				else {
+					code.add("$T::new", declaringType);
+				}
 			}
 			return;
 		}
