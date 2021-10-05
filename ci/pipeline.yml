@@ -128,6 +128,15 @@ resources:
       username: ((artifactory-username))
       password: ((artifactory-password))
       build_name: ((build-name))
+  - name: github-pre-release
+    type: github-release
+    icon: briefcase-download-outline
+    source:
+      owner: spring-projects-experimental
+      repository: spring-native
+      access_token: ((github-ci-release-token))
+      pre_release: true
+      release: false
   - name: github-release
     type: github-release
     icon: briefcase-download
@@ -360,6 +369,42 @@ jobs:
           params:
             path: git-repo
             status: failure
+  - name: stage-milestone
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - task: stage
+        image: ci-image
+        file: git-repo/ci/tasks/stage.yml
+        params:
+          RELEASE_TYPE: M
+      - put: artifactory-repo
+        params:
+          <<: *artifactory-repo-put-params
+          repo: libs-staging-local
+      - put: git-repo
+        params:
+          repository: stage-git-repo
+  - name: stage-rc
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - task: stage
+        image: ci-image
+        file: git-repo/ci/tasks/stage.yml
+        params:
+          RELEASE_TYPE: RC
+      - put: artifactory-repo
+        params:
+          <<: *artifactory-repo-put-params
+          repo: libs-staging-local
+      - put: git-repo
+        params:
+          repository: stage-git-repo
   - name: stage-release
     serial: true
     plan:
@@ -378,6 +423,64 @@ jobs:
       - put: git-repo
         params:
           repository: stage-git-repo
+  - name: promote-milestone
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - get: artifactory-repo
+        trigger: false
+        passed: [stage-milestone]
+        params:
+          download_artifacts: false
+          save_build_info: true
+      - task: promote
+        image: ci-image
+        file: git-repo/ci/tasks/promote.yml
+        params:
+          RELEASE_TYPE: M
+          <<: *artifactory-task-params
+      - task: generate-changelog
+        file: git-repo/ci/tasks/generate-changelog.yml
+        params:
+          RELEASE_TYPE: M
+          GITHUB_USERNAME: ((github-username))
+          GITHUB_TOKEN: ((github-ci-release-token))
+      - put: github-pre-release
+        params:
+          name: generated-changelog/tag
+          tag: generated-changelog/tag
+          body: generated-changelog/changelog.md
+  - name: promote-rc
+    serial: true
+    plan:
+      - get: ci-image
+      - get: git-repo
+        trigger: false
+      - get: artifactory-repo
+        trigger: false
+        passed: [stage-rc]
+        params:
+          download_artifacts: false
+          save_build_info: true
+      - task: promote
+        image: ci-image
+        file: git-repo/ci/tasks/promote.yml
+        params:
+          RELEASE_TYPE: RC
+          <<: *artifactory-task-params
+      - task: generate-changelog
+        file: git-repo/ci/tasks/generate-changelog.yml
+        params:
+          RELEASE_TYPE: RC
+          GITHUB_USERNAME: ((github-username))
+          GITHUB_TOKEN: ((github-ci-release-token))
+      - put: github-pre-release
+        params:
+          name: generated-changelog/tag
+          tag: generated-changelog/tag
+          body: generated-changelog/changelog.md
   - name: promote-release
     serial: true
     plan:
@@ -422,7 +525,7 @@ groups:
   - name: "builds"
     jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-stable-java11", "build-samples-stable-java11", "build-samples-dev-java11"]
   - name: "releases"
-    jobs: ["stage-release", "promote-release", "create-github-release"]
+    jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release"]
   - name: "ci-images"
     jobs: ["build-ci-image", "check-graalvm-ce-stable-change", "check-graalvm-ce-stable-every-day", "build-graalvm-ce-stable-image", "check-graalvm-ce-dev-change", "check-graalvm-ce-dev-every-day", "build-graalvm-ce-dev-image", "build-spring-native-stable-image", "build-spring-native-dev-image" ]
   - name: "pull-requests"

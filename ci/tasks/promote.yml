@@ -6,6 +6,7 @@ inputs:
 outputs:
 - name: version
 params:
+  RELEASE_TYPE:
   ARTIFACTORY_SERVER:
   ARTIFACTORY_USERNAME:
   ARTIFACTORY_PASSWORD:
