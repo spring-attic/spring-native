@@ -45,13 +45,16 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
-@NativeHint(trigger = AopAutoConfiguration.class,
+@NativeHint(trigger = AopAutoConfiguration.AspectJAutoProxyingConfiguration.class,
 	types = {
-		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class}, access=AccessBits.DECLARED_FIELDS|AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = {	AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access=AccessBits.PUBLIC_METHODS),
+		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access=AccessBits.DECLARED_FIELDS|AccessBits.PUBLIC_METHODS),
+		@TypeHint(types = { AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access=AccessBits.PUBLIC_METHODS),
 		@TypeHint(types= InfrastructureAdvisorAutoProxyCreator.class,
-				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = Proxy.class, access = AccessBits.DECLARED_METHODS) // aspect on proxied bean such as repository
+			access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
+		@TypeHint(types = Proxy.class, access = AccessBits.DECLARED_METHODS), // aspect on proxied bean such as repository
+		@TypeHint(types = {
+			Java15AnnotationFinder.class, Java15GenericSignatureInformationProvider.class,
+			Java15ReflectionBasedReferenceTypeDelegate.class})
 	},
 	resources = @ResourceHint(patterns = "org.aspectj.weaver.weaver-messages", isBundle = true) // messages in debug log
 )
@@ -63,11 +66,6 @@ import org.springframework.nativex.type.TypeSystem;
 		After.class,
 		Around.class
 }, access = AccessBits.ANNOTATION))
-@NativeHint(trigger = Java15AnnotationFinder.class, types = @TypeHint(types = {
-		Java15AnnotationFinder.class,
-		Java15GenericSignatureInformationProvider.class,
-		Java15ReflectionBasedReferenceTypeDelegate.class}
-))
 public class AopHints implements NativeConfiguration { 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
