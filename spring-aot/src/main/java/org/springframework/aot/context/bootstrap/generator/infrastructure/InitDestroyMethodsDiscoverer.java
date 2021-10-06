@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.DisposableBean;
@@ -148,14 +149,28 @@ class InitDestroyMethodsDiscoverer {
 
 	// TODO: remove once https://github.com/spring-projects/spring-framework/issues/27449 is resolved
 	@SuppressWarnings("unchecked")
-	private Set<String> getExternallyManagedLifecycleMethodNames(BeanDefinition beanDefinition, Field field) {
+	private Iterable<String> getExternallyManagedLifecycleMethodNames(BeanDefinition beanDefinition, Field field) {
 		if (beanDefinition instanceof RootBeanDefinition) {
 			Object value = ReflectionUtils.getField(field, beanDefinition);
 			if (!ObjectUtils.isEmpty(value)) {
-				return (Set<String>) value;
+				return ((Set<String>) value).stream().map(this::normalizeMethodName)
+						.collect(Collectors.toSet());
 			}
 		}
 		return Collections.emptySet();
+	}
+
+	/**
+	 * Normalize an externally managed method name as it may contain either the method
+	 * name itself or a {@link ClassUtils#getQualifiedMethodName(Method) qualified
+	 * representation}.
+	 * @param candidate the candidate method name representation
+	 * @return a method name
+	 */
+	private String normalizeMethodName(String candidate) {
+		return (candidate.contains("."))
+				? candidate.substring(candidate.lastIndexOf('.') + 1)
+				: candidate;
 	}
 
 	private Method detectInferredDestroyMethod(Class<?> beanType) {

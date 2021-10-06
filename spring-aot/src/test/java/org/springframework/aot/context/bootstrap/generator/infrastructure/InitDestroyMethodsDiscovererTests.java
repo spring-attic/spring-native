@@ -29,6 +29,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,6 +67,17 @@ class InitDestroyMethodsDiscovererTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition,
 				(mbd) -> mbd.registerExternallyManagedInitMethod("start")).registerInitMethods(registry);
+		assertThat(methods).containsOnlyKeys("test");
+		assertThat(methods.get("test")).containsExactly(START_METHOD);
+		hasSingleNativeReflectionEntry(LifecycleSample.class, START_METHOD);
+	}
+
+	@Test
+	void processWithExternallyManagedInitMethodNameAndQualifiedMethodName() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
+		String qualifiedMethodName = ClassUtils.getQualifiedMethodName(START_METHOD);
+		Map<String, List<Method>> methods = createInstance("test", beanDefinition,
+				(mbd) -> mbd.registerExternallyManagedInitMethod(qualifiedMethodName)).registerInitMethods(registry);
 		assertThat(methods).containsOnlyKeys("test");
 		assertThat(methods.get("test")).containsExactly(START_METHOD);
 		hasSingleNativeReflectionEntry(LifecycleSample.class, START_METHOD);
