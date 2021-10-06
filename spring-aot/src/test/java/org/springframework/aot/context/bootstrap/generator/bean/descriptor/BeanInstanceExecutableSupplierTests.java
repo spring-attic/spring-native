@@ -215,7 +215,32 @@ class BeanInstanceExecutableSupplierTests {
 				.getDeclaredConstructors()[1]);
 	}
 
-	// TODO: also test for factory methods and other executables
+	@Test
+	void beanDefinitionWithClassArrayFactoryMethodArgAndStringArrayValueType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayFactoryMethodSample.class.getName())
+				.setFactoryMethod("of")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
+				.findMethod(ClassArrayFactoryMethodSample.class, "of", Class[].class));
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayFactoryMethodArgAndAnotherMatchingConstructor() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class
+						.getName())
+				.setFactoryMethod("of")
+				.addConstructorArgValue(new String[] {"test1, test2"})
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
+				.findMethod(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class, "of", String[].class));
+	}
 
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		return new BeanInstanceExecutableSupplier(beanFactory).detectBeanInstanceExecutable(beanDefinition);
@@ -297,5 +322,25 @@ class BeanInstanceExecutableSupplierTests {
 
 		ClassArrayTwoConstructorsSample(String stringArg, String[] stringArrayArg) {
 		}
+	}
+
+	static class ClassArrayFactoryMethodSample {
+
+		static String of(Class<?>[] classArrayArg) {
+			return "test";
+		}
+
+	}
+
+	static class ClassArrayFactoryMethodSampleWithAnotherFactoryMethod {
+
+		static String of(Class<?>[] classArrayArg) {
+			return "test";
+		}
+
+		static String of(String[] classArrayArg) {
+			return "test";
+		}
+
 	}
 }
