@@ -230,21 +230,19 @@ class BeanInstanceExecutableSupplier {
 		if (fallback) {
 			if (parameterType.isArray()) {
 				return parameterType.getComponentType().isAssignableFrom(valueType)
-						|| isStringForClassSubstitution(parameterType, valueType);
+						|| isStringArrayForClassArraySubstitution(parameterType, valueType);
 
 			}
 			if (Collection.class.isAssignableFrom(parameterType.toClass())) {
-				return parameterType.as(Collection.class).getGeneric(0)
-						.isAssignableFrom(valueType);
+				return parameterType.as(Collection.class).getGeneric(0).isAssignableFrom(valueType);
 			}
 		}
 		return false;
 	}
 
-	private boolean isStringForClassSubstitution(ResolvableType parameterType, Class<?> valueType) {
+	private boolean isStringArrayForClassArraySubstitution(ResolvableType parameterType, Class<?> valueType) {
 		Class<?> arrayComponentRawClass = parameterType.getComponentType().getRawClass();
-		if (arrayComponentRawClass == null || !arrayComponentRawClass
-				.equals(Class.class)) {
+		if (arrayComponentRawClass == null || !arrayComponentRawClass.equals(Class.class)) {
 			return false;
 		}
 		return valueType.equals(String[].class);
