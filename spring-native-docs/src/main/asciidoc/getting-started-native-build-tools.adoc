@@ -287,12 +287,12 @@ $ mvn -Pnative -DskipTests package
 [source,bash,role="secondary"]
 .Gradle Groovy
 ----
-$ gradle nativeBuild
+$ gradle nativeCompile
 ----
 [source,bash,role="secondary"]
 .Gradle Kotlin
 ----
-$ gradle nativeBuild
+$ gradle nativeCompile
 ----
 
 NOTE: During the native compilation, you will see a lot of `WARNING: Could not register reflection metadata` messages. They are expected and will be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[#502] for more details.
