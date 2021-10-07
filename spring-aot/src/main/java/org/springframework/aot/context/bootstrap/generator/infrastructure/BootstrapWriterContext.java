@@ -19,13 +19,18 @@ package org.springframework.aot.context.bootstrap.generator.infrastructure;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.ParameterizedTypeName;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Context for components that write code to boostrap the context.
@@ -36,16 +41,46 @@ public class BootstrapWriterContext {
 
 	private final String packageName;
 
+	private final Function<String, BootstrapClass> bootstrapClassFactory;
+
 	private final ProtectedAccessAnalyzer protectedAccessAnalyzer;
 
 	private final Map<String, BootstrapClass> bootstrapClasses = new HashMap<>();
 
 	private final NativeConfigurationRegistry nativeConfigurationRegistry = new NativeConfigurationRegistry();
 
-	public BootstrapWriterContext(BootstrapClass defaultJavaFile) {
-		this.packageName = defaultJavaFile.getClassName().packageName();
+	BootstrapWriterContext(String packageName, Function<String, BootstrapClass> bootstrapClassFactory) {
+		this.packageName = packageName;
+		this.bootstrapClassFactory = bootstrapClassFactory;
 		this.protectedAccessAnalyzer = new ProtectedAccessAnalyzer(this.packageName);
-		this.bootstrapClasses.put(packageName, defaultJavaFile);
+		this.bootstrapClasses.put(packageName, bootstrapClassFactory.apply(packageName));
+	}
+
+	/**
+	 * Create a context targeting the specified package name and using a unique name for
+	 * all classes handled by this instance. The {@link BootstrapClass} for the main
+	 * context is an {@link ApplicationContextInitializer} while the package protected
+	 * boostrap classes are empty {@code public final} types.
+	 * @param packageName the default package name
+	 * @param className the name to use for bootstrap classes handled by this instance
+	 */
+	public BootstrapWriterContext(String packageName, String className) {
+		this(packageName, bootstrapClassFactory(packageName, className));
+	}
+
+	private static Function<String, BootstrapClass> bootstrapClassFactory(String defaultPackageName, String className) {
+		return (targetPackageName) -> {
+			if (targetPackageName.equals(defaultPackageName)) {
+				ParameterizedTypeName typeName = ParameterizedTypeName.get(ApplicationContextInitializer.class,
+						GenericApplicationContext.class);
+				return BootstrapClass.of(ClassName.get(targetPackageName, className), (type) ->
+						type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
+			}
+			else {
+				return BootstrapClass.of(ClassName.get(targetPackageName, className),
+						(type) -> type.addModifiers(Modifier.PUBLIC, Modifier.FINAL));
+			}
+		};
 	}
 
 	/**
@@ -66,14 +101,12 @@ public class BootstrapWriterContext {
 
 	/**
 	 * Return a {@link BootstrapClass} for the specified package name. If it does not
-	 * exist, it is created
+	 * exist, it is created.
 	 * @param packageName the package name to use
 	 * @return the bootstrap class
 	 */
 	public BootstrapClass getBootstrapClass(String packageName) {
-		return this.bootstrapClasses.computeIfAbsent(packageName, (p) ->
-				BootstrapClass.of(packageName, (type) ->
-						type.addModifiers(Modifier.PUBLIC, Modifier.FINAL)));
+		return this.bootstrapClasses.computeIfAbsent(packageName, this.bootstrapClassFactory);
 	}
 
 	/**

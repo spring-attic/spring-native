@@ -56,8 +56,9 @@ class BootstrapClassTests {
 
 	@Test
 	void addMethod() {
-		BootstrapClass bootstrapClass = BootstrapClass.of("com.example");
-		bootstrapClass.addMethod(MethodSpec.methodBuilder("test").returns(Integer.class).addCode(CodeBlock.of("return 42;")).build());
+		BootstrapClass bootstrapClass = createTestBootstrapClass();
+		bootstrapClass.addMethod(MethodSpec.methodBuilder("test").returns(Integer.class)
+				.addCode(CodeBlock.of("return 42;")).build());
 		assertThat(generateCode(bootstrapClass)).containsSequence(
 				"  Integer test() {\n",
 				"    return 42;\n",
@@ -66,12 +67,16 @@ class BootstrapClassTests {
 
 	@Test
 	void addMultipleMethods() {
-		BootstrapClass bootstrapClass = BootstrapClass.of("com.example");
+		BootstrapClass bootstrapClass = createTestBootstrapClass();
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("first").build());
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("second").build());
 		assertThat(generateCode(bootstrapClass))
 				.containsSequence("  void first() {\n", "  }")
 				.containsSequence("  void second() {\n", "  }");
+	}
+
+	private BootstrapClass createTestBootstrapClass() {
+		return BootstrapClass.of(TEST_CLASS_NAME);
 	}
 
 	private String generateCode(BootstrapClass bootstrapClass) {

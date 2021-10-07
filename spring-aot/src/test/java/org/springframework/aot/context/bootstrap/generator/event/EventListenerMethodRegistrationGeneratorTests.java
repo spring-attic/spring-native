@@ -72,7 +72,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 				.getBeanDefinition());
 		assertGeneratedCode(beanFactory, (code, writerContext) -> {
 			assertThat(code).lines().contains("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", EventListenerRegistrar.class, "
-					+ "() -> new EventListenerRegistrar(context, ContextBootstrapInitializer.getEventListenersMetadata()));");
+					+ "() -> new EventListenerRegistrar(context, com.example.Test.getEventListenersMetadata()));");
 			assertGeneratedCode(writerContext.getMainBootstrapClass()).removeIndent(1).lines().containsSequence(
 					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
 					"  return List.of(",
@@ -107,8 +107,9 @@ class EventListenerMethodRegistrationGeneratorTests {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			String protectedAccess = ProtectedEventListenerConfiguration.class.getPackageName() + ".Test.getEventListenersMetadata()";
 			assertThat(code).lines().containsExactly("context.registerBean(\"org.springframework.aot.EventListenerRegistrar\", "
-					+ "EventListenerRegistrar.class, () -> new EventListenerRegistrar(context, ContextBootstrapInitializer.getEventListenersMetadata()));");
+					+ "EventListenerRegistrar.class, () -> new EventListenerRegistrar(context, " + protectedAccess + "));");
 			BootstrapClass bootstrapClass = writerContext.getBootstrapClass(ProtectedEventListenerConfiguration.class.getPackageName());
 			assertGeneratedCode(bootstrapClass).removeIndent(1).lines().containsSequence(
 					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
@@ -189,7 +190,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 
 	void assertGeneratedCode(ConfigurableListableBeanFactory beanFactory, BiConsumer<CodeSnippet, BootstrapWriterContext> generatedContent) {
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(BootstrapClass.of("com.example"));
+		BootstrapWriterContext writerContext = new BootstrapWriterContext("com.example", "Test");
 		Builder code = CodeBlock.builder();
 		processor.writeEventListenersRegistration(writerContext, code);
 		generatedContent.accept(CodeSnippet.of(code.build()), writerContext);

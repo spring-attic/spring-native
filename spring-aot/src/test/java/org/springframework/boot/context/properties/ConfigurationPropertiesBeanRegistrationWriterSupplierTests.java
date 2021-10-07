@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.context.properties.JavaBeanSampleBean;
 import org.springframework.aot.context.bootstrap.generator.sample.context.properties.ValueObjectSampleBean;
@@ -68,7 +67,7 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplierTests {
 	}
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
+		return new BootstrapWriterContext("com.example", "Test");
 	}
 
 }

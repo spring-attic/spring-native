@@ -164,7 +164,7 @@ class BootstrapInfrastructureWriterTests {
 	}
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
+		return new BootstrapWriterContext("com.example", "Test");
 	}
 
 	private String generateCode(BootstrapClass bootstrapClass) {

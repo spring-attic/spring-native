@@ -35,8 +35,6 @@ import com.squareup.javapoet.TypeSpec;
  */
 public class BootstrapClass {
 
-	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
-
 	private final ClassName className;
 
 	private final TypeSpec.Builder type;
@@ -51,22 +49,23 @@ public class BootstrapClass {
 	}
 
 	/**
-	 * Create an instance for the specified package.
-	 * @param packageName the package name
+	 * Create an instance for the specified {@link ClassName}, customizing the type with
+	 * the specified {@link Consumer consumer callback}.
+	 * @param className the class name
 	 * @param type a callback to customize the type, i.e. to change default modifiers
 	 * @return a new {@link BootstrapClass}
 	 */
-	public static BootstrapClass of(String packageName, Consumer<TypeSpec.Builder> type) {
-		return new BootstrapClass(ClassName.get(packageName, BOOTSTRAP_CLASS_NAME), type);
+	public static BootstrapClass of(ClassName className, Consumer<TypeSpec.Builder> type) {
+		return new BootstrapClass(className, type);
 	}
 
 	/**
-	 * Create an instance for the specified package, as a {@code public} type.
-	 * @param packageName the package name
+	 * Create an instance for the specified {@link  ClassName}, as a {@code public} type.
+	 * @param className the class name
 	 * @return a new {@link BootstrapClass}
 	 */
-	public static BootstrapClass of(String packageName) {
-		return of(packageName, (type) -> type.addModifiers(Modifier.PUBLIC));
+	public static BootstrapClass of(ClassName className) {
+		return of(className, (type) -> type.addModifiers(Modifier.PUBLIC));
 	}
 
 	/**

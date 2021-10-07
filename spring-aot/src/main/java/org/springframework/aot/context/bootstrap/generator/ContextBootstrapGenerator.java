@@ -22,11 +22,9 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,7 +32,6 @@ import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistration
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.aot.context.bootstrap.generator.event.EventListenerMethodRegistrationGenerator;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapInfrastructureWriter;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistrar;
@@ -43,7 +40,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -57,6 +53,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @see NativeConfigurationRegistry
  */
 public class ContextBootstrapGenerator {
+
+	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
 
 	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
 
@@ -78,13 +76,12 @@ public class ContextBootstrapGenerator {
 	 * @return the {@link BootstrapGenerationResult generation result}
 	 */
 	public BootstrapGenerationResult generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName) {
-		BootstrapClass defaultBoostrapJavaFile = createDefaultBoostrapJavaFile(packageName);
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBoostrapJavaFile);
+		BootstrapWriterContext writerContext = new BootstrapWriterContext(packageName, BOOTSTRAP_CLASS_NAME);
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
-		defaultBoostrapJavaFile.addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
+		writerContext.getMainBootstrapClass().addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
 		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
 				nativeConfigurationRegistry.reflection().toClassDescriptors(),
 				nativeConfigurationRegistry.resources().toResourcesDescriptor(),
@@ -94,14 +91,6 @@ public class ContextBootstrapGenerator {
 				nativeConfigurationRegistry.jni().toClassDescriptors(),
 				nativeConfigurationRegistry.options()
 		);
-	}
-
-	public BootstrapClass createDefaultBoostrapJavaFile(String packageName) {
-		ParameterizedTypeName typeName = ParameterizedTypeName.get(
-				ClassName.get(ApplicationContextInitializer.class),
-				ClassName.get(GenericApplicationContext.class));
-		return BootstrapClass.of(packageName, (type) ->
-				type.addSuperinterface(typeName).addModifiers(Modifier.PUBLIC));
 	}
 
 	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,

@@ -106,8 +106,8 @@ class DefaultBeanRegistrationWriterTests {
 				.withInstanceCreator(ReflectionUtils.findMethod(SampleFactory.class, "create", String.class)).build();
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
 				.hasImport(SampleFactory.class).lines().containsOnly(
-				"BeanDefinitionRegistrar.of(\"test\", String.class).withFactoryMethod(SampleFactory.class, \"create\", String.class)",
-				"    .instanceSupplier(() -> test).register(context);");
+						"BeanDefinitionRegistrar.of(\"test\", String.class).withFactoryMethod(SampleFactory.class, \"create\", String.class)",
+						"    .instanceSupplier(() -> test).register(context);");
 	}
 
 	@Test
@@ -123,7 +123,8 @@ class DefaultBeanRegistrationWriterTests {
 				"    BeanDefinitionRegistrar.of(\"test\", ProtectedConstructorComponent.class)\n",
 				"        .instanceSupplier(ProtectedConstructorComponent::new).register(context);\n",
 				"  }");
-		assertThat(CodeSnippet.of(code.build())).isEqualTo("ContextBootstrapInitializer.registerTest(context);\n");
+		assertThat(CodeSnippet.of(code.build())).isEqualTo(
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(context);\n");
 	}
 
 	@Test
@@ -142,7 +143,8 @@ class DefaultBeanRegistrationWriterTests {
 				"    BeanDefinitionRegistrar.of(\"test\", String.class).withFactoryMethod(ProtectedFactoryMethod.class, \"testBean\", Integer.class)\n",
 				"        .instanceSupplier(() -> factory.testBean(42)).register(context);\n",
 				"  }");
-		assertThat(CodeSnippet.of(code.build())).isEqualTo("ContextBootstrapInitializer.registerProtectedFactoryMethod_test(context);\n");
+		assertThat(CodeSnippet.of(code.build())).isEqualTo(
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerProtectedFactoryMethod_test(context);\n");
 	}
 
 	@Test
@@ -161,7 +163,8 @@ class DefaultBeanRegistrationWriterTests {
 				"    BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(PublicFactoryBean.class, ProtectedType.class))\n",
 				"        .instanceSupplier(PublicFactoryBean::new).register(context);\n",
 				"  }");
-		assertThat(CodeSnippet.of(code.build())).isEqualTo("ContextBootstrapInitializer.registerTest(context);\n");
+		assertThat(CodeSnippet.of(code.build())).isEqualTo(
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(context);\n");
 	}
 
 	@Test
@@ -379,7 +382,7 @@ class DefaultBeanRegistrationWriterTests {
 
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext(BootstrapClass.of("com.example"));
+		return new BootstrapWriterContext("com.example", "Test");
 	}
 
 	// NEW

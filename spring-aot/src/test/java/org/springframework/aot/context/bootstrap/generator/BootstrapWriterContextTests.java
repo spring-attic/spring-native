@@ -16,10 +16,17 @@
 
 package org.springframework.aot.context.bootstrap.generator;
 
+import javax.lang.model.element.Modifier;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.ParameterizedTypeName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.support.GenericApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,26 +39,42 @@ class BootstrapWriterContextTests {
 
 	@Test
 	void createDefaultLinkPackageName() {
-		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		assertThat(writerContext.getPackageName()).isEqualTo("com.acme");
-		assertThat(writerContext.getMainBootstrapClass()).isSameAs(defaultBootstrapClass);
-		assertThat(writerContext.getBootstrapClass("com.acme")).isSameAs(defaultBootstrapClass);
+		assertThat(writerContext.getMainBootstrapClass().getClassName()).isEqualTo(ClassName.get("com.acme", "Test"));
+		assertThat(writerContext.getBootstrapClass("com.acme")).isSameAs(writerContext.getMainBootstrapClass());
+	}
+
+	@Test
+	void createDefaultHasMainClassAnApplicationListener() {
+		BootstrapWriterContext context = createComAcmeWriterContext();
+		JavaFile javaFile = context.getMainBootstrapClass().toJavaFile();
+		assertThat(javaFile.typeSpec.modifiers).containsOnly(Modifier.PUBLIC);
+		assertThat(javaFile.typeSpec.superinterfaces).containsOnly(
+				ParameterizedTypeName.get(ApplicationContextInitializer.class, GenericApplicationContext.class));
+	}
+
+	@Test
+	void createDefaultHasProtectedClassPublicFinal() {
+		BootstrapWriterContext context = createComAcmeWriterContext();
+		JavaFile javaFile = context.getBootstrapClass("com.example.another").toJavaFile();
+		assertThat(javaFile.typeSpec.modifiers).containsOnly(Modifier.PUBLIC, Modifier.FINAL);
+		assertThat(javaFile.typeSpec.superinterfaces).isEmpty();
 	}
 
 	@Test
 	void getBootstrapClassRegisterInstance() {
-		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		assertThat(writerContext.hasBootstrapClass("com.example")).isFalse();
-		assertThat(writerContext.getBootstrapClass("com.example")).isNotNull();
+		BootstrapClass bootstrapClass = writerContext.getBootstrapClass("com.example");
+		assertThat(bootstrapClass).isNotNull();
+		assertThat(bootstrapClass.getClassName().simpleName()).isEqualTo("Test");
 		assertThat(writerContext.hasBootstrapClass("com.example")).isTrue();
 	}
 
 	@Test
 	void getBootstrapClassReuseInstance() {
-		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		BootstrapClass bootstrapClass = writerContext.getBootstrapClass("com.example");
 		assertThat(bootstrapClass.getClassName().packageName()).isEqualTo("com.example");
 		assertThat(writerContext.getBootstrapClass("com.example")).isSameAs(bootstrapClass);
@@ -59,25 +82,27 @@ class BootstrapWriterContextTests {
 
 	@Test
 	void getRuntimeReflectionRegistry() {
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(BootstrapClass.of("com.acme"));
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		assertThat(writerContext.getNativeConfigurationRegistry()).isNotNull();
 		assertThat(writerContext.getNativeConfigurationRegistry().reflection().getEntries()).isEmpty();
 	}
 
 	@Test
 	void toJavaFilesWithDefaultClass() {
-		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		assertThat(writerContext.toJavaFiles()).hasSize(1);
 	}
 
 	@Test
 	void toJavaFilesWithDefaultClassAndAdditionalClasses() {
-		BootstrapClass defaultBootstrapClass = BootstrapClass.of("com.acme");
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(defaultBootstrapClass);
+		BootstrapWriterContext writerContext = createComAcmeWriterContext();
 		writerContext.getBootstrapClass("com.example");
 		writerContext.getBootstrapClass("com.another");
 		assertThat(writerContext.toJavaFiles()).hasSize(3);
+	}
+
+	private BootstrapWriterContext createComAcmeWriterContext() {
+		return new BootstrapWriterContext("com.acme", "Test");
 	}
 
 }
