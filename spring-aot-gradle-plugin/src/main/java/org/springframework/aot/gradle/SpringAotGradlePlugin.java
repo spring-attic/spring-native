@@ -135,7 +135,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			// Ensure that Kotlin compilation depends on AOT source generation
 			project.getPlugins().withId("org.jetbrains.kotlin.jvm", kotlinPlugin -> {
 				project.getTasks().named("compileAotMainKotlin")
-						.configure(compileKotlin -> compileKotlin.dependsOn(project.getTasks().named(aotMainSourceSet.getJarTaskName())));
+						.configure(compileKotlin -> compileKotlin.dependsOn(generateAotSources));
 			});
 		});
 	}

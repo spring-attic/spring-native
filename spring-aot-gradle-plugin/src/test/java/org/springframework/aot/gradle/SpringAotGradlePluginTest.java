@@ -112,7 +112,7 @@ public class SpringAotGradlePluginTest {
 		project.getPlugins().apply(KotlinPlatformJvmPlugin.class);
 
 		TaskProvider<Task> compileAotKotlin = project.getTasks().named("compileAotMainKotlin");
-		assertThat(compileAotKotlin.get().getDependsOn()).extracting("name").contains("aotMainJar");
+		assertThat(compileAotKotlin.get().getDependsOn()).extracting("name").contains("generateAot");
 	}
 
 
