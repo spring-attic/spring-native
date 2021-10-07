@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.squareup.javapoet.ClassName;
 import org.assertj.core.api.AbstractPathAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.PathAssert;
@@ -44,13 +45,17 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 
 	private final String packageName;
 
+	private final String className;
+
 	private final MapAssert<String, ClassDescriptor> classDescriptors;
 
-	public ContextBootstrapAssert(Path projectDirectory, String packageName,
+	public ContextBootstrapAssert(Path projectDirectory, ClassName className,
 			List<ClassDescriptor> classDescriptors) {
 		super(projectDirectory, ContextBootstrapAssert.class);
-		this.packageName = packageName;
-		this.classDescriptors = new MapAssert<>(classDescriptors.stream().collect(Collectors.toMap(ClassDescriptor::getName, (desc) -> desc)));
+		this.packageName = className.packageName();
+		this.className = className.simpleName();
+		this.classDescriptors = new MapAssert<>(classDescriptors.stream()
+				.collect(Collectors.toMap(ClassDescriptor::getName, (desc) -> desc)));
 	}
 
 	public ContextBootstrapAssert hasSource(String packageName, String name) {
@@ -73,7 +78,7 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 	}
 
 	public TextAssert contextBootstrapInitializer(String packageName) {
-		return source(packageName, "ContextBootstrapInitializer");
+		return source(packageName, this.className);
 	}
 
 	public TextAssert source(String packageName, String name) {

@@ -54,8 +54,6 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 public class ContextBootstrapGenerator {
 
-	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
-
 	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
 
 	private final List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers;
@@ -70,27 +68,15 @@ public class ContextBootstrapGenerator {
 
 	/**
 	 * Generate the code that is required to restore the state of the specified
-	 * {@link BeanFactory}.
+	 * {@link BeanFactory}, using the specified {@link BootstrapWriterContext}.
 	 * @param beanFactory the bean factory state to replicate in code
-	 * @param packageName the root package for the main {@code ContextBoostrap} class
-	 * @return the {@link BootstrapGenerationResult generation result}
+	 * @param writerContext the writer context to use
 	 */
-	public BootstrapGenerationResult generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, String packageName) {
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(packageName, BOOTSTRAP_CLASS_NAME);
-		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
+	public void generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext) {
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
 		writerContext.getMainBootstrapClass().addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
-		return new BootstrapGenerationResult(writerContext.toJavaFiles(),
-				nativeConfigurationRegistry.reflection().toClassDescriptors(),
-				nativeConfigurationRegistry.resources().toResourcesDescriptor(),
-				nativeConfigurationRegistry.proxy().toProxiesDescriptor(),
-				nativeConfigurationRegistry.initialization().toInitializationDescriptor(),
-				nativeConfigurationRegistry.serialization().toSerializationDescriptor(),
-				nativeConfigurationRegistry.jni().toClassDescriptors(),
-				nativeConfigurationRegistry.options()
-		);
 	}
 
 	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,

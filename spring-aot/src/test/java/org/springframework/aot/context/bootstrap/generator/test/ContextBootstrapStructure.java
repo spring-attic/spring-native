@@ -19,6 +19,7 @@ package org.springframework.aot.context.bootstrap.generator.test;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.squareup.javapoet.ClassName;
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
@@ -33,27 +34,27 @@ public final class ContextBootstrapStructure implements AssertProvider<ContextBo
 
 	private final Path sourceDirectory;
 
-	private final String packageName;
+	private final ClassName className;
 
 	private final List<ClassDescriptor> classDescriptors;
 
 	/**
 	 * Create an instance based on the specified source {@link Path directory} and chosen
-	 * package name.
+	 * default {@link ClassName}.
 	 * @param sourceDirectory the generated source directory
-	 * @param packageName the package to use for the main {@code ContextBootstrap} class
+	 * @param className the class name of the main generated class
 	 * @param classDescriptors the {@link ClassDescriptor class descriptors}
 	 */
-	public ContextBootstrapStructure(Path sourceDirectory, String packageName,
+	public ContextBootstrapStructure(Path sourceDirectory, ClassName className,
 			List<ClassDescriptor> classDescriptors) {
 		this.sourceDirectory = sourceDirectory;
-		this.packageName = packageName;
+		this.className = className;
 		this.classDescriptors = classDescriptors;
 	}
 
 	@Override
 	public ContextBootstrapAssert assertThat() {
-		return new ContextBootstrapAssert(this.sourceDirectory, this.packageName, this.classDescriptors);
+		return new ContextBootstrapAssert(this.sourceDirectory, this.className, this.classDescriptors);
 	}
 
 }

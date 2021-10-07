@@ -22,10 +22,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
-import org.springframework.aot.context.bootstrap.generator.BootstrapGenerationResult;
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
@@ -38,25 +39,19 @@ import org.springframework.util.ClassUtils;
  */
 public class ContextBootstrapGeneratorTester {
 
+	public static final String CLASS_NAME = "ContextBootstrapInitializer";
+
 	private final Path directory;
 
-	private final String packageName;
+	private final ClassName className;
 
-	public ContextBootstrapGeneratorTester(Path directory, String packageName) {
+	public ContextBootstrapGeneratorTester(Path directory, ClassName className) {
 		this.directory = directory;
-		this.packageName = packageName;
+		this.className = className;
 	}
 
 	public ContextBootstrapGeneratorTester(Path directory) {
-		this(directory, "com.example");
-	}
-
-	public ContextBootstrapGeneratorTester withDirectory(Path directory) {
-		return new ContextBootstrapGeneratorTester(directory, this.packageName);
-	}
-
-	public ContextBootstrapGeneratorTester withPackage(String packageName) {
-		return new ContextBootstrapGeneratorTester(this.directory, packageName);
+		this(directory, ClassName.get("com.exemple", CLASS_NAME));
 	}
 
 	public ContextBootstrapStructure generate(Class<?>... candidates) {
@@ -67,10 +62,11 @@ public class ContextBootstrapGeneratorTester {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		Path srcDirectory = generateSrcDirectory();
-		BootstrapGenerationResult result = new ContextBootstrapGenerator(context.getClassLoader())
-				.generateBootstrapClass(beanFactory, this.packageName);
-		writeSources(srcDirectory, result.getSourceFiles());
-		return new ContextBootstrapStructure(srcDirectory, this.packageName, result.getClassDescriptors());
+		BootstrapWriterContext writerContext = new BootstrapWriterContext(this.className.packageName(), this.className.simpleName());
+		new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(beanFactory, writerContext);
+		writeSources(srcDirectory, writerContext.toJavaFiles());
+		return new ContextBootstrapStructure(srcDirectory, this.className, writerContext
+				.getNativeConfigurationRegistry().reflection().toClassDescriptors());
 	}
 
 	private String generateShortName(Class<?> target) {

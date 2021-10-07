@@ -24,8 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
-import org.springframework.aot.context.bootstrap.generator.BootstrapGenerationResult;
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.AotApplicationContextFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
@@ -43,6 +44,8 @@ import org.springframework.util.StopWatch;
  * @author Stephane Nicoll
  */
 public class ContextBootstrapContributor implements BootstrapContributor {
+
+	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
 
 	private static final Log logger = LogFactory.getLog(ContextBootstrapContributor.class);
 
@@ -72,18 +75,20 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		configureEnvironment(applicationContext.getEnvironment());
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
-		BootstrapGenerationResult bootstrapGenerationResult = bootstrapGenerator.generateBootstrapClass(beanFactory, "org.springframework.aot");
+		BootstrapWriterContext writerContext = new BootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);
+		bootstrapGenerator.generateBootstrapClass(beanFactory, writerContext);
 		watch.stop();
 		logger.info("Processed " + beanFactory.getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");
 
-		bootstrapGenerationResult.getSourceFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
-		context.getOptions().addAll(bootstrapGenerationResult.getOptions());
-		context.describeReflection(reflectionDescriptor -> bootstrapGenerationResult.getClassDescriptors().forEach(reflectionDescriptor::merge));
-		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(bootstrapGenerationResult.getResourcesDescriptor()));
-		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(bootstrapGenerationResult.getProxiesDescriptor()));
-		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(bootstrapGenerationResult.getInitializationDescriptor()));
-		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(bootstrapGenerationResult.getSerializationDescriptor()));
-		context.describeJNIReflection(reflectionDescriptor -> bootstrapGenerationResult.getJniClassDescriptors().forEach(reflectionDescriptor::merge));
+		writerContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
+		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
+		context.getOptions().addAll(nativeConfigurationRegistry.options());
+		context.describeReflection(reflectionDescriptor -> nativeConfigurationRegistry.reflection().toClassDescriptors().forEach(reflectionDescriptor::merge));
+		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(nativeConfigurationRegistry.resources().toResourcesDescriptor()));
+		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(nativeConfigurationRegistry.proxy().toProxiesDescriptor()));
+		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(nativeConfigurationRegistry.initialization().toInitializationDescriptor()));
+		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(nativeConfigurationRegistry.serialization().toSerializationDescriptor()));
+		context.describeJNIReflection(reflectionDescriptor -> nativeConfigurationRegistry.jni().toClassDescriptors().forEach(reflectionDescriptor::merge));
 	}
 
 	private void configureEnvironment(ConfigurableEnvironment environment) {
