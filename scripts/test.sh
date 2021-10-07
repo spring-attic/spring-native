@@ -38,12 +38,12 @@ if [ -f pom.xml ]; then
 else
   EXECUTABLE_DIR=build/native/nativeCompile
   JAR_DIR=build/libs
-  GENERATED_DIR=build/generated/resources/aot
+  GENERATED_DIR=build/generated/resources/aotMain
   REPORT_DIR=build/native
 fi
 
 if [[ "$AOT_ONLY" == true ]]; then
-  EXECUTABLE="java -DspringAot=true -jar $JAR_DIR/*.jar"
+  EXECUTABLE="java -DspringAot=true -jar $JAR_DIR/*-SNAPSHOT.jar"
 else
   if ! [ -z "$1" ]; then
     if [[ "$1" != "--"* ]]; then
