@@ -60,6 +60,11 @@ resources:
     icon: github
     source:
       <<: *git-repo-resource-source
+  - name: slack-alert
+    type: slack-notification
+    icon: slack
+    source:
+      url: ((slack-webhook-url))
   - name: ci-images-git-repo
     type: git
     icon: github
@@ -307,6 +312,11 @@ jobs:
               AOT_ONLY: false
               <<: *docker-hub-task-params
               <<: *wavefront-params
+        on_failure:
+          do:
+            - put: slack-alert
+              params:
+                <<: *slack-fail-params
   - name: build-samples-dev-java11
     public: true
     plan:
