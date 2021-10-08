@@ -190,7 +190,7 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 	@Test
-	void writeWithLazy() {
+	void writeWithLazyInit() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
 				.setLazyInit(true).getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
