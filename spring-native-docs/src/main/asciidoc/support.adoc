@@ -59,7 +59,7 @@ Beware that actuators significantly increase the footprint, this will be optimiz
 * `spring-boot-starter-thymeleaf`
 * `spring-boot-starter-rsocket`
 * `spring-boot-starter-validation`
-* `spring-boot-starter-security`: WebMvc and WebFlux form login, HTTP basic authentication and OAuth 2.0 are supported.
+* `spring-boot-starter-security`: WebMvc and WebFlux form login, HTTP basic authentication, OAuth 2.0 and LDAP are supported.
 RSocket security is also supported.
 * `spring-boot-starter-oauth2-resource-server`: WebMvc and WebFlux are supported.
 * `spring-boot-starter-oauth2-client`: WebMvc and WebFlux are supported.
