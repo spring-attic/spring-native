@@ -190,6 +190,15 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 	@Test
+	void writeWithLazyInit() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
+				.setLazyInit(true).getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
+					      "    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setLazyInit(true)).register(context);");
+	}
+
+	@Test
 	void writeWithPrototypeScope() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleComponent.class)
 				.setScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE).getBeanDefinition();
