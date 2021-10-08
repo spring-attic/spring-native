@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mongodb.MongoException;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -41,7 +40,11 @@ public class CLR implements CommandLineRunner {
 				if(!collections.contains("order")) {
 					db.createCollection("order");
 				}
-				if(!collections.contains("coupon")) {
+				if(collections.contains("coupon")) {
+					template.execute(Coupon.class, mongoCollection ->
+							mongoCollection.deleteMany(new Document()));
+				}
+				else {
 					db.createCollection("coupon");
 				}
 				return "ok";
@@ -201,18 +204,8 @@ public class CLR implements CommandLineRunner {
 
 		// DBRefs
 		{
-
 			System.out.println("---- DBREFs ----");
 			orderRepository.deleteAll();
-			template.execute(Coupon.class, mongoCollection -> {
-				try {
-					mongoCollection.deleteMany(new Document());
-					return "CONTENT DELETED";
-				} catch (MongoException e) {
-					return "COLLECTION NOT YET PRESENT";
-				}
-			});
-
 			Coupon coupon = new Coupon("X3R");
 			template.insert(coupon);
 
