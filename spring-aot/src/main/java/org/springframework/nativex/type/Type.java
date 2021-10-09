@@ -2834,11 +2834,28 @@ public class Type {
 	/**
 	 * @return true if type or a method inside is marked @PostAuthorize, @PostFilter, @PreAuthorize or @PreFilter
 	 */
-	public boolean isAtPrePostSecured() {
-		return isAnnotatedInHierarchy(AtPostAuthorize) || isAnnotatedInHierarchy(AtPostFilter)
-				|| isAnnotatedInHierarchy(AtPreAuthorize) || isAnnotatedInHierarchy(AtPreFilter);
+	public boolean isAtPrePostSecured(boolean checkHierarchy) {
+		if (checkHierarchy) {
+			return isAnnotatedInHierarchy(AtPostAuthorize) || isAnnotatedInHierarchy(AtPostFilter)
+					|| isAnnotatedInHierarchy(AtPreAuthorize) || isAnnotatedInHierarchy(AtPreFilter);
+		} else {
+			return isAnnotatedOnTypeOrMethod(AtPostAuthorize) || isAnnotatedOnTypeOrMethod(AtPostFilter)
+					|| isAnnotatedOnTypeOrMethod(AtPreAuthorize) || isAnnotatedOnTypeOrMethod(AtPreFilter);
+		}
 	}
+	
 
+	public boolean isAnnotatedOnTypeOrMethod(String anno) {
+		if (isAnnotated(anno)) {
+			return true;
+		}
+		List<Method> methodsWithAnnotation = getMethodsWithAnnotation(anno);
+		if (methodsWithAnnotation.size() != 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void collectAnnotations(Set<Type> collector, Predicate<Type> filter) {
 		if (!this.isAnnotation()) {
 			throw new IllegalStateException(this.getDottedName() + " is not an annotation");
