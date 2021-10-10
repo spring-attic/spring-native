@@ -23,6 +23,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.context.bootstrap.generator.bean.InjectionPointWriterTests.SimpleConstructorBean.InnerClass;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
@@ -33,6 +35,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,6 +46,7 @@ import static org.mockito.Mockito.mock;
 class InjectionPointWriterTests {
 
 	@Test
+	@EnabledForJreRange(max = JAVA_11) // Executable is a sealed class and can't be mocked on Java 17
 	void writeInstantiationForUnsupportedExecutable() {
 		assertThatIllegalArgumentException().isThrownBy(() -> writeInstantiation(mock(Executable.class)));
 	}
