@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ class BeanInstanceExecutableSupplier {
 
 	Executable detectBeanInstanceExecutable(BeanDefinition beanDefinition) {
 		Supplier<ResolvableType> beanType = () -> getBeanType(beanDefinition);
-		List<Class<?>> valueTypes = beanDefinition.hasConstructorArgumentValues()
+		List<ResolvableType> valueTypes = beanDefinition.hasConstructorArgumentValues()
 				? determineParameterValueTypes(beanDefinition.getConstructorArgumentValues()) : Collections.emptyList();
 		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanType, valueTypes);
 		if (resolvedFactoryMethod != null) {
@@ -98,38 +99,38 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private List<Class<?>> determineParameterValueTypes(ConstructorArgumentValues constructorArgumentValues) {
-		List<Class<?>> parameterTypes = new ArrayList<>();
+	private List<ResolvableType> determineParameterValueTypes(ConstructorArgumentValues constructorArgumentValues) {
+		List<ResolvableType> parameterTypes = new ArrayList<>();
 		for (ValueHolder valueHolder : constructorArgumentValues.getIndexedArgumentValues().values()) {
 			if (valueHolder.getType() != null) {
-				parameterTypes.add(loadClass(valueHolder.getType()));
+				parameterTypes.add(ResolvableType.forClass(loadClass(valueHolder.getType())));
 			}
 			else {
 				Object value = valueHolder.getValue();
 				if (value instanceof BeanReference) {
-					parameterTypes.add(this.beanFactory.getType(((BeanReference) value).getBeanName(), false));
+					parameterTypes.add(ResolvableType.forClass(
+							this.beanFactory.getType(((BeanReference) value).getBeanName(), false)));
 				}
 				else if (value instanceof BeanDefinition) {
 					parameterTypes.add(extractTypeFromBeanDefinition(getBeanType((BeanDefinition) value)));
 				}
 				else {
-					parameterTypes.add(value.getClass());
+					parameterTypes.add(ResolvableType.forInstance(value));
 				}
 			}
 		}
 		return parameterTypes;
 	}
 
-	private Class<?> extractTypeFromBeanDefinition(ResolvableType type) {
-		Class<?> beanClass = type.toClass();
-		if (FactoryBean.class.isAssignableFrom(beanClass)) {
-			return type.as(FactoryBean.class).getGeneric(0).toClass();
+	private ResolvableType extractTypeFromBeanDefinition(ResolvableType type) {
+		if (FactoryBean.class.isAssignableFrom(type.toClass())) {
+			return type.as(FactoryBean.class).getGeneric(0);
 		}
-		return beanClass;
+		return type;
 	}
 
 	private Method resolveFactoryMethod(BeanDefinition beanDefinition, Supplier<ResolvableType> beanType,
-			List<Class<?>> valueTypes) {
+			List<ResolvableType> valueTypes) {
 		if (beanDefinition instanceof RootBeanDefinition) {
 			RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) beanDefinition;
 			Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
@@ -166,7 +167,7 @@ class BeanInstanceExecutableSupplier {
 		return false;
 	}
 
-	private Executable resolveConstructor(Supplier<ResolvableType> beanType, List<Class<?>> valueTypes) {
+	private Executable resolveConstructor(Supplier<ResolvableType> beanType, List<ResolvableType> valueTypes) {
 		Class<?> type = beanType.get().toClass();
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		if (constructors.length == 1) {
@@ -185,67 +186,107 @@ class BeanInstanceExecutableSupplier {
 			return types;
 		};
 		List<? extends Executable> matches = Arrays.stream(constructors)
-				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, false))
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.NONE))
 				.collect(Collectors.toList());
 		if (matches.size() == 1) {
 			return matches.get(0);
 		}
-		List<? extends Executable> fallbackMatches = Arrays.stream(constructors)
-				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, true))
+		List<? extends Executable> assignableElementFallbackMatches = Arrays.stream(constructors)
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.ASSIGNABLE_ELEMENT))
 				.collect(Collectors.toList());
-		return (fallbackMatches.size() == 1) ? fallbackMatches.get(0) : null;
+		if (assignableElementFallbackMatches.size() == 1) {
+			return assignableElementFallbackMatches.get(0);
+		}
+		List<? extends Executable> typeConversionFallbackMatches = Arrays.stream(constructors)
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.TYPE_CONVERSION))
+				.collect(Collectors.toList());
+		return (typeConversionFallbackMatches.size() == 1) ? typeConversionFallbackMatches.get(0) : null;
 	}
 
 	private Executable resolveFactoryMethod(List<Method> executables,
-			Function<Method, List<ResolvableType>> parameterTypesFactory, List<Class<?>> valueTypes) {
+			Function<Method, List<ResolvableType>> parameterTypesFactory, List<ResolvableType> valueTypes) {
 		List<? extends Executable> matches = executables.stream()
-				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, false)).collect(Collectors.toList());
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.NONE))
+				.collect(Collectors.toList());
 		if (matches.size() == 1) {
 			return matches.get(0);
 		}
-		List<? extends Executable> fallbackMatches = executables.stream()
-				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, true)).collect(Collectors.toList());
-		if (fallbackMatches.size() > 1) {
-			throw new IllegalStateException("Multiple matches with parameters '" + valueTypes + "': " + fallbackMatches);
+		List<? extends Executable> assignableElementFallbackMatches = executables.stream()
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.ASSIGNABLE_ELEMENT))
+				.collect(Collectors.toList());
+		if (assignableElementFallbackMatches.size() == 1) {
+			return assignableElementFallbackMatches.get(0);
 		}
-		return (fallbackMatches.size() == 1) ? fallbackMatches.get(0) : null;
+		List<? extends Executable> typeConversionFallbackMatches = executables.stream()
+				.filter((executable) -> match(parameterTypesFactory.apply(executable), valueTypes, FallbackMode.TYPE_CONVERSION))
+				.collect(Collectors.toList());
+		if (typeConversionFallbackMatches.size() > 1) {
+			throw new IllegalStateException("Multiple matches with parameters '" + valueTypes + "': " + typeConversionFallbackMatches);
+		}
+		return (typeConversionFallbackMatches.size() == 1) ? typeConversionFallbackMatches.get(0) : null;
 	}
 
-	private boolean match(List<ResolvableType> parameterTypes, List<Class<?>> valueTypes, boolean fallback) {
+	private boolean match(List<ResolvableType> parameterTypes, List<ResolvableType> valueTypes, FallbackMode fallbackMode) {
 		if (parameterTypes.size() != valueTypes.size()) {
 			return false;
 		}
 		for (int i = 0; i < parameterTypes.size(); i++) {
-			if (!isMatch(parameterTypes.get(i), valueTypes.get(i), fallback)) {
+			if (!isMatch(parameterTypes.get(i), valueTypes.get(i), fallbackMode)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean isMatch(ResolvableType parameterType, Class<?> valueType, boolean fallback) {
-		if (parameterType.isAssignableFrom(valueType)) {
+	private boolean isMatch(ResolvableType parameterType, ResolvableType valueType, FallbackMode fallbackMode) {
+		if (isAssignable(valueType).test(parameterType)) {
 			return true;
 		}
-		if (fallback) {
-			if (parameterType.isArray()) {
-				return parameterType.getComponentType().isAssignableFrom(valueType)
-						|| isStringArrayForClassArraySubstitution(parameterType, valueType);
-
-			}
-			if (Collection.class.isAssignableFrom(parameterType.toClass())) {
-				return parameterType.as(Collection.class).getGeneric(0).isAssignableFrom(valueType);
-			}
+		switch (fallbackMode) {
+			case ASSIGNABLE_ELEMENT:
+				return isAssignable(valueType).test(extractElementType(parameterType));
+			case TYPE_CONVERSION:
+				return typeConversionFallback(valueType).test(parameterType);
 		}
 		return false;
 	}
 
-	private boolean isStringArrayForClassArraySubstitution(ResolvableType parameterType, Class<?> valueType) {
-		Class<?> arrayComponentRawClass = parameterType.getComponentType().getRawClass();
-		if (arrayComponentRawClass == null || !arrayComponentRawClass.equals(Class.class)) {
-			return false;
+	private Predicate<ResolvableType> isAssignable(ResolvableType valueType) {
+		return (parameterType) -> parameterType.isAssignableFrom(valueType);
+	}
+
+	private ResolvableType extractElementType(ResolvableType parameterType) {
+		if (parameterType.isArray()) {
+			return parameterType.getComponentType();
 		}
-		return valueType.equals(String[].class);
+		if (Collection.class.isAssignableFrom(parameterType.toClass())) {
+			return parameterType.as(Collection.class).getGeneric(0);
+		}
+		return ResolvableType.NONE;
+	}
+
+	private Predicate<ResolvableType> typeConversionFallback(ResolvableType valueType) {
+		return (parameterType) -> {
+			if (isStringForClassFallback(valueType).test(parameterType)) {
+				return true;
+			}
+			if (isStringForClassFallback(extractElementType(valueType)).test(extractElementType(parameterType))) {
+				return true;
+			}
+			return (isStringForClassFallback(valueType).test(extractElementType(parameterType)));
+		};
+	}
+
+	/**
+	 * Return a {@link Predicate} for a parameter type that checks if its target value
+	 * is a {@link Class} and the value type is a {@link String}. This is a regular use
+	 * cases where a {@link Class} is defined in the bean definition as an FQN.
+	 * @param valueType the type of the value
+	 * @return a predicate to indicate a fallback match for a String to Class parameter
+	 */
+	private Predicate<ResolvableType> isStringForClassFallback(ResolvableType valueType) {
+		return (parameterType) -> (valueType.isAssignableFrom(String.class)
+				&& parameterType.isAssignableFrom(Class.class));
 	}
 
 	private Class<?> getFactoryBeanClass(BeanDefinition beanDefinition) {
@@ -290,6 +331,16 @@ class BeanInstanceExecutableSupplier {
 		Field field = ReflectionUtils.findField(RootBeanDefinition.class, fieldName);
 		ReflectionUtils.makeAccessible(field);
 		return targetType.cast(ReflectionUtils.getField(field, beanDefinition));
+	}
+
+	enum FallbackMode {
+
+		NONE,
+
+		ASSIGNABLE_ELEMENT,
+
+		TYPE_CONVERSION
+
 	}
 
 }

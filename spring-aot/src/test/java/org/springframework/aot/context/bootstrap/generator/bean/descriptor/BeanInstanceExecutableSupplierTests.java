@@ -190,29 +190,39 @@ class BeanInstanceExecutableSupplierTests {
 	}
 
 	@Test
-	void beanDefinitionWithClassArrayConstructorArgAndStringArrayValueType() {
+	void beanDefinitionWithClassArrayConstructorArgAndStringArrayValueType() throws NoSuchMethodException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
-				.rootBeanDefinition(ClassArrayConstructorSample.class.getName())
-				.addConstructorArgValue("test")
-				.addConstructorArgValue(new String[] {"test1, test2"})
+				.rootBeanDefinition(ConstructorClassArraySample.class.getName())
+				.addConstructorArgValue(new String[] { "test1, test2" })
 				.getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
-		assertThat(executable).isNotNull().isEqualTo(ClassArrayConstructorSample.class
+		assertThat(executable).isNotNull().isEqualTo(ConstructorClassArraySample.class
+				.getDeclaredConstructor(Class[].class));
+	}
+
+	@Test
+	void beanDefinitionWithClassArrayConstructorArgAndStringValueType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder
+				.rootBeanDefinition(ConstructorClassArraySample.class.getName())
+				.addConstructorArgValue("test1")
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ConstructorClassArraySample.class
 				.getDeclaredConstructors()[0]);
 	}
 
 	@Test
-	void beanDefinitionWithClassArrayConstructorArgAndAnotherMatchingConstructor() {
+	void beanDefinitionWithClassArrayConstructorArgAndAnotherMatchingConstructor() throws NoSuchMethodException {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
-				.rootBeanDefinition(ClassArrayTwoConstructorsSample.class.getName())
-				.addConstructorArgValue("test")
-				.addConstructorArgValue(new String[] {"test1, test2"})
+				.rootBeanDefinition(MultiConstructorClassArraySample.class.getName())
+				.addConstructorArgValue(new String[] { "test1, test2" })
 				.getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
-		assertThat(executable).isNotNull().isEqualTo(ClassArrayTwoConstructorsSample.class
-				.getDeclaredConstructors()[1]);
+		assertThat(executable).isNotNull().isEqualTo(MultiConstructorClassArraySample.class
+				.getDeclaredConstructor(String[].class));
 	}
 
 	@Test
@@ -220,8 +230,7 @@ class BeanInstanceExecutableSupplierTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(ClassArrayFactoryMethodSample.class.getName())
-				.setFactoryMethod("of")
-				.addConstructorArgValue(new String[] {"test1, test2"})
+				.setFactoryMethod("of").addConstructorArgValue(new String[] { "test1, test2" })
 				.getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
 		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
@@ -233,10 +242,8 @@ class BeanInstanceExecutableSupplierTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
 				.rootBeanDefinition(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class
-						.getName())
-				.setFactoryMethod("of")
-				.addConstructorArgValue(new String[] {"test1, test2"})
-				.getBeanDefinition();
+						.getName()).setFactoryMethod("of")
+				.addConstructorArgValue("test1").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
 		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils
 				.findMethod(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class, "of", String[].class));
@@ -309,21 +316,27 @@ class BeanInstanceExecutableSupplierTests {
 		}
 	}
 
-	static class ClassArrayConstructorSample {
+	@SuppressWarnings("unused")
+	static class ConstructorClassArraySample {
 
-		ClassArrayConstructorSample(String stringArg, Class<?>[] classArrayArg) {
+		ConstructorClassArraySample(Class<?>... classArrayArg) {
+		}
+
+		ConstructorClassArraySample(Integer somethingElse) {
 		}
 	}
 
-	static class ClassArrayTwoConstructorsSample {
+	@SuppressWarnings("unused")
+	static class MultiConstructorClassArraySample {
 
-		ClassArrayTwoConstructorsSample(String stringArg, Class<?>[] classArrayArg) {
+		MultiConstructorClassArraySample(Class<?>... classArrayArg) {
 		}
 
-		ClassArrayTwoConstructorsSample(String stringArg, String[] stringArrayArg) {
+		MultiConstructorClassArraySample(String... stringArrayArg) {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	static class ClassArrayFactoryMethodSample {
 
 		static String of(Class<?>[] classArrayArg) {
@@ -332,6 +345,7 @@ class BeanInstanceExecutableSupplierTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	static class ClassArrayFactoryMethodSampleWithAnotherFactoryMethod {
 
 		static String of(Class<?>[] classArrayArg) {
