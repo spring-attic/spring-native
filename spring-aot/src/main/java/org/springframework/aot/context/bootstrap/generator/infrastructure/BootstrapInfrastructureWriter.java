@@ -120,7 +120,7 @@ public class BootstrapInfrastructureWriter {
 				ClassName.get(String.class), ParameterizedTypeName.get(List.class, String.class)), variableName, LinkedHashMap.class);
 		lifecycleMethods.forEach((key, value) -> {
 			code.addStatement("$L.put($S, $L)", variableName, key, this.parameterWriter.writeParameterValue(
-					value.stream().map(Method::getName).collect(Collectors.toList()), ResolvableType.forClassWithGenerics(List.class, String.class)));
+					value.stream().map(Method::getName).collect(Collectors.toList()), () -> ResolvableType.forClassWithGenerics(List.class, String.class)));
 		});
 	}
 

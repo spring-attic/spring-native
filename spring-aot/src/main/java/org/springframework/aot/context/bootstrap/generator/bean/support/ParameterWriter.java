@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.squareup.javapoet.CodeBlock;
@@ -41,10 +42,19 @@ public final class ParameterWriter {
 	/**
 	 * Write the specified parameter {@code value}.
 	 * @param value the value of the parameter
+	 * @return the value of the parameter
+	 */
+	public CodeBlock writeParameterValue(Object value) {
+		return writeParameterValue(value, () -> ResolvableType.forInstance(value));
+	}
+
+	/**
+	 * Write the specified parameter {@code value}.
+	 * @param value the value of the parameter
 	 * @param parameterType the type of the parameter
 	 * @return the value of the parameter
 	 */
-	public CodeBlock writeParameterValue(Object value, ResolvableType parameterType) {
+	public CodeBlock writeParameterValue(Object value, Supplier<ResolvableType> parameterType) {
 		Builder code = CodeBlock.builder();
 		writeParameterValue(code, value, parameterType);
 		return code.build();
@@ -62,7 +72,12 @@ public final class ParameterWriter {
 				.collect(Collectors.joining(", ")), (Object[]) parameterTypes);
 	}
 
-	private void writeParameterValue(Builder code, Object value, ResolvableType parameterType) {
+	private void writeParameterValue(Builder code, Object value, Supplier<ResolvableType> parameterTypeSupplier) {
+		if (value == null) {
+			code.add("null");
+			return;
+		}
+		ResolvableType parameterType = parameterTypeSupplier.get();
 		if (parameterType.isArray()) {
 			code.add("new $T { ", parameterType.toClass());
 			writeAll(code, Arrays.asList(ObjectUtils.toObjectArray(value)), parameterType.getComponentType());
@@ -114,7 +129,7 @@ public final class ParameterWriter {
 	private void writeAll(Builder code, Iterable<?> items, ResolvableType elementType) {
 		Iterator<?> it = items.iterator();
 		while (it.hasNext()) {
-			writeParameterValue(code, it.next(), elementType);
+			writeParameterValue(code, it.next(), () -> elementType);
 			if (it.hasNext()) {
 				code.add(", ");
 			}

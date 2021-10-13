@@ -295,7 +295,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 				Object value = this.beanDefinition.getAttribute(attributeName);
 				Builder code = CodeBlock.builder();
 				code.add("$L.setAttribute($S, ", bdVariable, attributeName);
-				code.add((this.parameterWriter.writeParameterValue(value, ResolvableType.forInstance(value))));
+				code.add((this.parameterWriter.writeParameterValue(value)));
 				code.add(")");
 				statements.add(code.build());
 			}
@@ -311,7 +311,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
 		}
 		else {
-			code.add(this.parameterWriter.writeParameterValue(value, ResolvableType.forInstance(value)));
+			code.add(this.parameterWriter.writeParameterValue(value));
 		}
 	}
 

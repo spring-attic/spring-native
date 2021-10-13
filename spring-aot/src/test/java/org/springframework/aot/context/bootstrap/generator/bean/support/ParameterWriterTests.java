@@ -144,9 +144,17 @@ class ParameterWriterTests {
 				.isEqualTo("String.class");
 	}
 
+	@Test
+	void writeNull() {
+		assertThat(write(null)).isEqualTo("null");
+	}
+
+	private CodeSnippet write(Object value) {
+		return CodeSnippet.of(this.writer.writeParameterValue(value));
+	}
 
 	private CodeSnippet write(Object value, ResolvableType resolvableType) {
-		return CodeSnippet.of(this.writer.writeParameterValue(value, resolvableType));
+		return CodeSnippet.of(this.writer.writeParameterValue(value, () -> resolvableType));
 	}
 
 

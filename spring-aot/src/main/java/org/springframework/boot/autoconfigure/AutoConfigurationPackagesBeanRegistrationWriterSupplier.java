@@ -57,7 +57,7 @@ class AutoConfigurationPackagesBeanRegistrationWriterSupplier implements BeanReg
 				protected void writeInstanceSupplier(Builder code) {
 					code.add("() -> new $T(", BasePackages.class);
 					code.add(parameterWriter.writeParameterValue(getPackageNames(beanDefinition),
-							ResolvableType.forArrayComponent(ResolvableType.forClass(String.class))));
+							() -> ResolvableType.forArrayComponent(ResolvableType.forClass(String.class))));
 					code.add(")"); // End of constructor
 				}
 			};
