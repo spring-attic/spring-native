@@ -65,7 +65,6 @@
 										<env>
 											<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
 										</env>
-										<pullPolicy>IF_NOT_PRESENT</pullPolicy>
 									</image>
 								</configuration>
 							</execution>
