@@ -33,6 +33,10 @@ RC=0
 #sleep 3
 #kill ${PID} > /dev/null 2>&1
 
+echo "GraalVM build information"
+echo ""
+cat $JAVA_HOME/release
+echo ""
 
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s),ReflectConfig (lines)" >> samples-summary.csv
