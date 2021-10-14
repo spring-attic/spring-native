@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MILESTONE=0.10.x
+MILESTONE=0.11.x
 JAVA_VERSION=11
 GRAALVM_VERSION=stable
 PULL=false
