@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 RC=0
-native-image --version
+
+echo "GraalVM build information"
+echo ""
+cat $JAVA_HOME/release
+echo ""
+
 /bin/start-docker.sh
 if [[ -n $DOCKER_HUB_USERNAME ]]; then
   echo "$DOCKER_HUB_PASSWORD" | docker login -u $DOCKER_HUB_USERNAME --password-stdin
