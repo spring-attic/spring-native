@@ -18,11 +18,15 @@ package org.springframework.aot.context.bootstrap.generator.bean.support;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -80,7 +84,8 @@ public final class ParameterWriter {
 		ResolvableType parameterType = parameterTypeSupplier.get();
 		if (parameterType.isArray()) {
 			code.add("new $T { ", parameterType.toClass());
-			writeAll(code, Arrays.asList(ObjectUtils.toObjectArray(value)), parameterType.getComponentType());
+			writeAll(code, Arrays.asList(ObjectUtils.toObjectArray(value)),
+					(item) -> parameterType.getComponentType());
 			code.add(" }");
 		}
 		else if (value instanceof List) {
@@ -91,7 +96,7 @@ public final class ParameterWriter {
 			else {
 				code.add("$T.of(", List.class);
 				ResolvableType collectionType = parameterType.as(List.class).getGenerics()[0];
-				writeAll(code, list, collectionType);
+				writeAll(code, list, (item) -> collectionType);
 				code.add(")");
 			}
 		}
@@ -103,7 +108,22 @@ public final class ParameterWriter {
 			else {
 				code.add("$T.of(", Set.class);
 				ResolvableType collectionType = parameterType.as(Set.class).getGenerics()[0];
-				writeAll(code, set, collectionType);
+				writeAll(code, set, (item) -> collectionType);
+				code.add(")");
+			}
+		}
+		else if (value instanceof Map) {
+			Map<?, ?> map = (Map<?, ?>) value;
+			@SuppressWarnings("rawtypes")
+			Class<? extends Map> mapType = (value instanceof LinkedHashMap) ? LinkedHashMap.class : Map.class;
+			if (map.size() <= 10) {
+				code.add("$T.of(", mapType);
+				List<Object> parameters = new ArrayList<>();
+				map.forEach((mapKey, mapValue) -> {
+					parameters.add(mapKey);
+					parameters.add(mapValue);
+				});
+				writeAll(code, parameters, ResolvableType::forInstance);
 				code.add(")");
 			}
 		}
@@ -126,10 +146,11 @@ public final class ParameterWriter {
 		}
 	}
 
-	private void writeAll(Builder code, Iterable<?> items, ResolvableType elementType) {
-		Iterator<?> it = items.iterator();
+	private <T> void writeAll(Builder code, Iterable<T> items, Function<T, ResolvableType> elementType) {
+		Iterator<T> it = items.iterator();
 		while (it.hasNext()) {
-			writeParameterValue(code, it.next(), () -> elementType);
+			T item = it.next();
+			writeParameterValue(code, item, () -> elementType.apply(item));
 			if (it.hasNext()) {
 				code.add(", ");
 			}

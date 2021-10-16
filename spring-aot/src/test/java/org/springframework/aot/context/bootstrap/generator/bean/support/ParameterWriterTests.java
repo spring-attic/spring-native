@@ -21,8 +21,11 @@ import java.lang.reflect.Method;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -88,6 +91,28 @@ class ParameterWriterTests {
 		Set<String> value = Set.of();
 		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
 				.isEqualTo("Collections.emptySet()").hasImport(Collections.class);
+	}
+
+	@Test
+	void writeLinkedHashMap() {
+		Map<String, Object> value = new LinkedHashMap<>();
+		value.put("name", "Hello");
+		value.put("counter", 42);
+		assertThat(write(value)).isEqualTo("LinkedHashMap.of(\"name\", \"Hello\", \"counter\", 42)")
+				.hasImport(LinkedHashMap.class);
+	}
+
+	@Test
+	void writeHashMap() {
+		Map<String, Object> value = new HashMap<>();
+		value.put("unit", ChronoUnit.DAYS);
+		assertThat(write(value)).isEqualTo("Map.of(\"unit\", ChronoUnit.DAYS)")
+				.hasImport(ChronoUnit.class).hasImport(Map.class);
+	}
+
+	@Test
+	void writeEmptyMap() {
+		assertThat(write(Map.of())).isEqualTo("Map.of()").hasImport(Map.class);
 	}
 
 	@Test
