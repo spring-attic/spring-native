@@ -173,7 +173,7 @@ jobs:
           image: spring-native-ci-java11-image
         vars:
           jdk-url: ((jdk-url-java11))
-          ci-image-name: spring-native-ci-java11-image
+          ci-image-name: spring-native-ci-image
           <<: *registry-mirror-vars
       - put: spring-native-ci-java11-image
         params:
@@ -190,7 +190,7 @@ jobs:
           image: spring-native-ci-java17-image
         vars:
           jdk-url: ((jdk-url-java17))
-          ci-image-name: spring-native-ci-java17-image
+          ci-image-name: spring-native-ci-image
           <<: *registry-mirror-vars
       - put: spring-native-ci-java17-image
         params:
@@ -266,7 +266,7 @@ jobs:
         output_mapping:
           image: spring-native-java11-image
         vars:
-          ci-image-name: spring-native-java11-image
+          ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:java11-((milestone))"
           <<: *registry-mirror-vars
       - put: spring-native-java11-image
@@ -285,7 +285,7 @@ jobs:
         output_mapping:
           image: spring-native-java17-image
         vars:
-          ci-image-name: spring-native-java17-image
+          ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:java17-((milestone))"
           <<: *registry-mirror-vars
       - put: spring-native-java17-image
