@@ -15,7 +15,7 @@ NOTE: Some image requires build arguments.
 To build the CI image that is used for releases and deployment, invoke the following:
 
 ----
-$ docker build --no-cache -f ci-image/Dockerfile .
+$ docker build --no-cache --build-arg JDK_URL=... -f spring-native-ci-image/Dockerfile .
 ----
 
 To build the image that has the required GraalVM installation, you need two build

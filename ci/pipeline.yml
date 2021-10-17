@@ -83,32 +83,54 @@ resources:
       repository: ((github-repo-name))
       base_branch: ((branch))
       ignore_paths: ["ci/*"]
-  - name: graalvm-stable-git-repo
+  - name: graalvm-git-repo
     type: git
     icon: github
     source:
       uri: ((graalvm-repo))
-      branch: ((graalvm-stable-branch))
-  - name: ci-image
+      branch: ((graalvm-branch))
+  - name: spring-native-ci-java11-image
     type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native-ci
-  - name: graalvm-ce-stable-java11-image
+      tag: java11-((milestone))
+  - name: spring-native-ci-java17-image
+    type: registry-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/spring-native-ci
+      tag: java17-((milestone))
+  - name: graalvm-ce-java11-image
     type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/graalvm-ce
-      tag: stable-java11-((milestone))
-  - name: spring-native-stable-java11-image
+      tag: java11-((milestone))
+  - name: graalvm-ce-java17-image
+    type: registry-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/graalvm-ce
+      tag: java17-((milestone))
+  - name: spring-native-java11-image
     type: registry-image
     icon: docker
     source:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native
-      tag: stable-java11-((milestone))
+      tag: java11-((milestone))
+  - name: spring-native-java17-image
+    type: registry-image
+    icon: docker
+    source:
+      <<: *registry-image-resource-source
+      repository: ((docker-hub-organization))/spring-native
+      tag: java17-((milestone))
   - name: artifactory-repo
     type: artifactory-resource
     icon: package-variant
@@ -138,113 +160,195 @@ resources:
     type: time
     source: {interval: 24h}
 jobs:
-  - name: build-ci-image
+  - name: build-spring-native-ci-java11-image
+    old_name: build-ci-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
         trigger: true
-      - task: build-ci-image
+      - task: build-spring-native-ci-image
         privileged: true
-        file: git-repo/ci/tasks/build-ci-image.yml
+        file: git-repo/ci/tasks/build-spring-native-ci-image.yml
         output_mapping:
-          image: ci-image
+          image: spring-native-ci-java11-image
         vars:
-          ci-image-name: ci-image
+          jdk-url: ((jdk-url-java11))
+          ci-image-name: spring-native-ci-java11-image
           <<: *registry-mirror-vars
-      - put: ci-image
+      - put: spring-native-ci-java11-image
         params:
-          image: ci-image/image.tar
-  - name: check-graalvm-ce-stable-change
-    plan:
-      - get: graalvm-stable-git-repo
-        trigger: true
-  - name: check-graalvm-ce-stable-every-day
-    plan:
-      - get: graalvm-stable-git-repo
-        passed: [check-graalvm-ce-stable-change]
-      - get: every-day
-        trigger: true
-  - name: build-graalvm-ce-stable-image
+          image: spring-native-ci-java11-image/image.tar
+  - name: build-spring-native-ci-java17-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
-      - get: graalvm-stable-git-repo
-        passed: [check-graalvm-ce-stable-every-day]
+        trigger: true
+      - task: build-spring-native-ci-image
+        privileged: true
+        file: git-repo/ci/tasks/build-spring-native-ci-image.yml
+        output_mapping:
+          image: spring-native-ci-java17-image
+        vars:
+          jdk-url: ((jdk-url-java17))
+          ci-image-name: spring-native-ci-java17-image
+          <<: *registry-mirror-vars
+      - put: spring-native-ci-java17-image
+        params:
+          image: spring-native-ci-java17-image/image.tar
+  - name: check-graalvm-ce-change
+    old_name: check-graalvm-ce-stable-change
+    plan:
+      - get: graalvm-git-repo
+        trigger: true
+  - name: check-graalvm-ce-every-day
+    old_name: check-graalvm-ce-stable-every-day
+    plan:
+      - get: graalvm-git-repo
+        passed: [check-graalvm-ce-change]
+      - get: every-day
+        trigger: true
+  - name: build-graalvm-ce-java11-image
+    old_name: build-graalvm-ce-stable-image
+    plan:
+      - get: git-repo
+      - get: ci-images-git-repo
+      - get: graalvm-git-repo
+        passed: [check-graalvm-ce-every-day]
         trigger: true
       - get: every-day
-        passed: [check-graalvm-ce-stable-every-day]
-      - task: build-graalvm-ce-stable-image
+        passed: [check-graalvm-ce-every-day]
+      - task: build-graalvm-ce-image
         privileged: true
         file: git-repo/ci/tasks/build-graalvm-ce-image.yml
         output_mapping:
-          image: graalvm-ce-stable-java11-image
+          image: graalvm-ce-java11-image
         vars:
           ci-image-name: graalvm-ce-image
-          jdk-identifier: ((jdk-identifier-java11))
-          graalvm-branch: ((graalvm-stable-branch))
+          labsjdk-identifier: ((labsjdk-identifier-java11))
+          graalvm-branch: ((graalvm-branch))
           <<: *registry-mirror-vars
-      - put: graalvm-ce-stable-java11-image
+      - put: graalvm-ce-java11-image
         params:
-          image: graalvm-ce-stable-java11-image/image.tar
-  - name: build-spring-native-stable-image
+          image: graalvm-ce-java11-image/image.tar
+  - name: build-graalvm-ce-java17-image
+    plan:
+      - get: git-repo
+      - get: ci-images-git-repo
+      - get: graalvm-git-repo
+        passed: [ check-graalvm-ce-every-day ]
+        trigger: true
+      - get: every-day
+        passed: [ check-graalvm-ce-every-day ]
+      - task: build-graalvm-ce-image
+        privileged: true
+        file: git-repo/ci/tasks/build-graalvm-ce-image.yml
+        output_mapping:
+          image: graalvm-ce-java17-image
+        vars:
+          ci-image-name: graalvm-ce-image
+          labsjdk-identifier: ((labsjdk-identifier-java17))
+          graalvm-branch: ((graalvm-branch))
+          <<: *registry-mirror-vars
+      - put: graalvm-ce-java17-image
+        params:
+          image: graalvm-ce-java17-image/image.tar
+  - name: build-spring-native-java11-image
+    old_name: build-spring-native-stable-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
       - get: every-day
-        passed: [build-graalvm-ce-stable-image]
+        passed: [build-graalvm-ce-java11-image]
         trigger: true
-      - task: build-spring-native-stable-image
+      - task: build-spring-native-image
         privileged: true
         file: git-repo/ci/tasks/build-spring-native-image.yml
         output_mapping:
-          image: spring-native-stable-java11-image
+          image: spring-native-java11-image
         vars:
-          ci-image-name: spring-native-image
-          base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
+          ci-image-name: spring-native-java11-image
+          base-image: "((docker-hub-organization))/graalvm-ce:java11-((milestone))"
           <<: *registry-mirror-vars
-      - put: spring-native-stable-java11-image
+      - put: spring-native-java11-image
         params:
-          image: spring-native-stable-java11-image/image.tar
+          image: spring-native-java11-image/image.tar
+  - name: build-spring-native-java17-image
+    plan:
+      - get: git-repo
+      - get: ci-images-git-repo
+      - get: every-day
+        passed: [ build-graalvm-ce-java17-image ]
+        trigger: true
+      - task: build-spring-native-image
+        privileged: true
+        file: git-repo/ci/tasks/build-spring-native-image.yml
+        output_mapping:
+          image: spring-native-java17-image
+        vars:
+          ci-image-name: spring-native-java17-image
+          base-image: "((docker-hub-organization))/graalvm-ce:java17-((milestone))"
+          <<: *registry-mirror-vars
+      - put: spring-native-java17-image
+        params:
+          image: spring-native-java17-image/image.tar
   - name: build-key-samples-java11
     public: true
     serial: true
     plan:
-      - get: spring-native-stable-java11-image
+      - get: spring-native-java11-image
       - get: git-repo
         trigger: true
       - task: build
         privileged: true
-        image: spring-native-stable-java11-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/build-key-samples.yml
         params:
           <<: *docker-hub-task-params
-  - name: build-samples-aot-stable-java11
+  - name: build-samples-aot-java11
+    old_name: build-samples-aot-stable-java11
     public: true
     plan:
-      - get: spring-native-stable-java11-image
+      - get: spring-native-java11-image
       - get: git-repo
       - get: every-day
         trigger: true
       - do:
         - task: build
           privileged: true
-          image: spring-native-stable-java11-image
+          image: spring-native-java11-image
           file: git-repo/ci/tasks/build-samples.yml
           params:
             AOT_ONLY: true
             <<: *docker-hub-task-params
             <<: *wavefront-params
-  - name: build-samples-stable-java11
+  - name: build-samples-aot-java17
     public: true
     plan:
-      - get: spring-native-stable-java11-image
+      - get: spring-native-java17-image
       - get: git-repo
       - get: every-day
         trigger: true
       - do:
           - task: build
             privileged: true
-            image: spring-native-stable-java11-image
+            image: spring-native-java17-image
+            file: git-repo/ci/tasks/build-samples.yml
+            params:
+              AOT_ONLY: true
+              <<: *docker-hub-task-params
+              <<: *wavefront-params
+  - name: build-samples-java11
+    old_name: build-samples-stable-java11
+    public: true
+    plan:
+      - get: spring-native-java11-image
+      - get: git-repo
+      - get: every-day
+        trigger: true
+      - do:
+          - task: build
+            privileged: true
+            image: spring-native-java11-image
             file: git-repo/ci/tasks/build-samples.yml
             params:
               AOT_ONLY: false
@@ -255,16 +359,32 @@ jobs:
             - put: slack-alert
               params:
                 <<: *slack-fail-params
+  - name: build-samples-java17
+    public: true
+    plan:
+      - get: spring-native-java17-image
+      - get: git-repo
+      - get: every-day
+        trigger: true
+      - do:
+          - task: build
+            privileged: true
+            image: spring-native-java17-image
+            file: git-repo/ci/tasks/build-samples.yml
+            params:
+              AOT_ONLY: false
+              <<: *docker-hub-task-params
+              <<: *wavefront-params
   - name: deploy
     public: true
     plan:
-      - get: ci-image
+      - get: spring-native-java11-image
       - get: git-repo
         passed:
           - build-key-samples-java11
         trigger: true
       - task: build-project
-        image: ci-image
+        image: spring-native-java11-image
         privileged: true
         timeout: ((task-timeout))
         file: git-repo/ci/tasks/build-project.yml
@@ -275,7 +395,7 @@ jobs:
     serial: true
     public: true
     plan:
-      - get: spring-native-stable-java11-image
+      - get: spring-native-java11-image
       - get: git-repo
         resource: git-pull-request
         trigger: true
@@ -287,7 +407,7 @@ jobs:
             status: pending
         - task: build-project
           privileged: true
-          image: spring-native-stable-java11-image
+          image: spring-native-java11-image
           file: git-repo/ci/tasks/build-pr-project.yml
           params:
             <<: *docker-hub-task-params
@@ -305,11 +425,11 @@ jobs:
   - name: stage-milestone
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - task: stage
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: M
@@ -323,11 +443,11 @@ jobs:
   - name: stage-rc
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - task: stage
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: RC
@@ -341,11 +461,11 @@ jobs:
   - name: stage-release
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - task: stage
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: RELEASE
@@ -359,7 +479,7 @@ jobs:
   - name: promote-milestone
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - get: artifactory-repo
@@ -369,7 +489,7 @@ jobs:
           download_artifacts: false
           save_build_info: true
       - task: promote
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: M
@@ -390,7 +510,7 @@ jobs:
   - name: promote-rc
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - get: artifactory-repo
@@ -400,7 +520,7 @@ jobs:
           download_artifacts: false
           save_build_info: true
       - task: promote
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: RC
@@ -421,7 +541,7 @@ jobs:
   - name: promote-release
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
         trigger: false
       - get: artifactory-repo
@@ -431,7 +551,7 @@ jobs:
           download_artifacts: true
           save_build_info: true
       - task: promote
-        image: ci-image
+        image: spring-native-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: RELEASE
@@ -439,7 +559,7 @@ jobs:
   - name: create-github-release
     serial: true
     plan:
-      - get: ci-image
+      - get: spring-native-ci-java11-image
       - get: git-repo
       - get: artifactory-repo
         trigger: true
@@ -462,10 +582,10 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "builds"
-    jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-stable-java11", "build-samples-stable-java11"]
+    jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-java11", "build-samples-aot-java17", "build-samples-java11", "build-samples-java17"]
   - name: "releases"
     jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release"]
   - name: "ci-images"
-    jobs: ["build-ci-image", "check-graalvm-ce-stable-change", "check-graalvm-ce-stable-every-day", "build-graalvm-ce-stable-image", "build-spring-native-stable-image" ]
+    jobs: ["build-spring-native-ci-java11-image", "build-spring-native-ci-java17-image", "check-graalvm-ce-change", "check-graalvm-ce-every-day", "build-graalvm-ce-java11-image", "build-graalvm-ce-java17-image", "build-spring-native-java11-image", "build-spring-native-java17-image" ]
   - name: "pull-requests"
     jobs: [ "build-pull-requests" ]

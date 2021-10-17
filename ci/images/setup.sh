@@ -19,10 +19,9 @@ curl --output /opt/concourse-release-scripts.jar https://repo.spring.io/release/
 ###########################################################
 # JAVA
 ###########################################################
-JDK_URL=$( ./get-jdk-url.sh $1 )
 
 mkdir -p /opt/openjdk
 cd /opt/openjdk
-curl -L ${JDK_URL} | tar zx --strip-components=1
+curl -L $1 | tar zx --strip-components=1
 test -f /opt/openjdk/bin/java
 test -f /opt/openjdk/bin/javac

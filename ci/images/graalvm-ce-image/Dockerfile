@@ -1,6 +1,6 @@
 FROM springci/ci-image:main
 
-ARG JDK_IDENTIFIER
+ARG LABSJDK_IDENTIFIER
 ARG GRAALVM_BRANCH
 
 ENV PATH="/opt/mx:$PATH"
@@ -13,8 +13,8 @@ RUN cd /opt \
  && git clone --single-branch --branch master https://github.com/graalvm/mx.git \
  && git clone --single-branch --branch $GRAALVM_BRANCH https://github.com/oracle/graal.git
 
-RUN mx --quiet fetch-jdk --jdk-id $JDK_IDENTIFIER --configuration /opt/graal/common.json --to /opt \
- || mx --quiet fetch-jdk --jdk-id $JDK_IDENTIFIER --to /opt
+RUN mx --quiet fetch-jdk --jdk-id $LABSJDK_IDENTIFIER --configuration /opt/graal/common.json --to /opt \
+ || mx --quiet fetch-jdk --jdk-id $LABSJDK_IDENTIFIER --to /opt
 
 RUN mv /opt/labsjdk-ce-* /opt/openjdk-jvmci
 
