@@ -25,7 +25,7 @@ arguments:
 * `GRAALVM_BRANCH` the `branch` of the https://github.com/oracle/graal[GraalVM GithHub repository] to build.
 
 ----
-$ docker build --no-cache --build-arg JDK_IDENTIFIER=labsjdk-ce-11 \
+$ docker build --no-cache --build-arg LABSJDK_IDENTIFIER=labsjdk-ce-11 \
     --build-arg GRAALVM_BRANCH=master -f graalvm-ce-image/Dockerfile .
 ----
 
