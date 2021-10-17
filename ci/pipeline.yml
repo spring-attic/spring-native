@@ -200,7 +200,7 @@ jobs:
           image: graalvm-ce-stable-java11-image
         vars:
           ci-image-name: graalvm-ce-image
-          jvmci-url: ((jvmci-stable-java11))
+          jdk-identifier: ((jdk-identifier-java11))
           graalvm-branch: ((graalvm-stable-branch))
           <<: *registry-mirror-vars
       - put: graalvm-ce-stable-java11-image
@@ -232,7 +232,7 @@ jobs:
           image: graalvm-ce-dev-java11-image
         vars:
           ci-image-name: graalvm-ce-image
-          jvmci-url: ((jvmci-dev-java11))
+          jdk-identifier: ((jdk-identifier-java11))
           graalvm-branch: ((graalvm-dev-branch))
           <<: *registry-mirror-vars
       - put: graalvm-ce-dev-java11-image

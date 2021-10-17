@@ -1,10 +1,9 @@
-FROM ubuntu:focal
+FROM springci/ci-image:main
 
-ARG JVMCI_URL
+ARG JDK_IDENTIFIER
 ARG GRAALVM_BRANCH
 
-ENV JAVA_HOME=/opt/openjdk-jvmci
-ENV PATH="/opt/mx:$JAVA_HOME/bin:$PATH"
+ENV PATH="/opt/mx:$PATH"
 
 RUN apt-get -y update \
  && apt-get -y install git jq curl build-essential python unzip zlib1g-dev \
@@ -12,10 +11,16 @@ RUN apt-get -y update \
 
 RUN cd /opt \
  && git clone --single-branch --branch master https://github.com/graalvm/mx.git \
- && curl -L $JVMCI_URL | tar -xz \
- && mv *jdk* openjdk-jvmci \
- && git clone --single-branch --branch $GRAALVM_BRANCH https://github.com/oracle/graal.git \
- && cd graal/vm \
+ && git clone --single-branch --branch $GRAALVM_BRANCH https://github.com/oracle/graal.git
+
+RUN mx --quiet fetch-jdk --jdk-id $JDK_IDENTIFIER --configuration /opt/graal/common.json --to /opt \
+ || mx --quiet fetch-jdk --jdk-id $JDK_IDENTIFIER --to /opt
+
+RUN mv /opt/labsjdk-ce-* /opt/openjdk-jvmci
+
+ENV JAVA_HOME=/opt/openjdk-jvmci
+
+RUN cd /opt/graal/vm \
  && mx --disable-polyglot --disable-libpolyglot --dynamicimports /substratevm build
 
 FROM ubuntu:focal
