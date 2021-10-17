@@ -13,5 +13,4 @@ registry-mirror-password: ((artifactory-password))
 
 graalvm-repo: "https://github.com/oracle/graal.git"
 graalvm-stable-branch: "release/graal-vm/21.2"
-graalvm-dev-branch: "release/graal-vm/21.3"
 jdk-identifier-java11: "labsjdk-ce-11"

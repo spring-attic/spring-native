@@ -89,12 +89,6 @@ resources:
     source:
       uri: ((graalvm-repo))
       branch: ((graalvm-stable-branch))
-  - name: graalvm-dev-git-repo
-    type: git
-    icon: github
-    source:
-      uri: ((graalvm-repo))
-      branch: ((graalvm-dev-branch))
   - name: ci-image
     type: registry-image
     icon: docker
@@ -108,13 +102,6 @@ resources:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/graalvm-ce
       tag: stable-java11-((milestone))
-  - name: graalvm-ce-dev-java11-image
-    type: registry-image
-    icon: docker
-    source:
-      <<: *registry-image-resource-source
-      repository: ((docker-hub-organization))/graalvm-ce
-      tag: dev-java11-((milestone))
   - name: spring-native-stable-java11-image
     type: registry-image
     icon: docker
@@ -122,13 +109,6 @@ resources:
       <<: *registry-image-resource-source
       repository: ((docker-hub-organization))/spring-native
       tag: stable-java11-((milestone))
-  - name: spring-native-dev-java11-image
-    type: registry-image
-    icon: docker
-    source:
-      <<: *registry-image-resource-source
-      repository: ((docker-hub-organization))/spring-native
-      tag: dev-java11-((milestone))
   - name: artifactory-repo
     type: artifactory-resource
     icon: package-variant
@@ -206,38 +186,6 @@ jobs:
       - put: graalvm-ce-stable-java11-image
         params:
           image: graalvm-ce-stable-java11-image/image.tar
-  - name: check-graalvm-ce-dev-change
-    plan:
-      - get: graalvm-dev-git-repo
-        trigger: true
-  - name: check-graalvm-ce-dev-every-day
-    plan:
-      - get: graalvm-dev-git-repo
-        passed: [check-graalvm-ce-dev-change]
-      - get: every-day
-        trigger: true
-  - name: build-graalvm-ce-dev-image
-    plan:
-      - get: git-repo
-      - get: ci-images-git-repo
-      - get: graalvm-dev-git-repo
-        passed: [check-graalvm-ce-dev-every-day]
-        trigger: true
-      - get: every-day
-        passed: [check-graalvm-ce-dev-every-day]
-      - task: build-graalvm-ce-dev-image
-        privileged: true
-        file: git-repo/ci/tasks/build-graalvm-ce-image.yml
-        output_mapping:
-          image: graalvm-ce-dev-java11-image
-        vars:
-          ci-image-name: graalvm-ce-image
-          jdk-identifier: ((jdk-identifier-java11))
-          graalvm-branch: ((graalvm-dev-branch))
-          <<: *registry-mirror-vars
-      - put: graalvm-ce-dev-java11-image
-        params:
-          image: graalvm-ce-dev-java11-image/image.tar
   - name: build-spring-native-stable-image
     plan:
       - get: git-repo
@@ -257,25 +205,6 @@ jobs:
       - put: spring-native-stable-java11-image
         params:
           image: spring-native-stable-java11-image/image.tar
-  - name: build-spring-native-dev-image
-    plan:
-      - get: git-repo
-      - get: ci-images-git-repo
-      - get: every-day
-        passed: [build-graalvm-ce-dev-image]
-        trigger: true
-      - task: build-spring-native-dev-image
-        privileged: true
-        file: git-repo/ci/tasks/build-spring-native-image.yml
-        output_mapping:
-          image: spring-native-dev-java11-image
-        vars:
-          ci-image-name: spring-native-image
-          base-image: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
-          <<: *registry-mirror-vars
-      - put: spring-native-dev-java11-image
-        params:
-          image: spring-native-dev-java11-image/image.tar
   - name: build-key-samples-java11
     public: true
     serial: true
@@ -326,21 +255,6 @@ jobs:
             - put: slack-alert
               params:
                 <<: *slack-fail-params
-  - name: build-samples-dev-java11
-    public: true
-    plan:
-      - get: spring-native-dev-java11-image
-      - get: git-repo
-      - get: every-day
-        trigger: true
-      - task: build
-        privileged: true
-        image: spring-native-dev-java11-image
-        file: git-repo/ci/tasks/build-samples.yml
-        params:
-          AOT_ONLY: false
-          <<: *docker-hub-task-params
-          <<: *wavefront-params
   - name: deploy
     public: true
     plan:
@@ -548,10 +462,10 @@ jobs:
           body: generated-changelog/changelog.md
 groups:
   - name: "builds"
-    jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-stable-java11", "build-samples-stable-java11", "build-samples-dev-java11"]
+    jobs: ["build-key-samples-java11", "deploy", "build-samples-aot-stable-java11", "build-samples-stable-java11"]
   - name: "releases"
     jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release"]
   - name: "ci-images"
-    jobs: ["build-ci-image", "check-graalvm-ce-stable-change", "check-graalvm-ce-stable-every-day", "build-graalvm-ce-stable-image", "check-graalvm-ce-dev-change", "check-graalvm-ce-dev-every-day", "build-graalvm-ce-dev-image", "build-spring-native-stable-image", "build-spring-native-dev-image" ]
+    jobs: ["build-ci-image", "check-graalvm-ce-stable-change", "check-graalvm-ce-stable-every-day", "build-graalvm-ce-stable-image", "build-spring-native-stable-image" ]
   - name: "pull-requests"
     jobs: [ "build-pull-requests" ]
