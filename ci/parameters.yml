@@ -12,7 +12,7 @@ registry-mirror-username: ((artifactory-username))
 registry-mirror-password: ((artifactory-password))
 
 jdk-url-java11: "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz"
-jdl-url-java17: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz"
+jdk-url-java17: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz"
 
 graalvm-repo: "https://github.com/oracle/graal.git"
 graalvm-branch: "release/graal-vm/21.2"
