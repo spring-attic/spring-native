@@ -384,7 +384,7 @@ jobs:
           - build-key-samples-java11
         trigger: true
       - task: build-project
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         privileged: true
         timeout: ((task-timeout))
         file: git-repo/ci/tasks/build-project.yml
@@ -407,7 +407,7 @@ jobs:
             status: pending
         - task: build-project
           privileged: true
-          image: spring-native-java11-image
+          image: spring-native-ci-java11-image
           file: git-repo/ci/tasks/build-pr-project.yml
           params:
             <<: *docker-hub-task-params
@@ -429,7 +429,7 @@ jobs:
       - get: git-repo
         trigger: false
       - task: stage
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: M
@@ -447,7 +447,7 @@ jobs:
       - get: git-repo
         trigger: false
       - task: stage
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: RC
@@ -465,7 +465,7 @@ jobs:
       - get: git-repo
         trigger: false
       - task: stage
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/stage.yml
         params:
           RELEASE_TYPE: RELEASE
@@ -489,7 +489,7 @@ jobs:
           download_artifacts: false
           save_build_info: true
       - task: promote
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: M
@@ -520,7 +520,7 @@ jobs:
           download_artifacts: false
           save_build_info: true
       - task: promote
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: RC
@@ -551,7 +551,7 @@ jobs:
           download_artifacts: true
           save_build_info: true
       - task: promote
-        image: spring-native-java11-image
+        image: spring-native-ci-java11-image
         file: git-repo/ci/tasks/promote.yml
         params:
           RELEASE_TYPE: RELEASE
