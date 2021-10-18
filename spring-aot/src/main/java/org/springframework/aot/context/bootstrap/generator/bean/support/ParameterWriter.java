@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,10 +113,8 @@ public final class ParameterWriter {
 		}
 		else if (value instanceof Map) {
 			Map<?, ?> map = (Map<?, ?>) value;
-			@SuppressWarnings("rawtypes")
-			Class<? extends Map> mapType = (value instanceof LinkedHashMap) ? LinkedHashMap.class : Map.class;
 			if (map.size() <= 10) {
-				code.add("$T.of(", mapType);
+				code.add("$T.of(", Map.class);
 				List<Object> parameters = new ArrayList<>();
 				map.forEach((mapKey, mapValue) -> {
 					parameters.add(mapKey);

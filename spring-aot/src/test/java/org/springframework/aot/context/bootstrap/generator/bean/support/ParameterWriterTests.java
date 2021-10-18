@@ -94,16 +94,16 @@ class ParameterWriterTests {
 	}
 
 	@Test
-	void writeLinkedHashMap() {
+	void writeMap() {
 		Map<String, Object> value = new LinkedHashMap<>();
 		value.put("name", "Hello");
 		value.put("counter", 42);
-		assertThat(write(value)).isEqualTo("LinkedHashMap.of(\"name\", \"Hello\", \"counter\", 42)")
-				.hasImport(LinkedHashMap.class);
+		assertThat(write(value)).isEqualTo("Map.of(\"name\", \"Hello\", \"counter\", 42)")
+				.hasImport(Map.class);
 	}
 
 	@Test
-	void writeHashMap() {
+	void writeMapWithEnum() {
 		Map<String, Object> value = new HashMap<>();
 		value.put("unit", ChronoUnit.DAYS);
 		assertThat(write(value)).isEqualTo("Map.of(\"unit\", ChronoUnit.DAYS)")
