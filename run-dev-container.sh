@@ -16,8 +16,7 @@ while test $# -gt 0; do
       echo " "
       echo "options:"
       echo "-h, --help                show brief help"
-      echo "-j, --java=VERSION        specify Java version to use, can be 8 or 11, 11 by default"
-      echo "-g, --graalvm=VERSION     specify GraalVM flavor to use, can be stable or dev, stable by default"
+      echo "-j, --java=VERSION        specify Java version to use, can be 11 or 17, 11 by default"
       echo "-w, --workdir=/foo        specify the working directory, should be an absolute path, current one by default"
       echo "-p, --pull                force pulling of remote container images"
       echo "-r, --rebuild             force container image rebuild"
@@ -35,20 +34,6 @@ while test $# -gt 0; do
       ;;
     --java*)
       export JAVA_VERSION=`echo $1 | sed -e 's/^[^=]*=//g'`
-      shift
-      ;;
-    -g)
-      shift
-      if test $# -gt 0; then
-        export GRAALVM_VERSION=$1
-      else
-        echo "no GraalVM version specified"
-        exit 1
-      fi
-      shift
-      ;;
-    --graalvm*)
-      export GRAALVM_VERSION=`echo $1 | sed -e 's/^[^=]*=//g'`
       shift
       ;;
     -w)
@@ -92,7 +77,7 @@ done
 DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/docker" >/dev/null 2>&1 && pwd )"
 CONTAINER_HOME=/home/$USER
 CONTAINER_WORK_DIR=$CONTAINER_HOME/spring-native
-CONTAINER_TAG=${GRAALVM_VERSION}-java${JAVA_VERSION}-${MILESTONE}
+CONTAINER_TAG=java${JAVA_VERSION}-${MILESTONE}
 DEV_IMAGE=Dockerfile.spring-native-dev
 
 if [ "$PULL" = true ] ; then
