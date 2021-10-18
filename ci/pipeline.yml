@@ -161,7 +161,6 @@ resources:
     source: {interval: 24h}
 jobs:
   - name: build-spring-native-ci-java11-image
-    old_name: build-ci-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
@@ -196,19 +195,16 @@ jobs:
         params:
           image: spring-native-ci-java17-image/image.tar
   - name: check-graalvm-ce-change
-    old_name: check-graalvm-ce-stable-change
     plan:
       - get: graalvm-git-repo
         trigger: true
   - name: check-graalvm-ce-every-day
-    old_name: check-graalvm-ce-stable-every-day
     plan:
       - get: graalvm-git-repo
         passed: [check-graalvm-ce-change]
       - get: every-day
         trigger: true
   - name: build-graalvm-ce-java11-image
-    old_name: build-graalvm-ce-stable-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
@@ -253,7 +249,6 @@ jobs:
         params:
           image: graalvm-ce-java17-image/image.tar
   - name: build-spring-native-java11-image
-    old_name: build-spring-native-stable-image
     plan:
       - get: git-repo
       - get: ci-images-git-repo
@@ -305,7 +300,6 @@ jobs:
         params:
           <<: *docker-hub-task-params
   - name: build-samples-aot-java11
-    old_name: build-samples-aot-stable-java11
     public: true
     plan:
       - get: spring-native-java11-image
@@ -338,7 +332,6 @@ jobs:
               <<: *docker-hub-task-params
               <<: *wavefront-params
   - name: build-samples-java11
-    old_name: build-samples-stable-java11
     public: true
     plan:
       - get: spring-native-java11-image
