@@ -30,7 +30,6 @@ import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.errors.DefaultProductionExceptionHandler;
 import org.apache.kafka.streams.errors.LogAndFailExceptionHandler;
-import org.apache.kafka.streams.processor.DefaultPartitionGrouper;
 import org.apache.kafka.streams.processor.FailOnInvalidTimestamp;
 import org.apache.kafka.streams.processor.internals.StreamsPartitionAssignor;
 import org.apache.kafka.streams.processor.internals.assignment.FallbackPriorTaskAssignor;
@@ -138,7 +137,6 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 @NativeHint(trigger = StreamsBuilder.class,
 	types = {
 		@TypeHint(types = {
-				DefaultPartitionGrouper.class,
 				StreamsPartitionAssignor.class,
 				DefaultProductionExceptionHandler.class,
 				FailOnInvalidTimestamp.class,
