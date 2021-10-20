@@ -12,7 +12,8 @@ org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistration
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
 org.springframework.boot.actuate.endpoint.annotation.EndpointNativeConfigurationProcessor,\
-org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor
+org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor,\
+org.springframework.data.RepositoryDefinitionConfigurationProcessor  
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
 org.springframework.aot.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
