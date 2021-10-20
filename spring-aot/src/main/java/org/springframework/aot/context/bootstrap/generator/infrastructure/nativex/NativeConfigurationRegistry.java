@@ -18,6 +18,7 @@ package org.springframework.aot.context.bootstrap.generator.infrastructure.nativ
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -235,6 +236,14 @@ public class NativeConfigurationRegistry {
 			ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
 			this.proxies.forEach((proxy) -> proxy.contribute(proxiesDescriptor));
 			return proxiesDescriptor;
+		}
+
+		/**
+		 * Return the {@link NativeProxyEntry entries} of this registry.
+		 * @return the entries in the registry
+		 */
+		public Set<NativeProxyEntry> getEntries() {
+			return Collections.unmodifiableSet(this.proxies);
 		}
 
 	}

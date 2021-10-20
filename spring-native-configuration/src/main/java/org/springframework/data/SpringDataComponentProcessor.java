@@ -206,10 +206,10 @@ public class SpringDataComponentProcessor implements ComponentProcessor {
 
 			log.repositoryFoundForType(repositoryType, repositoryDomainType);
 
-			registerRepositoryInterface(repositoryType, imageContext);
-			registerDomainType(repositoryDomainType, imageContext);
-			registerQueryMethodResultTypes(repositoryType, repositoryDomainType, imageContext);
-			detectCustomRepositoryImplementations(repositoryType, imageContext);
+//			registerRepositoryInterface(repositoryType, imageContext);
+//			registerDomainType(repositoryDomainType, imageContext);
+//			registerQueryMethodResultTypes(repositoryType, repositoryDomainType, imageContext);
+//			detectCustomRepositoryImplementations(repositoryType, imageContext);
 		} catch (Throwable t) {
 			logger.debug("WARNING: Problem with SpringDataComponentProcessor: " + t.getMessage());
 		}

@@ -1,5 +1,4 @@
 org.springframework.SpringAtRepositoryComponentProcessor
-org.springframework.data.SpringDataComponentProcessor
 org.springframework.data.JpaComponentProcessor
 org.springframework.web.WebComponentProcessor
 org.springframework.AotProxyComponentProcessor
