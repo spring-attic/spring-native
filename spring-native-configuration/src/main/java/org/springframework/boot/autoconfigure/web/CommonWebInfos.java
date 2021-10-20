@@ -20,8 +20,10 @@ import org.springframework.nativex.hint.ResourceHint;
 
 @ResourceHint(patterns = {
 	"^static/.*",
+	"^public/.*",
+	"^resources/.*",
 	"^templates/.*",
-	"^META-INF/resources/webjars/.*"
+	"^META-INF/resources/.*"
 })
 public class CommonWebInfos {
 }
