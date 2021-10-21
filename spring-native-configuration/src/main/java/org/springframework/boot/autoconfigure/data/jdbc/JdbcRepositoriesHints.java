@@ -40,14 +40,7 @@ import org.springframework.nativex.hint.TypeHint;
 				JdbcRepositoryFactoryBean.class,
 				JdbcRepositoryConfigExtension.class,
 				SimpleJdbcRepository.class,
-				RelationResolver.class,
-				AfterDeleteCallback.class,
-				AfterLoadCallback.class,
-				AfterSaveCallback.class,
-				BeforeConvertCallback.class,
-				BeforeDeleteCallback.class,
-				BeforeSaveCallback.class,
-				RelationalAuditingCallback.class
+				RelationResolver.class
 		}), jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jdbc.core.convert.RelationResolver",
 				"org.springframework.aop.SpringProxy",
