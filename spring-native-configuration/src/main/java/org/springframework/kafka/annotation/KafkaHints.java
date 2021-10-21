@@ -18,11 +18,30 @@ package org.springframework.kafka.annotation;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.clients.consumer.RangeAssignor;
+import org.apache.kafka.clients.consumer.RoundRobinAssignor;
+import org.apache.kafka.clients.consumer.StickyAssignor;
+import org.apache.kafka.clients.producer.RoundRobinPartitioner;
+import org.apache.kafka.clients.producer.UniformStickyPartitioner;
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.message.CreateTopicsRequestData.CreatableTopic;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.common.serialization.ByteBufferDeserializer;
+import org.apache.kafka.common.serialization.ByteBufferSerializer;
+import org.apache.kafka.common.serialization.BytesDeserializer;
+import org.apache.kafka.common.serialization.BytesSerializer;
+import org.apache.kafka.common.serialization.DoubleDeserializer;
+import org.apache.kafka.common.serialization.DoubleSerializer;
+import org.apache.kafka.common.serialization.FloatDeserializer;
+import org.apache.kafka.common.serialization.FloatSerializer;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.common.serialization.ListDeserializer;
+import org.apache.kafka.common.serialization.ListSerializer;
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -36,6 +55,8 @@ import org.apache.kafka.streams.processor.internals.assignment.FallbackPriorTask
 import org.apache.kafka.streams.processor.internals.assignment.HighAvailabilityTaskAssignor;
 import org.apache.kafka.streams.processor.internals.assignment.StickyTaskAssignor;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
+
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -52,8 +73,15 @@ import org.springframework.kafka.listener.ConsumerProperties;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
+import org.springframework.kafka.support.serializer.DelegatingByTopicDeserializer;
+import org.springframework.kafka.support.serializer.DelegatingDeserializer;
+import org.springframework.kafka.support.serializer.DelegatingSerializer;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.ParseStringDeserializer;
+import org.springframework.kafka.support.serializer.StringOrBytesSerializer;
+import org.springframework.kafka.support.serializer.ToStringSerializer;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
@@ -116,14 +144,44 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 			}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS),
 		@TypeHint(types = {
 				AppInfo.class,
+				// standard assignors
+				CooperativeStickyAssignor.class,
 				RangeAssignor.class,
+				RoundRobinAssignor.class,
+				StickyAssignor.class,
+				// standard partitioners
 				DefaultPartitioner.class,
+				RoundRobinPartitioner.class,
+				UniformStickyPartitioner.class,
+				// standard serialization
+				ByteArrayDeserializer.class,
+				ByteArraySerializer.class,
+				ByteBufferDeserializer.class,
+				ByteBufferSerializer.class,
+				BytesDeserializer.class,
+				BytesSerializer.class,
+				DoubleSerializer.class,
+				DoubleDeserializer.class,
+				FloatSerializer.class,
+				FloatDeserializer.class,
+				IntegerSerializer.class,
+				IntegerDeserializer.class,
+				ListDeserializer.class,
+				ListSerializer.class,
+				LongSerializer.class,
+				LongDeserializer.class,
 				StringDeserializer.class,
 				StringSerializer.class,
+				// Spring serialization
+				DelegatingByTopicDeserializer.class,
+				DelegatingDeserializer.class,
+				ErrorHandlingDeserializer.class,
+				DelegatingSerializer.class,
 				JsonDeserializer.class,
 				JsonSerializer.class,
-				ByteArrayDeserializer.class,
-				ByteArraySerializer.class
+				ParseStringDeserializer.class,
+				StringOrBytesSerializer.class,
+				ToStringSerializer.class
 			}, typeNames = "java.util.zip.CRC32C")
 	},
 	jdkProxies = @JdkProxyHint(types = {
