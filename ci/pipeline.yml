@@ -388,7 +388,7 @@ jobs:
     serial: true
     public: true
     plan:
-      - get: spring-native-ci-java11-image
+      - get: spring-native-java11-image
       - get: git-repo
         resource: git-pull-request
         trigger: true
@@ -400,7 +400,7 @@ jobs:
             status: pending
         - task: build-project
           privileged: true
-          image: spring-native-ci-java11-image
+          image: spring-native-java11-image
           file: git-repo/ci/tasks/build-pr-project.yml
           params:
             <<: *docker-hub-task-params
