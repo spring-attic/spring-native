@@ -332,6 +332,10 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 
 						if (domainType.hasMethods()) {
 							reflectBuilder.withMethods(domainType.getMethods().toArray(new Method[0]));
+						} else {
+							if(domainType.isPartOf("java")) {
+								reflectBuilder.withFlags(Flag.allPublicMethods);
+							}
 						}
 
 						if (domainType.hasFields()) {
