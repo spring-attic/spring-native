@@ -270,10 +270,10 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			// TODO: should we also ask the BeanFactory if a tx-manager is configured?
 			if (ClassUtils.isPresent("org.springframework.transaction.interceptor.TransactionalProxy", classLoader)) {
 
-				registry.proxy().add(NativeProxyEntry.ofInterfaces(configuration.getRepositoryInterface(), Repository.class, org.springframework.transaction.interceptor.TransactionalProxy.class, Advised.class, DecoratingProxy.class));
+				registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(), "org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", DecoratingProxy.class.getName()));
 
 				if (configuration.isAnnotationPresent(Component.class)) {
-					registry.proxy().add(NativeProxyEntry.ofInterfaces(configuration.getRepositoryInterface(), Repository.class, org.springframework.transaction.interceptor.TransactionalProxy.class, Advised.class, DecoratingProxy.class, Serializable.class));
+					registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(), "org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", DecoratingProxy.class.getName(), Serializable.class.getName()));
 				}
 			}
 
