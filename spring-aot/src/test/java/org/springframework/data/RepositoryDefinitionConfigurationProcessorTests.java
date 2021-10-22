@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
@@ -173,6 +174,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	}
 
 	@Test
+	@Disabled("if another component allows access to property descriptor methods, this will cause trouble")
 	void onlyRegisterNonTransientFieldsButKeepTheAnnotation() {
 
 		NativeConfigRegistryHolder registry = getNativeConfiguration(new RepositoryConfiguration(CustomerRepository.class));

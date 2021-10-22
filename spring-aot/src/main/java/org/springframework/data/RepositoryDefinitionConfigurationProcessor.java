@@ -338,12 +338,8 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 							}
 						}
 
-						if (domainType.hasFields()) {
-							for (Field field : domainType.getFields()) {
-								if (nonTransientField(field)) {
-									reflectBuilder.withFields(field);
-								}
-							}
+						if(domainType.hasFields()) {
+							reflectBuilder.withFields(domainType.getFields().toArray(new Field[0]));
 						}
 
 						if (domainType.hasPersistenceConstructor()) {
