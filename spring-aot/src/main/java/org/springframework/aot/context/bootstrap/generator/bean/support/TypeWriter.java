@@ -30,7 +30,11 @@ import org.springframework.util.ClassUtils;
  */
 public class TypeWriter {
 
-
+	/**
+	 * Generate a type signature for the specified {@link ResolvableType}.
+	 * @param target the type to generate
+	 * @return the representation of that type
+	 */
 	public CodeBlock generateTypeFor(ResolvableType target) {
 		CodeBlock.Builder code = CodeBlock.builder();
 		generate(code, target, false);
@@ -51,14 +55,12 @@ public class TypeWriter {
 			code.add("$T.forClassWithGenerics($T.class, ", ResolvableType.class, type);
 			ResolvableType[] generics = target.getGenerics();
 			boolean hasGenericParameter = Arrays.stream(generics).anyMatch(ResolvableType::hasGenerics);
+			MultiCodeBlock multi = new MultiCodeBlock();
 			for (int i = 0; i < generics.length; i++) {
 				ResolvableType parameter = target.getGeneric(i);
-				generate(code, parameter, hasGenericParameter);
-				if (i < generics.length - 1) {
-					code.add(", ");
-				}
+				multi.add((parameterCode) -> generate(parameterCode, parameter, hasGenericParameter));
 			}
-			code.add(")");
+			code.add(multi.join(", ")).add(")");
 		}
 	}
 
