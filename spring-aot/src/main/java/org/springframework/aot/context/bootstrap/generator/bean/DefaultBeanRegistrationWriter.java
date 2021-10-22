@@ -42,6 +42,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Protec
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -117,7 +118,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 	 * @return the bean definition's attributes include filter
 	 */
 	protected Predicate<String> getAttributeFilter() {
-		return (candidate) -> false;
+		return (candidate) -> FactoryBean.OBJECT_TYPE_ATTRIBUTE.equals(candidate);
 	}
 
 	/**
