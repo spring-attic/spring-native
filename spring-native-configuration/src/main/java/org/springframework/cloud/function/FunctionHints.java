@@ -24,6 +24,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
+@NativeHint(options = "--enable-http")
 @NativeHint(trigger = RequestBuilder.class, initialization =
 	@InitializationHint(typeNames = "org.springframework.cloud.function.web.function.FunctionEndpointInitializer", initTime = InitializationTime.BUILD))
 @NativeHint(trigger = KotlinLambdaToFunctionAutoConfiguration.class, types =
