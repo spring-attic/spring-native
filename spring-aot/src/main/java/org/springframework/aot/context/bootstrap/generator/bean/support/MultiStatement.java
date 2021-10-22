@@ -27,6 +27,7 @@ import com.squareup.javapoet.CodeBlock.Builder;
  * A {@link CodeBlock} wrapper for multiple statements.
  *
  * @author Stephane Nicoll
+ * @see MultiCodeBlock
  */
 public final class MultiStatement {
 

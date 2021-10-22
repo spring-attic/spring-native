@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.scope.ScopedProxyUtils;
+import org.springframework.aot.context.bootstrap.generator.bean.support.MultiCodeBlock;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -124,18 +124,14 @@ public class EventListenerMethodRegistrationGenerator {
 		if (multipleMethods) {
 			registrations.add("$T.of(\n", List.class).indent().indent();
 		}
-		Iterator<Entry<String, List<EventListenerMetadataGenerator>>> it =
-				generatorsPerPackage.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<String, List<EventListenerMetadataGenerator>> entry = it.next();
-			MethodSpec method = createEventListenersMetadataMethod(entry.getValue());
-			BootstrapClass bootstrapClass = context.getBootstrapClass(entry.getKey());
+		MultiCodeBlock multi = new MultiCodeBlock();
+		generatorsPerPackage.forEach((packageName, generators) -> {
+			BootstrapClass bootstrapClass = context.getBootstrapClass(packageName);
+			MethodSpec method = createEventListenersMetadataMethod(generators);
 			bootstrapClass.addMethod(method);
-			registrations.add("$T.$N()", bootstrapClass.getClassName(), method);
-			if (it.hasNext()) {
-				registrations.add(",\n");
-			}
-		}
+			multi.add("$T.$N()", bootstrapClass.getClassName(), method);
+		});
+		registrations.add(multi.join(",\n"));
 		if (multipleMethods) {
 			registrations.add("\n").unindent().unindent();
 			registrations.add(").stream().flatMap($T::stream).collect($T.toList())",
@@ -162,13 +158,9 @@ public class EventListenerMethodRegistrationGenerator {
 		Builder code = CodeBlock.builder();
 		code.add("return $T.of(", List.class);
 		code.add("\n").indent();
-		Iterator<EventListenerMetadataGenerator> it = generators.iterator();
-		while (it.hasNext()) {
-			it.next().writeEventListenerMetadata(code); ;
-			if (it.hasNext()) {
-				code.add(",\n");
-			}
-		}
+		MultiCodeBlock multi = new MultiCodeBlock();
+		generators.forEach((generator) -> multi.add(generator::writeEventListenerMetadata));
+		code.add(multi.join(",\n"));
 		code.add("\n").unindent().addStatement(")");
 		return MethodSpec.methodBuilder("getEventListenersMetadata")
 				.returns(ParameterizedTypeName.get(List.class, EventListenerMetadata.class))

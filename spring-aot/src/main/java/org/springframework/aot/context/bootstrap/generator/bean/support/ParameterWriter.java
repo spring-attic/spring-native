@@ -21,7 +21,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,8 +82,8 @@ public final class ParameterWriter {
 		ResolvableType parameterType = parameterTypeSupplier.get();
 		if (parameterType.isArray()) {
 			code.add("new $T { ", parameterType.toClass());
-			writeAll(code, Arrays.asList(ObjectUtils.toObjectArray(value)),
-					(item) -> parameterType.getComponentType());
+			code.add(writeAll(Arrays.asList(ObjectUtils.toObjectArray(value)),
+					(item) -> parameterType.getComponentType()));
 			code.add(" }");
 		}
 		else if (value instanceof List) {
@@ -95,7 +94,7 @@ public final class ParameterWriter {
 			else {
 				code.add("$T.of(", List.class);
 				ResolvableType collectionType = parameterType.as(List.class).getGenerics()[0];
-				writeAll(code, list, (item) -> collectionType);
+				code.add(writeAll(list, (item) -> collectionType));
 				code.add(")");
 			}
 		}
@@ -107,7 +106,7 @@ public final class ParameterWriter {
 			else {
 				code.add("$T.of(", Set.class);
 				ResolvableType collectionType = parameterType.as(Set.class).getGenerics()[0];
-				writeAll(code, set, (item) -> collectionType);
+				code.add(writeAll(set, (item) -> collectionType));
 				code.add(")");
 			}
 		}
@@ -120,7 +119,7 @@ public final class ParameterWriter {
 					parameters.add(mapKey);
 					parameters.add(mapValue);
 				});
-				writeAll(code, parameters, ResolvableType::forInstance);
+				code.add(writeAll(parameters, ResolvableType::forInstance));
 				code.add(")");
 			}
 		}
@@ -143,15 +142,11 @@ public final class ParameterWriter {
 		}
 	}
 
-	private <T> void writeAll(Builder code, Iterable<T> items, Function<T, ResolvableType> elementType) {
-		Iterator<T> it = items.iterator();
-		while (it.hasNext()) {
-			T item = it.next();
-			writeParameterValue(code, item, () -> elementType.apply(item));
-			if (it.hasNext()) {
-				code.add(", ");
-			}
-		}
+	private <T> CodeBlock writeAll(Iterable<T> items, Function<T, ResolvableType> elementType) {
+		MultiCodeBlock multi = new MultiCodeBlock();
+		items.forEach((item) -> multi.add((code) ->
+				writeParameterValue(code, item, () -> elementType.apply(item))));
+		return multi.join(", ");
 	}
 
 	private boolean isPrimitiveOrWrapper(Object value) {
