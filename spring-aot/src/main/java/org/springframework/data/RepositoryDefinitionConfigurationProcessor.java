@@ -289,15 +289,19 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 
 				registry.reflection().forType(Iterable.class).withFlags(Flag.allPublicMethods);
 
-				try {
-					registry.reflection().forType(Class.forName("kotlinx.coroutines.flow.Flow")).withFlags(Flag.allPublicMethods);
-					registry.reflection().forType(Class.forName("kotlin.collections.Iterable")).withFlags(Flag.allPublicMethods);
-					registry.reflection().forType(Class.forName("kotlin.Unit")).withFlags(Flag.allPublicMethods);
-					registry.reflection().forType(Class.forName("kotlin.Long")).withFlags(Flag.allPublicMethods);
-					registry.reflection().forType(Class.forName("kotlin.Boolean")).withFlags(Flag.allPublicMethods);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
+				safelyRegister("kotlinx.coroutines.flow.Flow", Flag.allPublicMethods);
+				safelyRegister("kotlin.collections.Iterable", Flag.allPublicMethods);
+				safelyRegister("kotlin.Unit", Flag.allPublicMethods);
+				safelyRegister("kotlin.Long", Flag.allPublicMethods);
+				safelyRegister("kotlin.Boolean", Flag.allPublicMethods);
+			}
+		}
+
+		private void safelyRegister(String classname, Flag... flags) {
+			try {
+				registry.reflection().forType(Class.forName(classname)).withFlags(flags);
+			} catch (ClassNotFoundException e) {
+				// TODO: logging?
 			}
 		}
 
@@ -543,11 +547,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		}
 
 		boolean isKotlinRepository() {
-
-			if (KotlinDetector.isKotlinPresent()) {
-				return ClassUtils.isAssignable(CoroutineCrudRepository.class, repositoryInterface);
-			}
-			return false;
+			return ClassUtils.isAssignable(CoroutineCrudRepository.class, repositoryInterface);
 		}
 
 		void setBeanName(String beanName) {

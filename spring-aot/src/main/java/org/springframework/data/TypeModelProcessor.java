@@ -43,7 +43,7 @@ import org.springframework.util.ReflectionUtils;
  */
 class TypeModelProcessor {
 
-	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor."));
+	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor.", "kotlinx.", "kotlin."));
 
 	private Predicate<Class<?>> typeFilter = (type) -> {
 
