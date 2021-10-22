@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
-@NativeHint(trigger = HttpMessageConvertersAutoConfiguration.class, types = {
+@NativeHint(trigger = HttpMessageConvertersAutoConfiguration.class, options = "--enable-http", types = {
 	@TypeHint(types= FormHttpMessageConverter.class, access = AccessBits.DECLARED_FIELDS),
 	@TypeHint(types= Encoding.class, access = AccessBits.DECLARED_CONSTRUCTORS)
 })
