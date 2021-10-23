@@ -2654,6 +2654,22 @@ public class Type {
 		return dimensions > 0 ? Collections.emptyList()
 				: node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m)).collect(Collectors.toList());
 	}
+
+	public List<Method> getMethodsInHierarchy(Predicate<Method> predicate) {
+		if (dimensions > 0) {
+			return Collections.emptyList();
+		}
+		List<Method> ret = new ArrayList<>();
+		for (Type interf : getAllInterfaces()) {
+			ret.addAll(interf.node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m)).collect(Collectors.toList()));
+		}
+		Type cls = this;
+		while (cls != null) {
+			ret.addAll(cls.node.methods.stream().map(m -> wrap(m)).filter(m -> predicate.test(m)).collect(Collectors.toList()));
+			cls = cls.getSuperclass();
+		}
+		return ret;
+	}
 	
 	public List<Method> getMethod(String name) {
 		List<Method> results = new ArrayList<>();

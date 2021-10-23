@@ -51,7 +51,7 @@ public class WebComponentProcessor implements ComponentProcessor {
 	@Override
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 		Type controllerType = imageContext.getTypeSystem().resolveDotted(componentType,true);
-		List<Method> mappings = controllerType.getMethods(m -> m.isAtMapping());
+		List<Method> mappings = controllerType.getMethodsInHierarchy(m -> m.isAtMapping());
 		imageContext.log("WebComponentProcessor: in controller "+componentType+" processing mappings "+mappings);
 		for (Method mapping: mappings) {
 			List<Type> toProcess = new ArrayList<>();
