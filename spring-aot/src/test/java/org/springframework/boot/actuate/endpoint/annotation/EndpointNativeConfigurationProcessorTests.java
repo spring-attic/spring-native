@@ -25,6 +25,8 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +65,21 @@ class EndpointNativeConfigurationProcessorTests {
 			assertThat(entry.getMethods().stream().map(Method::getName)).containsOnly("get");
 		});
 		assertThat(entries).hasSize(1);
+	}
+
+	@Test
+	void registerFilteredEndpointRegistersEndpointFilter() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TestFilteredEndpoint.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		assertThat(entries).anySatisfy((entry) ->
+				assertThat(entry.getType()).isEqualTo(TestFilteredEndpoint.class));
+		assertThat(entries).anySatisfy((entry) -> {
+			assertThat(entry.getType()).isEqualTo(TestEndpointFilter.class);
+			assertThat(entry.getConstructors()).containsOnly(TestEndpointFilter.class.getDeclaredConstructors()[0]);
+		});
+		assertThat(entries).hasSize(2);
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
@@ -114,6 +131,20 @@ class EndpointNativeConfigurationProcessorTests {
 
 		}
 
+	}
+
+	@Endpoint
+	@FilteredEndpoint(TestEndpointFilter.class)
+	static class TestFilteredEndpoint {
+
+	}
+
+	static class TestEndpointFilter implements EndpointFilter<ExposableEndpoint<?>> {
+
+		@Override
+		public boolean match(ExposableEndpoint<?> endpoint) {
+			return false;
+		}
 	}
 
 }

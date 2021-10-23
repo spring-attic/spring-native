@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry.Builder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -33,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * A {@link BeanFactoryNativeConfigurationProcessor} that register reflection access for
  * actuator endpoints, specifically the methods flagged with one of the supported
- * operation annotations.
+ * operation annotations, as well as any endpoint filter.
  *
  * @author Stephane Nicoll
  */
@@ -74,11 +76,30 @@ class EndpointNativeConfigurationProcessor implements BeanFactoryNativeConfigura
 		private void registerEndpoint(NativeConfigurationRegistry registry, Class<?> type) {
 			Builder builder = registry.reflection().forType(type);
 			ReflectionUtils.doWithMethods(type, builder::withMethods, this::isOperationMethod);
+			Executable endpointFilterConstructor = getEndpointFilterConstructor(type);
+			if (endpointFilterConstructor != null) {
+				registry.reflection().addExecutable(endpointFilterConstructor);
+			}
 		}
 
 		private boolean isOperationMethod(Method method) {
 			MergedAnnotations from = MergedAnnotations.from(method);
 			return OPERATION_ANNOTATIONS.stream().anyMatch(from::isPresent);
+		}
+
+		private Executable getEndpointFilterConstructor(Class<?> endpointType) {
+			MergedAnnotations annotations = MergedAnnotations.from(endpointType);
+			MergedAnnotation<FilteredEndpoint> annotation = annotations.get(FilteredEndpoint.class);
+			if (annotation.isPresent()) {
+				try {
+					Class<?> endpointFilter = annotation.getClass("value");
+					return endpointFilter.getDeclaredConstructor();
+				}
+				catch (Exception ex) {
+					// ignore
+				}
+			}
+			return null;
 		}
 	}
 
