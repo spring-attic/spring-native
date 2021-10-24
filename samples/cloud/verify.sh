@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 source ${PWD%/*samples/*}/scripts/wait.sh
-trap 'wait_http localhost:8080 "hi!"' ERR
-wait_http localhost:8080/actuator "{"
+RC=0
+
+wait_http localhost:8080 "hi!" || RC=$?
+wait_http localhost:8080/actuator "{" || RC=$?
+
+exit $RC

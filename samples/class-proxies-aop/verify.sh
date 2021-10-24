@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 source ${PWD%/*samples/*}/scripts/wait.sh
-trap 'wait_http localhost:8080/with "hello1"' ERR
-wait_http localhost:8080/without "hello2"
+RC=0
+
+wait_http localhost:8080/with "hello1" || RC=$?
+wait_http localhost:8080/without "hello2" || RC=$?
+
+exit $RC
