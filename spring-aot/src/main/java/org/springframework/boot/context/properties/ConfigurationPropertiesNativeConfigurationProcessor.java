@@ -53,7 +53,8 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 	}
 
 	private void registerWithNestedMembersIfNecessary(NativeConfigurationRegistry registry, Class<?> type) {
-		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
+		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods)
+				.withFlags(Flag.allDeclaredConstructors);
 		for (Class<?> nested : type.getDeclaredClasses()) {
 			registerWithNestedMembersIfNecessary(registry, nested);
 		}

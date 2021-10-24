@@ -10,5 +10,6 @@ wait_http localhost:8080/actuator/metrics "jvm.classes.loaded" || RC=$?
 wait_http localhost:8080/actuator/metrics/jvm.classes.loaded "statistic" || RC=$?
 wait_http localhost:8080/actuator/custom "OK" || RC=$?
 wait_http localhost:8080/actuator/customnc "OK" || RC=$?
+wait_http localhost:8080/actuator/health/readiness "customIndicator" || RC=$?
 
 exit $RC
