@@ -16,6 +16,8 @@
 
 package org.springframework.web.socket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.converter.CompositeMessageConverter;
@@ -36,6 +38,7 @@ import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessa
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
+import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService;
 
 @NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, types = {
 		@TypeHint(types= {
@@ -59,5 +62,6 @@ import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrate
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
 		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
+@NativeHint(trigger = TransportHandlingSockJsService.class, types = @TypeHint(types = ObjectMapper.class, access = AccessBits.CLASS))
 public class WebSocketHints implements NativeConfiguration {
 }

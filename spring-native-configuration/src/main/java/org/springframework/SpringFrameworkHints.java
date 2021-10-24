@@ -75,7 +75,6 @@ import org.springframework.nativex.hint.JdkProxyHint;
 				org.springframework.web.client.RestTemplate.class,
 				org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.class,
 				org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport.class,
-				org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService.class,
 				org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.class,
 				org.springframework.core.ReactiveAdapterRegistry.class,
 				org.springframework.core.NativeDetector.class,
