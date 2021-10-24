@@ -26,6 +26,13 @@ import org.springframework.nativex.type.NativeConfiguration;
 	resources = @ResourceHint(patterns = "rabbitmq-amqp-client.properties"),
 	jdkProxies = {
 		@JdkProxyHint(types = ChannelProxy.class),
-		@JdkProxyHint(types = { RabbitListener.class, SynthesizedAnnotation.class})
+		@JdkProxyHint(types = { RabbitListener.class, SynthesizedAnnotation.class}),
+		@JdkProxyHint(typeNames = {
+				"org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer$ContainerDelegate",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"
+		})
 	})
+
 public class RabbitHints implements NativeConfiguration { }
