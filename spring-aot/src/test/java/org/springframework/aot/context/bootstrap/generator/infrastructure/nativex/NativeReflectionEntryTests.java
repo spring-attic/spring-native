@@ -226,6 +226,13 @@ class NativeReflectionEntryTests {
 		});
 	}
 
+	@Test
+	void toClassDescriptorShouldRegisterConditionalOnReachableType() {
+		ClassDescriptor descriptor = NativeReflectionEntry.of(String.class).conditionalOnTypeReachable(Integer.class).build().toClassDescriptor();
+		assertThat(descriptor.getName()).isEqualTo("java.lang.String");
+		assertThat(descriptor.getCondition().getTypeReachable()).isEqualTo("java.lang.Integer");
+	}
+
 	@SuppressWarnings("unused")
 	static class TestClass {
 

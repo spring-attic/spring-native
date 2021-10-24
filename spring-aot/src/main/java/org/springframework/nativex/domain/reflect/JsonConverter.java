@@ -43,6 +43,11 @@ public class JsonConverter {
 	public JSONObject toJsonObject(ClassDescriptor cd) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", cd.getName());
+		if (cd.getCondition() != null && cd.getCondition().getTypeReachable() != null) {
+			JSONObject conditionJsonObject = new JSONObject();
+			conditionJsonObject.put("typeReachable", cd.getCondition().getTypeReachable());
+			jsonObject.put("condition", conditionJsonObject);
+		}
 		Set<Flag> flags = cd.getFlags();
 		if (flags != null) {
 			for (Flag flag: Flag.values()) {

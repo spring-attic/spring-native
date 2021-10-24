@@ -21,6 +21,7 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.ConditionDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 
@@ -124,6 +125,30 @@ public class DescriptorTests {
 		b.add("bar/two.json");
 		a.merge(b);
 		assertThat(a.getPatterns()).containsExactlyInAnyOrder("foo/one.json", "bar/two.json");
+	}
+
+	@Test
+	public void reflectionDescriptorWithCondition() {
+		ClassDescriptor conditionalDescriptor = ClassDescriptor.of("foo");
+		conditionalDescriptor.setCondition(new ConditionDescriptor("bar"));
+		assertThat(conditionalDescriptor.toString()).contains("foo condition:bar");
+		assertThat(conditionalDescriptor.toJsonString()).contains("\"typeReachable\":\"bar\"");
+	}
+
+	@Test
+	public void reflectionDescriptorWithConditionAndNullReachableType() {
+		ClassDescriptor conditionalDescriptor = ClassDescriptor.of("foo");
+		conditionalDescriptor.setCondition(new ConditionDescriptor(null));
+		assertThat(conditionalDescriptor.toString()).isEqualTo("foo condition:null");
+		assertThat(conditionalDescriptor.toJsonString()).isEqualTo("{\"name\":\"foo\"}");
+	}
+
+	@Test
+	public void reflectionDescriptorWithConditionAndObjectReachableType() {
+		ClassDescriptor conditionalDescriptor = ClassDescriptor.of("foo");
+		conditionalDescriptor.setCondition(new ConditionDescriptor(Object.class.getName()));
+		assertThat(conditionalDescriptor.toString()).isEqualTo("foo condition:null");
+		assertThat(conditionalDescriptor.toJsonString()).isEqualTo("{\"name\":\"foo\"}");
 	}
 
 }

@@ -45,6 +45,7 @@ public class RequestedConfigurationManager {
 	private static Log logger = LogFactory.getLog(RequestedConfigurationManager.class);	
 	
 	private Map<String, Integer> requestedTypeAccesses = new HashMap<>();
+	private Map<String, String> requestedTypeReachable = new HashMap<>();
 	private Map<String, List<MethodDescriptor>> requestedMethodAccesses = new HashMap<>();
 	private Map<String, List<FieldDescriptor>> requestedFieldAccesses = new HashMap<>();
 	
@@ -95,9 +96,17 @@ public class RequestedConfigurationManager {
 			}
 		}
 	}
+
+	public void requestTypeReachable(String type, String reachableType) {
+		requestedTypeReachable.put(type, reachableType);
+	}
 	
 	public Integer getTypeAccessRequestedFor(String type) {
 		return requestedTypeAccesses.get(type);
+	}
+
+	public String getTypeReachableFor(String type) {
+		return requestedTypeReachable.get(type);
 	}
 
 	public List<MethodDescriptor> getMethodAccessRequestedFor(String type) {
@@ -150,6 +159,10 @@ public class RequestedConfigurationManager {
 		return requestedTypeAccesses.entrySet();
 	}
 
+	public Set<Entry<String,String>> getRequestedTypeReachable() {
+		return requestedTypeReachable.entrySet();
+	}
+
 	public List<JdkProxyDescriptor> getRequestedProxies() {
 		return requestedProxies;
 	}
@@ -178,6 +191,10 @@ public class RequestedConfigurationManager {
 		for (Entry<String, Integer> entry : incomingRCM.getRequestedTypeAccesses()) {
 			String typename = entry.getKey();
 			requestTypeAccess(typename, entry.getValue(), incomingRCM.getMethodAccessRequestedFor(typename), incomingRCM.getFieldAccessRequestedFor(typename));
+		}
+		for (Entry<String, String> entry : incomingRCM.getRequestedTypeReachable()) {
+			String typename = entry.getKey();
+			requestTypeReachable(typename, entry.getValue());
 		}
 		requestInitializationDescriptors(incomingRCM.getRequestedInitializations());
 		requestProxyDescriptors(incomingRCM.getRequestedProxies());

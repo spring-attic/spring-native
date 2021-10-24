@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.ConditionDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -87,12 +88,12 @@ public class ReflectionHandler extends Handler {
 	 * @param flags    any members that should be accessible via reflection
 	 */
 	public void addAccess(String typename, Flag...flags) {
-		addAccess(typename, null, null, false, flags);
+		addAccess(typename, null, null, null, false, flags);
 	}
 	
 	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
 		if (ad.noMembersSpecified()) {
-			addAccess(typename, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
 		} else {
 			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 			String[][] methodsAndConstructors = new String[mds.size()][];
@@ -111,7 +112,7 @@ public class ReflectionHandler extends Handler {
 				FieldDescriptor fd = fds.get(f);
 				fields[f] = FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
 			}
-			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
 		}
 	}
 	
@@ -123,7 +124,7 @@ public class ReflectionHandler extends Handler {
 		}
 	}
 
-	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
+	public void addAccess(String typename, String typeReachable, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
@@ -145,6 +146,9 @@ public class ReflectionHandler extends Handler {
 //		}
 		
 		ClassDescriptor cd = ClassDescriptor.of(typename);
+		if (typeReachable != null && !ts.resolveDotted(typeReachable).isAnnotation()) {
+			cd.setCondition(new ConditionDescriptor(typeReachable));
+		}
 		if (cd == null) {
 			cd  = ClassDescriptor.of(typename);
 		}

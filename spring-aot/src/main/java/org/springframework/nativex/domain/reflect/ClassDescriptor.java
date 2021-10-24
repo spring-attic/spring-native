@@ -28,11 +28,14 @@ import org.springframework.nativex.hint.Flag;
  * Reflection information about a single class.
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  * @see ReflectionDescriptor
  */
 public final class ClassDescriptor {
 
 	private String name; // e.g. java.lang.Class
+
+	private ConditionDescriptor condition;
 
 	private List<FieldDescriptor> fields;
 
@@ -43,8 +46,9 @@ public final class ClassDescriptor {
 	ClassDescriptor() {
 	}
 
-	ClassDescriptor(String name, List<FieldDescriptor> fields, List<MethodDescriptor> methods, Set<Flag> flags) {
+	ClassDescriptor(String name, ConditionDescriptor condition, List<FieldDescriptor> fields, List<MethodDescriptor> methods, Set<Flag> flags) {
 		this.name = name;
+		this.condition = condition;
 		this.fields = fields;
 		this.methods = methods;
 		this.flags = flags;
@@ -69,6 +73,7 @@ public final class ClassDescriptor {
 		ClassDescriptor other = (ClassDescriptor) o;
 		boolean result = true;
 		result = result && nullSafeEquals(this.name, other.name);
+		result = result && nullSafeEquals(this.condition, other.condition);
 		result = result && nullSafeEquals(this.flags, other.flags);
 		result = result && nullSafeEquals(this.fields, other.fields);
 		result = result && nullSafeEquals(this.methods, other.methods);
@@ -78,6 +83,7 @@ public final class ClassDescriptor {
 	@Override
 	public int hashCode() {
 		int result = nullSafeHashCode(this.name);
+		result = 31 * result + nullSafeHashCode(this.condition);
 		result = 31 * result + nullSafeHashCode(this.flags);
 		result = 31 * result + nullSafeHashCode(this.fields);
 		result = 31 * result + nullSafeHashCode(this.methods);
@@ -101,6 +107,7 @@ public final class ClassDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder(this.name);
+		buildToStringProperty(string, "condition", this.condition);
 		buildToStringProperty(string, "setFlags", this.flags);
 		buildToStringProperty(string, "fields", this.fields);
 		buildToStringProperty(string, "methods", this.methods);
@@ -111,6 +118,10 @@ public final class ClassDescriptor {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
+	}
+
+	public ConditionDescriptor getCondition() {
+		return condition;
 	}
 
 	public Set<Flag> getFlags() {
@@ -129,6 +140,10 @@ public final class ClassDescriptor {
 		ClassDescriptor cd = new ClassDescriptor();
 		cd.setName(name);
 		return cd;
+	}
+
+	public void setCondition(ConditionDescriptor condition) {
+		this.condition = condition;
 	}
 
 	public void setFlag(Flag f) {
@@ -184,6 +199,9 @@ public final class ClassDescriptor {
 	 * @param cd the ClassDescriptor to merge into this one
 	 */
 	public void merge(ClassDescriptor cd) {
+		if (cd.getCondition() != null && condition == null) {
+			condition = cd.getCondition();
+		}
 		if (cd.getFlags()!= null) {
 			for (Flag flag : cd.getFlags()) {
 				this.setFlag(flag);
@@ -278,10 +296,17 @@ public final class ClassDescriptor {
 		return false;
 	}
 
+	private boolean hasCondition() {
+		return condition != null && condition.getTypeReachable() != null;
+	}
+
 	public String toJsonString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		sb.append("\"name\":").append("\""+name+"\"");
+		if (hasCondition()) {
+			sb.append(",\"condition\":").append("\""+condition.toJsonString()+"\"");
+		}
 		if (hasConstructors()) {
 			sb.append(",\"allDeclaredConstructors\":true");
 		}
@@ -349,7 +374,7 @@ public final class ClassDescriptor {
 			flagsCopy = new HashSet<>();
 			flagsCopy.addAll(flags);
 		}
-		return new ClassDescriptor(name, fieldsCopy, methodsCopy, flagsCopy);
+		return new ClassDescriptor(name, condition, fieldsCopy, methodsCopy, flagsCopy);
 	}
 
 	public FieldDescriptor getFieldDescriptorNamed(String name) {

@@ -193,4 +193,8 @@ public class HintApplication {
 		return hintDeclaration.getJNITypes();
 	}
 
+	public String getTriggerTypename() {
+		return hintDeclaration.getTriggerTypename();
+	}
+
 }
