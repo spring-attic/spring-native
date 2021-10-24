@@ -6,6 +6,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     id("org.springframework.experimental.aot") version "0.11.0-SNAPSHOT"
     kotlin("jvm") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.21"
     kotlin("plugin.spring") version "1.5.21"
 }
 
@@ -25,9 +26,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
         exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-websocket")
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-json")
     }
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:${dependencyManagement.importedProperties["tomcat.version"]}")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

@@ -1,5 +1,6 @@
 package com.example.webmvc
 
+import kotlinx.serialization.Serializable
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +14,7 @@ fun main(args: Array<String>) {
 	runApplication<WebmvcApplication>(*args)
 }
 
+@Serializable
 data class Bar(val message: String)
 
 @RestController
