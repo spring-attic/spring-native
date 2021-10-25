@@ -77,7 +77,7 @@ else
 fi
 PID=$!
 
-./verify.sh
+VERIFY_RESULT=$(./verify.sh 2>&1)
 RC=$?
 if [[ $RC == 0 ]]
 then
@@ -122,6 +122,7 @@ else
   cat $BUILD_OUTPUT_FILE
   cat $TEST_OUTPUT_FILE
   printf "${RED}FAILURE${NC}: the output of the application does not contain the expected output\n"
+  printf "${VERIFY_RESULT}\n"
   if [ $SILENT == 'false' ]; then
     echo `date +%Y%m%d-%H%M`,`basename ${PWD##*/}`,ERROR,-,,,,, > $SUMMARY_CSV_FILE
   fi
