@@ -41,16 +41,19 @@ public final class ClassDescriptor {
 
 	private List<MethodDescriptor> methods; // includes constructors "<init>"
 
+	private List<MethodDescriptor> queriedMethods; // includes constructors "<init>"
+
 	private Set<Flag> flags; // Inclusion in list indicates they are set
 
 	ClassDescriptor() {
 	}
 
-	ClassDescriptor(String name, ConditionDescriptor condition, List<FieldDescriptor> fields, List<MethodDescriptor> methods, Set<Flag> flags) {
+	ClassDescriptor(String name, ConditionDescriptor condition, List<FieldDescriptor> fields, List<MethodDescriptor> methods, List<MethodDescriptor> queriedMethods, Set<Flag> flags) {
 		this.name = name;
 		this.condition = condition;
 		this.fields = fields;
 		this.methods = methods;
+		this.queriedMethods = queriedMethods;
 		this.flags = flags;
 	}
 
@@ -77,6 +80,7 @@ public final class ClassDescriptor {
 		result = result && nullSafeEquals(this.flags, other.flags);
 		result = result && nullSafeEquals(this.fields, other.fields);
 		result = result && nullSafeEquals(this.methods, other.methods);
+		result = result && nullSafeEquals(this.queriedMethods, other.queriedMethods);
 		return result;
 	}
 
@@ -87,6 +91,7 @@ public final class ClassDescriptor {
 		result = 31 * result + nullSafeHashCode(this.flags);
 		result = 31 * result + nullSafeHashCode(this.fields);
 		result = 31 * result + nullSafeHashCode(this.methods);
+		result = 31 * result + nullSafeHashCode(this.queriedMethods);
 		return result;
 	}
 
@@ -111,6 +116,7 @@ public final class ClassDescriptor {
 		buildToStringProperty(string, "setFlags", this.flags);
 		buildToStringProperty(string, "fields", this.fields);
 		buildToStringProperty(string, "methods", this.methods);
+		buildToStringProperty(string, "queriedMethods", this.queriedMethods);
 		return string.toString();
 	}
 
@@ -134,6 +140,10 @@ public final class ClassDescriptor {
 
 	public List<MethodDescriptor> getMethods() {
 		return this.methods;
+	}
+
+	public List<MethodDescriptor> getQueriedMethods() {
+		return this.queriedMethods;
 	}
 
 	public static ClassDescriptor of(String name) {
@@ -176,6 +186,19 @@ public final class ClassDescriptor {
 	private void addMethodDescriptors(List<MethodDescriptor> methodDescriptors) {
 		for (MethodDescriptor md: methodDescriptors) {
 			addMethodDescriptor(md);
+		}
+	}
+
+	public void addQueriedMethodDescriptor(MethodDescriptor methodDescriptor) {
+		if (queriedMethods == null) {
+			queriedMethods = new ArrayList<>();
+		}
+		queriedMethods.add(methodDescriptor);
+	}
+
+	private void addQueriedMethodDescriptors(List<MethodDescriptor> methodDescriptors) {
+		for (MethodDescriptor md: methodDescriptors) {
+			addQueriedMethodDescriptor(md);
 		}
 	}
 
@@ -234,10 +257,21 @@ public final class ClassDescriptor {
 				}
 			}
 		}
+		if (cd.getQueriedMethods() != null) {
+			for (MethodDescriptor methodDescriptor : cd.getQueriedMethods()) {
+				if (!containsQueriedMethodDescriptor(methodDescriptor)) {
+					addQueriedMethodDescriptor(methodDescriptor);
+				}
+			}
+		}
 	}
 
 	private boolean containsMethodDescriptor(MethodDescriptor methodDescriptor) {
 		return methods == null?false:methods.contains(methodDescriptor);
+	}
+
+	private boolean containsQueriedMethodDescriptor(MethodDescriptor methodDescriptor) {
+		return queriedMethods == null?false:queriedMethods.contains(methodDescriptor);
 	}
 
 	public MethodDescriptor getMethodDescriptor(String name, String... parameterTypes) {
@@ -252,7 +286,19 @@ public final class ClassDescriptor {
 		return null;
 	}
 
-	public boolean contains(MethodDescriptor toFind) {
+	public MethodDescriptor getQueriedMethodDescriptor(String name, String... parameterTypes) {
+		if (queriedMethods != null) {
+			MethodDescriptor toFind = MethodDescriptor.of(name, parameterTypes);
+			for (MethodDescriptor md : queriedMethods) {
+				if (md.equals(toFind)) {
+					return md;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean containsMethod(MethodDescriptor toFind) {
 		if (methods != null) {
 			for (MethodDescriptor md : methods) {
 				if (md.equals(toFind)) {
@@ -263,7 +309,18 @@ public final class ClassDescriptor {
 		return false;
 	}
 
-	public boolean contains(FieldDescriptor toFind) {
+	public boolean containsQueriedMethod(MethodDescriptor toFind) {
+		if (queriedMethods != null) {
+			for (MethodDescriptor md : queriedMethods) {
+				if (md.equals(toFind)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean containsField(FieldDescriptor toFind) {
 		if (fields != null) {
 			for (FieldDescriptor fd : fields) {
 				if (fd.equals(toFind)) {
@@ -285,9 +342,31 @@ public final class ClassDescriptor {
 		return false;
 	}
 
+	private boolean hasQueriedConstructors() {
+		if (queriedMethods != null) {
+			for (MethodDescriptor md : queriedMethods) {
+				if (md.getName().equals("<init>")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private boolean hasMethods() {
 		if (methods != null) {
 			for (MethodDescriptor md : methods) {
+				if (!md.getName().equals("<init>")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean hasQueriedMethods() {
+		if (queriedMethods != null) {
+			for (MethodDescriptor md : queriedMethods) {
 				if (!md.getName().equals("<init>")) {
 					return true;
 				}
@@ -310,8 +389,14 @@ public final class ClassDescriptor {
 		if (hasConstructors()) {
 			sb.append(",\"allDeclaredConstructors\":true");
 		}
+		if (hasQueriedConstructors()) {
+			sb.append(",\"queryAllDeclaredConstructors\":true");
+		}
 		if (hasMethods()) {
 			sb.append(",\"allDeclaredMethods\":true");
+		}
+		if (hasQueriedMethods()) {
+			sb.append(",\"queryAllDeclaredMethods\":true");
 		}
 		sb.append("}");
 		return sb.toString();
@@ -333,6 +418,14 @@ public final class ClassDescriptor {
 		if (toSubtract.getMethods()!=null) {
 			resultMethods.removeAll(toSubtract.getMethods());
 		}
+
+		List<MethodDescriptor> resultQueriedMethods = new ArrayList<>();
+		if (this.getQueriedMethods()!=null) {
+			resultQueriedMethods.addAll(this.getQueriedMethods());
+		}
+		if (toSubtract.getQueriedMethods()!=null) {
+			resultQueriedMethods.removeAll(toSubtract.getQueriedMethods());
+		}
 		
 		List<FieldDescriptor> resultFields = new ArrayList<>();
 		if (this.getFields()!=null) {
@@ -347,6 +440,9 @@ public final class ClassDescriptor {
 		}
 		if (!resultMethods.isEmpty()) {
 			result.addMethodDescriptors(resultMethods);
+		}
+		if (!resultQueriedMethods.isEmpty()) {
+			result.addQueriedMethodDescriptors(resultQueriedMethods);
 		}
 		if (!resultFields.isEmpty()) {
 			result.addFieldDescriptors(resultFields);
@@ -369,12 +465,19 @@ public final class ClassDescriptor {
 				methodsCopy.add(md.copy());
 			}
 		}
+		List<MethodDescriptor> queriedMethodsCopy = null;
+		if (queriedMethods != null) {
+			queriedMethodsCopy = new ArrayList<>();
+			for (MethodDescriptor md: queriedMethods) {
+				queriedMethodsCopy.add(md.copy());
+			}
+		}
 		Set<Flag> flagsCopy = null;
 		if (flags != null) {
 			flagsCopy = new HashSet<>();
 			flagsCopy.addAll(flags);
 		}
-		return new ClassDescriptor(name, condition, fieldsCopy, methodsCopy, flagsCopy);
+		return new ClassDescriptor(name, condition, fieldsCopy, methodsCopy, queriedMethodsCopy, flagsCopy);
 	}
 
 	public FieldDescriptor getFieldDescriptorNamed(String name) {

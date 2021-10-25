@@ -111,6 +111,13 @@ public class JsonMarshaller {
 				cd.addMethodDescriptor(toMethodDescriptor(methods.getJSONObject(i)));
 			}
 		}
+
+		JSONArray queriedMethods = object.optJSONArray("queriedMethods");
+		if (queriedMethods != null) {
+			for (int i=0;i<queriedMethods.length();i++) {
+				cd.addQueriedMethodDescriptor(toMethodDescriptor(queriedMethods.getJSONObject(i)));
+			}
+		}
 		return cd;
 	}
 	

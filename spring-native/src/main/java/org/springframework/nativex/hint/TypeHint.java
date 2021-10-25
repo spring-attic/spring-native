@@ -56,10 +56,16 @@ public @interface TypeHint {
 	int access() default AccessBits.LOAD_AND_CONSTRUCT;
 
 	/**
-	 * Specific method information, useful to reduce the footprint impact of the generated configuration.
+	 * Specific method information for reflective invocation and metadata query, useful to reduce the footprint impact of the generated configuration.
 	 * @return the methods information
 	 */
 	MethodHint[] methods() default {};
+
+	/**
+	 * Specific method information for reflective metadata query, useful to reduce the footprint impact of the generated configuration.
+	 * @return the methods information
+	 */
+	MethodHint[] queriedMethods() default {};
 
 	/**
 	 * Specific fields information, useful to reduce the footprint impact of the generated configuration or to specify

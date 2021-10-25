@@ -25,16 +25,21 @@ import java.util.List;
  * the names that go into the json configuration for native-image.
  * 
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public enum Flag {
-	allPublicFields, //
-	allDeclaredFields, //
-	allDeclaredConstructors, //
-	allPublicConstructors, //
-	allDeclaredMethods, //
-	allPublicMethods, //
-	allDeclaredClasses, //
-	allPublicClasses;
+	allPublicFields,
+	allDeclaredFields,
+	allDeclaredConstructors,
+	allPublicConstructors,
+	allDeclaredMethods,
+	allPublicMethods,
+	allDeclaredClasses,
+	allPublicClasses,
+	queryAllDeclaredMethods,
+	queryAllPublicMethods,
+	queryAllDeclaredConstructors,
+	queryAllPublicConstructors;
 
 	public static String toString(Flag[] flags) {
 		List<Flag> asList = Arrays.asList(flags);

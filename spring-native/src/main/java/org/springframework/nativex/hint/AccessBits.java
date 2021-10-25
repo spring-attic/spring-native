@@ -49,7 +49,7 @@ public class AccessBits {
 
 	/**
 	 * Declared methods access: public, protected, default (package) access, and private, but excluding inherited ones.
-	 * Use the more restrictive {@link #PUBLIC_METHODS} when possible.
+	 * Consider whether you need this or @link {@link #PUBLIC_METHODS}.
 	 * @see Class#getDeclaredMethods()
 	 */
 	public static final int DECLARED_METHODS      = 0x0008;
@@ -77,6 +77,32 @@ public class AccessBits {
 	 * Type must be accessible from JNI code (it will be placed in the jni-config.json and not reflect-config.json)
 	 */
 	public static final int JNI = 0x0080;
+
+	/**
+	 * Declared constructor's metadata query: public, protected, default (package) access, and private ones.
+	 * @see Class#getDeclaredConstructors()
+	 */
+	public static final int QUERY_DECLARED_CONSTRUCTORS = 0x0100;
+
+	/**
+	 * Declared method's metadata query: public, protected, default (package) access, and private, but excluding inherited ones.
+	 * Consider whether you need this or @link {@link #QUERY_PUBLIC_METHODS}.
+	 * @see Class#getDeclaredMethods()
+	 */
+	public static final int QUERY_DECLARED_METHODS      = 0x0200;
+
+	/**
+	 * Public method's metadata query access: public methods of the class including inherited ones.
+	 * Consider whether you need this or @link {@link #QUERY_DECLARED_METHODS}.
+	 * @see Class#getMethods()
+	 */
+	public static final int QUERY_PUBLIC_METHODS        = 0x0400;
+
+	/**
+	 * Queried public constructors.
+	 * @see Class#getConstructors()
+	 */
+	public static final int QUERY_PUBLIC_CONSTRUCTORS   = 0x0800;
 	
 	/**
 	 * No access.
@@ -142,6 +168,18 @@ public class AccessBits {
 		if ((value & PUBLIC_METHODS) != 0) {
 			flags.add(Flag.allPublicMethods);
 		}
+		if ((value & QUERY_DECLARED_CONSTRUCTORS) != 0) {
+			flags.add(Flag.queryAllDeclaredConstructors);
+		}
+		if ((value & QUERY_PUBLIC_CONSTRUCTORS) != 0) {
+			flags.add(Flag.queryAllPublicConstructors);
+		}
+		if ((value & QUERY_DECLARED_METHODS) != 0) {
+			flags.add(Flag.queryAllDeclaredMethods);
+		}
+		if ((value & QUERY_PUBLIC_METHODS) != 0) {
+			flags.add(Flag.queryAllPublicMethods);
+		}
 		return flags.toArray(new Flag[0]);
 	}
 
@@ -201,6 +239,18 @@ public class AccessBits {
 		if ((value & DECLARED_FIELDS) != 0) {
 			s.append("FLDS ");
 		}
+		if ((value & QUERY_DECLARED_CONSTRUCTORS) != 0) {
+			s.append("QDCONS ");
+		}
+		if ((value & QUERY_PUBLIC_CONSTRUCTORS) != 0) {
+			s.append("QPCONS ");
+		}
+		if ((value & QUERY_DECLARED_METHODS) != 0) {
+			s.append("QDMETHS ");
+		}
+		if ((value & QUERY_PUBLIC_METHODS) != 0) {
+			s.append("QPMETHS ");
+		}
 		if (value == 0) {
 			s.append("NONE");
 		}
@@ -245,6 +295,18 @@ public class AccessBits {
 		if ((currentAccess&PUBLIC_METHODS)==0 && (newAccess&PUBLIC_METHODS)!=0) {
 			result = result|PUBLIC_METHODS;
 		}
+		if ((currentAccess&QUERY_DECLARED_CONSTRUCTORS)==0 && (newAccess&QUERY_DECLARED_CONSTRUCTORS)!=0) {
+			result = result|QUERY_DECLARED_CONSTRUCTORS;
+		}
+		if ((currentAccess&QUERY_PUBLIC_CONSTRUCTORS)==0 && (newAccess&QUERY_PUBLIC_CONSTRUCTORS)!=0) {
+			result = result|QUERY_PUBLIC_CONSTRUCTORS;
+		}
+		if ((currentAccess&QUERY_DECLARED_METHODS)==0 && (newAccess&QUERY_DECLARED_METHODS)!=0) {
+			result = result|QUERY_DECLARED_METHODS;
+		}
+		if ((currentAccess&QUERY_PUBLIC_METHODS)==0 && (newAccess&QUERY_PUBLIC_METHODS)!=0) {
+			result = result|QUERY_PUBLIC_METHODS;
+		}
 		return result;
 	}
 
@@ -267,6 +329,18 @@ public class AccessBits {
 			}
 			if (Flag.allDeclaredFields.equals(flag)) {
 				value = value | AccessBits.DECLARED_FIELDS;
+			}
+			if (Flag.queryAllDeclaredConstructors.equals(flag)) {
+				value = value | AccessBits.QUERY_DECLARED_CONSTRUCTORS;
+			}
+			if (Flag.queryAllPublicConstructors.equals(flag)) {
+				value = value | AccessBits.QUERY_PUBLIC_CONSTRUCTORS;
+			}
+			if (Flag.queryAllDeclaredMethods.equals(flag)) {
+				value = value | AccessBits.QUERY_DECLARED_METHODS;
+			}
+			if (Flag.queryAllPublicMethods.equals(flag)) {
+				value = value | AccessBits.QUERY_PUBLIC_METHODS;
 			}
 		}
 

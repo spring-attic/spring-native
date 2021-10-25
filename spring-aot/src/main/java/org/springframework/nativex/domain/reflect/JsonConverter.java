@@ -90,6 +90,24 @@ public class JsonConverter {
 			}
 			jsonObject.put("methods", methodsJsonArray);
 		}
+		List<MethodDescriptor> qmds = cd.getQueriedMethods();
+		if (qmds != null) {
+			JSONArray methodsJsonArray = new JSONArray();
+			for (MethodDescriptor md: qmds) {
+				JSONObject methodJsonObject = new JSONObject();
+				methodJsonObject.put("name", md.getName());
+				List<String> parameterTypes = md.getParameterTypes();
+				JSONArray parameterArray = new JSONArray();
+				if (parameterTypes != null) {
+					for (String pt: parameterTypes) {
+						parameterArray.put(pt);
+					}
+				}
+				methodJsonObject.put("parameterTypes",parameterArray);
+				methodsJsonArray.put(methodJsonObject);
+			}
+			jsonObject.put("queriedMethods", methodsJsonArray);
+		}
 		return jsonObject;
 	}
 

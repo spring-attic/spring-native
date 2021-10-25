@@ -348,4 +348,26 @@ public class HintTests {
 	@JdkProxyHint(typeNames={"java.util.Map","java.io.Serializable"})
 	static class TestClass11 {
 	}
+
+	@Test
+	public void queriedMethods() {
+		Type testClass = typeSystem.resolveName(TestClass12.class.getName());
+		List<HintApplication> hints = testClass.getApplicableHints();
+		assertEquals(1,hints.size());
+		HintApplication hint = hints.get(0);
+		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
+		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
+		assertNotNull(accessDescriptor);
+		assertEquals((Integer) AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals("foo(java.lang.String)",accessDescriptor.getQueriedMethodDescriptors().get(0).toString());
+		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
+	}
+
+	@NativeHint(types = {
+			@TypeHint(typeNames = "java.lang.String",
+					queriedMethods = @MethodHint(name="foo",parameterTypes = String.class)
+			)
+	})
+	static class TestClass12 {
+	}
 }

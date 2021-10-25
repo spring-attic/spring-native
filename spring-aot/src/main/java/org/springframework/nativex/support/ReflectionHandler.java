@@ -88,12 +88,12 @@ public class ReflectionHandler extends Handler {
 	 * @param flags    any members that should be accessible via reflection
 	 */
 	public void addAccess(String typename, Flag...flags) {
-		addAccess(typename, null, null, null, false, flags);
+		addAccess(typename, null, null, null, null, false, flags);
 	}
 	
 	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
 		if (ad.noMembersSpecified()) {
-			addAccess(typename, null, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, null, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
 		} else {
 			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 			String[][] methodsAndConstructors = new String[mds.size()][];
@@ -106,13 +106,24 @@ public class ReflectionHandler extends Handler {
 					methodsAndConstructors[m][p+1]=ps.get(p);
 				}
 			}
+			List<org.springframework.nativex.type.MethodDescriptor> qmds = ad.getQueriedMethodDescriptors();
+			String[][] queriedMethodsAndConstructors = new String[qmds.size()][];
+			for (int m=0;m<qmds.size();m++) {
+				org.springframework.nativex.type.MethodDescriptor methodDescriptor = qmds.get(m);
+				queriedMethodsAndConstructors[m] = new String[methodDescriptor.getParameterTypes().size()+1];
+				queriedMethodsAndConstructors[m][0] = methodDescriptor.getName();
+				List<String> ps = methodDescriptor.getParameterTypes();
+				for (int p=0;p<ps.size();p++) {
+					queriedMethodsAndConstructors[m][p+1]=ps.get(p);
+				}
+			}
 			List<FieldDescriptor> fds = ad.getFieldDescriptors();
 			String[][] fields = new String[fds.size()][];
 			for (int f=0;f<fds.size();f++) {
 				FieldDescriptor fd = fds.get(f);
 				fields[f] = FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
 			}
-			addAccess(typename, null, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, methodsAndConstructors, queriedMethodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
 		}
 	}
 	
@@ -124,7 +135,7 @@ public class ReflectionHandler extends Handler {
 		}
 	}
 
-	public void addAccess(String typename, String typeReachable, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
+	public void addAccess(String typename, String typeReachable, String[][] methodsAndConstructors, String[][] queriedMethodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
@@ -159,8 +170,16 @@ public class ReflectionHandler extends Handler {
 		if (methodsAndConstructors != null) {
 			for (String[] mc: methodsAndConstructors) {
 				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
-				if (!cd.contains(md)) {
+				if (!cd.containsMethod(md)) {
 					cd.addMethodDescriptor(md);	
+				}
+			}
+		}
+		if (queriedMethodsAndConstructors != null) {
+			for (String[] mc: queriedMethodsAndConstructors) {
+				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
+				if (!cd.containsQueriedMethod(md)) {
+					cd.addQueriedMethodDescriptor(md);
 				}
 			}
 		}

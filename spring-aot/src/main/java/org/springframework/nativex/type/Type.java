@@ -1921,6 +1921,7 @@ public class Type {
 		int accessRequired = -1;
 		boolean isJniHint = false;
 		List<MethodDescriptor> mds = new ArrayList<>();
+		List<MethodDescriptor> qmds = new ArrayList<>();
 		List<FieldDescriptor> fds = new ArrayList<>();
 		for (int i = 0; i < values.size(); i += 2) {
 			String key = (String) values.get(i);
@@ -1940,6 +1941,8 @@ public class Type {
 				typeNames = (ArrayList<String>) value;
 			} else if (key.equals("methods")) {
 				processHintList(value, anno -> unpackMethodInfo(anno, mds));
+			} else if (key.equals("queriedMethods")) {
+				processHintList(value, anno -> unpackMethodInfo(anno, qmds));
 			} else if (key.equals("fields")) {
 				processHintList(value, anno -> unpackFieldInfo(anno, fds));
 			}
@@ -1947,13 +1950,13 @@ public class Type {
 		for (org.objectweb.asm.Type type : types) {
 			AccessDescriptor ad = null;
 			if (accessRequired == -1) {
-				ad = new AccessDescriptor(inferAccessRequired(type, mds, fds), mds, fds);
+				ad = new AccessDescriptor(inferAccessRequired(type, mds, fds), mds, qmds, fds);
 			} else {
 				if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
 						AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
 					throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
 				}
-				ad = new AccessDescriptor(accessRequired, mds, fds);
+				ad = new AccessDescriptor(accessRequired, mds, qmds, fds);
 			}
 			if (isJniHint) {
 				ch.addJniType(type.getClassName(), ad);
@@ -1966,13 +1969,13 @@ public class Type {
 			if (resolvedType != null) {
 				AccessDescriptor ad = null;
 				if (accessRequired == -1) {
-					ad = new AccessDescriptor(inferAccessRequired(resolvedType), mds, fds);
+					ad = new AccessDescriptor(inferAccessRequired(resolvedType), mds, qmds, fds);
 				} else {
 					if ((MethodDescriptor.includesConstructors(mds) || MethodDescriptor.includesStaticInitializers(mds)) && 
 							AccessBits.isSet(accessRequired, AccessBits.DECLARED_METHODS|AccessBits.PUBLIC_METHODS)) {
 						throw new IllegalStateException("Do not include global method reflection access when specifying individual methods");
 					}
-					ad = new AccessDescriptor(accessRequired, mds, fds);
+					ad = new AccessDescriptor(accessRequired, mds, qmds, fds);
 				}
 				if (isJniHint) {
 					ch.addJniType(typeName, ad);

@@ -107,6 +107,10 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 							Executable method = methodDescriptor.findOnClass(keyClass);
 							reflectionConfiguration.forType(keyClass).withExecutables(method);
 						}
+						for (MethodDescriptor methodDescriptor : value.getQueriedMethodDescriptors()) {
+							Executable method = methodDescriptor.findOnClass(keyClass);
+							reflectionConfiguration.forType(keyClass).withQueriedExecutables(method);
+						}
 						for (FieldDescriptor fieldDescriptor : value.getFieldDescriptors()) {
 							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());
 							reflectionConfiguration.forType(keyClass).withFields(field);

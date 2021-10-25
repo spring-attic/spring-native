@@ -73,6 +73,17 @@ class NativeReflectionEntryTests {
 	}
 
 	@Test
+	void toClassDescriptorShouldRegisterQueriedMethod() {
+		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class);
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withQueriedExecutables(method)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getQueriedMethods()).singleElement().satisfies((methodDescriptor) -> {
+			assertThat(methodDescriptor.getName()).isEqualTo("test");
+			assertThat(methodDescriptor.getParameterTypes()).containsExactly("java.lang.String", "java.lang.Integer");
+		});
+	}
+
+	@Test
 	void toClassDescriptorShouldRegisterMethodWithDollarSeparatorForParameters() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class, TestClass.class);
 		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(method)
@@ -90,6 +101,17 @@ class NativeReflectionEntryTests {
 		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(constructor)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
+			assertThat(methodDescriptor.getParameterTypes()).isEmpty();
+		});
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterQueriedConstructor() {
+		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withQueriedExecutables(constructor)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getQueriedMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
 			assertThat(methodDescriptor.getParameterTypes()).isEmpty();
 		});

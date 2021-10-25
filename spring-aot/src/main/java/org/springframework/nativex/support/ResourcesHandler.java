@@ -133,17 +133,24 @@ public class ResourcesHandler extends Handler {
 						org.springframework.nativex.type.ResourcesDescriptor resourcesDescriptor = org.springframework.nativex.type.ResourcesDescriptor.ofType(typename);
 						registerResourcesDescriptor(resourcesDescriptor);
 					}
-					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
+					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
 							AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
 						logger.debug("  type has #" + mds.size()
 								+ " members specified, removing typewide method access flags");
 						accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 					}
+					List<org.springframework.nativex.type.MethodDescriptor> qmds = ad.getQueriedMethodDescriptors();
+					if (qmds != null && qmds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
+							AccessBits.QUERY_DECLARED_METHODS | AccessBits.QUERY_PUBLIC_METHODS)) {
+						logger.debug("  type has #" + qmds.size()
+								+ " queried members specified, removing typewide method access flags");
+						accessFlags = filterFlags(accessFlags, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods);
+					}
 					List<FieldDescriptor> fds = ad.getFieldDescriptors();
 					reflectionHandler.addAccess(typename, ch.getTriggerTypename(), MethodDescriptor.toStringArray(mds),
-							FieldDescriptor.toStringArray(fds), true, accessFlags);
+							MethodDescriptor.toStringArray(qmds), FieldDescriptor.toStringArray(fds), true, accessFlags);
 				}
 				for (Map.Entry<String, AccessDescriptor> dependantType : ch.getJNITypes().entrySet()) {
 					String typename = dependantType.getKey();
@@ -813,7 +820,7 @@ public class ResourcesHandler extends Handler {
 			String dname = accessRequest.getKey();
 			int requestedAccess = accessRequest.getValue();
 			List<org.springframework.nativex.type.MethodDescriptor> methods = accessRequestor.getMethodAccessRequestedFor(dname);
-			
+
 			// TODO promote this approach to a plugin if becomes a little more common...
 			if (dname.equals("org.springframework.boot.autoconfigure.web.ServerProperties$Jetty")) { // See EmbeddedJetty @COC check
 				if (!ts.canResolve("org/eclipse/jetty/webapp/WebAppContext")) {
@@ -870,7 +877,8 @@ public class ResourcesHandler extends Handler {
 
 			String typeReachable = accessRequestor.getTypeReachableFor(dname);
 
-			reflectionHandler.addAccess(dname, typeReachable, MethodDescriptor.toStringArray(methods), FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, flags);
+			// TODO See if query method configuration is needed here
+			reflectionHandler.addAccess(dname, typeReachable, MethodDescriptor.toStringArray(methods), null, FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, flags);
 			/*
 			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
 				Type resolvedType = ts.resolveDotted(dname, true);

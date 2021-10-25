@@ -53,7 +53,11 @@ public class NativeReflectionEntry {
 
 	private final Set<Constructor<?>> constructors;
 
+	private final Set<Constructor<?>> queriedConstructors;
+
 	private final Set<Method> methods;
+
+	private final Set<Method> queriedMethods;
 
 	private final Set<Field> fields;
 
@@ -63,7 +67,9 @@ public class NativeReflectionEntry {
 		this.type = builder.type;
 		this.conditionalOnTypeReachable = builder.conditionalOnTypeReachable;
 		this.constructors = Collections.unmodifiableSet(builder.constructors);
+		this.queriedConstructors = Collections.unmodifiableSet(builder.queriedConstructors);
 		this.methods = Collections.unmodifiableSet(builder.methods);
+		this.queriedMethods = Collections.unmodifiableSet(builder.queriedMethods);
 		this.fields = Collections.unmodifiableSet(builder.fields);
 		this.flags = Collections.unmodifiableSet(builder.flags);
 	}
@@ -128,8 +134,12 @@ public class NativeReflectionEntry {
 		}
 		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
 				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
+		registerIfNecessary(this.queriedConstructors, Flag.queryAllDeclaredConstructors, Flag.queryAllPublicConstructors,
+				(constructor) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(constructor)));
 		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
 				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
+		registerIfNecessary(this.queriedMethods, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
+				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
 		registerIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
 				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
 		descriptor.setFlags(this.flags);
@@ -163,6 +173,7 @@ public class NativeReflectionEntry {
 		return new StringJoiner(", ", NativeReflectionEntry.class.getSimpleName() + "[", "]")
 				.add("type=" + this.type).add("constructors=" + this.constructors)
 				.add("methods=" + this.methods).add("fields=" + this.fields)
+				.add("queriedConstructors=" + this.queriedConstructors).add("queriedMethods=" + this.queriedMethods)
 				.add("flags=" + this.flags).toString();
 	}
 
@@ -174,7 +185,11 @@ public class NativeReflectionEntry {
 
 		private final Set<Constructor<?>> constructors = new LinkedHashSet<>();
 
+		private final Set<Constructor<?>> queriedConstructors = new LinkedHashSet<>();
+
 		private final Set<Method> methods = new LinkedHashSet<>();
+
+		private final Set<Method> queriedMethods = new LinkedHashSet<>();
 
 		private final Set<Field> fields = new LinkedHashSet<>();
 
@@ -207,6 +222,23 @@ public class NativeReflectionEntry {
 				}
 				else if (executable instanceof Constructor) {
 					this.constructors.add((Constructor<?>) executable);
+				}
+			});
+			return this;
+		}
+
+		/**
+		 * Add the specified {@link Executable methods or constructors} for metadata query access only.
+		 * @param executables the executables to add
+		 * @return this for method chaining
+		 */
+		public Builder withQueriedExecutables(Executable... executables) {
+			Arrays.stream(executables).forEach((executable) -> {
+				if (executable instanceof Method) {
+					this.queriedMethods.add((Method) executable);
+				}
+				else if (executable instanceof Constructor) {
+					this.queriedConstructors.add((Constructor<?>) executable);
 				}
 			});
 			return this;

@@ -26,15 +26,17 @@ public class AccessDescriptor {
 
 	private Integer accessBits;
 	private List<MethodDescriptor> methodDescriptors;
+	private List<MethodDescriptor> queriedMethodDescriptors;
 	private List<FieldDescriptor> fieldDescriptors;
 	
 	public AccessDescriptor(Integer accessBits) {
-		this(accessBits, Collections.emptyList(), Collections.emptyList());
+		this(accessBits, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 	}
 
-	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<FieldDescriptor> fds) {
+	public AccessDescriptor(Integer accessBits, List<MethodDescriptor> mds, List<MethodDescriptor> qmds, List<FieldDescriptor> fds) {
 		this.accessBits = accessBits;
 		this.methodDescriptors = mds;
+		this.queriedMethodDescriptors = qmds;
 		this.fieldDescriptors = fds;
 	}
 
@@ -44,6 +46,10 @@ public class AccessDescriptor {
 
 	public List<MethodDescriptor> getMethodDescriptors() {
 		return methodDescriptors;
+	}
+
+	public List<MethodDescriptor> getQueriedMethodDescriptors() {
+		return queriedMethodDescriptors;
 	}
 
 	public List<FieldDescriptor> getFieldDescriptors() {
@@ -60,6 +66,9 @@ public class AccessDescriptor {
 		s.append("AccessDesc:"+ AccessBits.toString(accessBits));
 		if (methodDescriptors!=null && !methodDescriptors.isEmpty()) {
 			s.append(",md="+methodDescriptors);
+		}
+		if (queriedMethodDescriptors!=null && !queriedMethodDescriptors.isEmpty()) {
+			s.append(",qmd="+queriedMethodDescriptors);
 		}
 		if (fieldDescriptors!=null && !fieldDescriptors.isEmpty()) {
 			s.append(",fd="+fieldDescriptors);

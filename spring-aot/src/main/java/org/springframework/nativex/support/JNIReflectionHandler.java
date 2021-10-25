@@ -115,7 +115,7 @@ public class JNIReflectionHandler extends Handler {
 		if (methodsAndConstructors != null) {
 			for (String[] mc: methodsAndConstructors) {
 				MethodDescriptor md = MethodDescriptor.of(mc[0], subarray(mc));
-				if (!cd.contains(md)) {
+				if (!cd.containsMethod(md)) {
 					cd.addMethodDescriptor(md);	
 				}
 			}

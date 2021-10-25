@@ -125,12 +125,22 @@ public class NativeConfigurationRegistry {
 		}
 
 		/**
-		 * Register the specified {@link Executable method or constructor}.
+		 * Register the specified {@link Executable method or constructor} for invocation and metadata query access.
 		 * @param executable the executable to register
 		 * @return this for method chaining
 		 */
 		public ReflectionConfiguration addExecutable(Executable executable) {
 			forType(executable.getDeclaringClass()).withExecutables(executable);
+			return this;
+		}
+
+		/**
+		 * Register the specified {@link Executable method or constructor} for metadata query access only.
+		 * @param executable the executable to register
+		 * @return this for method chaining
+		 */
+		public ReflectionConfiguration addQueriedExecutable(Executable executable) {
+			forType(executable.getDeclaringClass()).withQueriedExecutables(executable);
 			return this;
 		}
 

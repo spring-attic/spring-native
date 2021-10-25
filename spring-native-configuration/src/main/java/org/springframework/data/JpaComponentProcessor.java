@@ -84,7 +84,7 @@ public class JpaComponentProcessor implements ComponentProcessor {
 					.map(it -> new MethodDescriptor(it.getName(), Arrays.asList(it.asConfigurationArray())))
 					.collect(Collectors.toList());
 
-			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList()));
+			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList(), Collections.emptyList()));
 		}
 	}
 
@@ -100,7 +100,7 @@ public class JpaComponentProcessor implements ComponentProcessor {
 
 	private void registerTypeInConfiguration(Type type, NativeContext context) {
 
-		AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.FULL_REFLECTION, Collections.emptyList(), fieldDescriptorsForType(type, context));
+		AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.FULL_REFLECTION, Collections.emptyList(), Collections.emptyList(), fieldDescriptorsForType(type, context));
 
 		context.log(String.format("JpaComponentProcessor: adding reflection configuration type %s - %s", type.getDottedName(), accessDescriptor));
 
