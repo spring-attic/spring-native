@@ -16,16 +16,11 @@
 
 package org.springframework.aot.context.bootstrap.generator.infrastructure;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
@@ -33,56 +28,64 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
- * Context for components that write code to boostrap a context.
+ * Infrastructure used by context writers. Provide a main {@link BootstrapClass} as well
+ * as a way to contribute additional {@link BootstrapClass classes} if privileged access
+ * is required.
+ * <p/>
+ * A component may decide to fork a context at any time if they need to register a
+ * separate context, yet keeping a unique native configuration registry and view on the
+ * generated bootstrap classes.
  *
  * @author Stephane Nicoll
  */
-public class BootstrapWriterContext {
-
-	private final String packageName;
-
-	private final Function<String, BootstrapClass> bootstrapClassFactory;
-
-	private final NativeConfigurationRegistry nativeConfigurationRegistry;
-
-	private final ProtectedAccessAnalyzer protectedAccessAnalyzer;
-
-	private final Map<String, BootstrapClass> bootstrapClasses;
-
-	BootstrapWriterContext(String packageName, Function<String, BootstrapClass> bootstrapClassFactory,
-			NativeConfigurationRegistry nativeConfigurationRegistry) {
-		this.packageName = packageName;
-		this.bootstrapClassFactory = bootstrapClassFactory;
-		this.nativeConfigurationRegistry = nativeConfigurationRegistry;
-		this.protectedAccessAnalyzer = new ProtectedAccessAnalyzer(this.packageName);
-		this.bootstrapClasses = new HashMap<>();
-		this.bootstrapClasses.put(packageName, bootstrapClassFactory.apply(packageName));
-	}
+public interface BootstrapWriterContext {
 
 	/**
-	 * Create a context targeting the specified package name and using the specified
-	 * factory to create a {@link BootstrapClass} per requested package name.
-	 * @param packageName the main package name
+	 * Return a {@link NativeConfigurationRegistry} for recording the necessary native
+	 * configuration.
+	 * @return the native configuration registry
+	 */
+	NativeConfigurationRegistry getNativeConfigurationRegistry();
+
+	/**
+	 * Return the {@link ProtectedAccessAnalyzer} to use.
+	 * @return the protected access analyzer
+	 */
+	ProtectedAccessAnalyzer getProtectedAccessAnalyzer();
+
+	/**
+	 * Return a {@link BootstrapClass} for the specified package name. If it does not
+	 * exist, it is created.
+	 * @param packageName the package name to use
+	 * @return the bootstrap class
+	 */
+	BootstrapClass getBootstrapClass(String packageName);
+
+	/**
+	 * Return the main {@link BootstrapClass}.
+	 * @return the bootstrap class for the target package
+	 */
+	BootstrapClass getMainBootstrapClass();
+
+	/**
+	 * Fork a new {@link BootstrapWriterContext} for the specified {@code className}.
+	 * @param className the class name of a context.
+	 * @return a {@link BootstrapWriterContext} for the specified class name
+	 * @see BootstrapWriterContext#bootstrapClassFactory(String, String)
+	 * @throws IllegalArgumentException if a context with that class name already exists
+	 */
+	BootstrapWriterContext fork(String className);
+
+	/**
+	 * Fork a new {@link BootstrapWriterContext} for the specified {@code id}, using the
+	 * specified factory to create a {@link BootstrapClass} per requested package name.
+	 * @param id the identifier to use
 	 * @param bootstrapClassFactory the factory to use to create a {@link BootstrapClass}
 	 * based on a package name.
+	 * @return a {@link BootstrapWriterContext} for the specified id
+	 * @throws IllegalArgumentException if a context with that class name already exists
 	 */
-	public BootstrapWriterContext(String packageName, Function<String, BootstrapClass> bootstrapClassFactory) {
-		this(packageName, bootstrapClassFactory, new NativeConfigurationRegistry());
-	}
-
-	/**
-	 * Create a context targeting the specified package name and using a unique name for
-	 * all classes handled by this instance, applying a factory that creates a
-	 * {@link BootstrapClass} for the main context as an
-	 * {@link ApplicationContextInitializer} and the package protected boostrap classes
-	 * as empty {@code public final} types.
-	 * @param packageName the main package name
-	 * @param className the name to use for bootstrap classes handled by this instance
-	 * @see #bootstrapClassFactory
-	 */
-	public BootstrapWriterContext(String packageName, String className) {
-		this(packageName, bootstrapClassFactory(packageName, className));
-	}
+	BootstrapWriterContext fork(String id, Function<String, BootstrapClass> bootstrapClassFactory);
 
 	/**
 	 * Return a function that creates a {@link BootstrapClass} for the main context as an
@@ -90,9 +93,9 @@ public class BootstrapWriterContext {
 	 * as empty {@code public final} types.
 	 * @param mainPackageName the package name for the main context
 	 * @param className the class name to use
-	 * @return a function suitable to {@link BootstrapWriterContext#BootstrapWriterContext(String, Function)}
+	 * @return a function to create boostrap classes
 	 */
-	public static Function<String, BootstrapClass> bootstrapClassFactory(String mainPackageName, String className) {
+	static Function<String, BootstrapClass> bootstrapClassFactory(String mainPackageName, String className) {
 		return (targetPackageName) -> {
 			if (targetPackageName.equals(mainPackageName)) {
 				ParameterizedTypeName typeName = ParameterizedTypeName.get(ApplicationContextInitializer.class,
@@ -105,67 +108,6 @@ public class BootstrapWriterContext {
 						(type) -> type.addModifiers(Modifier.PUBLIC, Modifier.FINAL));
 			}
 		};
-	}
-
-	/**
-	 * Return the package name in which the main bootstrap class is located.
-	 * @return the default package name
-	 */
-	public String getPackageName() {
-		return this.packageName;
-	}
-
-	/**
-	 * Return a {@link NativeConfigurationRegistry} for recording the necessary native
-	 * configuration for this context
-	 * @return the native configuration registry
-	 */
-	public NativeConfigurationRegistry getNativeConfigurationRegistry() {
-		return this.nativeConfigurationRegistry;
-	}
-
-	/**
-	 * Return the {@link ProtectedAccessAnalyzer} to use.
-	 * @return the protected access analyzer
-	 */
-	public ProtectedAccessAnalyzer getProtectedAccessAnalyzer() {
-		return this.protectedAccessAnalyzer;
-	}
-
-	/**
-	 * Return a {@link BootstrapClass} for the specified package name. If it does not
-	 * exist, it is created.
-	 * @param packageName the package name to use
-	 * @return the bootstrap class
-	 */
-	public BootstrapClass getBootstrapClass(String packageName) {
-		return this.bootstrapClasses.computeIfAbsent(packageName, this.bootstrapClassFactory);
-	}
-
-	/**
-	 * Return the default {@link BootstrapClass}.
-	 * @return the bootstrap class for the target package
-	 * @see #getPackageName()
-	 */
-	public BootstrapClass getMainBootstrapClass() {
-		return getBootstrapClass(this.packageName);
-	}
-
-	/**
-	 * Specify if a {@link BootstrapClass} for the specified package name is registered.
-	 * @param packageName the package name to use
-	 * @return {@code true} if the class is registered for that package
-	 */
-	public boolean hasBootstrapClass(String packageName) {
-		return this.bootstrapClasses.containsKey(packageName);
-	}
-
-	/**
-	 * Return the list of {@link JavaFile} of known bootstrap classes.
-	 * @return the java files of bootstrap classes in this instance
-	 */
-	public List<JavaFile> toJavaFiles() {
-		return this.bootstrapClasses.values().stream().map(BootstrapClass::toJavaFile).collect(Collectors.toList());
 	}
 
 }

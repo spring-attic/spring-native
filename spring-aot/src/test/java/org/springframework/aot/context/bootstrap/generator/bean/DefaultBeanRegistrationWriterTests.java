@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.InnerComponentConfiguration.EnvironmentAwareComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
@@ -112,7 +112,7 @@ class DefaultBeanRegistrationWriterTests {
 
 	@Test
 	void writeWithProtectedConstructorWriteToBlessedPackage() {
-		BootstrapWriterContext context = createBootstrapContext();
+		DefaultBootstrapWriterContext context = createBootstrapContext();
 		Builder code = CodeBlock.builder();
 		createInstance(BeanDefinitionBuilder.rootBeanDefinition(
 				ProtectedConstructorComponent.class).getBeanDefinition()).writeBeanRegistration(context, code);
@@ -132,7 +132,7 @@ class DefaultBeanRegistrationWriterTests {
 		BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(String.class)
 				.withInstanceCreator(ReflectionUtils.findMethod(ProtectedFactoryMethod.class, "testBean", Integer.class))
 				.build();
-		BootstrapWriterContext context = createBootstrapContext();
+		DefaultBootstrapWriterContext context = createBootstrapContext();
 		Builder code = CodeBlock.builder();
 		createInstance(BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition(),
 				descriptor, (instance) -> instance.add("() -> factory.testBean(42)")).writeBeanRegistration(context, code);
@@ -149,7 +149,7 @@ class DefaultBeanRegistrationWriterTests {
 
 	@Test
 	void writeWithProtectedGenericTypeWriteToBlessedPackage() {
-		BootstrapWriterContext context = createBootstrapContext();
+		DefaultBootstrapWriterContext context = createBootstrapContext();
 		Builder code = CodeBlock.builder();
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(
 				PublicFactoryBean.class).getBeanDefinition();
@@ -195,7 +195,7 @@ class DefaultBeanRegistrationWriterTests {
 				.setLazyInit(true).getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
-					      "    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setLazyInit(true)).register(context);");
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setLazyInit(true)).register(context);");
 	}
 
 	@Test
@@ -390,8 +390,8 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 
-	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext("com.example", "Test");
+	private static DefaultBootstrapWriterContext createBootstrapContext() {
+		return new DefaultBootstrapWriterContext("com.example", "Test");
 	}
 
 	// NEW

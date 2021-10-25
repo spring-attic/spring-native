@@ -25,7 +25,7 @@ import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.AotApplicationContextFactory;
@@ -75,7 +75,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		configureEnvironment(applicationContext.getEnvironment());
 		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
 		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
-		BootstrapWriterContext writerContext = new BootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);
+		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);
 		bootstrapGenerator.generateBootstrapClass(beanFactory, writerContext);
 		watch.stop();
 		logger.info("Processed " + beanFactory.getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");

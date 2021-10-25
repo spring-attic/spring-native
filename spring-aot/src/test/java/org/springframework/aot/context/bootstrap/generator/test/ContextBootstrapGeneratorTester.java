@@ -26,7 +26,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
@@ -62,7 +62,8 @@ public class ContextBootstrapGeneratorTester {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		Path srcDirectory = generateSrcDirectory();
-		BootstrapWriterContext writerContext = new BootstrapWriterContext(this.className.packageName(), this.className.simpleName());
+		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(
+				this.className.packageName(), this.className.simpleName());
 		new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(beanFactory, writerContext);
 		writeSources(srcDirectory, writerContext.toJavaFiles());
 		return new ContextBootstrapStructure(srcDirectory, this.className, writerContext

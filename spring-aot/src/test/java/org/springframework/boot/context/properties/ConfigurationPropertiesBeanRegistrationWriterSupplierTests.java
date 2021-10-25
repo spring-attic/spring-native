@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.context.properties.JavaBeanSampleBean;
 import org.springframework.aot.context.bootstrap.generator.sample.context.properties.ValueObjectSampleBean;
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
@@ -67,7 +68,7 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplierTests {
 	}
 
 	private static BootstrapWriterContext createBootstrapContext() {
-		return new BootstrapWriterContext("com.example", "Test");
+		return new DefaultBootstrapWriterContext("com.example", "Test");
 	}
 
 }

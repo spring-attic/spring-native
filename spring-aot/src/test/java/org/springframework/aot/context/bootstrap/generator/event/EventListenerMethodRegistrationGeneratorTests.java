@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.event.AnotherEventListener;
@@ -190,7 +191,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 
 	void assertGeneratedCode(ConfigurableListableBeanFactory beanFactory, BiConsumer<CodeSnippet, BootstrapWriterContext> generatedContent) {
 		EventListenerMethodRegistrationGenerator processor = new EventListenerMethodRegistrationGenerator(beanFactory);
-		BootstrapWriterContext writerContext = new BootstrapWriterContext("com.example", "Test");
+		BootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("com.example", "Test");
 		Builder code = CodeBlock.builder();
 		processor.writeEventListenersRegistration(writerContext, code);
 		generatedContent.accept(CodeSnippet.of(code.build()), writerContext);

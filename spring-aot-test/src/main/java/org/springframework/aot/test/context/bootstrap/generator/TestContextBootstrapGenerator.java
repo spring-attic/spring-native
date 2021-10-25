@@ -35,7 +35,6 @@ import com.squareup.javapoet.TypeName;
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.CompositeBootstrapWriterContext;
 import org.springframework.aot.test.boot.SpringBootAotContextLoader;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -70,18 +69,18 @@ public class TestContextBootstrapGenerator {
 	 * Generate the test contexts for the specified {@code testClasses} and the mapping
 	 * between these test classes and their {@link ApplicationContextInitializer}.
 	 * @param testClasses the test classes to handle
-	 * @param compositeWriterContext the composite writer context to use
+	 * @param writerContext the writer context to use
 	 */
-	public void generateTestContexts(Iterable<Class<?>> testClasses, CompositeBootstrapWriterContext compositeWriterContext) {
+	public void generateTestContexts(Iterable<Class<?>> testClasses, BootstrapWriterContext writerContext) {
 		List<TestContextConfigurationDescriptor> descriptors = this.configurationDescriptorFactory.buildConfigurationDescriptors(testClasses);
 		AtomicInteger count = new AtomicInteger();
 		Supplier<String> fallbackClassName = () -> TEST_BOOTSTRAP_CLASS_NAME + count.getAndIncrement();
 		Map<ClassName, TestContextConfigurationDescriptor> entries = new HashMap<>();
 		for (TestContextConfigurationDescriptor descriptor : descriptors) {
-			ClassName className = generateTestContext(compositeWriterContext, fallbackClassName, descriptor);
+			ClassName className = generateTestContext(writerContext, fallbackClassName, descriptor);
 			entries.put(className, descriptor);
 		}
-		BootstrapWriterContext mainWriterContext = compositeWriterContext.createBootstrapWriterContext(
+		BootstrapWriterContext mainWriterContext = writerContext.fork(
 				TEST_BOOTSTRAP_CLASS_NAME, (packageName) -> {
 					ClassName mainClassName = ClassName.get(packageName, TEST_BOOTSTRAP_CLASS_NAME);
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
@@ -89,14 +88,14 @@ public class TestContextBootstrapGenerator {
 		mainWriterContext.getMainBootstrapClass().addMethod(generateContextLoadersMappingMethod(entries));
 	}
 
-	protected ClassName generateTestContext(CompositeBootstrapWriterContext testWriterContext, Supplier<String> fallbackClassName,
+	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<String> fallbackClassName,
 			TestContextConfigurationDescriptor descriptor) {
 		GenericApplicationContext context = descriptor.parseTestContext();
 		String className = determineClassName(descriptor.getTestClasses(), fallbackClassName);
-		BootstrapWriterContext writerContext = testWriterContext.createBootstrapWriterContext(className);
+		BootstrapWriterContext testWriterContext = writerContext.fork(className);
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
-		this.generator.generateBootstrapClass(beanFactory, writerContext);
-		BootstrapClass mainBootstrapClass = writerContext.getMainBootstrapClass();
+		this.generator.generateBootstrapClass(beanFactory, testWriterContext);
+		BootstrapClass mainBootstrapClass = testWriterContext.getMainBootstrapClass();
 		mainBootstrapClass.customizeType((type) -> type.addJavadoc(getClassLevelJavadoc(descriptor.getTestClasses())));
 		return mainBootstrapClass.getClassName();
 	}

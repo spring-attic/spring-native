@@ -26,8 +26,9 @@ import java.util.List;
 import com.squareup.javapoet.JavaFile;
 
 import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.test.context.bootstrap.generator.TestContextBootstrapGenerator;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.CompositeBootstrapWriterContext;
 
 /**
  * A tester for {@link ContextBootstrapGenerator}.
@@ -51,7 +52,8 @@ public class TestContextBootstrapGeneratorTester {
 
 	public ContextBootstrapStructure generate(Class<?>... testClasses) {
 		Path srcDirectory = generateSrcDirectory();
-		CompositeBootstrapWriterContext writerContext = new CompositeBootstrapWriterContext(this.packageName);
+		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(this.packageName,
+				BootstrapWriterContext.bootstrapClassFactory(this.packageName, "Test"));
 		new TestContextBootstrapGenerator(getClass().getClassLoader())
 				.generateTestContexts(Arrays.asList(testClasses), writerContext);
 		writeSources(srcDirectory, writerContext.toJavaFiles());

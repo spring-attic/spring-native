@@ -116,7 +116,7 @@ public class EventListenerMethodRegistrationGenerator {
 
 	private CodeBlock writeEventListenersMetadataRegistration(BootstrapWriterContext context,
 			List<EventListenerMetadataGenerator> eventGenerators) {
-		String targetPackageName = context.getPackageName();
+		String targetPackageName = context.getMainBootstrapClass().getClassName().packageName();
 		MultiValueMap<String, EventListenerMetadataGenerator> generatorsPerPackage =
 				indexEventListeners(eventGenerators, targetPackageName);
 		Builder registrations = CodeBlock.builder();

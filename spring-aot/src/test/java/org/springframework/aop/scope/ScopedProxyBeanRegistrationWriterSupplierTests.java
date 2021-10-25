@@ -19,7 +19,7 @@ package org.springframework.aop.scope;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.NumberHolder;
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.BeanFactory;
@@ -96,7 +96,7 @@ class ScopedProxyBeanRegistrationWriterSupplierTests {
 
 	private CodeSnippet writeBeanRegistration(BeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {
 		return CodeSnippet.of((code) -> getBeanRegistrationWriter(beanFactory, beanName, beanDefinition)
-				.writeBeanRegistration(new BootstrapWriterContext("com.example", "Test"), code));
+				.writeBeanRegistration(new DefaultBootstrapWriterContext("com.example", "Test"), code));
 	}
 
 	BeanRegistrationWriter getBeanRegistrationWriter(BeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {
