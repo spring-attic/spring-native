@@ -14,7 +14,7 @@
 		<pluginExecution>
 			<pluginExecutionFilter>
 				<goals>
-					<goal>test-generate</goal>
+					<goal>process-test-classes</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>

@@ -37,14 +37,20 @@ The plugin should be declared in your `pom.xml` file:
                         <goal>generate</goal>
                     </goals>
                 </execution>
+                <execution>
+					<id>test-generate</id>
+					<goals>
+						<goal>test-generate</goal>
+					</goals>
+				</execution>
             </executions>
         </plugin>
     </plugins>
 </build>
 ----
 
-Maven goals `spring-aot:generate` (`process-test-classes` phase) and `spring-aot:test-generate` (`prepare-package` phase) are automatically invoked in the Maven lifecycle when using the `mvn verify` or `mvn package` commands.
-The `spring-aot:*` goals are not meant to be called by themselves since they rely on other parts of the lifecycle.
+Maven goals `spring-aot:generate` (`prepare-package` phase) and `spring-aot:test-generate` (`process-test-classes` phase) are automatically invoked in the Maven lifecycle when using the `mvn verify` or `mvn package` commands.
+The `spring-aot:*` goals are not meant to be called directly since they rely on other parts of the lifecycle.
 Sources are generated in `target/generated-sources/spring-aot/` and test sources in `target/generated-test-sources/spring-aot/`.
 
 Configuration can be performed if needed within the `<configuration>` element, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:

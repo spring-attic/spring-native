@@ -42,6 +42,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.experimental</groupId>
+				<artifactId>spring-aot-test</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-gradle-plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>

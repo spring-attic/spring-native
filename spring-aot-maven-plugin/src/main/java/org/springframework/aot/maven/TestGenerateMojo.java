@@ -17,14 +17,14 @@
 package org.springframework.aot.maven;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -32,11 +32,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.ApplicationStructure;
-import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
+import org.springframework.boot.loader.tools.RunProcess;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
@@ -65,32 +66,67 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		throw new MojoFailureException("Spring AOT test code generation is not supported yet in this version, please remove 'test-generate' execution from your pom.xml and use -DskipTests to build the project.");
-//		Set<Path> resourceFolders = new HashSet<>();
-//		for (Resource r: project.getTestResources()) {
-//			// TODO respect includes/excludes
-//			resourceFolders.add(new File(r.getDirectory()).toPath());
-//		}
-//		recreateGeneratedSourcesFolder(this.generatedTestSourcesDirectory);
-//		Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
-//		Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
-//		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//		try {
-//			List<String> testClasspathElements = this.project.getTestClasspathElements();
-//			Path classesPath = Paths.get(project.getBuild().getTestOutputDirectory());
-//			BootstrapCodeGenerator generator = new BootstrapCodeGenerator(getAotOptions());
-//			ApplicationStructure applicationStructure = new ApplicationStructure(sourcesPath, resourcesPath, resourceFolders,
-//					Collections.singletonList(classesPath), null, project.getRuntimeClasspathElements(), classLoader);
-//			generator.generate(applicationStructure);
-//			compileGeneratedTestSources(sourcesPath, testClasspathElements);
-//			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
-//			this.buildContext.refresh(this.buildDir);
-//		}
-//		catch (Throwable exc) {
-//			getLog().error(exc);
-//			getLog().error(Arrays.toString(exc.getStackTrace()));
-//			throw new MojoFailureException("Build failed during Spring AOT test code generation", exc);
-//		}
+
+		Path testOutputDirectory = Paths.get(project.getBuild().getTestOutputDirectory());
+		try {
+			List<String> testClasspathElements = this.project.getTestClasspathElements();
+			Files.createDirectories(this.generatedTestSourcesDirectory.toPath());
+
+			Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
+			Files.createDirectories(sourcesPath);
+
+			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-native-configuration")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-aot")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-aot-test")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "org.springframework.boot", "spring-boot-loader-tools")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "com.squareup", "javapoet")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "info.picocli", "picocli")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
+					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
+
+			RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
+			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
+
+			List<String> args = new ArrayList<>();
+			// remote debug
+			if ("true".equals(this.debug)) {
+				args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
+			}
+			else {
+				args.addAll(Arrays.asList(CommandLineUtils.translateCommandline(this.debug)));
+			}
+			args.add("-cp");
+			args.add(asClasspathArgument(testClasspathElements));
+			args.add(GenerateTestBootstrapCommand.class.getCanonicalName());
+			if (getLogLevel().equals("DEBUG")) {
+				args.add("--debug");
+			}
+			// test output directory
+			args.add(testOutputDirectory.toString());
+			// outputPath
+			args.add(sourcesPath.toAbsolutePath().toString());
+			// packageName
+			args.add("org.springframework.aot");
+
+			int exitCode = runProcess.run(true, args, Collections.emptyMap());
+			if (exitCode != 0 && exitCode != 130) {
+				throw new IllegalStateException("Test bootstrap code generator finished with exit code: " + exitCode);
+			}
+
+			compileGeneratedTestSources(sourcesPath, testClasspathElements);
+			this.buildContext.refresh(this.buildDir);
+		}
+		catch (Throwable exc) {
+			getLog().error(exc);
+			getLog().error(Arrays.toString(exc.getStackTrace()));
+			throw new MojoFailureException("Build failed during Spring AOT test code generation", exc);
+		}
 	}
 
 	protected void compileGeneratedTestSources(Path sourcesPath, List<String> testClasspathElements) throws MojoExecutionException {
@@ -107,7 +143,6 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 	}
 
 
-
 	protected void processGeneratedTestResources(Path sourcePath, Path destinationPath) throws MojoExecutionException {
 		String resourcesVersion = this.project.getProperties().getProperty("maven-resources-plugin.version", "3.2.0");
 		Xpp3Dom resourceConfig = configuration(element("resources", element("resource", element("directory", sourcePath.toString()))),
@@ -119,5 +154,5 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-resources-plugin"), version(resourcesVersion)),
 				goal("copy-resources"), resourceConfig, executionEnvironment(this.project, this.session, this.pluginManager));
 	}
-	
+
 }

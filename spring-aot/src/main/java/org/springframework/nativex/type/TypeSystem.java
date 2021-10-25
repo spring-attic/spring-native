@@ -70,6 +70,7 @@ import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
+import org.springframework.util.Assert;
 
 /**
  * Simple type system with some rudimentary caching.
@@ -118,7 +119,7 @@ public class TypeSystem {
 	private String mainClass;
 	 
 	private static TypeSystem withClassloaderResolution;
-	private static AotOptions defaultAotOptions;
+	private static AotOptions defaultAotOptions = new AotOptions();
 	
 	// TODO temporary until we switch out the need for TS altogether
 	public static TypeSystem getClassLoaderBasedTypeSystem() {
@@ -132,6 +133,7 @@ public class TypeSystem {
 	public TypeSystem(List<String> classpath, String mainClass) {
 		this.classpath = classpath;
 		this.mainClass = mainClass;
+		this.aotOptions = new AotOptions();
 		index();
 	}
 
@@ -144,6 +146,7 @@ public class TypeSystem {
 	}
 	 
 	public static void setDefaultAotOptions(AotOptions aotOptions) {
+		Assert.notNull(aotOptions, "AotOptions should not be null");
 		defaultAotOptions = aotOptions;
 	}
 	
@@ -1689,7 +1692,7 @@ public class TypeSystem {
 	}
 
 	public boolean shouldRemoveXmlSupport() {
-		return aotOptions.isRemoveXmlSupport();
+		return this.aotOptions.isRemoveXmlSupport();
 	}
 
 	public void setAotOptions(AotOptions aotOptions) {

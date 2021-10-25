@@ -23,6 +23,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-aot-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-native-configuration</artifactId>
 		</dependency>
 		<dependency>

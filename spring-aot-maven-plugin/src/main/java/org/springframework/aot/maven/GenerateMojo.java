@@ -62,11 +62,47 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class GenerateMojo extends AbstractBootstrapMojo {
 
+	@Parameter(property = "spring.aot.mainClass")
+	protected String mainClass;
+
 	/**
 	 * Location of generated source files created by Spring AOT to bootstrap the application.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-sources/spring-aot/")
 	private File generatedSourcesDirectory;
+
+	@Parameter
+	protected String mode;
+
+	@Parameter
+	private boolean debugVerify;
+
+	@Parameter
+	private boolean verify = true;
+
+	@Parameter
+	private boolean removeYamlSupport;
+
+	@Parameter
+	private boolean removeJmxSupport = true;
+
+	@Parameter
+	private boolean removeXmlSupport = true;
+
+	@Parameter
+	private boolean removeSpelSupport;
+
+	protected AotOptions getAotOptions() {
+		AotOptions aotOptions = new AotOptions();
+		aotOptions.setMode(mode);
+		aotOptions.setDebugVerify(debugVerify);
+		aotOptions.setVerify(verify);
+		aotOptions.setRemoveYamlSupport(removeYamlSupport);
+		aotOptions.setRemoveJmxSupport(removeJmxSupport);
+		aotOptions.setRemoveXmlSupport(removeXmlSupport);
+		aotOptions.setRemoveSpelSupport(removeSpelSupport);
+		return aotOptions;
+	}
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -82,17 +118,17 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			List<String> runtimeClasspathElements = project.getRuntimeClasspathElements();
 
 			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-native-configuration")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-aot")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 			findJarFile(this.pluginArtifacts, "org.springframework.boot", "spring-boot-loader-tools")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 			findJarFile(this.pluginArtifacts, "com.squareup", "javapoet")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 			findJarFile(this.pluginArtifacts, "info.picocli", "picocli")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
-					.ifPresent(artifact -> runtimeClasspathElements.add(1, artifact.getFile().getAbsolutePath()));
+					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 
 			AotOptions aotOptions = getAotOptions();
 
@@ -146,21 +182,6 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			getLog().error(exc);
 			getLog().error(Arrays.toString(exc.getStackTrace()));
 			throw new MojoFailureException("Build failed during Spring AOT code generation", exc);
-		}
-	}
-
-	private String getLogLevel() {
-		if (getLog().isDebugEnabled()) {
-			return "DEBUG";
-		}
-		else if (getLog().isInfoEnabled()) {
-			return "INFO";
-		}
-		else if (getLog().isWarnEnabled()) {
-			return "WARN";
-		}
-		else {
-			return "ERROR";
 		}
 	}
 

@@ -69,54 +69,10 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}")
 	protected File buildDir;
 
-	@Parameter
-	protected String mode;
-
-	@Parameter
-	private boolean debugVerify;
-
-	@Parameter
-	private boolean verify = true;
-
-	@Parameter
-	private boolean removeYamlSupport;
-
-	@Parameter
-	private boolean removeJmxSupport = true;
-
-	@Parameter
-	private boolean removeXmlSupport = true;
-
-	@Parameter
-	private boolean removeSpelSupport;
-
-	@Parameter(property = "spring.aot.mainClass")
-	protected String mainClass;
-
 	@Parameter(property = "spring.aot.debug")
 	protected String debug;
 
-	protected AotOptions getAotOptions() {
-		AotOptions aotOptions = new AotOptions();
-		aotOptions.setMode(mode);
-		aotOptions.setDebugVerify(debugVerify);
-		aotOptions.setVerify(verify);
-		aotOptions.setRemoveYamlSupport(removeYamlSupport);
-		aotOptions.setRemoveJmxSupport(removeJmxSupport);
-		aotOptions.setRemoveXmlSupport(removeXmlSupport);
-		aotOptions.setRemoveSpelSupport(removeSpelSupport);
-		return aotOptions;
-	}
-
-	protected String getSpringNativeConfigurationJarPath() throws MojoFailureException {
-		return this.pluginArtifacts.stream()
-				.filter(artifact -> artifact.getGroupId().equals("org.springframework.experimental") && artifact.getArtifactId().equals("spring-native-configuration"))
-				.map(artifact -> artifact.getFile().getAbsolutePath())
-				.findFirst()
-				.orElseThrow(() -> new MojoFailureException("Could not find spring-native-configuration dependency in plugin classpath."));
-	}
-
-	public static String asClasspathArgument(List<String> elements) {
+	protected static String asClasspathArgument(List<String> elements) {
 		StringBuilder classpath = new StringBuilder();
 		for (String element : elements) {
 			if (classpath.length() > 0) {
@@ -127,11 +83,30 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		return classpath.toString();
 	}
 
-	public static Optional<Artifact> findJarFile(List<Artifact> artifacts, String groupId, String artifactId) {
+	protected static Optional<Artifact> findJarFile(List<Artifact> artifacts, String groupId, String artifactId) {
 		return artifacts.stream()
 				.filter(artifact -> artifact.getGroupId().equals(groupId)
 						&& artifact.getArtifactId().equals(artifactId))
 				.findFirst();
+	}
+
+	protected static void prependDependency(Artifact artifact, List<String> classpathElements) {
+		classpathElements.add(1, artifact.getFile().getAbsolutePath());
+	}
+
+	protected String getLogLevel() {
+		if (getLog().isDebugEnabled()) {
+			return "DEBUG";
+		}
+		else if (getLog().isInfoEnabled()) {
+			return "INFO";
+		}
+		else if (getLog().isWarnEnabled()) {
+			return "WARN";
+		}
+		else {
+			return "ERROR";
+		}
 	}
 
 	protected void recreateGeneratedSourcesFolder(File generatedSourcesFolder) throws MojoFailureException {
