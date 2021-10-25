@@ -197,16 +197,16 @@ public class NativeReflectionEntry {
 
 		/**
 		 * Add the specified {@link Executable methods or constructors}.
-		 * @param methods the methods to add
+		 * @param executables the executables to add
 		 * @return this for method chaining
 		 */
-		public Builder withMethods(Executable... methods) {
-			Arrays.stream(methods).forEach((method) -> {
-				if (method instanceof Method) {
-					this.methods.add((Method) method);
+		public Builder withExecutables(Executable... executables) {
+			Arrays.stream(executables).forEach((executable) -> {
+				if (executable instanceof Method) {
+					this.methods.add((Method) executable);
 				}
-				else if (method instanceof Constructor) {
-					this.constructors.add((Constructor<?>) method);
+				else if (executable instanceof Constructor) {
+					this.constructors.add((Constructor<?>) executable);
 				}
 			});
 			return this;

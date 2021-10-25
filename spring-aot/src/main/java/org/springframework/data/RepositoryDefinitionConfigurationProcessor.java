@@ -48,7 +48,6 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.DecoratingProxy;
-import org.springframework.core.KotlinDetector;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -335,7 +334,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 						Builder reflectBuilder = registry.reflection().forType(domainType.getType()).withFlags();
 
 						if (domainType.hasMethods()) {
-							reflectBuilder.withMethods(domainType.getMethods().toArray(new Method[0]));
+							reflectBuilder.withExecutables(domainType.getMethods().toArray(new Method[0]));
 						} else {
 							if(domainType.isPartOf("java")) {
 								reflectBuilder.withFlags(Flag.allPublicMethods);
@@ -347,7 +346,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 						}
 
 						if (domainType.hasPersistenceConstructor()) {
-							reflectBuilder.withMethods(domainType.getPersistenceConstructor());
+							reflectBuilder.withExecutables(domainType.getPersistenceConstructor());
 						} else {
 							reflectBuilder.withFlags(Flag.allDeclaredConstructors);
 						}

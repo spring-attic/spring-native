@@ -64,7 +64,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterMethod() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class);
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(method)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(method)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("test");
@@ -75,7 +75,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterMethodWithDollarSeparatorForParameters() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class, TestClass.class);
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(method)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(method)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("test");
@@ -87,7 +87,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterConstructor() {
 		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(constructor)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
@@ -98,7 +98,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterConstructorWithDollarSeparatorForParameters() {
 		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[1];
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(constructor)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
@@ -129,7 +129,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldNotRegisterSpecificConstructorIfAllDeclaredConstructorsIsSet() {
 		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(constructor)
 				.withFlags(Flag.allDeclaredConstructors)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors);
@@ -139,7 +139,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldNotRegisterSpecificConstructorIfAllPublicConstructorsIsSet() {
 		Constructor<?> constructor = TestClass.class.getDeclaredConstructors()[0];
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(constructor)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(constructor)
 				.withFlags(Flag.allPublicConstructors)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicConstructors);
@@ -149,7 +149,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterSpecificConstructorIfNotMatchingAllPublicConstructorsFlag() {
 		Constructor<?> constructor = VisibilityTestClass.class.getDeclaredConstructors()[0];
-		ClassDescriptor descriptor = NativeReflectionEntry.of(VisibilityTestClass.class).withMethods(constructor)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(VisibilityTestClass.class).withExecutables(constructor)
 				.withFlags(Flag.allPublicConstructors)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicConstructors);
@@ -162,7 +162,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldNotRegisterMethodIfAllDeclaredMethodsIsSet() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class);
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(method)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(method)
 				.withFlags(Flag.allDeclaredMethods)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods);
@@ -172,7 +172,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldNotRegisterMethodIfAllPublicMethodsIsSet() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "test", String.class, Integer.class);
-		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withMethods(method)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(TestClass.class).withExecutables(method)
 				.withFlags(Flag.allPublicMethods)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicMethods);
@@ -182,7 +182,7 @@ class NativeReflectionEntryTests {
 	@Test
 	void toClassDescriptorShouldRegisterMethodIfNotMatchingAllPublicMethodsIsSet() {
 		Method method = ReflectionUtils.findMethod(VisibilityTestClass.class, "test", String.class);
-		ClassDescriptor descriptor = NativeReflectionEntry.of(VisibilityTestClass.class).withMethods(method)
+		ClassDescriptor descriptor = NativeReflectionEntry.of(VisibilityTestClass.class).withExecutables(method)
 				.withFlags(Flag.allPublicMethods)
 				.build().toClassDescriptor();
 		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicMethods);

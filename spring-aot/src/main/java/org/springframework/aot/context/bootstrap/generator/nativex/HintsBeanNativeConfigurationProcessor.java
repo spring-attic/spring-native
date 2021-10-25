@@ -105,7 +105,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						}
 						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
 							Executable method = methodDescriptor.findOnClass(keyClass);
-							reflectionConfiguration.forType(keyClass).withMethods(method);
+							reflectionConfiguration.forType(keyClass).withExecutables(method);
 						}
 						for (FieldDescriptor fieldDescriptor : value.getFieldDescriptors()) {
 							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());
@@ -180,7 +180,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						}
 						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
 							Executable method = methodDescriptor.findOnClass(keyClass);
-							jniConfiguration.forType(keyClass).withMethods(method);
+							jniConfiguration.forType(keyClass).withExecutables(method);
 						}
 						for (FieldDescriptor fieldDescriptor : value.getFieldDescriptors()) {
 							Field field = keyClass.getDeclaredField(fieldDescriptor.getName());

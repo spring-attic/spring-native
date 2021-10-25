@@ -75,7 +75,7 @@ class EndpointNativeConfigurationProcessor implements BeanFactoryNativeConfigura
 
 		private void registerEndpoint(NativeConfigurationRegistry registry, Class<?> type) {
 			Builder builder = registry.reflection().forType(type);
-			ReflectionUtils.doWithMethods(type, builder::withMethods, this::isOperationMethod);
+			ReflectionUtils.doWithMethods(type, builder::withExecutables, this::isOperationMethod);
 			Executable endpointFilterConstructor = getEndpointFilterConstructor(type);
 			if (endpointFilterConstructor != null) {
 				registry.reflection().addExecutable(endpointFilterConstructor);

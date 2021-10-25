@@ -130,7 +130,7 @@ public class NativeConfigurationRegistry {
 		 * @return this for method chaining
 		 */
 		public ReflectionConfiguration addExecutable(Executable executable) {
-			forType(executable.getDeclaringClass()).withMethods(executable);
+			forType(executable.getDeclaringClass()).withExecutables(executable);
 			return this;
 		}
 

@@ -51,7 +51,7 @@ public class FrameworkMethodsBeanNativeConfigurationProcessor implements BeanNat
 				.filter(this::isRuntimeFrameworkAnnotation)
 				.forEach((ann) -> {
 					Method method = (Method) ann.getSource();
-					reflectionConfiguration.forType(method.getDeclaringClass()).withMethods(method);
+					reflectionConfiguration.forType(method.getDeclaringClass()).withExecutables(method);
 		});
 	}
 

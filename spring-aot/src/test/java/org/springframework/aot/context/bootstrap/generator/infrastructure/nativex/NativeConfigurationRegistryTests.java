@@ -65,7 +65,7 @@ class NativeConfigurationRegistryTests {
 	@Test
 	void getClassDescriptorsMapEntries() {
 		registry.reflection().forType(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
-		registry.reflection().forType(Integer.class).withMethods(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
+		registry.reflection().forType(Integer.class).withExecutables(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
 		assertThat(classDescriptors).hasSize(2);
 		assertThat(classDescriptors).anySatisfy((descriptor) -> {
