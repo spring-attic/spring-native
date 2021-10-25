@@ -151,7 +151,11 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			});
 
 			project.getTasks().withType(Test.class)
-					.configureEach(test -> test.setClasspath(test.getClasspath().plus(project.files(generatedTestSourcesJar.getArchiveFile()))));
+					.configureEach(test -> {
+						test.setClasspath(test.getClasspath().plus(project.files(generatedTestSourcesJar.getArchiveFile())));
+						test.systemProperty("spring.test.context.default.CacheAwareContextLoaderDelegate",
+								"org.springframework.aot.test.AotCacheAwareContextLoaderDelegate");
+					});
 
 			project.getPlugins().withType(NativeImagePlugin.class, nativeImagePlugin -> {
 				project.getTasks().named(NativeImagePlugin.NATIVE_COMPILE_TASK_NAME).configure(nativeCompile -> {

@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,6 +122,15 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			}
 
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
+
+			// Write system property as spring.properties file in test resources.
+			Path springProperties = Path.of(project.getBuild().getTestOutputDirectory(), "spring.properties");
+			if (springProperties.toFile().exists()) {
+				Files.delete(springProperties);
+			}
+			Files.write(springProperties,
+					Collections.singletonList("spring.test.context.default.CacheAwareContextLoaderDelegate=org.springframework.aot.test.AotCacheAwareContextLoaderDelegate"),
+					StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 			this.buildContext.refresh(this.buildDir);
 		}
 		catch (Throwable exc) {
