@@ -8,19 +8,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class CLR implements CommandLineRunner {
+public class HttpsRequester implements CommandLineRunner {
 
-	Logger logger = LoggerFactory.getLogger(CLR.class);
+	Logger logger = LoggerFactory.getLogger(HttpsRequester.class);
 
 	private WebClient client;
 
-	public CLR(WebClient.Builder builder) {
-		this.client = builder.baseUrl("http://localhost:8080").build();
+	public HttpsRequester(WebClient.Builder builder) {
+		this.client = builder.baseUrl("https://httpbin.org").build();
 	}
 
 	@Override
 	public void run(String... args) {
-		this.client.get().uri("superheros.json").retrieve().bodyToMono(Data.class).subscribe(message -> logger.info(message.toString()));
+		this.client.get().uri("anything").retrieve().bodyToMono(String.class).subscribe(body -> logger.info(body));
 	}
 	
 }
