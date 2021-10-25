@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Find Spring test Classes, which means classes annotated or meta-annotated with
@@ -54,7 +56,7 @@ public abstract class TestClassesFinder {
 		SimpleMetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 		File rootDirectory = rootDirectoryPath.toFile();
 		if (!rootDirectory.exists()) {
-			return null;
+			return Collections.emptyList();
 		}
 		else if (!rootDirectory.isDirectory()) {
 			throw new IllegalArgumentException("Invalid root directory '" + rootDirectory + "'");
@@ -87,7 +89,7 @@ public abstract class TestClassesFinder {
 
 			}
 		}
-		return testClasses;
+		return Collections.unmodifiableList(testClasses);
 	}
 
 	private static boolean isClassFile(File file) {

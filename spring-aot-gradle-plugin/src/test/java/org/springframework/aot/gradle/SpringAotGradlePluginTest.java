@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.gradle.tasks.GenerateAotSources;
+import org.springframework.aot.gradle.tasks.GenerateAotTestSources;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,15 +66,48 @@ public class SpringAotGradlePluginTest {
 	}
 
 	@Test
+	void pluginRegistersAotTestSourceSet() {
+		Project project = createTestProject();
+
+		JavaPluginExtension java = project.getExtensions().findByType(JavaPluginExtension.class);
+		SourceSet aotTestSourceSet = java.getSourceSets().findByName(SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME);
+		SourceSet testSourceSet = java.getSourceSets().findByName(SourceSet.TEST_SOURCE_SET_NAME);
+
+		assertThat(aotTestSourceSet).isNotNull();
+		assertThat(aotTestSourceSet.getJava().getSourceDirectories())
+				.hasSize(1)
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "sources" + File.separator + SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME));
+		assertThat(aotTestSourceSet.getResources().getSourceDirectories())
+				.hasSize(1)
+				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
+						+ File.separator + "resources" + File.separator + SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME));
+		assertThat(aotTestSourceSet.getCompileClasspath()).containsAll(testSourceSet.getRuntimeClasspath());
+	}
+
+	@Test
 	void pluginRegistersAotTask() {
 		Project project = createTestProject();
 
 		JavaPluginExtension java = project.getExtensions().findByType(JavaPluginExtension.class);
 		SourceSet aotSourceSet = java.getSourceSets().findByName(SpringAotGradlePlugin.AOT_MAIN_SOURCE_SET_NAME);
 		TaskProvider<GenerateAotSources> generateAotSourcesProvider = project.getTasks().withType(GenerateAotSources.class)
-				.named(SpringAotGradlePlugin.GENERATE_TASK_NAME);
+				.named(SpringAotGradlePlugin.GENERATE_MAIN_TASK_NAME);
 		assertThat(generateAotSourcesProvider.isPresent()).isTrue();
 		TaskProvider<Task> compileAotProvider = project.getTasks().named(aotSourceSet.getCompileJavaTaskName());
+		assertThat(compileAotProvider.isPresent()).isTrue();
+	}
+
+	@Test
+	void pluginRegistersAotTestTask() {
+		Project project = createTestProject();
+
+		JavaPluginExtension java = project.getExtensions().findByType(JavaPluginExtension.class);
+		SourceSet aotTestSourceSet = java.getSourceSets().findByName(SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME);
+		TaskProvider<GenerateAotTestSources> generateAotTestSourcesProvider = project.getTasks().withType(GenerateAotTestSources.class)
+				.named(SpringAotGradlePlugin.GENERATE_TEST_TASK_NAME);
+		assertThat(generateAotTestSourcesProvider.isPresent()).isTrue();
+		TaskProvider<Task> compileAotProvider = project.getTasks().named(aotTestSourceSet.getCompileJavaTaskName());
 		assertThat(compileAotProvider.isPresent()).isTrue();
 	}
 

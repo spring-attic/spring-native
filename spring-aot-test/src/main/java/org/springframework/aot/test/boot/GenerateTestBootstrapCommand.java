@@ -42,22 +42,26 @@ import org.springframework.util.ClassUtils;
 		description = "Generate the Java source for the Spring test Bootstrap class.")
 public class GenerateTestBootstrapCommand implements Callable<Integer> {
 
-	@Parameters(index = "0", arity = "0..1", description = "Folder containing the application test classes.")
-	private Path testClassesFolder;
-
-	@Parameters(index = "1", arity = "0..1", description = "Path where generated source files should be written.")
+	@Option(names={"--output", "-o"}, description = "Path where generated source files should be written.")
 	private Path outputPath;
-
-	@Parameters(index = "2", arity = "0..1", description = "The package name which should be used for generated source files.")
-	private String packageName;
 
 	@Option(names = {"--debug"}, description = "Enable debug logging.")
 	private boolean isDebug;
 
+	@Parameters(index = "0", arity = "1", description = "The package name which should be used for generated source files.")
+	private String packageName;
+
+	@Parameters(index = "1", arity = "1..*", description = "Folders containing the application test classes.")
+	private Path[] testClassesFolders;
+
+
 	@Override
 	public Integer call() throws Exception {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		List<String> testClassesNames = TestClassesFinder.findTestClasses(testClassesFolder);
+		List<String> testClassesNames = new ArrayList<>();
+		for (Path testClassesFolder : testClassesFolders) {
+			testClassesNames.addAll(TestClassesFinder.findTestClasses(testClassesFolder));
+		}
 
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		LogFile logFile = LogFile.get(environment);
@@ -74,7 +78,8 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 			testClasses.add(ClassUtils.forName(testClassName, classLoader));
 		}
 		new TestContextBootstrapGenerator(classLoader).generateTestContexts(testClasses, writerContext);
-		writeSources(this.outputPath, writerContext.toJavaFiles());
+		Path out = this.outputPath != null ? this.outputPath : Path.of(System.getProperty("user.dir"));
+		writeSources(out, writerContext.toJavaFiles());
 		return 0;
 	}
 

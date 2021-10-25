@@ -107,12 +107,13 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			if (getLogLevel().equals("DEBUG")) {
 				args.add("--debug");
 			}
-			// test output directory
-			args.add(testOutputDirectory.toString());
 			// outputPath
+			args.add("--output");
 			args.add(sourcesPath.toAbsolutePath().toString());
 			// packageName
 			args.add("org.springframework.aot");
+			// test output directory
+			args.add(testOutputDirectory.toString());
 
 			int exitCode = runProcess.run(true, args, Collections.emptyMap());
 			if (exitCode != 0 && exitCode != 130) {
