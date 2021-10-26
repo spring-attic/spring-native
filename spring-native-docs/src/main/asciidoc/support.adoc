@@ -41,7 +41,7 @@ IMPORTANT: Spring Native {version} is designed to be used with Spring Boot {spri
 The following starters are supported, the group ID is `org.springframework.boot` unless specified otherwise.
 
 * `spring-boot-starter-actuator`: WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure.
-Beware that actuators significantly increase the footprint, this will be optimized in a future release.
+** Exclude `io.micrometer:micrometer-core` when metrics are not used in order to reduce significantly the memory footprint
 * `spring-boot-starter-data-elasticsearch`
 * `spring-boot-starter-data-jdbc`
 * `spring-boot-starter-data-jpa`
