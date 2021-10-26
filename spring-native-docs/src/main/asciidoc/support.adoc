@@ -91,7 +91,7 @@ implementation("org.apache.tomcat.experimental:tomcat-embed-programmatic:${depen
 
 * `spring-boot-starter-actuator`
 ** WebMvc and WebFlux are supported, as well as metrics and tracing infrastructure.
-** Exclude `io.micrometer:micrometer-core` when metrics are not used in order to reduce significantly the memory footprint
+** Exclude `io.micrometer:micrometer-core` when metrics are not used in order to reduce the memory footprint
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
