@@ -4,7 +4,6 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
 
@@ -14,15 +13,18 @@ import org.springframework.util.ClassUtils;
  *
  * @author Olivier Boudet
  */
+class HealthContributorNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
-public class HealthContributorNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
-    @Override
-    public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-        if (ClassUtils.isPresent("org.springframework.boot.actuate.health.HealthContributor", beanFactory.getBeanClassLoader())) {
-            String[] healthContributorBeanNames = beanFactory.getBeanNamesForType(HealthContributor.class);
-            for (String bean : healthContributorBeanNames) {
-                registry.reflection().forType(beanFactory.getBean(bean, HealthContributor.class).getClass()).withFlags(Flag.allDeclaredConstructors).build();
-            }
-        }
-    }
+	private static final String HEALTH_CONTRIBUTOR_CLASS_NAME = "org.springframework.boot.actuate.health.HealthContributor";
+
+	@Override
+	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+		if (ClassUtils.isPresent(HEALTH_CONTRIBUTOR_CLASS_NAME, beanFactory.getBeanClassLoader())) {
+			String[] beanNames = beanFactory.getBeanNamesForType(HealthContributor.class);
+			for (String beanName : beanNames) {
+				Class<?> beanType = beanFactory.getBeanDefinition(beanName).getResolvableType().toClass();
+				registry.reflection().forType(beanType).withFlags(Flag.allDeclaredConstructors).build();
+			}
+		}
+	}
 }

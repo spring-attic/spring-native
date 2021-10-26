@@ -17,15 +17,13 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.PingHealthIndicator;
 import org.springframework.nativex.hint.Flag;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,29 +38,30 @@ class HealthContributorNativeConfigurationProcessorTests {
 	void registerHealthIndicator() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
-		beanFactory.registerBeanDefinition("healthIndicator", BeanDefinitionBuilder.rootBeanDefinition(TestHealthIndicator.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("healthIndicator", BeanDefinitionBuilder.rootBeanDefinition(PingHealthIndicator.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
-		assertThat(entries).anySatisfy((entry) -> {
-			assertThat(entry.getType()).isEqualTo(TestHealthIndicator.class);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
 		});
-		assertThat(entries).hasSize(1);
+	}
+
+	@Test
+	void registerHealthContributor() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("healthContributor", BeanDefinitionBuilder.rootBeanDefinition(HealthContributor.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(HealthContributor.class);
+			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
+		});
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new HealthContributorNativeConfigurationProcessor().process(beanFactory, registry);
 		return registry;
-	}
-
-	@SuppressWarnings("unused")
-	static class TestHealthIndicator implements HealthIndicator {
-
-		@Override
-		public Health health() {
-			return Health.up().build();
-		}
 	}
 
 }
