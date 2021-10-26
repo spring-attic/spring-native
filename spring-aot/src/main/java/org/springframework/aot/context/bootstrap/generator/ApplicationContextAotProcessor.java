@@ -36,11 +36,16 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Bootst
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistrar;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -80,9 +85,8 @@ public class ApplicationContextAotProcessor {
 	 * @param writerContext the writer context to use
 	 */
 	public void process(GenericApplicationContext context, BootstrapWriterContext writerContext) {
+		this.beanRegistrationWriterSuppliers.forEach((supplier) -> invokeAwareMethods(supplier, context));
 		ConfigurableListableBeanFactory beanFactory = this.buildTimeBeanDefinitionsRegistrar.processBeanDefinitions(context);
-		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
-				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
 		writerContext.getMainBootstrapClass().addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
 	}
@@ -142,6 +146,31 @@ public class ApplicationContextAotProcessor {
 		}
 		logger.error("Failed to handle bean " + beanName + " with definition " + beanDefinition);
 		return null;
+	}
+
+	private void invokeAwareMethods(Object instance, GenericApplicationContext context) {
+		if (instance instanceof EnvironmentAware) {
+			((EnvironmentAware) instance).setEnvironment(context.getEnvironment());
+		}
+		if (instance instanceof ResourceLoaderAware) {
+			((ResourceLoaderAware) instance).setResourceLoader(context);
+		}
+		if (instance instanceof ApplicationEventPublisherAware) {
+			((ApplicationEventPublisherAware) instance).setApplicationEventPublisher(context);
+		}
+		if (instance instanceof ApplicationContextAware) {
+			((ApplicationContextAware) instance).setApplicationContext(context);
+		}
+		if (instance instanceof BeanClassLoaderAware) {
+			ClassLoader bcl = context.getBeanFactory().getBeanClassLoader();
+			if (bcl != null) {
+				((BeanClassLoaderAware) instance).setBeanClassLoader(bcl);
+			}
+		}
+		if (instance instanceof BeanFactoryAware) {
+			((BeanFactoryAware) instance).setBeanFactory(context.getBeanFactory());
+		}
+
 	}
 
 }

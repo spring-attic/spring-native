@@ -28,7 +28,7 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 5)
-class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrationWriterSupplier {
+public class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrationWriterSupplier {
 
 	@Override
 	protected BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,

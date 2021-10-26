@@ -17,11 +17,16 @@
 package org.springframework.aot.context.bootstrap.generator;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
+import org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericConfiguration;
@@ -35,12 +40,28 @@ import org.springframework.aot.context.bootstrap.generator.sample.visibility.Pub
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicOuterClassConfiguration;
 import org.springframework.aot.context.bootstrap.generator.test.ApplicationContextAotProcessorTester;
 import org.springframework.aot.context.bootstrap.generator.test.ContextBootstrapStructure;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.samples.scope.ScopeConfiguration;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link ApplicationContextAotProcessor}.
@@ -296,6 +317,54 @@ class ApplicationContextAotProcessorTests {
 				"  argumentValues.addIndexedArgumentValue(2, 4);",
 				"}).register(context);"
 		);
+	}
+
+	@Test
+	void awareCallbacksAreHonored() {
+		AwareBeanRegistrationWriterSupplier supplier = spy(new AwareBeanRegistrationWriterSupplier());
+		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(List.of(new DefaultBeanRegistrationWriterSupplier(), supplier));
+		GenericApplicationContext context = new GenericApplicationContext();
+		processor.process(context, new DefaultBootstrapWriterContext("com.acme", "Test"));
+		verify(supplier).setEnvironment(context.getEnvironment());
+		verify(supplier).setResourceLoader(context);
+		verify(supplier).setApplicationEventPublisher(context);
+		verify(supplier).setApplicationContext(context);
+		verify(supplier).setBeanClassLoader(context.getBeanFactory().getBeanClassLoader());
+		verify(supplier).setBeanFactory(context.getBeanFactory());
+		verifyNoMoreInteractions(supplier);
+	}
+
+	static class AwareBeanRegistrationWriterSupplier implements BeanRegistrationWriterSupplier, EnvironmentAware,
+			ResourceLoaderAware, ApplicationEventPublisherAware, ApplicationContextAware, BeanClassLoaderAware,
+			BeanFactoryAware {
+		@Override
+		public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
+			return null;
+		}
+
+		@Override
+		public void setBeanClassLoader(ClassLoader classLoader) {
+		}
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		}
+
+		@Override
+		public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		}
+
+		@Override
+		public void setEnvironment(Environment environment) {
+		}
+
+		@Override
+		public void setResourceLoader(ResourceLoader resourceLoader) {
+		}
 	}
 
 }

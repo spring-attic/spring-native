@@ -16,11 +16,23 @@
 
 package org.springframework.aot.context.bootstrap.generator.bean;
 
+import org.springframework.beans.factory.Aware;
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 
 /**
  * Strategy interface to provide the bean registration writer for a {@link BeanDefinition}.
+ * <p/>
+ * Can implement any of the following {@link Aware} interfaces: {@link EnvironmentAware},
+ * {@link ResourceLoaderAware}, {@link ApplicationEventPublisherAware},
+ * {@link ApplicationContextAware}, {@link BeanClassLoaderAware}, and
+ * {@link BeanFactoryAware}.
  *
  * @author Stephane Nicoll
  */
