@@ -7,11 +7,11 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 
 /**
- * Enable HTTPS support when that makes sense by default, for example when beans like http clients are detected.
+ * Enable HTTP and HTTPS support for specific beans, for example when http clients are detected.
  *
  * @author Sébastien Deleuze
  */
-public class EnableHttpsBeanNativeConfigurationProcessor implements BeanNativeConfigurationProcessor {
+public class EnableHttpBeanNativeConfigurationProcessor implements BeanNativeConfigurationProcessor {
 
 	private static final List<String> BEAN_TYPE_NAMES = List.of(
 			"org.springframework.web.client.RestTemplate",
@@ -20,12 +20,14 @@ public class EnableHttpsBeanNativeConfigurationProcessor implements BeanNativeCo
 			"org.springframework.web.reactive.function.client.WebClient$Builder"
 	);
 
+	private static final String ENABLE_HTTP_OPTION = "--enable-http";
 	private static final String ENABLE_HTTPS_OPTION = "--enable-https";
 
 	@Override
 	public void process(BeanInstanceDescriptor descriptor, NativeConfigurationRegistry registry) {
 		for (String beanTypeName : BEAN_TYPE_NAMES) {
 			if (descriptor.getUserBeanClass().getName().equals(beanTypeName)) {
+				registry.options().add(ENABLE_HTTP_OPTION);
 				registry.options().add(ENABLE_HTTPS_OPTION);
 			}
 		}

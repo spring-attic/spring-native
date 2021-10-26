@@ -11,42 +11,42 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EnableHttpsBeanNativeConfigurationProcessor}.
+ * Tests for {@link EnableHttpBeanNativeConfigurationProcessor}.
  *
  * @author Sébastien Deleuze
  */
-public class EnableHttpsBeanNativeConfigurationProcessorTests {
+public class EnableHttpBeanNativeConfigurationProcessorTests {
 
 	@Test
-	void registerEnableHttpsForWebClient() {
+	void registerEnableHttpForWebClient() {
 		BeanInstanceDescriptor webClientDescriptor = BeanInstanceDescriptor.of(WebClient.class).build();
 		NativeConfigurationRegistry registry = register(webClientDescriptor);
-		assertThat(registry.options()).singleElement().isEqualTo("--enable-https");
+		assertThat(registry.options()).containsExactly("--enable-http", "--enable-https");
 	}
 
 	@Test
-	void registerEnableHttpsForWebClientBuilder() {
+	void registerEnableHttpForWebClientBuilder() {
 		BeanInstanceDescriptor webClientDescriptor = BeanInstanceDescriptor.of(WebClient.Builder.class).build();
 		NativeConfigurationRegistry registry = register(webClientDescriptor);
-		assertThat(registry.options()).singleElement().isEqualTo("--enable-https");
+		assertThat(registry.options()).containsExactly("--enable-http", "--enable-https");
 	}
 
 	@Test
-	void registerEnableHttpsForRestTemplate() {
+	void registerEnableHttpForRestTemplate() {
 		BeanInstanceDescriptor webClientDescriptor = BeanInstanceDescriptor.of(RestTemplate.class).build();
 		NativeConfigurationRegistry registry = register(webClientDescriptor);
-		assertThat(registry.options()).singleElement().isEqualTo("--enable-https");
+		assertThat(registry.options()).containsExactly("--enable-http", "--enable-https");
 	}
 
 	@Test
-	void registerEnableHttpsForRestTemplateBuilder() {
+	void registerEnableHttpForRestTemplateBuilder() {
 		BeanInstanceDescriptor webClientDescriptor = BeanInstanceDescriptor.of(RestTemplateBuilder.class).build();
 		NativeConfigurationRegistry registry = register(webClientDescriptor);
-		assertThat(registry.options()).singleElement().isEqualTo("--enable-https");
+		assertThat(registry.options()).containsExactly("--enable-http", "--enable-https");
 	}
 
 	@Test
-	void registerEnableHttpsForOtherBean() {
+	void registerEnableHttpForOtherBean() {
 		BeanInstanceDescriptor webClientDescriptor = BeanInstanceDescriptor.of(String.class).build();
 		NativeConfigurationRegistry registry = register(webClientDescriptor);
 		assertThat(registry.options()).isEmpty();
@@ -54,7 +54,7 @@ public class EnableHttpsBeanNativeConfigurationProcessorTests {
 
 	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-		new EnableHttpsBeanNativeConfigurationProcessor().process(descriptor, registry);
+		new EnableHttpBeanNativeConfigurationProcessor().process(descriptor, registry);
 		return registry;
 	}
 }
