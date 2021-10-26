@@ -193,7 +193,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 				}
 			}
 		}
-		if (beanType.getSuperclass() != null) {
+		if (beanType.getSuperclass() != null && beanType.getSuperclass() != Object.class) {
 			findAndRegisterRelevantNativeHints(beanType.getSuperclass(), registry);
 		}
 	}
