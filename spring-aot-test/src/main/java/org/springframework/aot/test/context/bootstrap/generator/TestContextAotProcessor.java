@@ -32,37 +32,30 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
-import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.test.boot.SpringBootAotContextLoader;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.SmartContextLoader;
 
 /**
- * A context bootstrap generator for tests that start an application context. Generate a
- * context initializer class for each identified context as well as a main class that
- * links each test to its initializer.
+ * A decorator of {@link ApplicationContextAotProcessor} that handles test contexts.
  *
  * @author Stephane Nicoll
  */
-public class TestContextBootstrapGenerator {
+public class TestContextAotProcessor {
 
 	private static final String TEST_BOOTSTRAP_CLASS_NAME = "TestContextBootstrapInitializer";
 
-	private final BuildTimeBeanDefinitionsRegistrar registrar;
-
 	private final TestContextConfigurationDescriptorFactory configurationDescriptorFactory;
 
-	private final ContextBootstrapGenerator generator;
+	private final ApplicationContextAotProcessor contextProcessor;
 
-	public TestContextBootstrapGenerator(ClassLoader classLoader) {
-		this.registrar = new BuildTimeBeanDefinitionsRegistrar();
+	public TestContextAotProcessor(ClassLoader classLoader) {
 		this.configurationDescriptorFactory = new TestContextConfigurationDescriptorFactory(classLoader);
-		this.generator = new ContextBootstrapGenerator(classLoader);
+		this.contextProcessor = new ApplicationContextAotProcessor(classLoader);
 	}
 
 	/**
@@ -93,8 +86,7 @@ public class TestContextBootstrapGenerator {
 		GenericApplicationContext context = descriptor.parseTestContext();
 		String className = determineClassName(descriptor.getTestClasses(), fallbackClassName);
 		BootstrapWriterContext testWriterContext = writerContext.fork(className);
-		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
-		this.generator.generateBootstrapClass(beanFactory, testWriterContext);
+		this.contextProcessor.process(context, testWriterContext);
 		BootstrapClass mainBootstrapClass = testWriterContext.getMainBootstrapClass();
 		mainBootstrapClass.customizeType((type) -> type.addJavadoc(getClassLevelJavadoc(descriptor.getTestClasses())));
 		return mainBootstrapClass.getClassName();

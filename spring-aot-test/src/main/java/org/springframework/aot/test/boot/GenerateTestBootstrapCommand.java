@@ -29,7 +29,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
-import org.springframework.aot.test.context.bootstrap.generator.TestContextBootstrapGenerator;
+import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -77,7 +77,7 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 			testClasses.add(ClassUtils.forName(testClassName, classLoader));
 		}
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(this.packageName, "Test");
-		new TestContextBootstrapGenerator(classLoader).generateTestContexts(testClasses, writerContext);
+		new TestContextAotProcessor(classLoader).generateTestContexts(testClasses, writerContext);
 		Path out = this.outputPath != null ? this.outputPath : Path.of(System.getProperty("user.dir"));
 		writeSources(out, writerContext.toJavaFiles());
 		return 0;

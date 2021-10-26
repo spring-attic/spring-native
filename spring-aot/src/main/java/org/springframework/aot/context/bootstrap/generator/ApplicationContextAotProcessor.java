@@ -40,39 +40,47 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * Translate a {@link BeanFactory} to generated code that represents the state of the
- * factory, as well as the necessary configuration to run in a native image.
+ * Process an {@link ApplicationContext} and its {@link BeanFactory} to generate code that
+ * represents the state of the factory, as well as the necessary configuration to run in
+ * a native image.
  *
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
  * @see BeanRegistrationWriterSupplier
  * @see NativeConfigurationRegistry
  */
-public class ContextBootstrapGenerator {
+public class ApplicationContextAotProcessor {
 
-	private static final Log logger = LogFactory.getLog(ContextBootstrapGenerator.class);
+	private static final Log logger = LogFactory.getLog(ApplicationContextAotProcessor.class);
 
 	private final List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers;
 
-	public ContextBootstrapGenerator(ClassLoader classLoader) {
+	private final BuildTimeBeanDefinitionsRegistrar buildTimeBeanDefinitionsRegistrar;
+
+	ApplicationContextAotProcessor(List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers) {
+		this.beanRegistrationWriterSuppliers = beanRegistrationWriterSuppliers;
+		this.buildTimeBeanDefinitionsRegistrar = new BuildTimeBeanDefinitionsRegistrar();
+	}
+
+	public ApplicationContextAotProcessor(ClassLoader classLoader) {
 		this(SpringFactoriesLoader.loadFactories(BeanRegistrationWriterSupplier.class, classLoader));
 	}
 
-	ContextBootstrapGenerator(List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers) {
-		this.beanRegistrationWriterSuppliers = beanRegistrationWriterSuppliers;
-	}
-
 	/**
-	 * Generate the code that is required to restore the state of the specified
-	 * {@link BeanFactory}, using the specified {@link BootstrapWriterContext}.
-	 * @param beanFactory the bean factory state to replicate in code
+	 * Process the specified {@link GenericApplicationContext} and generate the code that
+	 * is required to restore the state of its {@link BeanFactory}, using the specified
+	 * {@link BootstrapWriterContext}.
+	 * @param context the context to process
 	 * @param writerContext the writer context to use
 	 */
-	public void generateBootstrapClass(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext) {
+	public void process(GenericApplicationContext context, BootstrapWriterContext writerContext) {
+		ConfigurableListableBeanFactory beanFactory = this.buildTimeBeanDefinitionsRegistrar.processBeanDefinitions(context);
 		this.beanRegistrationWriterSuppliers.stream().filter(BeanFactoryAware.class::isInstance)
 				.map(BeanFactoryAware.class::cast).forEach((callback) -> callback.setBeanFactory(beanFactory));
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());

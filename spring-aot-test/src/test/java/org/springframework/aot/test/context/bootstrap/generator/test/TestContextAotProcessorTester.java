@@ -25,36 +25,35 @@ import java.util.List;
 
 import com.squareup.javapoet.JavaFile;
 
-import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
-import org.springframework.aot.test.context.bootstrap.generator.TestContextBootstrapGenerator;
+import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 
 /**
- * A tester for {@link ContextBootstrapGenerator}.
+ * A tester for {@link TestContextAotProcessor}.
  *
  * @author Stephane Nicoll
  */
-public class TestContextBootstrapGeneratorTester {
+public class TestContextAotProcessorTester {
 
 	private final Path directory;
 
 	private final String packageName;
 
-	public TestContextBootstrapGeneratorTester(Path directory, String packageName) {
+	public TestContextAotProcessorTester(Path directory, String packageName) {
 		this.directory = directory;
 		this.packageName = packageName;
 	}
 
-	public TestContextBootstrapGeneratorTester(Path directory) {
+	public TestContextAotProcessorTester(Path directory) {
 		this(directory, "com.example");
 	}
 
-	public ContextBootstrapStructure generate(Class<?>... testClasses) {
+	public ContextBootstrapStructure process(Class<?>... testClasses) {
 		Path srcDirectory = generateSrcDirectory();
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(this.packageName,
 				BootstrapWriterContext.bootstrapClassFactory(this.packageName, "Test"));
-		new TestContextBootstrapGenerator(getClass().getClassLoader())
+		new TestContextAotProcessor(getClass().getClassLoader())
 				.generateTestContexts(Arrays.asList(testClasses), writerContext);
 		writeSources(srcDirectory, writerContext.toJavaFiles());
 		// TODO registry not set

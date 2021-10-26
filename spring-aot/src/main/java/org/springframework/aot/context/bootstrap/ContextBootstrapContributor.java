@@ -24,12 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
-import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.AotApplicationContextFactory;
-import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -73,12 +71,11 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		GenericApplicationContext applicationContext = new AotApplicationContextFactory(resourceLoader)
 				.createApplicationContext(applicationClass);
 		configureEnvironment(applicationContext.getEnvironment());
-		ConfigurableListableBeanFactory beanFactory = new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(applicationContext);
-		ContextBootstrapGenerator bootstrapGenerator = new ContextBootstrapGenerator(classLoader);
+		ApplicationContextAotProcessor aotProcessor = new ApplicationContextAotProcessor(classLoader);
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);
-		bootstrapGenerator.generateBootstrapClass(beanFactory, writerContext);
+		aotProcessor.process(applicationContext, writerContext);
 		watch.stop();
-		logger.info("Processed " + beanFactory.getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");
+		logger.info("Processed " + applicationContext.getBeanFactory().getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");
 
 		writerContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();

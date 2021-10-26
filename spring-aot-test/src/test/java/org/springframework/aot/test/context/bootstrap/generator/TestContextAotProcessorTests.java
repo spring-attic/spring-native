@@ -23,29 +23,29 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.aot.test.context.bootstrap.generator.test.ContextBootstrapStructure;
-import org.springframework.aot.test.context.bootstrap.generator.test.TestContextBootstrapGeneratorTester;
+import org.springframework.aot.test.context.bootstrap.generator.test.TestContextAotProcessorTester;
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TestContextBootstrapGenerator}.
+ * Tests for {@link TestContextAotProcessor}.
  *
  * @author Stephane Nicoll
  */
-class TestContextBootstrapGeneratorTests {
+class TestContextAotProcessorTests {
 
-	private TestContextBootstrapGeneratorTester generatorTester;
+	private TestContextAotProcessorTester tester;
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.generatorTester = new TestContextBootstrapGeneratorTester(directory);
+		this.tester = new TestContextAotProcessorTester(directory);
 	}
 
 	@Test
-	void generateTestContextsForSingleTestClass() {
-		ContextBootstrapStructure structure = this.generatorTester.generate(SampleApplicationTests.class);
+	void processSingleTestClass() {
+		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).contextBootstrapInitializer("SampleApplicationTestsContextInitializer").lines()
 				.containsSubsequence(
 						"/**",
@@ -60,8 +60,8 @@ class TestContextBootstrapGeneratorTests {
 	}
 
 	@Test
-	void generateTestContextsForSeveralTestClassesSharingTheSameConfiguration() {
-		ContextBootstrapStructure structure = this.generatorTester.generate(
+	void processSeveralTestClassesSharingTheSameConfiguration() {
+		ContextBootstrapStructure structure = this.tester.process(
 				SampleApplicationTests.class, SampleApplicationAnotherTests.class);
 		assertThat(structure).contextBootstrapInitializer("TestContextBootstrapInitializer0").lines()
 				.containsSubsequence(
@@ -77,8 +77,8 @@ class TestContextBootstrapGeneratorTests {
 	}
 
 	@Test
-	void generateTestContextsWriteContextLoaderMappingAtStandardLocation() {
-		ContextBootstrapStructure structure = this.generatorTester.generate(
+	void processWritesContextLoaderMappingAtStandardLocation() {
+		ContextBootstrapStructure structure = this.tester.process(
 				SampleApplicationTests.class, SampleApplicationAnotherTests.class);
 		assertThat(structure).contextBootstrapInitializer("TestContextBootstrapInitializer")
 				.removeIndent(1).lines().containsSubsequence(

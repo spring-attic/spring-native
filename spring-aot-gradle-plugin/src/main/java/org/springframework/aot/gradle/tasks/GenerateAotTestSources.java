@@ -32,10 +32,10 @@ import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
 import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
-import org.springframework.aot.test.context.bootstrap.generator.TestContextBootstrapGenerator;
+import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 
 /**
- * {@link org.gradle.api.Task} that generates AOT test sources using the {@link TestContextBootstrapGenerator}.
+ * {@link org.gradle.api.Task} that generates AOT test sources using {@link TestContextAotProcessor}.
  *
  * @author Brian Clozel
  */

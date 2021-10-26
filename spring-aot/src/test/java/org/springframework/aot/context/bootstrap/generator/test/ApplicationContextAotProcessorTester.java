@@ -25,19 +25,17 @@ import java.util.List;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
-import org.springframework.aot.context.bootstrap.generator.ContextBootstrapGenerator;
+import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 
 /**
- * A tester for {@link ContextBootstrapGenerator}.
+ * A tester for {@link ApplicationContextAotProcessor}.
  *
  * @author Stephane Nicoll
  */
-public class ContextBootstrapGeneratorTester {
+public class ApplicationContextAotProcessorTester {
 
 	public static final String CLASS_NAME = "ContextBootstrapInitializer";
 
@@ -45,26 +43,24 @@ public class ContextBootstrapGeneratorTester {
 
 	private final ClassName className;
 
-	public ContextBootstrapGeneratorTester(Path directory, ClassName className) {
+	public ApplicationContextAotProcessorTester(Path directory, ClassName className) {
 		this.directory = directory;
 		this.className = className;
 	}
 
-	public ContextBootstrapGeneratorTester(Path directory) {
+	public ApplicationContextAotProcessorTester(Path directory) {
 		this(directory, ClassName.get("com.exemple", CLASS_NAME));
 	}
 
-	public ContextBootstrapStructure generate(Class<?>... candidates) {
+	public ContextBootstrapStructure process(Class<?>... candidates) {
 		GenericApplicationContext context = new GenericApplicationContext();
 		for (Class<?> candidate : candidates) {
 			context.registerBean(generateShortName(candidate), candidate);
 		}
-		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
-		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		Path srcDirectory = generateSrcDirectory();
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(
 				this.className.packageName(), this.className.simpleName());
-		new ContextBootstrapGenerator(context.getClassLoader()).generateBootstrapClass(beanFactory, writerContext);
+		new ApplicationContextAotProcessor(context.getClassLoader()).process(context, writerContext);
 		writeSources(srcDirectory, writerContext.toJavaFiles());
 		return new ContextBootstrapStructure(srcDirectory, this.className, writerContext
 				.getNativeConfigurationRegistry().reflection().toClassDescriptors());
