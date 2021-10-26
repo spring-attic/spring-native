@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
 public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
 	private static final String REPO_MARKER = "org.springframework.data.repository.Repository";
+
 	private static final Pattern REPOSITORY_METHOD_PATTERN = Pattern.compile("^(find|read|get|query|search|stream|count|exists|delete|remove).*");
 
 	@Override
@@ -96,20 +97,16 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 	static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-
 			RepositoryConfigurationContributor configurationHandler = new RepositoryConfigurationContributor(beanFactory.getBeanClassLoader(), registry);
 			collectRepositoryDefinitions(beanFactory).forEach(configurationHandler::writeConfiguration);
 		}
 
 		private Collection<RepositoryConfiguration> collectRepositoryDefinitions(ConfigurableListableBeanFactory beanFactory) {
-
 			RepositoryConfigurationFactory configurationFactory = new RepositoryConfigurationFactory(beanFactory);
-
 			List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
 			for (String beanName : beanFactory.getBeanNamesForType(RepositoryFactoryInformation.class, false, false)) {
 				repositoryConfigurations.add(configurationFactory.forBeanName(beanName));
 			}
-
 			return repositoryConfigurations;
 		}
 	}
@@ -123,6 +120,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 	static class RepositoryConfigurationFactory {
 
 		private static final String FRAGMENTS_PROPERTY = "repositoryFragments";
+
 		private static final String CUSTOM_IMPLEMENTATION_PROPERTY = "customImplementation";
 
 		private final ConfigurableListableBeanFactory beanFactory;
@@ -132,23 +130,19 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		}
 
 		RepositoryConfiguration forBeanName(String beanName) {
-
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName.replace("&", ""));
-
 			RepositoryConfiguration configuration = new RepositoryConfiguration(readRepositoryInterfaceFromBeanDefinition(beanName, beanDefinition));
 			configuration.setBeanName(beanName);
 			configuration.setCustomImplementation(readCustomImplementationFromBeanDefinition(beanDefinition));
 			configuration.setFragments(readFragmentsFromBeanDefinition(beanDefinition));
-
 			return configuration;
 		}
 
+		@SuppressWarnings("unchecked")
 		private List<Class<?>> readFragmentsFromBeanDefinition(BeanDefinition beanDefinition) {
-
 			if (!beanDefinition.getPropertyValues().contains(FRAGMENTS_PROPERTY)) {
 				return Collections.emptyList();
 			}
-
 			List<Class<?>> detectedFragments = new ArrayList<>();
 			PropertyValue repositoryFragments = beanDefinition.getPropertyValues().getPropertyValue(FRAGMENTS_PROPERTY);
 			Object fragments = repositoryFragments.getValue();
@@ -157,18 +151,15 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				RootBeanDefinition fragmentsBeanDefinition = (RootBeanDefinition) fragments;
 				ValueHolder argumentValue = fragmentsBeanDefinition.getConstructorArgumentValues().getArgumentValue(0, List.class);
 				List<String> fragmentBeanNames = (List<String>) argumentValue.getValue();
-
 				for (String beanName : fragmentBeanNames) {
-
 					RootBeanDefinition bd = (RootBeanDefinition) beanFactory.getBeanDefinition(beanName);
 					ValueHolder fragmentInterface = bd.getConstructorArgumentValues().getArgumentValue(0, String.class);
-
 					try {
 						detectedFragments.add(ClassUtils.forName(fragmentInterface.getValue().toString(), beanFactory.getBeanClassLoader()));
-					} catch (ClassNotFoundException e) {
-						throw new CannotLoadBeanClassException(null, beanName, fragmentInterface.getValue().toString(), e);
 					}
-
+					catch (ClassNotFoundException ex) {
+						throw new CannotLoadBeanClassException(null, beanName, fragmentInterface.getValue().toString(), ex);
+					}
 					if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(1)) { // fragment implementation
 						ValueHolder fragmentImplementation = bd.getConstructorArgumentValues().getArgumentValue(1, BeanReference.class);
 						if (fragmentImplementation.getValue() instanceof BeanReference) {
@@ -177,32 +168,25 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 					}
 				}
 			}
-
 			return detectedFragments;
 		}
 
 		@Nullable
 		private Class<?> readCustomImplementationFromBeanDefinition(BeanDefinition beanDefinition) {
-
 			if (!beanDefinition.getPropertyValues().contains(CUSTOM_IMPLEMENTATION_PROPERTY)) {
 				return null;
 			}
-
 			PropertyValue customImplementation = beanDefinition.getPropertyValues().getPropertyValue(CUSTOM_IMPLEMENTATION_PROPERTY);
-
 			if (customImplementation.getValue() instanceof BeanReference) {
 				return beanFactory.getType(((BeanReference) customImplementation.getValue()).getBeanName(), false);
 			}
-
 			throw new InvalidPropertyException(RepositoryFactoryBeanSupport.class, CUSTOM_IMPLEMENTATION_PROPERTY, "Not a BeanReference to custom repository implementation!");
 		}
 
 		private Class<?> readRepositoryInterfaceFromBeanDefinition(String beanName, BeanDefinition beanDefinition) {
-
 			if (beanDefinition.getConstructorArgumentValues().getArgumentCount() != 1) {
 				throw new BeanDefinitionValidationException("No repository interface defined on for " + beanDefinition);
 			}
-
 			ValueHolder repositoryInterfaceName = beanDefinition.getConstructorArgumentValues().getArgumentValue(0, Class.class);
 			Object repositoryInterface = repositoryInterfaceName.getValue();
 			if (repositoryInterface instanceof Class) {
@@ -210,7 +194,8 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 			try {
 				return ClassUtils.forName(repositoryInterface.toString(), beanFactory.getBeanClassLoader());
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException e) {
 				throw new CannotLoadBeanClassException(null, beanName, repositoryInterface.toString(), e);
 			}
 		}
@@ -224,26 +209,31 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 	 */
 	static class RepositoryConfigurationContributor {
 
-		private final ClassLoader classLoader;
-		private final NativeConfigurationRegistry registry;
-		private final TypeModelProcessor typeModelProcessor;
-
-		private final Set<Class<?>> seen = new HashSet<>();
-
 		private static final TypeOps.PackageFilter JAVA_PACKAGE = TypeOps.PackageFilter.of("java");
+
 		private static final TypeOps.PackageFilter SPRING_DATA_PACKAGE = TypeOps.PackageFilter.of("org.springframework.data");
-		private static final TypeOps.PackageFilter SPRING_DATA_DOMAIN_TYPES_PACKAGES = TypeOps.PackageFilter.of("org.springframework.data.domain", "org.springframework.data.geo");
+
+		private static final TypeOps.PackageFilter SPRING_DATA_DOMAIN_TYPES_PACKAGES = TypeOps.PackageFilter.of(
+				"org.springframework.data.domain", "org.springframework.data.geo");
+
 		private static final AnnotationFilter ANNOTATION_FILTER = AnnotationFilter.packages("java.lang", "org.springframework.lang", "javax");
 
-		RepositoryConfigurationContributor(ClassLoader classLoader, NativeConfigurationRegistry registry) {
+		private final ClassLoader classLoader;
 
+		private final NativeConfigurationRegistry registry;
+
+		private final TypeModelProcessor typeModelProcessor;
+
+		private final Set<Class<?>> seen;
+
+		RepositoryConfigurationContributor(ClassLoader classLoader, NativeConfigurationRegistry registry) {
 			this.classLoader = classLoader;
 			this.registry = registry;
 			this.typeModelProcessor = new TypeModelProcessor();
+			this.seen = new HashSet<>();
 		}
 
 		void writeConfiguration(RepositoryConfiguration configuration) {
-
 			writeRepositoryInterfaceConfiguration(configuration);
 			writeDomainTypeConfiguration(configuration.getDomainType().toClass());
 			writeQueryMethodConfiguration(configuration);
@@ -253,41 +243,33 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 
 		/**
 		 * Write reflection and proxy config for the repository interface.
-		 *
-		 * @param configuration
+		 * @param configuration the repository configuraiton
 		 */
 		private void writeRepositoryInterfaceConfiguration(RepositoryConfiguration configuration) {
-
 			// target access on methods
 			registry.reflection().forType(configuration.getRepositoryInterface())
 					.withFlags(Flag.allPublicMethods);
-
 			// proxy configuration
 			registry.proxy().add(NativeProxyEntry.ofInterfaces(configuration.getRepositoryInterface(), SpringProxy.class, Advised.class, DecoratingProxy.class));
-
 			// transactional proxy configuration
 			// TODO: should we also ask the BeanFactory if a tx-manager is configured?
 			if (ClassUtils.isPresent("org.springframework.transaction.interceptor.TransactionalProxy", classLoader)) {
-
-				registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(), "org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", DecoratingProxy.class.getName()));
-
+				registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(),
+						"org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", DecoratingProxy.class.getName()));
 				if (configuration.isAnnotationPresent(Component.class)) {
-					registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(), "org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised", DecoratingProxy.class.getName(), Serializable.class.getName()));
+					registry.proxy().add(NativeProxyEntry.ofInterfaceNames(configuration.getRepositoryInterface().getName(), Repository.class.getName(),
+							"org.springframework.transaction.interceptor.TransactionalProxy", "org.springframework.aop.framework.Advised",
+							DecoratingProxy.class.getName(), Serializable.class.getName()));
 				}
 			}
-
 			// reactive repo
 			if (configuration.isReactiveRepository()) {
-
 				// TODO: do we still need this?
 				registry.initialization().add(NativeInitializationEntry.ofBuildTimeType(configuration.getRepositoryInterface()));
 			}
-
-			// koltin repo
+			// Kotlin repo
 			if (configuration.isKotlinRepository()) {
-
 				registry.reflection().forType(Iterable.class).withFlags(Flag.allPublicMethods);
-
 				safelyRegister("kotlinx.coroutines.flow.Flow", Flag.allPublicMethods);
 				safelyRegister("kotlin.collections.Iterable", Flag.allPublicMethods);
 				safelyRegister("kotlin.Unit", Flag.allPublicMethods);
@@ -299,167 +281,133 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		private void safelyRegister(String classname, Flag... flags) {
 			try {
 				registry.reflection().forType(Class.forName(classname)).withFlags(flags);
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException ex) {
 				// TODO: logging?
 			}
 		}
 
 		/**
-		 * Write reflection and proxy config for, from a the given root, reachable types and annotations.
-		 *
-		 * @param type
+		 * Write reflection and proxy config for the given type.
+		 * @param type the type to handle
 		 */
 		private void writeDomainTypeConfiguration(Class<?> type) {
-
-			typeModelProcessor
-					.inspect(type)
-					.forEach(domainType -> {
-
-						if (seen.contains(domainType.getType())) {
-							return;
-						}
-
-						seen.add(domainType.getType());
-
-						if (domainType.isPartOf(SPRING_DATA_DOMAIN_TYPES_PACKAGES)) {  // eg. Page, Slice
-							return;
-						}
-
-						if (SimpleTypeHolder.DEFAULT.isSimpleType(domainType.getType())) { // eg. String, ...
-							if (!domainType.isPartOf("java.time")) { // ES auditing using Instant
-								return;
-							}
-						}
-
-						Builder reflectBuilder = registry.reflection().forType(domainType.getType()).withFlags();
-
-						if (domainType.hasMethods()) {
-							reflectBuilder.withExecutables(domainType.getMethods().toArray(new Method[0]));
-						} else {
-							if(domainType.isPartOf("java")) {
-								reflectBuilder.withFlags(Flag.allPublicMethods);
-							}
-						}
-
-						if(domainType.hasFields()) {
-							reflectBuilder.withFields(domainType.getFields().toArray(new Field[0]));
-						}
-
-						if (domainType.hasPersistenceConstructor()) {
-							reflectBuilder.withExecutables(domainType.getPersistenceConstructor());
-						} else {
-							reflectBuilder.withFlags(Flag.allDeclaredConstructors);
-						}
-
-						domainType.doWithAnnotatedElements(this::writeAnnotationConfigurationFor);
-					});
-		}
-
-		/**
-		 * Write reflection config for repository interface query methods, involved domain types and
-		 * annotations.
-		 *
-		 * @param configuration
-		 */
-		private void writeQueryMethodConfiguration(RepositoryConfiguration configuration) {
-
-			writeRepositoryMethodConfiguration(configuration.getRepositoryInterface(), configuration.getDomainType().toClass(), method -> {
-				if (REPOSITORY_METHOD_PATTERN.matcher(method.getName()).matches()) {
-					return true;
+			typeModelProcessor.inspect(type).forEach((domainType) -> {
+				if (seen.contains(domainType.getType())) {
+					return;
 				}
-				if (AnnotationUtils.findAnnotation(method, QueryAnnotation.class) != null) {
-					return true;
+				seen.add(domainType.getType());
+				if (domainType.isPartOf(SPRING_DATA_DOMAIN_TYPES_PACKAGES)) {  // eg. Page, Slice
+					return;
 				}
-				return false;
+				if (SimpleTypeHolder.DEFAULT.isSimpleType(domainType.getType())) { // eg. String, ...
+					if (!domainType.isPartOf("java.time")) { // ES auditing using Instant
+						return;
+					}
+				}
+				Builder reflectBuilder = registry.reflection().forType(domainType.getType()).withFlags();
+				if (domainType.hasMethods()) {
+					reflectBuilder.withExecutables(domainType.getMethods().toArray(new Method[0]));
+				}
+				else {
+					if (domainType.isPartOf("java")) {
+						reflectBuilder.withFlags(Flag.allPublicMethods);
+					}
+				}
+				if (domainType.hasFields()) {
+					reflectBuilder.withFields(domainType.getFields().toArray(new Field[0]));
+				}
+				if (domainType.hasPersistenceConstructor()) {
+					reflectBuilder.withExecutables(domainType.getPersistenceConstructor());
+				}
+				else {
+					reflectBuilder.withFlags(Flag.allDeclaredConstructors);
+				}
+				domainType.doWithAnnotatedElements(this::writeAnnotationConfigurationFor);
 			});
 		}
 
+		/**
+		 * Write reflection config for repository interface query methods, involved domain
+		 * types and annotations.
+		 * @param configuration the repository configuration
+		 */
+		private void writeQueryMethodConfiguration(RepositoryConfiguration configuration) {
+			writeRepositoryMethodConfiguration(configuration.getRepositoryInterface(), configuration.getDomainType().toClass(),
+					(method) -> {
+						if (REPOSITORY_METHOD_PATTERN.matcher(method.getName()).matches()) {
+							return true;
+						}
+						return AnnotationUtils.findAnnotation(method, QueryAnnotation.class) != null;
+					});
+		}
+
 		private void writeRepositoryMethodConfiguration(Class<?> typeToInspect, Class<?> repositoryDomainType, MethodFilter filter) {
-
 			ReflectionUtils.doWithMethods(typeToInspect, method -> {
-
 				Set<Class<?>> classes = TypeUtils.resolveTypesInSignature(ResolvableType.forMethodReturnType(method, typeToInspect));
-
 				classes.stream().filter(it -> !SimpleTypeHolder.DEFAULT.isSimpleType(it)).forEach(it -> {
-
 					if (it.equals(repositoryDomainType)) {
 						return;
 					}
-
 					if (TypeUtils.type(it).isPartOf(SPRING_DATA_PACKAGE, JAVA_PACKAGE)) {
 						return;
 					}
-
 					if (isProjectionInterface(repositoryDomainType, it)) {
-						registry.proxy().add(NativeProxyEntry.ofInterfaces(it, TargetAware.class, SpringProxy.class, DecoratingProxy.class));
+						registry.proxy().add(NativeProxyEntry.ofInterfaces(it,
+								TargetAware.class, SpringProxy.class, DecoratingProxy.class));
 					}
-
 					writeDomainTypeConfiguration(it);
 				});
-
 				writeAnnotationConfigurationFor(method);
 			}, filter);
 		}
 
 		/**
-		 * Write reflection config for repository interface query methods and involved domain types.
-		 *
-		 * @param configuration
+		 * Write reflection config for repository fragments.
+		 * @param configuration the repository configuration
 		 */
 		private void writeRepositoryFragments(RepositoryConfiguration configuration) {
-
 			if (!configuration.hasFragments()) {
 				return;
 			}
-
 			for (Class<?> fragment : configuration.getFragments()) {
-
 				registry.reflection().forType(fragment).withFlags(Flag.allDeclaredConstructors, Flag.allPublicMethods);
-
-				writeRepositoryMethodConfiguration(fragment, configuration.getDomainType().toClass(), method -> {
-					return Modifier.isPublic(method.getModifiers());
-				});
+				writeRepositoryMethodConfiguration(fragment, configuration.getDomainType().toClass(),
+						(method) -> Modifier.isPublic(method.getModifiers()));
 			}
 		}
 
 		/**
 		 * Write reflection config for custom implementations.
-		 *
-		 * @param configuration
+		 * @param configuration the repository configuration
 		 */
 		private void writeCustomImplementation(RepositoryConfiguration configuration) {
-
 			if (!configuration.hasCustomImplementation()) {
 				return;
 			}
-
 			Class<?> customImplementation = configuration.getCustomImplementation();
 			registry.reflection().forType(customImplementation).withFlags(Flag.allDeclaredConstructors, Flag.allPublicMethods);
-
 			for (Class<?> repoInterface : configuration.getRepositoryInterface().getInterfaces()) {
 				if (ClassUtils.isAssignable(repoInterface, customImplementation)) {
 					registry.reflection().forType(repoInterface).withFlags(Flag.allPublicMethods);
 					break;
 				}
 			}
-
-			writeRepositoryMethodConfiguration(customImplementation, configuration.getDomainType().toClass(), method -> {
-				return Modifier.isPublic(method.getModifiers());
-			});
+			writeRepositoryMethodConfiguration(customImplementation, configuration.getDomainType().toClass(),
+					(method) -> Modifier.isPublic(method.getModifiers()));
 		}
 
 		private void writeAnnotationConfigurationFor(AnnotatedElement element) {
-
 			TypeUtils.resolveAnnotationsFor(element, ANNOTATION_FILTER)
 					.forEach(annotation -> {
-						if (TypeUtils.type(annotation.getType()).isPartOf(SPRING_DATA_PACKAGE) || annotation.getMetaTypes().stream().anyMatch(SPRING_DATA_PACKAGE::matches)) {
+						if (TypeUtils.type(annotation.getType()).isPartOf(SPRING_DATA_PACKAGE)
+								|| annotation.getMetaTypes().stream().anyMatch(SPRING_DATA_PACKAGE::matches)) {
 							registry.reflection().forType(annotation.getType()).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
 							registry.proxy().add(NativeProxyEntry.ofInterfaces(annotation.getType(), SynthesizedAnnotation.class));
 						}
 					});
-
 			if (element instanceof Constructor) {
-				for (Parameter parameter : ((Constructor) element).getParameters()) {
+				for (Parameter parameter : ((Constructor<?>) element).getParameters()) {
 					writeAnnotationConfigurationFor(parameter);
 				}
 			}
@@ -470,8 +418,8 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 		}
 
-		private static boolean nonTransientField(Field it) {
-			return AnnotationUtils.findAnnotation(it, Transient.class) == null;
+		private static boolean nonTransientField(Field field) {
+			return AnnotationUtils.findAnnotation(field, Transient.class) == null;
 		}
 	}
 
@@ -483,27 +431,26 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 	static class RepositoryConfiguration {
 
 		private String beanName;
-		private Class<?> repositoryInterface;
-		private ResolvableType repositoryType;
 
-		private ResolvableType domainType;
-		private ResolvableType idType;
+		private final Class<?> repositoryInterface;
 
-		private List<Class<?>> fragments = new ArrayList<>(0);
+		private final ResolvableType repositoryType;
+
+		private final ResolvableType domainType;
+
+		private final ResolvableType idType;
+
+		private final List<Class<?>> fragments = new ArrayList<>(0);
+
 		private Class<?> customImplementation;
 
 		RepositoryConfiguration(Class<?> repositoryInterface) {
-
 			this.repositoryInterface = repositoryInterface;
 			this.repositoryType = ResolvableType.forClass(Repository.class, repositoryInterface);
-
-			{
-				ResolvableType[] args = repositoryType.getGenerics();
-				this.domainType = args[0];
-				this.idType = args[1];
-			}
+			ResolvableType[] args = repositoryType.getGenerics();
+			this.domainType = args[0];
+			this.idType = args[1];
 		}
-
 
 		void setFragments(Collection<Class<?>> fragments) {
 			this.fragments.addAll(fragments);
@@ -563,6 +510,8 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 	}
 
 	private static boolean isProjectionInterface(Class<?> repositoryDomainType, Class<?> signatureType) {
-		return signatureType.isInterface() && !signatureType.getPackageName().startsWith("java.") && !signatureType.getPackageName().startsWith("org.springframework.data") && !signatureType.isAssignableFrom(repositoryDomainType);
+		return signatureType.isInterface() && !signatureType.getPackageName().startsWith("java.")
+				&& !signatureType.getPackageName().startsWith("org.springframework.data")
+				&& !signatureType.isAssignableFrom(repositoryDomainType);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,7 @@ public class TypeUtils {
 	}
 
 	public static Set<Class<?>> resolveTypesInSignature(Class<?> owner, Method method) {
-
 		Set<Class<?>> signature = new LinkedHashSet<>();
-
 		signature.addAll(resolveTypesInSignature(ResolvableType.forMethodReturnType(method, owner)));
 		for (Parameter parameter : method.getParameters()) {
 			signature.addAll(resolveTypesInSignature(ResolvableType.forMethodParameter(MethodParameter.forParameter(parameter))));
@@ -67,40 +65,32 @@ public class TypeUtils {
 	}
 
 	public static Set<Class<?>> resolveTypesInSignature(Class<?> owner, Constructor<?> constructor) {
-
 		Set<Class<?>> signature = new LinkedHashSet<>();
-
 		for (int i = 0; i < constructor.getParameterCount(); i++) {
 			signature.addAll(resolveTypesInSignature(ResolvableType.forConstructorParameter(constructor, i, owner)));
 		}
-
 		return signature;
 	}
 
 	public static Set<Class<?>> resolveTypesInSignature(Class<?> root) {
-
 		Set<Class<?>> signature = new LinkedHashSet<>();
 		resolveTypesInSignature(ResolvableType.forClass(root), signature);
 		return signature;
 	}
 
 	public static Set<Class<?>> resolveTypesInSignature(ResolvableType root) {
-
 		Set<Class<?>> signature = new LinkedHashSet<>();
 		resolveTypesInSignature(root, signature);
 		return signature;
 	}
 
 	private static void resolveTypesInSignature(ResolvableType current, Set<Class<?>> signatures) {
-
 		if (ResolvableType.NONE.equals(current) || ObjectUtils.nullSafeEquals(Void.TYPE, current.getType())) {
 			return;
 		}
-
 		if (signatures.contains(current.toClass())) {
 			return;
 		}
-
 		signatures.add(current.toClass());
 		resolveTypesInSignature(current.getSuperType(), signatures);
 		for (ResolvableType type : current.getGenerics()) {
@@ -124,7 +114,6 @@ public class TypeUtils {
 		}
 
 		default boolean isPartOf(PackageFilter... packageFilters) {
-
 			for (PackageFilter filter : packageFilters) {
 				if (filter.matches(getType().getName())) {
 					return true;
@@ -173,7 +162,6 @@ public class TypeUtils {
 		}
 
 		static PackageFilter of(String... packageNames) {
-
 			Set<String> target = new LinkedHashSet<>();
 			for (String pkgName : packageNames) {
 				target.add(pkgName.endsWith(".") ? pkgName : (pkgName + '.'));
@@ -183,7 +171,6 @@ public class TypeUtils {
 
 		@Override
 		public boolean matches(String typeName) {
-
 			for (String pgkName : packageNames) {
 				if (typeName.startsWith(pgkName)) {
 					return true;

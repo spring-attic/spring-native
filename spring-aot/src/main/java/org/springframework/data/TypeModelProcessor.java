@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,51 +45,39 @@ class TypeModelProcessor {
 
 	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor.", "kotlinx.", "kotlin."));
 
-	private Predicate<Class<?>> typeFilter = (type) -> {
+	private Predicate<Class<?>> typeFilter = (type) -> EXCLUDED_DOMAINS.stream().noneMatch(it -> {
+		if (type.getPackageName().startsWith("java.")) {
+			if (type.getPackageName().startsWith("java.util")) {
+				return false;
+			}
+			if (type.getPackageName().startsWith("java.time")) {
+				return false;
+			}
+			if (type.getPackageName().equals("java.lang") && Modifier.isFinal(type.getModifiers())) {
+				return false;
+			}
+			return true;
+		}
+		if (type.getPackageName().startsWith(it)) {
+			return true;
+		}
+		return false;
+	});
 
-		return !EXCLUDED_DOMAINS
-				.stream()
-				.anyMatch(it -> {
-					if (type.getPackageName().startsWith("java.")) {
-						if (type.getPackageName().startsWith("java.util")) {
-							return false;
-						}
-						if (type.getPackageName().startsWith("java.time")) {
-							return false;
-						}
-						if (type.getPackageName().equals("java.lang") && Modifier.isFinal(type.getModifiers())) {
-							return false;
-						}
-						return true;
-					}
-					if (type.getPackageName().startsWith(it)) {
-						return true;
-					}
-					return false;
-				});
-	};
-
-	private Predicate<Method> methodFilter = (method) -> {
-
+	private final Predicate<Method> methodFilter = (method) -> {
 		if (method.getName().startsWith("$$_hibernate")) {
 			return false;
 		}
 		if (method.getDeclaringClass().getPackageName().startsWith("java.") ||
-				EXCLUDED_DOMAINS
-						.stream()
-						.anyMatch(it -> {
-							return method.getDeclaringClass().getPackageName().startsWith(it);
-						})) {
+				EXCLUDED_DOMAINS.stream().anyMatch(it ->
+						method.getDeclaringClass().getPackageName().startsWith(it))) {
 			return false;
 		}
-		if ((Modifier.isNative(method.getModifiers()) || Modifier.isPrivate(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) && method.getDeclaringClass().equals(Object.class)) {
-			return false;
-		}
-		return true;
+		return (!Modifier.isNative(method.getModifiers()) && !Modifier.isPrivate(method.getModifiers()) && !Modifier.isProtected(method.getModifiers()))
+				|| !method.getDeclaringClass().equals(Object.class);
 	};
 
 	private Predicate<Field> fieldFilter = (field) -> {
-
 		if (field.isSynthetic() | field.getName().startsWith("$$_hibernate")) {
 			return false;
 		}
@@ -100,7 +88,6 @@ class TypeModelProcessor {
 	};
 
 	public TypeModelProcessor filterFields(Predicate<Field> filter) {
-
 		this.fieldFilter = filter.and(filter);
 		return this;
 	}
@@ -112,9 +99,8 @@ class TypeModelProcessor {
 
 	/**
 	 * Inspect the given type and resolve those reachable via fields, methods, generics, ...
-	 *
-	 * @param type
-	 * @return
+	 * @param type the type to inspect
+	 * @return a type model collector for the type
 	 */
 	public TypeModelCollector inspect(Class<?> type) {
 		return new TypeModelCollector(type);
@@ -125,33 +111,26 @@ class TypeModelProcessor {
 	}
 
 	private void processType(ResolvableType type, InspectionCache cache, Consumer<TypeModel> callback) {
-
 		if (ResolvableType.NONE.equals(type) || cache.contains(type.toClass()) || !typeFilter.test(type.toClass())) {
 			return;
 		}
-
 		TypeModel result = new TypeModel(type.toClass());
 		cache.put(result.getType(), result);
-
 		Set<Type> additionalTypes = new LinkedHashSet<>();
 		additionalTypes.addAll(TypeUtils.resolveTypesInSignature(type));
 		additionalTypes.addAll(visitConstructorsOfType(type, result));
 		additionalTypes.addAll(visitMethodsOfType(type, result));
 		additionalTypes.addAll(visitFieldsOfType(type, result));
-
 		callback.accept(result);
-
 		for (Type discoveredType : additionalTypes) {
 			processType(ResolvableType.forType(discoveredType, type), cache, callback);
 		}
 	}
 
 	Set<Type> visitConstructorsOfType(ResolvableType type, TypeModel result) {
-
 		if (!typeFilter.test(type.toClass())) {
 			return Collections.emptySet();
 		}
-
 		Set<Type> discoveredTypes = new LinkedHashSet<>();
 		for (Constructor<?> constructor : type.toClass().getDeclaredConstructors()) {
 			result.addConstructor(constructor);
@@ -161,53 +140,41 @@ class TypeModelProcessor {
 				}
 			}
 		}
-		return discoveredTypes.stream().collect(Collectors.toSet());
+		return new HashSet<>(discoveredTypes);
 	}
 
 	Set<Type> visitMethodsOfType(ResolvableType type, TypeModel result) {
-
 		if (!typeFilter.test(type.toClass())) {
 			return Collections.emptySet();
 		}
-
 		Set<Type> discoveredTypes = new LinkedHashSet<>();
 		ReflectionUtils.doWithLocalMethods(type.toClass(), method -> {
-
-			if(!methodFilter.test(method)) {
+			if (!methodFilter.test(method)) {
 				return;
 			}
-
 			result.addMethod(method);
-
 			for (Class<?> signatureType : TypeUtils.resolveTypesInSignature(type.toClass(), method)) {
 				if (typeFilter.test(signatureType)) {
 					discoveredTypes.add(signatureType);
 				}
 			}
 		});
-
-		return discoveredTypes.stream().collect(Collectors.toSet());
+		return new HashSet<>(discoveredTypes);
 	}
 
 	Set<Type> visitFieldsOfType(ResolvableType type, TypeModel result) {
-
 		Set<Type> discoveredTypes = new LinkedHashSet<>();
-
 		ReflectionUtils.doWithLocalFields(type.toClass(), field -> {
-
-			if(!fieldFilter.test(field)) {
+			if (!fieldFilter.test(field)) {
 				return;
 			}
-
 			result.addField(field);
-
 			for (Class<?> signatureType : TypeUtils.resolveTypesInSignature(ResolvableType.forField(field, type))) {
 				if (typeFilter.test(signatureType)) {
 					discoveredTypes.add(signatureType);
 				}
 			}
 		});
-
 		return discoveredTypes;
 	}
 
@@ -224,7 +191,6 @@ class TypeModelProcessor {
 		}
 
 		List<TypeModel> list() {
-
 			List<TypeModel> target = new ArrayList<>();
 			forEach(target::add);
 			return target;
@@ -233,7 +199,7 @@ class TypeModelProcessor {
 
 	static class InspectionCache {
 
-		private Map<Class<?>, TypeModel> mutableCache = new LinkedHashMap<>();
+		private final Map<Class<?>, TypeModel> mutableCache = new LinkedHashMap<>();
 
 		public boolean contains(Class<?> key) {
 			return mutableCache.containsKey(key);

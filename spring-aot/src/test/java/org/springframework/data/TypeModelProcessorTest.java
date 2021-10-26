@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ class TypeModelProcessorTest {
 
 	@Test
 	void detectsFieldsAndMethodsOfType() {
-
 		assertThatModel(computeModelFor(AbstractType.class))
 				.containsOnlyMethods("abstractMethod", "methodDefinedInAbstractType")
 				.containsOnlyFields("fieldInAbstractType")
@@ -50,7 +49,6 @@ class TypeModelProcessorTest {
 
 	@Test
 	void detectsOnlyLocalFields() {
-
 		assertThatModel(computeModelFor(FieldsAndMethods.class))
 				.containsOnlyMethods("abstractMethod", "someDefaultMethod", "privateMethod", "packagePrivateMethod", "protectedMethod", "publicMethod")
 				.containsOnlyFields("CONSTANT_FIELD", "privateField", "packagePrivateField", "protectedField", "publicField")
@@ -59,56 +57,47 @@ class TypeModelProcessorTest {
 
 	@Test
 	void coversSignatureTypes() {
-
 		assertThat(new TypeModelProcessor().inspect(FieldsAndMethods.class).list())
-				.<Class>map(TypeModel::getType)
+				.<Class<?>>map(TypeModel::getType)
 				.contains(FieldsAndMethods.class, AbstractType.class, InterfaceType.class);
 	}
 
 	@Test
 	void coversMethodArgs() {
-
 		assertThat(new TypeModelProcessor().inspect(TypesInMethodSignatures.class).list())
-				.<Class>map(TypeModel::getType)
+				.<Class<?>>map(TypeModel::getType)
 				.contains(TypesInMethodSignatures.class, String.class, Long.class, Integer.class, Void.class);
 	}
 
 	@Test
 	void doesNotOverflowOnCyclicPropertyReferences() {
-
 		assertThat(new TypeModelProcessor().inspect(CyclicPropertiesA.class).list())
-				.<Class>map(TypeModel::getType)
+				.<Class<?>>map(TypeModel::getType)
 				.contains(CyclicPropertiesA.class, CyclicPropertiesB.class);
 	}
 
 	@Test
 	void doesNotOverflowOnCyclicSelfReferences() {
-
 		assertThat(new TypeModelProcessor().inspect(CyclicPropertiesSelf.class).list())
-				.<Class>map(TypeModel::getType)
+				.<Class<?>>map(TypeModel::getType)
 				.contains(CyclicPropertiesSelf.class);
 	}
 
 	@Test
 	void doesNotOverflowOnCyclicGenericsReferences() {
-
 		assertThat(new TypeModelProcessor().inspect(CyclicGenerics.class).list())
-				.<Class>map(TypeModel::getType)
+				.<Class<?>>map(TypeModel::getType)
 				.contains(CyclicGenerics.class);
 	}
 
 
 	private TypeModel computeModelFor(Class<?> type) {
-
-		List<TypeModel> modelList = new TypeModelProcessor()
-				.inspect(type).list();
-
+		List<TypeModel> modelList = new TypeModelProcessor().inspect(type).list();
 		for (TypeModel model : modelList) {
 			if (model.getType().equals(type)) {
 				return model;
 			}
 		}
-
 		Assertions.fail("Could not find model for " + type.getSimpleName());
 		return null; // why oh why
 	}

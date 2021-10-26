@@ -33,7 +33,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * A {@link NativeContext} designed to capture added configurations in memory allowing verification within tests.
+ * A {@link NativeContext} designed to capture added configurations in memory allowing
+ * verification within tests.
  *
  * @author Christoph Strobl
  */
@@ -42,9 +43,13 @@ public class NativeTestContext implements NativeContext {
 	private final TypeSystem typeSystem;
 
 	MultiValueMap<String, List<String>> proxies;
+
 	MultiValueMap<String, AotProxyDescriptor> classProxies;
+
 	MultiValueMap<String, AccessDescriptor> reflection;
+
 	Set<Type> builtTimeInit;
+
 	Set<String> resources;
 
 	public NativeTestContext() {
@@ -52,9 +57,7 @@ public class NativeTestContext implements NativeContext {
 	}
 
 	public NativeTestContext(TypeSystem typeSystem) {
-
 		this.typeSystem = typeSystem;
-
 		this.proxies = new LinkedMultiValueMap<>();
 		this.reflection = new LinkedMultiValueMap<>();
 		this.builtTimeInit = new LinkedHashSet<>();
@@ -63,7 +66,6 @@ public class NativeTestContext implements NativeContext {
 
 	@Override
 	public boolean addProxy(List<String> interfaces) {
-
 		proxies.add(interfaces.get(0), interfaces);
 		return true;
 	}
@@ -95,7 +97,6 @@ public class NativeTestContext implements NativeContext {
 
 	@Override
 	public Set<String> addReflectiveAccessHierarchy(String typename, int accessBits) {
-
 		Type type = typeSystem.resolveDotted(typename, true);
 		Set<String> added = new TreeSet<>();
 		registerHierarchy(type, added, accessBits);
@@ -118,7 +119,6 @@ public class NativeTestContext implements NativeContext {
 
 	@Override
 	public void addReflectiveAccess(String parameterTypename, int accessBits) {
-
 		// something is off about the flags conversion in addReflectiveAccess(String key, Flag... flags)
 		addReflectiveAccess(parameterTypename, new AccessDescriptor(accessBits));
 	}
@@ -152,7 +152,6 @@ public class NativeTestContext implements NativeContext {
 	}
 
 	public AccessDescriptor getReflectionEntry(Class<?> type) {
-
 		List<AccessDescriptor> descriptors = reflection.getOrDefault(cacheKey(type), Collections.emptyList());
 		if (descriptors.isEmpty()) {
 			return null;
@@ -180,7 +179,6 @@ public class NativeTestContext implements NativeContext {
 	}
 
 	public void clear() {
-
 		this.proxies.clear();
 		this.reflection.clear();
 		this.builtTimeInit.clear();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package org.springframework.data;
 
-import static org.assertj.core.api.Assertions.*;
-
-import javax.annotation.Nullable;
 import java.lang.annotation.Documented;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -27,9 +24,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.InitializationConfiguration;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ProxyConfiguration;
@@ -80,16 +80,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
+ * Tests for {@link RepositoryDefinitionConfigurationProcessor}.
+ *
  * @author Christoph Strobl
  */
 public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void computeReflectionForSimpleCrudRepository() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(SimpleRepositoryConfig.class);
-
 		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
 				.contains(CustomerRepository.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
@@ -101,9 +103,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void computeReflectionForSimpleReactiveCrudRepository() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ReactiveConfig.class);
-
 		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
 				.contains(CustomerRepositoryReactive.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
@@ -115,9 +115,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void computeReflectionRepositoryQueryMethods() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithQueryMethods.class);
-
 		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
 				.contains(CustomerRepositoryWithQueryMethods.class) // Repository Interface
 				.contains(DomainObjectWithSimpleTypesOnly.class, ProjectionInterface.class) // User Domain Types
@@ -129,9 +127,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void computeReflectionForRepositoryWithCustomImplementation() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithCustomImplementation.class);
-
 		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
 				.contains(RepositoryWithCustomImplementation.class) // Repository Interface
 				.contains(CustomImplInterface.class) // Custom Implementation Interface
@@ -145,9 +141,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void computeReflectionForRepositoryWithFragments() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithFragments.class);
-
 		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
 				.contains(RepositoryWithFragments.class) // Repository Interface
 				.contains(CustomImplInterface1.class) // Fragment 1 Interface
@@ -165,9 +159,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	@Test
 	void onlyRegistersPreferredCtorIfPresent() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(new RepositoryConfiguration(CustomerRepository.class));
-
 		assertThat(registry.getReflectionEntry(Address.class))
 				.satisfies(ctorWithArgs(String.class))
 				.satisfies(doesNotContainsCtorFlag());
@@ -176,28 +168,23 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	@Disabled("if another component allows access to property descriptor methods, this will cause trouble")
 	void onlyRegisterNonTransientFieldsButKeepTheAnnotation() {
-
 		NativeConfigRegistryHolder registry = getNativeConfiguration(new RepositoryConfiguration(CustomerRepository.class));
-
 		assertThat(registry.getReflectionEntry(Customer.class))
 				.satisfies(onlyFields("id", "modifiedAt"));
 		assertThat(registry.getProxyEntries(Transient.class)).hasSize(1);
 	}
 
 	private NativeConfigRegistryHolder getNativeConfiguration(Class<?> configurationClass) {
-
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.registerBean(configurationClass);
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
-
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new RepositoryDefinitionConfigurationProcessor().process(beanFactory, registry);
 		return new NativeConfigRegistryHolder(registry);
 	}
 
 	private NativeConfigRegistryHolder getNativeConfiguration(RepositoryConfiguration configuration) {
-
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new RepositoryConfigurationContributor(this.getClass().getClassLoader(), registry).writeConfiguration(configuration);
 		return new NativeConfigRegistryHolder(registry);
@@ -243,6 +230,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 			return delegate.options();
 		}
 
+		@SuppressWarnings("unchecked")
 		public List<NativeProxyEntry> getProxyEntries(Class<?> type) {
 			return delegate.proxy().getEntries().stream()
 					.filter(it -> {
@@ -261,11 +249,8 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	private Consumer<NativeReflectionEntry> ctorWithArgs(Class<?>... args) {
 		return (entry) -> {
-
-			List<Constructor<?>> constructors = ReflectionUtils.findConstructors(entry.getType(), p -> {
-				return ObjectUtils.nullSafeEquals(p.getParameterTypes(), args);
-			});
-
+			List<Constructor<?>> constructors = ReflectionUtils.findConstructors(entry.getType(),
+					p -> ObjectUtils.nullSafeEquals(p.getParameterTypes(), args));
 			assertThat(entry.getConstructors()).contains(constructors.iterator().next());
 		};
 	}
@@ -278,15 +263,11 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	}
 
 	private Consumer<NativeReflectionEntry> doesNotContainsCtorFlag() {
-		return (entry) -> {
-			assertThat(entry.getFlags()).doesNotContain(Flag.allDeclaredConstructors);
-		};
+		return (entry) -> assertThat(entry.getFlags()).doesNotContain(Flag.allDeclaredConstructors);
 	}
 
 	private Consumer<NativeReflectionEntry> onlyFields(String... fields) {
-		return (entry) -> {
-			assertThat(entry.getFields()).map(Field::getName).containsExactlyInAnyOrder(fields);
-		};
+		return (entry) -> assertThat(entry.getFields()).map(Field::getName).containsExactlyInAnyOrder(fields);
 	}
 
 	private Consumer<NativeReflectionEntry.Builder> allCtors() {
@@ -309,4 +290,5 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
 		};
 	}
+
 }

@@ -34,7 +34,7 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class TestTypeSystem extends TypeSystem {
 
-	private Set<String> excludedPackages;
+	private final Set<String> excludedPackages;
 
 	public TestTypeSystem() {
 		this(Arrays.asList(new File("./target/classes").toString(), new File("./target/test-classes").toString()));
@@ -56,7 +56,6 @@ public class TestTypeSystem extends TypeSystem {
 
 	@Override
 	public Type resolveSlashed(String slashedTypeName, boolean allowNotFound) {
-
 		Type type = super.resolveSlashed(slashedTypeName, allowNotFound);
 		if (!isPartOfExcludedPackage(type)) {
 			return type;
@@ -69,22 +68,15 @@ public class TestTypeSystem extends TypeSystem {
 	}
 
 	private boolean isPartOfExcludedPackage(Type type) {
-
-		return excludedPackages.stream().
-				filter(type::isPartOfDomain)
-				.findAny().isPresent();
+		return excludedPackages.stream().anyMatch(type::isPartOfDomain);
 	}
 
 	public TestTypeSystem excludePackages(String... packages) {
-
-		for (String pkg : packages) {
-			excludedPackages.add(pkg);
-		}
+		excludedPackages.addAll(Arrays.asList(packages));
 		return this;
 	}
 
 	public TestTypeSystem clearExclusions() {
-
 		this.excludedPackages.clear();
 		return this;
 	}
