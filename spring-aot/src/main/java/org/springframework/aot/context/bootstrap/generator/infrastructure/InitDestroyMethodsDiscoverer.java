@@ -16,7 +16,6 @@
 
 package org.springframework.aot.context.bootstrap.generator.infrastructure;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,20 +52,8 @@ class InitDestroyMethodsDiscoverer {
 
 	private final ConfigurableListableBeanFactory beanFactory;
 
-	private final Field externallyManagedInitMethods;
-
-	private final Field externallyManagedDestroyMethods;
-
 	public InitDestroyMethodsDiscoverer(ConfigurableListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		this.externallyManagedInitMethods = makeAccessible("externallyManagedInitMethods");
-		this.externallyManagedDestroyMethods = makeAccessible("externallyManagedDestroyMethods");
-	}
-
-	private static Field makeAccessible(String fieldName) {
-		Field field = ReflectionUtils.findField(RootBeanDefinition.class, fieldName);
-		ReflectionUtils.makeAccessible(field);
-		return field;
 	}
 
 	/**
@@ -86,7 +73,7 @@ class InitDestroyMethodsDiscoverer {
 		if (StringUtils.hasText(initMethodName)) {
 			methods.add(findMethod(beanType, initMethodName));
 		}
-		for (String methodName : getExternallyManagedLifecycleMethodNames(beanDefinition, this.externallyManagedInitMethods)) {
+		for (String methodName : getExternallyManagedInitMethods(beanDefinition)) {
 			methods.add(findMethod(beanType, methodName));
 		}
 		return methods;
@@ -132,23 +119,31 @@ class InitDestroyMethodsDiscoverer {
 		else if (StringUtils.hasText(destroyMethodName)) {
 			methods.add(findMethod(beanType, destroyMethodName));
 		}
-		for (String methodName : getExternallyManagedLifecycleMethodNames(beanDefinition, this.externallyManagedDestroyMethods)) {
+		for (String methodName : getExternallyManagedDestroyMethods(beanDefinition)) {
 			methods.add(findMethod(beanType, methodName));
 		}
 		return methods;
 	}
 
-	// TODO: remove once https://github.com/spring-projects/spring-framework/issues/27449 is resolved
-	@SuppressWarnings("unchecked")
-	private Iterable<String> getExternallyManagedLifecycleMethodNames(BeanDefinition beanDefinition, Field field) {
+	private Iterable<String> getExternallyManagedInitMethods(BeanDefinition beanDefinition) {
 		if (beanDefinition instanceof RootBeanDefinition) {
-			Object value = ReflectionUtils.getField(field, beanDefinition);
-			if (!ObjectUtils.isEmpty(value)) {
-				return ((Set<String>) value).stream().map(this::normalizeMethodName)
-						.collect(Collectors.toSet());
-			}
+			return normalizeExternallyManagedLifecycleMethodNames(
+					((RootBeanDefinition) beanDefinition).getExternallyManagedInitMethods());
 		}
-		return Collections.emptySet();
+		return Collections.emptyList();
+	}
+
+	private Iterable<String> getExternallyManagedDestroyMethods(BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof RootBeanDefinition) {
+			return normalizeExternallyManagedLifecycleMethodNames(
+					((RootBeanDefinition) beanDefinition).getExternallyManagedDestroyMethods());
+		}
+		return Collections.emptyList();
+	}
+
+	private Iterable<String> normalizeExternallyManagedLifecycleMethodNames(Set<String> candidates) {
+		return candidates.stream().map(this::normalizeMethodName)
+				.collect(Collectors.toSet());
 	}
 
 	/**
