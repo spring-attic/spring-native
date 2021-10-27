@@ -172,8 +172,7 @@ class InitDestroyMethodsDiscovererTests {
 		beanDefinition.setDestroyMethodName("(inferred)");
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		Method closeMethod = ReflectionUtils.findMethod(AutoClosableSample.class, "close");
-		hasSingleNativeReflectionEntry(AutoClosableSample.class, closeMethod);
+		assertThat(this.registry.reflection().getEntries()).isEmpty();
 	}
 
 	@Test
@@ -210,8 +209,7 @@ class InitDestroyMethodsDiscovererTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(AutoClosableSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		Method closeMethod = ReflectionUtils.findMethod(AutoClosableSample.class, "close");
-		hasSingleNativeReflectionEntry(AutoClosableSample.class, closeMethod);
+		assertThat(this.registry.reflection().getEntries()).isEmpty();
 	}
 
 	@Test
