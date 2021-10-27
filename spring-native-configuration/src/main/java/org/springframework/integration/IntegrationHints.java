@@ -46,7 +46,6 @@ import org.springframework.nativex.type.TypeSystem;
 				types = {
 						org.springframework.integration.config.IntegrationRegistrar.class,
 						org.springframework.integration.support.json.JacksonPresent.class,
-						org.springframework.integration.support.management.micrometer.MicrometerMetricsCaptorRegistrar.class,
 						org.springframework.integration.http.config.HttpContextUtils.class,
 						org.springframework.integration.websocket.config.WebSocketIntegrationConfigurationInitializer.class
 				}),
