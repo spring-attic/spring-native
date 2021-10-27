@@ -5,8 +5,8 @@ plugins {
     id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     id("org.springframework.experimental.aot") version "0.10.5-SNAPSHOT"
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.spring") version "1.5.21"
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.spring") version "1.5.31"
     id("org.graalvm.buildtools.native") version "0.9.3"
 }
 
