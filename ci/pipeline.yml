@@ -24,6 +24,10 @@ anchors:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
+  registry-mirror-vars: &registry-mirror-vars
+    registry-mirror-host: ((registry-mirror-host))
+    registry-mirror-username: ((registry-mirror-username))
+    registry-mirror-password: ((registry-mirror-password))
   wavefront-params: &wavefront-params
     MANAGEMENT_METRICS_EXPORT_WAVEFRONT_APITOKEN: ((wavefront.api-token))
     MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI: ((wavefront.uri))
@@ -152,6 +156,7 @@ jobs:
           image: ci-image
         vars:
           ci-image-name: ci-image
+          <<: *registry-mirror-vars
       - put: ci-image
         params:
           image: ci-image/image.tar
@@ -183,6 +188,7 @@ jobs:
           ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-stable-java11))
           graalvm-branch: ((graalvm-stable-branch))
+          <<: *registry-mirror-vars
       - put: graalvm-ce-stable-java11-image
         params:
           image: graalvm-ce-stable-java11-image/image.tar
@@ -214,6 +220,7 @@ jobs:
           ci-image-name: graalvm-ce-image
           jvmci-url: ((jvmci-dev-java11))
           graalvm-branch: ((graalvm-dev-branch))
+          <<: *registry-mirror-vars
       - put: graalvm-ce-dev-java11-image
         params:
           image: graalvm-ce-dev-java11-image/image.tar
@@ -232,6 +239,7 @@ jobs:
         vars:
           ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:stable-java11-((milestone))"
+          <<: *registry-mirror-vars
       - put: spring-native-stable-java11-image
         params:
           image: spring-native-stable-java11-image/image.tar
@@ -250,6 +258,7 @@ jobs:
         vars:
           ci-image-name: spring-native-image
           base-image: "((docker-hub-organization))/graalvm-ce:dev-java11-((milestone))"
+          <<: *registry-mirror-vars
       - put: spring-native-dev-java11-image
         params:
           image: spring-native-dev-java11-image/image.tar
@@ -381,6 +390,8 @@ jobs:
           RELEASE_TYPE: RELEASE
           GITHUB_USERNAME: ((github-username))
           GITHUB_TOKEN: ((github-ci-release-token))
+        vars:
+          <<: *registry-mirror-vars
       - put: github-release
         params:
           name: generated-changelog/tag
