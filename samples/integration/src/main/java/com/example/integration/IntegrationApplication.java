@@ -15,8 +15,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.integration.annotation.Gateway;
-import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.interceptor.WireTap;
 import org.springframework.integration.config.EnableIntegrationManagement;
@@ -26,6 +24,7 @@ import org.springframework.integration.config.IntegrationConverter;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlowDefinition;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.handler.advice.RequestHandlerRetryAdvice;
 import org.springframework.integration.http.config.EnableIntegrationGraphController;
@@ -79,6 +78,8 @@ public class IntegrationApplication {
 						.block(Duration.ofSeconds(10));
 
 		System.out.println("CURRENT INTEGRATION GRAPH:\n" + integrationGraph);
+
+		System.out.println("The 'GatewayProxyFactoryBean' is: " + context.getBean(GatewayProxyFactoryBean.class));
 	}
 
 	@Bean
@@ -158,14 +159,6 @@ public class IntegrationApplication {
 						.requestMapping(mapping -> mapping.methods(HttpMethod.GET)))
 				.handle(controlBusGateway, "startEndpoint")
 				.get();
-	}
-
-	@MessagingGateway(defaultRequestChannel = "controlBus.input")
-	public interface ControlBusGateway {
-
-		@Gateway(payloadExpression = "'@' + args[0] + '.start()'")
-		void startEndpoint(String id);
-
 	}
 
 }
