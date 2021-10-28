@@ -71,7 +71,8 @@ import org.springframework.nativex.type.TypeSystem;
 								org.springframework.integration.gateway.MethodArgsHolder.class,
 								org.springframework.integration.routingslip.ExpressionEvaluatingRoutingSlipRouteStrategy.RequestAndReply.class,
 								org.springframework.integration.core.Pausable.class
-						})
+						}),
+				@TypeHint(access = AccessBits.ALL, types = org.springframework.integration.support.management.micrometer.MicrometerMetricsCaptorConfiguration.class)
 		},
 		serializables = {
 				@SerializationHint(
