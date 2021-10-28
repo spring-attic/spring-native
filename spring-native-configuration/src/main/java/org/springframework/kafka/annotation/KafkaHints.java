@@ -218,7 +218,7 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 				Serdes.VoidSerde.class
 		})
 })
-@NativeHint(trigger = KafkaAvroSerializer.class,
+@NativeHint(trigger = AbstractKafkaListenerContainerFactory.class,
 	types = {
 		@TypeHint(types = {
 				ErrorMessage.class,
