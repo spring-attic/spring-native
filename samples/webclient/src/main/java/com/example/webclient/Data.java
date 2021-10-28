@@ -4,69 +4,45 @@ import java.util.List;
 
 public class Data {
 
-	private List<SuperHero> superheros;
+	private String url;
+
+	private String origin;
+
+	private String method;
 
 	public Data() {
 	}
 
-	public List<SuperHero> getSuperheros() {
-		return superheros;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setSuperheros(List<SuperHero> superheros) {
-		this.superheros = superheros;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
-	@Override
-	public String toString() {
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+	@java.lang.Override
+	public java.lang.String toString() {
 		return "Data{" +
-				"superheros=" + superheros +
+				"url='" + url + '\'' +
+				", origin='" + origin + '\'' +
+				", method='" + method + '\'' +
 				'}';
 	}
-
-	public static class SuperHero {
-
-		private String name;
-
-		private String power;
-
-		private String url;
-
-		public SuperHero() {
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getPower() {
-			return power;
-		}
-
-		public void setPower(String power) {
-			this.power = power;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		@Override
-		public String toString() {
-			return "SuperHero{" +
-					"name='" + name + '\'' +
-					", power='" + power + '\'' +
-					", url='" + url + '\'' +
-					'}';
-		}
-	}
-
 }

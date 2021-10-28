@@ -15,12 +15,12 @@ public class HttpRequester implements CommandLineRunner {
 	private WebClient client;
 
 	public HttpRequester(WebClient.Builder builder) {
-		this.client = builder.baseUrl("http://localhost:8080").build();
+		this.client = builder.baseUrl("http://httpbin.org").build();
 	}
 
 	@Override
 	public void run(String... args) {
-		this.client.get().uri("superheros.json").retrieve().bodyToMono(Data.class).subscribe(message -> logger.info(message.toString()));
+		this.client.get().uri("anything").retrieve().bodyToMono(Data.class).subscribe(message -> logger.info(message.toString()));
 	}
 	
 }

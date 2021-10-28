@@ -20,7 +20,7 @@ public class HttpsRequester implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		this.client.get().uri("anything").retrieve().bodyToMono(String.class).subscribe(body -> logger.info(body));
+		this.client.get().uri("anything").retrieve().bodyToMono(Data.class).subscribe(message -> logger.info(message.toString()));
 	}
 	
 }
