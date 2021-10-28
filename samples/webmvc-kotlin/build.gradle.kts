@@ -7,7 +7,7 @@ plugins {
     id("org.springframework.experimental.aot") version "0.10.5-SNAPSHOT"
     kotlin("jvm") version "1.5.31"
     kotlin("plugin.spring") version "1.5.31"
-    id("org.graalvm.buildtools.native") version "0.9.3"
+    id("org.graalvm.buildtools.native") version "0.9.4"
 }
 
 group = "com.example"
