@@ -42,6 +42,8 @@ class DefaultBuildContext implements BuildContext {
 
 	private final String applicationClass;
 
+	private final List<String> testClasses;
+
 	private final List<String> classpath;
 
 	private final Set<String> options = new LinkedHashSet<>();
@@ -62,9 +64,10 @@ class DefaultBuildContext implements BuildContext {
 
 	private final InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
-	DefaultBuildContext(ApplicationStructure applicationStructure) {
+	DefaultBuildContext(AotPhase aotPhase, ApplicationStructure applicationStructure) {
 		this.mainClass = applicationStructure.getMainClass();
 		this.applicationClass = applicationStructure.getApplicationClass();
+		this.testClasses = applicationStructure.getTestClasses();
 		this.classpath = applicationStructure.getClasspath();
 		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(applicationStructure.getClassLoader()));
 	}
@@ -92,6 +95,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public String getApplicationClass() {
 		return this.applicationClass;
+	}
+
+	@Override
+	public List<String> getTestClasses() {
+		return this.testClasses;
 	}
 
 	@Override
