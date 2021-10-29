@@ -1368,7 +1368,7 @@ public class TypeSystem {
 			try {
 				mainClass = MainClassFinder.findSingleMainClass(new File(path));
 			}
-			catch (IOException e) {
+			catch (Exception e) {
 				logger.error(e);
 			}
 		}

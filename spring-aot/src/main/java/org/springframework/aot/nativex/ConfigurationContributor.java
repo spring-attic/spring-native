@@ -119,7 +119,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 			try {
 				mainClass = MainClassFinder.findSingleMainClass(new File(path));
 			}
-			catch (IOException e) {
+			catch (Exception e) {
 				logger.error(e);
 			}
 			if (mainClass != null) {
