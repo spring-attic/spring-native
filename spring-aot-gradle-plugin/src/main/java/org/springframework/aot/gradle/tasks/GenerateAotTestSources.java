@@ -17,8 +17,11 @@
 package org.springframework.aot.gradle.tasks;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
@@ -33,6 +36,7 @@ import org.gradle.process.CommandLineArgumentProvider;
 
 import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
 import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link org.gradle.api.Task} that generates AOT test sources using {@link TestContextAotProcessor}.
@@ -94,8 +98,9 @@ public class GenerateAotTestSources extends JavaExec {
 			if (getLogLevel().equals("DEBUG")) {
 				arguments.add("--debug");
 			}
-			arguments.add("--output=" + GenerateAotTestSources.this.generatedSourcesOutputDirectory.get().getAsFile().toPath());
-			arguments.add("org.springframework.aot");
+			arguments.add("--sources-out=" + GenerateAotTestSources.this.generatedSourcesOutputDirectory.get().getAsFile().toPath());
+			arguments.add("--resources-out=" + GenerateAotTestSources.this.generatedResourcesOutputDirectory.get().getAsFile().toPath());
+			arguments.add("--resources=" + toPathArgument(GenerateAotTestSources.this.resourceDirectories.getSrcDirs()));
 
 			for (File directory : GenerateAotTestSources.this.testSourceSetOutputDirectories.getClassesDirs()) {
 				arguments.add(directory.getAbsolutePath());
@@ -117,6 +122,11 @@ public class GenerateAotTestSources extends JavaExec {
 			else {
 				return "ERROR";
 			}
+		}
+
+		private String toPathArgument(Set<File> files) {
+			List<String> paths = files.stream().map(File::toPath).map(Path::toString).collect(Collectors.toList());
+			return StringUtils.collectionToDelimitedString(paths, File.pathSeparator);
 		}
 
 	}

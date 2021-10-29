@@ -36,7 +36,7 @@ import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
 import org.springframework.aot.BootstrapCodeGenerator;
-import org.springframework.aot.context.bootstrap.GenerateBootstrap;
+import org.springframework.aot.context.bootstrap.GenerateBootstrapCommand;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
@@ -63,7 +63,7 @@ public class GenerateAotSources extends JavaExec {
 		this.sourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.resourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
-		getMainClass().set(GenerateBootstrap.class.getCanonicalName());
+		getMainClass().set(GenerateBootstrapCommand.class.getCanonicalName());
 		getArgumentProviders().add(new BootstrapGeneratorArgumentProvider());
 	}
 
