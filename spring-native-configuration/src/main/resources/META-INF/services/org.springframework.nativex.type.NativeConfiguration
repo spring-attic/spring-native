@@ -1,5 +1,6 @@
 org.springframework.scheduling.quartz.QuartzHints
 LoggingInitHints
+SunManagementHints
 com.google.protobuf.ProtobufHints
 io.lettuce.LettuceHints
 io.netty.NettyHints
