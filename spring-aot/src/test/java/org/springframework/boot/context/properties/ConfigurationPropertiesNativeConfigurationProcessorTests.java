@@ -69,7 +69,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	private Consumer<NativeReflectionEntry> allDeclaredMethods(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
 		};
 	}
 
