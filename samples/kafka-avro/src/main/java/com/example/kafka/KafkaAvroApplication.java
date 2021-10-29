@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class KafkaAvroApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KafkaAvroApplication.class, args).close();
+		SpringApplication.run(KafkaAvroApplication.class, args);
 	}
 
 	@KafkaListener(id = "graal", topics = "graal")
@@ -50,7 +50,6 @@ public class KafkaAvroApplication {
 			Thing thing = Thing.newBuilder().setStringField("someValue").setIntField(42).build();
 			template.send("graal", thing);
 			System.out.println("++++++Sent:" + thing);
-			Thread.sleep(5000);
 		};
 	}
 
