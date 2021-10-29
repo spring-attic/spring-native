@@ -50,7 +50,6 @@ public class KafkaStreamsApplication {
 		return args -> {
 			template.send("graalStreamsIn", "foo");
 			System.out.println("++++++Sent:foo");
-			Thread.sleep(5000);
 		};
 	}
 

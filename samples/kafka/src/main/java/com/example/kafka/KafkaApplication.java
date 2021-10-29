@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class KafkaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KafkaApplication.class, args).close();
+		SpringApplication.run(KafkaApplication.class, args);
 	}
 
 	@KafkaListener(id = "graal", topics = "graal")
@@ -44,7 +44,6 @@ public class KafkaApplication {
 			Greeting data = new Greeting("Hello from GraalVM!");
 			template.send("graal", data);
 			System.out.println("++++++Sent: " + data);
-			Thread.sleep(5000);
 		};
 	}
 
