@@ -19,6 +19,8 @@
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Dependency override to benerfit from https://github.com/spring-projects/spring-data-commons/issues/2485. To be removed when we switch to Spring Boot 2.6.0-SNAPSHOT or 2.6.0 -->
+		<spring-data-bom.version>2021.1.0-SNAPSHOT</spring-data-bom.version>
 	</properties>
 
 	<dependencies>
