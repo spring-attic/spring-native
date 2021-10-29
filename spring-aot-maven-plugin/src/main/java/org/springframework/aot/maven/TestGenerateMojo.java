@@ -24,7 +24,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -39,6 +41,7 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
 import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.util.StringUtils;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
@@ -74,6 +77,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			Files.createDirectories(this.generatedTestSourcesDirectory.toPath());
 
 			Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));
+			Path resourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "resources"));
 			Files.createDirectories(sourcesPath);
 
 			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-native-configuration")
@@ -94,6 +98,15 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
 			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 
+			// consider main and test resources
+			Set<Path> resourceFolders = new HashSet<>();
+			for (Resource r : project.getResources()) {
+				resourceFolders.add(new File(r.getDirectory()).toPath());
+			}
+			for (Resource r : project.getTestResources()) {
+				resourceFolders.add(new File(r.getDirectory()).toPath());
+			}
+
 			List<String> args = new ArrayList<>();
 			// remote debug
 			if ("true".equals(this.debug)) {
@@ -105,14 +118,12 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			args.add("-cp");
 			args.add(asClasspathArgument(testClasspathElements));
 			args.add(GenerateTestBootstrapCommand.class.getCanonicalName());
+			args.add("--sources-out=" + sourcesPath.toAbsolutePath());
+			args.add("--resources-out=" + resourcesPath.toAbsolutePath());
+			args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
 			if (getLogLevel().equals("DEBUG")) {
 				args.add("--debug");
 			}
-			// outputPath
-			args.add("--output");
-			args.add(sourcesPath.toAbsolutePath().toString());
-			// packageName
-			args.add("org.springframework.aot");
 			// test output directory
 			args.add(testOutputDirectory.toString());
 
@@ -122,6 +133,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			}
 
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
+			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
 
 			// Write system property as spring.properties file in test resources.
 			Path springProperties = Path.of(project.getBuild().getTestOutputDirectory(), "spring.properties");

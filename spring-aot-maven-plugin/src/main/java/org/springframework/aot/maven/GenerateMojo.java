@@ -37,10 +37,9 @@ import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.context.bootstrap.GenerateBootstrap;
+import org.springframework.aot.context.bootstrap.GenerateBootstrapCommand;
 import org.springframework.boot.loader.tools.RunProcess;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.support.Mode;
 import org.springframework.util.StringUtils;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
@@ -144,7 +143,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			}
 			args.add("-cp");
 			args.add(asClasspathArgument(runtimeClasspathElements));
-			args.add(GenerateBootstrap.class.getCanonicalName());
+			args.add(GenerateBootstrapCommand.class.getCanonicalName());
 			args.add("--mode=" + aotOptions.toMode());
 			args.add("--sources-out=" + sourcesPath.toAbsolutePath());
 			args.add("--resources-out=" + resourcesPath.toAbsolutePath());
