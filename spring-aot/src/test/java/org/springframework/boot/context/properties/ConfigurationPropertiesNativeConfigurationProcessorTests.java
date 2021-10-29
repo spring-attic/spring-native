@@ -16,6 +16,10 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Constructor;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -24,7 +28,6 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessorTests.SamplePropertiesWithNested.OneLevelDown;
 import org.springframework.nativex.hint.Flag;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,22 +41,111 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 	@Test
-	void processConfigurationProperties() {
+	void processJavaBeanConfigurationProperties() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SampleProperties.class).getBeanDefinition());
-		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SampleProperties.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder
+				.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies(allDeclaredMethods(SampleProperties.class));
+		assertThat(registry.reflection().getEntries()).singleElement()
+				.satisfies(javaBeanBinding(SampleProperties.class));
 	}
 
 	@Test
-	void processConfigurationPropertiesWithNestedType() {
+	void processJavaBeanConfigurationPropertiesWithSeveralConstructors() throws NoSuchMethodException {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SamplePropertiesWithSeveralConstructors.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).singleElement()
+				.satisfies(javaBeanBinding(SamplePropertiesWithSeveralConstructors.class,
+						SamplePropertiesWithSeveralConstructors.class.getDeclaredConstructor()));
+	}
+
+	@Test
+	void processJavaBeanConfigurationPropertiesWithMapOfPojo() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SamplePropertiesWithMap.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithMap.class));
+		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
+		assertThat(entries).hasSize(2);
+	}
+
+	@Test
+	void processJavaBeanConfigurationPropertiesWithListOfPojo() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SamplePropertiesWithList.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithList.class));
+		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
+		assertThat(entries).hasSize(2);
+	}
+
+	@Test
+	void processJavaBeanConfigurationPropertiesWitArrayOfPojo() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SamplePropertiesWithArray.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithArray.class));
+		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
+		assertThat(entries).hasSize(2);
+	}
+
+	@Test
+	void processValueObjectConfigurationProperties() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SampleImmutableProperties.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder
+				.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies(
+				valueObjectBinding(SampleImmutableProperties.class,
+						SampleImmutableProperties.class.getDeclaredConstructors()[0]));
+	}
+
+	@Test
+	void processValueObjectConfigurationPropertiesWithSpecificConstructor() throws NoSuchMethodException {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SampleImmutablePropertiesWithSeveralConstructors.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies(
+				valueObjectBinding(SampleImmutablePropertiesWithSeveralConstructors.class,
+						SampleImmutablePropertiesWithSeveralConstructors.class.getDeclaredConstructor(String.class)));
+	}
+
+	@Test
+	void processValueObjectConfigurationPropertiesWithSeveralLayersOfPojo() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SampleImmutablePropertiesWithList.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		assertThat(entries).anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithList.class,
+				SampleImmutablePropertiesWithList.class.getConstructors()[0]));
+		assertThat(entries).anySatisfy(valueObjectBinding(Person.class, Person.class.getConstructors()[0]));
+		assertThat(entries).anySatisfy(valueObjectBinding(Address.class, Address.class.getDeclaredConstructors()[0]));
+		assertThat(entries).hasSize(3);
+	}
+
+
+	@Test
+	void processConfigurationPropertiesWithNestedTypeNotUsedIsIgnored() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithNested.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).anySatisfy(allDeclaredMethods(SamplePropertiesWithNested.class))
-				.anySatisfy(allDeclaredMethods(OneLevelDown.class)).hasSize(2);
+		assertThat(registry.reflection().getEntries()).singleElement().satisfies(
+				javaBeanBinding(SamplePropertiesWithNested.class));
 	}
 
 	@Test
@@ -62,13 +154,26 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithExternalNested.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).anySatisfy(allDeclaredMethods(SamplePropertiesWithExternalNested.class))
-				.anySatisfy(allDeclaredMethods(SampleType.class)).anySatisfy(allDeclaredMethods(SampleType.Nested.class)).hasSize(3);
+		assertThat(registry.reflection().getEntries()).anySatisfy(javaBeanBinding(SamplePropertiesWithExternalNested.class))
+				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class)).hasSize(3);
 	}
 
-	private Consumer<NativeReflectionEntry> allDeclaredMethods(Class<?> type) {
+	private Consumer<NativeReflectionEntry> javaBeanBinding(Class<?> type) {
+		return javaBeanBinding(type, type.getDeclaredConstructors()[0]);
+	}
+
+	private Consumer<NativeReflectionEntry> javaBeanBinding(Class<?> type, Constructor<?> constructor) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
+			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
+			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+		};
+	}
+
+	private Consumer<NativeReflectionEntry> valueObjectBinding(Class<?> type, Constructor<?> constructor) {
+		return (entry) -> {
+			assertThat(entry.getType()).isEqualTo(type);
+			assertThat(entry.getConstructors()).containsOnly(constructor);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
 		};
 	}
@@ -82,6 +187,84 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 	@ConfigurationProperties("test")
 	static class SampleProperties {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SamplePropertiesWithSeveralConstructors {
+
+		SamplePropertiesWithSeveralConstructors() {
+		}
+
+		public SamplePropertiesWithSeveralConstructors(String ignored) {
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SamplePropertiesWithMap {
+
+		public Map<String, Address> getAddresses() {
+			return Collections.emptyMap();
+		}
+	}
+
+	@ConfigurationProperties("test")
+	static class SamplePropertiesWithList {
+
+		public List<Address> getAllAddresses() {
+			return Collections.emptyList();
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SamplePropertiesWithArray {
+
+		public Address[] getAllAddresses() {
+			return new Address[0];
+		}
+
+	}
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class SampleImmutableProperties {
+
+		private final String name;
+
+		SampleImmutableProperties(String name) {
+			this.name = name;
+		}
+	}
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class SampleImmutablePropertiesWithSeveralConstructors {
+
+		private final String name;
+
+		@ConstructorBinding
+		SampleImmutablePropertiesWithSeveralConstructors(String name) {
+			this.name = name;
+		}
+
+		public SampleImmutablePropertiesWithSeveralConstructors() {
+			this("test");
+		}
+
+	}
+
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class SampleImmutablePropertiesWithList {
+
+		private final List<Person> family;
+
+		public SampleImmutablePropertiesWithList(List<Person> family) {
+			this.family = family;
+		}
 
 	}
 
@@ -121,8 +304,35 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 	static class SampleType {
 
+		private final Nested nested = new Nested();
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
 		static class Nested {
 
+		}
+
+	}
+
+	static class Address {
+
+
+	}
+
+	static class Person {
+		private final String firstName;
+
+		private final String lastName;
+
+		@NestedConfigurationProperty
+		private final Address address;
+
+		public Person(String firstName, String lastName, Address address) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+			this.address = address;
 		}
 
 	}

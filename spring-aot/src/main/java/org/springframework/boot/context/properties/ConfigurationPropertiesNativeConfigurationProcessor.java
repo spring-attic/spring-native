@@ -16,12 +16,29 @@
 
 package org.springframework.boot.context.properties;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry.Builder;
+import org.springframework.beans.BeanInfoFactory;
+import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -47,20 +64,148 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 	private void processConfigurationProperties(NativeConfigurationRegistry registry, BeanDefinition beanDefinition) {
 		Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
-		registerWithNestedMembersIfNecessary(registry, type);
-		ReflectionUtils.doWithFields(type, (field) -> registerWithNestedMembersIfNecessary(registry, field.getType()),
-				this::isNestedConfigurationProperties);
+		new TypeProcessor(type).process(registry);
 	}
 
-	private void registerWithNestedMembersIfNecessary(NativeConfigurationRegistry registry, Class<?> type) {
-		registry.reflection().forType(type).withFlags(Flag.allDeclaredMethods);
-		for (Class<?> nested : type.getDeclaredClasses()) {
-			registerWithNestedMembersIfNecessary(registry, nested);
+	/**
+	 * Process a given type for binding purposes, discovering any nested type it may
+	 * expose via a property.
+	 */
+	private static class TypeProcessor {
+
+		private static final BeanInfoFactory beanInfoFactory = new ExtendedBeanInfoFactory();
+
+		private final Class<?> type;
+
+		private final boolean constructorBinding;
+
+		private final BeanInfo beanInfo;
+
+		TypeProcessor(Class<?> type) {
+			this(type, hasConstructorBinding(type));
 		}
-	}
 
-	private boolean isNestedConfigurationProperties(Field field) {
-		return (field.getAnnotation(NestedConfigurationProperty.class) != null);
+		private TypeProcessor(Class<?> type, boolean constructorBinding) {
+			this.type = type;
+			this.constructorBinding = constructorBinding;
+			this.beanInfo = getBeanInfo(type);
+		}
+
+		private static boolean hasConstructorBinding(AnnotatedElement element) {
+			return MergedAnnotations.from(element).isPresent(ConstructorBinding.class);
+		}
+
+		public void process(NativeConfigurationRegistry registry) {
+			Builder reflection = registry.reflection().forType(this.type)
+					.withFlags(Flag.allDeclaredMethods);
+			Constructor<?> constructor = handleConstructor(reflection);
+			if (this.constructorBinding) {
+				handleValueObjectProperties(registry, constructor);
+			}
+			else if (this.beanInfo != null) {
+				handleJavaBeanProperties(registry);
+			}
+		}
+
+		private Constructor<?> handleConstructor(Builder reflection) {
+			Constructor<?> bindingConstructor = findBindingConstructor();
+			if (bindingConstructor != null) {
+				reflection.withExecutables(bindingConstructor);
+				return bindingConstructor;
+			}
+			else {
+				reflection.withFlags(Flag.allDeclaredConstructors);
+				return null;
+			}
+		}
+
+		private void handleValueObjectProperties(NativeConfigurationRegistry registry, Constructor<?> constructor) {
+			for (int i = 0; i < constructor.getParameterCount(); i++) {
+				ResolvableType propertyType = ResolvableType.forConstructorParameter(constructor, i);
+				Class<?> nestedType = getNestedType(constructor.getParameters()[i].getName(), propertyType);
+				if (nestedType != null) {
+					new TypeProcessor(nestedType, true).process(registry);
+				}
+			}
+		}
+
+		private void handleJavaBeanProperties(NativeConfigurationRegistry registry) {
+			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+				Method readMethod = propertyDescriptor.getReadMethod();
+				if (readMethod != null) {
+					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
+					Class<?> nestedType = getNestedType(propertyDescriptor.getName(), propertyType);
+					if (nestedType != null) {
+						new TypeProcessor(nestedType).process(registry);
+					}
+				}
+			}
+		}
+
+		private Class<?> getNestedType(String propertyName, ResolvableType propertyType) {
+			Class<?> propertyClass = propertyType.toClass();
+			if (propertyType.isArray()) {
+				return propertyType.getComponentType().toClass();
+			}
+			else if (Collection.class.isAssignableFrom(propertyClass)) {
+				return propertyType.as(Collection.class).getGeneric(0).toClass();
+			}
+			else if (Map.class.isAssignableFrom(propertyClass)) {
+				return propertyType.as(Map.class).getGeneric(1).toClass();
+			}
+			else if (this.type.equals(propertyClass.getDeclaringClass())) {
+				return propertyClass;
+			}
+			else {
+				Field field = ReflectionUtils.findField(this.type, propertyName);
+				if (field != null && isNestedConfigurationProperties(field)) {
+					return propertyClass;
+				}
+			}
+			return null;
+		}
+
+		private Constructor<?> findBindingConstructor() {
+			Constructor<?>[] allConstructors = this.type.getDeclaredConstructors();
+			if (allConstructors.length == 1) {
+				return allConstructors[0];
+			}
+			if (this.constructorBinding) {
+				List<Constructor<?>> candidates = Arrays.stream(allConstructors)
+						.filter(TypeProcessor::hasConstructorBinding).collect(Collectors.toList());
+				if (candidates.size() == 1) {
+					return candidates.get(0);
+				}
+			}
+			else {
+				try {
+					return this.type.getDeclaredConstructor();
+				}
+				catch (NoSuchMethodException ex) {
+					// No default constructor
+				}
+			}
+			return null;
+		}
+
+
+		private boolean isNestedConfigurationProperties(Field field) {
+			return MergedAnnotations.from(field).isPresent(NestedConfigurationProperty.class);
+		}
+
+		private static BeanInfo getBeanInfo(Class<?> beanType) {
+			try {
+				BeanInfo beanInfo = beanInfoFactory.getBeanInfo(beanType);
+				if (beanInfo != null) {
+					return beanInfo;
+				}
+				return Introspector.getBeanInfo(beanType, Introspector.IGNORE_ALL_BEANINFO);
+			}
+			catch (IntrospectionException ex) {
+				return null;
+			}
+		}
+
 	}
 
 }
