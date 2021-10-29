@@ -15,6 +15,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.integration.annotation.Gateway;
+import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.interceptor.WireTap;
 import org.springframework.integration.config.EnableIntegrationManagement;
@@ -159,6 +161,14 @@ public class IntegrationApplication {
 						.requestMapping(mapping -> mapping.methods(HttpMethod.GET)))
 				.handle(controlBusGateway, "startEndpoint")
 				.get();
+	}
+
+	@MessagingGateway(defaultRequestChannel = "controlBus.input")
+	public static interface ControlBusGateway {
+
+		@Gateway(payloadExpression = "'@' + args[0] + '.start()'")
+		void startEndpoint(String id);
+
 	}
 
 }
