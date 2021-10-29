@@ -44,4 +44,8 @@ public interface BootstrapContributor extends Ordered {
 		return 0;
 	}
 
+	default boolean supportsAotPhase(AotPhase aotPhase) {
+		return true;
+	}
+
 }
