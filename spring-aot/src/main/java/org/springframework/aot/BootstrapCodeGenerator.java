@@ -64,10 +64,10 @@ public class BootstrapCodeGenerator {
 		this.aotOptions = aotOptions;
 	}
 
-	public void generate(ApplicationStructure structure) throws IOException {
+	public void generate(AotPhase aotPhase, ApplicationStructure structure) throws IOException {
 		logger.debug("Starting code generation with classLoader: " + structure.getClassLoader());
-		DefaultBuildContext buildContext = new DefaultBuildContext(structure);
-		generate(structure.getSourcesPath(), structure.getResourcesPath(), structure.getResourceFolders(), buildContext);
+		DefaultBuildContext buildContext = new DefaultBuildContext(aotPhase, structure);
+		generate(structure.getSourcesPath(), structure.getResourcesPath(), structure.getResourceFolders(), buildContext, aotPhase);
 	}
 
 	/**
@@ -75,19 +75,22 @@ public class BootstrapCodeGenerator {
 	 *
 	 * @param sourcesPath the root path generated source files should be written to
 	 * @param resourcesPath the root path generated resource files should be written to
-	 * @param buildContext the build context for this application
 	 * @param resourceFolders paths to folders containing project main resources
+	 * @param buildContext the build context for this application
+	 * @param aotPhase
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
-	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext) throws IOException {
+	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext, AotPhase aotPhase) throws IOException {
 
 		// TODO temporary whilst migrating the inferencing to Aot land
 		TypeSystem.setDefaultAotOptions(aotOptions);
 
 		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
 		for (BootstrapContributor contributor : contributors) {
-			logger.debug("Executing Contributor: " + contributor.getClass().getName());
-			contributor.contribute(buildContext, this.aotOptions);
+			if (contributor.supportsAotPhase(aotPhase)) {
+				logger.debug("Executing Contributor: " + contributor.getClass().getName());
+				contributor.contribute(buildContext, this.aotOptions);
+			}
 		}
 
 		buildResourcePatternCache(buildContext.getResourcesDescriptor());

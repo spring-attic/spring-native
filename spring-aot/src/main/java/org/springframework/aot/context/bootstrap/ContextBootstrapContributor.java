@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.AotPhase;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
@@ -46,6 +47,11 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 	private static final String BOOTSTRAP_CLASS_NAME = "ContextBootstrapInitializer";
 
 	private static final Log logger = LogFactory.getLog(ContextBootstrapContributor.class);
+
+	@Override
+	public boolean supportsAotPhase(AotPhase aotPhase) {
+		return AotPhase.MAIN.equals(aotPhase);
+	}
 
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -29,6 +30,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import org.springframework.aot.AotPhase;
 import org.springframework.aot.ApplicationStructure;
 import org.springframework.aot.BootstrapCodeGenerator;
 import org.springframework.boot.logging.LogFile;
@@ -42,7 +44,7 @@ import org.springframework.util.StringUtils;
 
 @Command(mixinStandardHelpOptions = true,
 		description = "Generate the Java source for the Spring Bootstrap class.")
-public class GenerateBootstrap implements Callable<Integer> {
+public class GenerateBootstrapCommand implements Callable<Integer> {
 
 	@Parameters(index = "0", arity = "0..1", description = "The main application class, auto-detected if not provided.")
 	private String mainClass;
@@ -100,13 +102,13 @@ public class GenerateBootstrap implements Callable<Integer> {
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
-				this.classesPaths, this.mainClass, Arrays.asList(classPath), classLoader);
-		generator.generate(applicationStructure);
+				this.classesPaths, this.mainClass, Collections.emptyList(), Arrays.asList(classPath), classLoader);
+		generator.generate(AotPhase.MAIN, applicationStructure);
 		return 0;
 	}
 
 	public static void main(String[] args) throws IOException {
-		int exitCode = new CommandLine(new GenerateBootstrap()).execute(args);
+		int exitCode = new CommandLine(new GenerateBootstrapCommand()).execute(args);
 		System.exit(exitCode);
 	}
 }
