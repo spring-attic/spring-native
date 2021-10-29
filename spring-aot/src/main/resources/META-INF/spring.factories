@@ -14,8 +14,10 @@ org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanF
 org.springframework.aot.context.bootstrap.generator.nativex.EnableHttpBeanFactoryNativeConfigurationProcessor,\
 org.springframework.boot.actuate.endpoint.annotation.EndpointNativeConfigurationProcessor,\
 org.springframework.boot.actuate.endpoint.annotation.HealthContributorNativeConfigurationProcessor,\
+org.springframework.boot.context.AotProxyNativeConfigurationProcessor,\
 org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor,\
-org.springframework.data.RepositoryDefinitionConfigurationProcessor
+org.springframework.data.RepositoryDefinitionConfigurationProcessor,\
+org.springframework.transaction.annotation.TransactionalNativeConfigurationProcessor
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
 org.springframework.aot.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
