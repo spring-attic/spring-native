@@ -69,6 +69,12 @@
 			<artifactId>spring-data-commons</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- ConfigurationClassBeanDefinitionReader uses GroovyBeanDefinitionReader -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
