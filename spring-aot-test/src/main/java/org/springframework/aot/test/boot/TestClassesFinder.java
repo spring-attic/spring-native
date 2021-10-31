@@ -32,7 +32,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Find Spring test Classes, which means classes annotated or meta-annotated with
@@ -62,7 +61,7 @@ public abstract class TestClassesFinder {
 			throw new IllegalArgumentException("Invalid root directory '" + rootDirectory + "'");
 		}
 		else {
-			Deque<File> stack = new ArrayDeque();
+			Deque<File> stack = new ArrayDeque<>();
 			stack.push(rootDirectory);
 			while (!stack.isEmpty()) {
 				File file = stack.pop();

@@ -108,6 +108,7 @@ class TestContextConfigurationDescriptorFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	void supportsSearchAllAvailableAotProcessors() {
 		AotTestContextProcessor notSupportedProcessor = mockAotTestContextProcessor((bootstrapper) -> false, () -> null);
 		AotTestContextProcessor anotherNotSupportedProcessor = mockAotTestContextProcessor((bootstrapper) -> false, () -> null);
