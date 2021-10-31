@@ -16,11 +16,6 @@
 
 package org.springframework.aot.test;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Supplier;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,61 +24,26 @@ import org.springframework.test.context.CacheAwareContextLoaderDelegate;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * A {@link CacheAwareContextLoaderDelegate} that enables the use of generated application
  * contexts for supported test classes.
- * <p/>
- * Reflectively accesses {@value #INITIALIZER_NAME} to retrieve the mapping of all known
- * test classes.
  *
  * @author Stephane Nicoll
  * @author Sam Brannen
  */
 public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContextLoaderDelegate {
 
-	private static final String INITIALIZER_NAME = "org.springframework.aot.TestContextBootstrapInitializer";
-
 	private static final Log logger = LogFactory.getLog(AotCacheAwareContextLoaderDelegate.class);
-
-	private final Map<String, Supplier<SmartContextLoader>> contextLoaders;
-
-	public AotCacheAwareContextLoaderDelegate(Map<String, Supplier<SmartContextLoader>> contextLoaders) {
-		this.contextLoaders = contextLoaders;
-	}
-
-	public AotCacheAwareContextLoaderDelegate() {
-		this(loadContextLoadersMapping());
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Supplier<SmartContextLoader>> loadContextLoadersMapping() {
-		try {
-			Class<?> type = ClassUtils.forName(INITIALIZER_NAME, null);
-			Method method = ReflectionUtils.findMethod(type, "getContextLoaders");
-			return (Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
-		}
-		catch (Exception ex) {
-			// TODO: exception
-			return Collections.emptyMap();
-		}
-	}
 
 	@Override
 	protected ApplicationContext loadContextInternal(MergedContextConfiguration config) throws Exception {
-		SmartContextLoader contextLoader = getContextLoader(config.getTestClass());
+		SmartContextLoader contextLoader = AotContextLoaderUtils.getContextLoader(config.getTestClass());
 		if (contextLoader != null) {
 			logger.info("Starting test in AOT mode using " + contextLoader);
 			return contextLoader.loadContext(config);
 		}
 		return super.loadContextInternal(config);
-	}
-
-	private SmartContextLoader getContextLoader(Class<?> testClass) {
-		Supplier<SmartContextLoader> supplier = this.contextLoaders.get(testClass.getName());
-		return (supplier != null) ? supplier.get() : null;
 	}
 
 }

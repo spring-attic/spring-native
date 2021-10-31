@@ -18,6 +18,7 @@ package org.springframework.aot.test;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
@@ -44,12 +45,21 @@ import static org.mockito.Mockito.verifyNoInteractions;
  */
 class AotCacheAwareContextLoaderDelegateTests {
 
+	private final ApplicationContext applicationContext = mock(ApplicationContext.class);
+
+	private final SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
+
+	private final AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate();
+
+
+	@AfterEach
+	void resetAotContextLoaderUtils() {
+		AotContextLoaderUtils.setContextLoaders(null);
+	}
+
 	@Test
 	void loadContextWithMatchDelegatesToSmartContextLoader() throws Exception {
-		ApplicationContext applicationContext = mock(ApplicationContext.class);
-		SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
-		AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate(
-				Map.of(SampleTest.class.getName(), () -> contextLoader));
+		AotContextLoaderUtils.setContextLoaders(Map.of(SampleTest.class.getName(), () -> contextLoader));
 		assertThat(delegate.loadContextInternal(createMergedContextConfiguration(SampleTest.class)))
 				.isSameAs(applicationContext);
 		verify(contextLoader).loadContext(any(MergedContextConfiguration.class));
@@ -57,10 +67,7 @@ class AotCacheAwareContextLoaderDelegateTests {
 
 	@Test
 	void loadContextWithNoMatchUsesDefaultBehavior() throws Exception {
-		ApplicationContext applicationContext = mock(ApplicationContext.class);
-		SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
-		AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate(
-				Map.of(SampleTest.class.getName(), () -> contextLoader));
+		AotContextLoaderUtils.setContextLoaders(Map.of(SampleTest.class.getName(), () -> contextLoader));
 		ApplicationContext actual = delegate.loadContextInternal(
 				createMergedContextConfiguration(SampleAnotherTest.class));
 		assertThat(actual).isNotNull();
