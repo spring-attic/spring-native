@@ -36,7 +36,7 @@ import org.springframework.util.ReflectionUtils;
  * A {@link CacheAwareContextLoaderDelegate} that enables the use of generated application
  * contexts for supported test classes.
  * <p/>
- * Reflectively accesses {@value INITIALIZER_NAME} to retrieve the mapping of all known
+ * Reflectively accesses {@value #INITIALIZER_NAME} to retrieve the mapping of all known
  * test classes.
  *
  * @author Stephane Nicoll
