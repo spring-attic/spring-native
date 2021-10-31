@@ -32,11 +32,7 @@ import org.springframework.test.context.TestPropertySource;
 @NativeHint(trigger = org.junit.jupiter.api.Test.class,
 		initialization = @InitializationHint(typeNames = "org.junit.platform.launcher.TestIdentifier", initTime = InitializationTime.BUILD),
 		types = {
-		@TypeHint(typeNames = {
-				"org.springframework.boot.test.context.ImportsContextCustomizer$ImportsSelector",
-				"org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelector"
-		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE),
-		@TypeHint(types = {
+			@TypeHint(types = {
 				SpringBootTest.WebEnvironment.class,
 				org.springframework.test.context.junit.jupiter.SpringExtension.class,
 				org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.class,
@@ -47,7 +43,8 @@ import org.springframework.test.context.TestPropertySource;
 				org.springframework.boot.test.mock.mockito.MockitoPostProcessor.class,
 				ImportAutoConfiguration.class,
 				OverrideAutoConfiguration.class,
-				TypeExcludeFilters.class
+				TypeExcludeFilters.class,
+				org.springframework.aot.test.AotCacheAwareContextLoaderDelegate.class
 		}, typeNames = {
 				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration",
 				"org.springframework.boot.test.mock.mockito.MockitoPostProcessor$SpyPostProcessor",
