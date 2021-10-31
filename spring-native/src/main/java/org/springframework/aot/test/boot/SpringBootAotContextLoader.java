@@ -21,8 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.aot.SpringApplicationAotUtils;
-import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -112,20 +110,11 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 		}
 		ConfigurableApplicationContext context = application.run(args);
 
-		// FIXME: register Autowired support after the context has started for the test class
-		configureAutowiringSupport(context.getBeanFactory());
 		return context;
 	}
 
 	private boolean isEmbeddedWebEnvironment() {
 		return this.webEnvironment.isEmbedded();
-	}
-
-	// TODO: could do this at build time
-	private void configureAutowiringSupport(ConfigurableListableBeanFactory beanFactory) {
-		AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
-		beanPostProcessor.setBeanFactory(beanFactory);
-		beanFactory.addBeanPostProcessor(beanPostProcessor);
 	}
 
 	// Copy of SpringBootContextLoader

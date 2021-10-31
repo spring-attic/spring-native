@@ -75,4 +75,8 @@ class AotContextLoader {
 		return (supplier != null) ? supplier.get() : null;
 	}
 
+	boolean isSupportedTestClass(Class<?> testClass) {
+		return this.contextLoaders.containsKey(testClass.getName());
+	}
+
 }

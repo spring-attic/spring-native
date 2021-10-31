@@ -5,3 +5,6 @@ org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.nativex.GeneratedClassNotFoundExceptionFailureAnalyzer,\
 org.springframework.nativex.ClassNotFoundExceptionNativeFailureAnalyzer,\
 org.springframework.nativex.NoSuchMethodExceptionNativeFailureAnalyzer
+
+org.springframework.test.context.TestExecutionListener=\
+org.springframework.aot.test.AotDependencyInjectionTestExecutionListener
