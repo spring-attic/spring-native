@@ -22,13 +22,12 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.BootstrapContext;
-import org.springframework.test.context.BootstrapTestUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
-import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
+import org.springframework.test.context.support.DefaultBootstrapContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +50,8 @@ class AotCacheAwareContextLoaderDelegateTests {
 		SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
 		AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate(
 				Map.of(SampleTest.class.getName(), () -> contextLoader));
-		assertThat(delegate.loadContextInternal(createMergedContextConfiguration(SampleTest.class))).isSameAs(applicationContext);
+		assertThat(delegate.loadContextInternal(createMergedContextConfiguration(SampleTest.class)))
+				.isSameAs(applicationContext);
 		verify(contextLoader).loadContext(any(MergedContextConfiguration.class));
 	}
 
@@ -61,7 +61,8 @@ class AotCacheAwareContextLoaderDelegateTests {
 		SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
 		AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate(
 				Map.of(SampleTest.class.getName(), () -> contextLoader));
-		ApplicationContext actual = delegate.loadContextInternal(createMergedContextConfiguration(SampleAnotherTest.class));
+		ApplicationContext actual = delegate.loadContextInternal(
+				createMergedContextConfiguration(SampleAnotherTest.class));
 		assertThat(actual).isNotNull();
 		verifyNoInteractions(contextLoader);
 	}
@@ -78,9 +79,10 @@ class AotCacheAwareContextLoaderDelegateTests {
 	}
 
 	private MergedContextConfiguration createMergedContextConfiguration(Class<?> testClass) {
-		BootstrapContext buildBootstrapContext = BootstrapTestUtils.buildBootstrapContext(testClass, new DefaultCacheAwareContextLoaderDelegate());
-		TestContextBootstrapper testContextBootstrapper = BootstrapTestUtils.resolveTestContextBootstrapper(buildBootstrapContext);
-		return testContextBootstrapper.buildMergedContextConfiguration();
+		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
+		bootstrapper.setBootstrapContext(new DefaultBootstrapContext(testClass,
+				new DefaultCacheAwareContextLoaderDelegate()));
+		return bootstrapper.buildMergedContextConfiguration();
 	}
 
 
@@ -91,7 +93,6 @@ class AotCacheAwareContextLoaderDelegateTests {
 	@SpringBootTest(properties = "spring.main.web-application-type=none")
 	static class SampleAnotherTest {
 	}
-
 
 	@SpringBootConfiguration
 	static class SampleConfiguration {
