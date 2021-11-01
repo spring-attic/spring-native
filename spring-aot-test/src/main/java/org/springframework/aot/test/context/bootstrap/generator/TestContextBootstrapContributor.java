@@ -16,15 +16,19 @@
 
 package org.springframework.aot.test.context.bootstrap.generator;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.squareup.javapoet.JavaFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.AotPhase;
 import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
+import org.springframework.aot.SourceFiles;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.ClassUtils;
@@ -53,6 +57,7 @@ public class TestContextBootstrapContributor implements BootstrapContributor {
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", "Test");
 		new TestContextAotProcessor(classLoader)
 				.generateTestContexts(testClasses, writerContext);
+		writerContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
 	}
 
 	@Override
