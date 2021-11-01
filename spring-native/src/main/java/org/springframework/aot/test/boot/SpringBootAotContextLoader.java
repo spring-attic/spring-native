@@ -37,7 +37,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * A {@link SmartContextLoader} that use an {@link ApplicationContextInitializer}
- * to boostrap a Spring Boot test. This includes support for {@code @SpringBootTest} as
+ * to bootstrap a Spring Boot test. This includes support for {@code @SpringBootTest} as
  * well as slice tests.
  *
  * @author Stephane Nicoll
