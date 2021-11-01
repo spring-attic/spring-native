@@ -16,12 +16,9 @@
 
 package org.springframework.aot.test.context.bootstrap.generator;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.squareup.javapoet.JavaFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
