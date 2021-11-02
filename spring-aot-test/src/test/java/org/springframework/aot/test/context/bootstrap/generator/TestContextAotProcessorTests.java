@@ -90,4 +90,10 @@ class TestContextAotProcessorTests {
 						"}");
 	}
 
+	@Test
+	void processInvokeTestNativeConfigurationRegistrar() {
+		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
+		assertThat(structure).hasResourcePattern("org/springframework/aot/test/samples/app/SampleApplication.class");
+	}
+
 }

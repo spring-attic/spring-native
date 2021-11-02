@@ -27,12 +27,13 @@ import org.springframework.aot.BootstrapContributor;
 import org.springframework.aot.BuildContext;
 import org.springframework.aot.SourceFiles;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.ClassUtils;
 
 /**
  * Adapter class that calls {@link TestContextAotProcessor}
- * 
+ *
  * @author Brian Clozel
  */
 public class TestContextBootstrapContributor implements BootstrapContributor {
@@ -56,9 +57,17 @@ public class TestContextBootstrapContributor implements BootstrapContributor {
 			}
 		}
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", "Test");
-		new TestContextAotProcessor(classLoader)
-				.generateTestContexts(testClasses, writerContext);
+		new TestContextAotProcessor(classLoader).generateTestContexts(testClasses, writerContext);
+
 		writerContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
+		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
+		context.getOptions().addAll(nativeConfigurationRegistry.options());
+		context.describeReflection(reflectionDescriptor -> nativeConfigurationRegistry.reflection().toClassDescriptors().forEach(reflectionDescriptor::merge));
+		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(nativeConfigurationRegistry.resources().toResourcesDescriptor()));
+		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(nativeConfigurationRegistry.proxy().toProxiesDescriptor()));
+		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(nativeConfigurationRegistry.initialization().toInitializationDescriptor()));
+		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(nativeConfigurationRegistry.serialization().toSerializationDescriptor()));
+		context.describeJNIReflection(reflectionDescriptor -> nativeConfigurationRegistry.jni().toClassDescriptors().forEach(reflectionDescriptor::merge));
 	}
 
 	@Override

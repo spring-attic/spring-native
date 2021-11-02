@@ -70,11 +70,18 @@ class TestContextConfigurationDescriptor {
 	}
 
 	/**
+	 * Return the {@link MergedContextConfiguration} of this instance
+	 * @return the test configuration
+	 */
+	MergedContextConfiguration getContextConfiguration() {
+		return this.contextConfiguration;
+	}
+
+	/**
 	 * Return the test classes that this descriptor manages.
 	 * @return the registered test classes for this test context
 	 */
 	List<Class<?>> getTestClasses() {
 		return this.testClasses;
 	}
-
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.assertj.core.api.AssertProvider;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 
 /**
@@ -35,25 +36,25 @@ public final class ContextBootstrapStructure implements AssertProvider<ContextBo
 
 	private final String packageName;
 
-	private final List<ClassDescriptor> classDescriptors;
+	private final NativeConfigurationRegistry nativeConfigurationRegistry;
 
 	/**
 	 * Create an instance based on the specified source {@link Path directory} and chosen
 	 * default packageName.
 	 * @param sourceDirectory the generated source directory
 	 * @param packageName the default package name
-	 * @param classDescriptors the {@link ClassDescriptor class descriptors}
+	 * @param nativeConfigurationRegistry the native configuration registry
 	 */
 	public ContextBootstrapStructure(Path sourceDirectory, String packageName,
-			List<ClassDescriptor> classDescriptors) {
+			NativeConfigurationRegistry nativeConfigurationRegistry) {
 		this.sourceDirectory = sourceDirectory;
 		this.packageName = packageName;
-		this.classDescriptors = classDescriptors;
+		this.nativeConfigurationRegistry = nativeConfigurationRegistry;
 	}
 
 	@Override
 	public ContextBootstrapAssert assertThat() {
-		return new ContextBootstrapAssert(this.sourceDirectory, this.packageName, this.classDescriptors);
+		return new ContextBootstrapAssert(this.sourceDirectory, this.packageName, this.nativeConfigurationRegistry);
 	}
 
 }

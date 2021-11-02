@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.squareup.javapoet.JavaFile;
@@ -56,8 +55,7 @@ public class TestContextAotProcessorTester {
 		new TestContextAotProcessor(getClass().getClassLoader())
 				.generateTestContexts(Arrays.asList(testClasses), writerContext);
 		writeSources(srcDirectory, writerContext.toJavaFiles());
-		// TODO registry not set
-		return new ContextBootstrapStructure(srcDirectory, this.packageName, Collections.emptyList());
+		return new ContextBootstrapStructure(srcDirectory, this.packageName, writerContext.getNativeConfigurationRegistry());
 	}
 
 	private Path generateSrcDirectory() {

@@ -21,14 +21,16 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractPathAssert;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.PathAssert;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -46,12 +48,15 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 
 	private final MapAssert<String, ClassDescriptor> classDescriptors;
 
+	private final ListAssert<String> resourcePatterns;
+
 	public ContextBootstrapAssert(Path projectDirectory, String packageName,
-			List<ClassDescriptor> classDescriptors) {
+			NativeConfigurationRegistry nativeConfigurationRegistry) {
 		super(projectDirectory, ContextBootstrapAssert.class);
 		this.packageName = packageName;
-		this.classDescriptors = new MapAssert<>(classDescriptors.stream()
+		this.classDescriptors = new MapAssert<>(nativeConfigurationRegistry.reflection().toClassDescriptors().stream()
 				.collect(Collectors.toMap(ClassDescriptor::getName, (desc) -> desc)));
+		this.resourcePatterns = new ListAssert<>(new ArrayList<>(nativeConfigurationRegistry.resources().toResourcesDescriptor().getPatterns()));
 	}
 
 	public ContextBootstrapAssert hasSource(String packageName, String name) {
@@ -61,6 +66,11 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 
 	public ContextBootstrapAssert hasClassDescriptor(Class<?> type) {
 		this.classDescriptors.containsKey(type.getName());
+		return this.myself;
+	}
+
+	public ContextBootstrapAssert hasResourcePattern(String pattern) {
+		this.resourcePatterns.contains(pattern);
 		return this.myself;
 	}
 

@@ -36,6 +36,7 @@ import org.springframework.aot.context.bootstrap.generator.ApplicationContextAot
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.test.boot.SpringBootAotContextLoader;
+import org.springframework.aot.test.context.bootstrap.generator.nativex.TestNativeConfigurationRegistrar;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.SmartContextLoader;
@@ -53,9 +54,12 @@ public class TestContextAotProcessor {
 
 	private final ApplicationContextAotProcessor contextProcessor;
 
+	private final TestNativeConfigurationRegistrar testNativeConfigurationRegistrar;
+
 	public TestContextAotProcessor(ClassLoader classLoader) {
 		this.configurationDescriptorFactory = new TestContextConfigurationDescriptorFactory(classLoader);
 		this.contextProcessor = new ApplicationContextAotProcessor(classLoader);
+		this.testNativeConfigurationRegistrar = new TestNativeConfigurationRegistrar(classLoader);
 	}
 
 	/**
@@ -79,6 +83,9 @@ public class TestContextAotProcessor {
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
 				});
 		mainWriterContext.getMainBootstrapClass().addMethod(generateContextLoadersMappingMethod(entries));
+
+		this.testNativeConfigurationRegistrar.processTestConfigurations(writerContext.getNativeConfigurationRegistry(),
+				entries.values().stream().map(TestContextConfigurationDescriptor::getContextConfiguration).collect(Collectors.toList()));
 	}
 
 	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<String> fallbackClassName,
