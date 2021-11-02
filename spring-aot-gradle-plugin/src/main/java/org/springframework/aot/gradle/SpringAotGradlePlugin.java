@@ -161,10 +161,14 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 				project.getTasks().named(NativeImagePlugin.NATIVE_COMPILE_TASK_NAME).configure(nativeCompile -> {
 					nativeCompile.dependsOn(generatedSourcesJar);
 				});
-				 graal.getBinaries().named(NativeImagePlugin.NATIVE_MAIN_EXTENSION).configure(options -> {
+				graal.getBinaries().named(NativeImagePlugin.NATIVE_MAIN_EXTENSION).configure(options -> {
 					 Provider<RegularFile> generatedSources = generatedSourcesJar.getArchiveFile();
 					 options.classpath(generatedSources);
-				 });
+				});
+				graal.getBinaries().named(NativeImagePlugin.NATIVE_TEST_EXTENSION).configure(options -> {
+					Provider<RegularFile> generatedTestSources = generatedTestSourcesJar.getArchiveFile();
+					options.classpath(generatedTestSources);
+				});
 			});
 
 			// Ensure that Kotlin compilation depends on AOT source generation

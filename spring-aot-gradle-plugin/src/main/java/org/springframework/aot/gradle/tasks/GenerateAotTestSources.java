@@ -19,6 +19,7 @@ package org.springframework.aot.gradle.tasks;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,7 +101,11 @@ public class GenerateAotTestSources extends JavaExec {
 			}
 			arguments.add("--sources-out=" + GenerateAotTestSources.this.generatedSourcesOutputDirectory.get().getAsFile().toPath());
 			arguments.add("--resources-out=" + GenerateAotTestSources.this.generatedResourcesOutputDirectory.get().getAsFile().toPath());
-			arguments.add("--resources=" + toPathArgument(GenerateAotTestSources.this.resourceDirectories.getSrcDirs()));
+			Set<File> resources = new HashSet<>();
+			GenerateAotSources generateAotSources = (GenerateAotSources) getProject().getTasks().stream().filter(task -> task instanceof GenerateAotSources).findFirst().get();
+			resources.addAll(generateAotSources.getResourceDirectories().getSrcDirs());
+			resources.addAll(GenerateAotTestSources.this.resourceDirectories.getSrcDirs());
+			arguments.add("--resources=" + toPathArgument(resources));
 
 			for (File directory : GenerateAotTestSources.this.testSourceSetOutputDirectories.getClassesDirs()) {
 				arguments.add(directory.getAbsolutePath());

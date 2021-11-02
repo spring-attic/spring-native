@@ -68,7 +68,7 @@ public class GenerateAotSources extends JavaExec {
 	}
 
 	@InputFiles
-	public FileCollection getResourceDirectories() {
+	public SourceDirectorySet getResourceDirectories() {
 		return this.resourceDirectories;
 	}
 
