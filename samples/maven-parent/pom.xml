@@ -71,6 +71,7 @@
 					<extensions>true</extensions>
 					<executions>
 						<execution>
+							<id>build-native</id>
 							<goals>
 								<goal>build</goal>
 							</goals>
@@ -78,7 +79,7 @@
 						</execution>
 						<!-- Disabled for now since not fully supported yet with the new AOT engine
 						<execution>
-							<id>test</id>
+							<id>test-native</id>
 							<goals>
 								<goal>test</goal>
 							</goals>
