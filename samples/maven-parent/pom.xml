@@ -54,12 +54,14 @@
 								<goal>generate</goal>
 							</goals>
 						</execution>
+						<!-- Disabled for now since not fully supported yet with the new AOT engine
 						<execution>
 							<id>test-generate</id>
 							<goals>
 								<goal>test-generate</goal>
 							</goals>
 						</execution>
+						-->
 					</executions>
 				</plugin>
 				<plugin>
@@ -73,6 +75,7 @@
 							</goals>
 							<phase>package</phase>
 						</execution>
+						<!-- Disabled for now since not fully supported yet with the new AOT engine
 						<execution>
 							<id>test</id>
 							<goals>
@@ -80,6 +83,7 @@
 							</goals>
 							<phase>test</phase>
 						</execution>
+						-->
 					</executions>
 				</plugin>
 			</plugins>
