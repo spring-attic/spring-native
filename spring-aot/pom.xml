@@ -49,6 +49,12 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- ConfigurationClassBeanDefinitionReader uses GroovyBeanDefinitionReader -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -67,12 +73,6 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<!-- ConfigurationClassBeanDefinitionReader uses GroovyBeanDefinitionReader -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
 			<optional>true</optional>
 		</dependency>
 

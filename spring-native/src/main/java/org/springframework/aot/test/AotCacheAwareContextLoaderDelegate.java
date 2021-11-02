@@ -36,9 +36,19 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 
 	private static final Log logger = LogFactory.getLog(AotCacheAwareContextLoaderDelegate.class);
 
+	private final AotContextLoader aotContextLoader;
+
+	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader) {
+		this.aotContextLoader = aotContextLoader;
+	}
+
+	public AotCacheAwareContextLoaderDelegate() {
+		this(new AotContextLoader());
+	}
+
 	@Override
 	protected ApplicationContext loadContextInternal(MergedContextConfiguration config) throws Exception {
-		SmartContextLoader contextLoader = AotContextLoaderUtils.getContextLoader(config.getTestClass());
+		SmartContextLoader contextLoader = this.aotContextLoader.getContextLoader(config.getTestClass());
 		if (contextLoader != null) {
 			logger.info("Starting test in AOT mode using " + contextLoader);
 			return contextLoader.loadContext(config);

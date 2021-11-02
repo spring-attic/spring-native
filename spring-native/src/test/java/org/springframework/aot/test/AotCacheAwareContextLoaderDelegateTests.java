@@ -17,8 +17,8 @@
 package org.springframework.aot.test;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
@@ -47,34 +47,34 @@ class AotCacheAwareContextLoaderDelegateTests {
 
 	private final ApplicationContext applicationContext = mock(ApplicationContext.class);
 
-	private final SmartContextLoader contextLoader = mockSmartContextLoader(applicationContext);
-
-	private final AotCacheAwareContextLoaderDelegate delegate = new AotCacheAwareContextLoaderDelegate();
-
-
-	@AfterEach
-	void resetAotContextLoaderUtils() {
-		AotContextLoaderUtils.setContextLoaders(null);
-	}
+	private final SmartContextLoader contextLoader = mockSmartContextLoader(this.applicationContext);
 
 	@Test
 	void loadContextWithMatchDelegatesToSmartContextLoader() throws Exception {
-		AotContextLoaderUtils.setContextLoaders(Map.of(SampleTest.class.getName(), () -> contextLoader));
+		AotCacheAwareContextLoaderDelegate delegate = createAotCacheAwareContextLoaderDelegate(
+				Map.of(SampleTest.class.getName(), () -> this.contextLoader));
 		assertThat(delegate.loadContextInternal(createMergedContextConfiguration(SampleTest.class)))
-				.isSameAs(applicationContext);
-		verify(contextLoader).loadContext(any(MergedContextConfiguration.class));
+				.isSameAs(this.applicationContext);
+		verify(this.contextLoader).loadContext(any(MergedContextConfiguration.class));
 	}
 
 	@Test
 	void loadContextWithNoMatchUsesDefaultBehavior() throws Exception {
-		AotContextLoaderUtils.setContextLoaders(Map.of(SampleTest.class.getName(), () -> contextLoader));
+		AotCacheAwareContextLoaderDelegate delegate = createAotCacheAwareContextLoaderDelegate(
+				Map.of(SampleTest.class.getName(), () -> this.contextLoader));
 		ApplicationContext actual = delegate.loadContextInternal(
 				createMergedContextConfiguration(SampleAnotherTest.class));
 		assertThat(actual).isNotNull();
-		verifyNoInteractions(contextLoader);
+		verifyNoInteractions(this.contextLoader);
 	}
 
-	private SmartContextLoader mockSmartContextLoader(ApplicationContext applicationContext) {
+	private AotCacheAwareContextLoaderDelegate createAotCacheAwareContextLoaderDelegate(
+			Map<String, Supplier<SmartContextLoader>> contextLoaders) {
+		AotContextLoader aotContextLoader = new AotContextLoader(contextLoaders);
+		return new AotCacheAwareContextLoaderDelegate(aotContextLoader);
+	}
+
+	private static SmartContextLoader mockSmartContextLoader(ApplicationContext applicationContext) {
 		try {
 			SmartContextLoader mock = mock(SmartContextLoader.class);
 			given(mock.loadContext(any(MergedContextConfiguration.class))).willReturn(applicationContext);
