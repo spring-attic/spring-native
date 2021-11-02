@@ -12,8 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
-import org.springframework.nativex.hint.InitializationHint;
-import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -29,9 +27,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-@NativeHint(trigger = org.junit.jupiter.api.Test.class,
-		initialization = @InitializationHint(typeNames = "org.junit.platform.launcher.TestIdentifier", initTime = InitializationTime.BUILD),
-		types = {
+@NativeHint(trigger = org.junit.jupiter.api.Test.class, types = {
 			@TypeHint(types = {
 				SpringBootTest.WebEnvironment.class,
 				org.springframework.test.context.junit.jupiter.SpringExtension.class,
