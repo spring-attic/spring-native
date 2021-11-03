@@ -66,8 +66,8 @@ public class LogbackHints implements NativeConfiguration {
         @Override
         public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
                 if (!typeSystem.aotOptions.isRemoveXmlSupport() &&
-                        (typeSystem.resolveDotted("org.codehaus.janino.ScriptEvaluator") != null) &&
-                        (typeSystem.resolveDotted("ch.qos.logback.classic.Level") != null)) {
+                        (typeSystem.resolveDotted("org.codehaus.janino.ScriptEvaluator", true) != null) &&
+                        (typeSystem.resolveDotted("ch.qos.logback.classic.Level", true) != null)) {
                         HintDeclaration hint = new HintDeclaration();
                         hint.addDependantType("org.codehaus.janino.ScriptEvaluator", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
                         AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS);
