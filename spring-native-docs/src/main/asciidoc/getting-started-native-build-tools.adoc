@@ -161,6 +161,7 @@ The following example adds a `native` profile that triggers the plugin during th
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <version>{graalvm-native-buildtools-version}</version>
+                        <extensions>true</extensions>
                         <executions>
                             <execution>
                                 <id>build-native</id>
