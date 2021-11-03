@@ -16,8 +16,11 @@
 
 package org.springframework.boot.logging;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.pattern.DateConverter;
 import ch.qos.logback.classic.pattern.LevelConverter;
 import ch.qos.logback.classic.pattern.LineSeparatorConverter;
@@ -25,28 +28,25 @@ import ch.qos.logback.classic.pattern.LoggerConverter;
 import ch.qos.logback.classic.pattern.MDCConverter;
 import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.pattern.ThreadConverter;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
-import ch.qos.logback.core.util.FileSize;
+
 import org.springframework.boot.logging.logback.ColorConverter;
 import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter;
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.AccessDescriptor;
+import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.nativex.type.ResourcesDescriptor;
+import org.springframework.nativex.type.TypeSystem;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 // TODO Initialize ch.qos.logback.classic.PatternLayout at build time?
-@NativeHint(trigger = Level.class, types = {
+@NativeHint(trigger = Level.class, types =
         @TypeHint(types = {
                 DateConverter.class,
                 LevelConverter.class,
@@ -60,22 +60,31 @@ import org.springframework.nativex.type.NativeConfiguration;
                 ExtendedWhitespaceThrowableProxyConverter.class,
                 IntegerTokenConverter.class,
                 DateTokenConverter.class
-        }, access=AccessBits.CLASS, methods = @MethodHint(name="<init>"),
-                typeNames = "org.codehaus.janino.ScriptEvaluator"), // in case janino is present
-        @TypeHint(types = {
-                PatternLayoutEncoder.class,
-                ConsoleAppender.class,
-                RollingFileAppender.class,
-                FixedWindowRollingPolicy.class,
-                SizeBasedTriggeringPolicy.class,
-                TimeBasedRollingPolicy.class,
-                SizeAndTimeBasedRollingPolicy.class,
-                FileSize.class
-        }, access = AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS)},
-        resources = {
-                @ResourceHint(patterns = "org/springframework/boot/logging/logback/defaults.xml"),
-                @ResourceHint(patterns = "org/springframework/boot/logging/logback/console-appender.xml"),
-                @ResourceHint(patterns = "org/springframework/boot/logging/logback/file-appender.xml")
-        })
+        }, access=AccessBits.CLASS, methods = @MethodHint(name="<init>")))
 public class LogbackHints implements NativeConfiguration {
+
+        @Override
+        public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
+                if (!typeSystem.aotOptions.isRemoveXmlSupport() &&
+                        (typeSystem.resolveDotted("org.codehaus.janino.ScriptEvaluator") != null) &&
+                        (typeSystem.resolveDotted("ch.qos.logback.classic.Level") != null)) {
+                        HintDeclaration hint = new HintDeclaration();
+                        hint.addDependantType("org.codehaus.janino.ScriptEvaluator", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
+                        AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS);
+                        hint.addDependantType("ch.qos.logback.classic.encoder.PatternLayoutEncoder", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.ConsoleAppender", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.rolling.RollingFileAppender", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.rolling.FixedWindowRollingPolicy", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.rolling.TimeBasedRollingPolicy", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy", accessDescriptor);
+                        hint.addDependantType("ch.qos.logback.core.util.FileSize", accessDescriptor);
+                        hint.addResourcesDescriptor(new ResourcesDescriptor(new String[]{
+                                "org/springframework/boot/logging/logback/defaults.xml",
+                                "org/springframework/boot/logging/logback/console-appender.xml",
+                                "org/springframework/boot/logging/logback/file-appender.xml"}, false));
+                        return Arrays.asList(hint);
+                }
+                return Collections.emptyList();
+        }
 }
