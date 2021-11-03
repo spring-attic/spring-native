@@ -26,9 +26,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.aot.BootstrapContributor;
-import org.springframework.aot.BuildContext;
-import org.springframework.aot.ResourceFile;
+import org.springframework.aot.build.BootstrapContributor;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.context.ResourceFile;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.ClassWriter;

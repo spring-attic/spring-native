@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.classreading.TypeSystem;

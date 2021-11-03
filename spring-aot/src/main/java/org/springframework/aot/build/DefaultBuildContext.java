@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.context.ResourceFile;
+import org.springframework.aot.build.context.SourceFile;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.init.InitializationDescriptor;

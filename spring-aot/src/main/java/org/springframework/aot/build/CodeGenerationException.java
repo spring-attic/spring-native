@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+package org.springframework.aot.build;
+
 /**
- * Support for Ahead of Time on application context.
+ * A {@link CodeGenerationException} is thrown when a {@link BootstrapContributor}
+ * fails while generating boostrap resources for the application.
+ *
+ * @author Brian Clozel
  */
-package org.springframework.aot;
+public class CodeGenerationException extends RuntimeException {
+
+	public CodeGenerationException(String message) {
+		super(message);
+	}
+
+	public CodeGenerationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+}

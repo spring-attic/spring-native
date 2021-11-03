@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,10 +28,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.context.bootstrap.ContextBootstrapContributor;
-import org.springframework.aot.factories.ModifiedSpringApplicationContributor;
-import org.springframework.aot.factories.SpringFactoriesContributor;
-import org.springframework.aot.nativex.ConfigurationContributor;
+import org.springframework.aot.build.context.ResourceFile;
+import org.springframework.aot.build.context.SourceFile;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptorJsonMarshaller;

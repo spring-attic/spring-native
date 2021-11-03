@@ -35,8 +35,8 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
-import org.springframework.aot.BootstrapCodeGenerator;
-import org.springframework.aot.context.bootstrap.GenerateBootstrapCommand;
+import org.springframework.aot.build.BootstrapCodeGenerator;
+import org.springframework.aot.build.GenerateBootstrapCommand;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;

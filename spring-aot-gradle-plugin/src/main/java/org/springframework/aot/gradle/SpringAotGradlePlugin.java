@@ -51,11 +51,11 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
 import org.gradle.util.GradleVersion;
 
-import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.aot.build.BootstrapCodeGenerator;
 import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.gradle.tasks.GenerateAotSources;
 import org.springframework.aot.gradle.tasks.GenerateAotTestSources;
-import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
+import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;

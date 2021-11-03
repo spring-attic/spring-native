@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot.context.bootstrap;
+package org.springframework.aot.build;
 
 import java.io.File;
 import java.io.FileFilter;

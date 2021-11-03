@@ -21,7 +21,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;

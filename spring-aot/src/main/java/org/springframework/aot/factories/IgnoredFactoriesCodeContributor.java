@@ -22,12 +22,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.BootstrapCodeGenerator;
 
 /**
  * {@link FactoriesCodeContributor} ignoring Spring Factories that are now handled
  * during the bootstrap code generation process.
- * @see org.springframework.aot.BootstrapCodeGenerator
+ * @see BootstrapCodeGenerator
  */
 public class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 

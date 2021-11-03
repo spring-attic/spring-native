@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.aot.context.bootstrap;
+package org.springframework.aot.build;
 
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.AotPhase;
-import org.springframework.aot.BootstrapContributor;
-import org.springframework.aot.BuildContext;
-import org.springframework.aot.SourceFiles;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.context.SourceFiles;
 import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;

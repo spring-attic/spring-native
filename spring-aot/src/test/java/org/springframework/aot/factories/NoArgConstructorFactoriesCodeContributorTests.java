@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.factories.fixtures.MissingDefaultConstructorFactory;
 import org.springframework.aot.factories.fixtures.PublicFactory;

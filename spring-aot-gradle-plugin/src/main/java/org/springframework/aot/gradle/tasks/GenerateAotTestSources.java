@@ -35,7 +35,7 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
-import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
+import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
 import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 import org.springframework.util.StringUtils;
 

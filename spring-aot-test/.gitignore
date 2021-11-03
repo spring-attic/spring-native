@@ -1,0 +1,4 @@
+target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+hs_err_pid*

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import com.squareup.javapoet.CodeBlock;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.type.classreading.MethodDescriptor;
 import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;

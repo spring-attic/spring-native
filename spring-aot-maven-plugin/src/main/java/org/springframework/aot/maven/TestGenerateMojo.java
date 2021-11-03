@@ -39,7 +39,7 @@ import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.test.boot.GenerateTestBootstrapCommand;
+import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
 import org.springframework.boot.loader.tools.RunProcess;
 import org.springframework.util.StringUtils;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.aot.context.bootstrap.AnnotatedClassFinder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;

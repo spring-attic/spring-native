@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot.test.boot;
+package org.springframework.aot.test.build;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +30,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import org.springframework.aot.AotPhase;
-import org.springframework.aot.ApplicationStructure;
-import org.springframework.aot.BootstrapCodeGenerator;
+import org.springframework.aot.build.AotPhase;
+import org.springframework.aot.build.ApplicationStructure;
+import org.springframework.aot.build.BootstrapCodeGenerator;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;

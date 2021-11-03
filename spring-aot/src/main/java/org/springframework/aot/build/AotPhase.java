@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build;
 
 /**
- * A {@link CodeGenerationException} is thrown when a {@link BootstrapContributor}
- * fails while generating boostrap resources for the application.
- *
  * @author Brian Clozel
  */
-public class CodeGenerationException extends RuntimeException {
+public enum AotPhase {
 
-	public CodeGenerationException(String message) {
-		super(message);
-	}
-
-	public CodeGenerationException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
+	MAIN, TEST
 }

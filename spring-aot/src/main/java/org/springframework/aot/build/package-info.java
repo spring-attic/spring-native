@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 /**
- * @author Brian Clozel
+ * Support for Triggering AOT processing at build time.
  */
-public interface ResourceFile extends GeneratedFile {
-
-	Path NATIVE_IMAGE_PATH = Paths.get("META-INF", "native-image");
-
-	Path NATIVE_CONFIG_PATH = NATIVE_IMAGE_PATH.resolve(Paths.get("org.springframework.aot", "spring-aot"));
-	
-	Path SPRING_COMPONENTS_PATH = Paths.get("META-INF", "spring.components");
-
-}
+package org.springframework.aot.build;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot.test.context.bootstrap.generator;
+package org.springframework.aot.test.build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +22,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.AotPhase;
-import org.springframework.aot.BootstrapContributor;
-import org.springframework.aot.BuildContext;
-import org.springframework.aot.SourceFiles;
+import org.springframework.aot.build.AotPhase;
+import org.springframework.aot.build.BootstrapContributor;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.context.SourceFiles;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.ClassUtils;
 

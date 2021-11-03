@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.springframework.aot.BuildContext;
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.classreading.TypeSystem;

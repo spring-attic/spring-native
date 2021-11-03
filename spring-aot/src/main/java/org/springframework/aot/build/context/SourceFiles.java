@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build.context;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,7 +38,7 @@ public abstract class SourceFiles {
 	 * @return the source file
 	 */
 	public static SourceFile fromJavaFile(JavaFile javaFile) {
-		return rootPath -> javaFile.writeTo(rootPath);
+		return javaFile::writeTo;
 	}
 
 	/**
@@ -60,5 +60,5 @@ public abstract class SourceFiles {
 			StreamUtils.copy(staticFile, Files.newOutputStream(outputPath));
 		};
 	}
-	
+
 }

@@ -26,10 +26,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.aot.BootstrapContributor;
-import org.springframework.aot.BuildContext;
-import org.springframework.aot.CodeGenerationException;
-import org.springframework.aot.SourceFiles;
+import org.springframework.aot.build.BootstrapContributor;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.CodeGenerationException;
+import org.springframework.aot.build.context.SourceFiles;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;

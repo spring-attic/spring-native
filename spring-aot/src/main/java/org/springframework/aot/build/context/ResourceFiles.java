@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build.context;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

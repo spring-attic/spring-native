@@ -23,8 +23,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.BuildContext;
-import org.springframework.aot.CodeGenerationException;
+import org.springframework.aot.build.context.BuildContext;
+import org.springframework.aot.build.CodeGenerationException;
 import org.springframework.nativex.AotOptions;
 
 /**

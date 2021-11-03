@@ -37,7 +37,7 @@ import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-import org.springframework.aot.context.bootstrap.GenerateBootstrapCommand;
+import org.springframework.aot.build.GenerateBootstrapCommand;
 import org.springframework.boot.loader.tools.RunProcess;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;

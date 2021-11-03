@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.aot;
+package org.springframework.aot.build;
 
+import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.Ordered;
 import org.springframework.nativex.AotOptions;
 
