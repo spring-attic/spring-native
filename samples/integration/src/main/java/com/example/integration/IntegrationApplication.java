@@ -15,6 +15,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.integration.annotation.Gateway;
+import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.interceptor.WireTap;
 import org.springframework.integration.config.EnableIntegrationManagement;
@@ -30,11 +32,9 @@ import org.springframework.integration.http.config.EnableIntegrationGraphControl
 import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
 import org.springframework.integration.jdbc.store.channel.H2ChannelMessageStoreQueryProvider;
 import org.springframework.integration.redis.store.RedisChannelMessageStore;
-import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.integration.support.json.JacksonJsonUtils;
 import org.springframework.integration.webflux.dsl.WebFlux;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -101,13 +101,6 @@ public class IntegrationApplication {
 		return redisChannelMessageStore;
 	}
 
-	@Bean(PollerMetadata.DEFAULT_POLLER)
-	PollerMetadata defaultPoller() {
-		PollerMetadata pollerMetadata = new PollerMetadata();
-		pollerMetadata.setTrigger(new PeriodicTrigger(10));
-		return pollerMetadata;
-	}
-
 	@Bean
 	IntegrationFlow printFormattedSecondsFlow(JdbcChannelMessageStore jdbcChannelMessageStore,
 			RedisChannelMessageStore redisChannelMessageStore) {
@@ -165,6 +158,14 @@ public class IntegrationApplication {
 						.requestMapping(mapping -> mapping.methods(HttpMethod.GET)))
 				.handle(controlBusGateway, "startEndpoint")
 				.get();
+	}
+
+	@MessagingGateway(defaultRequestChannel = "controlBus.input")
+	public static interface ControlBusGateway {
+
+		@Gateway(payloadExpression = "'@' + args[0] + '.start()'")
+		void startEndpoint(String id);
+
 	}
 
 }
