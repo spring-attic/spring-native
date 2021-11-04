@@ -118,7 +118,7 @@ public class ApplicationContextAotProcessor {
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (selector.select(beanName, beanDefinition)) {
-				BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationGenerator(
+				BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationWriter(
 						beanName, beanDefinition);
 				if (beanRegistrationWriter != null) {
 					beanRegistrationWriter.writeBeanRegistration(writerContext, code);
@@ -137,7 +137,7 @@ public class ApplicationContextAotProcessor {
 		code.add("\n");
 	}
 
-	private BeanRegistrationWriter getBeanRegistrationGenerator(String beanName, BeanDefinition beanDefinition) {
+	private BeanRegistrationWriter getBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition) {
 		for (BeanRegistrationWriterSupplier supplier : this.beanRegistrationWriterSuppliers) {
 			BeanRegistrationWriter writer = supplier.get(beanName, beanDefinition);
 			if (writer != null) {
