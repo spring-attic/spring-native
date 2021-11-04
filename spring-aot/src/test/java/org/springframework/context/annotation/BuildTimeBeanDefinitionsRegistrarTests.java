@@ -30,7 +30,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrarTests.CustomClasspathScanningConfiguration.CustomClasspathScanningImportBeanDefinitionRegistrar;
@@ -188,6 +190,27 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 		assertThat(ImportOriginRegistry.get(beanFactory)).isNull();
 	}
 
+	@Test
+	void processContextWithBeanDefinitionRegistryPostProcessorAndRoleInfrastructure() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		context.registerBeanDefinition("testPostProcessor", BeanDefinitionBuilder
+				.rootBeanDefinition(TestBeanDefinitionRegistryPostProcessor.class)
+				.setRole(BeanDefinition.ROLE_INFRASTRUCTURE).getBeanDefinition());
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		assertThat(beanFactory.getBeanDefinitionNames()).contains("simpleComponent")
+				.doesNotContain("testPostProcessor");
+	}
+
+	@Test
+	void processContextWithBeanDefinitionRegistryPostProcessorAndDefaultRole() {
+		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		context.registerBeanDefinition("testPostProcessor", BeanDefinitionBuilder
+				.rootBeanDefinition(TestBeanDefinitionRegistryPostProcessor.class)
+				.getBeanDefinition());
+		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
+		assertThat(beanFactory.getBeanDefinitionNames()).contains("simpleComponent", "testPostProcessor");
+	}
+
 	private <T extends GenericApplicationContext> T createApplicationContext(
 			Supplier<T> contextFactory, Class<?>... componentClasses) {
 		return createApplicationContext(contextFactory, new MockEnvironment(), componentClasses);
@@ -254,6 +277,19 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 		@Override
 		public void postProcessBeanDefinition(String beanName, RootBeanDefinition beanDefinition) {
 			beanDefinition.setAttribute("beanFactory", this.beanFactory);
+		}
+	}
+
+	static class TestBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+			registry.registerBeanDefinition("simpleComponent", new RootBeanDefinition(SimpleComponent.class));
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
 		}
 	}
 

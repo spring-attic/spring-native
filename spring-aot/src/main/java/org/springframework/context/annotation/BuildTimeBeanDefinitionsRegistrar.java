@@ -24,7 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -57,6 +60,7 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		}
 		parseConfigurationClasses(context);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		invokeBeanDefinitionRegistryPostProcessors(beanFactory);
 		resolveBeanDefinitionTypes(beanFactory);
 		postProcessBeanDefinitions(beanFactory);
 		registerImportOriginRegistryIfNecessary(beanFactory);
@@ -70,6 +74,25 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		configurationClassPostProcessor.setEnvironment(context.getEnvironment());
 		configurationClassPostProcessor.setResourceLoader(context);
 		configurationClassPostProcessor.postProcessBeanFactory(context.getBeanFactory());
+	}
+
+	private void invokeBeanDefinitionRegistryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+		Map<String, BeanDefinitionRegistryPostProcessor> candidates = beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);
+		candidates.forEach((beanName, postProcessor) -> {
+			postProcessor.postProcessBeanDefinitionRegistry(registry);
+			if (beanFactory.containsBeanDefinition(beanName)) {
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+				if (beanDefinition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE) {
+					((BeanDefinitionRegistry) beanFactory).removeBeanDefinition(beanName);
+					logger.debug("Removed " + BeanDefinitionRegistryPostProcessor.class.getSimpleName() + " with bean name " + beanName);
+				}
+				else {
+					logger.warn(BeanDefinitionRegistryPostProcessor.class.getSimpleName() + " with bean name "
+							+ beanName + " is going to be invoked again at runtime, set a role infrastructure to avoid this");
+				}
+			}
+		});
 	}
 
 	private void resolveBeanDefinitionTypes(ConfigurableListableBeanFactory beanFactory) {
