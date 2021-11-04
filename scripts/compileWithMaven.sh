@@ -23,7 +23,11 @@ while test $# -gt 0; do
   esac
 done
 
-printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
+if [ -z "$DB" ]; then
+  printf "=== ${BLUE}Building %s sample${NC} ===\n" "${PWD##*/}"
+else
+  printf "=== ${BLUE}Building %s sample with database ${DB}${NC} ===\n" "${PWD##*/}"
+fi
 
 rm -rf target
 mkdir -p target/native
