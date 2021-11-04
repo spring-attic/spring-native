@@ -31,14 +31,12 @@ import java.util.stream.Collectors;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.data.TypeUtils.TypeOps;
 import org.springframework.data.TypeUtils.TypeOps.PackageFilter;
-import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.util.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
  * Entry point to access {@link Field fields}, {@link Method methods} and {@link Constructor constructors} honoring
- * {@link PersistenceConstructor} annotation.
+ * {@literal org.springframework.data.annotation.PersistenceConstructor} annotation.
  *
  * @author Christoph Strobl
  */

@@ -150,7 +150,7 @@ class TypeProcessorTests {
 				.skipAnnotationInspection()
 				.skipMethodInspection()
 				.skipFieldInspection()
-				.use(typeSystem).toProcessTypesMatching(type -> type.getName().endsWith("NotAnEntity"));
+				.use(typeSystem).toProcessTypesMatching(type -> type.getDottedName().endsWith("entities.NotAnEntity"));
 
 		assertThat(hints).hasSize(1);
 		assertThat(capturedTypes).containsExactly("org.springframework.nativex.type.entities.NotAnEntity");

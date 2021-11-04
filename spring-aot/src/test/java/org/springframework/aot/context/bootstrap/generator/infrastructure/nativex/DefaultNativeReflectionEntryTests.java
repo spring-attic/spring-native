@@ -22,7 +22,9 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry.FieldAccess;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ReflectionUtils;
 
@@ -253,6 +255,35 @@ class DefaultNativeReflectionEntryTests {
 		ClassDescriptor descriptor = DefaultNativeReflectionEntry.of(String.class).conditionalOnTypeReachable(Integer.class).build().toClassDescriptor();
 		assertThat(descriptor.getName()).isEqualTo("java.lang.String");
 		assertThat(descriptor.getCondition().getTypeReachable()).isEqualTo("java.lang.Integer");
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterFieldWithSpecificAccess() {
+		Field field = ReflectionUtils.findField(TestClass.class, "field");
+		ClassDescriptor descriptor = DefaultNativeReflectionEntry.of(TestClass.class)
+				.withField(field, FieldAccess.ALLOW_WRITE, FieldAccess.UNSAFE)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getFields()).containsExactly(FieldDescriptor.of("field", true, true));
+	}
+
+	@Test
+	void toClassDescriptorShouldRegisterFieldsWithSpecificAccessOnlyOnce() {
+		Field field = ReflectionUtils.findField(TestClass.class, "field");
+		ClassDescriptor descriptor = DefaultNativeReflectionEntry.of(TestClass.class)
+				.withField(field, FieldAccess.ALLOW_WRITE, FieldAccess.UNSAFE)
+				.withField(field, FieldAccess.ALLOW_WRITE, FieldAccess.UNSAFE)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getFields()).containsExactly(FieldDescriptor.of("field", true, true));
+	}
+
+	@Test
+	void toClassDescriptorShouldAppendDifferentFieldAccessForSameField() {
+		Field field = ReflectionUtils.findField(TestClass.class, "field");
+		ClassDescriptor descriptor = DefaultNativeReflectionEntry.of(TestClass.class)
+				.withField(field, FieldAccess.UNSAFE)
+				.withField(field, FieldAccess.ALLOW_WRITE)
+				.build().toClassDescriptor();
+		assertThat(descriptor.getFields()).containsExactly(FieldDescriptor.of("field", true, true));
 	}
 
 	@SuppressWarnings("unused")
