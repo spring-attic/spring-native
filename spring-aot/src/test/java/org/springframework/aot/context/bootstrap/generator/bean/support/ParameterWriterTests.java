@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -146,6 +147,13 @@ class ParameterWriterTests {
 	@Test
 	void writeClass() {
 		assertThat(write(Integer.class, ResolvableType.forClass(Class.class))).isEqualTo("Integer.class");
+	}
+
+	@Test
+	void writeResolvableType() {
+		ResolvableType type = ResolvableType.forClassWithGenerics(Consumer.class, Integer.class);
+		assertThat(write(type, type)).hasImport(ResolvableType.class)
+				.isEqualTo("ResolvableType.forClassWithGenerics(Consumer.class, Integer.class)");
 	}
 
 	@Test

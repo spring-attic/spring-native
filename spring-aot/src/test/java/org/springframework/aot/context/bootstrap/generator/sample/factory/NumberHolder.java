@@ -16,7 +16,9 @@
 
 package org.springframework.aot.context.bootstrap.generator.sample.factory;
 
-public class NumberHolder<T extends Number> {
+import java.io.Serializable;
+
+public class NumberHolder<T extends Number> implements Serializable {
 
 	private final T number;
 

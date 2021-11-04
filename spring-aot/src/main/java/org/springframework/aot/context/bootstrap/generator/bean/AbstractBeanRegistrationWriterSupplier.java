@@ -41,9 +41,23 @@ public abstract class AbstractBeanRegistrationWriterSupplier implements BeanRegi
 	}
 
 	@Override
-	public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
+	public final BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
+		if (!isCandidate(beanName, beanDefinition)) {
+			return null;
+		}
 		BeanInstanceDescriptor beanInstanceDescriptor = resolveBeanInstanceDescriptor(beanDefinition);
 		return (beanInstanceDescriptor != null) ? createInstance(beanName, beanDefinition, beanInstanceDescriptor) : null;
+	}
+
+	/**
+	 * Check if the specified bean definition is a candidate for this instance.
+	 * @param beanName the bean name
+	 * @param beanDefinition the bean definition
+	 * @return {@code true} if this instance should provider a
+	 * {@link BeanRegistrationWriter} for this bean definition
+	 */
+	protected boolean isCandidate(String beanName, BeanDefinition beanDefinition) {
+		return true;
 	}
 
 	/**

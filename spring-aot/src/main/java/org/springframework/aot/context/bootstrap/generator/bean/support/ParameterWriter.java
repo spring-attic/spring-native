@@ -41,6 +41,8 @@ import org.springframework.util.ObjectUtils;
  */
 public final class ParameterWriter {
 
+	private final TypeWriter typeWriter = new TypeWriter();
+
 	/**
 	 * Write the specified parameter {@code value}.
 	 * @param value the value of the parameter
@@ -139,6 +141,9 @@ public final class ParameterWriter {
 		}
 		else if (value instanceof Class) {
 			code.add("$T.class", value);
+		}
+		else if (value instanceof ResolvableType) {
+			code.add(this.typeWriter.generateTypeFor((ResolvableType) value));
 		}
 	}
 

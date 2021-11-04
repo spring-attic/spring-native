@@ -5,6 +5,7 @@ org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcess
 
 org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.aop.scope.ScopedProxyBeanRegistrationWriterSupplier,\
+org.springframework.beans.factory.BeanFactoryBeanRegistrationWriterSupplier,\
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
