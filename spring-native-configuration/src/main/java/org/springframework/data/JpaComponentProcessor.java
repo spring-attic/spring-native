@@ -73,19 +73,19 @@ public class JpaComponentProcessor implements ComponentProcessor {
 	public void process(NativeContext imageContext, String componentType, List<String> classifiers) {
 
 		Type domainType = imageContext.getTypeSystem().resolveName(componentType);
-		typeProcessor.use(imageContext).toProcessType(domainType);
+//		typeProcessor.use(imageContext).toProcessType(domainType);
 
-		for (String listener : domainType.findAnnotationValue(ENTITY_LISTENERS, false, false)) {
-			Type listenerType = imageContext.getTypeSystem().Lresolve(listener);
-			List<MethodDescriptor> methodDescriptors = listenerType
-					.getMethods(method -> method.getAnnotationTypes().stream().anyMatch(
-							type -> type.getDottedName().startsWith("javax.persistence")))
-					.stream()
-					.map(it -> new MethodDescriptor(it.getName(), Arrays.asList(it.asConfigurationArray())))
-					.collect(Collectors.toList());
-
-			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList(), Collections.emptyList()));
-		}
+//		for (String listener : domainType.findAnnotationValue(ENTITY_LISTENERS, false, false)) {
+//			Type listenerType = imageContext.getTypeSystem().Lresolve(listener);
+//			List<MethodDescriptor> methodDescriptors = listenerType
+//					.getMethods(method -> method.getAnnotationTypes().stream().anyMatch(
+//							type -> type.getDottedName().startsWith("javax.persistence")))
+//					.stream()
+//					.map(it -> new MethodDescriptor(it.getName(), Arrays.asList(it.asConfigurationArray())))
+//					.collect(Collectors.toList());
+//
+//			imageContext.addReflectiveAccess(listenerType.getDottedName(), new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT, methodDescriptors, Collections.emptyList(), Collections.emptyList()));
+//		}
 	}
 
 	private void registerAnnotationInConfiguration(Type annotation, NativeContext context) {

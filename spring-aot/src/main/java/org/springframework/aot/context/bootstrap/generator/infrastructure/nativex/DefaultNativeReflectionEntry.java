@@ -22,9 +22,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -33,6 +37,8 @@ import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * A {@link NativeReflectionEntry} that uses standard reflection.
@@ -55,7 +61,7 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 
 	private final Set<Method> queriedMethods;
 
-	private final Set<Field> fields;
+	private final MultiValueMap<Field,FieldAccess> fields;
 
 
 	private DefaultNativeReflectionEntry(Builder builder) {
@@ -65,7 +71,7 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 		this.queriedConstructors = Collections.unmodifiableSet(builder.queriedConstructors);
 		this.methods = Collections.unmodifiableSet(builder.methods);
 		this.queriedMethods = Collections.unmodifiableSet(builder.queriedMethods);
-		this.fields = Collections.unmodifiableSet(builder.fields);
+		this.fields = new LinkedMultiValueMap(builder.fields);
 
 	}
 
@@ -107,7 +113,7 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 	 * @return the fields
 	 */
 	public Set<Field> getFields() {
-		return this.fields;
+		return this.fields.keySet();
 	}
 
 	@Override
@@ -121,9 +127,27 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
 		registerIfNecessary(this.queriedMethods, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
 				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
-		registerIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
-				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
+		registerFieldIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
+				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field.getKey(), field.getValue())));
 		return descriptor;
+	}
+
+	private void registerFieldIfNecessary(MultiValueMap<Field, FieldAccess> members, Flag allFlag,
+			Flag publicFlag, Consumer<Entry<Field, List<FieldAccess>>> memberConsumer) {
+		if (!getFlags().contains(allFlag)) {
+			boolean checkVisibility = getFlags().contains(publicFlag);
+			for (Entry<Field, List<FieldAccess>> member : members.entrySet()) {
+				if (!checkVisibility || !Modifier.isPublic(member.getKey().getModifiers())) {
+					memberConsumer.accept(member);
+				}
+			}
+		} else {
+			for (Entry<Field, List<FieldAccess>> member : members.entrySet()) {
+				if(member.getValue().contains(FieldAccess.UNSAFE)) {
+					memberConsumer.accept(member);
+				}
+			}
+		}
 	}
 
 	private <T extends Member> void registerIfNecessary(Iterable<T> members, Flag allFlag,
@@ -138,8 +162,8 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 				.map(Class::getName).toArray(String[]::new));
 	}
 
-	private FieldDescriptor toFieldDescriptor(Field field) {
-		return FieldDescriptor.of(field.getName(), true, false);
+	private FieldDescriptor toFieldDescriptor(Field field, Collection<FieldAccess> access) {
+		return FieldDescriptor.of(field.getName(), access.contains(FieldAccess.ALLOW_WRITE), access.contains(FieldAccess.UNSAFE));
 	}
 
 	@Override
@@ -149,6 +173,10 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 				.add("methods=" + this.methods).add("fields=" + this.fields)
 				.add("queriedConstructors=" + this.queriedConstructors).add("queriedMethods=" + this.queriedMethods)
 				.add("flags=" + getFlags()).toString();
+	}
+
+	public enum FieldAccess {
+		ALLOW_WRITE, UNSAFE
 	}
 
 	public static class Builder extends NativeReflectionEntry.Builder<Builder, DefaultNativeReflectionEntry> {
@@ -163,7 +191,7 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 
 		private final Set<Method> queriedMethods = new LinkedHashSet<>();
 
-		private final Set<Field> fields = new LinkedHashSet<>();
+		private final MultiValueMap<Field,FieldAccess> fields = new LinkedMultiValueMap<>();
 
 		Builder(Class<?> type) {
 			this.type = type;
@@ -220,7 +248,23 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 		 * @return this for method chaining
 		 */
 		public Builder withFields(Field... fields) {
-			this.fields.addAll(Arrays.asList(fields));
+			for(Field field: fields) {
+				withField(field, FieldAccess.ALLOW_WRITE);
+			}
+			return this;
+		}
+
+		public Builder withField(Field field, FieldAccess... access) {
+			if(!fields.containsKey(field)) {
+				this.fields.addAll(field, Arrays.asList(access));
+			}
+
+			ArrayList<FieldAccess> tmp = new ArrayList<>(Arrays.asList(access));
+			tmp.removeAll(fields.get(field));
+			if(!tmp.isEmpty()) {
+				this.fields.addAll(field, tmp);
+			}
+
 			return this;
 		}
 

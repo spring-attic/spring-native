@@ -25,7 +25,9 @@ import java.util.Collections;
 
 import org.hibernate.type.EnumType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.data.jpa.entities.AuditingListener;
 import org.springframework.data.jpa.entities.EntityWithEnum;
 import org.springframework.data.jpa.entities.EntityWithListener;
@@ -39,6 +41,7 @@ import org.springframework.nativex.type.MethodDescriptor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.util.NativeTestContext;
 
+@Ignore
 public class JpaComponentProcessorTests {
 
 
