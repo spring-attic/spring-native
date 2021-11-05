@@ -107,6 +107,13 @@ class PropertiesSupplierTests {
 		});
 	}
 
+	@Test
+	void detectPropertiesWithNoWriteMethod() {
+		assertThat(detect(BeanDefinitionBuilder.rootBeanDefinition(ReadOnlyProperty.class)
+				.addPropertyValue("name", "Hello").getBeanDefinition())).singleElement()
+				.satisfies((descriptor) -> assertThat(descriptor.getWriteMethod()).isNull());
+	}
+
 	private List<PropertyDescriptor> detect(AbstractBeanDefinition beanDefinition) {
 		PropertiesSupplier supplier = new PropertiesSupplier();
 		return supplier.detectProperties(beanDefinition);
@@ -147,6 +154,16 @@ class PropertiesSupplierTests {
 
 		void setName(String name) {
 			this.name = name;
+		}
+
+	}
+
+	static class ReadOnlyProperty {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
 		}
 
 	}

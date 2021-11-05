@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor.PropertyDescriptor;
 import org.springframework.beans.BeanInfoFactory;
@@ -70,8 +71,9 @@ class PropertiesSupplier {
 
 	private Method findWriteMethod(BeanInfo beanInfo, String propertyName) {
 		return Arrays.stream(beanInfo.getPropertyDescriptors())
-				.filter((pd) -> pd.getName().equals(propertyName))
-				.map(java.beans.PropertyDescriptor::getWriteMethod).findFirst().orElse(null);
+				.filter((pd) -> propertyName.equals(pd.getName()))
+				.map(java.beans.PropertyDescriptor::getWriteMethod)
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 }
