@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -31,6 +32,9 @@ import java.util.stream.Collectors;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
@@ -42,6 +46,18 @@ import org.springframework.util.ObjectUtils;
 public final class ParameterWriter {
 
 	private final TypeWriter typeWriter = new TypeWriter();
+
+	private final BiConsumer<BeanDefinition, Builder> innerBeanDefinitionWriter;
+
+	public ParameterWriter(BiConsumer<BeanDefinition, Builder> innerBeanDefinitionWriter) {
+		this.innerBeanDefinitionWriter = innerBeanDefinitionWriter;
+	}
+
+	public ParameterWriter() {
+		this((beanDefinition, builder) -> {
+			throw new IllegalStateException("Inner bean definition is not supported by this instance");
+		});
+	}
 
 	/**
 	 * Write the specified parameter {@code value}.
@@ -144,6 +160,12 @@ public final class ParameterWriter {
 		}
 		else if (value instanceof ResolvableType) {
 			code.add(this.typeWriter.generateTypeFor((ResolvableType) value));
+		}
+		else if (value instanceof BeanDefinition) {
+			this.innerBeanDefinitionWriter.accept((BeanDefinition) value, code);
+		}
+		if (value instanceof BeanReference) {
+			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
 		}
 	}
 

@@ -37,11 +37,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.aot.context.bootstrap.generator.sample.factory.SampleFactory;
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
+import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ParameterWriter}.
@@ -180,6 +186,26 @@ class ParameterWriterTests {
 	@Test
 	void writeNull() {
 		assertThat(write(null)).isEqualTo("null");
+	}
+
+	@Test
+	void writeBeanReference() {
+		BeanReference beanReference = mock(BeanReference.class);
+		given(beanReference.getBeanName()).willReturn("testBean");
+		assertThat(write(beanReference)).hasImport(RuntimeBeanReference.class)
+				.isEqualTo("new RuntimeBeanReference(\"testBean\")");
+	}
+
+	@Test
+	void writeBeanDefinitionCallsConsumer() {
+		ParameterWriter writer = new ParameterWriter(((beanDefinition, builder) -> builder.add("test")));
+		assertThat(CodeSnippet.of(writer.writeParameterValue(new RootBeanDefinition()))).isEqualTo("test");
+	}
+
+	@Test
+	void writeBeanDefinitionWithoutConsumerFails() {
+		ParameterWriter writer = new ParameterWriter();
+		assertThatIllegalStateException().isThrownBy(() -> writer.writeParameterValue(new RootBeanDefinition()));
 	}
 
 	private CodeSnippet write(Object value) {

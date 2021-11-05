@@ -16,6 +16,8 @@
 
 package org.springframework.aot.context.bootstrap.generator.sample.injection;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +47,10 @@ public class InjectionConfiguration {
 	}
 
 	public void setCounter(Integer counter) {
+
+	}
+
+	public void setNames(List<String> names) {
 
 	}
 

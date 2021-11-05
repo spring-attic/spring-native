@@ -83,7 +83,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		this.beanDefinition = beanDefinition;
 		this.beanInstanceDescriptor = beanInstanceDescriptor;
 		this.options = options;
-		this.parameterWriter = new ParameterWriter();
+		this.parameterWriter = new ParameterWriter(this::writeNestedBeanDefinition);
 	}
 
 	public DefaultBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition,
@@ -257,7 +257,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		code.add(prefix);
 		code.add("addIndexedArgumentValue($L, ", index);
 		Object value = valueHolder.getValue();
-		writeValue(code, value);
+		code.add(this.parameterWriter.writeParameterValue(value));
 		code.add(")");
 		return code.build();
 	}
@@ -282,7 +282,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		code.add(prefix);
 		code.add("addPropertyValue($S, ", property.getName());
 		Object value = property.getValue();
-		writeValue(code, value);
+		code.add(this.parameterWriter.writeParameterValue(value));
 		code.add(")");
 		return code.build();
 	}
@@ -302,17 +302,9 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		}
 	}
 
-	private void writeValue(Builder code, Object value) {
-		if (value instanceof BeanDefinition) {
-			DefaultBeanRegistrationWriter nestedGenerator = writeNestedBeanDefinition((BeanDefinition) value);
-			nestedGenerator.writeBeanDefinition(code);
-		}
-		if (value instanceof BeanReference) {
-			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
-		}
-		else {
-			code.add(this.parameterWriter.writeParameterValue(value));
-		}
+	private void writeNestedBeanDefinition(BeanDefinition beanDefinition, Builder code) {
+		DefaultBeanRegistrationWriter nestedGenerator = writeNestedBeanDefinition(beanDefinition);
+		nestedGenerator.writeBeanDefinition(code);
 	}
 
 	private DefaultBeanRegistrationWriter writeNestedBeanDefinition(BeanDefinition value) {

@@ -18,6 +18,7 @@ package org.springframework.aot.context.bootstrap.generator.bean;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -316,6 +317,21 @@ class DefaultBeanRegistrationWriterTests {
 				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
 				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"name\", BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
 				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition())).register(context);");
+		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
+	}
+
+	@Test
+	void writePropertyAsListOfBeanDefinitions() {
+		BeanDefinition innerBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SimpleConfiguration.class, "stringBean")
+				.getBeanDefinition();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class)
+				.addPropertyValue("names", List.of(innerBeanDefinition, innerBeanDefinition)).getBeanDefinition();
+		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> InjectionConfiguration::new"));
+		assertThat(generatedCode).lines().containsOnly(
+				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
+				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"names\", List.of(BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
+				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition(), BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
+				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition()))).register(context);");
 		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
 	}
 
