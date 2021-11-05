@@ -30,7 +30,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				NewSpan.class
 		}, typeNames = {
 				"org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$OnAnyLoadBalancerImplementationPresentCondition",
-				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean"
+				"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean",
+				"brave.kafka.clients.TracingProducer", "brave.kafka.clients.TracingConsumer"
 		}),
 		@TypeHint(types = TraceQuartzAutoConfiguration.class,
 				typeNames = {
