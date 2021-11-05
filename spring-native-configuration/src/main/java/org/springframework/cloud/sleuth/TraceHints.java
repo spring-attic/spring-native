@@ -9,7 +9,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = AsyncReporter.class, options = "--enable-url-protocols=http")
 @NativeHint(trigger = BraveAutoConfiguration.class, types = {
-		@TypeHint(typeNames = {"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean"})
+		@TypeHint(typeNames = {"org.springframework.cloud.context.scope.GenericScope$LockedScopedProxyFactoryBean", "brave.kafka.clients.TracingProducer", "brave.kafka.clients.TracingConsumer"})
 })
 public class TraceHints implements NativeConfiguration {
 }
