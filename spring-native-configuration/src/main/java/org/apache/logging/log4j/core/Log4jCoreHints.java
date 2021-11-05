@@ -15,6 +15,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(
 	trigger = org.apache.logging.log4j.core.Logger.class, options = "-Dlog4j2.disable.jmx=true",
 		initialization = @InitializationHint(typeNames = {
+				"javax.script.ScriptEngineManager",
 				"com.oracle.truffle.js.scriptengine.GraalJSEngineFactory",
 				"com.oracle.truffle.js.scriptengine.GraalJSScriptEngine"
 		}, initTime = InitializationTime.BUILD)
