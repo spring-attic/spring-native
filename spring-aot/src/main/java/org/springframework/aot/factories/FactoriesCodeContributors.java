@@ -38,6 +38,7 @@ class FactoriesCodeContributors {
 
 	FactoriesCodeContributors(AotOptions aotOptions) {
 		this.contributors = Arrays.asList(new IgnoredFactoriesCodeContributor(),
+				new TestExecutionListenerFactoriesCodeContributor(),
 				new TestAutoConfigurationFactoriesCodeContributor(aotOptions),
 				new NoArgConstructorFactoriesCodeContributor(),
 				new PrivateFactoriesCodeContributor(),
