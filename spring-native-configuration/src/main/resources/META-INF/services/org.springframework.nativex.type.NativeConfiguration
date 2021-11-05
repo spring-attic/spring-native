@@ -10,6 +10,7 @@ org.apache.catalina.TomcatHints
 org.apache.commons.pool2.CommonsPool2Hints
 org.apache.logging.Log4jApiHints
 org.apache.logging.log4j.core.Log4jCoreHints
+org.assertj.AssertJHints
 org.h2.H2Hints
 org.hsqldb.HSQLDBHints
 org.mariadb.MariaDbHints
