@@ -107,9 +107,13 @@ public class ApplicationStructure {
 
 	private String detectMainClass(List<Path> classesPaths) throws IOException {
 		for (Path path : classesPaths) {
-			String mainClass = MainClassFinder.findSingleMainClass(path.toFile());
-			if (StringUtils.hasText(mainClass)) {
-				return mainClass;
+			File file = path.toFile();
+			// For now only search in directories, could be extended to JARs using the JarFile parameter variant
+			if (file.isDirectory()) {
+				String mainClass = MainClassFinder.findSingleMainClass(file);
+				if (StringUtils.hasText(mainClass)) {
+					return mainClass;
+				}
 			}
 		}
 		return null;
@@ -117,9 +121,13 @@ public class ApplicationStructure {
 
 	private String detectApplicationClass(List<Path> classesPaths) throws IOException {
 		for (Path path : classesPaths) {
-			String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(path.toFile(), SpringBootApplication.class.getName());
-			if (StringUtils.hasText(applicationClass)) {
-				return applicationClass;
+			File file = path.toFile();
+			// For now only search in directories, could be extended to JARs using the JarFile parameter variant
+			if (file.isDirectory()) {
+				String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(file, SpringBootApplication.class.getName());
+				if (StringUtils.hasText(applicationClass)) {
+					return applicationClass;
+				}
 			}
 		}
 		return null;

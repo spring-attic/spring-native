@@ -1366,7 +1366,11 @@ public class TypeSystem {
 				break;
 			}
 			try {
-				mainClass = MainClassFinder.findSingleMainClass(new File(path));
+				File file = new File(path);
+				// For now only search in directories, could be extended to JARs using the JarFile parameter variant
+				if (file.isDirectory()) {
+					mainClass = MainClassFinder.findSingleMainClass(file);
+				}
 			}
 			catch (Exception e) {
 				logger.error(e);
