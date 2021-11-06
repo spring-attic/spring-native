@@ -30,6 +30,7 @@ import org.apache.kafka.common.utils.AppInfoParser.AppInfo;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.errors.DefaultProductionExceptionHandler;
 import org.apache.kafka.streams.errors.LogAndFailExceptionHandler;
+import org.apache.kafka.streams.internals.metrics.ClientMetrics;
 import org.apache.kafka.streams.processor.DefaultPartitionGrouper;
 import org.apache.kafka.streams.processor.FailOnInvalidTimestamp;
 import org.apache.kafka.streams.processor.internals.StreamsPartitionAssignor;
@@ -60,6 +61,7 @@ import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -185,5 +187,6 @@ import io.confluent.kafka.serializers.subject.TopicNameStrategy;
 						org.springframework.kafka.support.KafkaUtils.class,
 						org.springframework.kafka.support.JacksonPresent.class
 		}))
+@NativeHint(trigger = ClientMetrics.class, resources = @ResourceHint(patterns = "/kafka/kafka-streams-version.properties"))
 public class KafkaHints implements NativeConfiguration {
 }
