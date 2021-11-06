@@ -19,7 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class KafkaStreamsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KafkaStreamsApplication.class, args).close();
+		SpringApplication.run(KafkaStreamsApplication.class, args);
 	}
 
 	@Bean
