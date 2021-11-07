@@ -336,7 +336,7 @@ To run the application, you can use `docker` the usual way as shown in the follo
 
 [source,bash]
 ----
-$ docker run --rm -p 8080:8080 rest-service:0.0.1-SNAPSHOT
+$ docker run --rm -p 8080:8080 rest-service-complete:0.0.1-SNAPSHOT
 ----
 
 
@@ -347,7 +347,7 @@ If you prefer `docker-compose`, you can write a `docker-compose.yml` at the root
 version: '3.1'
 services:
   rest-service:
-    image: rest-service:0.0.1-SNAPSHOT
+    image: rest-service-complete:0.0.1-SNAPSHOT
     ports:
       - "8080:8080"
 ----
