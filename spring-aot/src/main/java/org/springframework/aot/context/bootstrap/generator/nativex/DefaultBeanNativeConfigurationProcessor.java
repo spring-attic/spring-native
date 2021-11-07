@@ -16,6 +16,7 @@
 
 package org.springframework.aot.context.bootstrap.generator.nativex;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -72,8 +73,25 @@ class DefaultBeanNativeConfigurationProcessor implements BeanNativeConfiguration
 				reflectionConfiguration.addExecutable(writeMethod);
 			}
 			Object value = property.getPropertyValue().getValue();
-			if (value instanceof BeanDefinition) {
-				processInnerBeanDefinition((BeanDefinition) value, registry);
+			processValue(value, registry);
+		}
+	}
+
+	private void processValue(Object value, NativeConfigurationRegistry registry) {
+		if (value == null) {
+			return;
+		}
+		else if (value instanceof BeanDefinition) {
+			processInnerBeanDefinition((BeanDefinition) value, registry);
+		}
+		else if (value instanceof Iterable) {
+			Iterable<?> iterable = (Iterable<?>) value;
+			iterable.forEach((item) -> processValue(item, registry));
+		}
+		else if (value.getClass().isArray()) {
+			int length = Array.getLength(value);
+			for (int i = 0; i < length; i++) {
+				processValue(Array.get(value, i), registry);
 			}
 		}
 	}

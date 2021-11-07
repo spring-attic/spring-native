@@ -19,11 +19,14 @@ package org.springframework.aot.context.bootstrap.generator.nativex;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.beans.PropertyValue;
@@ -181,7 +184,44 @@ class DefaultBeanNativeConfigurationProcessorTests {
 					BaseFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
+		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
 		assertThat(registry.reflection().getEntries()).hasSize(3);
+	}
+
+	@Test
+	void registerReflectionEntriesForListOfInnerBeanDefinition() {
+		Constructor<?> instanceCreator = InjectionConfiguration.class.getDeclaredConstructors()[0];
+		Method countersWriteMethod = ReflectionUtils.findMethod(InjectionConfiguration.class, "setCounters", List.class);
+		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionConfiguration.class)
+				.withInstanceCreator(instanceCreator).withProperty(countersWriteMethod, new PropertyValue("counters",
+						List.of(BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition(),
+								BeanDefinitionBuilder.rootBeanDefinition(AnotherIntegerFactoryBean.class).getBeanDefinition())))
+				.build());
+		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
+			assertThat(entry.getConstructors()).contains(instanceCreator);
+			assertThat(entry.getMethods()).containsOnly(countersWriteMethod);
+			assertThat(entry.getFields()).isEmpty();
+		});
+		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
+			assertThat(entry.getMethods()).containsOnly(ReflectionUtils.findMethod(
+					BaseFactoryBean.class, "setNamingStrategy", String.class));
+			assertThat(entry.getFields()).isEmpty();
+		});
+		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
+		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(AnotherIntegerFactoryBean.class));
+		assertThat(registry.reflection().getEntries()).hasSize(4);
+	}
+
+	private Consumer<NativeReflectionEntry> defaultConstructor(Class<?> type) {
+		return (entry) -> {
+			assertThat(entry.getType()).isEqualTo(type);
+			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
+			assertThat(entry.getFields()).isEmpty();
+			assertThat(entry.getMethods()).isEmpty();
+			assertThat(entry.getFlags()).isEmpty();
+		};
 	}
 
 	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
@@ -222,6 +262,15 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		@Override
 		public Integer getObject() {
 			return 42;
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	static class AnotherIntegerFactoryBean extends IntegerFactoryBean {
+
+		public AnotherIntegerFactoryBean(Environment environment) {
+			super(environment);
 		}
 
 	}

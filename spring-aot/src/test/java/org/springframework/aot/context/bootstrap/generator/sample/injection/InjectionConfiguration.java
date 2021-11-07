@@ -54,4 +54,8 @@ public class InjectionConfiguration {
 
 	}
 
+	public void setCounters(List<Integer> counter) {
+
+	}
+
 }
