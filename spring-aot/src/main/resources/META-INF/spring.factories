@@ -19,7 +19,8 @@ org.springframework.boot.actuate.endpoint.annotation.HealthContributorNativeConf
 org.springframework.boot.context.AotProxyNativeConfigurationProcessor,\
 org.springframework.boot.context.properties.ConfigurationPropertiesNativeConfigurationProcessor,\
 org.springframework.data.RepositoryDefinitionConfigurationProcessor,\
-org.springframework.transaction.annotation.TransactionalNativeConfigurationProcessor
+org.springframework.transaction.annotation.TransactionalNativeConfigurationProcessor,\
+org.springframework.kafka.KafkaAvroNativeConfigurationProcessor
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
 org.springframework.aot.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\
