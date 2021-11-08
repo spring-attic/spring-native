@@ -18,6 +18,7 @@ package org.springframework.data;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -35,6 +36,8 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
+import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentFilter;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -43,6 +46,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -52,18 +56,56 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 	private static Log logger = LogFactory.getLog(JpaConfigurationProcessor.class);
 
-	private static final String JPA_MARKER = "javax.persistence.Entity";
+	private static final String JPA_ENTITY = "javax.persistence.Entity";
+	private static final String JPA_PERSISTENCE_CONTEXT = "javax.persistence.PersistenceContext";
+	private static final String JPA_ENTITY_LISTENERS = "javax.persistence.EntityListeners";
 
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 
-		if (ClassUtils.isPresent(JPA_MARKER, beanFactory.getBeanClassLoader())) {
+		if (ClassUtils.isPresent(JPA_ENTITY, beanFactory.getBeanClassLoader())) {
 			logger.debug("JPA detected - processing types.");
-			new JpaConfigurationProcessor.JpaProcessor(beanFactory.getBeanClassLoader()).process(registry);
+			new JpaPersistenceContextProcessor().process(beanFactory, registry);
+			new JpaEntityProcessor(beanFactory.getBeanClassLoader()).process(registry);
 		}
 	}
 
-	static class JpaProcessor {
+	/**
+	 * Processor to inspect components for fields that require a {@literal javax.persistence.PersistenceContext}.
+	 */
+	static class JpaPersistenceContextProcessor {
+
+		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+			doWithComponents(beanFactory,
+					(beanName, beanType) -> {
+						registry.reflection()
+								.forType(beanType)
+								.withFields(TypeUtils.getAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT).toArray(new Field[0]));
+					},
+					(beanName, beanType) -> {
+						return TypeUtils.hasAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT);
+					});
+		}
+
+		// TODO: copied from AotProxyNativeConfigurationProcessor so maybe find a better location for it in some utils?
+		static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
+				ComponentFilter filter) {
+			beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
+				Class<?> beanType = beanFactory.getType(beanName);
+				MergedAnnotation<Component> componentAnnotation = MergedAnnotations.from(beanType).get(Component.class);
+				if (componentAnnotation.isPresent()) {
+					if (filter == null || filter.test(beanName, beanType)) {
+						callback.invoke(beanName, beanType);
+					}
+				}
+			});
+		}
+	}
+
+	/**
+	 * Processor to inspect user domain types annotated with {@literal javax.persistence.Entity}.
+	 */
+	static class JpaEntityProcessor {
 
 		private final AnnotationFilter annotationFilter;
 
@@ -71,10 +113,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		private final Set<JpaImplementation> jpaImplementations;
 		private final ClassLoader classLoader;
 
-		public JpaProcessor(ClassLoader classLoader) {
+		public JpaEntityProcessor(ClassLoader classLoader) {
 
 			this.classLoader = classLoader;
-			entityAnnotation = loadIfPresent("javax.persistence.Entity", classLoader);
+			entityAnnotation = loadIfPresent(JPA_ENTITY, classLoader);
 			jpaImplementations = new LinkedHashSet<>(Arrays.asList(new HibernateJpaImplementation()))
 					.stream()
 					.filter(it -> it.isAvailable(classLoader))
@@ -109,7 +151,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				 * If an EntityListener is defined we need to inspect the target and make sure
 				 * reflection is configured so the methods can be invoked
 				 */
-				MergedAnnotation<Annotation> entityListener = MergedAnnotations.from(type).get("javax.persistence.EntityListeners");
+				MergedAnnotation<Annotation> entityListener = MergedAnnotations.from(type).get(JPA_ENTITY_LISTENERS);
 				if (entityListener.isPresent()) {
 					Class<?>[] values = entityListener.getClassArray("value");
 					for (Class<?> listener : values) {
