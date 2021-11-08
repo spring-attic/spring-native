@@ -11,6 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.CommonContainerStoppingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.nativex.hint.NativeHint;
@@ -24,21 +25,27 @@ public class KafkaAvroApplication {
 		SpringApplication.run(KafkaAvroApplication.class, args);
 	}
 
-	@KafkaListener(id = "graal", topics = "graal")
-	public void listen(Thing in) {
-		System.out.println("++++++Received Thing:" + in);
+	@Bean
+	public NewTopic topic1() {
+		return TopicBuilder.name("graal1").partitions(1).replicas(1).build();
 	}
 
 	@Bean
-	public NewTopic topic() {
-		return TopicBuilder.name("graal").partitions(1).replicas(1).build();
+	public NewTopic topic2() {
+		return TopicBuilder.name("graal2").partitions(1).replicas(1).build();
+	}
+
+	@Bean
+	public NewTopic topic3() {
+		return TopicBuilder.name("graal3").partitions(1).replicas(1).build();
 	}
 
 	@Bean
 	public ConcurrentMessageListenerContainer<Object, Object> manualListenerContainer(MyMessageListener listener,
 			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 
-		ConcurrentMessageListenerContainer<Object, Object> container = factory.createContainer("graal");
+		factory.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());
+		ConcurrentMessageListenerContainer<Object, Object> container = factory.createContainer("graal3");
 		container.getContainerProperties().setGroupId("graal3");
 		container.getContainerProperties().setMessageListener(listener);
 		return container;
@@ -47,9 +54,13 @@ public class KafkaAvroApplication {
 	@Bean
 	public ApplicationRunner runner(KafkaTemplate<Object, Object> template) {
 		return args -> {
-			Thing thing = Thing.newBuilder().setStringField("someValue").setIntField(42).build();
-			template.send("graal", thing);
-			System.out.println("++++++Sent:" + thing);
+			Thing thing = Thing.newBuilder().setStringField("thing1Value").setIntField(42).build();
+			template.send("graal1", thing);
+			Thing2 thing2 = Thing2.newBuilder().setStringField("thing2Value").setIntField(42).build();
+			template.send("graal2", thing2);
+			Thing3 thing3 = Thing3.newBuilder().setStringField("thing3Value").setIntField(42).build();
+			template.send("graal3", thing3);
+			System.out.println("++++++Sent:" + thing + thing2 + thing3);
 		};
 	}
 
@@ -58,9 +69,15 @@ public class KafkaAvroApplication {
 @Component
 class RecordListener {
 
-	@KafkaListener(id = "graal2", topics = "graal")
+	@KafkaListener(id = "graal", topics = "graal1")
+	void listen(Thing in) {
+		System.out.println("++++++Received "
+				+ in.getClass().getSimpleName() + ":" + in);
+	}
+
+	@KafkaListener(id = "graal2", topics = "graal2")
 	void listen(ConsumerRecord<String, Thing2> record) {
-		System.out.println("++++++Received Thing2:" + record);
+		System.out.println("++++++Received " + record.value().getClass().getSimpleName() + ":" + record);
 	}
 
 }
@@ -69,8 +86,8 @@ class RecordListener {
 class MyMessageListener implements MessageListener<String, Thing3> {
 
 	@Override
-	public void onMessage(ConsumerRecord<String, Thing3> data) {
-		System.out.println("++++++Received Thing3:" + data);
+	public void onMessage(ConsumerRecord<String, Thing3> record) {
+		System.out.println("++++++Received " + record.value().getClass().getSimpleName() + ":" + record);
 	}
 
 

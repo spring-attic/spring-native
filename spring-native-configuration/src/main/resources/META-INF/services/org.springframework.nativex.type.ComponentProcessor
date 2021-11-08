@@ -6,4 +6,3 @@ org.springframework.AotProxyRepositoryComponentProcessor
 org.springframework.SynthesizerComputationComponentProcessor
 org.springframework.TransactionalEventListenerComponentProcessor
 org.springframework.ValidatedComponentProcessor
-org.springframework.kafka.KafkaComponentProcessor
