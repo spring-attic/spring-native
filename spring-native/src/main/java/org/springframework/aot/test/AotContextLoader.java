@@ -54,10 +54,14 @@ class AotContextLoader {
 		try {
 			Class<?> type = ClassUtils.forName(INITIALIZER_NAME, null);
 			Method method = ReflectionUtils.findMethod(type, "getContextLoaders");
-			return (Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
+			Map<String, Supplier<SmartContextLoader>> map =
+					(Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
+			System.out.println("[AotContextLoader] Loaded SmartContextLoader mappings for test classes " + map.keySet());
+			return map;
 		}
 		catch (Exception ex) {
-			// TODO: exception
+			System.err.println("[AotContextLoader] Failed to invoke method [getContextLoaders()] on class [" + INITIALIZER_NAME + "]: " + ex);
+			// TODO Rethrow exception?
 			return Collections.emptyMap();
 		}
 	}
