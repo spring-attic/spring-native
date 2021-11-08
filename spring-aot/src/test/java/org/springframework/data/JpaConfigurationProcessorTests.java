@@ -27,16 +27,22 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.data.JpaConfigurationProcessor.JpaEntityProcessor;
+import org.springframework.data.JpaConfigurationProcessor.JpaPersistenceContextProcessor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.sample.data.jpa.AuditingListener;
+import org.springframework.sample.data.jpa.ComponentWithPersistenceContext;
 import org.springframework.sample.data.jpa.EntityWithListener;
 import org.springframework.sample.data.jpa.LineItem;
 import org.springframework.sample.data.jpa.NotAnEntity;
 import org.springframework.sample.data.jpa.Order;
 import org.springframework.sample.data.jpa.SomeAnnotation;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Tests for {@link JpaConfigurationProcessor}.
@@ -48,7 +54,7 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	void shouldIncludeReachableTypes() {
 
-		assertThat(process(Order.class)).satisfies(it -> {
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
 			assertThat(it.hasReflectionEntry(Order.class)).isTrue();
 			assertThat(it.hasReflectionEntry(LineItem.class)).isTrue();
 			assertThat(it.hasReflectionEntry(NotAnEntity.class)).isFalse();
@@ -58,7 +64,7 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void shouldRegisterReflectionAllowWriteForFinalFields/* looking at you hibernate */() {
 
-		assertThat(process(Order.class)).satisfies(it -> {
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
 
 			ClassDescriptor classDescriptor = it.getReflectionEntry(Order.class).toClassDescriptor();
 			Optional<FieldDescriptor> id = classDescriptor.getFields().stream().filter(field -> {
@@ -71,7 +77,7 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void shouldNotDoFancyStuffForNonFinalFields/* looking at you hibernate */() {
 
-		assertThat(process(Order.class)).satisfies(it -> {
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
 
 			ClassDescriptor classDescriptor = it.getReflectionEntry(Order.class).toClassDescriptor();
 			Optional<FieldDescriptor> name = classDescriptor.getFields().stream().filter(field -> {
@@ -84,7 +90,7 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void shouldAddReflectionForJavaxPersistenceAnnotations() {
 
-		assertThat(process(Order.class)).satisfies(it -> {
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
 
 			assertThat(it.hasReflectionEntry(Entity.class)).isTrue();
 			assertThat(it.hasReflectionEntry(GeneratedValue.class)).isTrue();
@@ -96,7 +102,7 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void whatAboutOtherAnnotations/* like jackson */() {
 
-		assertThat(process(Order.class)).satisfies(it -> {
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
 			assertThat(it.hasReflectionEntry(SomeAnnotation.class)).isFalse();
 		});
 	}
@@ -113,16 +119,35 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void shouldAddFullReflectionForEntityListener() {
 
-		assertThat(process(EntityWithListener.class)).satisfies(it -> {
+		assertThat(processJpaEntities(EntityWithListener.class)).satisfies(it -> {
 			assertThat(it.hasReflectionEntry(AuditingListener.class)).isTrue();
 		});
 	}
 
+	@Test
+	public void shouldRegisterFieldAccessForPersistenceContext() {
 
-	NativeConfigRegistryHolder process(Class<?>... entities) {
+		NativeConfigRegistryHolder nativeConfigRegistryHolder = processBeansWithPotentialPersistenceContext(ComponentWithPersistenceContext.class);
+		DefaultNativeReflectionEntry reflectionEntry = nativeConfigRegistryHolder.getReflectionEntry(ComponentWithPersistenceContext.class);
+		assertThat(reflectionEntry.getFields()).containsExactly(ReflectionUtils.findField(ComponentWithPersistenceContext.class, "entityManager"));
+	}
+
+
+	NativeConfigRegistryHolder processJpaEntities(Class<?>... entities) {
 
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-		new JpaConfigurationProcessor.JpaProcessor(this.getClass().getClassLoader()).process(new LinkedHashSet<>(Arrays.asList(entities)), registry);
+		new JpaEntityProcessor(this.getClass().getClassLoader()).process(new LinkedHashSet<>(Arrays.asList(entities)), registry);
+		return new NativeConfigRegistryHolder(registry);
+	}
+
+	NativeConfigRegistryHolder processBeansWithPotentialPersistenceContext(Class<?>... types) {
+
+		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		for (Class<?> type : types) {
+			beanFactory.registerBeanDefinition(type.getSimpleName(), BeanDefinitionBuilder.rootBeanDefinition(type).getBeanDefinition());
+		}
+		new JpaPersistenceContextProcessor().process(beanFactory, registry);
 		return new NativeConfigRegistryHolder(registry);
 	}
 
@@ -134,7 +159,7 @@ public class JpaConfigurationProcessorTests {
 			this.delegate = registry;
 		}
 
-		NativeReflectionEntry getReflectionEntry(Class<?> type) {
+		DefaultNativeReflectionEntry getReflectionEntry(Class<?> type) {
 			return delegate.reflection().forType(type).build();
 		}
 

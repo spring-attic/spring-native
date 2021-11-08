@@ -18,6 +18,7 @@ package org.springframework.data;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.LinkedHashSet;
@@ -53,6 +54,29 @@ public class TypeUtils {
 
 	public static Set<Class<?>> resolveAnnotationTypesFor(AnnotatedElement element) {
 		return resolveAnnotationTypesFor(element, AnnotationFilter.PLAIN);
+	}
+
+	public static boolean hasAnnotatedField(Class<?> type, String annotationName) {
+
+		for (Field field: type.getDeclaredFields()) {
+			MergedAnnotations fieldAnnotations = MergedAnnotations.from(field);
+			boolean hasAnnotation = fieldAnnotations.get(annotationName).isPresent();
+			if (hasAnnotation) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Set<Field> getAnnotatedField(Class<?> type, String annotationName) {
+
+		Set<Field> fields = new LinkedHashSet<>();
+		for (Field field: type.getDeclaredFields()) {
+			if (MergedAnnotations.from(field).get(annotationName).isPresent()) {
+				fields.add(field);
+			}
+		}
+		return fields;
 	}
 
 	public static Set<Class<?>> resolveTypesInSignature(Class<?> owner, Method method) {
