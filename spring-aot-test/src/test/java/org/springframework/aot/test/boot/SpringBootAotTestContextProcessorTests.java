@@ -16,10 +16,15 @@
 
 package org.springframework.aot.test.boot;
 
+import com.squareup.javapoet.ClassName;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.test.context.bootstrap.generator.test.CodeSnippet;
+import org.springframework.aot.test.samples.app.SampleApplicationIntegrationTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -27,6 +32,7 @@ import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
 import org.springframework.test.context.support.DefaultBootstrapContext;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
+import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -86,6 +92,42 @@ class SpringBootAotTestContextProcessorTests {
 		given(contextConfiguration.getClasses()).willReturn(new Class<?>[0]);
 		assertThatIllegalStateException().isThrownBy(() -> this.processor.prepareTestContext(contextConfiguration))
 				.withMessageContaining("Failed to prepare test context");
+	}
+
+	@Test
+	void writeInstanceSupplierForNonWebSpringBootTest() {
+		MergedContextConfiguration contextConfiguration = mock(MergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(SpringBootAotContextLoader.class)
+				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class)");
+	}
+
+	@Test
+	void writeInstanceSupplierForServletWebSpringBootTest() {
+		WebMergedContextConfiguration contextConfiguration = mock(WebMergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(SpringBootAotContextLoader.class).hasImport(WebApplicationType.class)
+				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.MOCK)");
+	}
+
+	@Test
+	void writeInstanceSupplierForServletWebSpringBootTestWithRandomPort() {
+		WebMergedContextConfiguration contextConfiguration = mock(WebMergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationIntegrationTests.class);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(SpringBootAotContextLoader.class)
+				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.RANDOM_PORT)");
+	}
+
+	@Test
+	void writeInstanceSupplierForReactiveWebSpringBootTest() {
+		ReactiveWebMergedContextConfiguration contextConfiguration = mock(ReactiveWebMergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(SpringBootAotContextLoader.class)
+				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.REACTIVE, SpringBootTest.WebEnvironment.MOCK)");
 	}
 
 	private TestContextBootstrapper createSpringBootTestContextBootstrapper(Class<?> testClass) {

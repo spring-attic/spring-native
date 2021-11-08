@@ -23,8 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -49,6 +51,16 @@ class SpringBootAotContextLoaderTests {
 	@Test
 	void loadContextUsesApplicationContextInitializer() {
 		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class);
+		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
+			assertThat(context).hasNotFailed().hasBean("testBean").hasSingleBean(String.class);
+			assertThat(context.getBean(String.class)).isEqualTo(TestApplicationContextInitializer.TEST_BEAN);
+		});
+	}
+
+	@Test
+	void loadContextUsesApplicationContextInitializerAndWebSettings() {
+		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class,
+				WebApplicationType.SERVLET, WebEnvironment.MOCK);
 		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
 			assertThat(context).hasNotFailed().hasBean("testBean").hasSingleBean(String.class);
 			assertThat(context.getBean(String.class)).isEqualTo(TestApplicationContextInitializer.TEST_BEAN);
@@ -85,7 +97,7 @@ class SpringBootAotContextLoaderTests {
 	}
 
 
-	@SpringBootTest(properties = { "spring.main.web-application-type=none", "test.property=42" })
+	@SpringBootTest(properties = "test.property=42")
 	static class SampleTest {
 
 	}

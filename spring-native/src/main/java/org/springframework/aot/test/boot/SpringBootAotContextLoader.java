@@ -16,16 +16,22 @@
 
 package org.springframework.aot.test.boot;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.aot.SpringApplicationAotUtils;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootContextLoader;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -34,6 +40,7 @@ import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
  * A {@link SmartContextLoader} that use an {@link ApplicationContextInitializer}
@@ -46,12 +53,31 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 
 	private final Class<? extends ApplicationContextInitializer<?>> testContextInitializer;
 
+	private final WebApplicationType webApplicationType;
+
+	private final WebEnvironment webEnvironment;
+
 	/**
-	 * Create a new instance using the specified {@link ApplicationContextInitializer}.
+	 * Create an instance for the specified {@link ApplicationContextInitializer} and
+	 * web-related details.
+	 * @param testContextInitializer the context initializer to use
+	 * @param webApplicationType the {@link WebApplicationType} to use for the context
+	 * @param webEnvironment the {@link WebEnvironment} to use for the context
+	 */
+	public SpringBootAotContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer,
+			WebApplicationType webApplicationType, WebEnvironment webEnvironment) {
+		this.testContextInitializer = testContextInitializer;
+		this.webApplicationType = webApplicationType;
+		this.webEnvironment = webEnvironment;
+	}
+
+	/**
+	 * Create a new instance using the specified {@link ApplicationContextInitializer} for
+	 * a non-web context.
 	 * @param testContextInitializer the context initializer to use
 	 */
 	public SpringBootAotContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer) {
-		this.testContextInitializer = testContextInitializer;
+		this(testContextInitializer, WebApplicationType.NONE, WebEnvironment.NONE);
 	}
 
 	@Override
@@ -70,8 +96,20 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 				config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
 		application.setEnvironment(environment);
-		application.setWebApplicationType(detectWebApplicationType(config));
 		application.setApplicationContextFactory(SpringApplicationAotUtils.AOT_FACTORY);
+		application.setWebApplicationType(this.webApplicationType);
+
+		if (!isEmbeddedWebEnvironment()) {
+			if (this.webApplicationType == WebApplicationType.SERVLET) {
+				List<ApplicationContextInitializer<?>> initializers = new ArrayList<>(application.getInitializers());
+				new WebConfigurer().configure(config, application, initializers);
+				application.setInitializers(initializers);
+			}
+			else if (this.webApplicationType == WebApplicationType.REACTIVE) {
+				application.setApplicationContextFactory(
+						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
+			}
+		}
 		ConfigurableApplicationContext context = application.run(args);
 
 		// FIXME: register Autowired support after the context has started for the test class
@@ -79,16 +117,15 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 		return context;
 	}
 
-	private WebApplicationType detectWebApplicationType(MergedContextConfiguration config) {
-		if (config instanceof WebMergedContextConfiguration) {
-			return WebApplicationType.SERVLET;
-		}
-		else if (config instanceof ReactiveWebMergedContextConfiguration) {
-			return WebApplicationType.REACTIVE;
-		}
-		else {
-			return WebApplicationType.NONE;
-		}
+	private boolean isEmbeddedWebEnvironment() {
+		return this.webEnvironment.isEmbedded();
+	}
+
+	// TODO: could do this at build time
+	private void configureAutowiringSupport(ConfigurableListableBeanFactory beanFactory) {
+		AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
+		beanPostProcessor.setBeanFactory(beanFactory);
+		beanFactory.addBeanPostProcessor(beanPostProcessor);
 	}
 
 	// Copy of SpringBootContextLoader
@@ -102,10 +139,22 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
-	private void configureAutowiringSupport(ConfigurableListableBeanFactory beanFactory) {
-		AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
-		beanPostProcessor.setBeanFactory(beanFactory);
-		beanFactory.addBeanPostProcessor(beanPostProcessor);
+	private static class WebConfigurer {
+
+		void configure(MergedContextConfiguration configuration, SpringApplication application,
+				List<ApplicationContextInitializer<?>> initializers) {
+			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
+			addMockServletContext(initializers, webConfiguration);
+			application.setApplicationContextFactory((webApplicationType) -> new GenericWebApplicationContext());
+		}
+
+		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
+				WebMergedContextConfiguration webConfiguration) {
+			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
+					webConfiguration.getResourceBasePath());
+			initializers.add(0, new ServletContextApplicationContextInitializer(servletContext, true));
+		}
+
 	}
 
 }

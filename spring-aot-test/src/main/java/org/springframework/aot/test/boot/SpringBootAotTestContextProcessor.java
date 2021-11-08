@@ -18,14 +18,21 @@ package org.springframework.aot.test.boot;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.CodeBlock.Builder;
 
 import org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
+import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
  * An {@link AotTestContextProcessor} that handles Spring Boot test. This includes support
@@ -55,7 +62,34 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 
 	@Override
 	public CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer) {
-		return CodeBlock.of("() -> new $T($T.class)", SpringBootAotContextLoader.class, applicationContextInitializer);
+		Builder code = CodeBlock.builder();
+		code.add("() -> new $T($T.class", SpringBootAotContextLoader.class, applicationContextInitializer);
+		WebApplicationType webApplicationType = detectWebApplicationType(config);
+		if (webApplicationType.equals(WebApplicationType.NONE)) {
+			code.add(")");
+		}
+		else {
+			code.add(", $T.$L, $T.$L)", WebApplicationType.class, webApplicationType,
+					WebEnvironment.class, detectWebEnvironment(config));
+		}
+		return code.build();
+	}
+
+	private WebApplicationType detectWebApplicationType(MergedContextConfiguration config) {
+		if (config instanceof WebMergedContextConfiguration) {
+			return WebApplicationType.SERVLET;
+		}
+		else if (config instanceof ReactiveWebMergedContextConfiguration) {
+			return WebApplicationType.REACTIVE;
+		}
+		else {
+			return WebApplicationType.NONE;
+		}
+	}
+
+	private WebEnvironment detectWebEnvironment(MergedContextConfiguration config) {
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
+				.getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE);
 	}
 
 }
