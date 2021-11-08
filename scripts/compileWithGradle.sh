@@ -41,5 +41,5 @@ if [ "$AOT_ONLY" = false ] ; then
   fi
 else
   echo "Packaging ${PWD##*/} with Gradle (AOT only)'"
-  ./gradlew bootJar &> build/native/output.txt
+  ./gradlew build &> build/native/output.txt
 fi

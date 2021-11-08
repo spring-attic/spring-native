@@ -45,7 +45,7 @@ if [ "$AOT_ONLY" = false ] ; then
   fi
 else
   echo "Packaging ${PWD##*/} with Maven (AOT only)"
-  if mvn -ntp -DskipTests package $* &> target/native/output.txt; then
+  if mvn -ntp package $* &> target/native/output.txt; then
     printf "${GREEN}SUCCESS${NC}\n"
   else
     cat target/native/output.txt
