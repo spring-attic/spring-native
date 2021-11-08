@@ -267,13 +267,23 @@ class BeanInstanceExecutableSupplier {
 
 	private Predicate<ResolvableType> typeConversionFallback(ResolvableType valueType) {
 		return (parameterType) -> {
-			if (isStringForClassFallback(valueType).test(parameterType)) {
+			if (valueOrCollection(valueType, this::isStringForClassFallback).test(parameterType)) {
 				return true;
 			}
-			if (isStringForClassFallback(extractElementType(valueType)).test(extractElementType(parameterType))) {
+			return valueOrCollection(valueType, this::isSimpleConvertibleType).test(parameterType);
+		};
+	}
+
+	private Predicate<ResolvableType> valueOrCollection(ResolvableType valueType,
+			Function<ResolvableType, Predicate<ResolvableType>> predicateProvider) {
+		return (parameterType) -> {
+			if (predicateProvider.apply(valueType).test(parameterType)) {
 				return true;
 			}
-			return (isStringForClassFallback(valueType).test(extractElementType(parameterType)));
+			if (predicateProvider.apply(extractElementType(valueType)).test(extractElementType(parameterType))) {
+				return true;
+			}
+			return (predicateProvider.apply(valueType).test(extractElementType(parameterType)));
 		};
 	}
 
@@ -287,6 +297,10 @@ class BeanInstanceExecutableSupplier {
 	private Predicate<ResolvableType> isStringForClassFallback(ResolvableType valueType) {
 		return (parameterType) -> (valueType.isAssignableFrom(String.class)
 				&& parameterType.isAssignableFrom(Class.class));
+	}
+
+	private Predicate<ResolvableType> isSimpleConvertibleType(ResolvableType valueType) {
+		return (parameterType) -> isSimpleConvertibleType(parameterType.toClass()) && isSimpleConvertibleType(valueType.toClass());
 	}
 
 	private Class<?> getFactoryBeanClass(BeanDefinition beanDefinition) {
@@ -332,6 +346,14 @@ class BeanInstanceExecutableSupplier {
 		ReflectionUtils.makeAccessible(field);
 		return targetType.cast(ReflectionUtils.getField(field, beanDefinition));
 	}
+
+	public static boolean isSimpleConvertibleType(Class<?> type) {
+		return (type.isPrimitive() && type != void.class) ||
+				type == Double.class || type == Float.class || type == Long.class ||
+				type == Integer.class || type == Short.class || type == Character.class ||
+				type == Byte.class || type == Boolean.class || type == String.class;
+	}
+
 
 	enum FallbackMode {
 

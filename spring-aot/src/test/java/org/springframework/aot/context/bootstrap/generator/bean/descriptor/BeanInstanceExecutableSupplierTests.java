@@ -19,6 +19,7 @@ package org.springframework.aot.context.bootstrap.generator.bean.descriptor;
 import java.lang.reflect.Executable;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
 import org.junit.jupiter.api.Test;
 
@@ -249,6 +250,14 @@ class BeanInstanceExecutableSupplierTests {
 				.findMethod(ClassArrayFactoryMethodSampleWithAnotherFactoryMethod.class, "of", String[].class));
 	}
 
+	@Test
+	void beanDefinitionWithMultiArgConstructorAndPrimitiveConversion() throws NoSuchMethodException {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(ConstructorPrimitiveFallback.class)
+				.addConstructorArgValue("true").getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(new DefaultListableBeanFactory(), beanDefinition);
+		assertThat(executable).isEqualTo(ConstructorPrimitiveFallback.class.getDeclaredConstructor(boolean.class));
+	}
+
 	private Executable detectBeanInstanceExecutable(DefaultListableBeanFactory beanFactory, BeanDefinition beanDefinition) {
 		return new BeanInstanceExecutableSupplier(beanFactory).detectBeanInstanceExecutable(beanDefinition);
 	}
@@ -322,7 +331,7 @@ class BeanInstanceExecutableSupplierTests {
 		ConstructorClassArraySample(Class<?>... classArrayArg) {
 		}
 
-		ConstructorClassArraySample(Integer somethingElse) {
+		ConstructorClassArraySample(Executor somethingElse) {
 		}
 	}
 
@@ -354,6 +363,17 @@ class BeanInstanceExecutableSupplierTests {
 
 		static String of(String[] classArrayArg) {
 			return "test";
+		}
+
+	}
+
+	@SuppressWarnings("unnused")
+	static class ConstructorPrimitiveFallback {
+
+		public ConstructorPrimitiveFallback(boolean useDefaultExecutor) {
+		}
+
+		public ConstructorPrimitiveFallback(Executor executor) {
 		}
 
 	}
