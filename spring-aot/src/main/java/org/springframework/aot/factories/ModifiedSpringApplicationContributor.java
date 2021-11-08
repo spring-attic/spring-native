@@ -224,9 +224,20 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			@Override
 			public void visitInsn(int opcode) {
 				if (opcode == RETURN) {
+					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/nativex/AotModeDetector", "isRunningAotTests",
+							"()Z", false);
+					Label elseIfClause = new Label();
+					mv.visitJumpInsn(IFEQ, elseIfClause);
+					mv.visitVarInsn(ALOAD, 0);
+					mv.visitVarInsn(ALOAD, 0);
+					mv.visitLdcInsn(Type.getType("Lorg/springframework/context/ApplicationContextInitializer;"));
+					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "getSpringFactoriesInstances", "(Ljava/lang/Class;)Ljava/util/Collection;", false);
+					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "setInitializers", "(Ljava/util/Collection;)V", false);
+					Label end = new Label();
+					mv.visitJumpInsn(GOTO, end);
+					mv.visitLabel(elseIfClause);
 					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/nativex/AotModeDetector", "isAotModeEnabled",
 							"()Z", false);
-					Label end = new Label();
 					Label elseClause = new Label();
 					mv.visitJumpInsn(IFEQ, elseClause);
 					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplication", "logger",

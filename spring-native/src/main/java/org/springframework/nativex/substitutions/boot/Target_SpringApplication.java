@@ -114,7 +114,10 @@ final class Target_SpringApplication {
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 
-		if (AotModeDetector.isAotModeEnabled()) {
+		if (AotModeDetector.isRunningAotTests()) {
+			setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		}
+		else if (AotModeDetector.isAotModeEnabled()) {
 			logger.info("AOT mode enabled");
 			setApplicationContextFactory(SpringApplicationAotUtils.AOT_FACTORY);
 			List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
