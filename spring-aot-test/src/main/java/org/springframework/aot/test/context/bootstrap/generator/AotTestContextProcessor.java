@@ -30,7 +30,7 @@ public interface AotTestContextProcessor {
 
 	/**
 	 * Specify whether this instance supports the specified {@link TestContextBootstrapper}.
-	 * @param bootstrapper the test context boostrapper to check
+	 * @param bootstrapper the test context bootstrapper to check
 	 * @return {@code true} if it supports it, {@code false} otherwise
 	 */
 	boolean supports(TestContextBootstrapper bootstrapper);
