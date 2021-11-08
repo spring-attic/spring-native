@@ -23,10 +23,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.data.TypeUtils.TypeOps;
 import org.springframework.data.TypeUtils.TypeOps.PackageFilter;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -40,13 +42,13 @@ import org.springframework.util.ClassUtils;
  *
  * @author Christoph Strobl
  */
-class TypeModel { // TODO: implements TypeInformation
+public class TypeModel { // TODO: implements TypeInformation
 
 	private Class<?> type;
 	private Set<Method> methods = new LinkedHashSet<>();
 	private Set<Constructor> constructors = new LinkedHashSet<>();
 	private Set<Field> fields = new LinkedHashSet<>();
-	private Lazy<Constructor> persistenceConstructor = Lazy.of(this::computePersistenceConstructor);
+	private Optional<Constructor> persistenceConstructor;
 	private TypeOps typeOps;
 
 	public TypeModel(Class<?> type) {
@@ -69,19 +71,19 @@ class TypeModel { // TODO: implements TypeInformation
 		this.constructors.add(constructor);
 	}
 
-	void doWithMethods(Consumer<Method> consumer) {
+	public void doWithMethods(Consumer<Method> consumer) {
 		methods.forEach(consumer);
 	}
 
-	void doWithFields(Consumer<Field> consumer) {
+	public void doWithFields(Consumer<Field> consumer) {
 		fields.forEach(consumer);
 	}
 
-	void doWithConstructors(Consumer<Constructor> consumer) {
+	public void doWithConstructors(Consumer<Constructor> consumer) {
 		constructors.forEach(consumer);
 	}
 
-	void doWithAnnotatedElements(Consumer<AnnotatedElement> consumer) {
+	public void doWithAnnotatedElements(Consumer<AnnotatedElement> consumer) {
 
 		consumer.accept(getType());
 		getConstructors().forEach(consumer);
@@ -131,7 +133,11 @@ class TypeModel { // TODO: implements TypeInformation
 
 	@Nullable
 	public Constructor getPersistenceConstructor() {
-		return persistenceConstructor.getNullable();
+
+		if(persistenceConstructor == null) {
+			persistenceConstructor = Optional.ofNullable(computePersistenceConstructor());
+		}
+		return persistenceConstructor.orElse(null);
 	}
 
 	private Constructor computePersistenceConstructor() {
@@ -150,7 +156,7 @@ class TypeModel { // TODO: implements TypeInformation
 				continue;
 			}
 
-			if (candidate.isAnnotationPresent(PersistenceConstructor.class)) {
+			if (MergedAnnotations.from(candidate).isPresent("org.springframework.data.annotation.PersistenceConstructor")) {
 				return candidate;
 			}
 
