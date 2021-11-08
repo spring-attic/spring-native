@@ -16,8 +16,12 @@
 
 package org.springframework.aot.test.context.bootstrap.generator;
 
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -45,5 +49,15 @@ public interface AotTestContextProcessor {
 	 * @see #supports(TestContextBootstrapper)
 	 */
 	GenericApplicationContext prepareTestContext(MergedContextConfiguration config);
+
+	/**
+	 * Write the necessary code to supply a {@link SmartContextLoader} for the specified
+	 * {@link MergedContextConfiguration} and root application context initializer class
+	 * name.
+	 * @param config the config to handle
+	 * @param applicationContextInitializer the {@link ClassName} of the root application
+	 * context initializer used to initialize the context at runtime.
+	 */
+	CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer);
 
 }

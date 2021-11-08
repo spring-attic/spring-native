@@ -35,7 +35,6 @@ import com.squareup.javapoet.TypeName;
 import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
-import org.springframework.aot.test.boot.SpringBootAotContextLoader;
 import org.springframework.aot.test.context.bootstrap.generator.nativex.TestNativeConfigurationRegistrar;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
@@ -104,11 +103,12 @@ public class TestContextAotProcessor {
 		TypeName mapType = ParameterizedTypeName.get(ClassName.get(Map.class),
 				ClassName.get(String.class), ParameterizedTypeName.get(Supplier.class, SmartContextLoader.class));
 		code.addStatement("$T entries = new $T<>()", mapType, HashMap.class);
-		// FIXME: assume Spring Boot support only
 		entries.forEach((className, descriptor) ->
-				descriptor.getTestClasses().forEach((testClass) ->
-						code.addStatement("entries.put($S, () -> new $T($T.class))",
-								testClass.getName(), SpringBootAotContextLoader.class, className)));
+				descriptor.getTestClasses().forEach((testClass) -> {
+					code.add("entries.put($S, ", testClass.getName());
+					code.add(descriptor.writeTestContextLoaderInstanceSupplier(className));
+					code.addStatement(")");
+				}));
 		code.addStatement("return entries");
 		return MethodSpec.methodBuilder("getContextLoaders").returns(mapType)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build()).build();

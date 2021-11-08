@@ -67,8 +67,7 @@ class TestContextConfigurationDescriptorFactory {
 				existingDescriptor.registerTestClass(testClass);
 			}
 			else {
-				descriptors.add(new TestContextConfigurationDescriptor(contextConfiguration,
-						() -> testContextProcessor.prepareTestContext(contextConfiguration)));
+				descriptors.add(new TestContextConfigurationDescriptor(contextConfiguration, testContextProcessor));
 			}
 		}
 		return descriptors;

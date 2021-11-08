@@ -18,7 +18,9 @@ package org.springframework.aot.test.context.bootstrap.generator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -32,13 +34,13 @@ class TestContextConfigurationDescriptor {
 
 	private final MergedContextConfiguration contextConfiguration;
 
-	private final Supplier<GenericApplicationContext> contextSupplier;
+	private final AotTestContextProcessor aotTestContextProcessor;
 
 	private final List<Class<?>> testClasses;
 
-	TestContextConfigurationDescriptor(MergedContextConfiguration configuration, Supplier<GenericApplicationContext> contextSupplier) {
+	TestContextConfigurationDescriptor(MergedContextConfiguration configuration, AotTestContextProcessor aotTestContextProcessor) {
 		this.contextConfiguration = configuration;
-		this.contextSupplier = contextSupplier;
+		this.aotTestContextProcessor = aotTestContextProcessor;
 		this.testClasses = new ArrayList<>();
 		this.testClasses.add(configuration.getTestClass());
 	}
@@ -48,7 +50,18 @@ class TestContextConfigurationDescriptor {
 	 * @return a parsed context (not refreshed)
 	 */
 	GenericApplicationContext parseTestContext() {
-		return this.contextSupplier.get();
+		return this.aotTestContextProcessor.prepareTestContext(this.contextConfiguration);
+	}
+
+	/**
+	 * Write the instance supplier for the context handled by this instance, using the
+	 * specified application context initializer
+	 * @param className the {@link ClassName} of the root application context initializer
+	 * used to initialize the context at runtime.
+	 * @return an instance supplier (lambda style)
+	 */
+	CodeBlock writeTestContextLoaderInstanceSupplier(ClassName className) {
+		return this.aotTestContextProcessor.writeInstanceSupplier(this.contextConfiguration, className);
 	}
 
 	/**

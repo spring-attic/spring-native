@@ -16,8 +16,8 @@
 
 package org.springframework.aot.test.context.bootstrap.generator;
 
-import java.util.function.Supplier;
-
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
@@ -30,6 +30,7 @@ import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDele
 import org.springframework.test.context.support.DefaultBootstrapContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,46 +43,63 @@ import static org.mockito.Mockito.verify;
 class TestContextConfigurationDescriptorTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void parseTestContextUseSupplier() {
-		Supplier<GenericApplicationContext> supplier = mock(Supplier.class);
+	void parseTestContextUseAotTestContextProcessor() {
+		MergedContextConfiguration mergedContextConfiguration = createMergedContextConfiguration(SampleApplicationTests.class);
 		GenericApplicationContext context = new GenericApplicationContext();
-		given(supplier.get()).willReturn(context);
+		AotTestContextProcessor aotTestContextProcessor = mock(AotTestContextProcessor.class);
+		given(aotTestContextProcessor.prepareTestContext(mergedContextConfiguration)).willReturn(context);
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
-				createMergedContextConfiguration(SampleApplicationTests.class), supplier);
+				mergedContextConfiguration, aotTestContextProcessor);
 		assertThat(descriptor.parseTestContext()).isSameAs(context);
-		verify(supplier).get();
+		verify(aotTestContextProcessor).prepareTestContext(mergedContextConfiguration);
+	}
+
+	@Test
+	void writeTestContextLoaderInstanceSupplierUseAotTestContextProcessor() {
+		MergedContextConfiguration mergedContextConfiguration = createMergedContextConfiguration(SampleApplicationTests.class);
+		ClassName className = ClassName.get("com.example", "TestInit");
+		AotTestContextProcessor aotTestContextProcessor = mock(AotTestContextProcessor.class);
+		given(aotTestContextProcessor.writeInstanceSupplier(mergedContextConfiguration, className)).willReturn(CodeBlock.of("test"));
+		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
+				mergedContextConfiguration, aotTestContextProcessor);
+		assertThat(descriptor.writeTestContextLoaderInstanceSupplier(className)).hasToString("test");
+		verify(aotTestContextProcessor).writeInstanceSupplier(mergedContextConfiguration, className);
 	}
 
 	@Test
 	void isSameWithEquivalentMergedContextConfiguration() {
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
-				createMergedContextConfiguration(SampleApplicationTests.class), GenericApplicationContext::new);
+				createMergedContextConfiguration(SampleApplicationTests.class), mockAotTestContextProcessor());
 		assertThat(descriptor.isSameContext(createMergedContextConfiguration(SampleApplicationAnotherTests.class))).isTrue();
 	}
 
 	@Test
 	void isSameWithDifferentMergedContextConfiguration() {
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
-				createMergedContextConfiguration(SampleApplicationTests.class), GenericApplicationContext::new);
+				createMergedContextConfiguration(SampleApplicationTests.class), mockAotTestContextProcessor());
 		assertThat(descriptor.isSameContext(createMergedContextConfiguration(SampleJdbcTests.class))).isFalse();
 	}
 
 	@Test
 	void getTestClassesContainOriginalTestClass() {
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
-				createMergedContextConfiguration(SampleApplicationTests.class), GenericApplicationContext::new);
+				createMergedContextConfiguration(SampleApplicationTests.class), mockAotTestContextProcessor());
 		assertThat(descriptor.getTestClasses()).containsOnly(SampleApplicationTests.class);
 	}
 
 	@Test
 	void registerTestClassAppendToList() {
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptor(
-				createMergedContextConfiguration(SampleApplicationTests.class), GenericApplicationContext::new);
+				createMergedContextConfiguration(SampleApplicationTests.class), mockAotTestContextProcessor());
 		descriptor.registerTestClass(SampleApplicationAnotherTests.class);
 		assertThat(descriptor.getTestClasses()).containsOnly(SampleApplicationTests.class, SampleApplicationAnotherTests.class);
 	}
 
+	private AotTestContextProcessor mockAotTestContextProcessor() {
+		AotTestContextProcessor aotTestContextProcessor = mock(AotTestContextProcessor.class);
+		given(aotTestContextProcessor.prepareTestContext(any())).willReturn(new GenericApplicationContext());
+		return aotTestContextProcessor;
+	}
 
 	private MergedContextConfiguration createMergedContextConfiguration(Class<?> testClass) {
 		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();

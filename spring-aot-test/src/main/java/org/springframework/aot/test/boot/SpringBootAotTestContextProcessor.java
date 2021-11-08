@@ -16,6 +16,9 @@
 
 package org.springframework.aot.test.boot;
 
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+
 import org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
@@ -48,6 +51,11 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to prepare test context using " + config, ex);
 		}
+	}
+
+	@Override
+	public CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer) {
+		return CodeBlock.of("() -> new $T($T.class)", SpringBootAotContextLoader.class, applicationContextInitializer);
 	}
 
 }
