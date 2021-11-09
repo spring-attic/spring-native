@@ -54,7 +54,7 @@ class TestExecutionListenerFactoriesCodeContributor implements FactoriesCodeCont
 	private void generateReflectionMetadata(SpringFactory factory, BuildContext context) {
 		String className = factory.getFactory().getClassName();
 		ClassDescriptor classDescriptor = ClassDescriptor.of(className);
-		classDescriptor.addMethodDescriptor(MethodDescriptor.of(MethodDescriptor.CONSTRUCTOR_NAME, (String[]) null));
+		classDescriptor.addMethodDescriptor(MethodDescriptor.defaultConstructor());
 		context.describeReflection(reflect -> reflect.add(classDescriptor));
 	}
 

@@ -24,18 +24,19 @@ import java.util.List;
 /**
  *
  * @author Andy Clement
+ * @author Sam Brannen
  */
 public final class MethodDescriptor extends MemberDescriptor {
 
 	public final static String CONSTRUCTOR_NAME = "<init>";
-	
+
 	public final static List<String> NO_PARAMS = Collections.emptyList();
-	
+
 	private List<String> parameterTypes; // e.g. char[], java.lang.String, java.lang.Object[]
 
 	MethodDescriptor() {
 	}
-	
+
 	MethodDescriptor(String name, List<String> parameterTypes) {
 		super(name);
 		this.parameterTypes = parameterTypes;
@@ -44,7 +45,7 @@ public final class MethodDescriptor extends MemberDescriptor {
 	public List<String> getParameterTypes() {
 		return this.parameterTypes;
 	}
-	
+
 	public void setParameterTypes(List<String> parameterTypes) {
 		this.parameterTypes = parameterTypes;
 	}
@@ -78,7 +79,7 @@ public final class MethodDescriptor extends MemberDescriptor {
 		buildToStringProperty(string, "parameterTypes", this.parameterTypes);
 		return string.toString();
 	}
-	
+
 	public static MethodDescriptor of(String name, String... parameterTypes) {
 		MethodDescriptor md = new MethodDescriptor();
 		md.setName(name);
@@ -89,7 +90,7 @@ public final class MethodDescriptor extends MemberDescriptor {
 		}
 		return md;
 	}
-	
+
 	public static MethodDescriptor of(String...nameAndParameterTypes) {
 		MethodDescriptor md = new MethodDescriptor();
 		md.setName(nameAndParameterTypes[0]);
@@ -99,6 +100,15 @@ public final class MethodDescriptor extends MemberDescriptor {
 			md.setParameterTypes(NO_PARAMS);
 		}
 		return md;
+	}
+
+	/**
+	 * Create a {@link MethodDescriptor} for the default no-argument constructor.
+	 * @see #CONSTRUCTOR_NAME
+	 * @see #of(String, String...)
+	 */
+	public static MethodDescriptor defaultConstructor() {
+		return of(CONSTRUCTOR_NAME, (String[]) null);
 	}
 
 	public static String[][] toStringArray(List<org.springframework.nativex.type.MethodDescriptor> methods) {
@@ -145,5 +155,5 @@ public final class MethodDescriptor extends MemberDescriptor {
 		parameterTypesCopy.addAll(parameterTypes);
 		return new MethodDescriptor(name, parameterTypesCopy);
 	}
-	
+
 }
