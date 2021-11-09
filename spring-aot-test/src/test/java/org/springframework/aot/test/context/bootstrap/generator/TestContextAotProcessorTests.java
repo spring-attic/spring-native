@@ -17,6 +17,7 @@
 package org.springframework.aot.test.context.bootstrap.generator;
 
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,10 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.aot.test.context.bootstrap.generator.test.ContextBootstrapStructure;
 import org.springframework.aot.test.context.bootstrap.generator.test.TestContextAotProcessorTester;
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
+import org.springframework.aot.test.samples.app.SampleApplicationIntegrationTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
+import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,6 +98,37 @@ class TestContextAotProcessorTests {
 	void processInvokeTestNativeConfigurationRegistrar() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasResourcePattern("org/springframework/aot/test/samples/app/SampleApplication.class");
+	}
+
+	@Test
+	void processRegisterReflectionForContextLoadersMappingMethod() {
+		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
+		assertThat(structure).hasClassDescriptor("com.example.TestContextBootstrapInitializer", (descriptor) -> {
+			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+				assertThat(methodDescriptor.getName()).isEqualTo("getContextLoaders");
+				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
+			});
+			assertThat(descriptor.getFlags()).isNull();
+			assertThat(descriptor.getFields()).isNull();
+		});
+	}
+
+	@Test
+	void processRegisterReflectionForContextInitializerClassName() {
+		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class, SampleJdbcTests.class);
+		assertThat(structure).hasClassDescriptor("com.example.SampleApplicationTestsContextInitializer", assertContextInitializerMetadata());
+		assertThat(structure).hasClassDescriptor("com.example.SampleJdbcTestsContextInitializer", assertContextInitializerMetadata());
+	}
+
+	private Consumer<ClassDescriptor> assertContextInitializerMetadata() {
+		return (descriptor) -> {
+			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
+				assertThat(methodDescriptor.getName()).isEqualTo("<init>");
+				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
+			});
+			assertThat(descriptor.getFlags()).isNull();
+			assertThat(descriptor.getFields()).isNull();
+		};
 	}
 
 }

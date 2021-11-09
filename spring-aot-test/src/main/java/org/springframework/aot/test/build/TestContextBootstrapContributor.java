@@ -30,15 +30,12 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Defaul
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.util.ClassUtils;
 
 /**
  * Adapter class that calls {@link TestContextAotProcessor}
  *
  * @author Brian Clozel
- * @author Sam Brannen
  */
 public class TestContextBootstrapContributor implements BootstrapContributor {
 
@@ -72,12 +69,6 @@ public class TestContextBootstrapContributor implements BootstrapContributor {
 		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(nativeConfigurationRegistry.initialization().toInitializationDescriptor()));
 		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(nativeConfigurationRegistry.serialization().toSerializationDescriptor()));
 		context.describeJNIReflection(reflectionDescriptor -> nativeConfigurationRegistry.jni().toClassDescriptors().forEach(reflectionDescriptor::merge));
-
-		// Register reflection configuration for generated TestContextBootstrapInitializer class.
-		// See https://github.com/spring-projects-experimental/spring-native/issues/1235
-		ClassDescriptor classDescriptor = ClassDescriptor.of("org.springframework.aot.TestContextBootstrapInitializer");
-		classDescriptor.addMethodDescriptor(MethodDescriptor.of("getContextLoaders", (String[]) null));
-		context.describeReflection(reflect -> reflect.add(classDescriptor));
 	}
 
 	@Override

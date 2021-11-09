@@ -35,6 +35,7 @@ import com.squareup.javapoet.TypeName;
 import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
 import org.springframework.aot.test.context.bootstrap.generator.nativex.TestNativeConfigurationRegistrar;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
@@ -68,23 +69,33 @@ public class TestContextAotProcessor {
 	 * @param writerContext the writer context to use
 	 */
 	public void generateTestContexts(Iterable<Class<?>> testClasses, BootstrapWriterContext writerContext) {
+		ReflectionConfiguration reflection = writerContext.getNativeConfigurationRegistry().reflection();
 		List<TestContextConfigurationDescriptor> descriptors = this.configurationDescriptorFactory.buildConfigurationDescriptors(testClasses);
 		AtomicInteger count = new AtomicInteger();
 		Supplier<String> fallbackClassName = () -> TEST_BOOTSTRAP_CLASS_NAME + count.getAndIncrement();
 		Map<ClassName, TestContextConfigurationDescriptor> entries = new HashMap<>();
 		for (TestContextConfigurationDescriptor descriptor : descriptors) {
 			ClassName className = generateTestContext(writerContext, fallbackClassName, descriptor);
+			reflection.forGeneratedType(className).withMethods(MethodSpec.constructorBuilder().build());
 			entries.put(className, descriptor);
 		}
+		generateContextLoadersMapping(writerContext, entries);
+
+		this.testNativeConfigurationRegistrar.processTestConfigurations(writerContext.getNativeConfigurationRegistry(),
+				entries.values().stream().map(TestContextConfigurationDescriptor::getContextConfiguration).collect(Collectors.toList()));
+	}
+
+	private void generateContextLoadersMapping(BootstrapWriterContext writerContext, Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		BootstrapWriterContext mainWriterContext = writerContext.fork(
 				TEST_BOOTSTRAP_CLASS_NAME, (packageName) -> {
 					ClassName mainClassName = ClassName.get(packageName, TEST_BOOTSTRAP_CLASS_NAME);
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
 				});
-		mainWriterContext.getMainBootstrapClass().addMethod(generateContextLoadersMappingMethod(entries));
-
-		this.testNativeConfigurationRegistrar.processTestConfigurations(writerContext.getNativeConfigurationRegistry(),
-				entries.values().stream().map(TestContextConfigurationDescriptor::getContextConfiguration).collect(Collectors.toList()));
+		MethodSpec method = generateContextLoadersMappingMethod(entries);
+		BootstrapClass boostrapClass = mainWriterContext.getMainBootstrapClass();
+		boostrapClass.addMethod(method);
+		writerContext.getNativeConfigurationRegistry().reflection()
+				.forGeneratedType(boostrapClass.getClassName()).withMethods(method);
 	}
 
 	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<String> fallbackClassName,

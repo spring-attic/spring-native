@@ -74,9 +74,13 @@ public class ContextBootstrapAssert extends AbstractPathAssert<ContextBootstrapA
 		return this.myself;
 	}
 
-	public ContextBootstrapAssert hasClassDescriptor(Class<?> type, Consumer<ClassDescriptor> assertions) {
-		this.classDescriptors.hasEntrySatisfying(type.getName(), assertions);
+	public ContextBootstrapAssert hasClassDescriptor(String type, Consumer<ClassDescriptor> assertions) {
+		this.classDescriptors.containsKey(type).hasEntrySatisfying(type, assertions);
 		return this.myself;
+	}
+
+	public ContextBootstrapAssert hasClassDescriptor(Class<?> type, Consumer<ClassDescriptor> assertions) {
+		return hasClassDescriptor(type.getName(), assertions);
 	}
 
 	public TextAssert contextBootstrapInitializer(String name) {
