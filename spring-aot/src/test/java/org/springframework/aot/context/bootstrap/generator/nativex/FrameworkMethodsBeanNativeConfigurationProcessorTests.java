@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -43,7 +43,8 @@ public class FrameworkMethodsBeanNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(FooController.class).build());
 		Method fooMethod = FooController.class.getDeclaredMethod("foo");
 		Method barMethod = AbstractController.class.getDeclaredMethod("bar");
-		assertThat(registry.reflection().getEntries()).hasSize(2).anySatisfy(method(fooMethod)).anySatisfy(method(barMethod));
+		assertThat(registry.reflection().reflectionEntries()).hasSize(2)
+				.anySatisfy(method(fooMethod)).anySatisfy(method(barMethod));
 	}
 
 	private NativeConfigurationRegistry register(BeanInstanceDescriptor descriptor) {
@@ -52,7 +53,7 @@ public class FrameworkMethodsBeanNativeConfigurationProcessorTests {
 		return registry;
 	}
 
-	private Consumer<NativeReflectionEntry> method(Method method) {
+	private Consumer<DefaultNativeReflectionEntry> method(Method method) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(method.getDeclaringClass());
 			assertThat(entry.getFlags()).isEmpty();

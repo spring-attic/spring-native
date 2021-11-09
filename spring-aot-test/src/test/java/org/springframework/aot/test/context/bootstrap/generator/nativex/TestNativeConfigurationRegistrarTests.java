@@ -55,7 +55,7 @@ class TestNativeConfigurationRegistrarTests {
 		CustomSpringFactoriesClassLoader classLoader = new CustomSpringFactoriesClassLoader("test-configuration-processors.factories");
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new TestNativeConfigurationRegistrar(classLoader).processTestConfigurations(registry, List.of(mock(MergedContextConfiguration.class)));
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) ->
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) ->
 				assertThat(entry.getType()).isEqualTo(TestNativeConfigurationRegistrarTests.class));
 	}
 

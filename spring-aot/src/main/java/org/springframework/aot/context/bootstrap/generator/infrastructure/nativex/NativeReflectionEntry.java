@@ -16,103 +16,36 @@
 
 package org.springframework.aot.context.bootstrap.generator.infrastructure.nativex;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ConditionDescriptor;
-import org.springframework.nativex.domain.reflect.FieldDescriptor;
-import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.Flag;
 
 /**
- * Describe the need for reflection for a particular {@link Class type}.
+ * Describe the need for reflection for a particular type.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/">GraalVM native image reflection documentation</a>
+ * @see DefaultNativeReflectionEntry
+ * @see GeneratedCodeNativeReflectionEntry
  */
-public class NativeReflectionEntry {
-
-	private static final String CONSTRUCTOR_NAME = "<init>";
-
-	private final Class<?> type;
-
-	private Class<?> conditionalOnTypeReachable;
-
-	private final Set<Constructor<?>> constructors;
-
-	private final Set<Constructor<?>> queriedConstructors;
-
-	private final Set<Method> methods;
-
-	private final Set<Method> queriedMethods;
-
-	private final Set<Field> fields;
+public abstract class NativeReflectionEntry {
 
 	private final Set<Flag> flags;
 
-	private NativeReflectionEntry(Builder builder) {
-		this.type = builder.type;
-		this.conditionalOnTypeReachable = builder.conditionalOnTypeReachable;
-		this.constructors = Collections.unmodifiableSet(builder.constructors);
-		this.queriedConstructors = Collections.unmodifiableSet(builder.queriedConstructors);
-		this.methods = Collections.unmodifiableSet(builder.methods);
-		this.queriedMethods = Collections.unmodifiableSet(builder.queriedMethods);
-		this.fields = Collections.unmodifiableSet(builder.fields);
+	private final String conditionalOnTypeReachable;
+
+	protected NativeReflectionEntry(Builder<?, ?> builder) {
 		this.flags = Collections.unmodifiableSet(builder.flags);
-	}
-
-	/**
-	 * Create a new {@link Builder} for the specified type.
-	 * @param type the type to consider
-	 * @return a new builder
-	 */
-	public static Builder of(Class<?> type) {
-		return new Builder(type);
-	}
-
-	/**
-	 * Return the type to consider.
-	 * @return the type to consider
-	 */
-	public Class<?> getType() {
-		return this.type;
-	}
-
-	/**
-	 * Return the {@link Constructor constructor}.
-	 * @return the constructors
-	 */
-	public Set<Constructor<?>> getConstructors() {
-		return this.constructors;
-	}
-
-	/**
-	 * Return the {@link Method methods}.
-	 * @return the methods
-	 */
-	public Set<Method> getMethods() {
-		return this.methods;
-	}
-
-	/**
-	 * Return the {@link Field fields}.
-	 * @return the fields
-	 */
-	public Set<Field> getFields() {
-		return this.fields;
+		this.conditionalOnTypeReachable = builder.conditionalOnTypeReachable;
 	}
 
 	/**
@@ -124,153 +57,54 @@ public class NativeReflectionEntry {
 	}
 
 	/**
-	 * Create a {@link ClassDescriptor} from this entry
+	 * Create a {@link ClassDescriptor} from this entry.
 	 * @return a class descriptor describing this entry
 	 */
 	public ClassDescriptor toClassDescriptor() {
-		ClassDescriptor descriptor = ClassDescriptor.of(this.type);
-		if (conditionalOnTypeReachable != null) {
-			descriptor.setCondition(new ConditionDescriptor(conditionalOnTypeReachable.getName()));
+		ClassDescriptor descriptor = initializerClassDescriptor();
+		if (this.conditionalOnTypeReachable != null) {
+			descriptor.setCondition(new ConditionDescriptor(this.conditionalOnTypeReachable));
 		}
-		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
-				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
-		registerIfNecessary(this.queriedConstructors, Flag.queryAllDeclaredConstructors, Flag.queryAllPublicConstructors,
-				(constructor) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(constructor)));
-		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
-				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
-		registerIfNecessary(this.queriedMethods, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
-				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
-		registerIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
-				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
 		descriptor.setFlags(this.flags);
 		return descriptor;
 	}
 
-	private <T extends Member> void registerIfNecessary(Iterable<T> members, Flag allFlag,
-			Flag publicFlag, Consumer<T> memberConsumer) {
+	protected abstract ClassDescriptor initializerClassDescriptor();
+
+	protected <T> void registerIfNecessary(Iterable<T> members, Flag allFlag,
+			Flag publicFlag, Predicate<T> isPublicMember, Consumer<T> memberConsumer) {
 		if (!this.flags.contains(allFlag)) {
 			boolean checkVisibility = this.flags.contains(publicFlag);
 			for (T member : members) {
-				if (!checkVisibility || !Modifier.isPublic(member.getModifiers())) {
+				if (!checkVisibility || !isPublicMember.test(member)) {
 					memberConsumer.accept(member);
 				}
 			}
 		}
 	}
 
-	private MethodDescriptor toMethodDescriptor(Executable method) {
-		String name = (method instanceof Constructor) ? CONSTRUCTOR_NAME : method.getName();
-		return MethodDescriptor.of(name, Arrays.stream(method.getParameterTypes())
-				.map(Class::getName).toArray(String[]::new));
-	}
-
-	private FieldDescriptor toFieldDescriptor(Field field) {
-		return FieldDescriptor.of(field.getName(), true, false);
-	}
-
-	@Override
-	public String toString() {
-		return new StringJoiner(", ", NativeReflectionEntry.class.getSimpleName() + "[", "]")
-				.add("type=" + this.type).add("constructors=" + this.constructors)
-				.add("methods=" + this.methods).add("fields=" + this.fields)
-				.add("queriedConstructors=" + this.queriedConstructors).add("queriedMethods=" + this.queriedMethods)
-				.add("flags=" + this.flags).toString();
-	}
-
-	public static class Builder {
-
-		private final Class<?> type;
-
-		private Class<?> conditionalOnTypeReachable;
-
-		private final Set<Constructor<?>> constructors = new LinkedHashSet<>();
-
-		private final Set<Constructor<?>> queriedConstructors = new LinkedHashSet<>();
-
-		private final Set<Method> methods = new LinkedHashSet<>();
-
-		private final Set<Method> queriedMethods = new LinkedHashSet<>();
-
-		private final Set<Field> fields = new LinkedHashSet<>();
+	public abstract static class Builder<B extends Builder<B, T>, T extends NativeReflectionEntry> {
 
 		private final Set<Flag> flags = new LinkedHashSet<>();
 
-		Builder(Class<?> type) {
-			this.type = type;
-		}
-
-		/**
-		 * Makes this entry conditional to provided type.
-		 * @param conditionalOnTypeReachable The type which should make this entry taken in account.
-		 * @return this for method chaining
-		 */
-		public Builder conditionalOnTypeReachable(Class<?> conditionalOnTypeReachable) {
-			this.conditionalOnTypeReachable = conditionalOnTypeReachable;
-			return this;
-		}
-
-
-		/**
-		 * Add the specified {@link Executable methods or constructors}.
-		 * @param executables the executables to add
-		 * @return this for method chaining
-		 */
-		public Builder withExecutables(Executable... executables) {
-			Arrays.stream(executables).forEach((executable) -> {
-				if (executable instanceof Method) {
-					this.methods.add((Method) executable);
-				}
-				else if (executable instanceof Constructor) {
-					this.constructors.add((Constructor<?>) executable);
-				}
-			});
-			return this;
-		}
-
-		/**
-		 * Add the specified {@link Executable methods or constructors} for metadata query access only.
-		 * @param executables the executables to add
-		 * @return this for method chaining
-		 */
-		public Builder withQueriedExecutables(Executable... executables) {
-			Arrays.stream(executables).forEach((executable) -> {
-				if (executable instanceof Method) {
-					this.queriedMethods.add((Method) executable);
-				}
-				else if (executable instanceof Constructor) {
-					this.queriedConstructors.add((Constructor<?>) executable);
-				}
-			});
-			return this;
-		}
-
-		/**
-		 * Add the specified {@link Field fields}.
-		 * @param fields the fields to add
-		 * @return this for method chaining
-		 */
-		public Builder withFields(Field... fields) {
-			this.fields.addAll(Arrays.asList(fields));
-			return this;
-		}
+		protected String conditionalOnTypeReachable;
 
 		/**
 		 * Set the specified {@link Flag flags}.
 		 * @param flags the flags to set
 		 * @return this for method chaining
 		 */
-		public Builder withFlags(Flag... flags) {
+		public B withFlags(Flag... flags) {
 			this.flags.addAll(Arrays.asList(flags));
-			return this;
+			return self();
 		}
 
-		/**
-		 * Create a {@link NativeReflectionEntry} from the state of this builder
-		 * @return a new entry
-		 */
-		public NativeReflectionEntry build() {
-			return new NativeReflectionEntry(this);
+		@SuppressWarnings("unchecked")
+		protected B self() {
+			return (B) this;
 		}
+
+		abstract T build();
 
 	}
 

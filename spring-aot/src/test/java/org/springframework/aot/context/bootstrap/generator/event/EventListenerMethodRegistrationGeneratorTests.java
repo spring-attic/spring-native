@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.event.AnotherEventListener;
 import org.springframework.aot.context.bootstrap.generator.sample.event.SingleEventListener;
@@ -166,7 +167,8 @@ class EventListenerMethodRegistrationGeneratorTests {
 		beanFactory.registerBeanDefinition("another", BeanDefinitionBuilder.rootBeanDefinition(AnotherEventListener.class)
 				.getBeanDefinition());
 		assertGeneratedCode(beanFactory, (code, writerContext) -> {
-			List<NativeReflectionEntry> entries = writerContext.getNativeConfigurationRegistry().reflection().getEntries();
+			List<DefaultNativeReflectionEntry> entries = writerContext.getNativeConfigurationRegistry()
+					.reflection().reflectionEntries().collect(Collectors.toList());
 			assertThat(entries).hasSize(2);
 			assertThat(entries).anySatisfy((entry) -> {
 				assertThat(entry.getType()).isEqualTo(SingleEventListener.class);

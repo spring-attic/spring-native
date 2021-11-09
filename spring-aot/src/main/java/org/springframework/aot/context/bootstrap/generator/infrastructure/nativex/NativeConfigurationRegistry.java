@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.squareup.javapoet.ClassName;
 
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
@@ -118,10 +121,13 @@ public class NativeConfigurationRegistry {
 	 */
 	public static final class ReflectionConfiguration {
 
-		private final Map<Class<?>, NativeReflectionEntry.Builder> reflection;
+		private final Map<Class<?>, DefaultNativeReflectionEntry.Builder> reflection;
+
+		private final Map<ClassName, GeneratedCodeNativeReflectionEntry.Builder> generatedCodeReflection;
 
 		private ReflectionConfiguration() {
 			this.reflection = new LinkedHashMap<>();
+			this.generatedCodeReflection = new LinkedHashMap<>();
 		}
 
 		/**
@@ -155,22 +161,40 @@ public class NativeConfigurationRegistry {
 		}
 
 		/**
-		 * Return the {@link NativeReflectionEntry.Builder} to further describe the specified
-		 * type.
+		 * Return the {@link DefaultNativeReflectionEntry.Builder} to further describe the
+		 * specified type.
 		 * @param type a type to provide runtime reflection for
 		 * @return a builder to further describe the need for runtime reflection
 		 */
-		public NativeReflectionEntry.Builder forType(Class<?> type) {
-			return this.reflection.computeIfAbsent(type, NativeReflectionEntry.Builder::new);
+		public DefaultNativeReflectionEntry.Builder forType(Class<?> type) {
+			return this.reflection.computeIfAbsent(type, DefaultNativeReflectionEntry.Builder::new);
 		}
 
 		/**
-		 * Return the {@link NativeReflectionEntry entries} of this registry.
+		 * Return the {@link GeneratedCodeNativeReflectionEntry.Builder} to further
+		 * describe the specified {@link ClassName}.
+		 * @param className a generated type to provide runtime reflection for
+		 * @return a builder to further describe the need for runtime reflection
+		 */
+		public GeneratedCodeNativeReflectionEntry.Builder forGeneratedType(ClassName className) {
+			return this.generatedCodeReflection.computeIfAbsent(className, GeneratedCodeNativeReflectionEntry.Builder::new);
+		}
+
+		/**
+		 * Return the {@link DefaultNativeReflectionEntry entries} of this registry.
 		 * @return the entries in the registry
 		 */
-		public List<NativeReflectionEntry> getEntries() {
-			return this.reflection.values().stream().map(NativeReflectionEntry.Builder::build)
-					.collect(Collectors.toList());
+		public Stream<DefaultNativeReflectionEntry> reflectionEntries() {
+			return this.reflection.values().stream().map(DefaultNativeReflectionEntry.Builder::build);
+		}
+
+		/**
+		 * Return the generated code {@link GeneratedCodeNativeReflectionEntry entries} of
+		 * this registry.
+		 * @return the entries in the registry for generated code
+		 */
+		public Stream<GeneratedCodeNativeReflectionEntry> generatedCodeEntries() {
+			return this.generatedCodeReflection.values().stream().map(GeneratedCodeNativeReflectionEntry.Builder::build);
 		}
 
 		/**
@@ -178,8 +202,8 @@ public class NativeConfigurationRegistry {
 		 * @return the classes entries in the registry, as {@link ClassDescriptor} instances
 		 */
 		public List<ClassDescriptor> toClassDescriptors() {
-			return this.reflection.values().stream().map((builder) -> builder.build()
-					.toClassDescriptor()).collect(Collectors.toList());
+			return Stream.concat(reflectionEntries(), generatedCodeEntries())
+					.map(NativeReflectionEntry::toClassDescriptor).collect(Collectors.toList());
 		}
 
 	}

@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.SpringProxy;
@@ -44,7 +46,7 @@ class NativeConfigurationRegistryTests {
 	void addMethodUseDeclaringClass() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "setName", String.class);
 		registry.reflection().addExecutable(method);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
 			assertThat(entry.getMethods()).containsOnly(method);
 			assertThat(entry.getFields()).isEmpty();
@@ -55,7 +57,7 @@ class NativeConfigurationRegistryTests {
 	void addFieldUseDeclaringClass() {
 		Field field = ReflectionUtils.findField(TestClass.class, "field");
 		registry.reflection().addField(field);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).contains(field);
@@ -80,6 +82,33 @@ class NativeConfigurationRegistryTests {
 					assertThat(methodDescriptor.getName()).isEqualTo("decode"));
 			assertThat(descriptor.getFields()).isNull();
 		});
+	}
+
+	@Test
+	void getClassDescriptorsMapAllEntries() {
+		registry.reflection().forType(String.class).withFields(ReflectionUtils.findField(String.class, "value"));
+		registry.reflection().forGeneratedType(ClassName.get("com.example", "Test")).withFields(FieldSpec.builder(String.class, "generated").build());
+		registry.reflection().forType(Integer.class).withExecutables(ReflectionUtils.findMethod(Integer.class, "decode", String.class));
+		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
+		assertThat(classDescriptors).anySatisfy((descriptor) -> {
+			assertThat(descriptor.getName()).isEqualTo(String.class.getName());
+			assertThat(descriptor.getMethods()).isNull();
+			assertThat(descriptor.getFields()).singleElement().satisfies((fieldDescriptor) ->
+					assertThat(fieldDescriptor.getName()).isEqualTo("value"));
+		});
+		assertThat(classDescriptors).anySatisfy((descriptor) -> {
+			assertThat(descriptor.getName()).isEqualTo(Integer.class.getName());
+			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) ->
+					assertThat(methodDescriptor.getName()).isEqualTo("decode"));
+			assertThat(descriptor.getFields()).isNull();
+		});
+		assertThat(classDescriptors).anySatisfy((descriptor) -> {
+			assertThat(descriptor.getName()).isEqualTo("com.example.Test");
+			assertThat(descriptor.getMethods()).isNull();
+			assertThat(descriptor.getFields()).singleElement().satisfies((fieldDescriptor) ->
+					assertThat(fieldDescriptor.getName()).isEqualTo("generated"));
+		});
+		assertThat(classDescriptors).hasSize(3);
 	}
 
 	@Test
@@ -115,9 +144,9 @@ class NativeConfigurationRegistryTests {
 		registry.proxy().add(NativeProxyEntry.ofInterfaces(SpringProxy.class));
 		registry.proxy().add(NativeProxyEntry.ofInterfaces(SpringProxy.class, Advised.class));
 		assertThat(registry.proxy().toProxiesDescriptor()).satisfies((proxiesDescriptor) ->
-			assertThat(proxiesDescriptor.getProxyDescriptors()).anySatisfy(jdkProxyDescriptor ->
-					assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName()))
-					.anySatisfy(jdkProxyDescriptor -> assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName())).hasSize(2)
+				assertThat(proxiesDescriptor.getProxyDescriptors()).anySatisfy(jdkProxyDescriptor ->
+								assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName()))
+						.anySatisfy(jdkProxyDescriptor -> assertThat(jdkProxyDescriptor.getTypes()).containsExactly(SpringProxy.class.getName())).hasSize(2)
 		);
 	}
 
@@ -133,8 +162,8 @@ class NativeConfigurationRegistryTests {
 		registry.initialization().add(NativeInitializationEntry.ofRuntimeType(String.class));
 		registry.initialization().add(NativeInitializationEntry.ofBuildTimePackage("foo.bar"));
 		assertThat(registry.initialization().toInitializationDescriptor()).satisfies((initializationDescriptor) -> {
-					assertThat(initializationDescriptor.getRuntimeClasses()).singleElement().isEqualTo(String.class.getName());
-					assertThat(initializationDescriptor.getBuildtimePackages()).singleElement().isEqualTo("foo.bar");
+			assertThat(initializationDescriptor.getRuntimeClasses()).singleElement().isEqualTo(String.class.getName());
+			assertThat(initializationDescriptor.getBuildtimePackages()).singleElement().isEqualTo("foo.bar");
 		});
 	}
 

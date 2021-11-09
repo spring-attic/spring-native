@@ -55,7 +55,7 @@ class EventListenerMetadataGeneratorTests {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		Method method = ReflectionUtils.findMethod(AnotherEventListener.class, "onRefresh");
 		new EventListenerMetadataGenerator("test", AnotherEventListener.class, method, null).registerReflectionMetadata(registry);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(AnotherEventListener.class);
 			assertThat(entry.getMethods()).containsOnly(method);
 			assertThat(entry.getFields()).isEmpty();

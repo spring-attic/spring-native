@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.beans.PropertyValue;
@@ -52,7 +52,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		Constructor<?> instanceCreator = InjectionComponent.class.getDeclaredConstructors()[0];
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).isEmpty();
@@ -66,7 +66,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		Method injectionPoint = ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class);
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(injectionPoint);
@@ -80,7 +80,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		Method injectionPoint = ReflectionUtils.findMethod(IntegerFactoryBean.class, "setNamingStrategy", String.class);
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
 			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).containsOnly(injectionPoint);
@@ -91,7 +91,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).hasSize(2);
+		assertThat(registry.reflection().reflectionEntries()).hasSize(2);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		Field injectionPoint = ReflectionUtils.findField(InjectionComponent.class, "counter");
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionComponent.class);
 			assertThat(entry.getConstructors()).containsOnly(instanceCreator);
 			assertThat(entry.getMethods()).isEmpty();
@@ -114,7 +114,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		Field injectionPoint = ReflectionUtils.findField(IntegerFactoryBean.class, "strategy");
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
 			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).isEmpty();
@@ -125,7 +125,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 			assertThat(entry.getConstructors()).containsOnly(instanceCreator);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).hasSize(2);
+		assertThat(registry.reflection().reflectionEntries()).hasSize(2);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(IntegerFactoryBean.class)
 				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
 				.build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
 			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).containsOnly(nameWriteMethod);
@@ -146,7 +146,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).hasSize(2);
+		assertThat(registry.reflection().reflectionEntries()).hasSize(2);
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionConfiguration.class)
 				.withInstanceCreator(instanceCreator).withProperty(nameWriteMethod, new PropertyValue("name", "Hello"))
 				.withProperty(counterWriteMethod, new PropertyValue("counter", 42)).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(nameWriteMethod, counterWriteMethod);
@@ -172,20 +172,20 @@ class DefaultBeanNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionConfiguration.class)
 				.withInstanceCreator(instanceCreator).withProperty(counterWriteMethod, new PropertyValue("counter",
 						BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition())).build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(counterWriteMethod);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
 			assertThat(entry.getMethods()).containsOnly(ReflectionUtils.findMethod(
 					BaseFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
-		assertThat(registry.reflection().getEntries()).hasSize(3);
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
+		assertThat(registry.reflection().reflectionEntries()).hasSize(3);
 	}
 
 	@Test
@@ -197,24 +197,24 @@ class DefaultBeanNativeConfigurationProcessorTests {
 						List.of(BeanDefinitionBuilder.rootBeanDefinition(IntegerFactoryBean.class).getBeanDefinition(),
 								BeanDefinitionBuilder.rootBeanDefinition(AnotherIntegerFactoryBean.class).getBeanDefinition())))
 				.build());
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(InjectionConfiguration.class);
 			assertThat(entry.getConstructors()).contains(instanceCreator);
 			assertThat(entry.getMethods()).containsOnly(countersWriteMethod);
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(BaseFactoryBean.class);
 			assertThat(entry.getMethods()).containsOnly(ReflectionUtils.findMethod(
 					BaseFactoryBean.class, "setNamingStrategy", String.class));
 			assertThat(entry.getFields()).isEmpty();
 		});
-		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
-		assertThat(registry.reflection().getEntries()).anySatisfy(defaultConstructor(AnotherIntegerFactoryBean.class));
-		assertThat(registry.reflection().getEntries()).hasSize(4);
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy(defaultConstructor(IntegerFactoryBean.class));
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy(defaultConstructor(AnotherIntegerFactoryBean.class));
+		assertThat(registry.reflection().reflectionEntries()).hasSize(4);
 	}
 
-	private Consumer<NativeReflectionEntry> defaultConstructor(Class<?> type) {
+	private Consumer<DefaultNativeReflectionEntry> defaultConstructor(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);

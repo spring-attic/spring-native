@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -111,7 +111,7 @@ class InitDestroyMethodsDiscovererTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerInitMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class InitDestroyMethodsDiscovererTests {
 		beanDefinition.setDestroyMethodName("(inferred)");
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -172,7 +172,7 @@ class InitDestroyMethodsDiscovererTests {
 		beanDefinition.setDestroyMethodName("(inferred)");
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -201,7 +201,7 @@ class InitDestroyMethodsDiscovererTests {
 		beanDefinition.setDestroyMethodName("(inferred)");
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -209,7 +209,7 @@ class InitDestroyMethodsDiscovererTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(AutoClosableSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class InitDestroyMethodsDiscovererTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
 		Map<String, List<Method>> methods = createInstance("test", beanDefinition).registerDestroyMethods(registry);
 		assertThat(methods).isEmpty();
-		assertThat(this.registry.reflection().getEntries()).isEmpty();
+		assertThat(this.registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -229,8 +229,8 @@ class InitDestroyMethodsDiscovererTests {
 				.withMessageContaining("Lifecycle method annotation 'doesNotExist' not found");
 	}
 
-	private void hasSingleNativeReflectionEntry(Consumer<NativeReflectionEntry> assertions) {
-		assertThat(this.registry.reflection().getEntries()).singleElement().satisfies(assertions);
+	private void hasSingleNativeReflectionEntry(Consumer<DefaultNativeReflectionEntry> assertions) {
+		assertThat(this.registry.reflection().reflectionEntries()).singleElement().satisfies(assertions);
 	}
 
 	private void hasSingleNativeReflectionEntry(Class<?> type, Method... methods) {

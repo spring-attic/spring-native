@@ -1,0 +1,238 @@
+/*
+ * Copyright 2019-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.aot.context.bootstrap.generator.infrastructure.nativex;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.Consumer;
+
+import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.FieldDescriptor;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
+import org.springframework.nativex.hint.Flag;
+
+/**
+ * A {@link NativeReflectionEntry} that uses standard reflection.
+ *
+ * @author Brian Clozel
+ * @author Stephane Nicoll
+ * @author Sebastien Deleuze
+ */
+public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
+
+	private static final String CONSTRUCTOR_NAME = "<init>";
+
+	private final Class<?> type;
+
+	private final Set<Constructor<?>> constructors;
+
+	private final Set<Constructor<?>> queriedConstructors;
+
+	private final Set<Method> methods;
+
+	private final Set<Method> queriedMethods;
+
+	private final Set<Field> fields;
+
+
+	private DefaultNativeReflectionEntry(Builder builder) {
+		super(builder);
+		this.type = builder.type;
+		this.constructors = Collections.unmodifiableSet(builder.constructors);
+		this.queriedConstructors = Collections.unmodifiableSet(builder.queriedConstructors);
+		this.methods = Collections.unmodifiableSet(builder.methods);
+		this.queriedMethods = Collections.unmodifiableSet(builder.queriedMethods);
+		this.fields = Collections.unmodifiableSet(builder.fields);
+
+	}
+
+	/**
+	 * Create a new {@link Builder} for the specified type.
+	 * @param type the type to consider
+	 * @return a new builder
+	 */
+	public static Builder of(Class<?> type) {
+		return new Builder(type);
+	}
+
+	/**
+	 * Return the type to consider.
+	 * @return the type to consider
+	 */
+	public Class<?> getType() {
+		return this.type;
+	}
+
+	/**
+	 * Return the {@link Constructor constructor}.
+	 * @return the constructors
+	 */
+	public Set<Constructor<?>> getConstructors() {
+		return this.constructors;
+	}
+
+	/**
+	 * Return the {@link Method methods}.
+	 * @return the methods
+	 */
+	public Set<Method> getMethods() {
+		return this.methods;
+	}
+
+	/**
+	 * Return the {@link Field fields}.
+	 * @return the fields
+	 */
+	public Set<Field> getFields() {
+		return this.fields;
+	}
+
+	@Override
+	protected ClassDescriptor initializerClassDescriptor() {
+		ClassDescriptor descriptor = ClassDescriptor.of(this.type);
+		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
+				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
+		registerIfNecessary(this.queriedConstructors, Flag.queryAllDeclaredConstructors, Flag.queryAllPublicConstructors,
+				(constructor) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(constructor)));
+		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
+				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
+		registerIfNecessary(this.queriedMethods, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
+				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
+		registerIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
+				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
+		return descriptor;
+	}
+
+	private <T extends Member> void registerIfNecessary(Iterable<T> members, Flag allFlag,
+			Flag publicFlag, Consumer<T> memberConsumer) {
+		registerIfNecessary(members, allFlag, publicFlag,
+				(member) -> Modifier.isPublic(member.getModifiers()), memberConsumer);
+	}
+
+	private MethodDescriptor toMethodDescriptor(Executable method) {
+		String name = (method instanceof Constructor) ? CONSTRUCTOR_NAME : method.getName();
+		return MethodDescriptor.of(name, Arrays.stream(method.getParameterTypes())
+				.map(Class::getName).toArray(String[]::new));
+	}
+
+	private FieldDescriptor toFieldDescriptor(Field field) {
+		return FieldDescriptor.of(field.getName(), true, false);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", DefaultNativeReflectionEntry.class.getSimpleName() + "[", "]")
+				.add("type=" + this.type).add("constructors=" + this.constructors)
+				.add("methods=" + this.methods).add("fields=" + this.fields)
+				.add("queriedConstructors=" + this.queriedConstructors).add("queriedMethods=" + this.queriedMethods)
+				.add("flags=" + getFlags()).toString();
+	}
+
+	public static class Builder extends NativeReflectionEntry.Builder<Builder, DefaultNativeReflectionEntry> {
+
+		private final Class<?> type;
+
+		private final Set<Constructor<?>> constructors = new LinkedHashSet<>();
+
+		private final Set<Constructor<?>> queriedConstructors = new LinkedHashSet<>();
+
+		private final Set<Method> methods = new LinkedHashSet<>();
+
+		private final Set<Method> queriedMethods = new LinkedHashSet<>();
+
+		private final Set<Field> fields = new LinkedHashSet<>();
+
+		Builder(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Makes this entry conditional to provided type.
+		 * @param conditionalOnTypeReachable The type which should make this entry taken in account.
+		 * @return this for method chaining
+		 */
+		public Builder conditionalOnTypeReachable(Class<?> conditionalOnTypeReachable) {
+			this.conditionalOnTypeReachable = (conditionalOnTypeReachable != null) ? conditionalOnTypeReachable.getName() : null;
+			return this;
+		}
+
+
+		/**
+		 * Add the specified {@link Executable methods or constructors}.
+		 * @param executables the executables to add
+		 * @return this for method chaining
+		 */
+		public Builder withExecutables(Executable... executables) {
+			Arrays.stream(executables).forEach((executable) -> {
+				if (executable instanceof Method) {
+					this.methods.add((Method) executable);
+				}
+				else if (executable instanceof Constructor) {
+					this.constructors.add((Constructor<?>) executable);
+				}
+			});
+			return this;
+		}
+
+		/**
+		 * Add the specified {@link Executable methods or constructors} for metadata query access only.
+		 * @param executables the executables to add
+		 * @return this for method chaining
+		 */
+		public Builder withQueriedExecutables(Executable... executables) {
+			Arrays.stream(executables).forEach((executable) -> {
+				if (executable instanceof Method) {
+					this.queriedMethods.add((Method) executable);
+				}
+				else if (executable instanceof Constructor) {
+					this.queriedConstructors.add((Constructor<?>) executable);
+				}
+			});
+			return this;
+		}
+
+		/**
+		 * Add the specified {@link Field fields}.
+		 * @param fields the fields to add
+		 * @return this for method chaining
+		 */
+		public Builder withFields(Field... fields) {
+			this.fields.addAll(Arrays.asList(fields));
+			return this;
+		}
+
+		/**
+		 * Create a {@link DefaultNativeReflectionEntry} from the state of this builder
+		 * @return a new entry
+		 */
+		@Override
+		public DefaultNativeReflectionEntry build() {
+			return new DefaultNativeReflectionEntry(this);
+		}
+
+	}
+
+}

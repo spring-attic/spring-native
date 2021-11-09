@@ -18,11 +18,12 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -44,7 +45,7 @@ class EndpointNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TestEndpoint.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestEndpoint.class);
 			assertThat(entry.getMethods().stream().map(Method::getName))
@@ -59,7 +60,7 @@ class EndpointNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TestEndpointWebExtension.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestEndpointWebExtension.class);
 			assertThat(entry.getMethods().stream().map(Method::getName)).containsOnly("get");
@@ -72,7 +73,7 @@ class EndpointNativeConfigurationProcessorTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TestFilteredEndpoint.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		List<NativeReflectionEntry> entries = registry.reflection().getEntries();
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy((entry) ->
 				assertThat(entry.getType()).isEqualTo(TestFilteredEndpoint.class));
 		assertThat(entries).anySatisfy((entry) -> {

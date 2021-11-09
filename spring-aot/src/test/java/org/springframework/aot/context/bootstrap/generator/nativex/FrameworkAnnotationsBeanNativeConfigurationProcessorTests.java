@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessorTests {
 	@Test
 	void registerAnnotationsForClassAnnotations() {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(AsyncConfiguration.class).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies(annotation(EnableAsync.class));
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies(annotation(EnableAsync.class));
 	}
 
 	@Test
@@ -54,10 +54,10 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessorTests {
 		Method injectionPoint = ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class);
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies(annotation(Autowired.class));
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies(annotation(Autowired.class));
 	}
 
-	private Consumer<NativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
+	private Consumer<DefaultNativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(annotationType);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);

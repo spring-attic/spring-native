@@ -62,7 +62,7 @@ class NativeConfigurationRegistrarTests {
 		beanFactory.setBeanClassLoader(new CustomSpringFactoriesClassLoader("bean-factory-processors.factories"));
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new NativeConfigurationRegistrar(beanFactory).processBeanFactory(registry);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) ->
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) ->
 				assertThat(entry.getType()).isEqualTo(NativeConfigurationRegistrarTests.class));
 	}
 
@@ -74,8 +74,8 @@ class NativeConfigurationRegistrarTests {
 		new NativeConfigurationRegistrar(beanFactory).processBeans(registry,
 				List.of(BeanInstanceDescriptor.of(String.class).build(),
 						BeanInstanceDescriptor.of(Integer.class).build()));
-		List<Class<?>> collect = registry.reflection().getEntries().stream()
-				.map(NativeReflectionEntry::getType).collect(Collectors.toList());
+		List<Class<?>> collect = registry.reflection().reflectionEntries()
+				.map(DefaultNativeReflectionEntry::getType).collect(Collectors.toList());
 		assertThat(collect).containsOnly(String.class, Integer.class);
 	}
 

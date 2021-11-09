@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.InitializationConfiguration;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ProxyConfiguration;
@@ -37,7 +38,6 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ResourcesConfiguration;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.SerializationConfiguration;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
@@ -92,7 +92,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	void computeReflectionForSimpleCrudRepository() {
 		NativeConfigRegistryHolder registry = getNativeConfiguration(SimpleRepositoryConfig.class);
-		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
 				.contains(CustomerRepository.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
 				.doesNotContain(Point.class) // Spring Data Domain Types
@@ -104,7 +104,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	void computeReflectionForSimpleReactiveCrudRepository() {
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ReactiveConfig.class);
-		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
 				.contains(CustomerRepositoryReactive.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
 				.doesNotContain(Point.class) // Spring Data Domain Types
@@ -116,7 +116,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	void computeReflectionRepositoryQueryMethods() {
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithQueryMethods.class);
-		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
 				.contains(CustomerRepositoryWithQueryMethods.class) // Repository Interface
 				.contains(DomainObjectWithSimpleTypesOnly.class, ProjectionInterface.class) // User Domain Types
 				.contains(Id.class, QueryAnnotation.class, Param.class) // Spring Data Annotations
@@ -128,7 +128,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	void computeReflectionForRepositoryWithCustomImplementation() {
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithCustomImplementation.class);
-		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
 				.contains(RepositoryWithCustomImplementation.class) // Repository Interface
 				.contains(CustomImplInterface.class) // Custom Implementation Interface
 				.contains(RepositoryWithCustomImplementationImpl.class) // Custom Implementation target
@@ -142,7 +142,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	@Test
 	void computeReflectionForRepositoryWithFragments() {
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigWithFragments.class);
-		assertThat(registry.reflection().getEntries()).<Class>extracting(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
 				.contains(RepositoryWithFragments.class) // Repository Interface
 				.contains(CustomImplInterface1.class) // Fragment 1 Interface
 				.contains(CustomImplInterface2.class) // Fragment 2 Interface
@@ -198,7 +198,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 			this.delegate = registry;
 		}
 
-		NativeReflectionEntry getReflectionEntry(Class<?> type) {
+		DefaultNativeReflectionEntry getReflectionEntry(Class<?> type) {
 			return delegate.reflection().forType(type).build();
 		}
 
@@ -247,7 +247,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 		}
 	}
 
-	private Consumer<NativeReflectionEntry> ctorWithArgs(Class<?>... args) {
+	private Consumer<DefaultNativeReflectionEntry> ctorWithArgs(Class<?>... args) {
 		return (entry) -> {
 			List<Constructor<?>> constructors = ReflectionUtils.findConstructors(entry.getType(),
 					p -> ObjectUtils.nullSafeEquals(p.getParameterTypes(), args));
@@ -255,36 +255,36 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 		};
 	}
 
-	private Consumer<NativeReflectionEntry.Builder> containsCtor(Constructor<?> constructor) {
+	private Consumer<DefaultNativeReflectionEntry.Builder> containsCtor(Constructor<?> constructor) {
 		return (builder) -> {
-			NativeReflectionEntry entry = builder.build();
+			DefaultNativeReflectionEntry entry = builder.build();
 			assertThat(entry.getConstructors()).contains(constructor);
 		};
 	}
 
-	private Consumer<NativeReflectionEntry> doesNotContainsCtorFlag() {
+	private Consumer<DefaultNativeReflectionEntry> doesNotContainsCtorFlag() {
 		return (entry) -> assertThat(entry.getFlags()).doesNotContain(Flag.allDeclaredConstructors);
 	}
 
-	private Consumer<NativeReflectionEntry> onlyFields(String... fields) {
+	private Consumer<DefaultNativeReflectionEntry> onlyFields(String... fields) {
 		return (entry) -> assertThat(entry.getFields()).map(Field::getName).containsExactlyInAnyOrder(fields);
 	}
 
-	private Consumer<NativeReflectionEntry.Builder> allCtors() {
+	private Consumer<DefaultNativeReflectionEntry.Builder> allCtors() {
 		return (builder) -> {
-			NativeReflectionEntry entry = builder.build();
+			DefaultNativeReflectionEntry entry = builder.build();
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
 		};
 	}
 
-	private Consumer<NativeReflectionEntry> allDeclaredMethods(Class<?> type) {
+	private Consumer<DefaultNativeReflectionEntry> allDeclaredMethods(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
 		};
 	}
 
-	private Consumer<NativeReflectionEntry> annotation(Class<?> type) {
+	private Consumer<DefaultNativeReflectionEntry> annotation(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredConstructors, Flag.allDeclaredMethods);

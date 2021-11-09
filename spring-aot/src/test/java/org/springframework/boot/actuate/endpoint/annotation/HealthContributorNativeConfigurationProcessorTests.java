@@ -52,7 +52,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("healthIndicator", BeanDefinitionBuilder
 				.rootBeanDefinition(PingHealthIndicator.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
 		});
@@ -65,7 +65,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("healthContributor", BeanDefinitionBuilder
 				.rootBeanDefinition(HealthContributor.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).isEmpty();
+		assertThat(registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("healthContributor", BeanDefinitionBuilder
 				.rootBeanDefinition(HealthIndicator.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).isEmpty();
+		assertThat(registry.reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		indicator.setFactoryMethodName("createIndicator");
 		beanFactory.registerBeanDefinition("indicator", indicator);
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
 		});
@@ -106,7 +106,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().getEntries()).singleElement().satisfies((entry) -> {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
 		});

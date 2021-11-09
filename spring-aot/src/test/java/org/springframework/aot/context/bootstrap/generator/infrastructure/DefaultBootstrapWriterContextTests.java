@@ -28,7 +28,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -91,7 +91,7 @@ class DefaultBootstrapWriterContextTests {
 	void getRuntimeReflectionRegistry() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
 		assertThat(writerContext.getNativeConfigurationRegistry()).isNotNull();
-		assertThat(writerContext.getNativeConfigurationRegistry().reflection().getEntries()).isEmpty();
+		assertThat(writerContext.getNativeConfigurationRegistry().reflection().reflectionEntries()).isEmpty();
 	}
 
 	@Test
@@ -206,8 +206,8 @@ class DefaultBootstrapWriterContextTests {
 				.reflection().forType(String.class);
 		writerContext.fork("Test2").getNativeConfigurationRegistry()
 				.reflection().forType(Integer.class);
-		List<Class<?>> reflectionTypes = writerContext.getNativeConfigurationRegistry().reflection().getEntries().stream()
-				.map(NativeReflectionEntry::getType).collect(Collectors.toList());
+		List<Class<?>> reflectionTypes = writerContext.getNativeConfigurationRegistry().reflection().reflectionEntries()
+				.map(DefaultNativeReflectionEntry::getType).collect(Collectors.toList());
 		assertThat(reflectionTypes).containsOnly(String.class, Integer.class);
 	}
 
