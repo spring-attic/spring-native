@@ -20,7 +20,7 @@ import com.squareup.javapoet.ClassName;
 
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 
 /**
  * {@link FactoriesCodeContributor} that contributes source code for
@@ -52,10 +52,10 @@ class TestExecutionListenerFactoriesCodeContributor implements FactoriesCodeCont
 	}
 
 	private void generateReflectionMetadata(SpringFactory factory, BuildContext context) {
-		String factoryClassName = factory.getFactory().getClassName();
-		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
-		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
-		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
+		String className = factory.getFactory().getClassName();
+		ClassDescriptor classDescriptor = ClassDescriptor.of(className);
+		classDescriptor.addMethodDescriptor(MethodDescriptor.of(MethodDescriptor.CONSTRUCTOR_NAME, (String[]) null));
+		context.describeReflection(reflect -> reflect.add(classDescriptor));
 	}
 
 }
