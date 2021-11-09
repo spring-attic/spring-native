@@ -41,7 +41,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * @author Christoph Strobl
  */
-class TypeModelProcessor {
+public class TypeModelProcessor {
 
 	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor.", "kotlinx.", "kotlin."));
 
@@ -186,11 +186,11 @@ class TypeModelProcessor {
 			this.root = root;
 		}
 
-		void forEach(Consumer<TypeModel> consumer) {
+		public void forEach(Consumer<TypeModel> consumer) {
 			process(root, consumer);
 		}
 
-		List<TypeModel> list() {
+		public List<TypeModel> list() {
 			List<TypeModel> target = new ArrayList<>();
 			forEach(target::add);
 			return target;

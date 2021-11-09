@@ -118,7 +118,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 			Type repositoryType = imageContext.getTypeSystem().resolveDotted(key);
 			Set<String> processed = new HashSet<>(); 
 			processRepositoryType(repositoryType, imageContext, processed);
-			registerRepositoryProxy(imageContext, repositoryType, processed);
+			// registerRepositoryProxy(imageContext, repositoryType, processed);
 		} catch (Throwable t) {
 			imageContext.log(LOG_PREFIX+"WARNING: Problem with SpringAtRepositoryComponentProcessor: " + t.getMessage());
 			t.printStackTrace();
@@ -131,7 +131,7 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 			addAllTypesFromSignaturesInRepositoryInterface(repositoryInterface, imageContext, processed);
 		}
 		imageContext.log(String.format(LOG_PREFIX+"%s reflective access added - adding this repository type and its hierarchy",repositoryType.getDottedName()));
-		imageContext.addReflectiveAccessHierarchy(repositoryType, AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS|AccessBits.DECLARED_FIELDS);
+		//imageContext.addReflectiveAccessHierarchy(repositoryType, AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS|AccessBits.DECLARED_FIELDS);
 	}
 
 	public void addAllTypesFromSignaturesInRepositoryInterface(Type repositoryInterface,
@@ -159,28 +159,28 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 							addValidationMessagesBundle = true;
 							flags.add(Flag.allDeclaredFields);
 						}
-						imageContext.addReflectiveAccess(type.getDottedName(), flags.toArray(new Flag[0]));
-						processPossibleDomainType(type, imageContext, processed);
+						//imageContext.addReflectiveAccess(type.getDottedName(), flags.toArray(new Flag[0]));
+						//processPossibleDomainType(type, imageContext, processed);
 					}
 				}
 			}
 		}
-		if (repositoryInterface.getName().endsWith("Repository")) {
-			// Look for a plural form of the repository domain type
-			String pluralName = repositoryInterface.getDottedName();
-			pluralName = pluralName.substring(0, pluralName.length() - "Repository".length());
-			pluralName = pluralName + "s"; // Vet > Vets
-			if (processed.add(pluralName)) {
-				Type resolvedPluralType = imageContext.getTypeSystem().resolveDotted(pluralName, true);
-				if (resolvedPluralType != null) {
-					imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - found as a plural form of %s",
-							pluralName, repositoryInterface.getDottedName()));
-					imageContext.addReflectiveAccess(pluralName, Flag.allPublicMethods, Flag.allDeclaredConstructors);
-				} else {
-					imageContext.log(String.format(LOG_PREFIX + "%s PLURAL TYPE NOT FOUND", pluralName));
-				}
-			}
-		}
+//		if (repositoryInterface.getName().endsWith("Repository")) {
+//			// Look for a plural form of the repository domain type
+//			String pluralName = repositoryInterface.getDottedName();
+//			pluralName = pluralName.substring(0, pluralName.length() - "Repository".length());
+//			pluralName = pluralName + "s"; // Vet > Vets
+//			if (processed.add(pluralName)) {
+//				Type resolvedPluralType = imageContext.getTypeSystem().resolveDotted(pluralName, true);
+//				if (resolvedPluralType != null) {
+//					imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - found as a plural form of %s",
+//							pluralName, repositoryInterface.getDottedName()));
+//					imageContext.addReflectiveAccess(pluralName, Flag.allPublicMethods, Flag.allDeclaredConstructors);
+//				} else {
+//					imageContext.log(String.format(LOG_PREFIX + "%s PLURAL TYPE NOT FOUND", pluralName));
+//				}
+//			}
+//		}
 		if (addValidationMessagesBundle) {
 			imageContext.addResourceBundle("org.hibernate.validator.ValidationMessages");
 		}
@@ -199,8 +199,8 @@ public class SpringAtRepositoryComponentProcessor implements ComponentProcessor 
 					if (resolvedFieldType != null && inSimilarPackage(resolvedFieldType, type)) {
 						imageContext.log(String.format(LOG_PREFIX + "%s reflective access added - due to field %s.%s",
 								resolvedFieldType.getDottedName(),type.getDottedName(),field.getName()));
-						imageContext.addReflectiveAccess(resolvedFieldType.getDottedName(), Flag.allPublicMethods,
-								Flag.allDeclaredConstructors);
+						//imageContext.addReflectiveAccess(resolvedFieldType.getDottedName(), Flag.allPublicMethods,
+						//		Flag.allDeclaredConstructors);
 						// TODO should recurse through domain object graph? processPossibleDomainType(resolvedFieldType, imageContext);
 					}
 				}	

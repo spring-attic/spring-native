@@ -1,4 +1,3 @@
-org.springframework.SpringAtRepositoryComponentProcessor
 org.springframework.data.JpaComponentProcessor
 org.springframework.web.WebComponentProcessor
 org.springframework.PersistentContextMarkedComponentProcessor
