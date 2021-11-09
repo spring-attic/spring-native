@@ -168,6 +168,8 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 				graal.getBinaries().named(NativeImagePlugin.NATIVE_TEST_EXTENSION).configure(options -> {
 					Provider<RegularFile> generatedTestSources = generatedTestSourcesJar.getArchiveFile();
 					options.classpath(generatedTestSources);
+					options.runtimeArgs("-Dspring.test.context.default.CacheAwareContextLoaderDelegate=" +
+							"org.springframework.aot.test.AotCacheAwareContextLoaderDelegate");
 				});
 			});
 
