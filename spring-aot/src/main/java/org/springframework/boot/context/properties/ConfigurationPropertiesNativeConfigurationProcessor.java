@@ -99,7 +99,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 			Builder reflection = registry.reflection().forType(this.type)
 					.withFlags(Flag.allDeclaredMethods);
 			Constructor<?> constructor = handleConstructor(reflection);
-			if (this.constructorBinding) {
+			if (this.constructorBinding && constructor != null) {
 				handleValueObjectProperties(registry, constructor);
 			}
 			else if (this.beanInfo != null) {

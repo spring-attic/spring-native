@@ -125,6 +125,19 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	}
 
 	@Test
+	void processValueObjectConfigurationPropertiesWithNoConstructorCandidate() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SampleImmutablePropertiesWithSeveralConstructorsNoCandidate.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((descriptor) -> {
+			assertThat(descriptor.getType()).isEqualTo(SampleImmutablePropertiesWithSeveralConstructorsNoCandidate.class);
+			assertThat(descriptor.getConstructors()).isEmpty();
+			assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
+		});
+	}
+
+	@Test
 	void processValueObjectConfigurationPropertiesWithSeveralLayersOfPojo() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
@@ -252,6 +265,22 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 		public SampleImmutablePropertiesWithSeveralConstructors() {
 			this("test");
+		}
+
+	}
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class SampleImmutablePropertiesWithSeveralConstructorsNoCandidate {
+
+		private final String name;
+
+		SampleImmutablePropertiesWithSeveralConstructorsNoCandidate(String name) {
+			this.name = name;
+		}
+
+		public SampleImmutablePropertiesWithSeveralConstructorsNoCandidate(StringBuilder sb) {
+			this(sb.toString());
 		}
 
 	}
