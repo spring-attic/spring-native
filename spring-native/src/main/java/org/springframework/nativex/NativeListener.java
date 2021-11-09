@@ -16,8 +16,6 @@
 
 package org.springframework.nativex;
 
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,6 +24,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.nativex.utils.NativeUtils;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -47,16 +46,10 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 	}
 
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		if (AotModeDetector.isAotModeEnabled()) {
+		if (AotModeDetector.isAotModeEnabled() || AotModeDetector.isRunningAotTests()) {
 			logger.info("This application is bootstrapped with code generated with Spring AOT");
 			ConfigurableEnvironment environment = event.getEnvironment();
-			Properties props = new Properties();
-			props.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
-			props.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
-			props.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
-			props.put("spring.cloud.compatibility-verifier.enabled", "false"); // To avoid false positive due to SpringApplication patched copy
-			props.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
-			environment.getPropertySources().addFirst(new PropertiesPropertySource("native", props));
+			environment.getPropertySources().addFirst(new PropertiesPropertySource("native", NativeUtils.getNativeProperties()));
 		}
 	}
 }

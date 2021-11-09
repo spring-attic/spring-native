@@ -32,6 +32,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.nativex.AotOptions;
+import org.springframework.nativex.utils.NativeUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StopWatch;
 
@@ -93,13 +94,7 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 	}
 
 	private void configureEnvironment(ConfigurableEnvironment environment) {
-		Properties properties = new Properties();
-		properties.put("spring.aop.proxy-target-class", "false"); // Not supported in native images
-		properties.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
-		properties.put("spring.cloud.compatibility-verifier.enabled", "false"); // To avoid false positive due to SpringApplication patched copy
-		properties.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
-		properties.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
-		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", properties));
+		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", NativeUtils.getNativeProperties()));
 	}
 
 }

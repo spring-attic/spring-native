@@ -36,7 +36,9 @@ import org.springframework.boot.logging.DeferredLogs;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.nativex.utils.NativeUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -117,6 +119,7 @@ class TestContextGeneratorSpringApplication extends SpringApplication {
 				new ConfigDataEnvironmentPostProcessor(new DeferredLogs(), new DefaultBootstrapContext());
 		configDataEnvironmentPostProcessor.postProcessEnvironment(environment, this);
 		bindToSpringApplication(environment, this);
+		environment.getPropertySources().addFirst(new PropertiesPropertySource("native", NativeUtils.getNativeProperties()));
 		return environment;
 	}
 
