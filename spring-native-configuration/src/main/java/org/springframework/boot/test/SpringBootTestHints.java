@@ -35,7 +35,6 @@ import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.test.context.support.WithSecurityContext;
 import org.springframework.security.web.FilterChainProxy;
@@ -209,16 +208,6 @@ public class SpringBootTestHints implements NativeConfiguration {
 				hints.add(hintDeclaration);
 			}
 		}
-		List<HintDeclaration> testHints = TypeProcessor.namedProcessor("Tests")
-				.skipTypesMatching(type -> type.getMethodsWithAnnotationName("org.junit.jupiter.api.Test", false).isEmpty())
-				.skipAnnotationInspection()
-				.limitInspectionDepth(0)
-				.onTypeDiscovered((type, context) -> {
-					context.addReflectiveAccess(type, new AccessDescriptor(AccessBits.ALL));
-				})
-				.use(typeSystem)
-				.processTypes();
-		hints.addAll(testHints);
 		return hints;
 	}
 }
