@@ -17,7 +17,6 @@
 package org.springframework.aot.test;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -45,34 +44,35 @@ class AotContextLoader {
 		this.contextLoaders = contextLoaders;
 	}
 
+	AotContextLoader(String initializerClassName) {
+		this(loadContextLoadersMapping(initializerClassName));
+	}
+
 	AotContextLoader() {
-		this(loadContextLoadersMapping());
+		this(INITIALIZER_NAME);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Supplier<SmartContextLoader>> loadContextLoadersMapping() {
+	private static Map<String, Supplier<SmartContextLoader>> loadContextLoadersMapping(String initializerClassName) {
 		try {
-			Class<?> type = ClassUtils.forName(INITIALIZER_NAME, null);
+			Class<?> type = ClassUtils.forName(initializerClassName, null);
 			Method method = ReflectionUtils.findMethod(type, "getContextLoaders");
-			Map<String, Supplier<SmartContextLoader>> map =
-					(Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
-			System.out.println("[AotContextLoader] Loaded SmartContextLoader mappings for test classes " + map.keySet());
-			return map;
+			if (method == null) {
+				throw new IllegalStateException("No getContextLoaders() method found on " + type.getName());
+			}
+			return (Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
+		}
+		catch (IllegalStateException ex) {
+			throw ex;
 		}
 		catch (Exception ex) {
-			System.err.println("[AotContextLoader] Failed to invoke method [getContextLoaders()] on class [" + INITIALIZER_NAME + "]: " + ex);
-			// TODO Rethrow exception?
-			return Collections.emptyMap();
+			throw new IllegalStateException("Failed to load context loaders mapping", ex);
 		}
 	}
 
 	SmartContextLoader getContextLoader(Class<?> testClass) {
 		Supplier<SmartContextLoader> supplier = this.contextLoaders.get(testClass.getName());
 		return (supplier != null) ? supplier.get() : null;
-	}
-
-	boolean isSupportedTestClass(Class<?> testClass) {
-		return this.contextLoaders.containsKey(testClass.getName());
 	}
 
 }
