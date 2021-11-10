@@ -39,6 +39,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
 import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentFilter;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.index.CandidateComponentsIndex;
+import org.springframework.context.index.CandidateComponentsIndexLoader;
 import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -48,6 +50,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Christoph Strobl
@@ -66,7 +70,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		if (ClassUtils.isPresent(JPA_ENTITY, beanFactory.getBeanClassLoader())) {
 			logger.debug("JPA detected - processing types.");
 			new JpaPersistenceContextProcessor().process(beanFactory, registry);
-			new JpaEntityProcessor(beanFactory.getBeanClassLoader()).process(registry);
+			new JpaEntityProcessor(beanFactory.getBeanClassLoader()).process(beanFactory, registry);
 		}
 	}
 
@@ -85,20 +89,6 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 					(beanName, beanType) -> {
 						return TypeUtils.hasAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT);
 					});
-		}
-
-		// TODO: copied from AotProxyNativeConfigurationProcessor so maybe find a better location for it in some utils?
-		static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
-				ComponentFilter filter) {
-			beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
-				Class<?> beanType = beanFactory.getType(beanName);
-				MergedAnnotation<Component> componentAnnotation = MergedAnnotations.from(beanType).get(Component.class);
-				if (componentAnnotation.isPresent()) {
-					if (filter == null || filter.test(beanName, beanType)) {
-						callback.invoke(beanName, beanType);
-					}
-				}
-			});
 		}
 	}
 
@@ -130,11 +120,40 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 		/**
 		 * Scan the path for JPA entities and process those.
+		 * Tries to look up types within the {@literal spring.components} index first and will use types discovered there if present.
+		 * Once no entities could be found in the index we'll try to find a component that defines an {@literal EntityScan} and read the
+		 * {@literal basePackages} attribute to do some potentially slow class path scanning.
 		 *
 		 * @param registry must not be {@literal null}.
 		 */
-		void process(NativeConfigurationRegistry registry) {
-			process(scanForEntities(), registry);
+		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+
+			Set<Class<?>> entities = readEntitiesFromIndex();
+
+			if (!entities.isEmpty()) {
+				process(entities, registry);
+				return;
+			}
+
+			doWithComponents(beanFactory,
+					(beanName, beanType) -> {
+
+						MergedAnnotation<Annotation> entityScanAnnotation = MergedAnnotations.from(beanType).get("org.springframework.boot.autoconfigure.domain.EntityScan");
+						String[] basePackages = entityScanAnnotation.getStringArray("basePackages");
+						Set<Class<?>> resolvedTypes = new LinkedHashSet<>();
+
+						if (ObjectUtils.isEmpty(basePackages)) {
+							resolvedTypes.addAll(scanForEntities(beanType.getPackageName()));
+						} else {
+							for (String basePackage : basePackages) {
+								resolvedTypes.addAll(scanForEntities(basePackage));
+							}
+						}
+						process(resolvedTypes, registry);
+					},
+					(beanName, beanType) -> {
+						return MergedAnnotations.from(beanType).isPresent("org.springframework.boot.autoconfigure.domain.EntityScan");
+					});
 		}
 
 		/**
@@ -209,13 +228,29 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		}
 
 		/**
-		 * Scan the classpath for types annotated with {@link #JPA_MARKER}
+		 * Scan the {@literal spring.components} index for types annotated with {@link #JPA_ENTITY}
 		 *
 		 * @return the {@link Set} of top level entities.
 		 */
-		Set<Class<?>> scanForEntities() {
+		Set<Class<?>> readEntitiesFromIndex() {
 
-			if (entityAnnotation == null) {
+			CandidateComponentsIndex index = CandidateComponentsIndexLoader.loadIndex(classLoader);
+			if (index == null) {
+				return Collections.emptySet();
+			}
+			Set<String> candidateTypes = index.getCandidateTypes("*", JPA_ENTITY);
+			return candidateTypes.stream().map(it -> loadIfPresent(it, classLoader)).filter(it -> it != null).collect(Collectors.toSet());
+		}
+
+		/**
+		 * Scan the classpath for types annotated with {@link #JPA_ENTITY}
+		 *
+		 * @param basePackage must not be null nor empty.
+		 * @return the {@link Set} of top level entities.
+		 */
+		Set<Class<?>> scanForEntities(String basePackage) {
+
+			if (entityAnnotation == null || !StringUtils.hasText(basePackage)) {
 				return Collections.emptySet();
 			}
 
@@ -224,7 +259,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			componentProvider.addIncludeFilter(new AnnotationTypeFilter(entityAnnotation));
 
 			Set<Class<?>> entities = new LinkedHashSet<>();
-			for (BeanDefinition definition : componentProvider.findCandidateComponents("")) {
+			for (BeanDefinition definition : componentProvider.findCandidateComponents(basePackage)) {
 
 				Class<?> type = loadIfPresent(definition.getBeanClassName(), classLoader);
 				if (type == null) {
@@ -284,5 +319,18 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			//
 		}
 		return null;
+	}
+
+	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
+			ComponentFilter filter) {
+		beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
+			Class<?> beanType = beanFactory.getType(beanName);
+			MergedAnnotation<Component> componentAnnotation = MergedAnnotations.from(beanType).get(Component.class);
+			if (componentAnnotation.isPresent()) {
+				if (filter == null || filter.test(beanName, beanType)) {
+					callback.invoke(beanName, beanType);
+				}
+			}
+		});
 	}
 }
