@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.sample.data.beans.AtComponentAnnotatedType;
@@ -71,7 +71,7 @@ class RepositoryComponentConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new RepositoryComponentConfigurationProcessor().process(beanFactory, registry);
 
-		assertThat(registry.reflection().getEntries()).<Class<?>>map(NativeReflectionEntry::getType)
+		assertThat(registry.reflection().reflectionEntries()).<Class<?>>map(DefaultNativeReflectionEntry::getType)
 				.containsExactly(TypeInSamePackageAsRepository.class);
 	}
 

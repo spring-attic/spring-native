@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry.Builder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
 import org.springframework.core.ResolvableType;
@@ -90,7 +90,7 @@ public class RepositoryComponentConfigurationProcessor implements BeanFactoryNat
 			modelProcessor.inspect(type).forEach(it -> {
 				if (inSimilarPackage(it.getType(), beanType)) {
 
-					Builder builder = registry.reflection().forType(it.getType());
+					DefaultNativeReflectionEntry.Builder builder = registry.reflection().forType(it.getType());
 					builder.withFlags(Flag.allPublicMethods, Flag.allDeclaredConstructors);
 
 					it.doWithFields(field -> {
