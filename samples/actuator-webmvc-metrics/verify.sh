@@ -8,6 +8,7 @@ wait_http localhost:8080/actuator/prometheus "jvm_classes_loaded_classes" || RC=
 wait_http localhost:8080/actuator/info "{}" || RC=$?
 wait_http localhost:8080/actuator/metrics "jvm.classes.loaded" || RC=$?
 wait_http localhost:8080/actuator/metrics/jvm.classes.loaded "statistic" || RC=$?
+wait_http localhost:8080/actuator/caches "{}" || RC=$?
 wait_http localhost:8080/actuator/custom "OK" || RC=$?
 wait_http localhost:8080/actuator/customnc "OK" || RC=$?
 

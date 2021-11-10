@@ -26,8 +26,8 @@ import org.springframework.nativex.hint.TypeHint;
 @NativeHint(trigger = CachesEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
 		CachesEndpoint.class,
+		CachesEndpoint.CachesReport.class,
 		CachingOperationInvokerAdvisor.class,
-		// TODO likely incomplete, not tested
 	})
 })
 public class CachesEndpointAutoConfigurationHints implements NativeConfiguration {
