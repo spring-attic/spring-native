@@ -19,15 +19,7 @@ package org.springframework.boot.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -36,60 +28,46 @@ import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
-import org.springframework.security.test.context.support.WithSecurityContext;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
-@NativeHint(trigger = org.junit.jupiter.api.Test.class, types = {
-			@TypeHint(types = {
-				SpringBootTest.WebEnvironment.class,
-				org.springframework.test.context.junit.jupiter.SpringExtension.class,
-				org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.class,
-				org.springframework.test.context.support.DefaultBootstrapContext.class,
-				org.springframework.boot.test.context.SpringBootTestContextBootstrapper.class,
-				org.springframework.boot.test.context.SpringBootContextLoader.class,
-				org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener.class,
-				org.springframework.boot.test.mock.mockito.MockitoPostProcessor.class,
-				ImportAutoConfiguration.class,
-				OverrideAutoConfiguration.class,
-				TypeExcludeFilters.class,
-				org.springframework.aot.test.AotCacheAwareContextLoaderDelegate.class
+/**
+ * Native hints for Spring Boot's testing support.
+ *
+ * @see org.springframework.test.SpringTestHints
+ */
+@NativeHint(trigger = org.junit.jupiter.api.Test.class,
+	types = {
+		@TypeHint(types = {
+			org.springframework.aot.test.AotCacheAwareContextLoaderDelegate.class,
+			org.springframework.boot.autoconfigure.ImportAutoConfiguration.class,
+			org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration.class,
+			org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener.class,
+			org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class,
+			org.springframework.boot.test.context.SpringBootContextLoader.class,
+			org.springframework.boot.test.context.SpringBootTest.WebEnvironment.class,
+			org.springframework.boot.test.context.SpringBootTestContextBootstrapper.class,
+			org.springframework.boot.test.mock.mockito.MockitoPostProcessor.class
 		}, typeNames = {
-				"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration",
-				"org.springframework.boot.test.mock.mockito.MockitoPostProcessor$SpyPostProcessor",
-				"org.springframework.boot.test.context.ImportsContextCustomizer$ImportsCleanupPostProcessor"
+			"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration",
+			"org.springframework.boot.test.mock.mockito.MockitoPostProcessor$SpyPostProcessor",
+			"org.springframework.boot.test.context.ImportsContextCustomizer$ImportsCleanupPostProcessor"
 		}),
 		@TypeHint(types = {
-				org.springframework.boot.test.context.SpringBootTest.class,
-				ActiveProfiles.class,
-				org.springframework.test.context.web.WebAppConfiguration.class,
-				org.springframework.test.context.BootstrapWith.class,
-				AutoConfigureMockMvc.class,
-				SpringBootConfiguration.class,
-				TestPropertySource.class
+			org.springframework.boot.SpringBootConfiguration.class,
+			org.springframework.boot.test.context.SpringBootTest.class,
+			org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc.class,
 		}, access = AccessBits.ANNOTATION)
-}, jdkProxies = {
-		@JdkProxyHint(types = { org.springframework.test.context.BootstrapWith.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
-		@JdkProxyHint(types = { org.springframework.boot.test.context.SpringBootTest.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
+	},
+	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.context.annotation.Import.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
+		@JdkProxyHint(types = { org.springframework.boot.test.context.SpringBootTest.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
-		@JdkProxyHint(typeNames = { "org.springframework.context.annotation.ComponentScan$Filter", "org.springframework.core.annotation.SynthesizedAnnotation" })
-})
-@NativeHint(trigger = TestDatabaseAutoConfiguration.class, types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
-// TODO Move to Spring Security (test) hint
-@NativeHint(trigger = WithSecurityContext.class, types = {
-		@TypeHint(types = {
-				SecurityContextPersistenceFilter.class
-		}, access = AccessBits.FULL_REFLECTION),
-		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = AccessBits.FULL_REFLECTION, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
-		@TypeHint(types = FilterChainProxy.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
-		@TypeHint(types = WithSecurityContext.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
-		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory")
-}, jdkProxies = {@JdkProxyHint(types = { WithSecurityContext.class, org.springframework.core.annotation.SynthesizedAnnotation.class })
-})
+	}
+)
+
+@NativeHint(trigger = org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration.class,
+	types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
+
 public class SpringBootTestHints implements NativeConfiguration {
 
 	@Override

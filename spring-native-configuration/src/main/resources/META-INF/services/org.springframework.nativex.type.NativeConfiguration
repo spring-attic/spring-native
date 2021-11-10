@@ -112,10 +112,11 @@ org.springframework.security.config.annotation.method.configuration.GlobalMethod
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints
 org.springframework.security.ldap.LdapSecurityHints
 org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints
+org.springframework.security.test.SpringSecurityTestHints
 org.springframework.session.servlet.HttpSessionHints
 org.springframework.session.server.WebSessionHints
 org.springframework.stereotype.ComponentHints
-org.springframework.test.context.jdbc.SqlScriptsTestExecutionListenerHints
+org.springframework.test.SpringTestHints
 org.springframework.test.web.reactive.server.DefaultWebTestClientBuilderHints
 org.springframework.transaction.annotation.TransactionManagementHints
 org.springframework.web.bind.annotation.WebAnnotationHints
