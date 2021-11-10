@@ -575,7 +575,7 @@ public class ResourcesHandler extends Handler {
 		if (typesToMakeAccessible == null) {
 			throw new IllegalStateException();
 		}
-		if (type == null || !visited.add(type)) {
+		if (type == null || type.getName().equals("java/lang/Object") || !visited.add(type)) {
 			return;
 		}
 			if (inferredRequiredAccess.getValue() != 0) {
