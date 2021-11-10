@@ -35,7 +35,6 @@ import reactor.netty.DisposableServer;
 	resources = @ResourceHint(patterns = "org/springframework/web/util/HtmlCharacterEntityReferences.properties"),
 	types = {
 		@TypeHint(types= HandlerResult.class),
-		@TypeHint(types = Flux.class, access = AccessBits.CLASS),
 		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 })
