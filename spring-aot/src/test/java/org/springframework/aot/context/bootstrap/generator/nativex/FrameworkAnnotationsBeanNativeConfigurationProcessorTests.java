@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
@@ -29,9 +31,18 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.sample.callback.AsyncConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Indexed;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +66,20 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = register(BeanInstanceDescriptor.of(InjectionComponent.class)
 				.withInstanceCreator(instanceCreator).withInjectionPoint(injectionPoint, false).build());
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies(annotation(Autowired.class));
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { GetMapping.class, Async.class, Scheduled.class })
+	void isCandidateWithAnnotationToRetain(Class<? extends Annotation> annotationType) {
+		assertThat(new FrameworkAnnotationsBeanNativeConfigurationProcessor()
+				.isRuntimeFrameworkAnnotation(MergedAnnotation.of(annotationType))).isTrue();
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { Indexed.class, Component.class, Configuration.class, ConditionalOnMissingBean.class, ConditionalOnAvailableEndpoint.class })
+	void isCandidateWithAnnotationToIgnore(Class<? extends Annotation> annotationType) {
+		assertThat(new FrameworkAnnotationsBeanNativeConfigurationProcessor()
+				.isRuntimeFrameworkAnnotation(MergedAnnotation.of(annotationType))).isFalse();
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {

@@ -19,11 +19,13 @@ package org.springframework.aot.context.bootstrap.generator.nativex;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -59,12 +61,21 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessor implements BeanNative
 				reflectionConfiguration.forType(ann.getType()).withFlags(Flag.allDeclaredMethods));
 	}
 
-	private boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {
-		String name = annotation.getType().getName();
-		boolean candidate = name.startsWith("org.springframework.") &&
-				!name.startsWith("org.springframework.context.annotation") &&
-				!name.startsWith("org.springframework.boot.autoconfigure.condition");
-		return candidate && !IGNORED_TYPES.contains(annotation.getType());
+	protected boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {
+		Predicate<MergedAnnotation<?>> ignore = isConditionModelAnnotation().or(isConditionAnnotation()).or(isIgnoredType());
+		return annotation.getType().getName().startsWith("org.springframework.") && !ignore.test(annotation);
+	}
+
+	private Predicate<MergedAnnotation<?>> isConditionModelAnnotation() {
+		return (annotation) -> annotation.getType().getName().startsWith("org.springframework.context.annotation");
+	}
+
+	private Predicate<MergedAnnotation<?>> isConditionAnnotation() {
+		return (annotation) -> MergedAnnotations.from(annotation.getType()).isPresent(Conditional.class);
+	}
+
+	private Predicate<MergedAnnotation<?>> isIgnoredType() {
+		return (annotation) -> IGNORED_TYPES.contains(annotation.getType());
 	}
 
 }
