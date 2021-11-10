@@ -62,7 +62,8 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessor implements BeanNative
 	private boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {
 		String name = annotation.getType().getName();
 		boolean candidate = name.startsWith("org.springframework.") &&
-				!name.startsWith("org.springframework.context.annotation");
+				!name.startsWith("org.springframework.context.annotation") &&
+				!name.startsWith("org.springframework.boot.autoconfigure.condition");
 		return candidate && !IGNORED_TYPES.contains(annotation.getType());
 	}
 
