@@ -51,6 +51,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Stephane Nicoll
  * @author Christoph Strobl
+ * @author Sebastien Deleuze
  */
 class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
@@ -96,14 +97,16 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		}
 
 		public void process(NativeConfigurationRegistry registry) {
-			Builder reflection = registry.reflection().forType(this.type)
-					.withFlags(Flag.allDeclaredMethods);
-			Constructor<?> constructor = handleConstructor(reflection);
-			if (this.constructorBinding && constructor != null) {
-				handleValueObjectProperties(registry, constructor);
-			}
-			else if (this.beanInfo != null) {
-				handleJavaBeanProperties(registry);
+			Builder reflection = registry.reflection().forType(this.type);
+			if (!this.type.getPackageName().startsWith("java.")) {
+				reflection.withFlags(Flag.allDeclaredMethods);
+				Constructor<?> constructor = handleConstructor(reflection);
+				if (this.constructorBinding && constructor != null) {
+					handleValueObjectProperties(registry, constructor);
+				}
+				else if (this.beanInfo != null) {
+					handleJavaBeanProperties(registry);
+				}
 			}
 		}
 
