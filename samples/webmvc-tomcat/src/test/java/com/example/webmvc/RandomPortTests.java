@@ -1,4 +1,4 @@
-package com.example.webmvc.test;
+package com.example.webmvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
