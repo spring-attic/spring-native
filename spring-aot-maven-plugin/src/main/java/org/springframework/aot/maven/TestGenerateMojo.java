@@ -72,6 +72,10 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		Path testOutputDirectory = Paths.get(project.getBuild().getTestOutputDirectory());
+		if (Files.notExists(testOutputDirectory)) {
+			getLog().info("Skip Spring AOT test generation since no test have been detected");
+			return;
+		}
 		try {
 			List<String> testClasspathElements = this.project.getTestClasspathElements();
 			Files.createDirectories(this.generatedTestSourcesDirectory.toPath());
