@@ -58,19 +58,12 @@ import org.springframework.nativex.type.TypeSystem;
 				ManagementContextType.class,
 				PathMapper.class,
 				ManagementPortType.class,
-		}, typeNames = {
+		}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	@TypeHint(typeNames = {
 			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
 			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
 			"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
-	})
+	}, access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 })
 public class WebMvcEndpointManagementContextConfigurationHints implements NativeConfiguration {
-
-	@Override
-	public boolean isValid(TypeSystem typeSystem) {
-		// Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(SERVLET))
-		boolean isWebMvcApplication = typeSystem.resolveName("org.springframework.web.context.support.GenericWebApplicationContext", true) != null;
-		return isWebMvcApplication;
-	}
-
 }

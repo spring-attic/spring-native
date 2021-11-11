@@ -57,6 +57,7 @@ import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -84,22 +85,20 @@ import java.util.EventListener;
 						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				}, access = AccessBits.DECLARED_CONSTRUCTORS),
 				@TypeHint(types = {
-						Repository.class,
+						Id.class, GeneratedValue.class, Repository.class,
 						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class,
 						OneToOne.class, JoinColumn.class, Table.class, Transient.class
-				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS),
+				}),
+				@TypeHint(types = EventType.class, access = AccessBits.DECLARED_FIELDS),
+				@TypeHint(types = EntityManagerFactory.class, methods = @MethodHint(name = "getMetamodel")),
 				@TypeHint(types = {
 						SessionImpl.class,
-						EventType.class,
-
 						JdbcResourceLocalTransactionCoordinatorBuilderImpl.class,
-						SimpleJpaRepository.class,
-						EntityManagerFactory.class,
 						EntityManager.class,
 						QueryProducer.class,
 						HibernateEntityManager.class,
 						HibernateEntityManagerFactory.class,
-						GeneratedValue.class, Id.class,
+
 						ReusableMessageFactory.class,
 						// TODO expose package contents again?
 						ParameterizedMessageFactory.class,
@@ -123,15 +122,17 @@ import java.util.EventListener;
 
 						EnumType.class,
 						InheritanceType.class,
-
-				}, typeNames = {
+				},typeNames = {
 						"org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger",
 						"org.hibernate.internal.EntityManagerMessageLogger_$logger",
 						"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
 						"org.hibernate.annotations.common.util.impl.Log",
-						"org.hibernate.cfg.beanvalidation.TypeSafeActivator",
+						"org.hibernate.cfg.beanvalidation.TypeSafeActivator"
 				}),
+				@TypeHint(types = {
+						SimpleJpaRepository.class
+				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
 				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory
 						Tuplizer.class, EntityTuplizer.class, AbstractEntityTuplizer.class, PojoEntityTuplizer.class,

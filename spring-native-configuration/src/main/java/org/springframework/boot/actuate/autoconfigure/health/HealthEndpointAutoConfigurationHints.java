@@ -40,16 +40,14 @@ import org.springframework.nativex.hint.AccessBits;
 // Hitting /health endpoint
 @NativeHint(trigger = HealthEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
-		ReactiveHealthEndpointWebExtension.class,
-		HealthEndpointWebExtension.class,
-	}),
-	@TypeHint(types = {
 		StatusAggregator.class,
 		SimpleStatusAggregator.class,
 		HttpCodeStatusMapper.class,
 		SimpleHttpCodeStatusMapper.class,
 	},access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
 	@TypeHint(types = {
+		ReactiveHealthEndpointWebExtension.class,
+		HealthEndpointWebExtension.class,
 		Status.class,
 		SystemHealth.class,
 		CompositeHealth.class,
@@ -68,7 +66,7 @@ import org.springframework.nativex.hint.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.health.ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
-	},access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
+	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
 	@TypeHint(
 		types = HealthEndpoint.class,
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",

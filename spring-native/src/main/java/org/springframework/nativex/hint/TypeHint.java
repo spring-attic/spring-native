@@ -23,8 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Configure reflection or {@code *.class} resources access on specified types. Class references
  * via the {@link #types()} member are the preferred form of use but sometimes due to accessibility restrictions the type names
- * may need to be specified in the {@link #typeNames} member. See {@link AccessBits} for the configurable types of access - it
- * can be important to limit it to only what is necessary for an absolutely optimal compiled image size.
+ * may need to be specified in the {@link #typeNames} member.
+ *
+ * See {@link #access()} for inferred type of access and how to customize it with {@link AccessBits}.
+ * It can be important to limit it to only what is necessary for an optimal compiled image size.
  *
  * @see <a href="https://www.graalvm.org/reference-manual/native-image/Reflection/#manual-configuration">Manual configuration of reflection use in native images</a>
  * @author Andy Clement
@@ -49,11 +51,20 @@ public @interface TypeHint {
 	String[] typeNames() default {};
 
 	/**
-	 * Access scope to be configured (class and declared constructors by default). See the various predefined ones
-	 * defined in {@link AccessBits}. You can also use custom combinations like {@code CLASS | DECLARED_FIELDS}.
-	 * @return the access
+	 * Access scope to be configured, See the various predefined ones defined in {@link AccessBits}.
+	 *
+	 * <p>Inferred when not specified with:
+	 * <ul>
+	 *     <li>{@link AccessBits#ANNOTATION} for annotations</li>
+	 *     <li>{@link AccessBits#INTERFACE} for interfaces</li>
+	 *     <li>{@link AccessBits#CLASS} for arrays</li>
+	 *     <li>{@link AccessBits#LOAD_AND_CONSTRUCT} for other types</li>
+	 * </ul>
+	 *
+	 * <p>It is possible to combine multiple accesses with bitwise OR operator, for example
+	 * {@code access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS}.
 	 */
-	int access() default AccessBits.LOAD_AND_CONSTRUCT;
+	int access() default 0;
 
 	/**
 	 * Specific method information for reflective invocation and metadata query, useful to reduce the footprint impact of the generated configuration.

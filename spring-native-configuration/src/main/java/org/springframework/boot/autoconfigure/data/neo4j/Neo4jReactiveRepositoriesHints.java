@@ -20,6 +20,7 @@ import org.springframework.data.neo4j.config.AbstractReactiveNeo4jConfig;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.data.neo4j.core.mapping.callback.ReactiveAuditingBeforeBindCallback;
+import org.springframework.data.neo4j.core.mapping.callback.ReactiveBeforeBindCallback;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
@@ -34,25 +35,26 @@ import org.springframework.nativex.hint.AccessBits;
 @NativeHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class,
 		options = "--enable-https", types = {
 	@TypeHint(types = {
-		org.springframework.data.neo4j.core.mapping.callback.ReactiveBeforeBindCallback.class
-	}, access= AccessBits.CLASS|AccessBits.DECLARED_METHODS),
-	@TypeHint(types = {
-		ReactiveNeo4jRepository.class,
-		ReactiveNeo4jRepositoryConfigurationExtension.class,
-		AbstractReactiveNeo4jConfig.class,
-		SimpleReactiveNeo4jRepository.class,
-		ReactiveNeo4jTemplate.class,
-		ReactiveNeo4jClient.class,
-		ReactiveAuditingBeforeBindCallback.class,
-		UUIDStringGenerator.class,
-		Neo4jEvaluationContextExtension.class
+			SimpleReactiveNeo4jRepository.class,
+			ReactiveNeo4jRepository.class,
+			ReactiveAuditingBeforeBindCallback.class,
+			ReactiveBeforeBindCallback.class
 	}, typeNames = {
 			"org.springframework.data.neo4j.repository.query.SimpleQueryByExampleExecutor",
 			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
-			"org.springframework.data.neo4j.core.schema.GeneratedValue$InternalIdGenerator",
-			"org.springframework.data.neo4j.core.schema.GeneratedValue$UUIDGenerator",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveIdGeneratingBeforeBindCallback",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveOptimisticLockingBeforeBindCallback"
+	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	@TypeHint(types = {
+		ReactiveNeo4jRepositoryConfigurationExtension.class,
+		AbstractReactiveNeo4jConfig.class,
+		ReactiveNeo4jTemplate.class,
+		ReactiveNeo4jClient.class,
+		UUIDStringGenerator.class,
+		Neo4jEvaluationContextExtension.class
+	}, typeNames = {
+			"org.springframework.data.neo4j.core.schema.GeneratedValue$InternalIdGenerator",
+			"org.springframework.data.neo4j.core.schema.GeneratedValue$UUIDGenerator",
 		}
 	)},
 	jdkProxies = {

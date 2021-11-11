@@ -112,17 +112,23 @@ public class AccessBits {
 	/**
 	 * Full reflection access.
 	 */
-	public static final int FULL_REFLECTION = (CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+	public static final int FULL_REFLECTION = (CLASS | DECLARED_CONSTRUCTORS | PUBLIC_CONSTRUCTORS | DECLARED_METHODS | PUBLIC_METHODS | DECLARED_FIELDS);
 
 	/**
-	 * Combine all kinds of access.
+	 * Combine all kinds of access, including {@link #RESOURCE}.
+	 * @see #FULL_REFLECTION
 	 */
-	public static final int ALL = (RESOURCE | CLASS | DECLARED_CONSTRUCTORS | DECLARED_METHODS | DECLARED_FIELDS);
+	public static final int ALL = (RESOURCE | FULL_REFLECTION);
 
 	/**
 	 * Predefined set of access suitable for annotations.
 	 */
-	public static final int ANNOTATION = (CLASS | DECLARED_METHODS);
+	public static final int ANNOTATION = (CLASS | PUBLIC_METHODS);
+
+	/**
+	 * Predefined set of access suitable for interfaces.
+	 */
+	public static final int INTERFACE = (CLASS | PUBLIC_METHODS);
 
 	/**
 	 * Class and declared constructor access (default).

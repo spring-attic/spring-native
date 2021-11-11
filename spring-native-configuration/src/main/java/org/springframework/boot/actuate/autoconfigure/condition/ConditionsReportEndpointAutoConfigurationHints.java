@@ -37,7 +37,7 @@ import org.springframework.util.MultiValueMap;
 		MessageAndConditions.class,
 		MultiValueMap.class,
 		LinkedMultiValueMap.class,
-	},access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class ConditionsReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

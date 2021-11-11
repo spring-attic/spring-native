@@ -2274,46 +2274,19 @@ public class Type {
 		
 	public static int inferAccessRequired(Type t) {
 		if (t == null) {
-			return AccessBits.FULL_REFLECTION;
+			return 0;
 		}
-		if (t.isConfigurationProperties() && disablePropertyReflection ) {
-			return AccessBits.NONE;
-		} else if ((t.isBeanFactoryPostProcessor() || t.isBeanPostProcessor())) {
-			return AccessBits.NONE;
-		} else if ((t.isAtConfiguration() || t.isImportSelector() || t.isImportRegistrar()/* || t.isConfigurationProperties()*/)) {
-			return AccessBits.NONE;
-		} else if (t.isAtConfiguration() || t.isMetaImportAnnotated()) {
-			return AccessBits.ALL;
-		} else if (t.isImportSelector()) {
-			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE;
-		} else if (t.isImportRegistrar()) {
-			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.RESOURCE; // Including resource because of KafkaBootstrapConfiguration
-		} else if (t.isBeanFactoryPostProcessor()) {
-			// vanilla-jpa demos these needing accessing a a resource *sigh*
-			// TODO investigate if deeper pattern can tell us why certain things need
-			// RESOURCE
-			return AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS | AccessBits.RESOURCE;
-		} else if (t.isBeanPostProcessor()) {
-			return AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS /*| AccessBits.DECLARED_METHODS*/ | AccessBits.RESOURCE;
-		} else if (t.isArray()) {
+		else if (t.isAnnotation()) {
+			return AccessBits.ANNOTATION;
+		}
+		else if (t.isInterface()) {
+			return AccessBits.INTERFACE;
+		}
+		else if (t.isArray()) {
 			return AccessBits.CLASS;
-		} else if (t.isConfigurationProperties()) {
-			int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-			if (t.isAtValidated(false)) {
-				access |= AccessBits.DECLARED_FIELDS;
-			}
-			if (!t.isAtConstructorBinding()) {
-				access |= AccessBits.DECLARED_METHODS;
-			}
-			return access;
-		} else if (t.isCondition()) {
-			return AccessBits.NONE;
-		} else if (t.isComponent() || t.isApplicationListener()) {
-			return AccessBits.ALL;
-		} else if (t.isEnvironmentPostProcessor()) {
+		}
+		else {
 			return AccessBits.LOAD_AND_CONSTRUCT;
-		} else {
-			return AccessBits.FULL_REFLECTION;//-AccessBits.DECLARED_FIELDS;
 		}
 	}
 

@@ -333,11 +333,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 				ReusableMessageFactory.class,
 				NotNullValidator.class,
 				Log_$logger.class,
-				Log.class,
-				Messages_$bundle.class
+				Log.class
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 		}),
+				@TypeHint(types = Messages_$bundle.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
 				@TypeHint(
 					types = javax.validation.Validator.class,
 					typeNames = "java.lang.Module",
@@ -367,7 +367,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 						Positive.class,
 						PositiveOrZero.class,
 						Size.class
-				}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
+				}),
 				// TODO Implement more clever dynamic hints to just use what is needed based on annotations used for example
 				@TypeHint(types = {
 						HibernateConstraintValidator.class,

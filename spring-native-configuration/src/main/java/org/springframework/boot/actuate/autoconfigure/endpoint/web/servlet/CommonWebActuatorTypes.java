@@ -56,11 +56,11 @@ import org.springframework.nativex.hint.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableChildManagementContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-	}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)
+	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 @TypeHint(types = {
 		EndpointWebExtension.class,
 		WebEndpoint.class,
 		ManagementContextConfiguration.class
-}, access = AccessBits.ANNOTATION)
+})
 public class CommonWebActuatorTypes {
 }

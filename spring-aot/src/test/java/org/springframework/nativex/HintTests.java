@@ -212,7 +212,7 @@ public class HintTests {
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);
-		assertEquals((Integer) AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT,accessDescriptor.getAccessBits());
 		assertEquals("foo(java.lang.String)",accessDescriptor.getMethodDescriptors().get(0).toString());
 		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
 	}
@@ -234,7 +234,7 @@ public class HintTests {
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);
-		assertEquals((Integer)AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals((Integer)AccessBits.LOAD_AND_CONSTRUCT,accessDescriptor.getAccessBits());
 		assertEquals(0,accessDescriptor.getMethodDescriptors().size());
 		FieldDescriptor fd = accessDescriptor.getFieldDescriptors().get(0);
 		assertEquals("foo",fd.getName());
@@ -358,7 +358,7 @@ public class HintTests {
 		Map<String, AccessDescriptor> specificTypes = hint.getSpecificTypes();
 		AccessDescriptor accessDescriptor = specificTypes.get("java.lang.String");
 		assertNotNull(accessDescriptor);
-		assertEquals((Integer) AccessBits.FULL_REFLECTION,accessDescriptor.getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT,accessDescriptor.getAccessBits());
 		assertEquals("foo(java.lang.String)",accessDescriptor.getQueriedMethodDescriptors().get(0).toString());
 		assertEquals(0,accessDescriptor.getFieldDescriptors().size());
 	}

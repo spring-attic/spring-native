@@ -16,9 +16,17 @@
 
 package org.springframework.kafka.annotation;
 
+import io.confluent.kafka.schemaregistry.client.rest.entities.Config;
 import io.confluent.kafka.schemaregistry.client.rest.entities.ErrorMessage;
+import io.confluent.kafka.schemaregistry.client.rest.entities.Schema;
 import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaString;
 import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaTypeConverter;
+import io.confluent.kafka.schemaregistry.client.rest.entities.ServerClusterId;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SubjectVersion;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.CompatibilityCheckResponse;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.ConfigUpdateRequest;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.ModeGetResponse;
+import io.confluent.kafka.schemaregistry.client.rest.entities.requests.ModeUpdateRequest;
 import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaRequest;
 import io.confluent.kafka.schemaregistry.client.rest.entities.requests.RegisterSchemaResponse;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
@@ -219,16 +227,26 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = AbstractKafkaListenerContainerFactory.class,
 	types = {
 		@TypeHint(types = {
-				ErrorMessage.class,
 				KafkaAvroSerializer.class,
 				KafkaAvroDeserializer.class,
-				RegisterSchemaRequest.class,
-				RegisterSchemaResponse.class,
 				RuntimeDelegateImpl.class,
-				SchemaString.class,
-				SchemaTypeConverter.class,
 				TopicNameStrategy.class
-		})
+		}),
+			@TypeHint(types = {
+					ErrorMessage.class,
+					SchemaTypeConverter.class,
+					RegisterSchemaRequest.class,
+					RegisterSchemaResponse.class,
+					Config.class,
+					ModeGetResponse.class,
+					Schema.class,
+					SchemaString.class,
+					SubjectVersion.class,
+					CompatibilityCheckResponse.class,
+					ConfigUpdateRequest.class,
+					ModeUpdateRequest.class,
+					ServerClusterId.class
+			}, access = AccessBits.FULL_REFLECTION)
 	}
 )
 @NativeHint(trigger = org.springframework.kafka.support.KafkaUtils.class,

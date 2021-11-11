@@ -27,6 +27,7 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 import org.springframework.data.relational.core.mapping.event.BeforeDeleteCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback;
 import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -43,7 +44,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				BeforeDeleteCallback.class,
 				BeforeSaveCallback.class,
 				RelationalAuditingCallback.class
-		}),
+		}, access = AccessBits.PUBLIC_METHODS),
 		imports = DataNonReactiveAuditingHints.class
 )
 public class DataJdbcHints implements NativeConfiguration {

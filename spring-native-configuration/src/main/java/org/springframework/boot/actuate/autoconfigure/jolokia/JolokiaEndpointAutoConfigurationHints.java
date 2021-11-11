@@ -29,7 +29,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		Jsr160ProxyNotEnabledByDefaultAnymoreDispatcher.class,
 		AgentServlet.class
 	},access=AccessBits.LOAD_AND_CONSTRUCT),
-	@TypeHint(types = ServletEndpoint.class, access=AccessBits.DECLARED_METHODS)
+	@TypeHint(types = ServletEndpoint.class)
 })
 public class JolokiaEndpointAutoConfigurationHints implements NativeConfiguration {
 }

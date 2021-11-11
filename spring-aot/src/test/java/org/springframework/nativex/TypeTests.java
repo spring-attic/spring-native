@@ -243,8 +243,8 @@ public class TypeTests {
 		assertEquals(Integer.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(2, dts.size());
-		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
-		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.Float").getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT, dts.get("java.lang.String").getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT, dts.get("java.lang.Float").getAccessBits());
 	}
 
 	@Test
@@ -256,12 +256,12 @@ public class TypeTests {
 		assertEquals(Integer.class.getName(), ch.getTriggerTypename());
 		Map<String, AccessDescriptor> dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
-		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.String").getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT, dts.get("java.lang.String").getAccessBits());
 		ch = compilationHints.get(1);
 		assertEquals(String.class.getName(), ch.getTriggerTypename());
 		dts = ch.getDependantTypes();
 		assertEquals(1, dts.size());
-		assertEquals((Integer) AccessBits.FULL_REFLECTION, dts.get("java.lang.Float").getAccessBits());
+		assertEquals((Integer) AccessBits.LOAD_AND_CONSTRUCT, dts.get("java.lang.Float").getAccessBits());
 	}
 
 	@Test

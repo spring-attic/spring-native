@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -28,7 +29,7 @@ import org.springframework.nativex.hint.TypeHint;
 		CachesEndpoint.class,
 		CachesEndpoint.CachesReport.class,
 		CachingOperationInvokerAdvisor.class,
-	})
+	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 public class CachesEndpointAutoConfigurationHints implements NativeConfiguration {
 }

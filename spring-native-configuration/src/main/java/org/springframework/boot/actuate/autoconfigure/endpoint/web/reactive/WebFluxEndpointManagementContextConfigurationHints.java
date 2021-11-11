@@ -35,12 +35,4 @@ import org.springframework.nativex.type.TypeSystem;
 	}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
 )
 public class WebFluxEndpointManagementContextConfigurationHints implements NativeConfiguration {
-
-	@Override
-	public boolean isValid(TypeSystem typeSystem) {
-		// Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(REACTIVE))
-		boolean isWebfluxApplication = typeSystem.resolveName("org.springframework.web.reactive.HandlerResult", true) != null;
-		return isWebfluxApplication;
-	}
-
 }

@@ -27,6 +27,7 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 import org.springframework.data.relational.core.mapping.event.BeforeDeleteCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback;
 import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -36,12 +37,14 @@ import org.springframework.nativex.hint.TypeHint;
  * @author Christoph Strobl
  */
 @NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
-		types = @TypeHint(types = {
-				JdbcRepositoryFactoryBean.class,
-				JdbcRepositoryConfigExtension.class,
-				SimpleJdbcRepository.class,
-				RelationResolver.class
-		}), jdkProxies = @JdkProxyHint(typeNames = {
+		types = {
+		@TypeHint(types = {
+						JdbcRepositoryFactoryBean.class,
+						JdbcRepositoryConfigExtension.class,
+						RelationResolver.class
+				}),
+				@TypeHint(types = SimpleJdbcRepository.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+		}, jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jdbc.core.convert.RelationResolver",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",

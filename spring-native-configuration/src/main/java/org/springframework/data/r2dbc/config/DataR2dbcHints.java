@@ -18,16 +18,18 @@ package org.springframework.data.r2dbc.config;
 import org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration;
 import org.springframework.data.DataReactiveAuditingHints;
 import org.springframework.data.r2dbc.mapping.event.ReactiveAuditingEntityCallback;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(
 		trigger = R2dbcDataAutoConfiguration.class,
-		types = {
-				@TypeHint(types = PersistentEntitiesFactoryBean.class),
-				@TypeHint(types = ReactiveAuditingEntityCallback.class),
-		},
+		types = @TypeHint(types = {
+						PersistentEntitiesFactoryBean.class,
+						ReactiveAuditingEntityCallback.class
+				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+		,
 		imports = DataReactiveAuditingHints.class
 )
 public class DataR2dbcHints implements NativeConfiguration {

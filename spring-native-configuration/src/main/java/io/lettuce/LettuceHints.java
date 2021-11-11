@@ -16,6 +16,9 @@
 
 package io.lettuce;
 
+import javax.persistence.Access;
+
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
@@ -47,7 +50,6 @@ import org.springframework.nativex.hint.TypeHint;
 						io.lettuce.core.protocol.ConnectionWatchdog.class,
 						io.lettuce.core.resource.ClientResources.class,
 						io.lettuce.core.resource.DefaultClientResources.class,
-						io.netty.buffer.AbstractByteBufAllocator.class,
 						io.netty.buffer.PooledByteBufAllocator.class,
 						io.netty.channel.ChannelDuplexHandler.class,
 						io.netty.channel.ChannelHandlerAdapter.class,
@@ -55,9 +57,12 @@ import org.springframework.nativex.hint.TypeHint;
 						io.netty.channel.ChannelInitializer.class,
 						io.netty.channel.ChannelOutboundHandlerAdapter.class,
 						io.netty.channel.socket.nio.NioSocketChannel.class,
-						io.netty.handler.codec.MessageToByteEncoder.class,
-						io.netty.util.ReferenceCountUtil.class
+						io.netty.handler.codec.MessageToByteEncoder.class
 				}),
+				@TypeHint(types = {
+						io.netty.buffer.AbstractByteBufAllocator.class,
+						io.netty.util.ReferenceCountUtil.class,
+				}, access = AccessBits.DECLARED_METHODS), // TODO optimize with only the specific method required
 				@TypeHint(typeNames = {
 						"io.lettuce.core.ChannelGroupListener",
 						"io.lettuce.core.ConnectionEventTrigger",

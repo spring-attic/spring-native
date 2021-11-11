@@ -42,6 +42,7 @@ import org.springframework.data.mongodb.repository.support.SimpleMongoRepository
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
+import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.hint.TypeHint;
@@ -55,26 +56,32 @@ import org.springframework.nativex.type.TypeSystem;
 		@TypeHint(types = {
 				MongoRepositoryFactoryBean.class,
 				MongoRepositoryConfigurationExtension.class,
-				MongoConfigurationSupport.class,
+				MongoConfigurationSupport.class
+		}),
+		@TypeHint(types = {
 				SimpleMongoRepository.class,
 				BeforeConvertCallback.class,
 				BeforeSaveCallback.class,
 				AfterSaveCallback.class,
 				AfterConvertCallback.class
-		})
+		}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 })
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
 		imports = SpringDataReactiveHints.class,
-		types = @TypeHint(types = {
-				ReactiveMongoRepositoryFactoryBean.class,
-				ReactiveMongoRepositoryConfigurationExtension.class,
-				MongoConfigurationSupport.class,
-				SimpleReactiveMongoRepository.class,
-				ReactiveBeforeConvertCallback.class,
-				ReactiveBeforeSaveCallback.class,
-				ReactiveAfterSaveCallback.class,
-				ReactiveAfterConvertCallback.class
-		})
+		types = {
+		@TypeHint(types = {
+						ReactiveMongoRepositoryFactoryBean.class,
+						ReactiveMongoRepositoryConfigurationExtension.class,
+						MongoConfigurationSupport.class,
+				}),
+				@TypeHint(types = {
+						SimpleReactiveMongoRepository.class,
+						ReactiveBeforeConvertCallback.class,
+						ReactiveBeforeSaveCallback.class,
+						ReactiveAfterSaveCallback.class,
+						ReactiveAfterConvertCallback.class
+				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+		}
 )
 public class MongoRepositoriesHints implements NativeConfiguration {
 

@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 			DiskSpaceHealthIndicator.class,
 	}, typeNames = {
 		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
-	}),
+	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
 		@TypeHint(types = {
 				Endpoint.class,
 				EndpointExtension.class,
@@ -66,7 +66,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 				WriteOperation.class,
 				DeleteOperation.class,
 				Selector.class,
-		}, access = AccessBits.ANNOTATION)
+		})
 })
 public class EndpointAutoConfigurationHints implements NativeConfiguration {
 }

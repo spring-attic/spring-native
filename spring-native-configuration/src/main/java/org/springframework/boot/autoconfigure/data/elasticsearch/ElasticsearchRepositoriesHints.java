@@ -33,6 +33,7 @@ import org.springframework.data.elasticsearch.repository.support.SimpleElasticse
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -42,20 +43,23 @@ import org.springframework.nativex.hint.AccessBits;
 
 /**
  * @author Christoph Strobl
+ * @author Sebastien Deleuze
  */
 @NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
 		types = {
 				@TypeHint(types = {
 						ElasticsearchRepositoryFactoryBean.class,
-						ElasticsearchRepositoryConfigExtension.class,
-						SimpleElasticsearchRepository.class,
+						ElasticsearchRepositoryConfigExtension.class
+				}),
+				@TypeHint(types = {
 						BeforeConvertCallback.class,
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
-				}),
+						SimpleElasticsearchRepository.class },
+						access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
 				@TypeHint(types = {
 						org.elasticsearch.Version.class
-				}, access = AccessBits.ALL)
+				}, access = AccessBits.FULL_REFLECTION)
 		},
 		resources = @ResourceHint(patterns = "versions.properties"))
 @NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
@@ -65,11 +69,6 @@ import org.springframework.nativex.hint.AccessBits;
 						types = {
 								ReactiveElasticsearchRepositoryFactoryBean.class,
 								ReactiveElasticsearchRepositoryConfigurationExtension.class,
-								SimpleReactiveElasticsearchRepository.class,
-								ReactiveBeforeConvertCallback.class,
-								ReactiveAfterSaveCallback.class,
-								ReactiveAfterConvertCallback.class,
-
 								XContentParser.class
 						},
 						typeNames = { // todo check access only on fromXContent method
@@ -89,13 +88,19 @@ import org.springframework.nativex.hint.AccessBits;
 								"org.elasticsearch.action.main.MainResponse",
 								"org.elasticsearch.action.search.MultiSearchResponse",
 								"org.elasticsearch.action.search.ClearScrollResponse",
-						}),
+						}, methods = @MethodHint(name = "fromXContent", parameterTypes = XContentParser.class)),
 				@TypeHint(types = {
 						org.elasticsearch.Version.class
-				}, access = AccessBits.ALL),
+				}, access = AccessBits.FULL_REFLECTION),
+				@TypeHint(types = {
+						SimpleReactiveElasticsearchRepository.class,
+						ReactiveBeforeConvertCallback.class,
+						ReactiveAfterSaveCallback.class,
+						ReactiveAfterConvertCallback.class
+				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 		},
 		jdkProxies = {
-				@JdkProxyHint(types = {XContentParser.class})
+				@JdkProxyHint(types = XContentParser.class)
 		}
 )
 
