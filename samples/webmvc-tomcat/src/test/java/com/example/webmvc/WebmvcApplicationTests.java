@@ -1,4 +1,4 @@
-package com.example.webmvc.test;
+package com.example.webmvc;
 
 import org.junit.jupiter.api.Test;
 
