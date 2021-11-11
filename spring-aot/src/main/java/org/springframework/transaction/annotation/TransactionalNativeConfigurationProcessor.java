@@ -17,8 +17,7 @@
 package org.springframework.transaction.annotation;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * Recognize components that need transactional proxies and register them.
  *
  * @author Andy Clement
+ * @author Petr Hejl
  */
 public class TransactionalNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
@@ -58,56 +58,124 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 		}
 	}
 
-	public static boolean hasAnnotatedMethods(Class<?> type, String annotationName) {
+	private static boolean isTransactional(Class<?> type) {
+		return hasTransactionAnnotation(type, new HashSet<>());
+	}
+	
+	/**
+	 * Try and find either of the two possible transaction attributes on the type hierarchy or a method
+	 * within the hierarchy.
+	 */
+	private static boolean hasTransactionAnnotation(Class<?> type, Set<String> visited) {
+		if (!visited.add(type.getName())) {
+			return false;
+		}
+		MergedAnnotations annos = MergedAnnotations.from(type);
+		if (annos.get(TRANSACTIONAL_CLASS_NAME).isPresent() || annos.get(JAVAX_TRANSACTIONAL_CLASS_NAME).isPresent()) {
+			return true;
+		}
 		for (Method method: type.getDeclaredMethods()) {
-			MergedAnnotations methodAnnotations = MergedAnnotations.from(method);
-			boolean hasAnnotation = methodAnnotations.get(annotationName).isPresent();
-			if (hasAnnotation) {
+			annos = MergedAnnotations.from(method);
+			if (annos.get(TRANSACTIONAL_CLASS_NAME).isPresent() || annos.get(JAVAX_TRANSACTIONAL_CLASS_NAME).isPresent()) {
+				return true;
+			}			
+		}
+		Class<?> superClass = type.getSuperclass();
+		if (superClass != null) {
+			boolean found = hasTransactionAnnotation(superClass, visited);
+			if (found) {
+				return true;
+			}
+		}
+		for (Class<?> intface: type.getInterfaces()) {
+			boolean found = hasTransactionAnnotation(intface, visited);
+			if (found) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public static boolean isTransactional(Class<?> type) {
-		MergedAnnotations typeAnnotations = MergedAnnotations.from(type);
-		return (typeAnnotations.get(TRANSACTIONAL_CLASS_NAME).isPresent() || typeAnnotations.get(JAVAX_TRANSACTIONAL_CLASS_NAME).isPresent());
+	private static boolean hasInterfaceMethods(Class<?> type) {
+		return hasInterfaceMethods(type, new HashSet<>());
 	}
 	
+	
+	/**
+	 * Check if any interfaces in this types hierarchy have methods in them.
+	 * 
+	 * @param type the type to check
+	 * @param visited the types already checked whilst doing a searching visit
+	 * @return true if the type or any of its supertypes are an interface with at least one method
+	 */
+	private static boolean hasInterfaceMethods(Class<?> type, Set<String> visited) {
+		if (!visited.add(type.getName())) {
+			return false;
+		}
+		if (type.isInterface() && type.getMethods().length!=0) {
+			return true;
+		}
+		for (Class<?> intface: type.getInterfaces()) {
+			boolean found = hasInterfaceMethods(intface, visited);
+			if (found) {
+				return true;
+			}
+		}
+		Class<?> superClass = type.getSuperclass();
+		if (superClass != null) {
+			boolean found = hasInterfaceMethods(superClass, visited);
+			if (found) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Find and collect the list of interfaces implemented by a specified class. It does *not*
+	 * recurse into interfaces.
+	 */
+	private static void collectInterfaces(Class<?> clazz, LinkedHashSet<String> collector) {
+		for (Class<?> intface: clazz.getInterfaces()) {
+			collector.add(intface.getName());
+		}
+		Class<?> superclass = clazz.getSuperclass();
+		if (superclass != null) {
+			collectInterfaces(superclass, collector);
+		}
+	}
+
 	private static class Processor {
 
-		// TODO rationalize why some scenarios (jdbc-tx) need the JDKProxy whilst some (events) need the AotProxy and add
-		// intelligence here that captures the reason
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
 				(beanName, beanType) -> {
-						List<String> transactionalInterfaces = new ArrayList<>();
-						for (Class<?> intface: beanType.getInterfaces()) {
-							transactionalInterfaces.add(intface.getName());
-						}
+					if (hasInterfaceMethods(beanType)) {
+					    LinkedHashSet<String> interfaces = new LinkedHashSet<>();
+						collectInterfaces(beanType, interfaces);// new ArrayList<>();
 						// jdbc-tx sample requires this kind of JDK Proxy
 						//  [interface org.springframework.boot.CommandLineRunner, 
 						//   interface app.main.Finder, 
 						//   interface org.springframework.aop.SpringProxy, 
 						//   interface org.springframework.aop.framework.Advised, 
 						//   interface org.springframework.core.DecoratingProxy]
-						if (transactionalInterfaces.size()!=0) {
-							transactionalInterfaces.add(SpringProxy.class.getName());
-							transactionalInterfaces.add(Advised.class.getName());//"org.springframework.aop.framework.Advised");
-							transactionalInterfaces.add(DecoratingProxy.class.getName());//"org.springframework.core.DecoratingProxy");
-							logger.debug("creating native JDKProxy configuration for these interfaces: "+transactionalInterfaces);
-							registry.proxy().add(NativeProxyEntry.ofInterfaceNames(transactionalInterfaces.toArray(new String[0])));
+						if (interfaces.size()!=0) {
+							interfaces.add(SpringProxy.class.getName());
+							interfaces.add(Advised.class.getName());//"org.springframework.aop.framework.Advised");
+							interfaces.add(DecoratingProxy.class.getName());//"org.springframework.core.DecoratingProxy");
+							logger.debug("creating native JDKProxy configuration for these interfaces: "+interfaces);
+							registry.proxy().add(NativeProxyEntry.ofInterfaceNames(interfaces.toArray(new String[0])));
 						}
+					} else if (!beanType.isInterface()) {
 						// events sample requires this kind of proxy:
 						// @AotProxyHint(targetClass=com.example.events.SamplePublisher.class, 
 						//  proxyFeatures = ProxyBits.IS_STATIC)
-						if (!beanType.isInterface()) {
-							logger.debug("creating AOTProxy for this class: "+beanType.getName());
-							registry.proxy().add(NativeProxyEntry.ofClass(beanType,ProxyBits.IS_STATIC));
-						}
+						logger.debug("creating AOTProxy for this class: "+beanType.getName());
+						registry.proxy().add(NativeProxyEntry.ofClass(beanType,ProxyBits.IS_STATIC));
+					}
 				},
 				(beanName, beanType) -> {
-					return isTransactional(beanType) || hasAnnotatedMethods(beanType, TRANSACTIONAL_CLASS_NAME) || hasAnnotatedMethods(beanType, JAVAX_TRANSACTIONAL_CLASS_NAME);
+					return isTransactional(beanType);
 				});
 		}
 	}
