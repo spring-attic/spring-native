@@ -101,6 +101,16 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	}
 
 	@Test
+	void processJavaBeanConfigurationPropertiesWithListOfJavaType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
+				.rootBeanDefinition(SamplePropertiesWithSimpleList.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries()).singleElement()
+				.satisfies(javaBeanBinding(SamplePropertiesWithSimpleList.class));
+	}
+
+	@Test
 	void processValueObjectConfigurationProperties() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
@@ -227,6 +237,15 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	static class SamplePropertiesWithList {
 
 		public List<Address> getAllAddresses() {
+			return Collections.emptyList();
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SamplePropertiesWithSimpleList {
+
+		public List<String> getNames() {
 			return Collections.emptyList();
 		}
 

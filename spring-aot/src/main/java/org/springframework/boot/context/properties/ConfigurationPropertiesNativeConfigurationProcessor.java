@@ -65,7 +65,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 	private void processConfigurationProperties(NativeConfigurationRegistry registry, BeanDefinition beanDefinition) {
 		Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
-		new TypeProcessor(type).process(registry);
+		TypeProcessor.process(type, registry);
 	}
 
 	/**
@@ -82,31 +82,32 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private final BeanInfo beanInfo;
 
-		TypeProcessor(Class<?> type) {
-			this(type, hasConstructorBinding(type));
-		}
-
 		private TypeProcessor(Class<?> type, boolean constructorBinding) {
 			this.type = type;
 			this.constructorBinding = constructorBinding;
 			this.beanInfo = getBeanInfo(type);
 		}
 
+		public static void process(Class<?> type, NativeConfigurationRegistry registry) {
+			if (type.getPackageName().startsWith("java.")) {
+				return; // No reflection entries required for core types
+			}
+			new TypeProcessor(type, hasConstructorBinding(type)).process(registry);
+		}
+
 		private static boolean hasConstructorBinding(AnnotatedElement element) {
 			return MergedAnnotations.from(element).isPresent(ConstructorBinding.class);
 		}
 
-		public void process(NativeConfigurationRegistry registry) {
+		private void process(NativeConfigurationRegistry registry) {
 			Builder reflection = registry.reflection().forType(this.type);
-			if (!this.type.getPackageName().startsWith("java.")) {
-				reflection.withFlags(Flag.allDeclaredMethods);
-				Constructor<?> constructor = handleConstructor(reflection);
-				if (this.constructorBinding && constructor != null) {
-					handleValueObjectProperties(registry, constructor);
-				}
-				else if (this.beanInfo != null) {
-					handleJavaBeanProperties(registry);
-				}
+			reflection.withFlags(Flag.allDeclaredMethods);
+			Constructor<?> constructor = handleConstructor(reflection);
+			if (this.constructorBinding && constructor != null) {
+				handleValueObjectProperties(registry, constructor);
+			}
+			else if (this.beanInfo != null) {
+				handleJavaBeanProperties(registry);
 			}
 		}
 
@@ -139,7 +140,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
 					Class<?> nestedType = getNestedType(propertyDescriptor.getName(), propertyType);
 					if (nestedType != null) {
-						new TypeProcessor(nestedType).process(registry);
+						TypeProcessor.process(nestedType, registry);
 					}
 				}
 			}
