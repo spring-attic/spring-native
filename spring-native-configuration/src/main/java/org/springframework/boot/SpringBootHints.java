@@ -55,7 +55,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 			LogManager.class,
 			JavaLoggingSystem.class
 		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
-			@TypeHint(types = java.util.LinkedHashSet.class, access = AccessBits.CLASS), // Required for Profiles.class
+			@TypeHint(types = {
+					java.util.LinkedHashSet.class,
+					java.util.ArrayList.class
+			}, access = AccessBits.LOAD_AND_CONSTRUCT), // Required for configuration properties binding since we do not process implementations
 			@TypeHint(types= SpringApplication.class, methods = {
 				@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class), // Enables property control of banner mode
 				@MethodHint(name="setWebApplicationType",parameterTypes = WebApplicationType.class)
