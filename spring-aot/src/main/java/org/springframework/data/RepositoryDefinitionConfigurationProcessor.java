@@ -269,12 +269,12 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 			// Kotlin repo
 			if (configuration.isKotlinRepository()) {
-				registry.reflection().forType(Iterable.class).withFlags(Flag.allPublicMethods);
-				safelyRegister("kotlinx.coroutines.flow.Flow", Flag.allPublicMethods);
-				safelyRegister("kotlin.collections.Iterable", Flag.allPublicMethods);
-				safelyRegister("kotlin.Unit", Flag.allPublicMethods);
-				safelyRegister("kotlin.Long", Flag.allPublicMethods);
-				safelyRegister("kotlin.Boolean", Flag.allPublicMethods);
+				registry.reflection().forType(Iterable.class).withFlags(Flag.queryAllPublicMethods);
+				safelyRegister("kotlinx.coroutines.flow.Flow", Flag.queryAllPublicMethods);
+				safelyRegister("kotlin.collections.Iterable", Flag.queryAllPublicMethods);
+				safelyRegister("kotlin.Unit", Flag.queryAllPublicMethods);
+				safelyRegister("kotlin.Long", Flag.queryAllPublicMethods);
+				safelyRegister("kotlin.Boolean", Flag.queryAllPublicMethods);
 			}
 		}
 
