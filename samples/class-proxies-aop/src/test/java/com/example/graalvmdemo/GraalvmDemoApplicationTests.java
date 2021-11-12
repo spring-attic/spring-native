@@ -1,11 +1,10 @@
-package com.example.webflux.test;
+package com.example.graalvmdemo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.webflux.Foobar;
+import com.example.graalvmdemo.rest.PersonController;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -13,12 +12,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class WebfluxApplicationTests implements ApplicationContextAware {
+class GraalvmDemoApplicationTests implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	Foobar foobar;
+	PersonController controller;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -32,7 +31,7 @@ class WebfluxApplicationTests implements ApplicationContextAware {
 
 	@Test
 	void autowiringWorks() {
-		assertThat(this.foobar).as("@Autowired field").isNotNull();
+		assertThat(this.controller).as("@Autowired field").isNotNull();
 	}
 
 }
