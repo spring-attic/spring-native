@@ -48,6 +48,7 @@
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
 				<configuration>
+					<mode>native-agent</mode>
 					<removeSpelSupport>true</removeSpelSupport>
 				</configuration>
 			</plugin>
