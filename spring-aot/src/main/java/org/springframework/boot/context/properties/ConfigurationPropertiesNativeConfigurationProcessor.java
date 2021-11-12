@@ -89,9 +89,6 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		}
 
 		public static void process(Class<?> type, NativeConfigurationRegistry registry) {
-			if (type.getPackageName().startsWith("java.")) {
-				return; // No reflection entries required for core types
-			}
 			new TypeProcessor(type, hasConstructorBinding(type)).process(registry);
 		}
 
@@ -101,7 +98,10 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private void process(NativeConfigurationRegistry registry) {
 			Builder reflection = registry.reflection().forType(this.type);
-			reflection.withFlags(Flag.allDeclaredMethods);
+			if (this.type.getPackageName().startsWith("java.") || this.type.isArray()) {
+				return; // Only class reflection entry is required for Java core types or arrays
+			}
+			reflection.withFlags(Flag.allDeclaredMethods, Flag.allPublicMethods); // Flag.allPublicMethods required to handle inherited methods
 			Constructor<?> constructor = handleConstructor(reflection);
 			if (this.constructorBinding && constructor != null) {
 				handleValueObjectProperties(registry, constructor);
@@ -126,6 +126,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		private void handleValueObjectProperties(NativeConfigurationRegistry registry, Constructor<?> constructor) {
 			for (int i = 0; i < constructor.getParameterCount(); i++) {
 				ResolvableType propertyType = ResolvableType.forConstructorParameter(constructor, i);
+				new TypeProcessor(propertyType.resolve(), true).process(registry);
 				Class<?> nestedType = getNestedType(constructor.getParameters()[i].getName(), propertyType);
 				if (nestedType != null) {
 					new TypeProcessor(nestedType, true).process(registry);
@@ -136,8 +137,9 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		private void handleJavaBeanProperties(NativeConfigurationRegistry registry) {
 			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
 				Method readMethod = propertyDescriptor.getReadMethod();
-				if (readMethod != null) {
+				if (readMethod != null && !readMethod.getName().equals("getClass")) {
 					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
+					TypeProcessor.process(propertyType.resolve(), registry);
 					Class<?> nestedType = getNestedType(propertyDescriptor.getName(), propertyType);
 					if (nestedType != null) {
 						TypeProcessor.process(nestedType, registry);

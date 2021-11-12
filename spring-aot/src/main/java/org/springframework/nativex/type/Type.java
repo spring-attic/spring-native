@@ -314,7 +314,7 @@ public class Type {
 		} else if (node.signature == null) {
 			// With no generic signature it is just superclass and interfaces
 			Set<String> ls = new TreeSet<>();
-			if (node.superName != null && !node.superName.startsWith("java/lang/Object")) {
+			if (node.superName != null) {
 				ls.add(node.superName);
 			}
 			if (node.interfaces != null) {

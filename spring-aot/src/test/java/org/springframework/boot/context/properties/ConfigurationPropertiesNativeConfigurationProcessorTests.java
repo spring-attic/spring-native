@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Christoph Strobl
+ * @author Sebastien Deleuze
  */
 class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
@@ -49,7 +50,8 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder
 				.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().reflectionEntries()).singleElement()
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
+		assertThat(entries).singleElement()
 				.satisfies(javaBeanBinding(SampleProperties.class));
 	}
 
@@ -73,7 +75,8 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithMap.class));
 		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(entries).hasSize(2);
+		assertThat(entries).anySatisfy(classOnlyBinding(Map.class));
+		assertThat(entries).hasSize(3);
 	}
 
 	@Test
@@ -85,7 +88,8 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithList.class));
 		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(entries).hasSize(2);
+		assertThat(entries).anySatisfy(classOnlyBinding(List.class));
+		assertThat(entries).hasSize(3);
 	}
 
 	@Test
@@ -97,7 +101,8 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithArray.class));
 		assertThat(entries).anySatisfy(javaBeanBinding(Address.class));
-		assertThat(entries).hasSize(2);
+		assertThat(entries).anySatisfy(classOnlyBinding(Address[].class));
+		assertThat(entries).hasSize(3);
 	}
 
 	@Test
@@ -106,8 +111,11 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
 				.rootBeanDefinition(SamplePropertiesWithSimpleList.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().reflectionEntries()).singleElement()
-				.satisfies(javaBeanBinding(SamplePropertiesWithSimpleList.class));
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
+		assertThat(entries).anySatisfy(javaBeanBinding(SamplePropertiesWithSimpleList.class));
+		assertThat(entries).anySatisfy(classOnlyBinding(List.class));
+		assertThat(entries).anySatisfy(classOnlyBinding(String.class));
+		assertThat(entries).hasSize(3);
 	}
 
 	@Test
@@ -118,9 +126,11 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder
 				.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies(
-				valueObjectBinding(SampleImmutableProperties.class,
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
+		assertThat(entries).anySatisfy(valueObjectBinding(SampleImmutableProperties.class,
 						SampleImmutableProperties.class.getDeclaredConstructors()[0]));
+		assertThat(entries).anySatisfy(classOnlyBinding(String.class));
+		assertThat(entries).hasSize(2);
 	}
 
 	@Test
@@ -129,9 +139,12 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder
 				.rootBeanDefinition(SampleImmutablePropertiesWithSeveralConstructors.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
-		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies(
+		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
+		assertThat(entries).anySatisfy(
 				valueObjectBinding(SampleImmutablePropertiesWithSeveralConstructors.class,
 						SampleImmutablePropertiesWithSeveralConstructors.class.getDeclaredConstructor(String.class)));
+		assertThat(entries).anySatisfy(classOnlyBinding(String.class));
+		assertThat(entries).hasSize(2);
 	}
 
 	@Test
@@ -143,7 +156,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((descriptor) -> {
 			assertThat(descriptor.getType()).isEqualTo(SampleImmutablePropertiesWithSeveralConstructorsNoCandidate.class);
 			assertThat(descriptor.getConstructors()).isEmpty();
-			assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
+			assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.allDeclaredConstructors);
 		});
 	}
 
@@ -158,7 +171,9 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 				SampleImmutablePropertiesWithList.class.getConstructors()[0]));
 		assertThat(entries).anySatisfy(valueObjectBinding(Person.class, Person.class.getConstructors()[0]));
 		assertThat(entries).anySatisfy(valueObjectBinding(Address.class, Address.class.getDeclaredConstructors()[0]));
-		assertThat(entries).hasSize(3);
+		assertThat(entries).anySatisfy(classOnlyBinding(String.class));
+		assertThat(entries).anySatisfy(classOnlyBinding(List.class));
+		assertThat(entries).hasSize(5);
 	}
 
 
@@ -179,7 +194,16 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		assertThat(registry.reflection().reflectionEntries()).anySatisfy(javaBeanBinding(SamplePropertiesWithExternalNested.class))
-				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class)).hasSize(3);
+				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class))
+				.anySatisfy(classOnlyBinding(String.class)).hasSize(4);
+	}
+
+	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
+		return (entry) -> {
+			assertThat(entry.getType()).isEqualTo(type);
+			assertThat(entry.getConstructors()).isEmpty();
+			assertThat(entry.getFlags()).isEmpty();
+		};
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> javaBeanBinding(Class<?> type) {
@@ -190,7 +214,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods);
 		};
 	}
 
@@ -198,7 +222,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).containsOnly(constructor);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods);
 		};
 	}
 
