@@ -29,6 +29,10 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.nativex.hint.Flag;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -217,6 +221,18 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		assertThat(registry.reflection().reflectionEntries())
 				.anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithRecursive.class, SampleImmutablePropertiesWithRecursive.class.getDeclaredConstructors()[0]))
 				.anySatisfy(valueObjectBinding(ImmutableRecursive.class, ImmutableRecursive.class.getDeclaredConstructors()[0])).hasSize(2);
+	}
+
+	@Test
+	void processConfigurationPropertiesWithWellKnownTypes() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithWellKnownTypes.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries())
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class))
+				.anySatisfy(classOnlyBinding(ApplicationContext.class))
+				.anySatisfy(classOnlyBinding(Environment.class)).hasSize(3);
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
@@ -419,6 +435,33 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		public SampleImmutablePropertiesWithRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;
 		}
+	}
+
+	@ConfigurationProperties("wellKnownTypes")
+	static class SamplePropertiesWithWellKnownTypes implements ApplicationContextAware, EnvironmentAware {
+
+		private ApplicationContext applicationContext;
+
+		private Environment environment;
+
+		public ApplicationContext getApplicationContext() {
+			return applicationContext;
+		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		public Environment getEnvironment() {
+			return environment;
+		}
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.environment = environment;
+		}
+
 	}
 
 	static class SampleType {

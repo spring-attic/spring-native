@@ -37,8 +37,10 @@ import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.env.Environment;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -98,8 +100,8 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private void process(NativeConfigurationRegistry registry) {
 			Builder reflection = registry.reflection().forType(this.type);
-			if (this.type.getPackageName().startsWith("java.") || this.type.isArray()) {
-				return; // Only class reflection entry is required for Java core types or arrays
+			if (isClassOnlyReflectionType()) {
+				return;
 			}
 			reflection.withFlags(Flag.allDeclaredMethods, Flag.allPublicMethods); // Flag.allPublicMethods required to handle inherited methods
 			Constructor<?> constructor = handleConstructor(reflection);
@@ -109,6 +111,13 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 			else if (this.beanInfo != null) {
 				handleJavaBeanProperties(registry);
 			}
+		}
+
+		private boolean isClassOnlyReflectionType() {
+			return this.type.getPackageName().startsWith("java.") ||
+					this.type.isArray() ||
+					this.type.equals(ApplicationContext.class) ||
+					this.type.equals(Environment.class);
 		}
 
 		private Constructor<?> handleConstructor(Builder reflection) {
