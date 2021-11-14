@@ -64,7 +64,8 @@ public class ApplicationStructure {
 		this.classesPaths = classesPaths;
 		this.mainClass = mainClass != null ? mainClass : detectMainClass(classesPaths);
 		this.testClasses = testClasses;
-		this.applicationClass = detectApplicationClass(classesPaths);
+		String applicationClass = detectApplicationClass(classesPaths);
+		this.applicationClass = applicationClass == null ? mainClass : applicationClass;
 		this.classpath = classpath;
 		this.classLoader = classLoader;
 	}

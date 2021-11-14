@@ -71,10 +71,10 @@ class InitDestroyMethodsDiscoverer {
 		Set<Method> methods = new LinkedHashSet<>();
 		String initMethodName = beanDefinition.getInitMethodName();
 		if (StringUtils.hasText(initMethodName)) {
-			methods.add(findMethod(beanType, initMethodName));
+			methods.add(findMethod(beanDefinition, beanType, initMethodName));
 		}
 		for (String methodName : getExternallyManagedInitMethods(beanDefinition)) {
-			methods.add(findMethod(beanType, methodName));
+			methods.add(findMethod(beanDefinition, beanType, methodName));
 		}
 		return methods;
 	}
@@ -117,10 +117,10 @@ class InitDestroyMethodsDiscoverer {
 			}
 		}
 		else if (StringUtils.hasText(destroyMethodName)) {
-			methods.add(findMethod(beanType, destroyMethodName));
+			methods.add(findMethod(beanDefinition, beanType, destroyMethodName));
 		}
 		for (String methodName : getExternallyManagedDestroyMethods(beanDefinition)) {
-			methods.add(findMethod(beanType, methodName));
+			methods.add(findMethod(beanDefinition, beanType, methodName));
 		}
 		return methods;
 	}
@@ -176,10 +176,10 @@ class InitDestroyMethodsDiscoverer {
 		return null;
 	}
 
-	private Method findMethod(Class<?> beanType, String methodName) {
+	private Method findMethod(BeanDefinition beanDefinition, Class<?> beanType, String methodName) {
 		Method method = ReflectionUtils.findMethod(beanType, methodName);
 		if (method == null) {
-			throw new IllegalStateException("Lifecycle method annotation '" + methodName + "' not found on: " + beanType);
+			throw new IllegalStateException("Lifecycle method annotation '" + methodName + "' not found on: " + beanType + " for bean definition: " + beanDefinition);
 		}
 		return method;
 	}
