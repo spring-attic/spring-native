@@ -126,6 +126,10 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		private void handleValueObjectProperties(NativeConfigurationRegistry registry, Constructor<?> constructor) {
 			for (int i = 0; i < constructor.getParameterCount(); i++) {
 				ResolvableType propertyType = ResolvableType.forConstructorParameter(constructor, i);
+				Class<?> propertyClass = propertyType.resolve();
+				if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
+					return; // Prevent infinite recursion
+				}
 				new TypeProcessor(propertyType.resolve(), true).process(registry);
 				Class<?> nestedType = getNestedType(constructor.getParameters()[i].getName(), propertyType);
 				if (nestedType != null) {
@@ -139,7 +143,11 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 				Method readMethod = propertyDescriptor.getReadMethod();
 				if (readMethod != null && !readMethod.getName().equals("getClass")) {
 					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
-					TypeProcessor.process(propertyType.resolve(), registry);
+					Class<?> propertyClass = propertyType.resolve();
+					if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
+						return; // Prevent infinite recursion
+					}
+					TypeProcessor.process(propertyClass, registry);
 					Class<?> nestedType = getNestedType(propertyDescriptor.getName(), propertyType);
 					if (nestedType != null) {
 						TypeProcessor.process(nestedType, registry);

@@ -198,6 +198,27 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 				.anySatisfy(classOnlyBinding(String.class)).hasSize(4);
 	}
 
+	@Test
+	void processConfigurationPropertiesWithRecursiveType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithRecursive.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries()).anySatisfy(javaBeanBinding(SamplePropertiesWithRecursive.class))
+				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(2);
+	}
+
+	@Test
+	void processValueObjectConfigurationPropertiesWithRecursiveType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SampleImmutablePropertiesWithRecursive.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("beanB", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries())
+				.anySatisfy(valueObjectBinding(SampleImmutablePropertiesWithRecursive.class, SampleImmutablePropertiesWithRecursive.class.getDeclaredConstructors()[0]))
+				.anySatisfy(valueObjectBinding(ImmutableRecursive.class, ImmutableRecursive.class.getDeclaredConstructors()[0])).hasSize(2);
+	}
+
 	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
@@ -375,6 +396,31 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 	}
 
+	@ConfigurationProperties("recursive")
+	static class SamplePropertiesWithRecursive {
+
+		private Recursive recursive;
+
+		public Recursive getRecursive() {
+			return recursive;
+		}
+
+		public void setRecursive(Recursive recursive) {
+			this.recursive = recursive;
+		}
+	}
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class SampleImmutablePropertiesWithRecursive {
+
+		private ImmutableRecursive recursive;
+
+		public SampleImmutablePropertiesWithRecursive(ImmutableRecursive recursive) {
+			this.recursive = recursive;
+		}
+	}
+
 	static class SampleType {
 
 		private final Nested nested = new Nested();
@@ -406,6 +452,30 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 			this.firstName = firstName;
 			this.lastName = lastName;
 			this.address = address;
+		}
+
+	}
+
+	static class Recursive {
+
+		private Recursive recursive;
+
+		public Recursive getRecursive() {
+			return recursive;
+		}
+
+		public void setRecursive(Recursive recursive) {
+			this.recursive = recursive;
+		}
+
+	}
+
+	static class ImmutableRecursive {
+
+		private ImmutableRecursive recursive;
+
+		public ImmutableRecursive(ImmutableRecursive recursive) {
+			this.recursive = recursive;
 		}
 
 	}
