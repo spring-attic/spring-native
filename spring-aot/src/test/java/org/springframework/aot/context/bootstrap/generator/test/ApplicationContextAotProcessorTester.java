@@ -27,6 +27,7 @@ import com.squareup.javapoet.JavaFile;
 
 import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 
@@ -53,7 +54,7 @@ public class ApplicationContextAotProcessorTester {
 	}
 
 	public ContextBootstrapStructure process(Class<?>... candidates) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		for (Class<?> candidate : candidates) {
 			context.registerBean(generateShortName(candidate), candidate);
 		}

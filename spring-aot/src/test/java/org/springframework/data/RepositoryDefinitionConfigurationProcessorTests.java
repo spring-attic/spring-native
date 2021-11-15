@@ -39,6 +39,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.SerializationConfiguration;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.RepositoryDefinitionConfigurationProcessor.RepositoryConfiguration;
@@ -177,7 +178,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	}
 
 	private NativeConfigRegistryHolder getNativeConfiguration(Class<?> configurationClass) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(configurationClass);
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);

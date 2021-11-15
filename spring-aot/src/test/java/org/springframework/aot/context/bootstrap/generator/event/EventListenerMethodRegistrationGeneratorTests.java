@@ -103,7 +103,7 @@ class EventListenerMethodRegistrationGeneratorTests {
 
 	@Test
 	void writeEventListenersRegistrationWithPackageProtectedEventListener() {
-		GenericApplicationContext context = new GenericApplicationContext(prepareBeanFactory());
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBeanDefinition("configuration", BeanDefinitionBuilder.rootBeanDefinition(ProtectedEventListenerConfiguration.class)
 				.getBeanDefinition());
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();

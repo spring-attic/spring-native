@@ -18,6 +18,7 @@ package org.springframework.aot.context.origin;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.samples.simple.ConfigurationOne;
 import org.springframework.context.support.GenericApplicationContext;
@@ -33,13 +34,13 @@ class BeanFactoryStructureAnalyzerTests {
 
 	@Test
 	void analyzeSimpleStructure() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ConfigurationOne.class);
 		BeanFactoryStructure structure = analyze(context);
 		assertThat(structure).isNotNull();
-		assertThat(structure.getDescriptors()).containsOnlyKeys("beanOne", ConfigurationOne.class.getName());
+		assertThat(structure.getDescriptors()).containsKeys("beanOne", "configurationOne");
 		assertThat(structure.getDescriptors().get("beanOne").getOrigins())
-				.containsOnly(ConfigurationOne.class.getName());
+				.containsOnly("configurationOne");
 	}
 
 	private BeanFactoryStructure analyze(GenericApplicationContext context) {

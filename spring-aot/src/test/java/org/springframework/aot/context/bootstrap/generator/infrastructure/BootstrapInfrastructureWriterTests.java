@@ -29,6 +29,7 @@ import org.springframework.aot.context.bootstrap.generator.sample.callback.InitD
 import org.springframework.aot.context.bootstrap.generator.sample.callback.NestedImportConfiguration;
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
@@ -47,39 +48,39 @@ class BootstrapInfrastructureWriterTests {
 
 	@Test
 	void writeInfrastructureSetAutowireCandidateResolver() {
-		assertThat(writeInfrastructure(new GenericApplicationContext(), createBootstrapContext()))
+		assertThat(writeInfrastructure(createBootstrapContext()))
 				.contains("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());")
 				.hasImport(ContextAnnotationAutowireCandidateResolver.class);
 	}
 
 	@Test
 	void writeInfrastructureWithNoImportAwareCandidateDoesNotRegisterBean() {
-		assertThat(writeInfrastructure(new GenericApplicationContext(), createBootstrapContext()))
+		assertThat(writeInfrastructure(createBootstrapContext()))
 				.doesNotContain(ImportAwareBeanPostProcessor.class.getSimpleName());
 	}
 
 	@Test
 	void writeInfrastructureWithNoImportAwareMappingDoesNotRegisterBean() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ConfigurationTwo.class);
-		assertThat(writeInfrastructure(context, createBootstrapContext()))
+		assertThat(writeInfrastructure(createBootstrapContext(), context))
 				.doesNotContain(ImportAwareBeanPostProcessor.class.getSimpleName());
 	}
 
 	@Test
 	void writeInfrastructureWithImportAwareRegisterBean() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ImportConfiguration.class);
-		assertThat(writeInfrastructure(context, createBootstrapContext()))
+		assertThat(writeInfrastructure(createBootstrapContext(), context))
 				.contains("context.getBeanFactory().addBeanPostProcessor(createImportAwareBeanPostProcessor());");
 	}
 
 	@Test
 	void writeInfrastructureWithImportAwareRegisterCreateMethod() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ImportConfiguration.class);
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
-		writeInfrastructure(context, bootstrapContext);
+		writeInfrastructure(bootstrapContext, context);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
 				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
@@ -92,11 +93,11 @@ class BootstrapInfrastructureWriterTests {
 
 	@Test
 	void writeInfrastructureWithSeveralImportAwareInstances() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ImportConfiguration.class);
 		context.registerBean(AsyncConfiguration.class);
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
-		writeInfrastructure(context, bootstrapContext);
+		writeInfrastructure(bootstrapContext, context);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
 				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
@@ -111,10 +112,10 @@ class BootstrapInfrastructureWriterTests {
 
 	@Test
 	void writeInfrastructureWithNestedClass() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(NestedImportConfiguration.class);
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
-		writeInfrastructure(context, bootstrapContext);
+		writeInfrastructure(bootstrapContext, context);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
 				"  private ImportAwareBeanPostProcessor createImportAwareBeanPostProcessor() {",
 				"    Map<String, String> mappings = new LinkedHashMap<>();",
@@ -127,17 +128,17 @@ class BootstrapInfrastructureWriterTests {
 
 	@Test
 	void writeInfrastructureWithNoLifecycleMethodsDoesNotRegisterBean() {
-		assertThat(writeInfrastructure(new GenericApplicationContext(), createBootstrapContext()))
+		assertThat(writeInfrastructure(createBootstrapContext()))
 				.doesNotContain(InitDestroyBeanPostProcessor.class.getSimpleName())
 				.doesNotContain("createInitDestroyBeanPostProcessor");
 	}
 
 	@Test
 	void writeInfrastructureWithLifecycleMethodsRegisterCreateMethod() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean("testBean", InitDestroySampleBean.class);
 		BootstrapWriterContext bootstrapContext = createBootstrapContext();
-		writeInfrastructure(context, bootstrapContext);
+		writeInfrastructure(bootstrapContext, context);
 		assertThat(generateCode(bootstrapContext.getBootstrapClass("com.example")).lines()).contains(
 				"  private InitDestroyBeanPostProcessor createInitDestroyBeanPostProcessor(",
 				"      ConfigurableBeanFactory beanFactory) {",
@@ -151,13 +152,17 @@ class BootstrapInfrastructureWriterTests {
 
 	@Test
 	void writeInfrastructureWithLifecycleMethodsRegisterBean() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean("testBean", InitDestroySampleBean.class);
-		assertThat(writeInfrastructure(context, createBootstrapContext())).contains(
+		assertThat(writeInfrastructure(createBootstrapContext(), context)).contains(
 				"context.getBeanFactory().addBeanPostProcessor(createInitDestroyBeanPostProcessor(context.getBeanFactory()));");
 	}
 
-	private CodeSnippet writeInfrastructure(GenericApplicationContext context, BootstrapWriterContext writerContext) {
+	private CodeSnippet writeInfrastructure(BootstrapWriterContext writerContext) {
+		return writeInfrastructure(writerContext, new AnnotationConfigApplicationContext());
+	}
+
+	private CodeSnippet writeInfrastructure(BootstrapWriterContext writerContext, GenericApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		BootstrapInfrastructureWriter writer = new BootstrapInfrastructureWriter(beanFactory, writerContext);
 		return CodeSnippet.of(writer::writeInfrastructure);

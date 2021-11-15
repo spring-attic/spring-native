@@ -28,6 +28,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -62,7 +63,7 @@ class ConfigurationPropertiesBeanDefinitionOriginAnalyzerTests {
 
 	@Test
 	void analyzeConfigurationPropertiesInfrastructure() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(SampleAutoConfiguration.class);
 		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(registrar.processBeanDefinitions(context));

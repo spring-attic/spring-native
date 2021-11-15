@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.origin.BeanDefinitionDescriptor.Type;
 import org.springframework.aot.context.origin.BeanFactoryStructureAnalysis;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
@@ -37,7 +38,7 @@ class AutoConfigurationPackagesBeanDefinitionOriginAnalyzerTests {
 
 	@Test
 	void analyseAutoConfigurePackages() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(SampleConfiguration.class);
 		new BuildTimeBeanDefinitionsRegistrar().processBeanDefinitions(context);
 		BeanFactoryStructureAnalysis analysis = BeanFactoryStructureAnalysis.of(context.getBeanFactory());

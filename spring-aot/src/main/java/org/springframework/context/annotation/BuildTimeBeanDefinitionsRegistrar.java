@@ -19,6 +19,7 @@ package org.springframework.context.annotation;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.support.ApplicationContextAccessor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -36,11 +38,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Parse the {@link Configuration @Configuration classes} and provide the bean definitions
- * at build time.
+ * Process a {@link GenericApplicationContext} refresh phase up to a point where all the
+ * bean definitions have been created, but prior to actually creating bean instances.
+ * <p/>
+ * This is used at build time to get an overview of an application context.
  *
  * @author Stephane Nicoll
  * @see ConditionEvaluationStateReport
+ * @see BeanDefinitionPostProcessor
  */
 public class BuildTimeBeanDefinitionsRegistrar {
 
@@ -56,52 +61,13 @@ public class BuildTimeBeanDefinitionsRegistrar {
 		Assert.notNull(context, "Context must not be null");
 		Assert.state(!context.isActive(), () -> "Context must not be active");
 		if (logger.isDebugEnabled()) {
-			logger.debug("Parsing configuration classes");
+			logger.debug("Processing bean factory");
 		}
-		parseConfigurationClasses(context);
-		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		invokeBeanDefinitionRegistryPostProcessors(beanFactory);
-		resolveBeanDefinitionTypes(beanFactory);
+		ConfigurableListableBeanFactory beanFactory = ApplicationContextAccessor.prepareContext(context);
 		postProcessBeanDefinitions(beanFactory);
+		removeBeanDefinitionRegistryPostProcessors(beanFactory);
 		registerImportOriginRegistryIfNecessary(beanFactory);
 		return beanFactory;
-	}
-
-	private void parseConfigurationClasses(GenericApplicationContext context) {
-		ConfigurationClassPostProcessor configurationClassPostProcessor = new ConfigurationClassPostProcessor();
-		configurationClassPostProcessor.setApplicationStartup(context.getApplicationStartup());
-		configurationClassPostProcessor.setBeanClassLoader(context.getClassLoader());
-		configurationClassPostProcessor.setEnvironment(context.getEnvironment());
-		configurationClassPostProcessor.setResourceLoader(context);
-		configurationClassPostProcessor.postProcessBeanFactory(context.getBeanFactory());
-	}
-
-	private void invokeBeanDefinitionRegistryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
-		Map<String, BeanDefinitionRegistryPostProcessor> candidates = beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);
-		candidates.forEach((beanName, postProcessor) -> {
-			postProcessor.postProcessBeanDefinitionRegistry(registry);
-			if (beanFactory.containsBeanDefinition(beanName)) {
-				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-				if (beanDefinition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE) {
-					((BeanDefinitionRegistry) beanFactory).removeBeanDefinition(beanName);
-					logger.debug("Removed " + BeanDefinitionRegistryPostProcessor.class.getSimpleName() + " with bean name " + beanName);
-				}
-				else {
-					logger.warn(BeanDefinitionRegistryPostProcessor.class.getSimpleName() + " with bean name "
-							+ beanName + " is going to be invoked again at runtime, set a role infrastructure to avoid this");
-				}
-			}
-		});
-	}
-
-	private void resolveBeanDefinitionTypes(ConfigurableListableBeanFactory beanFactory) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Resolving types for " + beanFactory.getBeanDefinitionCount() + " bean definitions");
-		}
-		for (String name : beanFactory.getBeanDefinitionNames()) {
-			beanFactory.getType(name);
-		}
 	}
 
 	private void postProcessBeanDefinitions(ConfigurableListableBeanFactory beanFactory) {
@@ -116,6 +82,29 @@ public class BuildTimeBeanDefinitionsRegistrar {
 			RootBeanDefinition bd = (RootBeanDefinition) beanFactory.getMergedBeanDefinition(beanName);
 			postProcessors.forEach((postProcessor) -> postProcessor.postProcessBeanDefinition(beanName, bd));
 		}
+	}
+
+	private void removeBeanDefinitionRegistryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		Map<String, BeanDefinitionRegistryPostProcessor> candidates = beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);
+		candidates.forEach((beanName, postProcessor) -> {
+			if (!removeBeanDefinition(beanFactory, beanName, (bd) -> bd.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE)) {
+				logger.warn(BeanDefinitionRegistryPostProcessor.class.getSimpleName() + " with bean name "
+						+ beanName + " is going to be invoked again at runtime, set a role infrastructure to avoid this");
+			}
+		});
+	}
+
+	private boolean removeBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName,
+			Predicate<BeanDefinition> condition) {
+		if (beanFactory.containsBeanDefinition(beanName)) {
+			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
+			if (condition.test(beanDefinition)) {
+				((BeanDefinitionRegistry) beanFactory).removeBeanDefinition(beanName);
+				logger.debug("Removed bean definition with name " + beanName);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void registerImportOriginRegistryIfNecessary(ConfigurableListableBeanFactory beanFactory) {

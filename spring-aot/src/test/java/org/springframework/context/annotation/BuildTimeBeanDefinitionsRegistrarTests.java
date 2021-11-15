@@ -19,9 +19,11 @@ package org.springframework.context.annotation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -57,63 +59,71 @@ import static org.assertj.core.api.Assertions.entry;
  */
 class BuildTimeBeanDefinitionsRegistrarTests {
 
+	private static final String[] ANNOTATION_INFRASTRUCTURE_BEAN_NAMES = new String[] {
+			"org.springframework.context.annotation.internalAutowiredAnnotationProcessor",
+			"org.springframework.context.annotation.internalCommonAnnotationProcessor",
+			"org.springframework.context.annotation.internalPersistenceAnnotationProcessor",
+			"org.springframework.context.event.internalEventListenerProcessor",
+			"org.springframework.context.event.internalEventListenerFactory" };
+
 	private final BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 
 	@Test
 	void processBeanDefinitionsWithRegisteredConfigurationClasses() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new,
 				ConfigurationOne.class, ConfigurationTwo.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConfigurationOne.class.getName(),
-				ConfigurationTwo.class.getName(), "beanOne", "beanTwo");
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ignoringAnnotationInfrastructure("configurationOne",
+				"configurationTwo", "beanOne", "beanTwo"));
 	}
 
 	@Test
 	void processBeanDefinitionsWithRegisteredConfigurationClassWithImport() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ImportConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ImportConfiguration.class.getName(),
-				ConfigurationOne.class.getName(), ConfigurationTwo.class.getName(), "beanOne", "beanTwo");
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ignoringAnnotationInfrastructure("importConfiguration",
+				ConfigurationOne.class.getName(), ConfigurationTwo.class.getName(), "beanOne", "beanTwo"));
 	}
 
 	@Test
 	void processBeanDefinitionsWithClasspathScanning() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ScanConfiguration.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ScanConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ScanConfiguration.class.getName(),
-				"configurationOne", "configurationTwo", "simpleComponent", "beanOne", "beanTwo");
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ignoringAnnotationInfrastructure("scanConfiguration",
+				"configurationOne", "configurationTwo", "simpleComponent", "beanOne", "beanTwo"));
 	}
 
 	@Test
 	void processBeanDefinitionsWithConditionsOnConfigurationClassNotMatching() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConditionalConfigurationOne.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ConditionalConfigurationOne.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConditionalConfigurationOne.class.getName());
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ANNOTATION_INFRASTRUCTURE_BEAN_NAMES);
 	}
 
 	@Test
 	void processBeanDefinitionsWithConditionsOnConfigurationClassMatching() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), ConditionalConfigurationOne.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(ConditionalConfigurationOne.class.getName(),
-				ConfigurationOne.class.getName(), "beanOne", ConfigurationTwo.class.getName(), "beanTwo");
+		assertThat(beanFactory.getBeanDefinitionNames()).contains(ignoringAnnotationInfrastructure("conditionalConfigurationOne",
+				ConfigurationOne.class.getName(), "beanOne", ConfigurationTwo.class.getName(), "beanTwo"));
 	}
 
 	@Test
 	void processBeanDefinitionsWithCustomClasspathScanningAndNullBeanRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new,
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new,
 				new MockEnvironment().withProperty("test.one.enabled", "true"), CustomClasspathScanningConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		// Environment not linked so the condition evaluations applies on an "empty" environment.
-		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(CustomClasspathScanningConfiguration.class.getName());
+		assertThat(beanFactory.getBeanDefinitionNames()).containsOnly(
+				ignoringAnnotationInfrastructure("buildTimeBeanDefinitionsRegistrarTests.CustomClasspathScanningConfiguration"));
 	}
 
 	// Bean definitions
 
 	@Test
 	void processBeanDefinitionsForConfigurationClassCreateRelevantBeanDefinition() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ImportConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinition(ConfigurationOne.class.getName()))
 				.isInstanceOfSatisfying(ConfigurationClassBeanDefinition.class, (bd) -> {
@@ -124,7 +134,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processBeanDefinitionsForBeanMethodCreateRelevantBeanDefinition() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ImportConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinition("beanOne"))
 				.isInstanceOfSatisfying(BeanMethodBeanDefinition.class, (bd) -> {
@@ -138,10 +148,10 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void postProcessBeanDefinitionsInvokeBeanFactoryAwareOnBeanDefinitionPostProcessors() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, SimpleComponent.class);
-		context.getBeanFactory().setBeanClassLoader(new CustomSpringFactoriesClassLoader("bean-factory-aware.factories"));
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, SimpleComponent.class);
+		context.setClassLoader(new CustomSpringFactoriesClassLoader("bean-factory-aware.factories"));
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
-		assertThat(beanFactory.getMergedBeanDefinition(SimpleComponent.class.getName())
+		assertThat(beanFactory.getMergedBeanDefinition("simpleComponent")
 				.getAttribute("beanFactory")).isEqualTo(beanFactory);
 	}
 
@@ -149,14 +159,14 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithoutConfigurationClassesDoesNotCreateImportOriginRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(ImportOriginRegistry.get(beanFactory)).isNull();
 	}
 
 	@Test
 	void processContextWithNoInstanceAwareConfigurationClassesCreateEmptyImportOriginRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConfigurationOne.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ConfigurationOne.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
 		assertThat(registry).isNotNull();
@@ -165,7 +175,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithInstanceAwareConfigurationClassImportedCreateMatchingImportOriginRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ImportConfiguration.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ImportConfiguration.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
 		assertThat(registry).isNotNull();
@@ -175,7 +185,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithInstanceAwareConfigurationClassNotImportedCreateMatchingImportOriginRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new, ConfigurationTwo.class);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new, ConfigurationTwo.class);
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		ImportOriginRegistry registry = ImportOriginRegistry.get(beanFactory);
 		assertThat(registry).isNotNull();
@@ -184,7 +194,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithNullBeanDefinitionTypeIsIgnoredByImportOriginRegistry() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new);
 		context.registerBeanDefinition("test", new RootBeanDefinition());
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(ImportOriginRegistry.get(beanFactory)).isNull();
@@ -192,7 +202,7 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithBeanDefinitionRegistryPostProcessorAndRoleInfrastructure() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new);
 		context.registerBeanDefinition("testPostProcessor", BeanDefinitionBuilder
 				.rootBeanDefinition(TestBeanDefinitionRegistryPostProcessor.class)
 				.setRole(BeanDefinition.ROLE_INFRASTRUCTURE).getBeanDefinition());
@@ -203,13 +213,19 @@ class BuildTimeBeanDefinitionsRegistrarTests {
 
 	@Test
 	void processContextWithBeanDefinitionRegistryPostProcessorAndDefaultRole() {
-		GenericApplicationContext context = createApplicationContext(GenericApplicationContext::new);
+		GenericApplicationContext context = createApplicationContext(AnnotationConfigApplicationContext::new);
 		context.registerBeanDefinition("testPostProcessor", BeanDefinitionBuilder
 				.rootBeanDefinition(TestBeanDefinitionRegistryPostProcessor.class)
 				.getBeanDefinition());
 		ConfigurableListableBeanFactory beanFactory = this.registrar.processBeanDefinitions(context);
 		assertThat(beanFactory.getBeanDefinitionNames()).contains("simpleComponent", "testPostProcessor");
 	}
+
+	private String[] ignoringAnnotationInfrastructure(String... beanNames) {
+		return Stream.concat(Stream.of(ANNOTATION_INFRASTRUCTURE_BEAN_NAMES),
+				Arrays.stream(beanNames)).toArray(String[]::new);
+	}
+
 
 	private <T extends GenericApplicationContext> T createApplicationContext(
 			Supplier<T> contextFactory, Class<?>... componentClasses) {

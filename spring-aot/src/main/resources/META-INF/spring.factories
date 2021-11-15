@@ -1,4 +1,5 @@
 org.springframework.context.annotation.BeanDefinitionPostProcessor=\
+org.springframework.context.annotation.BeanClassBeanDefinitionPostProcessor,\
 org.springframework.data.RepositoryFactoryBeanPostProcessor,\
 org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor,\
 org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcessor

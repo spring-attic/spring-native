@@ -41,28 +41,26 @@ class CoreBeanDefinitionOriginAnalyzerTests {
 	@Test
 	void analyzeConfigurationClass() {
 		BeanFactoryStructureAnalysis analysis = analyze(ImportConfiguration.class);
-		assertThat(analysis.unresolved()).isEmpty();
 		Map<String, BeanDefinitionDescriptor> resolved = index(analysis.resolved());
 		assertThat(resolved).hasSize(5);
 		assertThat(resolved).containsOnlyKeys(
-				ImportConfiguration.class.getName(), ConfigurationOne.class.getName(), "beanOne",
+				"importConfiguration", ConfigurationOne.class.getName(), "beanOne",
 				ConfigurationTwo.class.getName(), "beanTwo");
 		assertThat(resolved.get(ConfigurationOne.class.getName()).getOrigins())
-				.containsOnly(ImportConfiguration.class.getName());
+				.containsOnly("importConfiguration");
 		assertThat(resolved.get(ConfigurationTwo.class.getName()).getOrigins())
-				.containsOnly(ImportConfiguration.class.getName());
-		assertThat(resolved.get(ImportConfiguration.class.getName()).getOrigins()).isEmpty();
+				.containsOnly("importConfiguration");
+		assertThat(resolved.get("importConfiguration").getOrigins()).isEmpty();
 	}
 
 	@Test
 	void analyzeBeanMethod() {
 		BeanFactoryStructureAnalysis analysis = analyze(ConfigurationOne.class);
-		assertThat(analysis.unresolved()).isEmpty();
 		Map<String, BeanDefinitionDescriptor> resolved = index(analysis.resolved());
 		assertThat(resolved).hasSize(2);
-		assertThat(resolved).containsOnlyKeys(ConfigurationOne.class.getName(), "beanOne");
+		assertThat(resolved).containsOnlyKeys("configurationOne", "beanOne");
 		assertThat(resolved.get("beanOne").getOrigins())
-				.containsOnly(ConfigurationOne.class.getName());
+				.containsOnly("configurationOne");
 	}
 
 	private Map<String, BeanDefinitionDescriptor> index(Stream<BeanDefinitionDescriptor> descriptors) {
@@ -70,7 +68,7 @@ class CoreBeanDefinitionOriginAnalyzerTests {
 	}
 
 	private BeanFactoryStructureAnalysis analyze(Class<?>... components) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		for (Class<?> component : components) {
 			context.registerBean(component);
 		}

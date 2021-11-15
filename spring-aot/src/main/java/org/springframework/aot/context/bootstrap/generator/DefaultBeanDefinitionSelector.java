@@ -49,6 +49,9 @@ public class DefaultBeanDefinitionSelector implements BeanDefinitionSelector {
 		// TODO Make a better split between the AOT and runtime parts otherwise too much reflection is required, so for now @Autowired on fields/setters and event listeners are not properly supported
 		this.excludedBeanNames.add(AnnotationConfigUtils.AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.COMMON_ANNOTATION_PROCESSOR_BEAN_NAME);
+
+		// Only used during configuration class parsing
+		this.excludedBeanNames.add("org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory");
 	}
 
 	@Override
