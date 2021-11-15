@@ -96,6 +96,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 				.contains(CustomerRepository.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
 				.doesNotContain(Point.class) // Spring Data Domain Types
+				.doesNotContain(Instant.class) // Types considered simple ones
 				.contains(TypeAlias.class, Id.class, Persistent.class, Transient.class, PersistenceConstructor.class) // Spring Data Annotations
 				.doesNotContain(Documented.class) // java.lang Annotations
 				.doesNotContain(Component.class); // Spring Stereotype Annotations
@@ -108,6 +109,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 				.contains(CustomerRepositoryReactive.class) // Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
 				.doesNotContain(Point.class) // Spring Data Domain Types
+				.doesNotContain(Instant.class) // Types considered simple ones
 				.contains(TypeAlias.class, Id.class, Persistent.class, Transient.class, PersistenceConstructor.class) // Spring Data Annotations
 				.doesNotContain(Documented.class) // java.lang Annotations
 				.doesNotContain(Component.class); // Spring Stereotype Annotations
@@ -150,8 +152,8 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 				.contains(CustomImplInterface2Impl.class) // Fragment 1 Implementation target
 				.contains(DomainObjectWithSimpleTypesOnly.class) // Domain Type Repository Interface
 				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // Domain Types Custom Implementation
-				.contains(Instant.class) // java.time
 				.contains(TypeAlias.class, Id.class, Persistent.class, Transient.class, PersistenceConstructor.class, LastModifiedDate.class) // Spring Data Annotations
+				.doesNotContain(Instant.class) // java.time
 				.doesNotContain(Documented.class) // java.lang Annotations
 				.doesNotContain(Component.class); // Spring Stereotype Annotations
 	}
