@@ -30,14 +30,14 @@ import org.springframework.aot.build.BootstrapCodeGenerator;
  * during the bootstrap code generation process.
  * @see BootstrapCodeGenerator
  */
-public class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
+class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 
-	private static List<String> IGNORED_FACTORY_PACKAGES = Arrays.asList(
+	private static final List<String> IGNORED_FACTORY_PACKAGES = Arrays.asList(
 			"org.springframework.aot.context.bootstrap",
 			"org.springframework.aot.context.origin",
 			"org.springframework.aot.test.context.bootstrap");
 
-	private static List<String> IGNORED_FACTORY_TYPES = Arrays.asList(
+	private static final List<String> IGNORED_FACTORY_TYPES = Arrays.asList(
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportListener",
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportFilter",
 			"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
