@@ -31,6 +31,8 @@ import org.springframework.nativex.hint.SerializationHint;
         org.springframework.samples.petclinic.model.BaseEntity.class,
         org.springframework.samples.petclinic.model.Person.class,
         org.springframework.samples.petclinic.vet.Vet.class,
+		java.lang.Integer.class,
+		java.lang.String.class,
         java.lang.Number.class
 })
 public class PetClinicApplication {
