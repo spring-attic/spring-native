@@ -18,12 +18,13 @@ package org.springframework.aot.factories;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.build.BootstrapCodeGenerator;
+import org.springframework.aot.build.context.BuildContext;
 
 /**
  * {@link FactoriesCodeContributor} ignoring Spring Factories that are now handled
@@ -32,27 +33,29 @@ import org.springframework.aot.build.BootstrapCodeGenerator;
  */
 class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 
-	private static final List<String> IGNORED_FACTORY_PACKAGES = Arrays.asList(
+	private static final Predicate<SpringFactory> IGNORED_FACTORY_PACKAGES = factoriesInPackages(
 			"org.springframework.aot.context.bootstrap",
 			"org.springframework.aot.context.origin",
 			"org.springframework.aot.test.context.bootstrap");
 
-	private static final List<String> IGNORED_FACTORY_TYPES = Arrays.asList(
+	private static final Predicate<SpringFactory> IGNORED_FACTORY_TYPES = factoryTypes(
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportListener",
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportFilter",
 			"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
 			"org.springframework.context.annotation.BeanDefinitionPostProcessor");
 
+	private static final Predicate<SpringFactory> CONTEXT_CUSTOMIZER_FACTORY = factoryEntry(
+			"org.springframework.test.context.ContextCustomizerFactory",
+			"org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory",
+			"org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory",
+			"org.springframework.boot.test.context.ImportsContextCustomizerFactory");
+
 	private final Log logger = LogFactory.getLog(IgnoredFactoriesCodeContributor.class);
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		for (String factoryPackage : IGNORED_FACTORY_PACKAGES) {
-			if (factory.getFactoryType().getClassName().startsWith(factoryPackage)) {
-				return true;
-			}
-		}
-		return IGNORED_FACTORY_TYPES.contains(factory.getFactoryType().getClassName());
+		return IGNORED_FACTORY_PACKAGES.or(IGNORED_FACTORY_TYPES)
+				.or(CONTEXT_CUSTOMIZER_FACTORY).test(factory);
 	}
 
 	@Override
@@ -60,4 +63,27 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 		// No-op, ignored.
 		logger.debug("Skip build time factory Type:" + factory.getFactory().getClassName());
 	}
+
+	private static Predicate<SpringFactory> factoryTypes(String... factoryTypes) {
+		List<String> candidates = Arrays.asList(factoryTypes);
+		return (springFactory) -> candidates.contains(springFactory.getFactoryType().getClassName());
+	}
+
+	private static Predicate<SpringFactory> factoriesInPackages(String... packageNames) {
+		return (springFactory) -> {
+			for (String packageName : packageNames) {
+				if (springFactory.getFactoryType().getClassName().startsWith(packageName)) {
+					return true;
+				}
+			}
+			return false;
+		};
+	}
+
+	private static Predicate<SpringFactory> factoryEntry(String factoryType, String... factoryImplementations) {
+		List<String> candidateImplementations = Arrays.asList(factoryImplementations);
+		return factoryTypes(factoryType).and((springFactory) ->
+				candidateImplementations.contains(springFactory.getFactory().getClassName()));
+	}
+
 }

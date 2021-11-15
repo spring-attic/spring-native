@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.BeanDefinitionPostProcessor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.test.context.ContextCustomizerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -38,6 +39,12 @@ class IgnoredFactoriesCodeContributorTests {
 		assertThat(this.factoriesCodeContributor.canContribute(springFactory)).isTrue();
 	}
 
+	@ParameterizedTest
+	@MethodSource("springFactoriesNotHandled")
+	void canContributeFactoryTypesToNotHandle(SpringFactory springFactory) {
+		assertThat(this.factoriesCodeContributor.canContribute(springFactory)).isFalse();
+	}
+
 	@Test
 	void contributeIsNoOp() {
 		CodeGenerator codeGenerator = mock(CodeGenerator.class);
@@ -53,7 +60,19 @@ class IgnoredFactoriesCodeContributorTests {
 				springFactory(EnableAutoConfiguration.class),
 				springFactory(BeanDefinitionPostProcessor.class),
 				springFactory(BeanRegistrationWriterSupplier.class),
-				springFactory(BeanDefinitionOriginAnalyzer.class));
+				springFactory(BeanDefinitionOriginAnalyzer.class),
+				springFactory(ContextCustomizerFactory.class,
+						"org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory"),
+				springFactory(ContextCustomizerFactory.class,
+						"org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory"),
+				springFactory(ContextCustomizerFactory.class,
+						"org.springframework.boot.test.context.ImportsContextCustomizerFactory"));
+	}
+
+	static Stream<Arguments> springFactoriesNotHandled() {
+		return Stream.of(
+				springFactory(ContextCustomizerFactory.class,
+						"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizerFactory"));
 	}
 
 
