@@ -70,7 +70,6 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>src/main/resources/avro</sourceDirectory>
-							<outputDirectory>${project.build.directory}/../generated-sources</outputDirectory>
 							<stringType>String</stringType>
 						</configuration>
 					</execution>
