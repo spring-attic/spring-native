@@ -301,9 +301,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 					return;
 				}
 				if (SimpleTypeHolder.DEFAULT.isSimpleType(domainType.getType())) { // eg. String, ...
-					if (!domainType.isPartOf("java.time")) { // ES auditing using Instant
-						return;
-					}
+					return;
 				}
 				Builder reflectBuilder = registry.reflection().forType(domainType.getType()).withFlags();
 				if (domainType.hasMethods()) {
