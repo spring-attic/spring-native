@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -229,6 +230,30 @@ class InitDestroyMethodsDiscovererTests {
 				.withMessageContaining("Lifecycle method annotation 'doesNotExist' not found");
 	}
 
+	@Test
+	void processShutdownSampleFactoryBean() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(ShutdownSampleFactoryBean.class);
+		beanDefinition.setDestroyMethodName("shutdown");
+		//beanDefinition.setTargetType(ShutdownSample.class);
+		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
+		Method shutdownMethod = ReflectionUtils.findMethod(ShutdownSample.class, "shutdown");
+		Map<String, List<Method>> methods = discoverer.registerDestroyMethods(registry);
+		assertThat(methods.get("test")).containsExactly(shutdownMethod);
+		hasSingleNativeReflectionEntry(ShutdownSample.class, shutdownMethod);
+	}
+
+	@Test
+	void processDisposableFactoryBean() {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(FactoryBean.class);
+		//beanDefinition.setTargetType(SampleDisposableFactoryBean.class);
+		beanDefinition.setDestroyMethodName("destroy");
+		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
+		Method destroyMethod = ReflectionUtils.findMethod(SampleDisposableFactoryBean.class, "destroy");
+		Map<String, List<Method>> methods = discoverer.registerDestroyMethods(registry);
+		assertThat(methods.get("test")).containsExactly(destroyMethod);
+		hasSingleNativeReflectionEntry(SampleDisposableFactoryBean.class, destroyMethod);
+	}
+
 	private void hasSingleNativeReflectionEntry(Consumer<DefaultNativeReflectionEntry> assertions) {
 		assertThat(this.registry.reflection().reflectionEntries()).singleElement().satisfies(assertions);
 	}
@@ -310,6 +335,37 @@ class InitDestroyMethodsDiscovererTests {
 		}
 
 		public void shutdown() {
+		}
+	}
+
+	static class ShutdownSampleFactoryBean implements FactoryBean {
+
+		@Override
+		public ShutdownSample getObject() throws Exception {
+			return new ShutdownSample();
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ShutdownSample.class;
+		}
+	}
+
+	static class SampleDisposableFactoryBean implements DisposableBean, FactoryBean {
+
+		@Override
+		public DisposableBeanSample getObject() throws Exception {
+			return new DisposableBeanSample();
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return DisposableBeanSample.class;
+		}
+
+		@Override
+		public void destroy() throws Exception {
+
 		}
 	}
 
