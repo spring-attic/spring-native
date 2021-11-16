@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostP
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.nativex.AotModeDetector;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -42,7 +43,7 @@ public class AotDependencyInjectionTestExecutionListener extends AbstractTestExe
 
 	private static final Log logger = LogFactory.getLog(AotDependencyInjectionTestExecutionListener.class);
 
-	private static final AotContextLoader aotContextLoader = new AotContextLoader();
+	private static final AotContextLoader aotContextLoader = getAotContextLoader();
 
 
 	/**
@@ -61,7 +62,7 @@ public class AotDependencyInjectionTestExecutionListener extends AbstractTestExe
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
-		if (aotContextLoader.isSupportedTestClass(testContext.getTestClass())) {
+		if (isSupportedTestClass(testContext)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Performing dependency injection for test context [" + testContext + "].");
 			}
@@ -71,7 +72,7 @@ public class AotDependencyInjectionTestExecutionListener extends AbstractTestExe
 
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
-		if (aotContextLoader.isSupportedTestClass(testContext.getTestClass())) {
+		if (isSupportedTestClass(testContext)) {
 			if (Boolean.TRUE.equals(
 				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
 				if (logger.isDebugEnabled()) {
@@ -91,6 +92,22 @@ public class AotDependencyInjectionTestExecutionListener extends AbstractTestExe
 		AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
 		beanPostProcessor.setBeanFactory(beanFactory);
 		beanPostProcessor.processInjection(testContext.getTestInstance());
+	}
+
+	private boolean isSupportedTestClass(TestContext testContext) {
+		return aotContextLoader != null && aotContextLoader.isSupportedTestClass(testContext.getTestClass());
+	}
+
+	private static AotContextLoader getAotContextLoader() {
+		if (AotModeDetector.isRunningAotTests()) {
+			try {
+				return new AotContextLoader();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to instantiate AotContextLoader", ex);
+			}
+		}
+		return null;
 	}
 
 }
