@@ -82,7 +82,7 @@ final class Target_SpringFactoriesLoader {
 
 	@Substitute
 	public static List<String> loadFactoryNames(Class<?> factoryType, @Nullable ClassLoader classLoader) {
-		if (AotModeDetector.isAotModeEnabled()) {
+		if (AotModeDetector.isAotModeEnabled() || AotModeDetector.isRunningAotTests()) {
 			List<String> result = new ArrayList<>();
 			List<String> names = Target_StaticSpringFactories.names.get(factoryType);
 			if (names != null) {
