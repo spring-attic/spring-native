@@ -20,45 +20,34 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.nativex.AotModeDetector;
 import org.springframework.test.context.TestContext;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.Assert;
 
 /**
- * {@code TestExecutionListener} which provides dependency injection support
- * for test instances whose {@code ApplicationContext} is loaded via AOT
- * mechanisms.
+ * {@code TestExecutionListener} which provides dependency injection for AOT
+ * generated application contexts for supported test classes.
+ *
+ * <p>For all other test classes, this listener delegates to the standard support
+ * in {@link DependencyInjectionTestExecutionListener}. This listener can therefore
+ * be used as a drop-in replacement for {@code DependencyInjectionTestExecutionListener}.
  *
  * @author Sam Brannen
  * @see DependencyInjectionTestExecutionListener
  * @see AotContextLoader
  * @see AotCacheAwareContextLoaderDelegate
  */
-public class AotDependencyInjectionTestExecutionListener extends AbstractTestExecutionListener {
+public class AotDependencyInjectionTestExecutionListener extends DependencyInjectionTestExecutionListener {
 
 	private static final Log logger = LogFactory.getLog(AotDependencyInjectionTestExecutionListener.class);
 
 	private static final AotContextLoader aotContextLoader = getAotContextLoader();
 
-
-	/**
-	 * Returns {@code 1999}, which is one less than the order configured for the
-	 * standard {@link DependencyInjectionTestExecutionListener}, thereby
-	 * ensuring that the {@code AotDependencyInjectionTestExecutionListener}
-	 * gets a chance to perform dependency injection before the
-	 * {@code DependencyInjectionTestExecutionListener} clears the
-	 * {@link DependencyInjectionTestExecutionListener#REINJECT_DEPENDENCIES_ATTRIBUTE
-	 * REINJECT_DEPENDENCIES_ATTRIBUTE} flag.
-	 */
-	@Override
-	public final int getOrder() {
-		return 1999;
-	}
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
@@ -66,32 +55,44 @@ public class AotDependencyInjectionTestExecutionListener extends AbstractTestExe
 			if (logger.isDebugEnabled()) {
 				logger.debug("Performing dependency injection for test context [" + testContext + "].");
 			}
-			injectDependencies(testContext);
+			injectDependenciesInAotMode(testContext);
+		}
+		else {
+			super.prepareTestInstance(testContext);
 		}
 	}
 
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
 		if (isSupportedTestClass(testContext)) {
-			if (Boolean.TRUE.equals(
-				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
+			if (Boolean.TRUE.equals(testContext.getAttribute(REINJECT_DEPENDENCIES_ATTRIBUTE))) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Reinjecting dependencies for test context [" + testContext + "].");
 				}
-				injectDependencies(testContext);
+				injectDependenciesInAotMode(testContext);
 			}
+		}
+		else {
+			super.beforeTestMethod(testContext);
 		}
 	}
 
-	protected void injectDependencies(TestContext testContext) throws Exception {
+
+	private void injectDependenciesInAotMode(TestContext testContext) throws Exception {
+		Class<?> clazz = testContext.getTestClass();
+		Object bean = testContext.getTestInstance();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
 		Assert.state(applicationContext instanceof GenericApplicationContext,
 				() -> "AOT ApplicationContext must be a GenericApplicationContext instead of " +
 						applicationContext.getClass().getName());
+
 		ConfigurableListableBeanFactory beanFactory = ((GenericApplicationContext) applicationContext).getBeanFactory();
 		AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
 		beanPostProcessor.setBeanFactory(beanFactory);
-		beanPostProcessor.processInjection(testContext.getTestInstance());
+		beanPostProcessor.processInjection(bean);
+		beanFactory.initializeBean(bean, clazz.getName() + AutowireCapableBeanFactory.ORIGINAL_INSTANCE_SUFFIX);
+
+		testContext.removeAttribute(REINJECT_DEPENDENCIES_ATTRIBUTE);
 	}
 
 	private boolean isSupportedTestClass(TestContext testContext) {

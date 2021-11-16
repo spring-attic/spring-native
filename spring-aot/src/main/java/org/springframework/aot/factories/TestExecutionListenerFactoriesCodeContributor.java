@@ -25,9 +25,14 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
 /**
  * {@link FactoriesCodeContributor} that contributes source code for
  * {@link org.springframework.test.context.TestExecutionListener} implementations.
+ *
  * <p>Instead of instantiating them statically, we make sure that
  * {@link org.springframework.core.io.support.SpringFactoriesLoader#loadFactoryNames(Class, ClassLoader)}
  * will return their names and that reflection metadata is registered for native images.
+ *
+ * <p>In addition, this {@code FactoriesCodeContributor} transparently replaces the
+ * {@code DependencyInjectionTestExecutionListener} from {@code spring-test} with
+ * the {@code AotDependencyInjectionTestExecutionListener} from {@code spring-native}.
  *
  * @author Sam Brannen
  * @author Brian Clozel
@@ -36,24 +41,34 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
  */
 class TestExecutionListenerFactoriesCodeContributor implements FactoriesCodeContributor {
 
+	private static final String TEL = "org.springframework.test.context.TestExecutionListener";
+
+	private static final String DITEL = "org.springframework.test.context.support.DependencyInjectionTestExecutionListener";
+
+	private static final String AOT_DITEL = "org.springframework.aot.test.AotDependencyInjectionTestExecutionListener";
+
+
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		return factory.getFactoryType().getClassName().equals("org.springframework.test.context.TestExecutionListener");
+		return TEL.equals(factory.getFactoryType().getClassName());
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
+		String className = factory.getFactory().getClassName();
+
+		// Replace standard DITEL with the AOT variant.
+		String factoryClassName = (DITEL.equals(className) ? AOT_DITEL : className);
 		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getClassName());
-		generateReflectionMetadata(factory, context);
+
+		generateReflectionMetadata(factoryClassName, context);
 		code.writeToStaticBlock(builder -> {
-			builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
-					factory.getFactory().getClassName());
+			builder.addStatement("names.add($T.class, $S)", factoryTypeClass, factoryClassName);
 		});
 	}
 
-	private void generateReflectionMetadata(SpringFactory factory, BuildContext context) {
-		String className = factory.getFactory().getClassName();
-		ClassDescriptor classDescriptor = ClassDescriptor.of(className);
+	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
+		ClassDescriptor classDescriptor = ClassDescriptor.of(factoryClassName);
 		classDescriptor.addMethodDescriptor(MethodDescriptor.defaultConstructor());
 		context.describeReflection(reflect -> reflect.add(classDescriptor));
 	}
