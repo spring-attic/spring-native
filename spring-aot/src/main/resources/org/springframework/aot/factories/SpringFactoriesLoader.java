@@ -57,7 +57,7 @@ public final class SpringFactoriesLoader {
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoader classLoader) {
 		Assert.notNull(factoryType, "'factoryType' must not be null");
-		if (AotModeDetector.isAotModeEnabled()) {
+		if (AotModeDetector.isAotModeEnabled() || AotModeDetector.isRunningAotTests()) {
 			List<Supplier<Object>> result = StaticSpringFactories.factories.get(factoryType);
 			if (result == null) {
 				return new ArrayList<>(0);
