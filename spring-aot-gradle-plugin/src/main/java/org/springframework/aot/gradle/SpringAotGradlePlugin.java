@@ -123,7 +123,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 				jar.setGroup(BasePlugin.BUILD_GROUP);
 				jar.getArchiveClassifier().convention("aot");
 			});
-			Configuration aotMainConfiguration = createAotMainConfiguration(project, aotMainSourceSet);
+			createAotMainConfiguration(project, aotMainSourceSet);
 
 			// Generated+compiled sources must be used by 'bootRun' and packaged by 'bootJar'
 			project.getPlugins().withType(SpringBootPlugin.class, springBootPlugin -> {
