@@ -6,6 +6,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 AOT_ONLY=false
+NATIVE_TESTS=false
 
 while test $# -gt 0; do
   case "$1" in
@@ -15,6 +16,14 @@ while test $# -gt 0; do
       ;;
     --aot-only)
       export AOT_ONLY=true
+      shift
+      ;;
+    -t)
+      export NATIVE_TESTS=true
+      shift
+      ;;
+    --native-tests)
+      export NATIVE_TESTS=true
       shift
       ;;
     *)
@@ -34,7 +43,11 @@ mkdir -p target/native
 
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Maven (native)"
-  mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
+  if [ "$NATIVE_TESTS" = false ] ; then
+    mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
+  else
+    mvn -ntp -Pnative package $* &> target/native/output.txt
+  fi
 
   if [[ -f target/${PWD##*/} ]]; then
     printf "${GREEN}SUCCESS${NC}\n"

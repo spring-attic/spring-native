@@ -24,6 +24,12 @@ while test $# -gt 0; do
       export SILENT=true
       shift
       ;;
+    -t)
+      shift
+      ;;
+    --native-tests)
+      shift
+      ;;
     *)
       break
       ;;
