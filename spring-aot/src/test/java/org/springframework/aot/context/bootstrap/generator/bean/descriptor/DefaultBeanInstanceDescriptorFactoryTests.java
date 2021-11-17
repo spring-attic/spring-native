@@ -18,7 +18,9 @@ package org.springframework.aot.context.bootstrap.generator.bean.descriptor;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
+import org.springframework.aot.context.bootstrap.generator.sample.injection.FieldInjectionComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -80,10 +82,23 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 	}
 
 	@Test
-	void createWithInjectionPoints() {
+	void createWithMethodInjectionPoints() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(InjectionConfiguration.class).getBeanDefinition());
 		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertInjectionConfiguration(descriptor);
+	}
+
+	@Test
+	void createWithMethodInjectionPointsUsingCglibProxy() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(
+				createCglibProxyType(InjectionConfiguration.class)).getBeanDefinition());
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertInjectionConfiguration(descriptor);
+	}
+
+	private void assertInjectionConfiguration(BeanInstanceDescriptor descriptor) {
 		assertThat(descriptor.getUserBeanClass()).isEqualTo(InjectionConfiguration.class);
 		assertThat(descriptor.getInstanceCreator()).isNotNull();
 		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(InjectionConfiguration.class.getDeclaredConstructors()[0]);
@@ -94,6 +109,40 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 		});
 		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
 			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findMethod(InjectionConfiguration.class, "setBean", String.class));
+			assertThat(injectionPoint.isRequired()).isFalse();
+		});
+		assertThat(descriptor.getProperties()).isEmpty();
+	}
+
+	@Test
+	void createWithFieldInjectionPoints() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(FieldInjectionComponent.class).getBeanDefinition());
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertFieldInjectionComponent(descriptor);
+	}
+
+	@Test
+	void createWithFieldInjectionPointsUsingCglibProxy() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(
+				createCglibProxyType(FieldInjectionComponent.class)).getBeanDefinition());
+		BeanInstanceDescriptor descriptor = createDescriptor(beanFactory, "test");
+		assertFieldInjectionComponent(descriptor);
+	}
+
+
+	private void assertFieldInjectionComponent(BeanInstanceDescriptor descriptor) {
+		assertThat(descriptor.getUserBeanClass()).isEqualTo(FieldInjectionComponent.class);
+		assertThat(descriptor.getInstanceCreator()).isNotNull();
+		assertThat(descriptor.getInstanceCreator().getMember()).isEqualTo(FieldInjectionComponent.class.getDeclaredConstructors()[0]);
+		assertThat(descriptor.getInjectionPoints()).hasSize(2);
+		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
+			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findField(FieldInjectionComponent.class, "environment"));
+			assertThat(injectionPoint.isRequired()).isTrue();
+		});
+		assertThat(descriptor.getInjectionPoints()).anySatisfy((injectionPoint) -> {
+			assertThat(injectionPoint.getMember()).isEqualTo(ReflectionUtils.findField(FieldInjectionComponent.class, "bean"));
 			assertThat(injectionPoint.isRequired()).isFalse();
 		});
 		assertThat(descriptor.getProperties()).isEmpty();
@@ -118,6 +167,12 @@ class DefaultBeanInstanceDescriptorFactoryTests {
 
 	private BeanInstanceDescriptor createDescriptor(DefaultListableBeanFactory beanFactory, String beanName) {
 		return new DefaultBeanInstanceDescriptorFactory(beanFactory).create(beanFactory.getMergedBeanDefinition(beanName));
+	}
+
+	private Class<?> createCglibProxyType(Class<?> target) {
+		ProxyFactory proxyFactory = new ProxyFactory();
+		proxyFactory.setTargetClass(target);
+		return proxyFactory.getProxy().getClass();
 	}
 
 }

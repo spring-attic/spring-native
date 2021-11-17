@@ -15,18 +15,19 @@
  */
 package org.springframework.data;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -43,6 +44,8 @@ import org.springframework.sample.data.jpa.NotAnEntity;
 import org.springframework.sample.data.jpa.Order;
 import org.springframework.sample.data.jpa.SomeAnnotation;
 import org.springframework.util.ReflectionUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JpaConfigurationProcessor}.
@@ -130,6 +133,20 @@ public class JpaConfigurationProcessorTests {
 		NativeConfigRegistryHolder nativeConfigRegistryHolder = processBeansWithPotentialPersistenceContext(ComponentWithPersistenceContext.class);
 		DefaultNativeReflectionEntry reflectionEntry = nativeConfigRegistryHolder.getReflectionEntry(ComponentWithPersistenceContext.class);
 		assertThat(reflectionEntry.getFields()).containsExactly(ReflectionUtils.findField(ComponentWithPersistenceContext.class, "entityManager"));
+	}
+
+	@Test
+	public void shouldRegisterFieldAccessForPersistenceContextBehindCglibProxy() {
+		NativeConfigRegistryHolder nativeConfigRegistryHolder = processBeansWithPotentialPersistenceContext(
+				createCglibProxyType(ComponentWithPersistenceContext.class));
+		DefaultNativeReflectionEntry reflectionEntry = nativeConfigRegistryHolder.getReflectionEntry(ComponentWithPersistenceContext.class);
+		assertThat(reflectionEntry.getFields()).containsExactly(ReflectionUtils.findField(ComponentWithPersistenceContext.class, "entityManager"));
+	}
+
+	private Class<?> createCglibProxyType(Class<?> target) {
+		ProxyFactory proxyFactory = new ProxyFactory();
+		proxyFactory.setTargetClass(target);
+		return proxyFactory.getProxy().getClass();
 	}
 
 

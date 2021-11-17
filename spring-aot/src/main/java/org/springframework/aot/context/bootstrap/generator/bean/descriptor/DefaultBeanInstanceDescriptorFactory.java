@@ -24,6 +24,7 @@ import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanI
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * A default {@link BeanInstanceDescriptorFactory} implementation using the standard
@@ -50,7 +51,7 @@ public class DefaultBeanInstanceDescriptorFactory implements BeanInstanceDescrip
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 		Executable instanceCreator = this.instanceCreatorSupplier.detectBeanInstanceExecutable(beanDefinition);
 		if (instanceCreator != null) {
-			Class<?> beanType = beanDefinition.getResolvableType().toClass();
+			Class<?> beanType = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
 			List<MemberDescriptor<?>> injectionPoints = this.injectionPointsSupplier.detectInjectionPoints(beanType);
 			List<PropertyDescriptor> properties = this.propertiesSupplier.detectProperties(beanDefinition);
 			return BeanInstanceDescriptor.of(beanDefinition.getResolvableType())

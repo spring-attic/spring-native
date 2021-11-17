@@ -172,7 +172,7 @@ class BeanInstanceExecutableSupplier {
 	}
 
 	private Executable resolveConstructor(Supplier<ResolvableType> beanType, List<ResolvableType> valueTypes) {
-		Class<?> type = beanType.get().toClass();
+		Class<?> type = ClassUtils.getUserClass(beanType.get().toClass());
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
 		if (constructors.length == 1) {
 			return constructors[0];

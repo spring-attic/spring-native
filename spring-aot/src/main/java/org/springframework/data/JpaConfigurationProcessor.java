@@ -323,14 +323,11 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
 			ComponentFilter filter) {
-		beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
-			Class<?> beanType = beanFactory.getType(beanName);
-			MergedAnnotation<Component> componentAnnotation = MergedAnnotations.from(beanType).get(Component.class);
-			if (componentAnnotation.isPresent()) {
-				if (filter == null || filter.test(beanName, beanType)) {
-					callback.invoke(beanName, beanType);
-				}
+		for (String beanName : beanFactory.getBeanNamesForAnnotation(Component.class)) {
+			Class<?> beanType = ClassUtils.getUserClass(beanFactory.getType(beanName));
+			if (filter == null || filter.test(beanName, beanType)) {
+				callback.invoke(beanName, beanType);
 			}
-		});
+		}
 	}
 }
