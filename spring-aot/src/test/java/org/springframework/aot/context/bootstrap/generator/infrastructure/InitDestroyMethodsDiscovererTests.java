@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -221,12 +222,15 @@ class InitDestroyMethodsDiscovererTests {
 	}
 
 	@Test
-	void processWithUnknownLifecycleMethodName() {
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
-		beanDefinition.setInitMethodName("doesNotExist");
+	void processWithTargetTypeNotProvidingSpecifiedMethod() {
+		// Testing the actual runtime instance has a destroy method but the exposed type does not
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(FactoryBean.class);
+		beanDefinition.setDestroyMethodName("destroy");
 		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
-		assertThatIllegalStateException().isThrownBy(() -> discoverer.registerInitMethods(registry))
-				.withMessageContaining("Lifecycle method annotation 'doesNotExist' not found");
+		assertThatIllegalStateException().isThrownBy(() -> discoverer.registerDestroyMethods(registry))
+				.withMessageContaining("Failed to process lifecycle methods on bean definition with name 'test'")
+				.havingCause().withMessageContaining("Lifecycle method annotation 'destroy' on "
+						+ "'org.springframework.beans.factory.FactoryBean' not found");
 	}
 
 	private void hasSingleNativeReflectionEntry(Consumer<DefaultNativeReflectionEntry> assertions) {
