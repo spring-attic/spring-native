@@ -34,6 +34,7 @@ import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.serialization.SerializationDescriptor;
+import org.springframework.util.ClassUtils;
 
 /**
  * Collect the required native configuration, such as the need for
@@ -167,7 +168,8 @@ public class NativeConfigurationRegistry {
 		 * @return a builder to further describe the need for runtime reflection
 		 */
 		public DefaultNativeReflectionEntry.Builder forType(Class<?> type) {
-			return this.reflection.computeIfAbsent(type, DefaultNativeReflectionEntry.Builder::new);
+			Class<?> userClass = ClassUtils.getUserClass(type);
+			return this.reflection.computeIfAbsent(userClass, DefaultNativeReflectionEntry.Builder::new);
 		}
 
 		/**

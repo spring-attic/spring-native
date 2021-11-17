@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.util.ReflectionUtils;
 
@@ -43,8 +44,44 @@ class NativeConfigurationRegistryTests {
 	private final NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 
 	@Test
+	void forTypeRegisterClass() {
+		registry.reflection().forType(TestClass.class);
+		assertTestClassEmptyEntry();
+	}
+
+	@Test
+	void forTypeWithProxyRegisterUserClass() {
+		ProxyFactory pf = new ProxyFactory();
+		pf.setTargetClass(TestClass.class);
+		Object proxy = pf.getProxy();
+		registry.reflection().forType(proxy.getClass());
+		assertTestClassEmptyEntry();
+	}
+
+	private void assertTestClassEmptyEntry() {
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
+			assertThat(entry.getType()).isEqualTo(TestClass.class);
+			assertThat(entry.getMethods()).isEmpty();
+			assertThat(entry.getFields()).isEmpty();
+		});
+	}
+
+	@Test
 	void addMethodUseDeclaringClass() {
 		Method method = ReflectionUtils.findMethod(TestClass.class, "setName", String.class);
+		assertTestClassMethod(method);
+	}
+
+	@Test
+	void addMethodWithProxyUseUserClass() {
+		ProxyFactory pf = new ProxyFactory();
+		pf.setTargetClass(TestClass.class);
+		Object proxy = pf.getProxy();
+		Method method = ReflectionUtils.findMethod(proxy.getClass(), "setName", String.class);
+		assertTestClassMethod(method);
+	}
+
+	private void assertTestClassMethod(Method method) {
 		registry.reflection().addExecutable(method);
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(TestClass.class);
@@ -197,7 +234,7 @@ class NativeConfigurationRegistryTests {
 
 
 	@SuppressWarnings("unused")
-	private static class TestClass {
+	public static class TestClass {
 
 		private String field;
 
