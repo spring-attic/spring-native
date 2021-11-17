@@ -32,6 +32,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
@@ -67,6 +68,7 @@ import org.springframework.util.FileSystemUtils;
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
+ * @author Sam Brannen
  */
 public class SpringAotGradlePlugin implements Plugin<Project> {
 
@@ -152,7 +154,13 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 			project.getTasks().withType(Test.class)
 					.configureEach(test -> {
-						test.setClasspath(test.getClasspath().plus(project.files(generatedTestSourcesJar.getArchiveFile())));
+						// Prepend the generatedTestSourcesJar to the classpath so that generated code
+						// overrides any types already in the classpath -- for example, the standard
+						// SpringFactoriesLoader implementation in spring-core must be overridden by
+						// the SpringFactoriesLoader implementation that uses StaticSpringFactories.
+						FileCollection classpath = project.files(project.files(generatedTestSourcesJar.getArchiveFile()),
+								test.getClasspath());
+						test.setClasspath(classpath);
 						test.systemProperty("spring.test.context.default.CacheAwareContextLoaderDelegate",
 								"org.springframework.aot.test.AotCacheAwareContextLoaderDelegate");
 					});
