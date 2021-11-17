@@ -42,6 +42,8 @@ public class SpringAotExtension {
 
 	private final Property<String> mainClass;
 
+	private final Property<String> applicationClass;
+
 	public SpringAotExtension(ObjectFactory objectFactory) {
 		this.mode = objectFactory.property(AotMode.class).convention(AotMode.NATIVE);
 		this.debugVerify = objectFactory.property(Boolean.class).convention(false);
@@ -51,6 +53,7 @@ public class SpringAotExtension {
 		this.removeJmxSupport = objectFactory.property(Boolean.class).convention(true);
 		this.verify = objectFactory.property(Boolean.class).convention(true);
 		this.mainClass = objectFactory.property(String.class).convention((String)null);
+		this.applicationClass = objectFactory.property(String.class).convention((String)null);
 	}
 
 	/**
@@ -103,10 +106,17 @@ public class SpringAotExtension {
 	}
 
 	/**
-	 * Allows to specify a main class, useful when multiple ones are present.
+	 * Allows to specify a main class, useful when multiple ones are present or when in a JAR dependency.
 	 */
 	public Property<String> getMainClass() {
 		return this.mainClass;
+	}
+
+	/**
+	 * Allows to specify an application class, useful when multiple ones are present or when in a JAR dependency.
+	 */
+	public Property<String> getApplicationClass() {
+		return this.applicationClass;
 	}
 
 }

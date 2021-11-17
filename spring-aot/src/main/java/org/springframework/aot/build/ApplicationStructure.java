@@ -57,14 +57,20 @@ public class ApplicationStructure {
 	private final ClassLoader classLoader;
 
 	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, List<Path> classesPaths,
-			@Nullable String mainClass, List<String> testClasses, List<String> classpath, @Nullable ClassLoader classLoader) throws IOException {
+			@Nullable String mainClass, @Nullable String applicationClass, List<String> testClasses, List<String> classpath, @Nullable ClassLoader classLoader) throws IOException {
 		this.sourcesPath = sourcesPath;
 		this.resourcesPath = resourcesPath;
 		this.resourceFolders = resourceFolders;
 		this.classesPaths = classesPaths;
 		this.mainClass = mainClass != null ? mainClass : detectMainClass(classesPaths);
+		if (applicationClass != null) {
+			this.applicationClass = applicationClass;
+		}
+		else {
+			String detectedApplicationClass = detectApplicationClass(classesPaths);
+			this.applicationClass = detectedApplicationClass != null ? detectedApplicationClass : mainClass;
+		}
 		this.testClasses = testClasses;
-		this.applicationClass = detectApplicationClass(classesPaths);
 		this.classpath = classpath;
 		this.classLoader = classLoader;
 	}
@@ -110,9 +116,13 @@ public class ApplicationStructure {
 			File file = path.toFile();
 			// For now only search in directories, could be extended to JARs using the JarFile parameter variant
 			if (file.isDirectory()) {
-				String mainClass = MainClassFinder.findSingleMainClass(file);
-				if (StringUtils.hasText(mainClass)) {
-					return mainClass;
+				try {
+					String mainClass = MainClassFinder.findSingleMainClass(file);
+					if (StringUtils.hasText(mainClass)) {
+						return mainClass;
+					}
+				} catch (IllegalStateException ex) {
+					// More that one class have been found
 				}
 			}
 		}
@@ -124,9 +134,13 @@ public class ApplicationStructure {
 			File file = path.toFile();
 			// For now only search in directories, could be extended to JARs using the JarFile parameter variant
 			if (file.isDirectory()) {
-				String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(file, SpringBootApplication.class.getName());
-				if (StringUtils.hasText(applicationClass)) {
-					return applicationClass;
+				try {
+					String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(file, SpringBootApplication.class.getName());
+					if (StringUtils.hasText(applicationClass)) {
+						return applicationClass;
+					}
+				} catch (IllegalStateException ex) {
+					// More that one class have been found
 				}
 			}
 		}

@@ -126,9 +126,11 @@ public class GenerateAotSources extends JavaExec {
 			if (getLogLevel().equals("DEBUG")) {
 				arguments.add("--debug");
 			}
-			// main application class
 			if (GenerateAotSources.this.aotOptions.getMainClass().isPresent()) {
-				arguments.add(GenerateAotSources.this.aotOptions.getMainClass().get());
+				arguments.add("--main-class=" + GenerateAotSources.this.aotOptions.getMainClass().get());
+			}
+			if (GenerateAotSources.this.aotOptions.getApplicationClass().isPresent()) {
+				arguments.add("--application-class=" + GenerateAotSources.this.aotOptions.getApplicationClass().get());
 			}
 			return arguments;
 		}

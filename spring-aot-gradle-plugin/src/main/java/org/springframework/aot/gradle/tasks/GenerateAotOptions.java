@@ -49,6 +49,8 @@ public class GenerateAotOptions implements Serializable {
 
 	private final Property<String> mainClass;
 
+	private final Property<String> applicationClass;
+
 	public GenerateAotOptions(SpringAotExtension extension) {
 		this.mode = extension.getMode().map(aotMode -> aotMode.getSlug());
 		this.debugVerify = extension.getDebugVerify();
@@ -58,6 +60,7 @@ public class GenerateAotOptions implements Serializable {
 		this.removeJmxSupport = extension.getRemoveJmxSupport();
 		this.verify = extension.getVerify();
 		this.mainClass = extension.getMainClass();
+		this.applicationClass = extension.getApplicationClass();
 	}
 
 	@Input
@@ -99,6 +102,12 @@ public class GenerateAotOptions implements Serializable {
 	@Optional
 	public Property<String> getMainClass() {
 		return this.mainClass;
+	}
+
+	@Input
+	@Optional
+	public Property<String> getApplicationClass() {
+		return this.applicationClass;
 	}
 
 	AotOptions toAotOptions() {

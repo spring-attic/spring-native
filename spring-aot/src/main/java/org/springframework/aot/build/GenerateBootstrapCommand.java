@@ -43,8 +43,11 @@ import org.springframework.util.StringUtils;
 		description = "Generate the Java source for the Spring Bootstrap class.")
 public class GenerateBootstrapCommand implements Callable<Integer> {
 
-	@Parameters(index = "0", arity = "0..1", description = "The main application class, auto-detected if not provided.")
+	@Option(names = "--main-class", description = "The main class, auto-detected if not provided.")
 	private String mainClass;
+
+	@Option(names = "--application-class", description = "The application class, auto-detected if not provided.")
+	private String applicationClass;
 
 	@Option(names = "--mode", required = true, description = "The mode which could be native or native-agent")
 	private String mode;
@@ -99,7 +102,7 @@ public class GenerateBootstrapCommand implements Callable<Integer> {
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
-				this.classesPaths, this.mainClass, Collections.emptyList(), Arrays.asList(classPath), classLoader);
+				this.classesPaths, this.mainClass, this.applicationClass, Collections.emptyList(), Arrays.asList(classPath), classLoader);
 		generator.generate(AotPhase.MAIN, applicationStructure);
 		return 0;
 	}

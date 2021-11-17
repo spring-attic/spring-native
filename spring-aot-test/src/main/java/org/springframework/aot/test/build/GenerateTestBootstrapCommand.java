@@ -83,7 +83,7 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
-				Arrays.asList(this.testClassesFolders), null, testClassesNames, Arrays.asList(classPath), classLoader);
+				Arrays.asList(this.testClassesFolders), null, null, testClassesNames, Arrays.asList(classPath), classLoader);
 		generator.generate(AotPhase.TEST, applicationStructure);
 		return 0;
 	}

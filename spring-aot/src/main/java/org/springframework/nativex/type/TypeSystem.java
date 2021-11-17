@@ -1349,7 +1349,7 @@ public class TypeSystem {
 			File f = new File(classpathEntry);
 			if (f.isDirectory()) {
 				result.add(Paths.get(f.toURI()));
-			} else if (f.isFile() && f.getName().endsWith(".jar") && (
+			} else if (mainPackagePath != null && f.isFile() && f.getName().endsWith(".jar") && (
 					f.getParent().endsWith(File.separator + "target") ||  // Maven multi-module
 							f.getParent().endsWith(File.separator + "libs") || // Gradle multi-module
 							f.getAbsolutePath().contains(mainPackagePath))) { // Same package than the main application class

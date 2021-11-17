@@ -198,6 +198,8 @@ Here are all the options available:
 
 * `mainClass` allows to specify a main class, useful when multiple ones are present.
 
+* `applicationClass` allows to specify an application class (typically annotated with `@SpringBootApplication`), useful when multiple ones are present.
+
 ==== Debugging the source generation
 
 The Spring AOT plugins spawns a new process to perform the source generation.
