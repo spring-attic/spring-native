@@ -46,7 +46,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class BeanInstanceExecutableSupplierTests {
 
 	@Test
-	void detectBeanInstanceExecutableWithFactoryMethodName() {
+	void detectBeanInstanceExecutableWithBeanClassAndFactoryMethodName() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("testBean", "test");
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class)
+				.setFactoryMethod("create").addConstructorArgReference("testBean").getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils.findMethod(SampleFactory.class, "create", String.class));
+	}
+
+	@Test
+	void detectBeanInstanceExecutableWithBeanClassNameAndFactoryMethodName() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("testBean", "test");
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class.getName())
@@ -60,7 +70,7 @@ class BeanInstanceExecutableSupplierTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("testNumber", 1L);
 		beanFactory.registerSingleton("testBean", "test");
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class.getName())
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class)
 				.setFactoryMethod("create").addConstructorArgReference("testNumber")
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
@@ -77,11 +87,22 @@ class BeanInstanceExecutableSupplierTests {
 	}
 
 	@Test
+	void detectBeanInstanceExecutableWithBeanClassAndFactoryMethodNameIgnoreTargetType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("testBean", "test");
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class)
+				.setFactoryMethod("create").addConstructorArgReference("testBean").getBeanDefinition();
+		beanDefinition.setTargetType(String.class);
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils.findMethod(SampleFactory.class, "create", String.class));
+	}
+
+	@Test
 	void beanDefinitionWithConstructorArgsForMultipleConstructors() throws Exception {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("testNumber", 1L);
 		beanFactory.registerSingleton("testBean", "test");
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleBeanWithConstructors.class.getName())
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleBeanWithConstructors.class)
 				.addConstructorArgReference("testNumber")
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
@@ -93,7 +114,7 @@ class BeanInstanceExecutableSupplierTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("testNumber", 1L);
 		beanFactory.registerSingleton("testBean", "test");
-		BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(SampleBeanWithConstructors.class.getName())
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(SampleBeanWithConstructors.class)
 				.addConstructorArgReference("testNumber")
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);

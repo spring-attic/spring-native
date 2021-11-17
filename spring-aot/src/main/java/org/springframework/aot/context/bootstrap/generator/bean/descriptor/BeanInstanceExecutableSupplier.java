@@ -41,6 +41,7 @@ import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -69,7 +70,7 @@ class BeanInstanceExecutableSupplier {
 		Supplier<ResolvableType> beanType = () -> getBeanType(beanDefinition);
 		List<ResolvableType> valueTypes = beanDefinition.hasConstructorArgumentValues()
 				? determineParameterValueTypes(beanDefinition.getConstructorArgumentValues()) : Collections.emptyList();
-		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, beanType, valueTypes);
+		Method resolvedFactoryMethod = resolveFactoryMethod(beanDefinition, valueTypes);
 		if (resolvedFactoryMethod != null) {
 			return resolvedFactoryMethod;
 		}
@@ -129,8 +130,7 @@ class BeanInstanceExecutableSupplier {
 		return type;
 	}
 
-	private Method resolveFactoryMethod(BeanDefinition beanDefinition, Supplier<ResolvableType> beanType,
-			List<ResolvableType> valueTypes) {
+	private Method resolveFactoryMethod(BeanDefinition beanDefinition, List<ResolvableType> valueTypes) {
 		if (beanDefinition instanceof RootBeanDefinition) {
 			RootBeanDefinition rootBeanDefinition = (RootBeanDefinition) beanDefinition;
 			Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
@@ -141,8 +141,12 @@ class BeanInstanceExecutableSupplier {
 		String factoryMethodName = beanDefinition.getFactoryMethodName();
 		if (factoryMethodName != null) {
 			List<Method> methods = new ArrayList<>();
-			ReflectionUtils.doWithMethods(beanType.get().toClass(), methods::add,
-					(method) -> isFactoryMethodCandidate(beanDefinition, method, factoryMethodName));
+			Class<?> beanClass = getBeanClass(beanDefinition);
+			if (beanClass == null) {
+				throw new IllegalStateException("Failed to determine bean class of " + beanDefinition);
+			}
+			ReflectionUtils.doWithMethods(beanClass, methods::add,
+					(method) -> isFactoryMethodCandidate(beanClass, method, factoryMethodName));
 			if (methods.size() >= 1) {
 				Function<Method, List<ResolvableType>> parameterTypesFactory = (method) -> {
 					List<ResolvableType> types = new ArrayList<>();
@@ -157,10 +161,10 @@ class BeanInstanceExecutableSupplier {
 		return null;
 	}
 
-	private boolean isFactoryMethodCandidate(BeanDefinition beanDefinition, Method method, String factoryMethodName) {
+	private boolean isFactoryMethodCandidate(Class<?> beanClass, Method method, String factoryMethodName) {
 		if (method.getName().equals(factoryMethodName)) {
 			if (Modifier.isStatic(method.getModifiers())) {
-				return method.getDeclaringClass().equals(getBeanType(beanDefinition).toClass());
+				return method.getDeclaringClass().equals(beanClass);
 			}
 			return !Modifier.isPrivate(method.getModifiers());
 		}
@@ -312,6 +316,14 @@ class BeanInstanceExecutableSupplier {
 			}
 		}
 		return null;
+	}
+
+	private Class<?> getBeanClass(BeanDefinition beanDefinition) {
+		if (beanDefinition instanceof AbstractBeanDefinition) {
+			AbstractBeanDefinition abd = (AbstractBeanDefinition) beanDefinition;
+			return abd.hasBeanClass() ? abd.getBeanClass() : loadClass(abd.getBeanClassName());
+		}
+		return (beanDefinition.getBeanClassName() != null) ? loadClass(beanDefinition.getBeanClassName()) : null;
 	}
 
 	private ResolvableType getBeanType(BeanDefinition beanDefinition) {
