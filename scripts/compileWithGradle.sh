@@ -41,5 +41,11 @@ if [ "$AOT_ONLY" = false ] ; then
   fi
 else
   echo "Packaging ${PWD##*/} with Gradle (AOT only)'"
-  ./gradlew build &> build/native/output.txt
+  if ./gradlew build &> build/native/output.txt; then
+    printf "${GREEN}SUCCESS${NC}\n"
+  else
+    cat build/native/output.txt
+    printf "${RED}FAILURE${NC}: an error occurred when building the JAR in AOT mode.\n"
+    exit 1
+  fi
 fi
