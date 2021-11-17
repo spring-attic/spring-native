@@ -17,7 +17,9 @@
 package org.springframework.aot.gradle;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
@@ -25,11 +27,17 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.internal.project.DefaultProject;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.build.event.BuildEventsListenerRegistry;
+import org.gradle.internal.service.DefaultServiceRegistry;
+import org.gradle.internal.service.scopes.ProjectScopeServices;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.tooling.events.OperationCompletionListener;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin;
 import org.junit.jupiter.api.Test;
 
@@ -143,10 +151,35 @@ public class SpringAotGradlePluginTest {
 	@Test
 	void configureKotlinTasksDependencies() {
 		Project project = createTestProject();
+		addFakeService(project);
 		project.getPlugins().apply(KotlinPlatformJvmPlugin.class);
 
 		TaskProvider<Task> compileAotKotlin = project.getTasks().named("compileAotMainKotlin");
 		assertThat(compileAotKotlin.get().getDependsOn()).extracting("name").contains("generateAot");
+	}
+
+	// TODO Workaround for https://github.com/gradle/gradle/issues/17783, removed when fixed
+	private void addFakeService(Project project) {
+		try {
+			ProjectScopeServices gss =
+					(ProjectScopeServices) ((DefaultProject) project).getServices();
+
+			Field state = ProjectScopeServices.class.getSuperclass().getDeclaredField("state");
+			state.setAccessible(true);
+			AtomicReference<Object> stateValue = (AtomicReference<Object>) state.get(gss);
+			Class<?> enumClass = Class.forName(DefaultServiceRegistry.class.getName() + "$State");
+			stateValue.set(enumClass.getEnumConstants()[0]);
+
+			gss.add(BuildEventsListenerRegistry.class, new FakeBuildEventsListenerRegistry());
+			stateValue.set(enumClass.getEnumConstants()[1]);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static class FakeBuildEventsListenerRegistry implements BuildEventsListenerRegistry {
+		@Override
+		public void onTaskCompletion(Provider<? extends OperationCompletionListener> provider) {}
 	}
 
 
