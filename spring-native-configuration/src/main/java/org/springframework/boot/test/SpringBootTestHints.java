@@ -16,18 +16,13 @@
 
 package org.springframework.boot.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeSystem;
+import org.springframework.test.web.client.SimpleRequestExpectationManager;
 
 /**
  * Native hints for Spring Boot's testing support.
@@ -44,7 +39,6 @@ import org.springframework.nativex.type.TypeSystem;
 			org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class,
 			org.springframework.boot.test.context.SpringBootContextLoader.class,
 			org.springframework.boot.test.context.SpringBootTest.WebEnvironment.class,
-			org.springframework.boot.test.context.SpringBootTestContextBootstrapper.class,
 			org.springframework.boot.test.mock.mockito.MockitoPostProcessor.class
 		}, typeNames = {
 			"org.springframework.boot.autoconfigure.test.ImportAutoConfiguration",
@@ -64,128 +58,8 @@ import org.springframework.nativex.type.TypeSystem;
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 	}
 )
-
 @NativeHint(trigger = org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration.class,
 	types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
-
+@NativeHint(trigger = MockServerRestTemplateCustomizer.class, types = @TypeHint(types = SimpleRequestExpectationManager.class))
 public class SpringBootTestHints implements NativeConfiguration {
-
-	@Override
-	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		Type test = typeSystem.resolve("org/junit/jupiter/api/Test", true);
-		List<HintDeclaration> hints = new ArrayList<>();
-		if (test != null)  {
-			if ((typeSystem.resolve("org/springframework/data/cassandra/SessionFactory", true) != null) ||
-					(typeSystem.resolve("org/springframework/data/cassandra/ReactiveSession", true) != null)) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest", new AccessDescriptor(AccessBits.RESOURCE));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/data/jdbc/repository/config/AbstractJdbcConfiguration", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/ldap/core/ContextSource", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if ((typeSystem.resolve("com/mongodb/client/MongoClient", true) != null) ||
-					(typeSystem.resolve("com/mongodb/reactivestreams/client/ClientSession", true) != null)) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/neo4j/driver/Driver", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/data/r2dbc/core/R2dbcEntityTemplate", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if ((typeSystem.resolve("org/springframework/data/redis/core/RedisOperations", true) != null) ||
-					(typeSystem.resolve("org/springframework/data/redis/core/ReactiveRedisTemplate", true) != null)) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.redis.DataRedisTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.data.redis.DataRedisTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/jdbc/core/JdbcTemplate", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jdbc.JdbcTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jdbc.JdbcTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jdbc.JdbcTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/jooq/ConnectionProvider", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jooq.JooqTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jooq.JooqTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.jooq.JooqTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if ((typeSystem.resolve("com/google/gson/Gson", true) != null) ||
-					(typeSystem.resolve("com/fasterxml/jackson/databind/ObjectMapper", true) != null) ||
-					(typeSystem.resolve("javax/json/bind/Jsonb", true) != null)) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.json.JsonTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.json.JsonTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.json.JsonTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/web/reactive/function/client/WebClient", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.client.RestClientTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.client.RestClientTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.client.RestClientTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/ws/client/core/WebServiceTemplate", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/data/jpa/repository/JpaRepository", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest", new AccessDescriptor(AccessBits.ANNOTATION));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/web/servlet/DispatcherServlet", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-			if (typeSystem.resolve("org/springframework/web/reactive/result/view/ViewResolver", true) != null) {
-				HintDeclaration hintDeclaration = new HintDeclaration();
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest", new AccessDescriptor(AccessBits.ALL));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTestContextBootstrapper", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hintDeclaration.addDependantType("org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTypeExcludeFilter", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-				hints.add(hintDeclaration);
-			}
-		}
-		return hints;
-	}
 }

@@ -70,7 +70,8 @@ public class TestContextAotProcessor {
 	 */
 	public void generateTestContexts(Iterable<Class<?>> testClasses, BootstrapWriterContext writerContext) {
 		ReflectionConfiguration reflection = writerContext.getNativeConfigurationRegistry().reflection();
-		List<TestContextConfigurationDescriptor> descriptors = this.configurationDescriptorFactory.buildConfigurationDescriptors(testClasses);
+		List<TestContextConfigurationDescriptor> descriptors = this.configurationDescriptorFactory.buildConfigurationDescriptors(testClasses,
+				writerContext.getNativeConfigurationRegistry());
 		AtomicInteger count = new AtomicInteger();
 		Supplier<String> fallbackClassName = () -> TEST_BOOTSTRAP_CLASS_NAME + count.getAndIncrement();
 		Map<ClassName, TestContextConfigurationDescriptor> entries = new HashMap<>();

@@ -23,11 +23,15 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.test.samples.app.SampleApplication;
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
+import org.springframework.aot.test.samples.app.SampleApplicationRestClientTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -49,14 +53,17 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Tests for {@link TestContextConfigurationDescriptorFactory}.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 class TestContextConfigurationDescriptorFactoryTests {
 
 	private final TestContextConfigurationDescriptorFactory factory = new TestContextConfigurationDescriptorFactory(getClass().getClassLoader());
 
+	private final NativeConfigurationRegistry nativeConfigurationRegistry = new NativeConfigurationRegistry();
+
 	@Test
 	void createTestContextConfigurationDescriptorForSingleConfigurationOnMultipleTests() {
-		assertThat(this.factory.buildConfigurationDescriptors(List.of(SampleApplicationTests.class, SampleApplicationAnotherTests.class)))
+		assertThat(this.factory.buildConfigurationDescriptors(List.of(SampleApplicationTests.class, SampleApplicationAnotherTests.class), nativeConfigurationRegistry))
 				.singleElement().satisfies((descriptor) -> assertThat(descriptor.getTestClasses())
 						.containsOnly(SampleApplicationTests.class, SampleApplicationAnotherTests.class));
 	}
@@ -64,7 +71,7 @@ class TestContextConfigurationDescriptorFactoryTests {
 	@Test
 	void createTestContextConfigurationDescriptorForSeveralConfigurations() {
 		List<TestContextConfigurationDescriptor> descriptors = this.factory.buildConfigurationDescriptors(List.of(
-				SampleApplicationTests.class, SampleApplicationAnotherTests.class, SampleJdbcTests.class));
+				SampleApplicationTests.class, SampleApplicationAnotherTests.class, SampleJdbcTests.class), nativeConfigurationRegistry);
 		assertThat(descriptors).anySatisfy((descriptor -> assertThat(descriptor.getTestClasses())
 				.containsOnly(SampleApplicationTests.class, SampleApplicationAnotherTests.class)));
 		assertThat(descriptors).anySatisfy((descriptor -> assertThat(descriptor.getTestClasses())
@@ -74,24 +81,43 @@ class TestContextConfigurationDescriptorFactoryTests {
 
 	@Test
 	void createTestContextConfigurationDescriptorForUnsupportedTestContextBootstrapper() {
-		assertThatIllegalStateException().isThrownBy(() -> this.factory.buildConfigurationDescriptors(List.of(UnsupportedSpringTest.class)))
+		assertThatIllegalStateException().isThrownBy(() -> this.factory.buildConfigurationDescriptors(List.of(UnsupportedSpringTest.class),
+				nativeConfigurationRegistry))
 				.withMessageContaining("No processor found for")
 				.withMessageContaining(UnsupportedTestContextBootstrapper.class.getName());
 	}
 
 	@Test
 	void createTestContextBootstrapperForSpringBootTest() {
-		TestContextBootstrapper testContextBootstrapper = this.factory.createTestContextBootstrapper(SampleApplicationTests.class);
+		TestContextBootstrapper testContextBootstrapper = this.factory.createTestContextBootstrapper(SampleApplicationTests.class, nativeConfigurationRegistry);
 		assertThat(testContextBootstrapper).isNotNull();
 		MergedContextConfiguration configuration = testContextBootstrapper.buildMergedContextConfiguration();
 		assertThat(configuration).isNotNull();
 		assertThat(configuration.getTestClass()).isEqualTo(SampleApplicationTests.class);
 		assertThat(configuration.getClasses()).containsOnly(SampleApplication.class);
+		assertThat(nativeConfigurationRegistry.reflection().reflectionEntries()).singleElement().satisfies(entry -> {
+			assertThat(entry.getType()).isEqualTo(SpringBootTestContextBootstrapper.class);
+			assertThat(entry.getFlags()).singleElement().isEqualTo(Flag.allDeclaredConstructors);
+		});
+	}
+
+	@Test
+	void createTestContextBootstrapperForSpringBootTestWithCustomBootstrapper() {
+		TestContextBootstrapper testContextBootstrapper = this.factory.createTestContextBootstrapper(SampleApplicationRestClientTests.class, nativeConfigurationRegistry);
+		assertThat(testContextBootstrapper).isNotNull();
+		MergedContextConfiguration configuration = testContextBootstrapper.buildMergedContextConfiguration();
+		assertThat(configuration).isNotNull();
+		assertThat(configuration.getTestClass()).isEqualTo(SampleApplicationRestClientTests.class);
+		assertThat(configuration.getClasses()).containsOnly(SampleApplication.class);
+		assertThat(nativeConfigurationRegistry.reflection().reflectionEntries()).singleElement().satisfies(entry -> {
+			assertThat(entry.getType().getName()).isEqualTo("org.springframework.boot.test.autoconfigure.web.client.RestClientTestContextBootstrapper");
+			assertThat(entry.getFlags()).singleElement().isEqualTo(Flag.allDeclaredConstructors);
+		});
 	}
 
 	@Test
 	void createTestContextBootstrapForNonSpringTest() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.createTestContextBootstrapper(String.class))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.createTestContextBootstrapper(String.class, nativeConfigurationRegistry))
 				.withMessageContaining(String.class.getName())
 				.withMessageContaining("is not a Spring test class, @BootstrapWith annotation not found");
 	}
@@ -101,7 +127,7 @@ class TestContextConfigurationDescriptorFactoryTests {
 		GenericApplicationContext context = new GenericApplicationContext();
 		AotTestContextProcessor processor = mockAotTestContextProcessor((bootstrapper) -> true, () -> context);
 		TestContextConfigurationDescriptor descriptor = new TestContextConfigurationDescriptorFactory(List.of(processor))
-				.buildConfigurationDescriptors(List.of(SampleApplicationTests.class)).get(0);
+				.buildConfigurationDescriptors(List.of(SampleApplicationTests.class), nativeConfigurationRegistry).get(0);
 		verify(processor).supports(any());
 		assertThat(descriptor.parseTestContext()).isSameAs(context);
 		verify(processor).prepareTestContext(any());
@@ -118,7 +144,7 @@ class TestContextConfigurationDescriptorFactoryTests {
 
 		new TestContextConfigurationDescriptorFactory(
 				List.of(notSupportedProcessor, anotherNotSupportedProcessor, processor, yetAnotherNotSupportedProcessor))
-				.buildConfigurationDescriptors(List.of(SampleApplicationTests.class));
+				.buildConfigurationDescriptors(List.of(SampleApplicationTests.class), nativeConfigurationRegistry);
 		InOrder ordered = inOrder(notSupportedProcessor, anotherNotSupportedProcessor, processor);
 		ordered.verify(notSupportedProcessor).supports(any());
 		ordered.verify(anotherNotSupportedProcessor).supports(any());
