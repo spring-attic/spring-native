@@ -222,36 +222,15 @@ class InitDestroyMethodsDiscovererTests {
 	}
 
 	@Test
-	void processWithUnknownLifecycleMethodName() {
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(LifecycleSample.class);
-		beanDefinition.setInitMethodName("doesNotExist");
-		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
-		assertThatIllegalStateException().isThrownBy(() -> discoverer.registerInitMethods(registry))
-				.withMessageContaining("Lifecycle method annotation 'doesNotExist' not found");
-	}
-
-	@Test
-	void processShutdownSampleFactoryBean() {
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(ShutdownSampleFactoryBean.class);
-		beanDefinition.setDestroyMethodName("shutdown");
-		//beanDefinition.setTargetType(ShutdownSample.class);
-		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
-		Method shutdownMethod = ReflectionUtils.findMethod(ShutdownSample.class, "shutdown");
-		Map<String, List<Method>> methods = discoverer.registerDestroyMethods(registry);
-		assertThat(methods.get("test")).containsExactly(shutdownMethod);
-		hasSingleNativeReflectionEntry(ShutdownSample.class, shutdownMethod);
-	}
-
-	@Test
-	void processDisposableFactoryBean() {
+	void processWithTargetTypeNotProvidingSpecifiedMethod() {
+		// Testing the actual runtime instance has a destroy method but the exposed type does not
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(FactoryBean.class);
-		//beanDefinition.setTargetType(SampleDisposableFactoryBean.class);
 		beanDefinition.setDestroyMethodName("destroy");
 		InitDestroyMethodsDiscoverer discoverer = createInstance("test", beanDefinition);
-		Method destroyMethod = ReflectionUtils.findMethod(SampleDisposableFactoryBean.class, "destroy");
-		Map<String, List<Method>> methods = discoverer.registerDestroyMethods(registry);
-		assertThat(methods.get("test")).containsExactly(destroyMethod);
-		hasSingleNativeReflectionEntry(SampleDisposableFactoryBean.class, destroyMethod);
+		assertThatIllegalStateException().isThrownBy(() -> discoverer.registerDestroyMethods(registry))
+				.withMessageContaining("Failed to process lifecycle methods on bean definition with name 'test'")
+				.havingCause().withMessageContaining("Lifecycle method annotation 'destroy' on "
+						+ "'org.springframework.beans.factory.FactoryBean' not found");
 	}
 
 	private void hasSingleNativeReflectionEntry(Consumer<DefaultNativeReflectionEntry> assertions) {
@@ -335,37 +314,6 @@ class InitDestroyMethodsDiscovererTests {
 		}
 
 		public void shutdown() {
-		}
-	}
-
-	static class ShutdownSampleFactoryBean implements FactoryBean {
-
-		@Override
-		public ShutdownSample getObject() throws Exception {
-			return new ShutdownSample();
-		}
-
-		@Override
-		public Class<?> getObjectType() {
-			return ShutdownSample.class;
-		}
-	}
-
-	static class SampleDisposableFactoryBean implements DisposableBean, FactoryBean {
-
-		@Override
-		public DisposableBeanSample getObject() throws Exception {
-			return new DisposableBeanSample();
-		}
-
-		@Override
-		public Class<?> getObjectType() {
-			return DisposableBeanSample.class;
-		}
-
-		@Override
-		public void destroy() throws Exception {
-
 		}
 	}
 

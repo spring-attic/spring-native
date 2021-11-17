@@ -93,12 +93,17 @@ class InitDestroyMethodsDiscoverer {
 	Map<String, List<Method>> processLifecycleMethods(NativeConfigurationRegistry registry, BiFunction<BeanDefinition, Class<?>, Set<Method>> lifecycleMethodsFactory) {
 		Map<String, List<Method>> lifecycleMethods = new LinkedHashMap<>();
 		for (String beanName : this.beanFactory.getBeanDefinitionNames()) {
-			BeanDefinition beanDefinition = this.beanFactory.getMergedBeanDefinition(beanName);
-			Class<?> beanType = getBeanType(beanDefinition);
-			Set<Method> methods = lifecycleMethodsFactory.apply(beanDefinition, beanType);
-			if (!ObjectUtils.isEmpty(methods)) {
-				lifecycleMethods.put(beanName, new ArrayList<>(methods));
-				methods.forEach((method) -> registry.reflection().addExecutable(method));
+			try {
+				BeanDefinition beanDefinition = this.beanFactory.getMergedBeanDefinition(beanName);
+				Class<?> beanType = getBeanType(beanDefinition);
+				Set<Method> methods = lifecycleMethodsFactory.apply(beanDefinition, beanType);
+				if (!ObjectUtils.isEmpty(methods)) {
+					lifecycleMethods.put(beanName, new ArrayList<>(methods));
+					methods.forEach((method) -> registry.reflection().addExecutable(method));
+				}
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to process lifecycle methods on bean definition with name '" + beanName + "'", ex);
 			}
 		}
 		return lifecycleMethods;
@@ -179,7 +184,8 @@ class InitDestroyMethodsDiscoverer {
 	private Method findMethod(Class<?> beanType, String methodName) {
 		Method method = ReflectionUtils.findMethod(beanType, methodName);
 		if (method == null) {
-			throw new IllegalStateException("Lifecycle method annotation '" + methodName + "' not found on: " + beanType);
+			throw new IllegalStateException("Lifecycle method annotation '" + methodName + "' on '"
+					+ beanType.getName() + "' not found");
 		}
 		return method;
 	}
