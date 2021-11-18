@@ -35,11 +35,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils.ComponentCallback;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils.ComponentFilter;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentFilter;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.index.CandidateComponentsIndex;
 import org.springframework.context.index.CandidateComponentsIndexLoader;
@@ -323,8 +324,8 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		return null;
 	}
 
-	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
-			ComponentFilter filter) {
+	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, NativeConfigurationUtils.ComponentCallback callback,
+			NativeConfigurationUtils.ComponentFilter filter) {
 		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
 			if (filter == null || filter.test(beanName, beanType)) {
 				callback.invoke(beanName, beanType);

@@ -33,9 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor;
 import org.springframework.core.annotation.AliasFor;
 
 /**
@@ -75,7 +75,7 @@ public class SynthesizedAnnotationNativeConfigurationProcessor implements BeanFa
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
+			NativeConfigurationUtils.doWithComponents(beanFactory,
 				(beanName, beanType) -> {
 					logger.debug("analyzing "+beanType.getName());
 					final Set<Class<?>> collector = new HashSet<>();

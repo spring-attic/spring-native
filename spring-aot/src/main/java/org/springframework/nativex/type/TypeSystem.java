@@ -1296,11 +1296,6 @@ public class TypeSystem {
 		}
 	}
 
-	public List<ComponentProcessor> getComponentProcessors() {
-		ensureSpringConfigurationDiscovered();
-		return hintLocator.getComponentProcessors();
-	}
-
 	public List<AccessChecker> getAccessCheckers() {
 		ensureSpringConfigurationDiscovered();
 		return hintLocator.getAccessVerifiers();

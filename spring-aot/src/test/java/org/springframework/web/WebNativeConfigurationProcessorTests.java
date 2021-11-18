@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -32,15 +31,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.slf4j.LoggerFactory;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+
 import reactor.core.publisher.Mono;
 /**
  * Tests for {@link WebNativeConfigurationProcessor}.
@@ -124,38 +120,10 @@ class WebNativeConfigurationProcessorTests {
 		assertThat(classDescriptors).contains(messageCd);
 	}
 
-	@Test
-	public void typesInSignature() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
-		Set<Class<?>> collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("one"));
-		assertThat(collected).containsOnly(Foo.class);
-		collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("two", Foo.class));
-		assertThat(collected).containsOnly(Foo.class);
-		collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("three", List.class));
-		assertThat(collected).containsOnly(List.class, Foo.class);
-		collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("four", Integer.TYPE, List.class, Map.class));
-		assertThat(collected).containsOnly(Map.class, String.class, List.class, Foo.class, Bar.class, Integer.class);
-		collected = WebNativeConfigurationProcessor.collectTypesInSignature(Boo.class.getDeclaredField("foos"));
-		assertThat(collected).containsOnly(List.class,Foo.class);
-	}
-
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new WebNativeConfigurationProcessor().process(beanFactory, registry);
 		return registry;
-	}
-
-	public Foo one() {
-		return null;
-	}
-	
-	public void two(Foo foo) {
-	}
-
-	public void three(List<Foo> foo) {
-	}
-	
-	public Map<String,List<Foo>> four(int i, List<Integer> li, Map<Bar,Foo> map) {
-		return null;
 	}
 
 	@RestController

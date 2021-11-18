@@ -49,7 +49,6 @@ import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.ComponentProcessor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.NativeContext;
@@ -332,13 +331,11 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 		registerAllRequested(requestor);
-		ts.getComponentProcessors().forEach(ComponentProcessor::printSummary);
 		logger.debug("Registered " + registeredComponents + " entries");
 	}
 	
 	private boolean processSpringComponent(String componentTypename, String classifiers, NativeContext context, RequestedConfigurationManager requestor, List<String> alreadyProcessed) {
 		ProcessingContext pc = ProcessingContext.of(componentTypename, ReachedBy.FromSpringComponent);
-		List<ComponentProcessor> componentProcessors = ts.getComponentProcessors();
 		boolean isComponent = false;
 		if (classifiers.equals("package-info")) {
 			return false;
@@ -436,11 +433,6 @@ public class ResourcesHandler extends Handler {
 				processSpringComponent(type.getDottedName(),"",context,requestor,alreadyProcessed);
 			}
 		}
-		for (ComponentProcessor componentProcessor: componentProcessors) {
-			if (componentProcessor.handle(context, componentTypename, values)) {
-				componentProcessor.process(context, componentTypename, values);
-			}
-		}	
 		return true;
 	}
 

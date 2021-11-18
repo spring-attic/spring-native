@@ -27,9 +27,9 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor;
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -86,7 +86,7 @@ public class PrePostSecuredNativeConfigurationProcessor implements BeanFactoryNa
 	static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
+			NativeConfigurationUtils.doWithComponents(beanFactory,
 					(beanName, beanType) -> {
 						// Check if it is an interface or the PrePost annotations are not directly on this 'class' (in which
 						// case we assume it is on a super interface - this is not perfect)

@@ -17,24 +17,18 @@
 package org.springframework.web;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.nativex.hint.Flag;
@@ -47,7 +41,6 @@ import org.springframework.util.ClassUtils;
  * @author Andy Clement
  */
 public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
-
 	
 	private static Log logger = LogFactory.getLog(WebNativeConfigurationProcessor.class);
 
@@ -64,50 +57,12 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 		}
 	}
 
-	public static Set<Class<?>> collectTypesInSignature(Method controllerMethod) {
-		Set<Class<?>> collector = new TreeSet<>((c1,c2) -> c1.getName().compareTo(c2.getName()));
-		walk(controllerMethod.getGenericReturnType(), collector);
-		for (Type parameterType: controllerMethod.getGenericParameterTypes()) {
-			walk(parameterType, collector);
-		}
-		return collector;
-	}
-
-	public static Set<Class<?>> collectTypesInSignature(Field field) {
-		Set<Class<?>> collector = new TreeSet<>((c1,c2) -> c1.getName().compareTo(c2.getName()));
-		walk(field.getGenericType(), collector);
-		return collector;
-	}
-
-	// TODO does this handle all relevant cases?
-	private static void walk(Type type, Set<Class<?>> collector) {
-		if (type instanceof GenericArrayType) {
-			GenericArrayType gaType = (GenericArrayType)type;
-			walk(gaType.getGenericComponentType(), collector);
-		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pType = (ParameterizedType)type;
-			walk(pType.getRawType(), collector);
-			for (Type typeArg: pType.getActualTypeArguments()) {
-				walk(typeArg, collector);
-			}
-		} else if (type instanceof TypeVariable) {
-			
-		} else if (type instanceof WildcardType) {
-			
-		} else if (type instanceof Class){
-			Class<?> clazz = (Class<?>)type;
-			if (!clazz.isPrimitive()) {
-				collector.add((Class<?>)type);
-			}
-		}
-	}
-
 	/**
 	 * Analyze a type and dig into it to add required access. This works but could probably be much smarter, so it is probably adding too much. The webmvc-kotlin will fail without this analysis.
 	 */
 	private static void recursivelyAnalyzeSignatureRelatedType(NativeConfigurationRegistry registry, Class<?> clazz, Set<String> added) {
 		for (Field field: clazz.getDeclaredFields()) {
-			Set<Class<?>> fieldSignatureTypes = collectTypesInSignature(field);
+			Set<Class<?>> fieldSignatureTypes = NativeConfigurationUtils.collectTypesInSignature(field);
 			for (Class<?> fieldSignatureType: fieldSignatureTypes) {
 				String name = fieldSignatureType.getName();
 				if (!ignore(name) && added.add(name)) {
@@ -129,14 +84,14 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 			final Set<String> added = new HashSet<>();
-			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
+			NativeConfigurationUtils.doWithComponents(beanFactory,
 				(beanName, controllerType) -> {
 					logger.debug("reviewing mappings in controller "+controllerType);
 					for (Method controllerMethod: controllerType.getDeclaredMethods()) {
 						MergedAnnotations mas = MergedAnnotations.from(controllerMethod,SearchStrategy.TYPE_HIERARCHY);
 						if (mas.isPresent(MAPPING_ANNOTATION_NAME) || mas.isPresent(MESSAGE_MAPPING_ANNOTATION_NAME)) {
 							List<Class<?>> toProcess = new ArrayList<>();
-							toProcess.addAll(collectTypesInSignature(controllerMethod));
+							toProcess.addAll(NativeConfigurationUtils.collectTypesInSignature(controllerMethod));
 							for (Class<?> clazz: toProcess) {
 								String name = clazz.getName();
 								if (name.startsWith("java.") ||

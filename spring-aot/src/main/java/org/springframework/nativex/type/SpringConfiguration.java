@@ -39,8 +39,6 @@ public class SpringConfiguration {
 	
 	private final List<AccessChecker> accessVerifiers = new ArrayList<>();
 	
-	private final List<ComponentProcessor> processors = new ArrayList<>();
-
 	public SpringConfiguration(TypeSystem typeSystem) {
 		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
@@ -76,12 +74,6 @@ public class SpringConfiguration {
 				}
 			}
 		}
-		logger.debug("Discovering component processors...");
-		ServiceLoader<ComponentProcessor> componentProcessors = ServiceLoader.load(ComponentProcessor.class);
-		for (ComponentProcessor componentProcessor: componentProcessors) {
-			logger.debug("SpringConfiguration: found component processor: "+componentProcessor.getClass().getName());
-			processors.add(componentProcessor);
-		}
 		logger.debug("Discovering access verifiers...");
 		ServiceLoader<AccessChecker> avs = ServiceLoader.load(AccessChecker.class);
 		for (AccessChecker av: avs) {
@@ -109,10 +101,6 @@ public class SpringConfiguration {
 	
 	public Map<String, List<HintDeclaration>> getProposedhints() {
 		return proposedHints;
-	}
-	
-	public List<ComponentProcessor> getComponentProcessors() {
-		return processors;
 	}
 	
 	public List<AccessChecker> getAccessVerifiers() {

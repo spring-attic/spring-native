@@ -28,10 +28,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils.ComponentCallback;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.TypeModelProcessor;
 import org.springframework.data.TypeUtils;
@@ -137,7 +138,7 @@ public class RepositoryComponentConfigurationProcessor implements BeanFactoryNat
 		}
 	}
 
-	static void doWithRepositories(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback) {
+	static void doWithRepositories(ConfigurableListableBeanFactory beanFactory, NativeConfigurationUtils.ComponentCallback callback) {
 		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Repository.class, callback::invoke);
 	}
 }

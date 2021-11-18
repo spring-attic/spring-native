@@ -25,11 +25,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
-import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -43,24 +42,6 @@ public class AotProxyNativeConfigurationProcessor implements BeanFactoryNativeCo
 
 	private static Log logger = LogFactory.getLog(AotProxyNativeConfigurationProcessor.class);
 
-	public interface ComponentCallback {
-		void invoke(String beanName, Class<?> beanType);
-	}
-
-	public interface ComponentFilter {
-		boolean test(String beanName, Class<?> beanType);
-	}
-
-	// TODO perhaps promote to more util area
-	public static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
-			ComponentFilter filter) {
-		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
-			if (filter == null || filter.test(beanName, beanType)) {
-				callback.invoke(beanName, beanType);
-			}
-		});
-	}
-
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 		new Processor().process(beanFactory, registry);
@@ -72,7 +53,7 @@ public class AotProxyNativeConfigurationProcessor implements BeanFactoryNativeCo
 				.of("org.springframework.scheduling.annotation.Async");
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			doWithComponents(beanFactory, (beanName, beanType) -> {
+			NativeConfigurationUtils.doWithComponents(beanFactory, (beanName, beanType) -> {
 				registry.proxy().add(NativeProxyEntry.ofClass(beanType, ProxyBits.IS_STATIC));
 			}, (beanName, beanType) -> {
 				for (String methodLevelAnnotation : METHOD_LEVEL_ANNOTATIONS) {

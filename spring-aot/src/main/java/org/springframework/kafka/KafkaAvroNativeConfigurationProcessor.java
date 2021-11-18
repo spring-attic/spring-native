@@ -25,9 +25,9 @@ import java.util.Set;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.kafka.listener.GenericMessageListener;
@@ -146,7 +146,7 @@ public class KafkaAvroNativeConfigurationProcessor implements BeanFactoryNativeC
 
         void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
             Set<Class<?>> avroTypes = new HashSet<>();
-            AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
+            NativeConfigurationUtils.doWithComponents(beanFactory,
                     (beanName, beanType) -> {
                         if (GenericMessageListener.class.isAssignableFrom(beanType)) {
                             ReflectionUtils.doWithMethods(beanType, method -> {

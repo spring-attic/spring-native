@@ -25,9 +25,9 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.AotProxyNativeConfigurationProcessor;
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.nativex.hint.ProxyBits;
@@ -148,7 +148,7 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
+			NativeConfigurationUtils.doWithComponents(beanFactory,
 				(beanName, beanType) -> {
 					if (hasInterfaceMethods(beanType)) {
 					    LinkedHashSet<String> interfaces = new LinkedHashSet<>();
