@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestContextAotProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Sam Brannen
  */
 class TestContextAotProcessorTests {
 
@@ -98,21 +99,40 @@ class TestContextAotProcessorTests {
 	}
 
 	@Test
+	void processWritesContextInitializersMapping() {
+		ContextBootstrapStructure structure = this.tester.process(
+				SampleApplicationTests.class, SampleApplicationAnotherTests.class, SimpleSpringTests.class);
+		assertThat(structure).contextBootstrapInitializer("TestContextBootstrapInitializer")
+				.removeIndent(1).lines().containsSubsequence(
+						"public static Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers(",
+						"    ) {",
+						"  Map<String, Class<? extends ApplicationContextInitializer<?>>> map = new HashMap<>();",
+						"  map.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", TestContextBootstrapInitializer0.class);",
+						"  map.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", TestContextBootstrapInitializer0.class);",
+						"  map.put(\"org.springframework.aot.test.samples.simple.SimpleSpringTests\", SimpleSpringTestsContextInitializer.class);",
+						"  return map;",
+						"}");
+	}
+
+	@Test
 	void processInvokesTestNativeConfigurationRegistrar() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasResourcePattern("org/springframework/aot/test/samples/app/SampleApplication.class");
 	}
 
 	@Test
-	void processRegistersReflectionForContextLoadersMappingMethod() {
+	void processRegistersReflectionForMappingMethods() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasClassDescriptor("com.example.TestContextBootstrapInitializer", (descriptor) -> {
-			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
-				assertThat(methodDescriptor.getName()).isEqualTo("getContextLoaders");
-				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
-			});
 			assertThat(descriptor.getAccess()).isNull();
 			assertThat(descriptor.getFields()).isNull();
+			assertThat(descriptor.getMethods()).hasSize(2);
+			assertThat(descriptor.getMethods()).allSatisfy((methodDescriptor) -> {
+				assertThat(methodDescriptor.getName()).satisfies(name -> {
+					assertThat(name.equals("getContextLoaders") || name.equals("getContextInitializers")).isTrue();
+				});
+				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
+			});
 		});
 	}
 

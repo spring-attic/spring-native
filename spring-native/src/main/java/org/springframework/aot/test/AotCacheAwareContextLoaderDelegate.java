@@ -20,14 +20,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
+import org.springframework.test.context.cache.ContextCache;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
+import org.springframework.util.Assert;
 
 /**
- * A {@link CacheAwareContextLoaderDelegate} that enables the use of generated application
- * contexts for supported test classes.
+ * A {@link CacheAwareContextLoaderDelegate} that enables the use of AOT-generated
+ * application contexts for supported test classes.
  *
  * @author Stephane Nicoll
  * @author Sam Brannen
@@ -38,22 +42,69 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 
 	private final AotContextLoader aotContextLoader;
 
+	public AotCacheAwareContextLoaderDelegate() {
+		this(new AotContextLoader());
+	}
+
 	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader) {
 		this.aotContextLoader = aotContextLoader;
 	}
 
-	public AotCacheAwareContextLoaderDelegate() {
-		this(new AotContextLoader());
+	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader, ContextCache contextCache) {
+		super(contextCache);
+		this.aotContextLoader = aotContextLoader;
 	}
 
 	@Override
 	protected ApplicationContext loadContextInternal(MergedContextConfiguration config) throws Exception {
 		SmartContextLoader contextLoader = this.aotContextLoader.getContextLoader(config.getTestClass());
 		if (contextLoader != null) {
+			Assert.isInstanceOf(AotMergedContextConfiguration.class, config);
 			logger.info("Loading test ApplicationContext in AOT mode using " + contextLoader);
-			return contextLoader.loadContext(config);
+			return contextLoader.loadContext(((AotMergedContextConfiguration) config).getOriginal());
 		}
 		return super.loadContextInternal(config);
+	}
+
+	@Override
+	public boolean isContextLoaded(MergedContextConfiguration mergedContextConfiguration) {
+		return super.isContextLoaded(replaceIfNecessary(mergedContextConfiguration));
+	}
+
+	@Override
+	public ApplicationContext loadContext(MergedContextConfiguration mergedContextConfiguration) {
+		return super.loadContext(replaceIfNecessary(mergedContextConfiguration));
+	}
+
+	@Override
+	public void closeContext(MergedContextConfiguration mergedContextConfiguration, HierarchyMode hierarchyMode) {
+		super.closeContext(replaceIfNecessary(mergedContextConfiguration), hierarchyMode);
+	}
+
+	/**
+	 * If the test class associated with the supplied {@link MergedContextConfiguration}
+	 * has an AOT-generated {@link ApplicationContext}, this method will create an
+	 * {@link AotMergedContextConfiguration} to replace the provided {@code MergedContextConfiguration}.
+	 * <p>This allows for transparent {@link org.springframework.test.context.cache.ContextCache ContextCache}
+	 * support for AOT-generated application contexts, including support for context
+	 * hierarchies.
+	 * <p>Otherwise, this method simply returns the supplied {@code MergedContextConfiguration}
+	 * unmodified.
+	 */
+	private MergedContextConfiguration replaceIfNecessary(MergedContextConfiguration mergedContextConfiguration) {
+		if (mergedContextConfiguration == null) {
+			return null;
+		}
+
+		Class<?> testClass = mergedContextConfiguration.getTestClass();
+		Class<? extends ApplicationContextInitializer<?>> contextInitializerClass =
+				this.aotContextLoader.getContextInitializerClass(testClass);
+
+		if (contextInitializerClass != null) {
+			return new AotMergedContextConfiguration(testClass, contextInitializerClass, mergedContextConfiguration,
+					this, replaceIfNecessary(mergedContextConfiguration.getParent()));
+		}
+		return mergedContextConfiguration;
 	}
 
 }

@@ -34,26 +34,47 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link AotContextLoader}.
  *
  * @author Stephane Nicoll
+ * @author Sam Brannen
  */
 class AotContextLoaderTests {
 
 	@Test
-	void loadWithClassNameFindMatchingContextLoader() {
+	void loadWithClassNameFindsMatchingContextLoader() {
 		AotContextLoader aotContextLoader = new AotContextLoader(TestMapping.class.getName());
-		assertThat(aotContextLoader.getContextLoader(AotContextLoaderTests.class)).isNotNull()
+		assertThat(aotContextLoader.getContextLoader(AotContextLoaderTests.class))
 				.isInstanceOf(AotSpringBootConfigContextLoader.class);
 	}
 
 	@Test
-	void loadWithClassNameReturnNullForUnregisteredTest() {
+	void loadWithClassNameReturnsNullContextLoaderForUnregisteredTest() {
 		AotContextLoader aotContextLoader = new AotContextLoader(TestMapping.class.getName());
 		assertThat(aotContextLoader.getContextLoader(Map.class)).isNull();
 	}
 
 	@Test
-	void loadWithClassNameWithoutMethod() {
+	void loadWithClassNameFindsMatchingContextInitializerClass() {
+		AotContextLoader aotContextLoader = new AotContextLoader(TestMapping.class.getName());
+		assertThat(aotContextLoader.getContextInitializerClass(AotContextLoaderTests.class))
+				.isEqualTo(TestApplicationContextInitializer.class);
+	}
+
+	@Test
+	void loadWithClassNameReturnsNullContextInitializerClassForUnregisteredTest() {
+		AotContextLoader aotContextLoader = new AotContextLoader(TestMapping.class.getName());
+		assertThat(aotContextLoader.getContextInitializerClass(Map.class)).isNull();
+	}
+
+	@Test
+	void loadWithClassNameWithoutContextLoadersMethod() {
 		assertThatIllegalStateException().isThrownBy(() -> new AotContextLoader(Map.class.getName()))
-				.withMessageContaining("No getContextLoaders() method found on java.util.Map");
+				.withMessage("No getContextLoaders() method found on java.util.Map");
+	}
+
+	@Test
+	void loadWithClassNameWithoutContextInitializersMethod() {
+		String className = HalfBakedTestMapping.class.getName();
+		assertThatIllegalStateException().isThrownBy(() -> new AotContextLoader(className))
+				.withMessage("No getContextInitializers() method found on " + className);
 	}
 
 	@Test
@@ -70,6 +91,21 @@ class AotContextLoaderTests {
 			entries.put(AotContextLoaderTests.class.getName(), () -> new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class));
 			entries.put("com.example.SampleTests", () -> new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class));
 			return entries;
+		}
+
+		public static Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers() {
+			Map<String, Class<? extends ApplicationContextInitializer<?>>> map = new HashMap<>();
+			map.put(AotContextLoaderTests.class.getName(), TestApplicationContextInitializer.class);
+			map.put("com.example.SampleTests", TestApplicationContextInitializer.class);
+			return map;
+		}
+
+	}
+
+	public static class HalfBakedTestMapping {
+
+		public static Map<String, Supplier<SmartContextLoader>> getContextLoaders() {
+			return null;
 		}
 	}
 

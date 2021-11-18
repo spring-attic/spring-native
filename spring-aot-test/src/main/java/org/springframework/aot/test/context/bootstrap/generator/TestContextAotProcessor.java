@@ -31,6 +31,7 @@ import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 
 import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
@@ -42,9 +43,11 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.SmartContextLoader;
 
 /**
- * A decorator of {@link ApplicationContextAotProcessor} that handles test contexts.
+ * A decorator of {@link ApplicationContextAotProcessor} that handles test
+ * application contexts.
  *
  * @author Stephane Nicoll
+ * @author Sam Brannen
  */
 public class TestContextAotProcessor {
 
@@ -81,22 +84,25 @@ public class TestContextAotProcessor {
 					.withMethods(MethodSpec.constructorBuilder().build());
 			entries.put(className, descriptor);
 		}
-		generateContextLoadersMapping(writerContext, entries);
+		generateMappingMethods(writerContext, entries);
 
 		this.testNativeConfigurationRegistrar.processTestConfigurations(nativeConfigurationRegistry,
 				entries.values().stream().map(TestContextConfigurationDescriptor::getContextConfiguration).collect(Collectors.toList()));
 	}
 
-	private void generateContextLoadersMapping(BootstrapWriterContext writerContext, Map<ClassName, TestContextConfigurationDescriptor> entries) {
+	private void generateMappingMethods(BootstrapWriterContext writerContext, Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		BootstrapWriterContext mainWriterContext = writerContext.fork(
 				TEST_BOOTSTRAP_CLASS_NAME, (packageName) -> {
 					ClassName mainClassName = ClassName.get(packageName, TEST_BOOTSTRAP_CLASS_NAME);
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
 				});
+
 		BootstrapClass boostrapClass = mainWriterContext.getMainBootstrapClass();
-		MethodSpec method = boostrapClass.addMethod(contextLoadersMappingMethod(entries));
+		MethodSpec getContextLoaders = boostrapClass.addMethod(getContextLoadersBuilder(entries));
+		MethodSpec getContextInitializers = boostrapClass.addMethod(getContextInitializersBuilder(entries));
 		writerContext.getNativeConfigurationRegistry().reflection()
-				.forGeneratedType(boostrapClass.getClassName()).withMethods(method);
+				.forGeneratedType(boostrapClass.getClassName())
+				.withMethods(getContextLoaders, getContextInitializers);
 	}
 
 	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<ClassName> fallbackClassName,
@@ -110,7 +116,7 @@ public class TestContextAotProcessor {
 		return mainBootstrapClass.getClassName();
 	}
 
-	private MethodSpec.Builder contextLoadersMappingMethod(Map<ClassName, TestContextConfigurationDescriptor> entries) {
+	private MethodSpec.Builder getContextLoadersBuilder(Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		Builder code = CodeBlock.builder();
 		TypeName mapType = ParameterizedTypeName.get(ClassName.get(Map.class),
 				ClassName.get(String.class), ParameterizedTypeName.get(Supplier.class, SmartContextLoader.class));
@@ -123,6 +129,34 @@ public class TestContextAotProcessor {
 				}));
 		code.addStatement("return entries");
 		return MethodSpec.methodBuilder("getContextLoaders").returns(mapType)
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build());
+	}
+
+	private MethodSpec.Builder getContextInitializersBuilder(Map<ClassName, TestContextConfigurationDescriptor> entries) {
+		// We're generating a method that looks like the following.
+		//
+		// public static Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers() {
+		//     Map<String, Class<? extends ApplicationContextInitializer<?>>> map = new HashMap<>();
+		//     map.put("org.example.Sample1Tests", Sample1TestsContextInitializer.class);
+		//     map.put("org.example.Sample2Tests", Sample2TestsContextInitializer.class);
+		//     return map;
+		// }
+
+		ClassName stringTypeName = ClassName.get(String.class);
+		TypeName initializerWildcard = WildcardTypeName.subtypeOf(Object.class);
+		TypeName initializerTypeName = ParameterizedTypeName.get(ClassName.get(ApplicationContextInitializer.class), initializerWildcard);
+		TypeName classWildcard = WildcardTypeName.subtypeOf(initializerTypeName);
+		TypeName classTypeName = ParameterizedTypeName.get(ClassName.get(Class.class), classWildcard);
+		TypeName mapTypeName = ParameterizedTypeName.get(ClassName.get(Map.class), stringTypeName, classTypeName);
+
+		Builder code = CodeBlock.builder();
+		code.addStatement("$T map = new $T<>()", mapTypeName, HashMap.class);
+		entries.forEach((className, descriptor) ->
+				descriptor.getTestClasses().forEach((testClass) -> {
+					code.addStatement("map.put($S, $T.class)", testClass.getName(), className);
+				}));
+		code.addStatement("return map");
+		return MethodSpec.methodBuilder("getContextInitializers").returns(mapTypeName)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build());
 	}
 

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.test.context.SmartContextLoader;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -40,12 +41,18 @@ class AotContextLoader {
 
 	private final Map<String, Supplier<SmartContextLoader>> contextLoaders;
 
-	AotContextLoader(Map<String, Supplier<SmartContextLoader>> contextLoaders) {
+	private final Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers;
+
+
+	AotContextLoader(Map<String, Supplier<SmartContextLoader>> contextLoaders,
+			Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers) {
+
 		this.contextLoaders = contextLoaders;
+		this.contextInitializers = contextInitializers;
 	}
 
 	AotContextLoader(String initializerClassName) {
-		this(loadContextLoadersMapping(initializerClassName));
+		this(loadContextLoadersMapping(initializerClassName), loadContextInitializersMapping(initializerClassName));
 	}
 
 	AotContextLoader() {
@@ -70,6 +77,24 @@ class AotContextLoader {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private static Map<String, Class<? extends ApplicationContextInitializer<?>>> loadContextInitializersMapping(String initializerClassName) {
+		try {
+			Class<?> type = ClassUtils.forName(initializerClassName, null);
+			Method method = ReflectionUtils.findMethod(type, "getContextInitializers");
+			if (method == null) {
+				throw new IllegalStateException("No getContextInitializers() method found on " + type.getName());
+			}
+			return (Map<String, Class<? extends ApplicationContextInitializer<?>>>) ReflectionUtils.invokeMethod(method, null);
+		}
+		catch (IllegalStateException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to load context initializers mapping", ex);
+		}
+	}
+
 	SmartContextLoader getContextLoader(Class<?> testClass) {
 		Supplier<SmartContextLoader> supplier = this.contextLoaders.get(testClass.getName());
 		return (supplier != null) ? supplier.get() : null;
@@ -77,6 +102,10 @@ class AotContextLoader {
 
 	boolean isSupportedTestClass(Class<?> testClass) {
 		return this.contextLoaders.containsKey(testClass.getName());
+	}
+
+	Class<? extends ApplicationContextInitializer<?>> getContextInitializerClass(Class<?> testClass) {
+		return this.contextInitializers.get(testClass.getName());
 	}
 
 }
