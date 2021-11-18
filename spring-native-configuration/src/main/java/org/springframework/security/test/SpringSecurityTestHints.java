@@ -35,7 +35,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = org.springframework.security.web.context.SecurityContextPersistenceFilter.class, access = AccessBits.FULL_REFLECTION),
 		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = AccessBits.FULL_REFLECTION, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
 		@TypeHint(types = org.springframework.security.test.context.support.WithSecurityContext.class, access = AccessBits.ANNOTATION),
-		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory")
+		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory"),
+		@TypeHint(typeNames = "reactor.core.publisher.Hooks")
 	},
 	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.security.test.context.support.WithSecurityContext.class, org.springframework.core.annotation.SynthesizedAnnotation.class })
