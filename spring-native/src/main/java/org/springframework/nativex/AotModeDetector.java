@@ -33,6 +33,8 @@ public abstract class AotModeDetector {
 
 	private static final boolean generatedTestClassPresent = ClassUtils.isPresent("org.springframework.aot.TestContextBootstrapInitializer", null);
 
+	private static final boolean aotTestClassPresent = ClassUtils.isPresent("org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor", null);
+
 	/**
 	 * Returns whether AOT-generated code should be considered at runtime.
 	 * This should return {@code true} only if:
@@ -51,7 +53,7 @@ public abstract class AotModeDetector {
 		return false;
 	}
 	public static boolean isRunningAotTests() {
-		return generatedTestClassPresent;
+		return generatedTestClassPresent && !aotTestClassPresent;
 	}
 
 	/**
