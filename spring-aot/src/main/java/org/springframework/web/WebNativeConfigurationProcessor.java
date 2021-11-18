@@ -53,7 +53,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 	protected final static String CONTROLLER_ANNOTATION_NAME = "org.springframework.stereotype.Controller";
 
 	protected final static String MAPPING_ANNOTATION_NAME = "org.springframework.web.bind.annotation.Mapping";
-	
+
 	protected final static String MESSAGE_MAPPING_ANNOTATION_NAME = "org.springframework.messaging.handler.annotation.MessageMapping";
 
 	@Override
@@ -102,7 +102,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 			AotProxyNativeConfigurationProcessor.doWithComponents(beanFactory,
 				(beanName, controllerType) -> {
 					logger.debug("reviewing mappings in controller "+controllerType);
-					for (Method controllerMethod: controllerType.getMethods()) {
+					for (Method controllerMethod: controllerType.getDeclaredMethods()) {
 						MergedAnnotations mas = MergedAnnotations.from(controllerMethod,SearchStrategy.TYPE_HIERARCHY);
 						if (mas.isPresent(MAPPING_ANNOTATION_NAME) || mas.isPresent(MESSAGE_MAPPING_ANNOTATION_NAME)) {
 							List<Class<?>> toProcess = new ArrayList<>();

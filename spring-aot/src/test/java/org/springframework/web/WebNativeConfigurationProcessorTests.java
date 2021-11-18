@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import reactor.core.publisher.Mono;
 /**
  * Tests for {@link WebNativeConfigurationProcessor}.
  *
@@ -87,6 +89,23 @@ class WebNativeConfigurationProcessorTests {
 		assertThat(fooCD.getFlags()).containsAll(ALL_MEMBERS);
 		assertThat(barCD.getName()).isEqualTo(Bar.class.getName());
 		assertThat(barCD.getFlags()).containsAll(ALL_MEMBERS);
+	}
+
+	
+	@Test
+	void rsocketController() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(RSocketController.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
+		assertThat(classDescriptors).hasSize(2);
+		ClassDescriptor monoCd = ClassDescriptor.of(Mono.class);
+		monoCd.setFlags(ALL_MEMBERS);
+		assertThat(classDescriptors).contains(monoCd);
+		ClassDescriptor messageCd = ClassDescriptor.of(Message.class);
+		messageCd.setFlags(ALL_MEMBERS);
+		assertThat(classDescriptors).contains(messageCd);
 	}
 
 	@Test
@@ -154,6 +173,49 @@ class WebNativeConfigurationProcessorTests {
 	}
 	
 	static class Bar {
+	}
+
+
+	@Controller
+	static class RSocketController {
+	
+		@MessageMapping("request-response")
+		Message requestResponse(Message request) {
+			return new Message("SERVER", "RESPONSE");
+		}
+	
+		@MessageMapping("mono-request-response")
+		Mono<Message> monoRequestResponse(Message request) {
+			return Mono.just(new Message("SERVER", "RESPONSE"));
+		}
+	}
+
+	static class Message {
+
+		private String string;
+		private String string2;
+
+		public Message(String string, String string2) {
+			this.setString(string);
+			this.setString2(string2);
+		}
+
+		public String getString() {
+			return string;
+		}
+
+		public void setString(String string) {
+			this.string = string;
+		}
+
+		public String getString2() {
+			return string2;
+		}
+
+		public void setString2(String string2) {
+			this.string2 = string2;
+		}
+		
 	}
 
 }
