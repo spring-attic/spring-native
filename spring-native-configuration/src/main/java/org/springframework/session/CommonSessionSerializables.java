@@ -46,6 +46,8 @@ import java.util.TreeSet;
         SimpleGrantedAuthority.class,
         User.class,
         Number.class,
+        Long.class,
+        Integer.class,
         AbstractAuthenticationToken.class,
         UsernamePasswordAuthenticationToken.class,
         StackTraceElement.class,
