@@ -96,7 +96,7 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 		return false;
 	}
 	
-	private static boolean hasInterfaceMethods(Class<?> type) {
+	public static boolean hasInterfaceMethods(Class<?> type) {
 		return hasInterfaceMethods(type, new HashSet<>());
 	}
 	
@@ -135,7 +135,7 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 	 * Find and collect the list of interfaces implemented by a specified class. It does *not*
 	 * recurse into interfaces.
 	 */
-	private static void collectInterfaces(Class<?> clazz, LinkedHashSet<String> collector) {
+	public static void collectInterfaces(Class<?> clazz, LinkedHashSet<String> collector) {
 		for (Class<?> intface: clazz.getInterfaces()) {
 			collector.add(intface.getName());
 		}
