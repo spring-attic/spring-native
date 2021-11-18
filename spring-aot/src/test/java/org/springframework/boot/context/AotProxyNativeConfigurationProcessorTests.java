@@ -23,6 +23,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBeanConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
@@ -56,6 +57,15 @@ class AotProxyNativeConfigurationProcessorTests {
 		assertThat(aotProxyDescriptor.getTargetClassType()).isEqualTo(Async1.class.getName());
 		assertThat(aotProxyDescriptor.getInterfaceTypes()).isEmpty();
 		assertThat(aotProxyDescriptor.getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
+	}
+
+	@Test
+	void componentWithNullType() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("genericBeanFactory", BeanDefinitionBuilder.rootBeanDefinition(
+				TestGenericFactoryBeanConfiguration.class, "testGenericFactoryBean").getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.proxy().getEntries()).isEmpty();
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {

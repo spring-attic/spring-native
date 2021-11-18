@@ -26,6 +26,7 @@ import java.util.Map;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry.Builder;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -59,17 +60,14 @@ class EndpointNativeConfigurationProcessor implements BeanFactoryNativeConfigura
 				ReadOperation.class, WriteOperation.class, DeleteOperation.class);
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			findCandidates(beanFactory).forEach((beanName, endpoint) -> registerEndpoint(registry, endpoint));
+			BeanFactoryProcessor beanFactoryProcessor = new BeanFactoryProcessor(beanFactory);
+			findCandidates(beanFactoryProcessor).forEach((beanName, endpoint) -> registerEndpoint(registry, endpoint));
 		}
 
-		private Map<String, Class<?>> findCandidates(ConfigurableListableBeanFactory beanFactory) {
+		private Map<String, Class<?>> findCandidates(BeanFactoryProcessor beanFactoryProcessor) {
 			Map<String, Class<?>> candidates = new LinkedHashMap<>();
-			ENDPOINT_ANNOTATIONS.forEach((annotation) -> {
-				String[] beanNames = beanFactory.getBeanNamesForAnnotation(annotation);
-				for (String beanName : beanNames) {
-					candidates.put(beanName, beanFactory.getType(beanName));
-				}
-			});
+			ENDPOINT_ANNOTATIONS.forEach((annotation) -> beanFactoryProcessor
+					.processBeansWithAnnotation(annotation, candidates::put));
 			return candidates;
 		}
 

@@ -29,6 +29,7 @@ import org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegis
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
+import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBeanConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericObjectProviderConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.infrastructure.ArgumentValueRegistrarConfiguration;
@@ -317,6 +318,14 @@ class ApplicationContextAotProcessorTests {
 				"  argumentValues.addIndexedArgumentValue(2, 4);",
 				"}).register(context);"
 		);
+	}
+
+	@Test
+	void processWithGenericFactoryBean() {
+		ContextBootstrapStructure structure = this.tester.process(TestGenericFactoryBeanConfiguration.class);
+		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
+				"BeanDefinitionRegistrar.of(\"testGenericFactoryBean\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Object.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
+				"    .instanceSupplier(() -> context.getBean(TestGenericFactoryBeanConfiguration.class).testGenericFactoryBean()).register(context);");
 	}
 
 	@Test

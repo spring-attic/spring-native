@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.AbstractCompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.ResolvableType;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.util.ClassUtils;
@@ -41,24 +41,22 @@ class HealthContributorNativeConfigurationProcessor implements BeanFactoryNative
 
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+		BeanFactoryProcessor processor = new BeanFactoryProcessor(beanFactory);
 		if (ClassUtils.isPresent(HEALTH_CONTRIBUTOR_CLASS_NAME, beanFactory.getBeanClassLoader())) {
-			String[] beanNames = beanFactory.getBeanNamesForType(HealthContributor.class);
-			for (String beanName : beanNames) {
-				Class<?> beanType = beanFactory.getType(beanName);
-				if (!beanType.equals(HealthContributor.class) && !(beanType.equals(HealthIndicator.class))) {
+			processor.processBeansWithType(HealthContributor.class, (beanName, beanType) -> {
+				if (!beanType.isInterface()) {
 					registry.reflection().forType(beanType).withFlags(Flag.allDeclaredConstructors).build();
 				}
-			}
+			});
 		}
 		if (ClassUtils.isPresent(COMPOSITE_HEALTH_CONTRIBUTOR_CLASS_NAME, beanFactory.getBeanClassLoader())) {
-			String[] beanNames = beanFactory.getBeanNamesForType(AbstractCompositeHealthContributorConfiguration.class);
-			for (String beanName : beanNames) {
-				Class<?> beanType = beanFactory.getType(beanName);
+			processor.processBeansWithType(AbstractCompositeHealthContributorConfiguration.class, (beanName, beanType) -> {
 				ResolvableType type = ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class,
 						beanType);
 				Class<?> indicatorType = type.resolveGeneric(1);
 				registry.reflection().forType(indicatorType).withFlags(Flag.allDeclaredConstructors).build();
-			}
+			});
 		}
 	}
+
 }

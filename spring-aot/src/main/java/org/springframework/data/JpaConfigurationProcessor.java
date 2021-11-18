@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
@@ -323,11 +325,11 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
 			ComponentFilter filter) {
-		for (String beanName : beanFactory.getBeanNamesForAnnotation(Component.class)) {
-			Class<?> beanType = ClassUtils.getUserClass(beanFactory.getType(beanName));
+		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
 			if (filter == null || filter.test(beanName, beanType)) {
 				callback.invoke(beanName, beanType);
 			}
-		}
+		});
 	}
+
 }

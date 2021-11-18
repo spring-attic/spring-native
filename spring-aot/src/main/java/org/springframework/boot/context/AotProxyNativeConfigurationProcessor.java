@@ -22,12 +22,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
@@ -54,13 +54,9 @@ public class AotProxyNativeConfigurationProcessor implements BeanFactoryNativeCo
 	// TODO perhaps promote to more util area
 	public static void doWithComponents(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback,
 			ComponentFilter filter) {
-		beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
-			Class<?> beanType = beanFactory.getType(beanName);
-			MergedAnnotation<Component> componentAnnotation = MergedAnnotations.from(beanType).get(Component.class);
-			if (componentAnnotation.isPresent()) {
-				if (filter == null || filter.test(beanName, beanType)) {
-					callback.invoke(beanName, beanType);
-				}
+		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
+			if (filter == null || filter.test(beanName, beanType)) {
+				callback.invoke(beanName, beanType);
 			}
 		});
 	}

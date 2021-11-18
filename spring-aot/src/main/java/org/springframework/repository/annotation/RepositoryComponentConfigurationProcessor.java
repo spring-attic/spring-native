@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.AotProxyNativeConfigurationProcessor.ComponentCallback;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.data.TypeModelProcessor;
 import org.springframework.data.TypeUtils;
 import org.springframework.nativex.hint.Flag;
@@ -138,11 +138,6 @@ public class RepositoryComponentConfigurationProcessor implements BeanFactoryNat
 	}
 
 	static void doWithRepositories(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback) {
-		beanFactory.getBeanNamesIterator().forEachRemaining((beanName) -> {
-			Class<?> beanType = beanFactory.getType(beanName);
-			if (MergedAnnotations.from(beanType).get(Repository.class).isPresent()) {
-				callback.invoke(beanName, beanType);
-			}
-		});
+		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Repository.class, callback::invoke);
 	}
 }
