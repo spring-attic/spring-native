@@ -56,14 +56,4 @@ public abstract class AotModeDetector {
 		return generatedTestClassPresent && !aotTestClassPresent;
 	}
 
-	/**
-	 * Returns if the thread is for a main invocation.
-	 * @param thread the thread to check
-	 * @return {@code true} if this is a main invocation, otherwise {@code false}
-	 */
-	protected static boolean isMain(Thread thread) {
-		return thread.getName().equals("main") &&
-				thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
-	}
-
 }
