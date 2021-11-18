@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.transaction.annotation;
+package org.springframework.validation.annotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,19 +37,23 @@ import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.stereotype.Component;
 
+// TODO unlike TransactionalNativeConfigurationProcessor this one does not currently include tests for method
+// level Validation annotations. The related native configuration processor doesn't handle that case, if 
+// method level @Validation should be handled in a similar way it should be easy to change the ValidationNativeConfigurationProcessor (and Tests)
+// to more match the TransactionalNativeConfigurationProcessor - possibly even merge the two into one to handle both annotations.
 /**
- * Tests for {@link TransactionalNativeConfigurationProcessor}.
+ * Tests for {@link ValidatedNativeConfigurationProcessor}.
  *
- * @author Petr Hejl
  * @author Andy Clement
+ * @author Petr Hejl
  */
-class TransactionalNativeConfigurationProcessorTests {
+class ValidatedNativeConfigurationProcessorTests {
 
 	@Test
-	void transactionalClass() {
+	void validatedClass() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
-		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TxClass.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(VClass.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		Set<NativeProxyEntry> proxyEntries = registry.proxy().getEntries();
 		assertThat(proxyEntries).hasSize(1);
@@ -59,35 +63,16 @@ class TransactionalNativeConfigurationProcessorTests {
 		JdkProxyDescriptor proxyDescriptor = proxyDescriptors.iterator().next();
 		assertThat(proxyDescriptor).isInstanceOf(AotProxyDescriptor.class);
 		AotProxyDescriptor aotProxyDescriptor = (AotProxyDescriptor)proxyDescriptor;
-		assertThat(aotProxyDescriptor.getTargetClassType()).isEqualTo(TxClass.class.getName());
+		assertThat(aotProxyDescriptor.getTargetClassType()).isEqualTo(VClass.class.getName());
 		assertThat(aotProxyDescriptor.getInterfaceTypes()).isEmpty();
 		assertThat(aotProxyDescriptor.getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
 	}
 
 	@Test
-	void transactionalMethod() {
+	void ValidatedClassWithInterfaces() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
-		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TxClass2.class).getBeanDefinition());
-		NativeConfigurationRegistry registry = process(beanFactory);
-		Set<NativeProxyEntry> proxyEntries = registry.proxy().getEntries();
-		assertThat(proxyEntries).hasSize(1);
-		ProxiesDescriptor proxiesDescriptor = registry.proxy().toProxiesDescriptor();
-		Set<JdkProxyDescriptor> proxyDescriptors = proxiesDescriptor.getProxyDescriptors();
-		assertThat(proxyDescriptors).hasSize(1);
-		JdkProxyDescriptor proxyDescriptor = proxyDescriptors.iterator().next();
-		assertThat(proxyDescriptor).isInstanceOf(AotProxyDescriptor.class);
-		AotProxyDescriptor aotProxyDescriptor = (AotProxyDescriptor)proxyDescriptor;
-		assertThat(aotProxyDescriptor.getTargetClassType()).isEqualTo(TxClass2.class.getName());
-		assertThat(aotProxyDescriptor.getInterfaceTypes()).isEmpty();
-		assertThat(aotProxyDescriptor.getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
-	}
-
-	@Test
-	void transactionalClassWithInterfaces() {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
-		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(TxClass3.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(VClass3.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		Set<NativeProxyEntry> proxyEntries = registry.proxy().getEntries();
 		assertThat(proxyEntries).hasSize(1);
@@ -100,10 +85,10 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterface() {
-		checkProxies(ComponentWithTransactionalInterface.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterface() {
+		checkProxies(ComponentWithValidatedInterface.class,
 				Arrays.asList(
-						TransactionalInterface.class.getName(),
+						ValidatedInterface.class.getName(),
 						"org.springframework.aop.SpringProxy",
 						"org.springframework.aop.framework.Advised",
 						"org.springframework.core.DecoratingProxy"),
@@ -111,10 +96,10 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceAndExtraInterface() {
-		checkProxies(ComponentWithTransactionalInterfaceAndExtraInterface.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceAndExtraInterface() {
+		checkProxies(ComponentWithValidatedInterfaceAndExtraInterface.class,
 				Arrays.asList(
-						TransactionalInterface.class.getName(),
+						ValidatedInterface.class.getName(),
 						VoidInterface.class.getName(),
 						"org.springframework.aop.SpringProxy",
 						"org.springframework.aop.framework.Advised",
@@ -123,10 +108,10 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceAndOtherMethod() {
-		checkProxies(ComponentWithTransactionalInterfaceAndOtherMethod.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceAndOtherMethod() {
+		checkProxies(ComponentWithValidatedInterfaceAndOtherMethod.class,
 				Arrays.asList(
-						TransactionalInterface.class.getName(),
+						ValidatedInterface.class.getName(),
 						"org.springframework.aop.SpringProxy",
 						"org.springframework.aop.framework.Advised",
 						"org.springframework.core.DecoratingProxy"),
@@ -134,10 +119,10 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceOverSuperClass() {
-		checkProxies(ComponentWithTransactionalInterfaceOverProxyClass.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceOverSuperClass() {
+		checkProxies(ComponentWithValidatedInterfaceOverProxyClass.class,
 				Arrays.asList(
-						TransactionalInterface.class.getName(),
+						ValidatedInterface.class.getName(),
 						"org.springframework.aop.SpringProxy",
 						"org.springframework.aop.framework.Advised",
 						"org.springframework.core.DecoratingProxy"),
@@ -145,8 +130,8 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceOverSuperInterface() {
-		checkProxies(ComponentWithTransactionalInterfaceOverProxyInterface.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceOverSuperInterface() {
+		checkProxies(ComponentWithValidatedInterfaceOverProxyInterface.class,
 				Arrays.asList(
 						ProxyInterface.class.getName(),
 						"org.springframework.aop.SpringProxy",
@@ -156,24 +141,24 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceWithoutMethod() {
-		checkProxies(ComponentWithTransactionalInterfaceWithoutMethod.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceWithoutMethod() {
+		checkProxies(ComponentWithValidatedInterfaceWithoutMethod.class,
 				null,
-				ComponentWithTransactionalInterfaceWithoutMethod.class.getName());
+				ComponentWithValidatedInterfaceWithoutMethod.class.getName());
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceWithoutMethodAndOtherMethod() {
-		checkProxies(ComponentWithTransactionalInterfaceWithoutMethodAndOtherMethod.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceWithoutMethodAndOtherMethod() {
+		checkProxies(ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod.class,
 				null,
-				ComponentWithTransactionalInterfaceWithoutMethodAndOtherMethod.class.getName());//asrg.springframework.transactional.components.ComponentWithTransactionalInterfaceWithoutMethodAndOtherMethod");
+				ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod.class.getName());//asrg.springframework.Validated.components.ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod");
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalInterfaceWithDefault() {
-		checkProxies(ComponentWithTransactionalInterfaceWithDefault.class,
+	public void shouldDescribeProxiesForComponentWithValidatedInterfaceWithDefault() {
+		checkProxies(ComponentWithValidatedInterfaceWithDefault.class,
 				Arrays.asList(
-						TransactionalInterfaceWithDefault.class.getName(),
+						ValidatedInterfaceWithDefault.class.getName(),
 						"org.springframework.aop.SpringProxy",
 						"org.springframework.aop.framework.Advised",
 						"org.springframework.core.DecoratingProxy"),
@@ -181,22 +166,15 @@ class TransactionalNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void shouldDescribeProxiesForComponentWithTransactionalMethod() {
-		checkProxies(ComponentWithTransactionalMethod.class,
+	public void shouldDescribeProxiesForValidatedComponent() {
+		checkProxies(ValidatedComponent.class,
 				null,
-				ComponentWithTransactionalMethod.class.getName());
-	}
-
-	@Test
-	public void shouldDescribeProxiesForTransactionalComponent() {
-		checkProxies(TransactionalComponent.class,
-				null,
-				TransactionalComponent.class.getName());
+				ValidatedComponent.class.getName());
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
-		new TransactionalNativeConfigurationProcessor().process(beanFactory, registry);
+		new ValidatedNativeConfigurationProcessor().process(beanFactory, registry);
 		return registry;
 	}
 
@@ -206,6 +184,7 @@ class TransactionalNativeConfigurationProcessorTests {
 		beanFactory.registerBeanDefinition("testComponent", BeanDefinitionBuilder.rootBeanDefinition(component).getBeanDefinition());
 
 		NativeConfigurationRegistry registry = process(beanFactory);
+		System.out.println(registry.proxy().toProxiesDescriptor());
 		List<JdkProxyDescriptor> computedClassProxies = registry.proxy().toProxiesDescriptor().getProxyDescriptors().stream().filter(pd -> pd.isClassProxy()).collect(Collectors.toList());
 		List<JdkProxyDescriptor> computedJdkProxies = registry.proxy().toProxiesDescriptor().getProxyDescriptors().stream().filter(pd -> !pd.isClassProxy()).collect(Collectors.toList());
 
@@ -226,27 +205,27 @@ class TransactionalNativeConfigurationProcessorTests {
 		}
 	}
 
-	@Transactional
-	public interface TransactionalInterface {
+	@Validated
+	public interface ValidatedInterface {
 
 		void foo();
 
 	}
 
-	public interface ProxyInterface extends TransactionalInterface {
+	public interface ProxyInterface extends ValidatedInterface {
 
 	}
 
 	public interface VoidInterface {
 	}
 
-	@Transactional
-	public interface TransactionalInterfaceWithoutMethod {
+	@Validated
+	public interface ValidatedInterfaceWithoutMethod {
 
 	}
 
-	@Transactional
-	public interface TransactionalInterfaceWithDefault {
+	@Validated
+	public interface ValidatedInterfaceWithDefault {
 
 		default void foo() {
 
@@ -254,7 +233,7 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	}
 
-	static class ProxyClass implements TransactionalInterface {
+	static class ProxyClass implements ValidatedInterface {
 
 		@Override
 		public void foo() {
@@ -265,7 +244,7 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	static class ComponentWithTransactionalInterface implements TransactionalInterface {
+	static class ComponentWithValidatedInterface implements ValidatedInterface {
 
 		@Override
 		public void foo() {
@@ -275,7 +254,7 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	static class ComponentWithTransactionalInterfaceAndExtraInterface implements TransactionalInterface, VoidInterface {
+	static class ComponentWithValidatedInterfaceAndExtraInterface implements ValidatedInterface, VoidInterface {
 
 		@Override
 		public void foo() {
@@ -286,7 +265,7 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	static class ComponentWithTransactionalInterfaceAndOtherMethod implements TransactionalInterface {
+	static class ComponentWithValidatedInterfaceAndOtherMethod implements ValidatedInterface {
 
 		@Override
 		public void foo() {
@@ -301,7 +280,7 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	public class ComponentWithTransactionalInterfaceOverProxyInterface implements ProxyInterface {
+	public class ComponentWithValidatedInterfaceOverProxyInterface implements ProxyInterface {
 
 		@Override
 		public void foo() {
@@ -312,19 +291,19 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	static class ComponentWithTransactionalInterfaceOverProxyClass extends ProxyClass {
+	static class ComponentWithValidatedInterfaceOverProxyClass extends ProxyClass {
 
 	}
 
 	// no proxy needed
 	@Component
-	static class ComponentWithTransactionalInterfaceWithoutMethod implements TransactionalInterfaceWithoutMethod {
+	static class ComponentWithValidatedInterfaceWithoutMethod implements ValidatedInterfaceWithoutMethod {
 
 	}
 
 	// needs aot proxy
 	@Component
-	static class ComponentWithTransactionalInterfaceWithoutMethodAndOtherMethod implements TransactionalInterfaceWithoutMethod {
+	static class ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod implements ValidatedInterfaceWithoutMethod {
 
 		public void bar() {
 
@@ -334,25 +313,14 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	// needs jdk proxy
 	@Component
-	static class ComponentWithTransactionalInterfaceWithDefault implements TransactionalInterfaceWithDefault {
+	static class ComponentWithValidatedInterfaceWithDefault implements ValidatedInterfaceWithDefault {
 
 	}
 
 	// needs aot proxy
+	@Validated
 	@Component
-	static class ComponentWithTransactionalMethod {
-
-		@Transactional
-		public void foo() {
-
-		}
-
-	}
-
-	// needs aot proxy
-	@Transactional
-	@Component
-	static class TransactionalComponent {
+	static class ValidatedComponent {
 
 		public void foo() {
 
@@ -360,23 +328,16 @@ class TransactionalNativeConfigurationProcessorTests {
 
 	}
 
-	@Transactional
+	@Validated
 	@Component
-	static class TxClass {
-		public void foo() {
-		}
-	}
-	
-	@Component
-	static class TxClass2 {
-		@Transactional
+	static class VClass {
 		public void foo() {
 		}
 	}
 
-	@Transactional
+	@Validated
 	@Component
-	static class TxClass3 implements Bar {
+	static class VClass3 implements Bar {
 		public void foo() {
 		}
 		public void test() {

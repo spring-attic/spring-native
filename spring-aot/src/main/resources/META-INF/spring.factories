@@ -24,7 +24,10 @@ org.springframework.repository.annotation.RepositoryComponentConfigurationProces
 org.springframework.transaction.annotation.TransactionalNativeConfigurationProcessor,\
 org.springframework.security.PrePostSecuredNativeConfigurationProcessor,\
 org.springframework.transaction.annotation.TransactionalNativeConfigurationProcessor,\
-org.springframework.kafka.KafkaAvroNativeConfigurationProcessor
+org.springframework.kafka.KafkaAvroNativeConfigurationProcessor,\
+org.springframework.validation.annotation.ValidatedNativeConfigurationProcessor,\
+org.springframework.web.WebNativeConfigurationProcessor,\
+org.springframework.core.SynthesizedAnnotationNativeConfigurationProcessor
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
 org.springframework.aot.context.bootstrap.generator.nativex.DefaultBeanNativeConfigurationProcessor,\

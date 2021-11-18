@@ -1,4 +1,0 @@
-org.springframework.web.WebComponentProcessor
-org.springframework.SynthesizerComputationComponentProcessor
-org.springframework.TransactionalEventListenerComponentProcessor
-org.springframework.ValidatedComponentProcessor
