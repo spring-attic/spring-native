@@ -24,6 +24,7 @@ import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
@@ -81,8 +82,8 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-		}, access = AccessBits.ALL),
-})
+		}, access = AccessBits.ALL)
+}, resources = @ResourceHint(patterns = "org.springframework.security.messages", isBundle = true))
 public class SecurityHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
