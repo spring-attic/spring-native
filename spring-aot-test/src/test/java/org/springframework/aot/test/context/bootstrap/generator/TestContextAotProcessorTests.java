@@ -31,6 +31,7 @@ import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
 import org.springframework.aot.test.samples.simple.SimpleSpringTests;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestContextAotProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Sam Brannen
  */
 class TestContextAotProcessorTests {
 
@@ -98,21 +100,39 @@ class TestContextAotProcessorTests {
 	}
 
 	@Test
+	void processWritesContextInitializersMapping() {
+		ContextBootstrapStructure structure = this.tester.process(
+				SampleApplicationTests.class, SampleApplicationAnotherTests.class, SimpleSpringTests.class);
+		assertThat(structure).contextBootstrapInitializer("TestContextBootstrapInitializer")
+				.removeIndent(1).lines().containsSubsequence(
+						"public static Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers(",
+						"    ) {",
+						"  Map<String, Class<? extends ApplicationContextInitializer<?>>> entries = new HashMap<>();",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", TestContextBootstrapInitializer0.class);",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", TestContextBootstrapInitializer0.class);",
+						"  entries.put(\"org.springframework.aot.test.samples.simple.SimpleSpringTests\", SimpleSpringTestsContextInitializer.class);",
+						"  return entries;",
+						"}");
+	}
+
+	@Test
 	void processInvokesTestNativeConfigurationRegistrar() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasResourcePattern("org/springframework/aot/test/samples/app/SampleApplication.class");
 	}
 
 	@Test
-	void processRegistersReflectionForContextLoadersMappingMethod() {
+	void processRegistersReflectionForMappingMethods() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasClassDescriptor("com.example.TestContextBootstrapInitializer", (descriptor) -> {
-			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
-				assertThat(methodDescriptor.getName()).isEqualTo("getContextLoaders");
-				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
-			});
 			assertThat(descriptor.getAccess()).isNull();
 			assertThat(descriptor.getFields()).isNull();
+			assertThat(descriptor.getMethods())
+				.hasSize(2)
+				.allSatisfy((methodDescriptor) -> assertThat(methodDescriptor.getParameterTypes()).isEmpty())
+				.extracting(MethodDescriptor::getName)
+					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextLoaders"))
+					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextInitializers"));
 		});
 	}
 

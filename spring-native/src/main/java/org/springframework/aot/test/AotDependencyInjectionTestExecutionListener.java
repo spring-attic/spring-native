@@ -39,14 +39,14 @@ import org.springframework.util.Assert;
  *
  * @author Sam Brannen
  * @see DependencyInjectionTestExecutionListener
- * @see AotContextLoader
+ * @see AotTestMappings
  * @see AotCacheAwareContextLoaderDelegate
  */
 public class AotDependencyInjectionTestExecutionListener extends DependencyInjectionTestExecutionListener {
 
 	private static final Log logger = LogFactory.getLog(AotDependencyInjectionTestExecutionListener.class);
 
-	private static final AotContextLoader aotContextLoader = getAotContextLoader();
+	private static final AotTestMappings aotTestMappings = getAotTestMappings();
 
 
 	@Override
@@ -96,16 +96,16 @@ public class AotDependencyInjectionTestExecutionListener extends DependencyInjec
 	}
 
 	private boolean isSupportedTestClass(TestContext testContext) {
-		return aotContextLoader != null && aotContextLoader.isSupportedTestClass(testContext.getTestClass());
+		return aotTestMappings != null && aotTestMappings.isSupportedTestClass(testContext.getTestClass());
 	}
 
-	private static AotContextLoader getAotContextLoader() {
+	private static AotTestMappings getAotTestMappings() {
 		if (AotModeDetector.isRunningAotTests()) {
 			try {
-				return new AotContextLoader();
+				return new AotTestMappings();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to instantiate AotContextLoader", ex);
+				throw new IllegalStateException("Failed to instantiate AotTestMappings", ex);
 			}
 		}
 		return null;
