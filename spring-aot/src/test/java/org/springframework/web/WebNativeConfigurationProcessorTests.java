@@ -33,6 +33,7 @@ import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,7 +91,6 @@ class WebNativeConfigurationProcessorTests {
 		assertThat(barCD.getName()).isEqualTo(Bar.class.getName());
 		assertThat(barCD.getFlags()).containsAll(ALL_MEMBERS);
 	}
-
 	
 	@Test
 	void rsocketController() {
@@ -109,7 +109,23 @@ class WebNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	public void typesInSignature() throws NoSuchMethodException, SecurityException {
+	void responseObjectFieldAnalysis() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(AnotherController.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
+		assertThat(classDescriptors).hasSize(2);
+		ClassDescriptor monoCd = ClassDescriptor.of(Foo.class);
+		monoCd.setFlags(ALL_MEMBERS);
+		assertThat(classDescriptors).contains(monoCd);
+		ClassDescriptor messageCd = ClassDescriptor.of(Boo.class);
+		messageCd.setFlags(ALL_MEMBERS);
+		assertThat(classDescriptors).contains(messageCd);
+	}
+
+	@Test
+	public void typesInSignature() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
 		Set<Class<?>> collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("one"));
 		assertThat(collected).containsOnly(Foo.class);
 		collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("two", Foo.class));
@@ -118,6 +134,8 @@ class WebNativeConfigurationProcessorTests {
 		assertThat(collected).containsOnly(List.class, Foo.class);
 		collected = WebNativeConfigurationProcessor.collectTypesInSignature(this.getClass().getDeclaredMethod("four", Integer.TYPE, List.class, Map.class));
 		assertThat(collected).containsOnly(Map.class, String.class, List.class, Foo.class, Bar.class, Integer.class);
+		collected = WebNativeConfigurationProcessor.collectTypesInSignature(Boo.class.getDeclaredField("foos"));
+		assertThat(collected).containsOnly(List.class,Foo.class);
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
@@ -216,6 +234,18 @@ class WebNativeConfigurationProcessorTests {
 			this.string2 = string2;
 		}
 		
+	}
+	
+	@Controller
+	static class AnotherController {
+		@GetMapping("/")
+		Boo peek() {
+			return new Boo();
+		}
+	}
+	
+	static class Boo {
+		List<Foo> foos;
 	}
 
 }

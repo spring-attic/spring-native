@@ -16,6 +16,7 @@
 
 package org.springframework.web;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -72,6 +73,12 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 		return collector;
 	}
 
+	public static Set<Class<?>> collectTypesInSignature(Field field) {
+		Set<Class<?>> collector = new TreeSet<>((c1,c2) -> c1.getName().compareTo(c2.getName()));
+		walk(field.getGenericType(), collector);
+		return collector;
+	}
+
 	// TODO does this handle all relevant cases?
 	private static void walk(Type type, Set<Class<?>> collector) {
 		if (type instanceof GenericArrayType) {
@@ -95,6 +102,29 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 		}
 	}
 
+	/**
+	 * Analyze a type and dig into it to add required access. This works but could probably be much smarter, so it is probably adding too much. The webmvc-kotlin will fail without this analysis.
+	 */
+	private static void recursivelyAnalyzeSignatureRelatedType(NativeConfigurationRegistry registry, Class<?> clazz, Set<String> added) {
+		for (Field field: clazz.getDeclaredFields()) {
+			Set<Class<?>> fieldSignatureTypes = collectTypesInSignature(field);
+			for (Class<?> fieldSignatureType: fieldSignatureTypes) {
+				String name = fieldSignatureType.getName();
+				if (!ignore(name) && added.add(name)) {
+					// TODO we are not included the hierarchy of the target here, is that OK because we are using allPublic* ?
+					registry.reflection().forType(fieldSignatureType).withFlags(Flag.allDeclaredConstructors, Flag.allPublicConstructors, Flag.allDeclaredFields, Flag.allPublicFields, Flag.allDeclaredMethods, Flag.allPublicMethods);
+					recursivelyAnalyzeSignatureRelatedType(registry, fieldSignatureType, added);
+				}
+			}
+		}
+	}
+
+	private static boolean ignore(String name) {
+		return (name.startsWith("java.") ||
+				name.startsWith("org.springframework.ui.") ||
+				name.startsWith("org.springframework.validation."));
+	}
+
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
@@ -116,9 +146,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 								}
 								if (added.add(name)) {
 									registry.reflection().forType(clazz).withFlags(Flag.allDeclaredConstructors, Flag.allPublicConstructors, Flag.allDeclaredFields, Flag.allPublicFields, Flag.allDeclaredMethods, Flag.allPublicMethods);
-									// TODO this code was in the original component processor but I have not activated it here - not *sure* we still need it
-//									Set<String> added = imageContext.addReflectiveAccessHierarchy(typename, AccessBits.FULL_REFLECTION);
-//									analyze(imageContext, type, added);
+									recursivelyAnalyzeSignatureRelatedType(registry, clazz, added);
 									logger.debug("adding reflective access to "+added+" (whilst introspecting controller: "+controllerType.getName()+" mapping: "+controllerMethod.getName()+")");
 								}
 							}
@@ -133,31 +161,5 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 		}
 
 	}
-
-//	private void analyze(NativeContext imageContext, Type type, Set<String> added) {
-//		List<Field> fields = type.getFields();
-//		for (Field field: fields) {
-//			Set<String> fieldTypenames = field.getTypesInSignature();
-//			for (String fieldTypename: fieldTypenames) {
-//				if (fieldTypename == null) {
-//					continue;
-//				}
-//				String dottedFieldTypename = fieldTypename.replace("/", ".");
-//				if (!ignore(dottedFieldTypename) && added.add(dottedFieldTypename)) {
-//					added.addAll(imageContext.addReflectiveAccessHierarchy(dottedFieldTypename, AccessBits.FULL_REFLECTION));
-//					// Recursive analysis - helps with something like a Vets type that includes a List<Vet>. Vet gets
-//					// recognized too.
-//					analyze(imageContext, imageContext.getTypeSystem().resolveDotted(dottedFieldTypename,true), added);
-//				}
-//			}
-//		}
-//	}
-//
-//	private boolean ignore(String name) {
-//		return (name.startsWith("java.") ||
-//				name.startsWith("org.springframework.ui.") ||
-//				name.startsWith("org.springframework.validation."));
-//	}
-//}
 
 }
