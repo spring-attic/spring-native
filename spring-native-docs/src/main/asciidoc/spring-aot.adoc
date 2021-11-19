@@ -1,14 +1,25 @@
 [[spring-aot]]
 == Spring AOT
+Spring AOT (Ahead-of-Time) inspects an application configuration at build-time and generate an optimized version of it.
+Based on your `@SpringBootApplication`-annotated main class, conditions are evaluated based on the current classpath and environment and only matching beans are considered.
 
-Spring AOT (Ahead-of-Time) aims at improving compatibility and footprint of native images for Spring Native applications.
-To achieve that, this projects ships Maven and Gradle build plugins that generate and compile a separate set of Java sources to be packaged with your Spring Boot application.
-By looking at your application classpath and configuration, Spring AOT brings some of the configuration processing at build time and streamlines the native image compilation process.
+[NOTE]
+===
+Conditions evaluations at build-time has important differences compared to what a regular Spring Boot application does at runtime.
+For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
+Conditions on the runtime environment, such as enabling features based on your chosen cloud platform, will no longer run at runtime.
+===
+
+Once the beans used by the application have been identified, Spring AOT generates the following:
+
+* An optimized version of the `BeanFactory`
+* The necessary native configuration (such as reflection and resources)
+
+Trimming down the application to only the beans that are effectively going to be created at runtime improves the compatibility and footprint of native images for Spring applications.
 
 The following sections will show you how to configure Spring AOT for <<spring-aot-maven,Maven>> or <<spring-aot-gradle,Gradle>>.
 You'll also learn more about <<spring-aot-modes,the types of sources generated and how they're used>>
 
-WARNING: Spring AOT test code generation is not supported yet in this version.
 
 [[spring-aot-maven]]
 === Maven
