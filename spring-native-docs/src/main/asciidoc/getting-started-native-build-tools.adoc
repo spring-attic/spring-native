@@ -159,6 +159,24 @@ The following example adds a `native` profile that triggers the plugin during th
 <profiles>
         <profile>
             <id>native</id>
+            <dependencies>
+                <!--
+                    Maven Surefire 3.0.0-M4 introduced support for automatically aligning
+                    the JUnit Platform version used by Surefire with the version needed
+                    by the user's configured version of JUnit Jupiter. Since we are not
+                    using Surefire 3.0 milestones, we therefore have to explicitly declare
+                    a dependency on the correct version of the junit-platform-launcher in
+                    order to have the UniqueIdTrackingListener (introduced in JUnit Platform
+                    1.8.0) which is required by Native Build Tools 0.9.6 and higher.
+                    The actual version of the junit-platform-launcher is managed by the
+                    junit-bom that is imported by the spring-boot-starter-parent.
+                -->
+                <dependency>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-launcher</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
