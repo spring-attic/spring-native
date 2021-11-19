@@ -100,8 +100,6 @@ plugins {
 
 The Spring AOT plugin performs ahead-of-time transformations required to improve native image compatibility and footprint.
 
-WARNING: Spring AOT test code generation is not supported yet in this version.
-
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
 ----
@@ -117,6 +115,12 @@ WARNING: Spring AOT test code generation is not supported yet in this version.
                     <id>generate</id>
                     <goals>
                         <goal>generate</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>test-generate</id>
+                    <goals>
+                        <goal>test-generate</goal>
                     </goals>
                 </execution>
             </executions>
@@ -170,6 +174,13 @@ The following example adds a `native` profile that triggers the plugin during th
                                 </goals>
                                 <phase>package</phase>
                             </execution>
+                            <execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution>
                         </executions>
                         <configuration>
                             <!-- ... -->
@@ -196,7 +207,7 @@ The following example adds a `native` profile that triggers the plugin during th
 [source,Kotlin,subs="attributes,verbatim",role="secondary"]
 .Gradle Kotlin
 ----
-// The GraalVM native build tools plugin is applied automatically
+// The GraalVM native build tools plugin is applied and configured automatically
 ----
 
 
@@ -325,4 +336,22 @@ Now that the service is up, visit `http://localhost:8080/greeting`, where you sh
 
 ==== Test the native application
 
-WARNING: Since Spring AOT test code generation is not supported yet in this version, compiling and running tests is not supported yet.
+The native application can be tested as follows:
+
+[source,bash,role="primary"]
+.Maven
+----
+$ mvn -Pnative test
+----
+[source,bash,role="secondary"]
+.Gradle Groovy
+----
+$ gradle nativeTest
+----
+[source,bash,role="secondary"]
+.Gradle Kotlin
+----
+$ gradle nativeTest
+----
+
+You can find more details about the native build tools https://github.com/graalvm/native-build-tools[here].
