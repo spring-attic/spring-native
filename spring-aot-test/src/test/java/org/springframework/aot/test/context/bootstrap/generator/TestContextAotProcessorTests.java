@@ -26,10 +26,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.aot.test.context.bootstrap.generator.test.ContextBootstrapStructure;
 import org.springframework.aot.test.context.bootstrap.generator.test.TestContextAotProcessorTester;
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
-import org.springframework.aot.test.samples.app.SampleApplicationIntegrationTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.hint.Flag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -118,6 +119,20 @@ class TestContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class, SampleJdbcTests.class);
 		assertThat(structure).hasClassDescriptor("com.example.SampleApplicationTestsContextInitializer", assertContextInitializerMetadata());
 		assertThat(structure).hasClassDescriptor("com.example.SampleJdbcTestsContextInitializer", assertContextInitializerMetadata());
+	}
+
+	@Test
+	void processRegisterReflectionForSpringBootTestContextBootstrapper() {
+		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
+		assertThat(structure).hasClassDescriptor(SpringBootTestContextBootstrapper.class.getName(),
+				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors));
+	}
+
+	@Test
+	void processRegisterReflectionForSliceTestContextBootstrapper() {
+		ContextBootstrapStructure structure = this.tester.process(SampleJdbcTests.class);
+		assertThat(structure).hasClassDescriptor("org.springframework.boot.test.autoconfigure.jdbc.JdbcTestContextBootstrapper",
+				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors));
 	}
 
 	private Consumer<ClassDescriptor> assertContextInitializerMetadata() {

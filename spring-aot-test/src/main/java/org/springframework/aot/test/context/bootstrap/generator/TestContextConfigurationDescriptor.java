@@ -22,8 +22,11 @@ import java.util.List;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContextBootstrapper;
 
 /**
  * Describe a particular test configuration, alongside the test classes that matches.
@@ -32,13 +35,17 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 class TestContextConfigurationDescriptor {
 
+	private final Class<? extends TestContextBootstrapper> testContextBootstrapperType;
+
 	private final MergedContextConfiguration contextConfiguration;
 
 	private final AotTestContextProcessor aotTestContextProcessor;
 
 	private final List<Class<?>> testClasses;
 
-	TestContextConfigurationDescriptor(MergedContextConfiguration configuration, AotTestContextProcessor aotTestContextProcessor) {
+	TestContextConfigurationDescriptor(Class<? extends TestContextBootstrapper> testContextBootstrapperType,
+			MergedContextConfiguration configuration, AotTestContextProcessor aotTestContextProcessor) {
+		this.testContextBootstrapperType = testContextBootstrapperType;
 		this.contextConfiguration = configuration;
 		this.aotTestContextProcessor = aotTestContextProcessor;
 		this.testClasses = new ArrayList<>();
@@ -51,6 +58,15 @@ class TestContextConfigurationDescriptor {
 	 */
 	GenericApplicationContext parseTestContext() {
 		return this.aotTestContextProcessor.prepareTestContext(this.contextConfiguration);
+	}
+
+	/**
+	 * Contribute native configuration required for this instance.
+	 * @param nativeConfigurationRegistry the registry to use
+	 */
+	void contributeNativeConfiguration(NativeConfigurationRegistry nativeConfigurationRegistry) {
+		nativeConfigurationRegistry.reflection().forType(this.testContextBootstrapperType)
+				.withFlags(Flag.allDeclaredConstructors);
 	}
 
 	/**

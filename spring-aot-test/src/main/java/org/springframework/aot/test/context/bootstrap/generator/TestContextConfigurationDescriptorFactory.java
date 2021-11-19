@@ -19,13 +19,11 @@ package org.springframework.aot.test.context.bootstrap.generator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.nativex.hint.Flag;
 import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
@@ -39,7 +37,6 @@ import org.springframework.test.context.support.DefaultBootstrapContext;
  * identify a matching {@link AotTestContextProcessor}.
  *
  * @author Stephane Nicoll
- * @author Sebastien Deleuze
  * @see AotTestContextProcessor
  */
 class TestContextConfigurationDescriptorFactory {
@@ -57,10 +54,10 @@ class TestContextConfigurationDescriptorFactory {
 		this(SpringFactoriesLoader.loadFactories(AotTestContextProcessor.class, classLoader));
 	}
 
-	List<TestContextConfigurationDescriptor> buildConfigurationDescriptors(Iterable<Class<?>> testClasses, NativeConfigurationRegistry nativeConfigurationRegistry) {
+	List<TestContextConfigurationDescriptor> buildConfigurationDescriptors(Iterable<Class<?>> testClasses) {
 		List<TestContextConfigurationDescriptor> descriptors = new ArrayList<>();
 		for (Class<?> testClass : testClasses) {
-			TestContextBootstrapper testContextBootstrapper = createTestContextBootstrapper(testClass, nativeConfigurationRegistry);
+			TestContextBootstrapper testContextBootstrapper = createTestContextBootstrapper(testClass);
 			MergedContextConfiguration contextConfiguration = testContextBootstrapper.buildMergedContextConfiguration();
 			AotTestContextProcessor testContextProcessor = findAotTestContextProcessor(testContextBootstrapper);
 			TestContextConfigurationDescriptor existingDescriptor = descriptors.stream()
@@ -70,7 +67,8 @@ class TestContextConfigurationDescriptorFactory {
 				existingDescriptor.registerTestClass(testClass);
 			}
 			else {
-				descriptors.add(new TestContextConfigurationDescriptor(contextConfiguration, testContextProcessor));
+				descriptors.add(new TestContextConfigurationDescriptor(testContextBootstrapper.getClass(),
+						contextConfiguration, testContextProcessor));
 			}
 		}
 		return descriptors;
@@ -90,22 +88,19 @@ class TestContextConfigurationDescriptorFactory {
 	 * @param testClass the test class to handle
 	 * @return a merged context configuration for the specified test class
 	 */
-	TestContextBootstrapper createTestContextBootstrapper(Class<?> testClass, NativeConfigurationRegistry nativeConfigurationRegistry) {
+	TestContextBootstrapper createTestContextBootstrapper(Class<?> testClass) {
 		BootstrapContext bootstrapContext = new DefaultBootstrapContext(testClass, this.contextLoaderDelegate);
-		TestContextBootstrapper bootstrapper = BeanUtils.instantiateClass(getTestContextBootstrapperType(testClass, nativeConfigurationRegistry));
+		TestContextBootstrapper bootstrapper = BeanUtils.instantiateClass(getTestContextBootstrapperType(testClass));
 		bootstrapper.setBootstrapContext(bootstrapContext);
 		return bootstrapper;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends TestContextBootstrapper> getTestContextBootstrapperType(Class<?> testClass, NativeConfigurationRegistry nativeConfigurationRegistry) {
+	private Class<? extends TestContextBootstrapper> getTestContextBootstrapperType(Class<?> testClass) {
 		MergedAnnotations annotations = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS);
 		MergedAnnotation<BootstrapWith> annotation = annotations.get(BootstrapWith.class);
 		if (annotation.isPresent()) {
-			Class<? extends TestContextBootstrapper> bootstrapperType = (Class<? extends TestContextBootstrapper>) annotation.getClass("value");
-			NativeConfigurationRegistry.ReflectionConfiguration reflection = nativeConfigurationRegistry.reflection();
-			reflection.forType(bootstrapperType).withFlags(Flag.allDeclaredConstructors);
-			return bootstrapperType;
+			return (Class<? extends TestContextBootstrapper>) annotation.getClass("value");
 		}
 		throw new IllegalArgumentException("'" + testClass.getName()
 				+ "' is not a Spring test class, @BootstrapWith annotation not found");
