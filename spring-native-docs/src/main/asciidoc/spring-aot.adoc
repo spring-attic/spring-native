@@ -4,11 +4,11 @@ Spring AOT (Ahead-of-Time) inspects an application configuration at build-time a
 Based on your `@SpringBootApplication`-annotated main class, conditions are evaluated based on the current classpath and environment and only matching beans are considered.
 
 [NOTE]
-===
+====
 Conditions evaluations at build-time has important differences compared to what a regular Spring Boot application does at runtime.
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
 Conditions on the runtime environment, such as enabling features based on your chosen cloud platform, will no longer run at runtime.
-===
+====
 
 Once the beans used by the application have been identified, Spring AOT generates the following:
 
