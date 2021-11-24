@@ -190,6 +190,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 					DefaultNativeReflectionEntry.Builder builder = registry.reflection().forType(typeModel.getType());
 					builder.withFlags(Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
 
+					if(typeModel.hasDeclaredClasses()) {
+						builder.withFlags(Flag.allDeclaredClasses);
+					}
+
 					typeModel.doWithFields(field -> {
 						if (Modifier.isFinal(field.getModifiers())) {
 							builder.withField(field, DefaultNativeReflectionEntry.FieldAccess.ALLOW_WRITE, DefaultNativeReflectionEntry.FieldAccess.UNSAFE);

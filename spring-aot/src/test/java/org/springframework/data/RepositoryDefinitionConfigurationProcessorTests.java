@@ -55,6 +55,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.geo.Point;
 import org.springframework.data.repository.query.Param;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.sample.data.config.ConfigForTypeHavingDeclaredClass;
 import org.springframework.sample.data.config.ConfigWithCustomImplementation;
 import org.springframework.sample.data.config.ConfigWithCustomImplementation.CustomImplInterface;
 import org.springframework.sample.data.config.ConfigWithCustomImplementation.RepositoryWithCustomImplementation;
@@ -77,6 +78,7 @@ import org.springframework.sample.data.types.Customer;
 import org.springframework.sample.data.types.DomainObjectWithSimpleTypesOnly;
 import org.springframework.sample.data.types.LocationHolder;
 import org.springframework.sample.data.types.ProjectionInterface;
+import org.springframework.sample.data.types.WithDeclaredClass;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
@@ -177,6 +179,22 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 		assertThat(registry.getProxyEntries(Transient.class)).hasSize(1);
 	}
 
+	@Test
+	void writesFlagForDeclaredClassesIfPresent() {
+
+		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigForTypeHavingDeclaredClass.class);
+		assertThat(registry.getReflectionEntry(WithDeclaredClass.class))
+				.satisfies(containsFlags(Flag.allDeclaredClasses));
+	}
+
+	@Test
+	void doesNotWriteFlagForDeclaredClassesIfNotPresent() {
+
+		NativeConfigRegistryHolder registry = getNativeConfiguration(SimpleRepositoryConfig.class);
+		assertThat(registry.getReflectionEntry(Customer.class))
+				.satisfies(doesNotContainFlags(Flag.allDeclaredClasses));
+	}
+
 	private NativeConfigRegistryHolder getNativeConfiguration(Class<?> configurationClass) {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(configurationClass);
@@ -271,6 +289,14 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 	private Consumer<DefaultNativeReflectionEntry> onlyFields(String... fields) {
 		return (entry) -> assertThat(entry.getFields()).map(Field::getName).containsExactlyInAnyOrder(fields);
+	}
+
+	private Consumer<DefaultNativeReflectionEntry> containsFlags(Flag... flags) {
+		return (entry) -> assertThat(entry.getFlags()).contains(flags);
+	}
+
+	private Consumer<DefaultNativeReflectionEntry> doesNotContainFlags(Flag... flags) {
+		return (entry) -> assertThat(entry.getFlags()).doesNotContain(flags);
 	}
 
 	private Consumer<DefaultNativeReflectionEntry.Builder> allCtors() {

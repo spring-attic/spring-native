@@ -33,6 +33,7 @@ import org.springframework.data.TypeUtils.TypeOps;
 import org.springframework.data.TypeUtils.TypeOps.PackageFilter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Entry point to access {@link Field fields}, {@link Method methods} and {@link Constructor constructors} honoring
@@ -127,6 +128,10 @@ public class TypeModel { // TODO: implements TypeInformation
 
 	public boolean isPartOf(String... packageNames) {
 		return typeOps.isPartOf(packageNames);
+	}
+
+	public boolean hasDeclaredClasses() {
+		return !ObjectUtils.isEmpty(type.getDeclaredClasses());
 	}
 
 	@Nullable

@@ -36,6 +36,7 @@ import org.springframework.data.JpaConfigurationProcessor.JpaEntityProcessor;
 import org.springframework.data.JpaConfigurationProcessor.JpaPersistenceContextProcessor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.sample.data.jpa.AuditingListener;
 import org.springframework.sample.data.jpa.ComponentWithPersistenceContext;
 import org.springframework.sample.data.jpa.EntityWithListener;
@@ -43,6 +44,7 @@ import org.springframework.sample.data.jpa.LineItem;
 import org.springframework.sample.data.jpa.NotAnEntity;
 import org.springframework.sample.data.jpa.Order;
 import org.springframework.sample.data.jpa.SomeAnnotation;
+import org.springframework.sample.data.types.WithDeclaredClass;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -143,12 +145,22 @@ public class JpaConfigurationProcessorTests {
 		assertThat(reflectionEntry.getFields()).containsExactly(ReflectionUtils.findField(ComponentWithPersistenceContext.class, "entityManager"));
 	}
 
+	@Test
+	public void shouldSetDeclaredClassesFlagIfRequired()  {
+		assertThat(processJpaEntities(WithDeclaredClass.class)).satisfies(it -> {
+			assertThat(it.getReflectionEntry(WithDeclaredClass.class).getFlags()).contains(Flag.allDeclaredClasses);
+		});
+
+		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
+			assertThat(it.getReflectionEntry(Order.class).getFlags()).doesNotContain(Flag.allDeclaredClasses);
+		});
+	}
+
 	private Class<?> createCglibProxyType(Class<?> target) {
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.setTargetClass(target);
 		return proxyFactory.getProxy().getClass();
 	}
-
 
 	NativeConfigRegistryHolder processJpaEntities(Class<?>... entities) {
 
