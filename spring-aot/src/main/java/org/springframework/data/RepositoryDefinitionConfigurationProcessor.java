@@ -303,7 +303,10 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				if (SimpleTypeHolder.DEFAULT.isSimpleType(domainType.getType())) { // eg. String, ...
 					return;
 				}
-				Builder reflectBuilder = registry.reflection().forType(domainType.getType()).withFlags();
+				Builder reflectBuilder = registry.reflection().forType(domainType.getType());
+				if(domainType.hasDeclaredClasses()) {
+						reflectBuilder.withFlags(Flag.allDeclaredClasses);
+				}
 				if (domainType.hasMethods()) {
 					reflectBuilder.withExecutables(domainType.getMethods().toArray(new Method[0]));
 				}
