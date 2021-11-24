@@ -8,10 +8,13 @@ import org.mockito.InOrder;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
@@ -340,6 +343,39 @@ class BeanDefinitionRegistrarTests {
 		assertThat(beanName).isNotNull().startsWith("(inner bean)#");
 	}
 
+	@Test
+	void beanFactoryWithUnresolvedGenericCanBeInjected() {
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
+		// See https://github.com/spring-projects/spring-framework/issues/27727
+		context.registerBean(NumberHolderSample.class);
+		BeanDefinitionRegistrar.of("factory", ResolvableType.forClassWithGenerics(FactoryBean.class,
+						ResolvableType.forClassWithGenerics(NumberHolder.class, Object.class)))
+				.withFactoryMethod(GenericFactoryBeanConfiguration.class, "integerHolderFactory")
+				.instanceSupplier(() -> new GenericFactoryBeanConfiguration().integerHolderFactory())
+				.register(context);
+		assertContext(context, () -> {
+			NumberHolder<Integer> numberHolder = context.getBean(NumberHolderSample.class).numberHolder;
+			assertThat(numberHolder).isNotNull();
+			assertThat(numberHolder.number).isEqualTo(42);
+		});
+	}
+
+	@Test
+	void beanWithUnresolvedGenericCanBeInjected() {
+		GenericApplicationContext context = new AnnotationConfigApplicationContext();
+		// See https://github.com/spring-projects/spring-framework/issues/27727
+		context.registerBean(NumberHolderSample.class);
+		BeanDefinitionRegistrar.of("numberHolder", ResolvableType.forClassWithGenerics(NumberHolder.class, Object.class))
+				.withFactoryMethod(GenericFactoryBeanConfiguration.class, "integerHolder")
+				.instanceSupplier(() -> new GenericFactoryBeanConfiguration().integerHolder())
+				.register(context);
+		assertContext(context, () -> {
+			NumberHolder<Integer> numberHolder = context.getBean(NumberHolderSample.class).numberHolder;
+			assertThat(numberHolder).isNotNull();
+			assertThat(numberHolder.number).isEqualTo(42);
+		});
+	}
+
 	private void assertContext(GenericApplicationContext context, Runnable assertions) {
 		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
 		if (!context.isRunning()) {
@@ -409,6 +445,54 @@ class BeanDefinitionRegistrarTests {
 			}
 
 		}
+
+	}
+
+	static class GenericFactoryBeanConfiguration {
+
+		FactoryBean<NumberHolder<?>> integerHolderFactory() {
+			return new GenericFactoryBean<>(integerHolder());
+		}
+
+		NumberHolder<?> integerHolder() {
+			return new NumberHolder<>(42);
+		}
+
+	}
+
+	static class GenericFactoryBean<T> implements FactoryBean<T> {
+
+		private final T value;
+
+		public GenericFactoryBean(T value) {
+			this.value = value;
+		}
+
+		@Override
+		public T getObject() {
+			return this.value;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return this.value.getClass();
+		}
+	}
+
+	static class NumberHolder<N extends Number> {
+
+		private final N number;
+
+		public NumberHolder(N number) {
+			this.number = number;
+		}
+
+	}
+
+	static class NumberHolderSample {
+
+		@Autowired
+		private NumberHolder<Integer> numberHolder;
 
 	}
 

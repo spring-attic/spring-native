@@ -101,12 +101,46 @@ public class BeanDefinitionRegistrar {
 
 	private RootBeanDefinition createBeanDefinition() {
 		RootBeanDefinition bd = (RootBeanDefinition) builder.getBeanDefinition();
-		bd.setTargetType(this.beanType);
+		ResolvableType targetType = determineTargetType();
+		if (targetType != null) {
+			bd.setTargetType(targetType);
+		}
 		if (this.instanceCreator instanceof Method) {
 			bd.setResolvedFactoryMethod((Method) this.instanceCreator);
 		}
 		this.customizers.forEach((customizer) -> customizer.accept(bd));
 		return bd;
+	}
+
+	/**
+	 * Resolve the {@link ResolvableType target type} that should be associated with the
+	 * bean definition. Can return {@code null} if the resolved type is not precise enough
+	 * and may avoid some runtime optimization to take place.
+	 * @return the target type to use.
+	 */
+	private ResolvableType determineTargetType() {
+		if (this.instanceCreator instanceof Method) {
+			ResolvableType returnType = ResolvableType.forMethodReturnType((Method) instanceCreator);
+			if (hasUnresolvedGenerics(returnType)) {
+				return null;
+			}
+		}
+		if (hasUnresolvedGenerics(this.beanType)) {
+			return null;
+		}
+		return this.beanType;
+	}
+
+	private boolean hasUnresolvedGenerics(ResolvableType resolvableType) {
+		if (resolvableType.hasUnresolvableGenerics()) {
+			return true;
+		}
+		for (ResolvableType generic : resolvableType.getGenerics()) {
+			if (hasUnresolvedGenerics(generic)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private InstanceSupplierContext createInstanceSupplierContext() {
