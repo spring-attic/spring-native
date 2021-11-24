@@ -74,6 +74,7 @@ org.springframework.boot.autoconfigure.web.servlet.WebMvcHints
 org.springframework.boot.context.config.ConfigDataPropertiesHints
 org.springframework.boot.logging.LogbackHints
 org.springframework.boot.test.SpringBootTestHints
+org.springframework.boot.test.autoconfigure.json.JsonTesterHints
 org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientHints
 org.springframework.boot.test.web.client.WebClientTestHints
 org.springframework.boot.test.web.reactive.server.ReactiveServerTestHints
