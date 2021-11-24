@@ -31,6 +31,7 @@ import org.springframework.context.annotation.samples.scan.ScanConfiguration;
 import org.springframework.context.annotation.samples.simple.ConfigurationOne;
 import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link BeanFactoryProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class BeanFactoryProcessorTests {
 
@@ -86,6 +88,13 @@ class BeanFactoryProcessorTests {
 				entry("configurationTwo", ConfigurationTwo.class));
 	}
 
+	@Test
+	void processWithFilter() {
+		ListableBeanFactory beanFactory = prepare(ConfigurationOne.class);
+		ConsumerCollector consumer = new ConsumerCollector();
+		new BeanFactoryProcessor(beanFactory).processBeans(type -> AnnotatedElementUtils.isAnnotated(type, Configuration.class), consumer);
+		assertThat(consumer.callbacks).containsOnly(entry("configurationOne", ConfigurationOne.class));
+	}
 
 	private ListableBeanFactory prepare(Class<?>... candidates) {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
