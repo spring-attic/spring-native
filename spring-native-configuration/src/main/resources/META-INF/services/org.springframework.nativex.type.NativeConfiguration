@@ -69,6 +69,7 @@ org.springframework.boot.autoconfigure.task.TaskHints
 org.springframework.boot.autoconfigure.transaction.TransactionHints
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketHints
 org.springframework.boot.autoconfigure.web.reactive.WebFluxHints
+org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfigurationHints
 org.springframework.boot.autoconfigure.web.servlet.WebHints
 org.springframework.boot.autoconfigure.web.servlet.WebMvcHints
 org.springframework.boot.context.config.ConfigDataPropertiesHints
