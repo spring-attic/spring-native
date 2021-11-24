@@ -121,6 +121,9 @@ public class TypeModelProcessor {
 		additionalTypes.addAll(visitConstructorsOfType(type, result));
 		additionalTypes.addAll(visitMethodsOfType(type, result));
 		additionalTypes.addAll(visitFieldsOfType(type, result));
+		if(result.hasDeclaredClasses()) {
+			additionalTypes.addAll(Arrays.asList(result.getType().getDeclaredClasses()));
+		}
 		callback.accept(result);
 		for (Type discoveredType : additionalTypes) {
 			processType(ResolvableType.forType(discoveredType, type), cache, callback);
