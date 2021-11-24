@@ -28,6 +28,7 @@ import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
@@ -51,6 +52,12 @@ public class Order {
 
 	@DBRef(lazy = true) // JdkProxy
 	private PriceReduction reduction;
+
+	@DocumentReference
+	private Discount documentRef;
+
+	@DocumentReference(lazy = true)
+	Discount lazyDocumentRef;
 
 	@CreatedDate
 	Instant createdAt;
@@ -153,6 +160,22 @@ public class Order {
 
 	public void setSimpleRef(Coupon simpleRef) {
 		this.simpleRef = simpleRef;
+	}
+
+	public Discount getDocumentRef() {
+		return documentRef;
+	}
+
+	public void setDocumentRef(Discount documentRef) {
+		this.documentRef = documentRef;
+	}
+
+	public Discount getLazyDocumentRef() {
+		return lazyDocumentRef;
+	}
+
+	public void setLazyDocumentRef(Discount lazyDocumentRef) {
+		this.lazyDocumentRef = lazyDocumentRef;
 	}
 
 	@Override
