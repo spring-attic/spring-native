@@ -83,14 +83,13 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	static class JpaPersistenceContextProcessor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			doWithComponents(beanFactory,
+
+			new BeanFactoryProcessor(beanFactory).processBeans(
+					(beanType) -> TypeUtils.hasAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT),
 					(beanName, beanType) -> {
 						registry.reflection()
 								.forType(beanType)
 								.withFields(TypeUtils.getAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT).toArray(new Field[0]));
-					},
-					(beanName, beanType) -> {
-						return TypeUtils.hasAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT);
 					});
 		}
 	}
@@ -138,7 +137,8 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				return;
 			}
 
-			doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans(
+					(beanType) -> MergedAnnotations.from(beanType).isPresent("org.springframework.boot.autoconfigure.domain.EntityScan"),
 					(beanName, beanType) -> {
 
 						MergedAnnotation<Annotation> entityScanAnnotation = MergedAnnotations.from(beanType).get("org.springframework.boot.autoconfigure.domain.EntityScan");
@@ -153,9 +153,6 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 							}
 						}
 						process(resolvedTypes, registry);
-					},
-					(beanName, beanType) -> {
-						return MergedAnnotations.from(beanType).isPresent("org.springframework.boot.autoconfigure.domain.EntityScan");
 					});
 		}
 
@@ -327,14 +324,4 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		}
 		return null;
 	}
-
-	static void doWithComponents(ConfigurableListableBeanFactory beanFactory, NativeConfigurationUtils.ComponentCallback callback,
-			NativeConfigurationUtils.ComponentFilter filter) {
-		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
-			if (filter == null || filter.test(beanName, beanType)) {
-				callback.invoke(beanName, beanType);
-			}
-		});
-	}
-
 }
