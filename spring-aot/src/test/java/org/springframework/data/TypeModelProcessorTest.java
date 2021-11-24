@@ -33,6 +33,7 @@ import org.springframework.sample.data.types.CyclicPropertiesSelf;
 import org.springframework.sample.data.types.FieldsAndMethods;
 import org.springframework.sample.data.types.InterfaceType;
 import org.springframework.sample.data.types.TypesInMethodSignatures;
+import org.springframework.sample.data.types.WithDeclaredClass;
 
 /**
  * @author Christoph Strobl
@@ -90,6 +91,12 @@ class TypeModelProcessorTest {
 				.contains(CyclicGenerics.class);
 	}
 
+	@Test
+	void includesDeclaredClassesInInspection() {
+		assertThat(new TypeModelProcessor().inspect(WithDeclaredClass.class).list())
+				.<Class<?>>map(TypeModel::getType)
+				.contains(WithDeclaredClass.SomeEnum.class);
+	}
 
 	private TypeModel computeModelFor(Class<?> type) {
 		List<TypeModel> modelList = new TypeModelProcessor().inspect(type).list();

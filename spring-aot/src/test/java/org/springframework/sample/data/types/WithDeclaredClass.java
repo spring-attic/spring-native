@@ -20,5 +20,5 @@ package org.springframework.sample.data.types;
  */
 public class WithDeclaredClass {
 
-	enum SomeEnum {};
+	public enum SomeEnum {};
 }
