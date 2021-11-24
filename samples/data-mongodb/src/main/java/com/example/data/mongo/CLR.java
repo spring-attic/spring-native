@@ -225,7 +225,25 @@ public class CLR implements CommandLineRunner {
 		}
 
 		{
+			System.out.println("---- Document References ----");
+			orderRepository.deleteAll();
+			Discount discount = new Discount(30F);
+			template.insert(discount);
 
+			Order order = new Order("c42", new Date()).//
+					addItem(product1).addItem(product2).addItem(product3);
+			order.setDocumentRef(discount);
+			order.setLazyDocumentRef(discount);
+
+			orderRepository.save(order);
+
+			Optional<Order> loaded = orderRepository.findById(order.getId());
+			System.out.println("document ref (no proxy): " + loaded.get().getDocumentRef().getPercentage());
+			System.out.println("lazy document ref (aot): " + loaded.get().lazyDocumentRef);
+			System.out.println("-----------------\n\n\n");
+		}
+
+		{
 			System.out.println("---- QUERY BY EXAMPLE ----");
 			orderRepository.deleteAll();
 
