@@ -18,6 +18,7 @@ package org.springframework.aot.support;
 
 import java.lang.annotation.Annotation;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.ClassUtils;
@@ -26,6 +27,7 @@ import org.springframework.util.ClassUtils;
  * BeanFactory helper to process bean definitions.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 public class BeanFactoryProcessor {
 
@@ -33,6 +35,25 @@ public class BeanFactoryProcessor {
 
 	public BeanFactoryProcessor(ListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+	}
+
+	/**
+	 * Process bean definitions matching the given {@link Predicate}.
+	 * <p>
+	 * If the bean type cannot be determined, the entry is skipped. If the type is a proxy
+	 * the user-facing class is extracted.
+	 * @param filter the predicate to apply on the bean type, must not be {@literal null}
+	 * @param consumer a callback with the name of the matching bean and the user type
+	 */
+	public void processBeans(Predicate<Class<?>> filter, BiConsumer<String, Class<?>> consumer) {
+		String[] beanNames = this.beanFactory.getBeanDefinitionNames();
+		for (String beanName : beanNames) {
+			invokeConsumer(beanName, (name, type) -> {
+				if (filter.test(type)) {
+					consumer.accept(name, type);
+				}
+			});
+		}
 	}
 
 	/**
@@ -48,7 +69,7 @@ public class BeanFactoryProcessor {
 			BiConsumer<String, Class<?>> consumer) {
 		String[] beanNames = this.beanFactory.getBeanNamesForType(type, true, false);
 		for (String beanName : beanNames) {
-			invokeConsumer(consumer, beanName);
+			invokeConsumer(beanName, consumer);
 		}
 	}
 
@@ -65,11 +86,11 @@ public class BeanFactoryProcessor {
 			BiConsumer<String, Class<?>> consumer) {
 		String[] beanNames = this.beanFactory.getBeanNamesForAnnotation(annotationType);
 		for (String beanName : beanNames) {
-			invokeConsumer(consumer, beanName);
+			invokeConsumer(beanName, consumer);
 		}
 	}
 
-	private void invokeConsumer(BiConsumer<String, Class<?>> consumer, String beanName) {
+	private void invokeConsumer(String beanName, BiConsumer<String, Class<?>> consumer) {
 		Class<?> type = this.beanFactory.getType(beanName);
 		if (type != null) {
 			consumer.accept(beanName, ClassUtils.getUserClass(type));
