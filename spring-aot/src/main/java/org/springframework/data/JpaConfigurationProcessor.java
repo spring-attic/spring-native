@@ -35,9 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils.ComponentCallback;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils.ComponentFilter;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -51,7 +48,6 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -83,14 +79,11 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	static class JpaPersistenceContextProcessor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-
 			new BeanFactoryProcessor(beanFactory).processBeans(
 					(beanType) -> TypeUtils.hasAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT),
-					(beanName, beanType) -> {
-						registry.reflection()
-								.forType(beanType)
-								.withFields(TypeUtils.getAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT).toArray(new Field[0]));
-					});
+					(beanName, beanType) -> registry.reflection()
+							.forType(beanType)
+							.withFields(TypeUtils.getAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT).toArray(new Field[0])));
 		}
 	}
 
