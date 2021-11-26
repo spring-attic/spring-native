@@ -15,6 +15,6 @@
  */
 
 /**
- * AOP extension points for AOT processing.
+ * Scope bean extension points for AOT processing.
  */
-package org.springframework.aop;
+package org.springframework.aop.scope;

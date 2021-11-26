@@ -57,7 +57,8 @@ public class ApplicationStructure {
 	private final ClassLoader classLoader;
 
 	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, List<Path> classesPaths,
-			@Nullable String mainClass, @Nullable String applicationClass, List<String> testClasses, List<String> classpath, @Nullable ClassLoader classLoader) throws IOException {
+			@Nullable String mainClass, @Nullable String applicationClass, List<String> testClasses, List<String> classpath,
+			@Nullable ClassLoader classLoader) throws IOException {
 		this.sourcesPath = sourcesPath;
 		this.resourcesPath = resourcesPath;
 		this.resourceFolders = resourceFolders;

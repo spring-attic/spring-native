@@ -52,9 +52,9 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class BootstrapCodeGenerator {
 
-	private static Log logger = LogFactory.getLog(BootstrapCodeGenerator.class);
+	private static final Log logger = LogFactory.getLog(BootstrapCodeGenerator.class);
 
-	private AotOptions aotOptions;
+	private final AotOptions aotOptions;
 
 	private final Set<Pattern> resourcePatternCache = new HashSet<>();
 
@@ -64,22 +64,21 @@ public class BootstrapCodeGenerator {
 
 	public void generate(AotPhase aotPhase, ApplicationStructure structure) throws IOException {
 		logger.debug("Starting code generation with classLoader: " + structure.getClassLoader());
-		DefaultBuildContext buildContext = new DefaultBuildContext(aotPhase, structure);
+		DefaultBuildContext buildContext = new DefaultBuildContext(structure);
 		generate(structure.getSourcesPath(), structure.getResourcesPath(), structure.getResourceFolders(), buildContext, aotPhase);
 	}
 
 	/**
-	 * Generate bootstrap code for the application.
+	 * Generate bootstrap code for the specified phase.
 	 *
 	 * @param sourcesPath the root path generated source files should be written to
 	 * @param resourcesPath the root path generated resource files should be written to
 	 * @param resourceFolders paths to folders containing project main resources
 	 * @param buildContext the build context for this application
-	 * @param aotPhase
+	 * @param aotPhase the {@link AotPhase} to use
 	 * @throws IOException if an I/O error is thrown when opening the resource folders
 	 */
 	private void generate(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, DefaultBuildContext buildContext, AotPhase aotPhase) throws IOException {
-
 		// TODO temporary whilst migrating the inferencing to Aot land
 		TypeSystem.setDefaultAotOptions(aotOptions);
 

@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.Nullable;
 
 /**
  * {@link BeanRegistrationWriterSupplier} for {@link ScopedProxyFactoryBean}.
@@ -43,6 +44,7 @@ class ScopedProxyBeanRegistrationWriterSupplier implements BeanRegistrationWrite
 
 	private static final Log logger = LogFactory.getLog(ScopedProxyBeanRegistrationWriterSupplier.class);
 
+	@Nullable
 	private ConfigurableBeanFactory beanFactory;
 
 	@Override
@@ -57,6 +59,7 @@ class ScopedProxyBeanRegistrationWriterSupplier implements BeanRegistrationWrite
 				? createScopedProxyBeanRegistrationWriter(beanName, beanDefinition) : null;
 	}
 
+	@Nullable
 	private BeanRegistrationWriter createScopedProxyBeanRegistrationWriter(String beanName, BeanDefinition beanDefinition) {
 		Object targetBeanName = beanDefinition.getPropertyValues().get("targetBeanName");
 		BeanDefinition targetBeanDefinition = getTargetBeanDefinition(targetBeanName);
@@ -82,10 +85,11 @@ class ScopedProxyBeanRegistrationWriterSupplier implements BeanRegistrationWrite
 		};
 	}
 
-	private BeanDefinition getTargetBeanDefinition(Object targetBeanName) {
+	@Nullable
+	private BeanDefinition getTargetBeanDefinition(@Nullable Object targetBeanName) {
 		if (targetBeanName instanceof String) {
 			String beanName = (String) targetBeanName;
-			if (this.beanFactory.containsBean(beanName)) {
+			if (this.beanFactory != null && this.beanFactory.containsBean(beanName)) {
 				return this.beanFactory.getMergedBeanDefinition(beanName);
 			}
 		}

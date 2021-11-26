@@ -69,7 +69,6 @@ public class BeanRegistrationWriterOptions {
 			return this;
 		}
 
-
 		public BeanRegistrationWriterOptions build() {
 			return new BeanRegistrationWriterOptions(this);
 		}

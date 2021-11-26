@@ -78,10 +78,12 @@ class InjectionPointWriter {
 		CodeBlock.Builder code = CodeBlock.builder();
 		Class<?> declaringType = ClassUtils.getUserClass(creator.getDeclaringClass());
 		boolean innerClass = isInnerClass(declaringType);
-		Class<?>[] parameterTypes = Arrays.stream(creator.getParameters()).map(Parameter::getType).toArray(Class<?>[]::new);
+		Class<?>[] parameterTypes = Arrays.stream(creator.getParameters()).map(Parameter::getType)
+				.toArray(Class<?>[]::new);
 		// Shortcut for common case
 		if (innerClass && parameterTypes.length == 1) {
-			code.add("context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
+			code.add("context.getBean($T.class).new $L()", declaringType.getEnclosingClass(),
+					declaringType.getSimpleName());
 			return code.build();
 		}
 		if (parameterTypes.length == 0) {
@@ -98,7 +100,8 @@ class InjectionPointWriter {
 
 		code.add(" ");
 		if (innerClass) {
-			code.add("context.getBean($T.class).new $L(", declaringType.getEnclosingClass(), declaringType.getSimpleName());
+			code.add("context.getBean($T.class).new $L(", declaringType.getEnclosingClass(),
+					declaringType.getSimpleName());
 		}
 		else {
 			code.add("new $T(", declaringType);

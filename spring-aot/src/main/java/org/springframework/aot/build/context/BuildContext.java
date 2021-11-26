@@ -35,9 +35,10 @@ import org.springframework.nativex.domain.serialization.SerializationDescriptor;
  */
 public interface BuildContext {
 
-	@Deprecated // for org.springframework.nativex.type.TypeSystem
+	@Deprecated
+		// for org.springframework.nativex.type.TypeSystem
 	List<String> getClasspath();
-	
+
 	/**
 	 * @return The {@link TypeSystem} based on the "compile+runtime" application classpath.
 	 */
@@ -53,7 +54,6 @@ public interface BuildContext {
 	 * Can be different from {@link #getMainClass()} for Kotlin applications for example.
 	 */
 	String getApplicationClass();
-
 
 	List<String> getTestClasses();
 

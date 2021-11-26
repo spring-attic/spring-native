@@ -15,6 +15,6 @@
  */
 
 /**
- * AOT native support.
+ * AOT infrastructure support.
  */
 package org.springframework.aot.context.bootstrap.generator.infrastructure;

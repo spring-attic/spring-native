@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.lang.Nullable;
 
 /**
  * Strategy interface to provide the bean registration writer for a {@link BeanDefinition}.
@@ -47,5 +48,6 @@ public interface BeanRegistrationWriterSupplier {
 	 * @return the {@link BeanRegistrationWriter} to use, or {@code null}
 	 * @see ConfigurableBeanFactory#getMergedBeanDefinition(String)
 	 */
+	@Nullable
 	BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition);
 }

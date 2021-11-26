@@ -55,7 +55,8 @@ public class BootstrapInfrastructureWriter {
 
 	private final ParameterWriter parameterWriter;
 
-	public BootstrapInfrastructureWriter(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext) {
+	public BootstrapInfrastructureWriter(ConfigurableListableBeanFactory beanFactory,
+			BootstrapWriterContext writerContext) {
 		this.beanFactory = beanFactory;
 		this.writerContext = writerContext;
 		this.parameterWriter = new ParameterWriter();

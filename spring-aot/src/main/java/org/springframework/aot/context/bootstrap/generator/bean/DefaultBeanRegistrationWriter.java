@@ -145,7 +145,8 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 	 * @param code the code builder to use
 	 */
 	protected void writeInstanceSupplier(Builder code) {
-		new DefaultBeanInstanceSupplierWriter(this.beanInstanceDescriptor, this.beanDefinition).writeInstanceSupplier(code);
+		new DefaultBeanInstanceSupplierWriter(this.beanInstanceDescriptor,
+				this.beanDefinition).writeInstanceSupplier(code);
 	}
 
 	void writeBeanRegistration(Builder code) {

@@ -67,7 +67,7 @@ class DefaultBuildContext implements BuildContext {
 
 	private final InitializationDescriptor initializationDescriptor = new InitializationDescriptor();
 
-	DefaultBuildContext(AotPhase aotPhase, ApplicationStructure applicationStructure) {
+	DefaultBuildContext(ApplicationStructure applicationStructure) {
 		this.mainClass = applicationStructure.getMainClass();
 		this.applicationClass = applicationStructure.getApplicationClass();
 		this.testClasses = applicationStructure.getTestClasses();

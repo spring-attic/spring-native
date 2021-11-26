@@ -52,8 +52,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Process an {@link ApplicationContext} and its {@link BeanFactory} to generate code that
- * represents the state of the factory, as well as the necessary configuration to run in
- * a native image.
+ * represents the state of the bean factory, as well as the necessary configuration to run
+ * the application context in a native image.
  *
  * @author Stephane Nicoll
  * @author Sebastien Deleuze
@@ -170,7 +170,6 @@ public class ApplicationContextAotProcessor {
 		if (instance instanceof BeanFactoryAware) {
 			((BeanFactoryAware) instance).setBeanFactory(context.getBeanFactory());
 		}
-
 	}
 
 }

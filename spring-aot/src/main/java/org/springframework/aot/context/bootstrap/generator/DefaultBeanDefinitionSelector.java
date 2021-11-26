@@ -41,12 +41,15 @@ public class DefaultBeanDefinitionSelector implements BeanDefinitionSelector {
 	public DefaultBeanDefinitionSelector(List<String> excludeTypes) {
 		this.excludeTypes = new ArrayList<>(excludeTypes);
 		this.excludedBeanNames = new HashSet<>();
+		// Configuration processing is happening at build time.
 		this.excludedBeanNames.add(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+
+		// Event listener registrations is done at build time
 		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.EVENT_LISTENER_FACTORY_BEAN_NAME);
 
-		// TODO Make a better split between the AOT and runtime parts otherwise too much reflection is required, so for now @Autowired on fields/setters and event listeners are not properly supported
+		// Injection points are processed at build time
 		this.excludedBeanNames.add(AnnotationConfigUtils.AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME);
 		this.excludedBeanNames.add(AnnotationConfigUtils.COMMON_ANNOTATION_PROCESSOR_BEAN_NAME);
 

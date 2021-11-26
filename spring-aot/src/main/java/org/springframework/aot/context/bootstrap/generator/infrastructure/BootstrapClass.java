@@ -28,8 +28,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 /**
- * Represent a class that provide registration for beans that are not available outside of
- * a particular package.
+ * Represent a class that provide registration for beans that are not available outside a
+ * particular package.
  *
  * @author Stephane Nicoll
  */

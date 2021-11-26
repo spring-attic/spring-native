@@ -67,10 +67,6 @@ class DefaultBeanInstanceSupplierWriter {
 	private void writeBeanInstantiation(Builder code, Constructor<?> constructor) {
 		Class<?> declaringType = ClassUtils.getUserClass(constructor.getDeclaringClass());
 		boolean innerClass = isInnerClass(declaringType);
-		List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(constructor.getParameterTypes()));
-		if (innerClass) { // Remove the implicit argument
-			parameterTypes.remove(0);
-		}
 		boolean multiStatements = !this.descriptor.getInjectionPoints().isEmpty();
 		int minArgs = isInnerClass(declaringType) ? 2 : 1;
 		// Shortcut for common case

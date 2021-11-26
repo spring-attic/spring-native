@@ -33,7 +33,8 @@ public class DefaultBeanRegistrationWriterSupplier extends AbstractBeanRegistrat
 	@Override
 	protected BeanRegistrationWriter createInstance(String beanName, BeanDefinition beanDefinition,
 			BeanInstanceDescriptor beanInstanceDescriptor) {
-		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanInstanceDescriptor, initializeOptions().build());
+		return new DefaultBeanRegistrationWriter(beanName, beanDefinition, beanInstanceDescriptor,
+				initializeOptions().build());
 	}
 
 }

@@ -30,8 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType.Unloaded;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.aop.framework.BuildTimeProxyDescriptor;
 import org.springframework.aop.framework.ProxyConfiguration;
 import org.springframework.aop.framework.ProxyGenerator;
@@ -49,20 +52,17 @@ import org.springframework.nativex.support.ConfigurationCollector;
 import org.springframework.nativex.support.SpringAnalyzer;
 import org.springframework.nativex.type.TypeSystem;
 
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType.Unloaded;
-
 /**
  * Contributes the configuration files for native image construction. This includes the reflection,
  * resource and proxy configuration in addition to the native-image.properties file that includes
  * special args and initialization configuration.
- * 
+ *
  * @author Andy Clement
  */
 public class ConfigurationContributor implements BootstrapContributor {
-	
-	private static Log logger = LogFactory.getLog(ConfigurationContributor.class);
-	
+
+	private static final Log logger = LogFactory.getLog(ConfigurationContributor.class);
+
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
 		TypeSystem typeSystem = new TypeSystem(context.getClasspath(), context.getMainClass());
@@ -77,22 +77,19 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.describeSerialization(serial -> serial.merge(configurationCollector.getSerializationDescriptor()));
 		context.describeJNIReflection(jniReflect -> jniReflect.merge(configurationCollector.getJNIReflectionDescriptor()));
 		context.describeInitialization(init -> init.merge(configurationCollector.getInitializationDescriptor()));
-		context.getOptions().forEach(option -> configurationCollector.addOption(option));
+		context.getOptions().forEach(configurationCollector::addOption);
 		String mainClass = getMainClass(context);
 		if (mainClass != null) {
 			configurationCollector.addOption("-H:Class=" + mainClass);
 		}
 		byte[] springComponentsFileContents = configurationCollector.getResources("META-INF/spring.components");
-		if (springComponentsFileContents!=null) {
+		if (springComponentsFileContents != null) {
 			logger.debug("Storing synthesized META-INF/spring.components");
-			context.addResources(new ResourceFile() {
-				@Override
-				public void writeTo(Path resourcesPath) throws IOException {
-					Path metaInfFolder = resourcesPath.resolve(Paths.get("META-INF"));
-					Files.createDirectories(metaInfFolder);
-					try (FileOutputStream fos = new FileOutputStream(resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
-						fos.write(springComponentsFileContents);
-					}
+			context.addResources((resourcesPath) -> {
+				Path metaInfFolder = resourcesPath.resolve(Paths.get("META-INF"));
+				Files.createDirectories(metaInfFolder);
+				try (FileOutputStream fos = new FileOutputStream(resourcesPath.resolve(ResourceFile.SPRING_COMPONENTS_PATH).toFile())) {
+					fos.write(springComponentsFileContents);
 				}
 			});
 		}
@@ -134,7 +131,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		logger.debug("Unable to find main class");
 		return null;
 	}
-	
+
 
 	/**
 	 * If the configuration has requested any class proxies to be constructed at build time, create them and register
@@ -144,7 +141,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		List<String> classProxyNames = generateBuildTimeClassProxies(configurationCollector, context);
 		ReflectionDescriptor reflectionDescriptor = new ReflectionDescriptor();
 		if (!classProxyNames.isEmpty()) {
-			for (String classProxyName: classProxyNames) {
+			for (String classProxyName : classProxyNames) {
 				ClassDescriptor classDescriptor = ClassDescriptor.of(classProxyName);
 				classDescriptor.setFlag(Flag.allDeclaredConstructors);
 				// TODO [build time proxies] not all proxy variants will need method access - depends on what
@@ -152,10 +149,10 @@ public class ConfigurationContributor implements BootstrapContributor {
 				classDescriptor.setFlag(Flag.allDeclaredMethods);
 				reflectionDescriptor.add(classDescriptor);
 			}
-			configurationCollector.addReflectionDescriptor(reflectionDescriptor, false);			
+			configurationCollector.addReflectionDescriptor(reflectionDescriptor, false);
 		}
 	}
-	
+
 	public List<String> generateBuildTimeClassProxies(ConfigurationCollector configurationCollector, BuildContext context) {
 		List<String> classProxyNames = new ArrayList<>();
 		Set<AotProxyDescriptor> classProxyDescriptors = configurationCollector.getClassProxyDescriptors();
@@ -164,73 +161,72 @@ public class ConfigurationContributor implements BootstrapContributor {
 				classProxyDescriptors.add((AotProxyDescriptor) proxyDescriptor);
 			}
 		}
-		for (AotProxyDescriptor classProxyDescriptor: classProxyDescriptors) {
-			if(context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {
-				logger.debug("Cannot reach class proxy target type of: "+classProxyDescriptor);
+		for (AotProxyDescriptor classProxyDescriptor : classProxyDescriptors) {
+			if (context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {
+				logger.debug("Cannot reach class proxy target type of: " + classProxyDescriptor);
 				continue;
 			}
 			classProxyNames.add(generateBuildTimeClassProxy(classProxyDescriptor, context));
 		}
 		return classProxyNames;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	private String generateBuildTimeClassProxy(AotProxyDescriptor cpd, BuildContext context) {
 		BuildTimeProxyDescriptor c = cpd.asCPDescriptor();
 		ProxyConfiguration proxyConfiguration = ProxyConfiguration.get(c, null);
 		List<String> classpath = context.getClasspath();
 		URL[] urls = new URL[classpath.size()];
-		for (int i=0;i<classpath.size();i++) {
+		for (int i = 0; i < classpath.size(); i++) {
 			try {
 				urls[i] = new File(classpath.get(i)).toURI().toURL();
-			} catch (MalformedURLException e) {
+			}
+			catch (MalformedURLException e) {
 				throw new IllegalStateException(e);
 			}
 		}
 		// TODO [build time proxies] is this parent OK?
-		URLClassLoader ucl = new URLClassLoader(urls,ConfigurationContributor.class.getClassLoader());
-		logger.debug("Creating build time class proxy for class "+c.getTargetClassType());
+		URLClassLoader ucl = new URLClassLoader(urls, ConfigurationContributor.class.getClassLoader());
+		logger.debug("Creating build time class proxy for class " + c.getTargetClassType());
 
 		Unloaded<?> unloadedProxy = ProxyGenerator.getProxyBytes(c, ucl);
-		
+
 		Path primaryProxyFilepath = Paths.get(proxyConfiguration.getProxyClassName().replace(".", "/") + ".class");
-		context.addResources(new ResourceFile() {
-			@Override
-			public void writeTo(Path resourcesPath) throws IOException {
-				Path primaryProxyRelativeFolder = primaryProxyFilepath.getParent();
-				Path primaryProxyFilename = primaryProxyFilepath.getFileName();
-				Path primaryProxyFolder = resourcesPath.resolve(primaryProxyRelativeFolder);
-				Files.createDirectories(primaryProxyFolder);
-				Path primaryProxyAbsolutePath = primaryProxyFolder.resolve(primaryProxyFilename);
-				logger.debug("Writing out build time class proxy as resource for type "+primaryProxyFilepath);
-				try (FileOutputStream fos = new FileOutputStream(primaryProxyAbsolutePath.toFile())) {
-					fos.write(unloadedProxy.getBytes());
-				}
+		context.addResources((resourcesPath) -> {
+			Path primaryProxyRelativeFolder = primaryProxyFilepath.getParent();
+			Path primaryProxyFilename = primaryProxyFilepath.getFileName();
+			Path primaryProxyFolder = resourcesPath.resolve(primaryProxyRelativeFolder);
+			Files.createDirectories(primaryProxyFolder);
+			Path primaryProxyAbsolutePath = primaryProxyFolder.resolve(primaryProxyFilename);
+			logger.debug("Writing out build time class proxy as resource for type " + primaryProxyFilepath);
+			try (FileOutputStream fos = new FileOutputStream(primaryProxyAbsolutePath.toFile())) {
+				fos.write(unloadedProxy.getBytes());
 			}
 		});
 		Map<TypeDescription, byte[]> auxiliaryTypes = unloadedProxy.getAuxiliaryTypes();
-		if (auxiliaryTypes!=null) {
-			for (Map.Entry<TypeDescription, byte[]> auxiliaryType: auxiliaryTypes.entrySet()) {
+		if (auxiliaryTypes != null) {
+			for (Map.Entry<TypeDescription, byte[]> auxiliaryType : auxiliaryTypes.entrySet()) {
 				context.addResources(new ProxyAuxResourceFile(auxiliaryType.getKey(), auxiliaryType.getValue()));
 			}
 		}
 		return proxyConfiguration.getProxyClassName();
 	}
-	
+
 	/**
 	 * Represents one of the auxiliary classes generated to support each method
 	 * invocation that needs delegation in a proxy class.
 	 */
 	static class ProxyAuxResourceFile implements ResourceFile {
-		
+
 		private Path auxProxyFilepath;
+
 		private byte[] data;
 
 		ProxyAuxResourceFile(TypeDescription td, byte[] data) {
 			this.data = data;
 			auxProxyFilepath = Paths.get(td.getName().replace(".", "/") + ".class");
 		}
-		
+
 		@Override
 		public void writeTo(Path resourcesPath) throws IOException {
 			Path auxProxyRelativeFolder = auxProxyFilepath.getParent();
@@ -238,11 +234,11 @@ public class ConfigurationContributor implements BootstrapContributor {
 			Path auxProxyFolder = resourcesPath.resolve(auxProxyRelativeFolder);
 			Files.createDirectories(auxProxyFolder);
 			Path auxProxyAbsolutePath = auxProxyFolder.resolve(auxProxyFilename);
-			logger.debug("Writing out build time class proxy support class as resource for type "+auxProxyFilepath);
+			logger.debug("Writing out build time class proxy support class as resource for type " + auxProxyFilepath);
 			try (FileOutputStream fos = new FileOutputStream(auxProxyAbsolutePath.toFile())) {
 				fos.write(data);
 			}
 		}
 	}
-	
+
 }
