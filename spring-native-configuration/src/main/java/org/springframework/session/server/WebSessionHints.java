@@ -16,13 +16,14 @@
 
 package org.springframework.session.server;
 
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.web.server.csrf.DefaultCsrfToken;
 import org.springframework.session.CommonSessionSerializables;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
+import org.springframework.util.ClassUtils;
 
 
 @NativeHint(trigger = SpringWebSessionConfiguration.class,
@@ -34,9 +35,8 @@ import org.springframework.session.config.annotation.web.server.SpringWebSession
 public class WebSessionHints implements NativeConfiguration {
 
     @Override
-    public boolean isValid(TypeSystem typeSystem) {
+    public boolean isValid(AotOptions aotOptions) {
         // Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(REACTIVE))
-        boolean usesWebSession = typeSystem.resolveName("org.springframework.web.server.WebSession", true) != null;
-        return usesWebSession;
+        return ClassUtils.isPresent("org.springframework.web.server.WebSession", null);
     }
 }

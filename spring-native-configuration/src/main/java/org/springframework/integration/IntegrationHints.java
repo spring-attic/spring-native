@@ -37,6 +37,7 @@ import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 
 @NativeHint(trigger = JdbcMessageStore.class,
 		resources = @ResourceHint(patterns = "org/springframework/integration/jdbc/schema-.*.sql"))
@@ -169,7 +170,7 @@ import org.springframework.nativex.type.TypeSystem;
 		initialization =
 		@InitializationHint(initTime = InitializationTime.BUILD,
 				types = org.springframework.integration.support.json.Jackson2JsonObjectMapper.class))
-public class IntegrationHints implements NativeConfiguration {
+public class IntegrationHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 
 	private static final String MESSAGING_GATEWAY_ANNOTATION =
 			"Lorg/springframework/integration/annotation/MessagingGateway;";

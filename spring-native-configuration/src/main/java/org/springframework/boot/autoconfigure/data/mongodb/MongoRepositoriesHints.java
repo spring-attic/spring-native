@@ -50,6 +50,8 @@ import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.TypeSystemNativeConfiguration;
+import org.springframework.util.ClassUtils;
 
 
 @NativeHint(trigger = MongoRepositoriesAutoConfiguration.class, types = {
@@ -83,12 +85,12 @@ import org.springframework.nativex.type.TypeSystem;
 				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
 		}
 )
-public class MongoRepositoriesHints implements NativeConfiguration {
+public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 
-		if (!typeSystem.canResolve("org/springframework/data/mongodb/core/mapping/Document")) {
+		if (!ClassUtils.isPresent("org.springframework.data.mongodb.core.mapping.Document", null)) {
 			return Collections.emptyList();
 		}
 

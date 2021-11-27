@@ -34,6 +34,7 @@ import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
 import org.springframework.boot.logging.logback.ColorConverter;
 import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter;
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -42,7 +43,7 @@ import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.ResourcesDescriptor;
-import org.springframework.nativex.type.TypeSystem;
+import org.springframework.util.ClassUtils;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
 // TODO Initialize ch.qos.logback.classic.PatternLayout at build time?
@@ -64,10 +65,10 @@ import org.springframework.nativex.type.TypeSystem;
 public class LogbackHints implements NativeConfiguration {
 
         @Override
-        public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-                if (!typeSystem.aotOptions.isRemoveXmlSupport() &&
-                        (typeSystem.resolveDotted("org.codehaus.janino.ScriptEvaluator", true) != null) &&
-                        (typeSystem.resolveDotted("ch.qos.logback.classic.Level", true) != null)) {
+        public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+                if (!aotOptions.isRemoveXmlSupport() &&
+                        ClassUtils.isPresent("org.codehaus.janino.ScriptEvaluator", null) &&
+                        ClassUtils.isPresent("ch.qos.logback.classic.Level", null)) {
                         HintDeclaration hint = new HintDeclaration();
                         hint.addDependantType("org.codehaus.janino.ScriptEvaluator", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
                         AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS);

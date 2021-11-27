@@ -19,20 +19,22 @@ package org.springframework.nativex.type;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.nativex.AotOptions;
+
 /**
  * 
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public interface NativeConfiguration {
 	
-	default List<HintDeclaration> computeHints(TypeSystem typeSystem) { return Collections.emptyList(); }
+	default List<HintDeclaration> computeHints(AotOptions aotOptions) { return Collections.emptyList(); }
 	
 	/**
 	 * Implementing this method enables hints on the @NativeConfiguration implementation to be
 	 * conditional on some programmatic test.
-	 * 
-	 * @param typeSystem a type system which can be used to query types available in the closed world
+	 *
 	 * @return {@code true} if the hints on this configuration are valid
 	 */
-	default boolean isValid(TypeSystem typeSystem) { return true; }
+	default boolean isValid(AotOptions aotOptions) { return true; }
 }

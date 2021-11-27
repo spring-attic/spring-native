@@ -23,6 +23,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -30,7 +31,6 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.TypeSystem;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -50,6 +50,7 @@ import org.springframework.security.authentication.event.AuthenticationFailurePr
 import org.springframework.security.authentication.event.AuthenticationFailureServiceExceptionEvent;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
+import org.springframework.util.ClassUtils;
 
 @NativeHint(trigger=SecurityAutoConfiguration.class, types = {
 		@TypeHint(
@@ -86,9 +87,9 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 }, resources = @ResourceHint(patterns = "org.springframework.security.messages", isBundle = true))
 public class SecurityHints implements NativeConfiguration {
 	@Override
-	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		boolean javaxServletFilterAround = typeSystem.resolveDotted("javax.servlet.Filter",true) != null;
-		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = typeSystem.resolveDotted("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",true) != null;
+	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+		boolean javaxServletFilterAround = ClassUtils.isPresent("javax.servlet.Filter",null);
+		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = ClassUtils.isPresent("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",null);
 		if (javaxServletFilterAround && autowiredWebSecurityConfigurersIgnoreParentsAround) {
 			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
 			HintDeclaration hd = new HintDeclaration();

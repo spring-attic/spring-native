@@ -28,6 +28,7 @@ import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -36,7 +37,6 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.ResourcesDescriptor;
-import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
@@ -52,8 +52,8 @@ import org.springframework.nativex.type.TypeSystem;
 })
 public class JdbcHints implements NativeConfiguration {
 	@Override
-	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		if (!typeSystem.shouldRemoveXmlSupport()) {
+	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+		if (!aotOptions.isRemoveXmlSupport()) {
 			HintDeclaration ch = new HintDeclaration();
 			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
 			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);

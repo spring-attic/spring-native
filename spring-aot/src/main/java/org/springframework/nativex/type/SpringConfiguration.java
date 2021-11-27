@@ -45,7 +45,7 @@ public class SpringConfiguration {
 		for (NativeConfiguration hintProvider: hintProviders) {
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
-				boolean valid = hintProvider.isValid(typeSystem);
+				boolean valid = hintProvider.isValid(typeSystem.aotOptions);
 				if (!valid) {
 					logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName()+" - isValid() check says they should not apply");
 					continue;
@@ -53,7 +53,10 @@ public class SpringConfiguration {
 				List<HintDeclaration> hints = new ArrayList<>();
 				hints.addAll(t.getCompilationHints());
 				try {
-					hints.addAll(hintProvider.computeHints(typeSystem));
+					hints.addAll(hintProvider.computeHints(typeSystem.aotOptions));
+					if (hintProvider instanceof TypeSystemNativeConfiguration) {
+						hints.addAll(((TypeSystemNativeConfiguration) hintProvider).computeHints(typeSystem));
+					}
 				} catch (NoClassDefFoundError ncdfe) {
 					System.out.println("WARNING: Hint provider computeHints() method in "+
 						hintProvider.getClass().getName()+" threw a NoClassDefFoundError for "+ncdfe.getMessage()+

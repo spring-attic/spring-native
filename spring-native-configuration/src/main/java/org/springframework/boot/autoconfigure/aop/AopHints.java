@@ -35,6 +35,7 @@ import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
+import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -42,8 +43,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.type.Type;
-import org.springframework.nativex.type.TypeSystem;
+import org.springframework.util.ClassUtils;
 
 @NativeHint(trigger = AopAutoConfiguration.AspectJAutoProxyingConfiguration.class,
 	types = {
@@ -68,9 +68,8 @@ import org.springframework.nativex.type.TypeSystem;
 }, access = AccessBits.ANNOTATION))
 public class AopHints implements NativeConfiguration { 
 	@Override
-	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-		Type aspectType = typeSystem.resolve("org/aspectj/lang/annotation/Aspect", true);
-		if (aspectType != null) {
+	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+		if (ClassUtils.isPresent("org.aspectj.lang.annotation.Aspect", null)) {
 			HintDeclaration hintDeclaration = new HintDeclaration();
 			hintDeclaration.setTriggerTypename("org.springframework.boot.autoconfigure.aop.AopAutoConfiguration");
 			hintDeclaration.addDependantType("org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator",

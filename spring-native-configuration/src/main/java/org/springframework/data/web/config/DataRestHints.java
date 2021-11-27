@@ -32,8 +32,6 @@ import org.springframework.hateoas.config.HateoasHints;
 import org.springframework.hateoas.mediatype.hal.HalMediaTypeConfiguration;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.InitializationHint;
-import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -42,6 +40,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeName;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.TypeSystemNativeConfiguration;
+
 import reactor.core.publisher.Flux;
 
 @NativeHint(trigger = RepositoryRestMvcAutoConfiguration.class, types = {
@@ -88,7 +88,7 @@ import reactor.core.publisher.Flux;
 		}
 
 )
-public class DataRestHints implements NativeConfiguration {
+public class DataRestHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 
 	private static final String BASE_PATH_AWARE_CONTROLLER = "Lorg/springframework/data/rest/webmvc/BasePathAwareController;";
 	private static final String REPOSITORY_REST_CONFIGURER = "org/springframework/data/rest/webmvc/config/RepositoryRestConfigurer";
@@ -114,7 +114,6 @@ public class DataRestHints implements NativeConfiguration {
 	 * Compute {@link HintDeclaration hints} for all types that extend org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer.
 	 * like "org.springframework.boot.autoconfigure.data.rest.SpringBootRepositoryRestConfigurer"
 	 *
-	 * @param typeSystem must not be {@literal null}.
 	 * @return never {@literal null}.
 	 */
 	private List<HintDeclaration> computeRepositoryRestConfigurer(TypeSystem typeSystem) {
@@ -137,7 +136,6 @@ public class DataRestHints implements NativeConfiguration {
 	 * Compute {@link HintDeclaration hints} for all types (meta)annotated with @BasePathAwareController.
 	 * Not interested in any fields reachable from these types but inspecting the methods for web-bind annotations.
 	 *
-	 * @param typeSystem must not be {@literal null}.
 	 * @return never {@literal null}.
 	 */
 	private List<HintDeclaration> computeRestControllerHints(TypeSystem typeSystem) {
@@ -161,7 +159,6 @@ public class DataRestHints implements NativeConfiguration {
 	 * Compute {@link HintDeclaration hints} for all types (meta)annotated with @RepositoryRestResource.
 	 * Extract the excerptProjection and register types as well as proxy configuration.
 	 *
-	 * @param typeSystem must not be {@literal null}.
 	 * @return never {@literal null}.
 	 */
 	private List<HintDeclaration> computeExcerptProjectionHints(TypeSystem typeSystem) {

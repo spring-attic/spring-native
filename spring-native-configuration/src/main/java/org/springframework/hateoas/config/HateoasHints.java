@@ -57,7 +57,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeProcessor;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 import org.springframework.plugin.PluginHints;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 @NativeHint(trigger = HalConfiguration.class,
@@ -108,7 +110,7 @@ import org.springframework.util.StringUtils;
 				JacksonHints.class,
 		}
 )
-public class HateoasHints implements NativeConfiguration {
+public class HateoasHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 
 	private static final String ENTITY_LINKS = "org/springframework/hateoas/server/EntityLinks";
 	private static final String JACKSON_ANNOTATION = "Lcom/fasterxml/jackson/annotation/JacksonAnnotation;";
@@ -117,7 +119,7 @@ public class HateoasHints implements NativeConfiguration {
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
 
-		if (!typeSystem.canResolve("org/springframework/hateoas/config/EnableHypermediaSupport")) {
+		if (!ClassUtils.isPresent("org.springframework.hateoas.config.EnableHypermediaSupport", null)) {
 			return Collections.emptyList();
 		}
 
