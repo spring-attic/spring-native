@@ -29,7 +29,6 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.nativex.type.AccessChecker;
 import org.springframework.nativex.type.AccessDescriptor;
 
 
@@ -139,22 +138,6 @@ public class ReflectionHandler extends Handler {
 		if (!silent) {
 			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
 		}
-		List<AccessChecker> accessCheckers = ts.getAccessCheckers();
-		for (AccessChecker accessChecker: accessCheckers) {
-			boolean isOK = accessChecker.check(ts, typename);
-			if (!isOK) {
-				logger.debug(typename+" discarded due to access check by "+accessChecker.getClass().getName());
-				return;
-			}
-		}
-		// This can return null if, for example, the supertype of the specified type is
-		// not on the classpath. In a simple app there may be a number of types coming in
-		// from spring-boot-autoconfigure but they extend types not on the classpath.
-//		Class<?> type = rra.resolveType(typename);
-//		if (type == null) {
-//			logger.info("WARNING: Possible problem, cannot resolve " + typename);
-//			return null;
-//		}
 		
 		ClassDescriptor cd = ClassDescriptor.of(typename);
 		if (typeReachable != null && !ts.resolveDotted(typeReachable).isAnnotation()) {

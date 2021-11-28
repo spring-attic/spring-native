@@ -26,7 +26,6 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.Flag;
-import org.springframework.nativex.type.AccessChecker;
 import org.springframework.nativex.type.AccessDescriptor;
 
 /**
@@ -94,14 +93,6 @@ public class JNIReflectionHandler extends Handler {
 	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
 		if (!silent) {
 			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
-		}
-		List<AccessChecker> accessCheckers = ts.getAccessCheckers();
-		for (AccessChecker accessChecker: accessCheckers) {
-			boolean isOK = accessChecker.check(ts, typename);
-			if (!isOK) {
-				logger.debug(typename+" discarded due to access check by "+accessChecker.getClass().getName());
-				return;
-			}
 		}
 		
 		ClassDescriptor cd = ClassDescriptor.of(typename);

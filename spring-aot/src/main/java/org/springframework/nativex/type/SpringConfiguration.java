@@ -39,8 +39,6 @@ public class SpringConfiguration {
 
 	private final Map<String, List<HintDeclaration>> proposedHints = new HashMap<>();
 	
-	private final List<AccessChecker> accessVerifiers = new ArrayList<>();
-	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		logger.debug("SpringConfiguration: Discovering hints");
 		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
@@ -82,12 +80,6 @@ public class SpringConfiguration {
 				}
 			}
 		}
-		logger.debug("Discovering access verifiers...");
-		ServiceLoader<AccessChecker> avs = ServiceLoader.load(AccessChecker.class);
-		for (AccessChecker av: avs) {
-			logger.debug("SpringConfiguration: found access verifier: "+av.getClass().getName());
-			accessVerifiers.add(av);
-		}
 	}
 
 	static {
@@ -109,10 +101,6 @@ public class SpringConfiguration {
 	
 	public Map<String, List<HintDeclaration>> getProposedhints() {
 		return proposedHints;
-	}
-	
-	public List<AccessChecker> getAccessVerifiers() {
-		return accessVerifiers;
 	}
 	
 	public static String[] findProposedFactoryGuards(String key) {

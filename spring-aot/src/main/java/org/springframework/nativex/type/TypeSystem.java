@@ -1307,11 +1307,6 @@ import org.springframework.util.Assert;
 			return false;
 		}
 	}
-
-	public List<AccessChecker> getAccessCheckers() {
-		ensureSpringConfigurationDiscovered();
-		return hintLocator.getAccessVerifiers();
-	}
 	
 	public synchronized Map<String,List<String>> getSpringClassesMakingIsPresentChecks() {
 		if (typesMakingIsPresentChecksInStaticInitializers == null) {
