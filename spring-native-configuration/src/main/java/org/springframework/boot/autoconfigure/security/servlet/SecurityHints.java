@@ -16,21 +16,18 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.AotOptions;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -48,6 +45,7 @@ import org.springframework.security.authentication.event.AuthenticationFailureLo
 import org.springframework.security.authentication.event.AuthenticationFailureProviderNotFoundEvent;
 import org.springframework.security.authentication.event.AuthenticationFailureProxyUntrustedEvent;
 import org.springframework.security.authentication.event.AuthenticationFailureServiceExceptionEvent;
+import org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 import org.springframework.util.ClassUtils;
@@ -87,16 +85,12 @@ import org.springframework.util.ClassUtils;
 }, resources = @ResourceHint(patterns = "org.springframework.security.messages", isBundle = true))
 public class SecurityHints implements NativeConfiguration {
 	@Override
-	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+	public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {
 		boolean javaxServletFilterAround = ClassUtils.isPresent("javax.servlet.Filter",null);
 		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = ClassUtils.isPresent("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",null);
 		if (javaxServletFilterAround && autowiredWebSecurityConfigurersIgnoreParentsAround) {
 			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
-			HintDeclaration hd = new HintDeclaration();
-			hd.addDependantType("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",
-					new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS));
-			return Collections.singletonList(hd);
+			registry.reflection().forType(AutowiredWebSecurityConfigurersIgnoreParents.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
 		}
-		return Collections.emptyList();
 	}
 }

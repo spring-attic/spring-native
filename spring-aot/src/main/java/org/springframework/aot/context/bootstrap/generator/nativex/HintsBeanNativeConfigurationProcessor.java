@@ -79,7 +79,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 		SerializationConfiguration serializationConfiguration = registry.serialization();
 		ReflectionConfiguration jniConfiguration = registry.jni();
 
-		List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem().findHints(beanType.getName());
+		List<HintDeclaration> hints = TypeSystem.getClassLoaderBasedTypeSystem(registry).findHints(beanType.getName());
 		if (hints != null) {
 			for (HintDeclaration hint : hints) {
 				try {

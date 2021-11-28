@@ -16,10 +16,6 @@
 
 package org.springframework.boot.logging;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.DateConverter;
 import ch.qos.logback.classic.pattern.LevelConverter;
@@ -30,19 +26,21 @@ import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.pattern.ThreadConverter;
 import ch.qos.logback.core.rolling.helper.DateTokenConverter;
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
+import org.codehaus.janino.ScriptEvaluator;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry.ReflectionConfiguration;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.boot.logging.logback.ColorConverter;
 import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter;
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.type.ResourcesDescriptor;
 import org.springframework.util.ClassUtils;
 
 // TODO Send a PR to Logback to remove reflection usage in ch.qos.logback.classic.PatternLayout
@@ -65,27 +63,26 @@ import org.springframework.util.ClassUtils;
 public class LogbackHints implements NativeConfiguration {
 
         @Override
-        public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+        public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {
                 if (!aotOptions.isRemoveXmlSupport() &&
                         ClassUtils.isPresent("org.codehaus.janino.ScriptEvaluator", null) &&
                         ClassUtils.isPresent("ch.qos.logback.classic.Level", null)) {
-                        HintDeclaration hint = new HintDeclaration();
-                        hint.addDependantType("org.codehaus.janino.ScriptEvaluator", new AccessDescriptor(AccessBits.LOAD_AND_CONSTRUCT));
-                        AccessDescriptor accessDescriptor = new AccessDescriptor(AccessBits.PUBLIC_CONSTRUCTORS | AccessBits.PUBLIC_METHODS);
-                        hint.addDependantType("ch.qos.logback.classic.encoder.PatternLayoutEncoder", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.ConsoleAppender", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.rolling.RollingFileAppender", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.rolling.FixedWindowRollingPolicy", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.rolling.TimeBasedRollingPolicy", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy", accessDescriptor);
-                        hint.addDependantType("ch.qos.logback.core.util.FileSize", accessDescriptor);
-                        hint.addResourcesDescriptor(new ResourcesDescriptor(new String[]{
-                                "org/springframework/boot/logging/logback/defaults.xml",
-                                "org/springframework/boot/logging/logback/console-appender.xml",
-                                "org/springframework/boot/logging/logback/file-appender.xml"}, false));
-                        return Arrays.asList(hint);
+
+                        ReflectionConfiguration reflection = registry.reflection();
+                        reflection.forType(ScriptEvaluator.class).withFlags(Flag.allPublicConstructors);
+                        reflection.forType(ch.qos.logback.classic.encoder.PatternLayoutEncoder.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.ConsoleAppender.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.rolling.RollingFileAppender.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.rolling.FixedWindowRollingPolicy.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.rolling.TimeBasedRollingPolicy.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+                        reflection.forType(ch.qos.logback.core.util.FileSize.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+
+                        registry.resources()
+                                .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/defaults.xml"))
+                                .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/console-appender.xml"))
+                                .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/file-appender.xml"));
                 }
-                return Collections.emptyList();
         }
 }

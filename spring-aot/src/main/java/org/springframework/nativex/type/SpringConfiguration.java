@@ -26,6 +26,8 @@ import java.util.ServiceLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+
 /**
  * @author Andy Clement
  */
@@ -45,7 +47,7 @@ public class SpringConfiguration {
 		for (NativeConfiguration hintProvider: hintProviders) {
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
-				boolean valid = hintProvider.isValid(typeSystem.aotOptions);
+				boolean valid = hintProvider.isValid(typeSystem.getAotOptions());
 				if (!valid) {
 					logger.debug("SpringConfiguration: processing provider: "+hintProvider.getClass().getName()+" - isValid() check says they should not apply");
 					continue;
@@ -53,7 +55,10 @@ public class SpringConfiguration {
 				List<HintDeclaration> hints = new ArrayList<>();
 				hints.addAll(t.getCompilationHints());
 				try {
-					hints.addAll(hintProvider.computeHints(typeSystem.aotOptions));
+					NativeConfigurationRegistry registry = typeSystem.getRegistry();
+					if (registry != null) {
+						hintProvider.computeHints(registry, typeSystem.getAotOptions());
+					}
 					if (hintProvider instanceof TypeSystemNativeConfiguration) {
 						hints.addAll(((TypeSystemNativeConfiguration) hintProvider).computeHints(typeSystem));
 					}

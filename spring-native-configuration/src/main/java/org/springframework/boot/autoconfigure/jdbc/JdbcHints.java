@@ -25,6 +25,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.util.ConcurrentBag.IConcurrentBagEntry;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikari;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
@@ -52,14 +54,9 @@ import org.springframework.nativex.type.ResourcesDescriptor;
 })
 public class JdbcHints implements NativeConfiguration {
 	@Override
-	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
+	public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {
 		if (!aotOptions.isRemoveXmlSupport()) {
-			HintDeclaration ch = new HintDeclaration();
-			// Referenced from org.springframework.jdbc.support.SQLErrorCodesFactory
-			ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
-			ch.addResourcesDescriptor(sqlErrorCodes);
-			return Collections.singletonList(ch);
+			registry.resources().add(NativeResourcesEntry.of("org/springframework/jdbc/support/sql-error-codes.xml"));
 		}
-		return Collections.emptyList();
 	}
 }

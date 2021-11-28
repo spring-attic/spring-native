@@ -36,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.TypeSystem;
 

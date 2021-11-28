@@ -16,25 +16,32 @@
 
 package org.springframework.nativex.type;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.AotOptions;
 
 /**
+ * Marker interface for class annotated with {@link org.springframework.nativex.hint.NativeHint} and related annotations,
+ * and provide an SPI for providing programmatic hints when declarative annotations are not flexible enough.
  * 
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
 public interface NativeConfiguration {
-	
-	default List<HintDeclaration> computeHints(AotOptions aotOptions) { return Collections.emptyList(); }
-	
+
 	/**
-	 * Implementing this method enables hints on the @NativeConfiguration implementation to be
+	 * Implementing this method enables hints on the {@code @NativeConfiguration} implementation to be
 	 * conditional on some programmatic test.
 	 *
-	 * @return {@code true} if the hints on this configuration are valid
+	 * @param aotOptions the AOT options configured for this build.
+	 * @return {@code true} if the hints on this configuration should apply.
 	 */
 	default boolean isValid(AotOptions aotOptions) { return true; }
+
+	/**
+	 *
+	 * @param registry the registry that allows to register native configuration.
+	 * @param aotOptions the AOT options configured for this build.
+	 */
+	default void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) { return; }
+
 }

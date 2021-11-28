@@ -62,6 +62,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
@@ -77,7 +78,7 @@ import org.springframework.util.Assert;
  * 
  * @author Andy Clement
  */
-public class TypeSystem {
+		public class TypeSystem {
 
 	private static Log logger = LogFactory.getLog(TypeSystem.class);
 
@@ -114,18 +115,21 @@ public class TypeSystem {
 	// of (the parameters to the isPresent calls)
 	private Map<String,List<String>> typesMakingIsPresentChecksInStaticInitializers;
 	
-	public AotOptions aotOptions;
+	private AotOptions aotOptions;
 
-	private String mainClass;
+	private final String mainClass;
+
+	private NativeConfigurationRegistry registry;
 	 
 	private static TypeSystem withClassloaderResolution;
 	private static AotOptions defaultAotOptions = new AotOptions();
 	
 	// TODO temporary until we switch out the need for TS altogether
-	public static TypeSystem getClassLoaderBasedTypeSystem() {
+	public static TypeSystem getClassLoaderBasedTypeSystem(NativeConfigurationRegistry registry) {
 		if (withClassloaderResolution== null) {
 			withClassloaderResolution = new TypeSystem(Collections.emptyList());
 			withClassloaderResolution.setAotOptions(defaultAotOptions);
+			withClassloaderResolution.setRegistry(registry);
 		}
 		return withClassloaderResolution;
 	}
@@ -149,7 +153,15 @@ public class TypeSystem {
 		Assert.notNull(aotOptions, "AotOptions should not be null");
 		defaultAotOptions = aotOptions;
 	}
-	
+
+	public NativeConfigurationRegistry getRegistry() {
+		return this.registry;
+	}
+
+
+	public void setRegistry(NativeConfigurationRegistry registry) {
+		this.registry = registry;
+	}
 	/**
 	 * Resolve the {@link Type} from this {@code TypeSystem} classpath,
 	 * returning {@code null} if not found.
@@ -1692,6 +1704,10 @@ public class TypeSystem {
 
 	public boolean shouldRemoveXmlSupport() {
 		return this.aotOptions.isRemoveXmlSupport();
+	}
+
+	public AotOptions getAotOptions() {
+		return aotOptions;
 	}
 
 	public void setAotOptions(AotOptions aotOptions) {

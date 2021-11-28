@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
@@ -39,7 +40,6 @@ import org.springframework.nativex.type.Field;
 import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
-//import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

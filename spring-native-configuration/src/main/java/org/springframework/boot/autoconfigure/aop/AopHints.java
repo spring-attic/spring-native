@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.aop;
 
 import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.List;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -30,21 +28,27 @@ import org.aspectj.weaver.reflect.Java15AnnotationFinder;
 import org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider;
 import org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate;
 
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.ProxyConfig;
 import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
-import org.springframework.nativex.AotOptions;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.AccessDescriptor;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.util.ClassUtils;
 
+@NativeHint(trigger = AopAutoConfiguration.class, types = {
+		@TypeHint(types = {
+				AnnotationAwareAspectJAutoProxyCreator.class,
+				AspectJAwareAdvisorAutoProxyCreator.class,
+				EnableAspectJAutoProxy.class
+		}, access = AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
+})
 @NativeHint(trigger = AopAutoConfiguration.AspectJAutoProxyingConfiguration.class,
 	types = {
 		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access=AccessBits.DECLARED_FIELDS|AccessBits.PUBLIC_METHODS),
@@ -66,20 +70,5 @@ import org.springframework.util.ClassUtils;
 		After.class,
 		Around.class
 }, access = AccessBits.ANNOTATION))
-public class AopHints implements NativeConfiguration { 
-	@Override
-	public List<HintDeclaration> computeHints(AotOptions aotOptions) {
-		if (ClassUtils.isPresent("org.aspectj.lang.annotation.Aspect", null)) {
-			HintDeclaration hintDeclaration = new HintDeclaration();
-			hintDeclaration.setTriggerTypename("org.springframework.boot.autoconfigure.aop.AopAutoConfiguration");
-			hintDeclaration.addDependantType("org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator",
-				new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
-			hintDeclaration.addDependantType("org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator",
-				new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
-			hintDeclaration.addDependantType("org.springframework.context.annotation.EnableAspectJAutoProxy",
-					new AccessDescriptor(AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS));
-			return Collections.singletonList(hintDeclaration);
-		}
-		return Collections.emptyList();
-	}
+public class AopHints implements NativeConfiguration {
 }
