@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.BeanDefinitionPostProcessor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.test.context.ContextCustomizerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,6 +62,7 @@ class IgnoredFactoriesCodeContributorTests {
 				springFactory(BeanDefinitionPostProcessor.class),
 				springFactory(BeanRegistrationWriterSupplier.class),
 				springFactory(BeanDefinitionOriginAnalyzer.class),
+				springFactory(NativeConfiguration.class),
 				springFactory(ContextCustomizerFactory.class,
 						"org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory"),
 				springFactory(ContextCustomizerFactory.class,

@@ -21,15 +21,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public class SpringConfiguration {
 
@@ -41,7 +42,7 @@ public class SpringConfiguration {
 	
 	public SpringConfiguration(TypeSystem typeSystem) {
 		logger.debug("SpringConfiguration: Discovering hints");
-		ServiceLoader<NativeConfiguration> hintProviders = ServiceLoader.load(NativeConfiguration.class);
+		List<NativeConfiguration> hintProviders = SpringFactoriesLoader.loadFactories(NativeConfiguration.class, null);
 		for (NativeConfiguration hintProvider: hintProviders) {
 			Type t = typeSystem.resolveName(hintProvider.getClass().getName());
 			if (t != null) {
