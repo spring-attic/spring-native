@@ -220,10 +220,10 @@ To remote debug this process, you can set a debug System property on the command
 .Maven
 ----
 $ # use the port 8000 by default
-$ mvn -Pnative spring-aot:generate -Dspring.aot.debug=true
+$ mvn spring-aot:generate -Dspring.aot.debug=true
 $ # configure custom debug options
-$ mvn -Pnative spring-aot:generate -Dspring.aot.debug=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
-$ mvn -Pnative spring-aot:generate -Dspring.aot.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9000 -Xnoagent"
+$ mvn spring-aot:generate -Dspring.aot.debug=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
+$ mvn spring-aot:generate -Dspring.aot.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9000 -Xnoagent"
 ----
 [source,bash,role="secondary"]
 .Gradle
@@ -232,6 +232,21 @@ $ # use the port 5005 by default
 $ ./gradlew generateAot -Dspring.aot.debug=true
 $ # configure a custom port
 $ ./gradlew generateAot -Dspring.aot.debug=true -Dspring.aot.debug.port=9000
+----
+
+If the need to debug the plugins that are involved before the source generation, use the regular related commands:
+
+[source,bash,role="primary"]
+.Maven
+----
+$ # use the port 8000 by default
+$ mvnDebug spring-aot:generate
+----
+[source,bash,role="secondary"]
+.Gradle
+----
+$ # use the port 5005 by default
+$ ./gradlew generateAot -Dorg.gradle.debug=true --no-daemon
 ----
 
 
