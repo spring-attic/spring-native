@@ -17,14 +17,11 @@
 package org.springframework.aot.factories;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import org.springframework.aot.build.context.BuildContext;
-import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.factories.fixtures.PublicFactory;
 import org.springframework.aot.factories.fixtures.TestFactory;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,30 +31,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@ExtendWith(TypeSystemExtension.class)
 class DefaultFactoriesCodeContributorTests {
 
 	DefaultFactoriesCodeContributor contributor = new DefaultFactoriesCodeContributor(new AotOptions());
 
 	@Test
-	void shouldContributeWhenPublicConstructor(TypeSystem typeSystem) {
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), typeSystem);
+	void shouldContributeWhenPublicConstructor() {
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), DefaultFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isTrue();
 	}
 
 	@Test
-	void shouldNotContributeWhenPublicConstructorNotAvailable(TypeSystem typeSystem) throws Exception {
+	void shouldNotContributeWhenPublicConstructorNotAvailable() throws Exception {
 		Class<?> protectedClass = getClass().getClassLoader()
 			.loadClass("org.springframework.aot.factories.fixtures.ProtectedFactory");
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(),
-				"org.springframework.aot.factories.fixtures.ProtectedFactory", typeSystem);
+				"org.springframework.aot.factories.fixtures.ProtectedFactory", DefaultFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isFalse();
 	}
 
 	@Test
-	void shouldContributeStaticStatement(TypeSystem typeSystem) {
+	void shouldContributeStaticStatement() {
 		CodeGenerator code = new CodeGenerator(new AotOptions());
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), typeSystem);
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), DefaultFactoriesCodeContributorTests.class.getClassLoader());
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.aot.factories.fixtures.TestFactory.class, " +
@@ -65,9 +61,9 @@ class DefaultFactoriesCodeContributorTests {
 	}
 
 	@Test
-	void shouldContributeStaticStatementForInnerClass(TypeSystem typeSystem) {
+	void shouldContributeStaticStatementForInnerClass() {
 		CodeGenerator code = new CodeGenerator(new AotOptions());
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.InnerFactory.class.getName(), typeSystem);
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.InnerFactory.class.getName(), DefaultFactoriesCodeContributorTests.class.getClassLoader());
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("factories.add(org.springframework.aot.factories.fixtures.TestFactory.class, " +

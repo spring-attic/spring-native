@@ -62,18 +62,18 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
 		// No-op, ignored.
-		logger.debug("Skip build time factory Type:" + factory.getFactory().getClassName());
+		logger.debug("Skip build time factory Type:" + factory.getFactory().getName());
 	}
 
 	private static Predicate<SpringFactory> factoryTypes(String... factoryTypes) {
 		List<String> candidates = Arrays.asList(factoryTypes);
-		return (springFactory) -> candidates.contains(springFactory.getFactoryType().getClassName());
+		return (springFactory) -> candidates.contains(springFactory.getFactoryType().getName());
 	}
 
 	private static Predicate<SpringFactory> factoriesInPackages(String... packageNames) {
 		return (springFactory) -> {
 			for (String packageName : packageNames) {
-				if (springFactory.getFactoryType().getClassName().startsWith(packageName)) {
+				if (springFactory.getFactoryType().getName().startsWith(packageName)) {
 					return true;
 				}
 			}
@@ -84,7 +84,7 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 	private static Predicate<SpringFactory> factoryEntry(String factoryType, String... factoryImplementations) {
 		List<String> candidateImplementations = Arrays.asList(factoryImplementations);
 		return factoryTypes(factoryType).and((springFactory) ->
-				candidateImplementations.contains(springFactory.getFactory().getClassName()));
+				candidateImplementations.contains(springFactory.getFactory().getName()));
 	}
 
 }

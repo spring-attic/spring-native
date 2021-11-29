@@ -35,7 +35,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +43,7 @@ import org.springframework.util.StringUtils;
  * Currently this is supported by a substitution on {@link SpringFactoriesLoader}.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public class SpringFactoriesContributor implements BootstrapContributor {
 
@@ -57,7 +57,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
 		try {
-			Set<SpringFactory> springFactories = loadSpringFactories(context.getTypeSystem());
+			Set<SpringFactory> springFactories = loadSpringFactories(context);
 			FactoriesCodeContributors contributors = new FactoriesCodeContributors(aotOptions);
 			CodeGenerator codeGenerator = contributors.createCodeGenerator(springFactories, context, aotOptions);
 
@@ -74,10 +74,10 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 		}
 	}
 
-	Set<SpringFactory> loadSpringFactories(TypeSystem typeSystem) throws IOException {
+	Set<SpringFactory> loadSpringFactories(BuildContext buildContext) throws IOException {
 		Set<SpringFactory> factories = new LinkedHashSet<>();
-		Enumeration<URL> factoriesLocations = typeSystem.getResourceLoader()
-				.getClassLoader().getResources(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
+		Enumeration<URL> factoriesLocations = buildContext.getClassLoader()
+				.getResources(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
 		while (factoriesLocations.hasMoreElements()) {
 			URL url = factoriesLocations.nextElement();
 			UrlResource resource = new UrlResource(url);
@@ -92,7 +92,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 
 				for (String factoryName : factoryNames) {
 					logger.debug("Loading factory Impl:" + factoryName);
-					SpringFactory springFactory = SpringFactory.resolve(factoryTypeName, factoryName, typeSystem);
+					SpringFactory springFactory = SpringFactory.resolve(factoryTypeName, factoryName, buildContext.getClassLoader());
 					if (springFactory != null) {
 						factories.add(springFactory);
 					}

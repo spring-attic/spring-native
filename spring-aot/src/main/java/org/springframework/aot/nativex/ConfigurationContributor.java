@@ -51,6 +51,7 @@ import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.support.ConfigurationCollector;
 import org.springframework.nativex.support.SpringAnalyzer;
 import org.springframework.nativex.type.TypeSystem;
+import org.springframework.util.ClassUtils;
 
 /**
  * Contributes the configuration files for native image construction. This includes the reflection,
@@ -162,7 +163,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 			}
 		}
 		for (AotProxyDescriptor classProxyDescriptor : classProxyDescriptors) {
-			if (context.getTypeSystem().resolve(classProxyDescriptor.getTargetClassType()) == null) {
+			if (!ClassUtils.isPresent(classProxyDescriptor.getTargetClassType(), context.getClassLoader())) {
 				logger.debug("Cannot reach class proxy target type of: " + classProxyDescriptor);
 				continue;
 			}

@@ -43,7 +43,7 @@ public class TestContextBootstrapContributor implements BootstrapContributor {
 
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
-		ClassLoader classLoader = context.getTypeSystem().getResourceLoader().getClassLoader();
+		ClassLoader classLoader = context.getClassLoader();
 		if (!ClassUtils.isPresent("org.springframework.test.context.CacheAwareContextLoaderDelegate", classLoader)) {
 			logger.info("Skip TestContextAotProcessor because spring-test dependency is not present in the classpath");
 			return;

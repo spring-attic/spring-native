@@ -28,6 +28,7 @@ import org.springframework.boot.AotApplicationContextFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.utils.NativeUtils;
@@ -52,8 +53,8 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
-		ResourceLoader resourceLoader = context.getTypeSystem().getResourceLoader();
-		ClassLoader classLoader = resourceLoader.getClassLoader();
+		ResourceLoader resourceLoader = new DefaultResourceLoader(context.getClassLoader());
+		ClassLoader classLoader = context.getClassLoader();
 		Class<?> applicationClass;
 		String applicationClassName = context.getApplicationClass();
 		if (applicationClassName == null) {

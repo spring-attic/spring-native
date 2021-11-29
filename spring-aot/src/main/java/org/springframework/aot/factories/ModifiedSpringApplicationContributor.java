@@ -38,6 +38,7 @@ import org.springframework.asm.Opcodes;
 import org.springframework.asm.Type;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.nativex.AotOptions;
 
@@ -59,7 +60,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 
 	@Override
 	public void contribute(BuildContext context, AotOptions aotOptions) {
-		Resource resource = context.getTypeSystem().getResourceLoader()
+		Resource resource = new DefaultResourceLoader(context.getClassLoader())
 				.getResource("org/springframework/boot/SpringApplication.class");
 		SpringApplicationClassRewriter ca = modify(resource);
 		byte[] bytes = ca.getBytes();

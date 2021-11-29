@@ -21,16 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.factories.fixtures.DemoTestExecutionListener;
 import org.springframework.aot.factories.fixtures.TestFactory;
 import org.springframework.aot.test.AotDependencyInjectionTestExecutionListener;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -43,7 +40,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  *
  * @author Sam Brannen
  */
-@ExtendWith(TypeSystemExtension.class)
 class TestExecutionListenerFactoriesCodeContributorTests {
 
 	private static final String TEL = TestExecutionListener.class.getName();
@@ -56,34 +52,34 @@ class TestExecutionListenerFactoriesCodeContributorTests {
 
 
 	@Test
-	void shouldNotContributeIfNotTestExecutionListener(TypeSystem typeSystem) {
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), DEMO_TEL, typeSystem);
+	void shouldNotContributeIfNotTestExecutionListener() {
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), DEMO_TEL, TestExecutionListenerFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isFalse();
 	}
 
 	@Test
-	void shouldContributeIfTestExecutionListener(TypeSystem typeSystem) {
-		SpringFactory factory = SpringFactory.resolve(TEL, DEMO_TEL, typeSystem);
+	void shouldContributeIfTestExecutionListener() {
+		SpringFactory factory = SpringFactory.resolve(TEL, DEMO_TEL, TestExecutionListenerFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isTrue();
 	}
 
 	@Test
-	void shouldContributeFactoryNameAndReflectionConfig(TypeSystem typeSystem) {
-		assertContributedFactoryNameAndReflectionConfig(typeSystem, DEMO_TEL, DEMO_TEL);
+	void shouldContributeFactoryNameAndReflectionConfig() {
+		assertContributedFactoryNameAndReflectionConfig(DEMO_TEL, DEMO_TEL);
 	}
 
 	@Test
-	void shouldReplaceStandardDitelWithAotDitel(TypeSystem typeSystem) {
-		assertContributedFactoryNameAndReflectionConfig(typeSystem, DITEL, AOT_DITEL);
+	void shouldReplaceStandardDitelWithAotDitel() {
+		assertContributedFactoryNameAndReflectionConfig(DITEL, AOT_DITEL);
 	}
 
 
 	@SuppressWarnings("unchecked")
-	private void assertContributedFactoryNameAndReflectionConfig(TypeSystem typeSystem, String registeredListener,
+	private void assertContributedFactoryNameAndReflectionConfig(String registeredListener,
 			String expectedListener) {
 
 		CodeGenerator code = new CodeGenerator(new AotOptions());
-		SpringFactory factory = SpringFactory.resolve(TEL, registeredListener, typeSystem);
+		SpringFactory factory = SpringFactory.resolve(TEL, registeredListener, TestExecutionListenerFactoriesCodeContributorTests.class.getClassLoader());
 		BuildContext buildContext = Mockito.mock(BuildContext.class);
 
 		this.contributor.contribute(factory, code, buildContext);

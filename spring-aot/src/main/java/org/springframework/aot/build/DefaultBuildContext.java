@@ -26,8 +26,6 @@ import java.util.function.Consumer;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.build.context.ResourceFile;
 import org.springframework.aot.build.context.SourceFile;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -39,7 +37,7 @@ import org.springframework.nativex.domain.serialization.SerializationDescriptor;
  */
 class DefaultBuildContext implements BuildContext {
 
-	private final TypeSystem typeSystem;
+	private final ClassLoader classLoader;
 
 	private final String mainClass;
 
@@ -72,12 +70,12 @@ class DefaultBuildContext implements BuildContext {
 		this.applicationClass = applicationStructure.getApplicationClass();
 		this.testClasses = applicationStructure.getTestClasses();
 		this.classpath = applicationStructure.getClasspath();
-		this.typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader(applicationStructure.getClassLoader()));
+		this.classLoader = applicationStructure.getClassLoader();
 	}
 
 	@Override
-	public TypeSystem getTypeSystem() {
-		return this.typeSystem;
+	public ClassLoader getClassLoader() {
+		return this.classLoader;
 	}
 
 	@Override

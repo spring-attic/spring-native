@@ -16,22 +16,25 @@
 
 package org.springframework.aot.factories;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.build.context.BuildContext;
-import org.springframework.core.type.classreading.ClassDescriptor;
-import org.springframework.core.type.classreading.MethodDescriptor;
-import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.beans.BeanUtils;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link FactoriesCodeContributor} that handles default constructors which are not public.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 
@@ -39,19 +42,24 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	@Override
 	public boolean canContribute(SpringFactory springFactory) {
-		ClassDescriptor factory = springFactory.getFactory();
-		return !factory.isPublic() || !factory.getDefaultConstructor().map(MethodDescriptor::isPublic).orElse(false);
+		Class<?> factory = springFactory.getFactory();
+		try {
+			Constructor<?> constructor = BeanUtils.getResolvableConstructor(factory);
+			return !Modifier.isPublic(factory.getModifiers()) ||
+					(constructor != null && constructor.getParameterCount() == 0 && !Modifier.isPublic(constructor.getModifiers()));
+		} catch (IllegalStateException | NoClassDefFoundError ex) {
+			return false;
+		}
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK = 
-				passesConditionalOnClass(typeSystem, factory) && passesFilterCheck(typeSystem, factory) ;
+				passesConditionalOnClass(context, factory) && passesFilterCheck(context, factory) ;
 		if (factoryOK) {
 			String packageName = factory.getFactory().getPackageName();
-			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
-			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getCanonicalClassName());
+			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalName());
+			ClassName factoryClass = ClassName.bestGuess(factory.getFactory().getCanonicalName());
 			ClassName staticFactoryClass = ClassName.get(packageName, code.getStaticFactoryClass(packageName).name);
 			MethodSpec creator = MethodSpec.methodBuilder(generateMethodName(factory.getFactory()))
 					.addModifiers(javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC)
@@ -62,27 +70,27 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 				block.addStatement("factories.add($T.class, () -> $T.$N())", factoryTypeClass, staticFactoryClass, creator);
 			});
 			// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
-			if (factory.getFactoryType().getClassName().endsWith("EnvironmentPostProcessor")) {
-				generateReflectionMetadata(factory.getFactory().getClassName(), context);
+			if (factory.getFactoryType().getName().endsWith("EnvironmentPostProcessor")) {
+				generateReflectionMetadata(factory.getFactory().getName(), context);
 			}
 		}
 	}
 
-	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
-		String factoryName = factory.getFactory().getClassName();
+	private boolean passesFilterCheck(BuildContext context, SpringFactory factory) {
+		String factoryName = factory.getFactory().getName();
 		// TODO shame no ConditionalOnClass on these providers
 		if (factoryName.equals("org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer")) {
-			return typeSystem.resolveClass("javax.validation.ValidationException") != null;
+			return ClassUtils.isPresent("javax.validation.ValidationException", context.getClassLoader());
 		} else if (factoryName.equals("org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer")) {
-			return typeSystem.resolveClass("liquibase.exception.ChangeLogParseException") != null;
+			return ClassUtils.isPresent("liquibase.exception.ChangeLogParseException", context.getClassLoader());
 		} else if (factoryName.equals("org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer")) {
-			return typeSystem.resolveClass("org.springframework.jdbc.CannotGetJdbcConnectionException") != null;
+			return ClassUtils.isPresent("org.springframework.jdbc.CannotGetJdbcConnectionException", context.getClassLoader());
 		}
 		return true;
 	}
 
-	private String generateMethodName(ClassDescriptor factory) {
-		return StringUtils.uncapitalize(factory.getShortName().replaceAll("\\.", ""));
+	private String generateMethodName(Class<?> factory) {
+		return StringUtils.uncapitalize(ClassUtils.getShortName(factory).replaceAll("\\.", ""));
 	}
 
 	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {

@@ -17,15 +17,12 @@
 package org.springframework.aot.factories;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import org.springframework.aot.build.context.BuildContext;
-import org.springframework.aot.TypeSystemExtension;
 import org.springframework.aot.factories.fixtures.MissingDefaultConstructorFactory;
 import org.springframework.aot.factories.fixtures.PublicFactory;
 import org.springframework.aot.factories.fixtures.TestFactory;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,34 +32,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@ExtendWith(TypeSystemExtension.class)
 class NoArgConstructorFactoriesCodeContributorTests {
 
 	NoArgConstructorFactoriesCodeContributor contributor = new NoArgConstructorFactoriesCodeContributor();
 
 	@Test
-	void shouldContributeWhenMissingDefaultConstructor(TypeSystem typeSystem) {
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), typeSystem);
+	void shouldContributeWhenMissingDefaultConstructor() {
+
+
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), NoArgConstructorFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isTrue();
 	}
 
 	@Test
-	void shouldNotContributeWhenDefaultDefaultConstructorPresent(TypeSystem typeSystem) {
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), typeSystem);
+	void shouldNotContributeWhenDefaultDefaultConstructorPresent() {
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), PublicFactory.class.getName(), NoArgConstructorFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isFalse();
 	}
 
 	@Test
-	void shouldNotContributeWhenDefaultProtectedConstructorPresent(TypeSystem typeSystem) {
+	void shouldNotContributeWhenDefaultProtectedConstructorPresent() {
 		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(),
-				"org.springframework.aot.factories.fixtures.ProtectedFactory", typeSystem);
+				"org.springframework.aot.factories.fixtures.ProtectedFactory", NoArgConstructorFactoriesCodeContributorTests.class.getClassLoader());
 		assertThat(this.contributor.canContribute(factory)).isFalse();
 	}
 
 	@Test
-	void shouldContributeFactoryNames(TypeSystem typeSystem) {
+	void shouldContributeFactoryNames() {
 		CodeGenerator code = new CodeGenerator(new AotOptions());
-		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), typeSystem);
+		SpringFactory factory = SpringFactory.resolve(TestFactory.class.getName(), MissingDefaultConstructorFactory.class.getName(), NoArgConstructorFactoriesCodeContributorTests.class.getClassLoader());
 		this.contributor.contribute(factory, code, Mockito.mock(BuildContext.class));
 		assertThat(code.generateStaticSpringFactories().toString())
 				.contains("names.add(TestFactory.class, \"org.springframework.aot.factories.fixtures.MissingDefaultConstructorFactory\");");

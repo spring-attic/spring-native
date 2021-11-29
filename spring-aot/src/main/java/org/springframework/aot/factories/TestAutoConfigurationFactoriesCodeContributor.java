@@ -28,8 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.nativex.AotOptions;
+import org.springframework.util.ClassUtils;
 
 import com.squareup.javapoet.ClassName;
 
@@ -47,6 +48,7 @@ import com.squareup.javapoet.ClassName;
  * 
  * @author Andy Clement
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public class TestAutoConfigurationFactoriesCodeContributor implements FactoriesCodeContributor {
 
@@ -63,61 +65,59 @@ public class TestAutoConfigurationFactoriesCodeContributor implements FactoriesC
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		boolean b = factory.getFactoryType().getClassName().startsWith(TEST_AUTO_CONFIGURATION_PREFIX);//.equals(factory.getFactoryType().getClassName());
-		return b;
+		return factory.getFactoryType().getName().startsWith(TEST_AUTO_CONFIGURATION_PREFIX);
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		TypeSystem typeSystem = context.getTypeSystem();
 		// Condition checks
 		// TODO make into a pluggable system
 		List<String> failedPropertyChecks = new ArrayList<>();
 		boolean factoryOK =
-				passesConditionalOnClass(typeSystem, factory) &&
-				passesAnyConditionalOnSingleCandidate(typeSystem, factory) &&
-				passesConditionalOnBean(typeSystem, factory) &&
-				passesIgnoreJmxConstraint(typeSystem, factory) &&
-				passesConditionalOnWebApplication(typeSystem, factory);
+				passesConditionalOnClass(context, factory) &&
+				passesAnyConditionalOnSingleCandidate(context, factory) &&
+				passesConditionalOnBean(context, factory) &&
+				passesIgnoreJmxConstraint(factory) &&
+				passesConditionalOnWebApplication(context, factory);
 		if (!failedPropertyChecks.isEmpty()) {
-			logger.debug("Following property checks failed on "+factory.getFactory().getClassName()+": "+failedPropertyChecks);
+			logger.debug("Following property checks failed on "+factory.getFactory().getName()+": "+failedPropertyChecks);
 		}
 		if (factoryOK) {
-			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalClassName());
+			ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getCanonicalName());
 			code.writeToStaticBlock(builder -> {
 				builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
-						factory.getFactory().getCanonicalClassName());
+						factory.getFactory().getCanonicalName());
 			});
 		}
 	}
 
-	private boolean passesIgnoreJmxConstraint(TypeSystem typeSystem, SpringFactory factory) {
-		String name = factory.getFactory().getCanonicalClassName();
+	private boolean passesIgnoreJmxConstraint(SpringFactory factory) {
+		String name = factory.getFactory().getCanonicalName();
 		if (aotOptions.isRemoveJmxSupport() && name.toLowerCase().contains("jmx")) {
 			return false;
 		}
 		return true;
 	}
 
-	private boolean passesAnyConditionalOnSingleCandidate(TypeSystem typeSystem, SpringFactory factory) {
-		MergedAnnotation<Annotation> onSingleCandidate = factory.getFactory().getAnnotations()
+	private boolean passesAnyConditionalOnSingleCandidate(BuildContext context, SpringFactory factory) {
+		MergedAnnotation<Annotation> onSingleCandidate = MergedAnnotations.from(factory.getFactory())
 				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate");
 		if (onSingleCandidate.isPresent()) {
 			String singleCandidateClass = onSingleCandidate.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING)
 					.getString("value");
-			return typeSystem.resolveClass(singleCandidateClass) != null;
+			return ClassUtils.isPresent(singleCandidateClass, context.getClassLoader());
 		}
 		return true;
 	}
 
-	private boolean passesConditionalOnBean(TypeSystem typeSystem, SpringFactory factory) {
-		MergedAnnotation<Annotation> onBeanCondition = factory.getFactory().getAnnotations()
+	private boolean passesConditionalOnBean(BuildContext context, SpringFactory factory) {
+		MergedAnnotation<Annotation> onBeanCondition = MergedAnnotations.from(factory.getFactory())
 				.get("org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		if (onBeanCondition.isPresent()) {
 			AnnotationAttributes attributes = onBeanCondition.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
 			return Stream.concat(Arrays.stream(attributes.getStringArray("value")),
 					Arrays.stream(attributes.getStringArray("type")))
-					.allMatch(beanClass -> typeSystem.resolveClass(beanClass) != null);
+					.allMatch(beanClass -> ClassUtils.isPresent(beanClass, context.getClassLoader()));
 		}
 		return true;
 	}

@@ -23,12 +23,14 @@ import java.util.Optional;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.type.classreading.TypeSystem;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.util.ClassUtils;
 
 /**
  * Contribute code for instantiating Spring Factories.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 interface FactoriesCodeContributor {
 
@@ -46,33 +48,33 @@ interface FactoriesCodeContributor {
 	 */
 	void contribute(SpringFactory factory, CodeGenerator code, BuildContext context);
 
-	default boolean passesConditionalOnClass(TypeSystem typeSystem, SpringFactory factory) {
-		MergedAnnotation<Annotation> onClassCondition = factory.getFactory().getAnnotations().get(CONDITIONAL_ON_CLASS);
+	default boolean passesConditionalOnClass(BuildContext context, SpringFactory factory) {
+		MergedAnnotation<Annotation> onClassCondition = MergedAnnotations.from(factory.getFactory()).get(CONDITIONAL_ON_CLASS);
 		if (onClassCondition.isPresent()) {
 			AnnotationAttributes classConditions = onClassCondition
 					.asAnnotationAttributes(MergedAnnotation.Adapt.CLASS_TO_STRING);
 			Optional<String> missingClassValue = Arrays.stream(classConditions.getStringArray("value"))
-					.filter(classCondition -> typeSystem.resolveClass(classCondition) == null).findAny();
+					.filter(classCondition -> !ClassUtils.isPresent(classCondition, context.getClassLoader())).findAny();
 			Optional<String> missingClassName = Arrays.stream(classConditions.getStringArray("name"))
-					.filter(classCondition -> typeSystem.resolveClass(classCondition) == null).findAny();
+					.filter(classCondition -> !ClassUtils.isPresent(classCondition, context.getClassLoader())).findAny();
 			return !missingClassValue.isPresent() && !missingClassName.isPresent();
 		}
 		return true;
 	}
 
-	default boolean passesConditionalOnWebApplication(TypeSystem typeSystem, SpringFactory factory) {
-		MergedAnnotation<Annotation> conditionalOnWebApp = factory.getFactory().getAnnotations().get(CONDITIONAL_ON_WEBAPP);
+	default boolean passesConditionalOnWebApplication(BuildContext context, SpringFactory factory) {
+		MergedAnnotation<Annotation> conditionalOnWebApp = MergedAnnotations.from(factory.getFactory()).get(CONDITIONAL_ON_WEBAPP);
 		if (conditionalOnWebApp.isPresent()) {
 			Enum<?> webApplicationType = conditionalOnWebApp.asAnnotationAttributes().getEnum("type");
 			if (webApplicationType.name().equals("SERVLET")) {
-				return typeSystem.resolveClass("org.springframework.web.context.support.GenericWebApplicationContext") != null;
+				return ClassUtils.isPresent("org.springframework.web.context.support.GenericWebApplicationContext", context.getClassLoader());
 			}
 			else if (webApplicationType.name().equals("REACTIVE")) {
-				return typeSystem.resolveClass("org.springframework.web.reactive.HandlerResult") != null;
+				return ClassUtils.isPresent("org.springframework.web.reactive.HandlerResult", context.getClassLoader());
 			}
 			else { // ANY
-				return (typeSystem.resolveClass("org.springframework.web.context.support.GenericWebApplicationContext") != null)
-						|| (typeSystem.resolveClass("org.springframework.web.reactive.HandlerResult") != null);
+				return (ClassUtils.isPresent("org.springframework.web.context.support.GenericWebApplicationContext", context.getClassLoader()))
+						|| (ClassUtils.isPresent("org.springframework.web.reactive.HandlerResult", context.getClassLoader()));
 			}
 		}
 		return true;

@@ -16,11 +16,13 @@
 
 package org.springframework.aot.factories;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.lang.reflect.Constructor;
+
 import org.springframework.aot.build.context.BuildContext;
+import org.springframework.beans.BeanUtils;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.util.ClassUtils;
 
 import com.squareup.javapoet.ClassName;
 
@@ -32,23 +34,27 @@ import com.squareup.javapoet.ClassName;
  * will return their name and we're also adding reflection metadata for native images.
  *
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeContributor {
 
-	private final Log logger = LogFactory.getLog(NoArgConstructorFactoriesCodeContributor.class);
-
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		return !factory.getFactory().getDefaultConstructor().isPresent();
+		Constructor<?> constructor = null;
+		try {
+			constructor = BeanUtils.getResolvableConstructor(factory.getFactory());
+		} catch (IllegalStateException | NoClassDefFoundError ex) {
+		}
+		return constructor == null || constructor.getParameterCount() > 0;
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getClassName());
-		generateReflectionMetadata(factory.getFactory().getClassName(), context);
+		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getName());
+		generateReflectionMetadata(factory.getFactory().getName(), context);
 		code.writeToStaticBlock(builder -> {
 			builder.addStatement("names.add($T.class, $S)", factoryTypeClass,
-					factory.getFactory().getClassName());
+					factory.getFactory().getName());
 		});
 	}
 

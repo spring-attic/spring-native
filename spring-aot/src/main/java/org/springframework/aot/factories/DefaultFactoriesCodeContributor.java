@@ -21,11 +21,10 @@ import java.util.function.Consumer;
 import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.aot.build.context.BuildContext;
-import org.springframework.core.type.classreading.MethodDescriptor;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link FactoriesCodeContributor} that handles default, public constructors.
@@ -43,44 +42,46 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	@Override
 	public boolean canContribute(SpringFactory springFactory) {
-		return springFactory.getFactory().getDefaultConstructor().filter(MethodDescriptor::isPublic).isPresent();
+		return ClassUtils.hasConstructor(springFactory.getFactory());
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		TypeSystem typeSystem = context.getTypeSystem();
 		boolean factoryOK =
-				passesConditionalOnClass(typeSystem, factory) &&
-						passesFilterCheck(typeSystem, factory) &&
-						passesConditionalOnWebApplication(typeSystem, factory);
+				passesConditionalOnClass(context, factory) &&
+						passesFilterCheck(context, factory) &&
+						passesConditionalOnWebApplication(context, factory);
 		if (factoryOK) {
-			code.writeToStaticBlock(generateStaticInit(factory));
-			// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
-			if (factory.getFactoryType().getClassName().endsWith("EnvironmentPostProcessor")) {
-				generateReflectionMetadata(factory.getFactory().getClassName(), context);
+			try {
+				code.writeToStaticBlock(generateStaticInit(factory));
+				// TODO To be removed, currently required due to org.springframework.boot.env.ReflectionEnvironmentPostProcessorsFactory
+				if (factory.getFactoryType().getName().endsWith("EnvironmentPostProcessor")) {
+					generateReflectionMetadata(factory.getFactory().getName(), context);
+				}
+			} catch (NoClassDefFoundError ex) {
 			}
 		}
 	}
 
 	Consumer<CodeBlock.Builder> generateStaticInit(SpringFactory factory) {
 		return builder ->
-				builder.addStatement("factories.add($N.class, () -> new $N())", factory.getFactoryType().getCanonicalClassName(),
-						factory.getFactory().getCanonicalClassName());
+				builder.addStatement("factories.add($N.class, () -> new $N())", factory.getFactoryType().getCanonicalName(),
+						factory.getFactory().getCanonicalName());
 	}
 
-	private boolean passesFilterCheck(TypeSystem typeSystem, SpringFactory factory) {
-		String factoryName = factory.getFactory().getClassName();
+	private boolean passesFilterCheck(BuildContext context, SpringFactory factory) {
+		String factoryName = factory.getFactory().getName();
 		// TODO shame no ConditionalOnClass on these providers
 		if (factoryName.endsWith("FreeMarkerTemplateAvailabilityProvider")) {
-			return typeSystem.resolveClass("freemarker.template.Configuration") != null;
+			return ClassUtils.isPresent("freemarker.template.Configuration", context.getClassLoader());
 		} else if (factoryName.endsWith("MustacheTemplateAvailabilityProvider")) {
-			return typeSystem.resolveClass("com.samskivert.mustache.Mustache") != null;
+			return ClassUtils.isPresent("com.samskivert.mustache.Mustache", context.getClassLoader());
 		} else if (factoryName.endsWith("GroovyTemplateAvailabilityProvider")) {
-			return typeSystem.resolveClass("groovy.text.TemplateEngine") != null;
+			return ClassUtils.isPresent("groovy.text.TemplateEngine", context.getClassLoader());
 		} else if (factoryName.endsWith("ThymeleafTemplateAvailabilityProvider")) {
-			return typeSystem.resolveClass("org.thymeleaf.spring5.SpringTemplateEngine") != null;
+			return ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine", context.getClassLoader());
 		} else if (factoryName.endsWith("JspTemplateAvailabilityProvider")) {
-			return typeSystem.resolveClass("org.apache.jasper.compiler.JspConfig") != null;
+			return ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", context.getClassLoader());
 		} else if (factoryName.equals("org.springframework.boot.autoconfigure.BackgroundPreinitializer")) {
 			return false;
 		} else if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {

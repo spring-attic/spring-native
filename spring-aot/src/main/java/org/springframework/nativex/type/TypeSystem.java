@@ -64,7 +64,6 @@ import org.objectweb.asm.tree.ClassNode;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.boot.loader.tools.MainClassFinder;
-import org.springframework.core.type.classreading.ClassDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
@@ -1691,10 +1690,6 @@ import org.springframework.util.Assert;
 		}
 		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
 		return resources.values();
-	}
-
-	public Type resolve(ClassDescriptor classDescriptor) {
-		return resolveDotted(classDescriptor.getClassName());
 	}
 
 	public boolean shouldRemoveXmlSupport() {

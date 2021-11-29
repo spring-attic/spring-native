@@ -50,16 +50,16 @@ class TestExecutionListenerFactoriesCodeContributor implements FactoriesCodeCont
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		return TEL.equals(factory.getFactoryType().getClassName());
+		return TEL.equals(factory.getFactoryType().getName());
 	}
 
 	@Override
 	public void contribute(SpringFactory factory, CodeGenerator code, BuildContext context) {
-		String className = factory.getFactory().getClassName();
+		String className = factory.getFactory().getName();
 
 		// Replace standard DITEL with the AOT variant.
 		String factoryClassName = (DITEL.equals(className) ? AOT_DITEL : className);
-		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getClassName());
+		ClassName factoryTypeClass = ClassName.bestGuess(factory.getFactoryType().getName());
 
 		generateReflectionMetadata(factoryClassName, context);
 		code.writeToStaticBlock(builder -> {

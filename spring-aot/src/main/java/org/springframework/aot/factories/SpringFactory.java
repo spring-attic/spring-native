@@ -20,53 +20,44 @@ import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.core.type.classreading.ClassDescriptor;
-import org.springframework.core.type.classreading.TypeSystem;
-import org.springframework.nativex.type.MissingTypeException;
+import org.springframework.util.ClassUtils;
 
 /**
  * An entry in a {@code spring.factories} file.
  * 
  * @author Brian Clozel
+ * @author Sebastien Deleuze
  */
 public class SpringFactory {
 
 	private static final Log logger = LogFactory.getLog(SpringFactory.class);
 
-	private final ClassDescriptor factoryType;
+	private final Class<?> factoryType;
 
-	private final ClassDescriptor factory;
+	private final Class<?> factory;
 
-	private SpringFactory(ClassDescriptor factoryType, ClassDescriptor factory) {
+	private SpringFactory(Class<?> factoryType, Class<?> factory) {
 		this.factoryType = factoryType;
 		this.factory = factory;
 	}
 
-	public static SpringFactory resolve(String factoryTypeName, String factoryName, TypeSystem typeSystem) {
+	public static SpringFactory resolve(String factoryTypeName, String factoryName, ClassLoader classLoader) {
 		try {
-			ClassDescriptor factoryType = typeSystem.resolveClass(factoryTypeName);
-			ClassDescriptor factory = typeSystem.resolveClass(factoryName);
-			if (factoryType == null) {
-				logger.debug("Could not resolve factory type "+factoryType);
-				return null;
-			}
-			if (factory == null) {
-				logger.debug("Could not resolve factory "+factoryName);
-				return null;
-			}
+			Class<?> factoryType = ClassUtils.resolveClassName(factoryTypeName, classLoader);
+			Class<?> factory = ClassUtils.resolveClassName(factoryName, classLoader);
 			return new SpringFactory(factoryType, factory);
 		}
-		catch (MissingTypeException exc) { // TODO can this still happen with the new type system?
+		catch (IllegalArgumentException exc) {
 			logger.debug("Could not load SpringFactory: " + exc.getMessage());
 			return null;
 		}
 	}
 
-	public ClassDescriptor getFactoryType() {
+	public Class<?> getFactoryType() {
 		return this.factoryType;
 	}
 
-	public ClassDescriptor getFactory() {
+	public Class<?> getFactory() {
 		return this.factory;
 	}
 
@@ -86,8 +77,8 @@ public class SpringFactory {
 	@Override
 	public String toString() {
 		return "SpringFactory{" +
-				"factoryType=" + factoryType.getClassName() +
-				", factory=" + factory.getClassName() +
+				"factoryType=" + factoryType.getName() +
+				", factory=" + factory.getName() +
 				'}';
 	}
 }

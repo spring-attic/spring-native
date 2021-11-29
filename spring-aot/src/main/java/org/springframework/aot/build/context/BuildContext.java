@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -40,9 +39,9 @@ public interface BuildContext {
 	List<String> getClasspath();
 
 	/**
-	 * @return The {@link TypeSystem} based on the "compile+runtime" application classpath.
+	 * @return The {@link ClassLoader} to use based on the "compile+runtime" application classpath.
 	 */
-	TypeSystem getTypeSystem();
+	ClassLoader getClassLoader();
 
 	/**
 	 * @return The (optional) main class of the application to build if it needs to be specified.

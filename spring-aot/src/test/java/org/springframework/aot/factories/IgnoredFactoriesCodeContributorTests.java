@@ -14,8 +14,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.BeanDefinitionPostProcessor;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.type.classreading.TypeSystem;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.test.context.ContextCustomizerFactory;
 
@@ -29,8 +27,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Stephane Nicoll
  */
 class IgnoredFactoriesCodeContributorTests {
-
-	private static final TypeSystem typeSystem = TypeSystem.getTypeSystem(new DefaultResourceLoader());
 
 	private final IgnoredFactoriesCodeContributor factoriesCodeContributor = new IgnoredFactoriesCodeContributor();
 
@@ -87,7 +83,7 @@ class IgnoredFactoriesCodeContributorTests {
 	}
 
 	private static SpringFactory createSpringFactory(Class<?> factoryType, String factoryImplementation) {
-		return SpringFactory.resolve(factoryType.getName(), factoryImplementation, typeSystem);
+		return SpringFactory.resolve(factoryType.getName(), factoryImplementation, IgnoredFactoriesCodeContributorTests.class.getClassLoader());
 	}
 
 }
