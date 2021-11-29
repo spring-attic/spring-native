@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -145,24 +145,23 @@ public class KafkaAvroNativeConfigurationProcessor implements BeanFactoryNativeC
 
         void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
             Set<Class<?>> avroTypes = new HashSet<>();
-            NativeConfigurationUtils.doWithComponents(beanFactory,
+            new BeanFactoryProcessor(beanFactory).processBeans(type -> isListener(type) || hasListenerMethods(type),
                     (beanName, beanType) -> {
-                        if (GenericMessageListener.class.isAssignableFrom(beanType)) {
-                            ReflectionUtils.doWithMethods(beanType, method -> {
-                                Type[] types = method.getGenericParameterTypes();
-                                if (types.length > 0) {
-                                    ResolvableType resolvableType = ResolvableType.forType(types[0]);
-                                    Class<?> keyType = resolvableType.resolveGeneric(0);
-                                    Class<?> valueType = resolvableType.resolveGeneric(1);
-                                    checkType(keyType, avroTypes);
-                                    checkType(valueType, avroTypes);
-                                }
-                            }, method -> method.getName().equals("onMessage"));
-                        } else {
-                            processMethods(beanType, avroTypes);
+                if (GenericMessageListener.class.isAssignableFrom(beanType)) {
+                    ReflectionUtils.doWithMethods(beanType, method -> {
+                        Type[] types = method.getGenericParameterTypes();
+                        if (types.length > 0) {
+                            ResolvableType resolvableType = ResolvableType.forType(types[0]);
+                            Class<?> keyType = resolvableType.resolveGeneric(0);
+                            Class<?> valueType = resolvableType.resolveGeneric(1);
+                            checkType(keyType, avroTypes);
+                            checkType(valueType, avroTypes);
                         }
-                    },
-                    (beanName, beanType) -> isListener(beanType) || hasListenerMethods(beanType));
+                    }, method -> method.getName().equals("onMessage"));
+                } else {
+                    processMethods(beanType, avroTypes);
+                }
+            });
 
             avroTypes.forEach(avroType -> registry
                     .reflection()
