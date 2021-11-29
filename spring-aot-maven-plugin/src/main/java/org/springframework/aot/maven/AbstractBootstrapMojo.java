@@ -38,7 +38,6 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
-import org.springframework.nativex.AotOptions;
 import org.springframework.util.FileSystemUtils;
 
 /**

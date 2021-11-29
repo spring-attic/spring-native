@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
-import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlerMappingDetails;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;

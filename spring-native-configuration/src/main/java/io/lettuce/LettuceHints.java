@@ -16,8 +16,6 @@
 
 package io.lettuce;
 
-import javax.persistence.Access;
-
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.type.NativeConfiguration;

@@ -28,7 +28,6 @@ import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;

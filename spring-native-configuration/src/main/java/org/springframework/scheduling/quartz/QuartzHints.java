@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 import org.springframework.nativex.type.TypeSystemNativeConfiguration;
-import org.springframework.util.ClassUtils;
 
 /**
  * Supports running scheduled Quartz jobs with Spring

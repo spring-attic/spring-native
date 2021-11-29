@@ -17,12 +17,10 @@
 package org.springframework.aot.test.context.bootstrap.generator.test;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import org.assertj.core.api.AssertProvider;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.nativex.domain.reflect.ClassDescriptor;
 
 /**
  * Represent a generated bootstrap structure and act as an entry point for AssertJ

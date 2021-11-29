@@ -24,7 +24,6 @@ import com.netflix.discovery.converters.jackson.builder.ApplicationsJacksonBuild
 
 import org.springframework.cloud.netflix.eureka.loadbalancer.EurekaLoadBalancerClientConfiguration;
 import org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.NativeHint;

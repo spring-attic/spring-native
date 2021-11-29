@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.DatabaseMetaData;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -36,9 +34,7 @@ import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.type.ResourcesDescriptor;
 
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",

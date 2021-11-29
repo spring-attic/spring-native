@@ -21,7 +21,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.type.TypeSystem;
 
 @NativeHint(trigger=WebFluxEndpointManagementContextConfiguration.class,
 	imports = CommonWebActuatorTypes.class,

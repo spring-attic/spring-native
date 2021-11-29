@@ -16,8 +16,6 @@
 
 package org.springframework.core.annotation;
 
-import org.springframework.core.DecoratingProxy;
-import org.springframework.core.PriorityOrdered;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;

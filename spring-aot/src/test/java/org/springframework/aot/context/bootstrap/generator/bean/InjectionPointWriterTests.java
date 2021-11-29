@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.context.bootstrap.generator.bean.InjectionPointWriterTests.SimpleConstructorBean.InnerClass;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
