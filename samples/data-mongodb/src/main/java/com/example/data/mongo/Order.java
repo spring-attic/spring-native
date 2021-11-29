@@ -87,8 +87,8 @@ public class Order {
 	/**
 	 * Creates a new {@link Order} for the given customer id and order date.
 	 *
-	 * @param customerId
-	 * @param orderDate
+	 * @param customerId {@link String ID} of the {@literal customer}.
+	 * @param orderDate {@link Date} of this {@link Order}.
 	 */
 	public Order(String customerId, Date orderDate) {
 		this(null, customerId, orderDate, new ArrayList<>());
@@ -97,8 +97,8 @@ public class Order {
 	/**
 	 * Adds a {@link LineItem} to the {@link Order}.
 	 *
-	 * @param item
-	 * @return
+	 * @param item {@link LineItem Item} ordered.
+	 * @return this {@link Order}.
 	 */
 	public Order addItem(LineItem item) {
 
