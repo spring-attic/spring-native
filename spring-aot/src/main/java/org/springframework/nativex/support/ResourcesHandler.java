@@ -64,7 +64,7 @@ public class ResourcesHandler extends Handler {
 	private final DynamicProxiesHandler dynamicProxiesHandler;
 
 	private final InitializationHandler initializationHandler;
-	
+
 	private SerializationHandler serializationHandler;
 
 	private JNIReflectionHandler jniReflectionHandler;
@@ -77,6 +77,7 @@ public class ResourcesHandler extends Handler {
 			DynamicProxiesHandler dynamicProxiesHandler, InitializationHandler initializationHandler,
 			SerializationHandler serializationHandler, JNIReflectionHandler jniReflectionHandler,
 			OptionHandler optionHandler, AotOptions aotOptions) {
+
 		super(collector);
 		this.reflectionHandler = reflectionHandler;
 		this.dynamicProxiesHandler = dynamicProxiesHandler;
@@ -91,9 +92,6 @@ public class ResourcesHandler extends Handler {
 	 * Callback from native-image. Determine resources related to Spring applications that need to be added to the image.
 	 */
 	public void register() {
-		if (aotOptions.toMode() == Mode.NATIVE) {
-			processSpringFactories();
-		}
 		handleConstantHints(aotOptions.toMode() == Mode.NATIVE_AGENT);
 		if (aotOptions.toMode() == Mode.NATIVE) {
 			handleSpringComponents();
@@ -212,22 +210,17 @@ public class ResourcesHandler extends Handler {
 	 */
 	public void handleSpringComponents() {
 		NativeContext context = new NativeContextImpl();
-//		Enumeration<URL> springComponents = fetchResources("META-INF/spring.components");
 		Collection<byte[]> springComponents = ts.getResources("META-INF/spring.components");
 		List<String> alreadyProcessed = new ArrayList<>();
 		if (springComponents.size()!=0) {
-//		if (springComponents.hasMoreElements()) {
 			logger.debug("Processing existing META-INF/spring.components files...");
 			for (byte[] springComponentsFile: springComponents) {
-//			while (springComponents.hasMoreElements()) {
-//				URL springFactory = springComponents.nextElement();
 				Properties p = new Properties();
 				try (ByteArrayInputStream bais = new ByteArrayInputStream(springComponentsFile)) {
 					p.load(bais);
 				} catch (IOException e) {
 					throw new IllegalStateException("Unable to load spring.factories", e);
 				}
-//				loadSpringFactoryFile(springFactory, p);
 				if (aotOptions.toMode() == Mode.NATIVE_AGENT) {
 					processSpringComponentsAgent(p, context);
 				} else {
@@ -285,7 +278,6 @@ public class ResourcesHandler extends Handler {
 			if (keyType.isAtSpringBootApplication()) {
 				logger.debug("hybrid: adding access to "+keyType+" since @SpringBootApplication");
 				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
-//				resourcesRegistry.addResources(key.replace(".", "/")+".class");
 				collector.addResource(key.replace(".", "/")+".class", false);
 			}
 			if (keyType.isAtController()) {
@@ -347,38 +339,25 @@ public class ResourcesHandler extends Handler {
 		Type kType = ts.resolveDotted(componentTypename);
 		logger.debug("Registering Spring Component: " + componentTypename);
 
-		// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are
-		// exposed
+		// Ensure if usage of @Component is meta-usage, the annotations that are meta-annotated are exposed
 		Entry<Type, List<Type>> metaAnnotated = kType.getMetaComponentTaggedAnnotations();
 		if (metaAnnotated != null) {
 			for (Type t: metaAnnotated.getValue()) {
 				String name = t.getDottedName();
 				reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
 				collector.addResource(name.replace(".", "/")+".class", false);
-//				resourcesRegistry.addResources(name.replace(".", "/")+".class");
 			}
 		}
 
-		if (kType.isAtConfiguration()) {
-			// Treat user configuration (from spring.components) the same as configuration
-			// discovered via spring.factories
-//			checkAndRegisterConfigurationType(componentTypename,ReachedBy.FromSpringComponent);
-		} else {
+		if (!kType.isAtConfiguration()) {
 			try {
-				// TODO assess which kinds of thing requiring what kind of access - here we see
-				// an Entity might require field reflective access where others don't
-				// I think as a component may have autowired fields (and an entity may have
-				// interesting fields) - you kind of always need to expose fields
-				// There is a type in vanilla-orm called Bootstrap that shows this need
 				reflectionHandler.addAccess(componentTypename, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
 					Flag.allDeclaredClasses, Flag.allDeclaredFields);
-//				resourcesRegistry.addResources(componentTypename.replace(".", "/") + ".class");
 				collector.addResource(componentTypename.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : kType.getNestedTypes()) {
 					reflectionHandler.addAccess(t.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
 							Flag.allDeclaredClasses);
-//					resourcesRegistry.addResources(t.getName() + ".class");
 					collector.addResource(t.getName()+".class", false);
 				}
 				registerHierarchy(pc, kType, requestor);
@@ -387,12 +366,11 @@ public class ResourcesHandler extends Handler {
 			}
 		}
 		if (kType != null && kType.isAtResponseBody()) {
-			// TODO [0.9.0] move into WebComponentProcessor?
 			processResponseBodyComponent(kType);
 		}
 		List<String> values = new ArrayList<>();
 		StringTokenizer st = new StringTokenizer(classifiers, ",");
-		// org.springframework.samples.petclinic.visit.JpaVisitRepositoryImpl=org.springframework.stereotype.Component,javax.transaction.Transactional
+
 		while (st.hasMoreElements()) {
 			String tt = st.nextToken();
 			values.add(tt);
@@ -401,20 +379,12 @@ public class ResourcesHandler extends Handler {
 			}
 			try {
 				Type baseType = ts.resolveDotted(tt);
-
-				// reflectionHandler.addAccess(tt,Flag.allDeclaredConstructors,
-				// Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-				// reflectionHandler.addAccess(tt,Flag.allPublicConstructors,
-				// Flag.allPublicMethods, Flag.allDeclaredClasses);
 				reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
-//				resourcesRegistry.addResources(tt.replace(".", "/") + ".class");
 				collector.addResource(tt.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : baseType.getNestedTypes()) {
 					String n = t.getName().replace("/", ".");
 					reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
-//					reflectionHandler.addAccess(n, Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredClasses);
-//					resourcesRegistry.addResources(t.getName() + ".class");
 					collector.addResource(t.getName() + ".class", false);
 				}
 				registerHierarchy(pc, baseType, requestor);
@@ -546,14 +516,6 @@ public class ResourcesHandler extends Handler {
 		boolean isConfiguration = type.isAtConfiguration();
 		if (!isConfiguration) {
 			// Double check are we here because we are a parent of some configuration being processed
-			// For example: 
-			// Analyzing org.springframework.web.reactive.config.WebFluxConfigurationSupport 
-			//   reached by 
-			// [[Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration-FromSpringFactoriesKey], 
-			// [Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration-NestedReference], 
-			// [Ctx:org.springframework.web.reactive.config.DelegatingWebFluxConfiguration-HierarchyProcessing], 
-			// [Ctx:org.springframework.web.reactive.config.WebFluxConfigurationSupport-HierarchyProcessing]]
-			// TODO [0.9.0] tidyup
 			String s2 = pc.getHierarchyProcessingTopMostTypename();
 			TypeSystem typeSystem = type.getTypeSystem();
 			Type resolve = typeSystem.resolveDotted(s2,true);
@@ -577,49 +539,20 @@ public class ResourcesHandler extends Handler {
 		}
 
 			if (inferredRequiredAccess.getValue() != 0) {
-		if (type.isCondition()) {
-			if (type.hasOnlySimpleConstructor()) {
-				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
-			} else {
-				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
+				if (type.isCondition()) {
+					if (type.hasOnlySimpleConstructor()) {
+						typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
+					} else {
+						typesToMakeAccessible.requestTypeAccess(type.getDottedName(),inferredRequiredAccess.getValue());
+					}
+				} else {
+						// TODO we can do better here, why can we not use the inferredRequiredAccess -
+						// it looks like we aren't adding RESOURCE to something when inferring.
+						typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
+								AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE
+										| (rootTypeWasConfiguration ? AccessBits.DECLARED_METHODS : AccessBits.PUBLIC_METHODS));
+				}
 			}
-		} else {
-				// TODO we can do better here, why can we not use the inferredRequiredAccess -
-				// it looks like we aren't adding RESOURCE to something when inferring.
-				typesToMakeAccessible.requestTypeAccess(type.getDottedName(),
-						AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE
-								| (rootTypeWasConfiguration ? AccessBits.DECLARED_METHODS : AccessBits.PUBLIC_METHODS));
-				// inferredRequiredAccess.getValue());
-				// reflectionHandler.addAccess(configNameDotted, Flag.allDeclaredConstructors,
-				// Flag.allDeclaredMethods);
-		}
-			}
-		
-		if (rootTypeWasConfiguration && !type.isAtConfiguration()) {
-			// Processing a superclass of a configuration (so may contain @Bean methods)
-		}
-		// Rather than just looking at superclass and interfaces, this will dig into everything including
-		// parameterized type references so nothing is missed
-//		if (type.getSuperclass()!=null) {
-//			logger.debug("RH>SC "+type.getSuperclass());
-//		registerHierarchyHelper(type.getSuperclass(),visited, typesToMakeAccessible,inferredRequiredAccess);
-//		}
-//		Type[] intfaces = type.getInterfaces();
-//		for (Type intface: intfaces) {
-//			logger.debug("RH>IF "+intface);
-//			registerHierarchyHelper(intface,visited, typesToMakeAccessible,inferredRequiredAccess);
-//		}
-/*		
-		List<String> supers = new ArrayList<>();
-		if (type.getSuperclass()!=null) {
-			supers.add(type.getSuperclass().getDottedName());
-		}
-		Type[] intfaces = type.getInterfaces();
-		for (Type intface: intfaces) {
-			supers.add(intface.getDottedName());
-		}
-		List<String> lst = new ArrayList<>();
-*/	
 		
 		Type superclass = type.getSuperclass();
 		registerHierarchyHelper(superclass, visited, typesToMakeAccessible, inferredRequiredAccess, true);
@@ -628,40 +561,10 @@ public class ResourcesHandler extends Handler {
 		for (String relatedType: relatedTypes) {
 			Type t = ts.resolveSlashed(relatedType,true);
 			if (t!=null) {
-//				lst.add(t.getDottedName());
 				registerHierarchyHelper(t, visited, typesToMakeAccessible, inferredRequiredAccess, false);
 			}
 		}
-//		lst.removeAll(supers);
-//		if (lst.size()!=0) {
-//		logger.debug("MISSED THESE ("+type.getDottedName()+"): "+lst);
-//		}
-	}
 
-	/**
-	 * Find all META-INF/spring.factories - for any configurations listed in each,
-	 * check if those configurations use ConditionalOnClass. If the classes listed
-	 * in ConditionalOnClass can't be found, discard the configuration from
-	 * spring.factories. Register either the unchanged or modified spring.factories
-	 * files with the system.
-	 */
-	public void processSpringFactories() {
-		logger.debug("Processing META-INF/spring.factories files...");
-		for (byte[] springFactory: ts.getResources("META-INF/spring.factories")) {
-			Properties p = new Properties();
-			try (ByteArrayInputStream bais = new ByteArrayInputStream(springFactory)) {
-				p.load(bais);
-			} catch (IOException e) {
-				throw new IllegalStateException("Unable to load bytes from spring factory file", e);
-			}
-//			loadSpringFactoryFile(springFactory, p);
-			processSpringFactory(ts, p);
-		}
-//		Enumeration<URL> springFactories = fetchResources("META-INF/spring.factories");
-//		while (springFactories.hasMoreElements()) {
-//			URL springFactory = springFactories.nextElement();
-//			processSpringFactory(ts, springFactory);
-//		}
 	}
 
 	private List<Entry<Type, List<Type>>> filterOutNestedConfigurationTypes(List<Entry<Type, List<Type>>> indexedComponents) {
@@ -679,9 +582,7 @@ public class ResourcesHandler extends Handler {
 		filtered.removeAll(subtypesToRemove);
 		return filtered;
 	}
-		
-	private void processSpringFactory(TypeSystem ts, Properties p) {
-	}
+
 	
 	/**
 	 * Captures the route taken when processing a type - we can be more aggressive about
@@ -704,17 +605,6 @@ public class ResourcesHandler extends Handler {
 		Specific, // This type was explicitly listed in a hint that was processed
 		InnerOfNestedCondition // it is the inner type of a class implementing AbstractNestedCondition
 	}
-
-//	private boolean checkConditionalOnEnabledMetricsExport(Type type) {
-//		boolean isOK = type.testAnyConditionalOnEnabledMetricsExport();
-//		if (!isOK) {
-//			logger.debug(type.getDottedName()+" FAILED ConditionalOnEnabledMetricsExport check - returning FALSE");
-//			return false;
-//		}
-//		return true;
-//	}
-	
-	List<String> failedPropertyChecks = new ArrayList<>();
 	
 	static class ContextEntry {
 		private String typename;
@@ -764,13 +654,6 @@ public class ResourcesHandler extends Handler {
 		
 		public String getHierarchyProcessingTopMostTypename() {
 			// Double check are we here because we are a parent of some configuration being processed
-						// For example: 
-						// Analyzing org.springframework.web.reactive.config.WebFluxConfigurationSupport 
-						//   reached by 
-						// [[Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration-FromSpringFactoriesKey], 
-						// [Ctx:org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration$EnableWebFluxConfiguration-NestedReference], 
-						// [Ctx:org.springframework.web.reactive.config.DelegatingWebFluxConfiguration-HierarchyProcessing], 
-						// [Ctx:org.springframework.web.reactive.config.WebFluxConfigurationSupport-HierarchyProcessing]]
 			int i = size()-1;
 			ContextEntry entry = get(i);
 			while (entry.reachedBy==ReachedBy.HierarchyProcessing) {
@@ -870,24 +753,11 @@ public class ResourcesHandler extends Handler {
 				logger.debug(dname+" has #"+methods.size()+" methods directly specified so removing any general method access needs");
 				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
 			}
-//			logger.debug(spaces(depth) + "fixed flags? "+Flag.toString(flags));
-//			logger.debug(depth, "ms: "+methods);
 
 			String typeReachable = accessRequestor.getTypeReachableFor(dname);
 
 			// TODO See if query method configuration is needed here
 			reflectionHandler.addAccess(dname, typeReachable, MethodDescriptor.toStringArray(methods), null, FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, flags);
-			/*
-			if (flags != null && flags.length == 1 && flags[0] == Flag.allDeclaredConstructors) {
-				Type resolvedType = ts.resolveDotted(dname, true);
-//				if (resolvedType != null && resolvedType.hasOnlySimpleConstructor()) {
-//					reflectionHandler.addAccess(dname, new String[][] { { "<init>" } },null, true);
-//				} else {
-//				}
-			} else {
-				reflectionHandler.addAccess(dname, null, null, true, flags);
-			}
-			*/
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
 				collector.addResource(fromTypenameToClassResource(dname), false);
 			}
