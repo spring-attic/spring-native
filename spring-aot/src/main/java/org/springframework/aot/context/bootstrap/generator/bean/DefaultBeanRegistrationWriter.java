@@ -43,11 +43,9 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.AttributeAccessor;
@@ -320,12 +318,24 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	private void writeBeanType(Builder code) {
 		ResolvableType resolvableType = this.beanDefinition.getResolvableType();
-		if (resolvableType.hasGenerics()) {
+		if (resolvableType.hasGenerics() && !hasUnresolvedGenerics(resolvableType)) {
 			code.add(typeWriter.generateTypeFor(resolvableType));
 		}
 		else {
 			code.add("$T.class", ClassUtils.getUserClass(this.beanDefinition.getResolvableType().toClass()));
 		}
+	}
+
+	private boolean hasUnresolvedGenerics(ResolvableType resolvableType) {
+		if (resolvableType.hasUnresolvableGenerics()) {
+			return true;
+		}
+		for (ResolvableType generic : resolvableType.getGenerics()) {
+			if (hasUnresolvedGenerics(generic)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private MethodSpec addBeanRegistrationMethod(Consumer<Builder> code) {

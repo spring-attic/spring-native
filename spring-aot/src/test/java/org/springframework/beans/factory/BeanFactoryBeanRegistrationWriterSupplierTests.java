@@ -36,7 +36,7 @@ class BeanFactoryBeanRegistrationWriterSupplierTests {
 	}
 
 	@Test
-	void writeBeanRegistrationForFactoryBeanWithObjectTypeResolvableType() {
+	void writeBeanRegistrationForFactoryBeanWithUnresolvedGenericAndResolvableTypeObjectTypeAttribute() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition();
 		beanDefinition.setTargetType(TestGenericFactoryBean.class);
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE,
@@ -44,7 +44,7 @@ class BeanFactoryBeanRegistrationWriterSupplierTests {
 		BeanRegistrationWriter beanRegistrationWriter = get(beanDefinition);
 		assertThat(beanRegistrationWriter).isNotNull();
 		assertThat(CodeSnippet.of((code) -> beanRegistrationWriter.writeBeanRegistration(createBootstrapContext(), code))).lines().contains(
-				"BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Serializable.class)).withConstructor(Serializable.class)",
+				"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withConstructor(Serializable.class)",
 				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class))).register(context);");
 	}
 
@@ -57,14 +57,14 @@ class BeanFactoryBeanRegistrationWriterSupplierTests {
 	}
 
 	@Test
-	void writeBeanRegistrationForFactoryBeanWithObjectTypeClass() {
+	void writeBeanRegistrationForFactoryBeanWithUnresolvedGenericAndClassObjetTypeAttribute() {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition();
 		beanDefinition.setTargetType(TestGenericFactoryBean.class);
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, Integer.class);
 		BeanRegistrationWriter beanRegistrationWriter = get(beanDefinition);
 		assertThat(beanRegistrationWriter).isNotNull();
 		assertThat(CodeSnippet.of((code) -> beanRegistrationWriter.writeBeanRegistration(createBootstrapContext(), code))).lines().contains(
-				"BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Serializable.class)).withConstructor(Serializable.class)",
+				"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withConstructor(Serializable.class)",
 				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", Integer.class)).register(context);");
 	}
 

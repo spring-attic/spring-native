@@ -29,6 +29,8 @@ public class BeanDefinitionRegistrar {
 
 	private final String beanName;
 
+	private final Class<?> beanClass;
+
 	private final ResolvableType beanType;
 
 	private final BeanDefinitionBuilder builder;
@@ -39,19 +41,26 @@ public class BeanDefinitionRegistrar {
 
 	private RootBeanDefinition beanDefinition;
 
-	private BeanDefinitionRegistrar(String beanName, ResolvableType beanType) {
+	/**
+	 * Create a new instance.
+	 * @param beanName the name of the bean
+	 * @param beanClass the type of the bean
+	 * @param beanType the target type with generic information (can be {@code null})
+	 */
+	private BeanDefinitionRegistrar(String beanName, Class<?> beanClass, ResolvableType beanType) {
 		this.beanName = beanName;
+		this.beanClass = beanClass;
 		this.beanType = beanType;
-		this.builder = BeanDefinitionBuilder.rootBeanDefinition(beanType.toClass());
+		this.builder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
 		this.customizers = new ArrayList<>();
 	}
 
 	public static BeanDefinitionRegistrar of(String beanName, ResolvableType beanType) {
-		return new BeanDefinitionRegistrar(beanName, beanType);
+		return new BeanDefinitionRegistrar(beanName, beanType.toClass(), beanType);
 	}
 
 	public static BeanDefinitionRegistrar of(String beanName, Class<?> beanType) {
-		return of(beanName, ResolvableType.forClass(beanType));
+		return new BeanDefinitionRegistrar(beanName, beanType, null);
 	}
 
 	public static BeanDefinitionRegistrar inner(ResolvableType beanType) {
@@ -73,7 +82,7 @@ public class BeanDefinitionRegistrar {
 	}
 
 	public BeanDefinitionRegistrar withConstructor(Class<?>... parameterTypes) {
-		this.instanceCreator = getConstructor(this.beanType.toClass(), parameterTypes);
+		this.instanceCreator = getConstructor(this.beanClass, parameterTypes);
 		return this;
 	}
 
@@ -101,9 +110,8 @@ public class BeanDefinitionRegistrar {
 
 	private RootBeanDefinition createBeanDefinition() {
 		RootBeanDefinition bd = (RootBeanDefinition) builder.getBeanDefinition();
-		ResolvableType targetType = determineTargetType();
-		if (targetType != null) {
-			bd.setTargetType(targetType);
+		if (this.beanType != null) {
+			bd.setTargetType(this.beanType);
 		}
 		if (this.instanceCreator instanceof Method) {
 			bd.setResolvedFactoryMethod((Method) this.instanceCreator);
@@ -112,40 +120,9 @@ public class BeanDefinitionRegistrar {
 		return bd;
 	}
 
-	/**
-	 * Resolve the {@link ResolvableType target type} that should be associated with the
-	 * bean definition. Can return {@code null} if the resolved type is not precise enough
-	 * and may avoid some runtime optimization to take place.
-	 * @return the target type to use.
-	 */
-	private ResolvableType determineTargetType() {
-		if (this.instanceCreator instanceof Method) {
-			ResolvableType returnType = ResolvableType.forMethodReturnType((Method) instanceCreator);
-			if (hasUnresolvedGenerics(returnType)) {
-				return null;
-			}
-		}
-		if (hasUnresolvedGenerics(this.beanType)) {
-			return null;
-		}
-		return this.beanType;
-	}
-
-	private boolean hasUnresolvedGenerics(ResolvableType resolvableType) {
-		if (resolvableType.hasUnresolvableGenerics()) {
-			return true;
-		}
-		for (ResolvableType generic : resolvableType.getGenerics()) {
-			if (hasUnresolvedGenerics(generic)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private InstanceSupplierContext createInstanceSupplierContext() {
 		String resolvedBeanName = this.beanName != null ? this.beanName : createInnerBeanName();
-		return new InstanceSupplierContext(resolvedBeanName, this.beanType.toClass());
+		return new InstanceSupplierContext(resolvedBeanName, beanClass);
 	}
 
 	private String createInnerBeanName() {

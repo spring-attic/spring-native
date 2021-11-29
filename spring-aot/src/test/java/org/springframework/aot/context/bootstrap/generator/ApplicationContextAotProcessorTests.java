@@ -321,10 +321,18 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
-	void processWithGenericFactoryBean() {
+	void processWithFactoryBeanAndResolvedGeneric() {
 		ContextBootstrapStructure structure = this.tester.process(TestGenericFactoryBeanConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
-				"BeanDefinitionRegistrar.of(\"testGenericFactoryBean\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Object.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
+				"BeanDefinitionRegistrar.of(\"testStringFactoryBean\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, String.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testStringFactoryBean\")",
+				"    .instanceSupplier(() -> context.getBean(TestGenericFactoryBeanConfiguration.class).testStringFactoryBean()).register(context);");
+	}
+
+	@Test
+	void processWithFactoryBeanAndUnresolvedGeneric() {
+		ContextBootstrapStructure structure = this.tester.process(TestGenericFactoryBeanConfiguration.class);
+		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
+				"BeanDefinitionRegistrar.of(\"testGenericFactoryBean\", TestGenericFactoryBean.class).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
 				"    .instanceSupplier(() -> context.getBean(TestGenericFactoryBeanConfiguration.class).testGenericFactoryBean()).register(context);");
 	}
 

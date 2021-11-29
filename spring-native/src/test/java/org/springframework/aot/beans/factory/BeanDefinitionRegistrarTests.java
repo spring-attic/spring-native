@@ -38,6 +38,20 @@ import static org.mockito.Mockito.mock;
 class BeanDefinitionRegistrarTests {
 
 	@Test
+	void beanDefinitionWithBeanClassDoesNotSetTargetType() {
+		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.of("test", String.class).toBeanDefinition();
+		assertThat(beanDefinition.getBeanClass()).isEqualTo(String.class);
+		assertThat(beanDefinition.getTargetType()).isNull();
+	}
+
+	@Test
+	void beanDefinitionWithResolvableTypeSetsTargetType() {
+		ResolvableType targetType = ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class);
+		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.of("test", targetType).toBeanDefinition();
+		assertThat(beanDefinition.getTargetType()).isNotNull().isEqualTo(NumberHolder.class);
+	}
+
+	@Test
 	void registerWithSimpleInstanceSupplier() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		BeanDefinitionRegistrar.of("test", InjectionSample.class)
@@ -348,8 +362,7 @@ class BeanDefinitionRegistrarTests {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		// See https://github.com/spring-projects/spring-framework/issues/27727
 		context.registerBean(NumberHolderSample.class);
-		BeanDefinitionRegistrar.of("factory", ResolvableType.forClassWithGenerics(FactoryBean.class,
-						ResolvableType.forClassWithGenerics(NumberHolder.class, Object.class)))
+		BeanDefinitionRegistrar.of("factory", FactoryBean.class)
 				.withFactoryMethod(GenericFactoryBeanConfiguration.class, "integerHolderFactory")
 				.instanceSupplier(() -> new GenericFactoryBeanConfiguration().integerHolderFactory())
 				.register(context);
@@ -365,7 +378,7 @@ class BeanDefinitionRegistrarTests {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		// See https://github.com/spring-projects/spring-framework/issues/27727
 		context.registerBean(NumberHolderSample.class);
-		BeanDefinitionRegistrar.of("numberHolder", ResolvableType.forClassWithGenerics(NumberHolder.class, Object.class))
+		BeanDefinitionRegistrar.of("numberHolder", NumberHolder.class)
 				.withFactoryMethod(GenericFactoryBeanConfiguration.class, "integerHolder")
 				.instanceSupplier(() -> new GenericFactoryBeanConfiguration().integerHolder())
 				.register(context);

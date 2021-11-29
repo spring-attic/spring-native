@@ -27,4 +27,9 @@ public class TestGenericFactoryBeanConfiguration {
 		return new TestGenericFactoryBean<>("test");
 	}
 
+	@Bean
+	public TestGenericFactoryBean<String> testStringFactoryBean() {
+		return new TestGenericFactoryBean<>("test");
+	}
+
 }
