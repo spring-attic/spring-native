@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -26,6 +30,8 @@ import org.springframework.util.ReflectionUtils;
  * @author Stephane Nicoll
  */
 public class BeanDefinitionRegistrar {
+
+	private static final Log logger = LogFactory.getLog(BeanDefinitionRegistrar.class);
 
 	private final String beanName;
 
@@ -96,6 +102,9 @@ public class BeanDefinitionRegistrar {
 	}
 
 	public void register(GenericApplicationContext context) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Register bean definition with name '" + this.beanName + "'");
+		}
 		BeanDefinition beanDefinition = toBeanDefinition();
 		if (this.beanName == null) {
 			throw new IllegalStateException("Bean name not set. Could not register " + beanDefinition);
@@ -104,8 +113,13 @@ public class BeanDefinitionRegistrar {
 	}
 
 	public RootBeanDefinition toBeanDefinition() {
-		this.beanDefinition = createBeanDefinition();
-		return this.beanDefinition;
+		try {
+			this.beanDefinition = createBeanDefinition();
+			return this.beanDefinition;
+		}
+		catch (Exception ex) {
+			throw new FatalBeanException("Failed to create bean definition for bean with name '" + this.beanName + "'", ex);
+		}
 	}
 
 	private RootBeanDefinition createBeanDefinition() {

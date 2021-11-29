@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +120,10 @@ class BeanDefinitionRegistrarTests {
 				.instanceSupplier(InjectionSample::new).customize((bd) -> {
 					throw exception;
 				});
-		assertThatThrownBy(() -> registrar.register(context)).isEqualTo(exception);
+		assertThatThrownBy(() -> registrar.register(context)).isInstanceOf(FatalBeanException.class)
+				.hasMessageContaining("Failed to create bean definition for bean with name 'test'")
+				.hasMessageContaining("test exception")
+				.hasCause(exception);
 	}
 
 	@Test
@@ -130,8 +134,9 @@ class BeanDefinitionRegistrarTests {
 				.instanceSupplier(InjectionSample::new).customize((bd) -> {
 					throw exception;
 				});
-		assertThatThrownBy(() -> registrar.register(context)).isInstanceOf(RuntimeException.class)
-				.hasCause(exception);
+		assertThatThrownBy(() -> registrar.register(context)).isInstanceOf(FatalBeanException.class)
+				.hasMessageContaining("Failed to create bean definition for bean with name 'test'")
+				.hasMessageContaining("test exception");
 	}
 
 	@Test
