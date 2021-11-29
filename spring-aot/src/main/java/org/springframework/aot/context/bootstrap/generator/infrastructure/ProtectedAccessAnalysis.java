@@ -43,7 +43,7 @@ public class ProtectedAccessAnalysis {
 
 	/**
 	 * Return the privileged package name to use, or {@code null} if none is required.
-	 * @return the priviledged package name to use, or {@code null}
+	 * @return the privileged package name to use, or {@code null}
 	 */
 	public String getPrivilegedPackageName() {
 		if (isAccessible()) {

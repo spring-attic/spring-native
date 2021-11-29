@@ -243,7 +243,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 
 		/**
 		 * Write reflection and proxy config for the repository interface.
-		 * @param configuration the repository configuraiton
+		 * @param configuration the repository configuration
 		 */
 		private void writeRepositoryInterfaceConfiguration(RepositoryConfiguration configuration) {
 			// target access on methods
@@ -278,9 +278,9 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 		}
 
-		private void safelyRegister(String classname, Flag... flags) {
+		private void safelyRegister(String className, Flag... flags) {
 			try {
-				registry.reflection().forType(Class.forName(classname)).withFlags(flags);
+				registry.reflection().forType(Class.forName(className)).withFlags(flags);
 			}
 			catch (ClassNotFoundException ex) {
 				// TODO: logging?

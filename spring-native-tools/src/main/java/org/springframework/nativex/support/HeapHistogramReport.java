@@ -88,7 +88,7 @@ public class HeapHistogramReport {
 		List<String> readAllLines = null;
 		try {
 			readAllLines = Files.readAllLines(Paths.get(template));
-		} catch (FileSystemNotFoundException fsnfe) {
+		} catch (FileSystemNotFoundException ex) {
 			String[] array = template.toString().split("!");
 			FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), env);
 			Path path = fs.getPath(array[1]);

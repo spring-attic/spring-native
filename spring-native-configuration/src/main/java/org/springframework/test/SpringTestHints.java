@@ -69,7 +69,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@JdkProxyHint(types = { org.springframework.test.context.junit.jupiter.EnabledIf.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.test.context.junit.jupiter.DisabledIf.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.test.context.web.WebAppConfiguration.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
-		// TODO Determine if we still need to add a JDK proxy hint for @ComponentScan.Fiter when testing with AOT support.
+		// TODO Determine if we still need to add a JDK proxy hint for @ComponentScan.Filter when testing with AOT support.
 		@JdkProxyHint(typeNames = { "org.springframework.context.annotation.ComponentScan$Filter", "org.springframework.core.annotation.SynthesizedAnnotation" })
 	}
 )

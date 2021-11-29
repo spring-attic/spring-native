@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 class SynthesizedAnnotationNativeConfigurationProcessorTests {
 
 	@Test
-	void eventlistenerSynthesis() {
+	void eventListenerSynthesis() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(Foo.class).getBeanDefinition());
@@ -55,7 +55,7 @@ class SynthesizedAnnotationNativeConfigurationProcessorTests {
 	}
 
 	@Test
-	void responsestatusSynthesis() {
+	void responseStatusSynthesis() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
 		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(Bar.class).getBeanDefinition());

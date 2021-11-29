@@ -32,12 +32,12 @@ public class InitializationHandler extends Handler {
 		collector.addInitializationDescriptor(initializationDescriptor);
 	}
 
-	public void initializeClassesAtBuildTime(String... typenames) {
-		collector.initializeClassesAtBuildTime(typenames);
+	public void initializeClassesAtBuildTime(String... typeNames) {
+		collector.initializeClassesAtBuildTime(typeNames);
 	}
 
-	public void initializeClassesAtRunTime(String... typenames) {
-		collector.initializeClassesAtRunTime(typenames);
+	public void initializeClassesAtRunTime(String... typeNames) {
+		collector.initializeClassesAtRunTime(typeNames);
 	}
 
 	public void initializePackagesAtBuildTime(String... packageNames) {

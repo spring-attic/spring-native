@@ -50,7 +50,7 @@ public class ApplicationContextAotProcessorTester {
 	}
 
 	public ApplicationContextAotProcessorTester(Path directory) {
-		this(directory, ClassName.get("com.exemple", CLASS_NAME));
+		this(directory, ClassName.get("com.example", CLASS_NAME));
 	}
 
 	public ContextBootstrapStructure process(Class<?>... candidates) {

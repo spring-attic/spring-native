@@ -35,11 +35,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
-import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
+import org.springframework.nativex.domain.proxies.ProxiesDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
@@ -396,20 +397,20 @@ public class ConfigurationCollector {
 		}
 	}
 
-	public void initializeClassesAtRunTime(String... typenames) {
-		for (String typename: typenames) {
-			initializationDescriptor.addRuntimeClass(typename);
+	public void initializeClassesAtRunTime(String... typeNames) {
+		for (String typeName : typeNames) {
+			initializationDescriptor.addRuntimeClass(typeName);
 		}
 	}
 
-	public void initializePackagesAtBuildTime(String... packagenames) {
-		for (String packagename: packagenames) {
-			initializationDescriptor.addBuildtimePackage(packagename);
+	public void initializePackagesAtBuildTime(String... packageNames) {
+		for (String packageName : packageNames) {
+			initializationDescriptor.addBuildtimePackage(packageName);
 		}
 	}
 
-	public void initializePackagesAtRunTime(String... packagenames) {
-		for (String packagename: packagenames) {
+	public void initializePackagesAtRunTime(String... packageNames) {
+		for (String packagename : packageNames) {
 			initializationDescriptor.addRuntimePackage(packagename);
 		}
 	}

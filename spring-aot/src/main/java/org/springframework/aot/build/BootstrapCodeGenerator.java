@@ -168,9 +168,9 @@ public class BootstrapCodeGenerator {
 	 * @param resourcesDescriptor the descriptor of resource patterns to potentially cache
 	 */
 	private void buildResourcePatternCache(ResourcesDescriptor resourcesDescriptor) {
-		for (String patt : resourcesDescriptor.getPatterns()) {
-			if (patt.startsWith("^") && patt.endsWith(".*")) {
-				this.resourcePatternCache.add(Pattern.compile(patt));
+		for (String pattern : resourcesDescriptor.getPatterns()) {
+			if (pattern.startsWith("^") && pattern.endsWith(".*")) {
+				this.resourcePatternCache.add(Pattern.compile(pattern));
 			}
 		}
 	}

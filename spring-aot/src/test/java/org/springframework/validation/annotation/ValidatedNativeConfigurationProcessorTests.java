@@ -151,7 +151,7 @@ class ValidatedNativeConfigurationProcessorTests {
 	public void shouldDescribeProxiesForComponentWithValidatedInterfaceWithoutMethodAndOtherMethod() {
 		checkProxies(ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod.class,
 				null,
-				ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod.class.getName());//asrg.springframework.Validated.components.ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod");
+				ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod.class.getName());//arg.springframework.Validated.components.ComponentWithValidatedInterfaceWithoutMethodAndOtherMethod");
 	}
 
 	@Test

@@ -56,7 +56,7 @@ class ImportAwareBeanPostProcessorTests {
 	}
 
 	@Test
-	void postProcessoOnNoCandidateDoesNotInvokeCallback() {
+	void postProcessOnNoCandidateDoesNotInvokeCallback() {
 		ImportAwareBeanPostProcessor postProcessor = new ImportAwareBeanPostProcessor(
 				Map.of(String.class.getName(), ImportAwareBeanPostProcessorTests.class.getName()));
 		TestImportAware importAware = new TestImportAware();

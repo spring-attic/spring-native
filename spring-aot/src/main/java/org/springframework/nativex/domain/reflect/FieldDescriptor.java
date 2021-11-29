@@ -115,9 +115,9 @@ public final class FieldDescriptor extends MemberDescriptor {
 		return array;
 	}
 
-	public static String[] toStringArray(String fieldname, boolean allowUnsafeAccess, boolean allowWrite) {
+	public static String[] toStringArray(String fieldName, boolean allowUnsafeAccess, boolean allowWrite) {
 		String[] array = new String[3];
-		array[0] = fieldname;
+		array[0] = fieldName;
 		array[1] = Boolean.toString(allowUnsafeAccess);
 		array[2] = Boolean.toString(allowWrite);
 		return array;

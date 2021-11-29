@@ -299,7 +299,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 		return (entry) -> assertThat(entry.getFlags()).doesNotContain(flags);
 	}
 
-	private Consumer<DefaultNativeReflectionEntry.Builder> allCtors() {
+	private Consumer<DefaultNativeReflectionEntry.Builder> allConstructors() {
 		return (builder) -> {
 			DefaultNativeReflectionEntry entry = builder.build();
 			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);

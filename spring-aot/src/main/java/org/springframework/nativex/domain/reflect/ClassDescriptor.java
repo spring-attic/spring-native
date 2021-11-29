@@ -492,7 +492,7 @@ public final class ClassDescriptor {
 	}
 
 	public static ClassDescriptor of(Class<?> type) {
-		return of(computeClassname(type));
+		return of(computeClassName(type));
 	}
 	
 	// TODO Move to TypeSystem, maybe TypeName? (Although TypeName is not currently used for anything primitive).
@@ -503,7 +503,7 @@ public final class ClassDescriptor {
 	 * @param type the type for which to create a class name
 	 * @return the class name
 	 */
-	private static String computeClassname(Class<?> type) {
+	private static String computeClassName(Class<?> type) {
 		StringBuilder result = new StringBuilder();
 		String typename = type.getName();
 		int dims = 0;
