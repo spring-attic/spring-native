@@ -95,14 +95,13 @@ public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNa
 			return Collections.emptyList();
 		}
 
-		List<Type> scan = typeSystem.scan(type -> {
-			return !type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DBRef;", false).isEmpty() &&
-					!type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DocumentReference;", false).isEmpty();
-		});
+		List<Type> scan = typeSystem.scan(type ->
+				!type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DBRef;", false).isEmpty()
+				&& !type.getFieldsWithAnnotation("Lorg/springframework/data/mongodb/core/mapping/DocumentReference;", false).isEmpty());
+
 		List<HintDeclaration> hints = scan.stream()
-				.flatMap(type -> {
-					return computeAssociations(typeSystem, type);
-				}).collect(Collectors.toList());
+				.flatMap(type -> computeAssociations(typeSystem, type))
+				.collect(Collectors.toList());
 
 		return hints;
 	}
@@ -116,23 +115,26 @@ public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNa
 
 	private Stream<HintDeclaration> computeAssociations(TypeSystem typeSystem, Type type, String annotation) {
 
-		return type.getFieldsWithAnnotation(annotation, false)
-
-				.stream()
+		return type.getFieldsWithAnnotation(annotation, false).stream()
 				.filter(field -> {
-							if (field == null) {
-								return false;
-							}
-							Map<String, String> annotationValuesInHierarchy = field.getAnnotationValuesInHierarchy(annotation);
-							return annotationValuesInHierarchy.get("lazy") == "true";
+						if (field == null) {
+							return false;
 						}
-				)
+						Map<String, String> annotationValuesInHierarchy = field.getAnnotationValuesInHierarchy(annotation);
+						return "true".equals(annotationValuesInHierarchy.get("lazy"));
+				})
 				.map(field -> {
 
 					if (field.getType().isInterface()) {
 
 						HintDeclaration hintDeclaration = new HintDeclaration();
-						List<String> interfaces = new ArrayList<>(field.getSignature().stream().map(typeSystem::resolveSlashed).map(Type::getDottedName).collect(Collectors.toList()));
+						List<String> interfaces = new ArrayList<>();
+
+						field.getSignature().stream()
+								.map(typeSystem::resolveSlashed)
+								.map(Type::getDottedName)
+								.forEach(interfaces::add);
+
 						interfaces.add(0, "org.springframework.data.mongodb.core.convert.LazyLoadingProxy");
 						interfaces.add("org.springframework.aop.SpringProxy");
 						interfaces.add("org.springframework.aop.framework.Advised");
@@ -140,12 +142,16 @@ public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNa
 
 						JdkProxyDescriptor descriptor = new JdkProxyDescriptor(interfaces);
 						hintDeclaration.addProxyDescriptor(descriptor);
+
 						return hintDeclaration;
 					}
 
 					HintDeclaration hintDeclaration = new HintDeclaration();
-					AotProxyDescriptor descriptor = new AotProxyDescriptor(field.getType().getDottedName(), Collections.singletonList("org.springframework.data.mongodb.core.convert.LazyLoadingProxy"), ProxyBits.IS_STATIC);
+					AotProxyDescriptor descriptor = new AotProxyDescriptor(field.getType().getDottedName(),
+							Collections.singletonList("org.springframework.data.mongodb.core.convert.LazyLoadingProxy"),
+							ProxyBits.IS_STATIC);
 					hintDeclaration.addProxyDescriptor(descriptor);
+
 					return hintDeclaration;
 				});
 	}
