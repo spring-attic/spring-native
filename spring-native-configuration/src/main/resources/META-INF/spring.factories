@@ -125,4 +125,5 @@ org.springframework.transaction.annotation.TransactionManagementHints,\
 org.springframework.web.bind.annotation.WebAnnotationHints,\
 org.springframework.web.socket.WebSocketHints,\
 org.thymeleaf.ThymeleafHints,\
+org.yaml.snakeyaml.SnakeYamlHints,\
 reactor.core.publisher.ReactorCoreHints

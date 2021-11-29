@@ -16,12 +16,20 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import javax.servlet.Servlet;
+
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 
 @NativeHint(trigger = WebMvcAutoConfiguration.class,
+	types = {
+		@TypeHint(types = Servlet.class),
+		@TypeHint(types = ConfigurableWebApplicationContext.class)
+	},
 	resources = @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties"))
 public class WebMvcHints implements NativeConfiguration {
 }

@@ -45,32 +45,8 @@ public class ReflectionHandler extends Handler {
 	
 	private static Log logger = LogFactory.getLog(ReflectionHandler.class);
 
-	private ReflectionDescriptor constantReflectionDescriptor;
-
-	private final AotOptions aotOptions;
-
-	public ReflectionHandler(ConfigurationCollector collector, AotOptions aotOptions) {
+	public ReflectionHandler(ConfigurationCollector collector) {
 		super(collector);
-		this.aotOptions = aotOptions;
-	}
-
-	private void registerWebApplicationTypeClasses() {
-		if (ts.resolveDotted("org.springframework.web.reactive.DispatcherHandler", true) !=null && 
-			ts.resolveDotted("org.springframework.web.servlet.DispatcherServlet", true) == null && 
-			ts.resolveDotted("org.glassfish.jersey.servlet.ServletContainer", true) == null) {
-			addAccess("org.springframework.web.reactive.DispatcherHandler");
-		} else if (ts.resolveDotted("javax.servlet.Servlet", true) !=null && 
-			ts.resolveDotted("org.springframework.web.context.ConfigurableWebApplicationContext", true) != null) {
-			addAccess("javax.servlet.Servlet");
-			addAccess("org.springframework.web.context.ConfigurableWebApplicationContext");
-		}
-	}
-
-	public void register() {
-		registerWebApplicationTypeClasses();
-		if (!aotOptions.isRemoveYamlSupport()) {
-			addAccess("org.yaml.snakeyaml.Yaml", Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
-		}
 	}
 
 	/**

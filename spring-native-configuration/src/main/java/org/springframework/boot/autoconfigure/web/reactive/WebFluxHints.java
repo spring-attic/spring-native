@@ -32,7 +32,10 @@ import reactor.netty.DisposableServer;
 @NativeHint(trigger = WebFluxAutoConfiguration.class,
 	resources = @ResourceHint(patterns = "org/springframework/web/util/HtmlCharacterEntityReferences.properties"),
 	types = {
-		@TypeHint(types= HandlerResult.class),
+		@TypeHint(types = {
+				HandlerResult.class,
+				org.springframework.web.reactive.DispatcherHandler.class
+		}),
 		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
 				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
 })

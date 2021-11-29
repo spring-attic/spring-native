@@ -29,7 +29,7 @@ import org.springframework.nativex.type.TypeSystem;
  */
 public class SpringAnalyzer {
 	
-	private static Log logger = LogFactory.getLog(SpringAnalyzer.class);	
+	private static Log logger = LogFactory.getLog(SpringAnalyzer.class);
 
 	private final TypeSystem typeSystem;
 
@@ -60,7 +60,7 @@ public class SpringAnalyzer {
 		logger.debug("Spring analysis running");
 		collector = new ConfigurationCollector(aotOptions);
 
-		reflectionHandler = new ReflectionHandler(collector, aotOptions);
+		reflectionHandler = new ReflectionHandler(collector);
 		dynamicProxiesHandler = new DynamicProxiesHandler(collector);
 		initializationHandler = new InitializationHandler(collector);
 		optionHandler = new OptionHandler(collector);
@@ -83,7 +83,6 @@ public class SpringAnalyzer {
 
 		logger.info("Spring Native operating mode: " + aotOptions.toMode().toString());
 
-		reflectionHandler.register();
 		resourcesHandler.register();
 	}
 
