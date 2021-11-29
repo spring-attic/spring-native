@@ -66,12 +66,28 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 						}),
 				@TypeHint(access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS,
 						types = {
+								org.springframework.beans.factory.config.BeanExpressionContext.class,
+								org.springframework.integration.config.ConsumerEndpointFactoryBean.class,
+								org.springframework.integration.context.IntegrationContextUtils.class,
 								org.springframework.integration.xml.xpath.XPathUtils.class,
 								org.springframework.integration.json.JsonPathUtils.class,
 								com.jayway.jsonpath.JsonPath.class,
 								org.springframework.integration.gateway.MethodArgsHolder.class,
 								org.springframework.integration.routingslip.ExpressionEvaluatingRoutingSlipRouteStrategy.RequestAndReply.class,
-								org.springframework.integration.core.Pausable.class
+								org.springframework.integration.core.Pausable.class,
+								org.springframework.integration.annotation.ServiceActivator.class,
+								org.springframework.integration.annotation.Splitter.class,
+								org.springframework.integration.annotation.Transformer.class,
+								org.springframework.integration.annotation.Router.class,
+								org.springframework.integration.annotation.Filter.class,
+								org.springframework.integration.annotation.BridgeFrom.class,
+								org.springframework.integration.annotation.BridgeTo.class,
+								org.springframework.integration.annotation.Aggregator.class,
+								org.springframework.integration.annotation.Gateway.class,
+								org.springframework.integration.annotation.GatewayHeader.class,
+								org.springframework.integration.annotation.InboundChannelAdapter.class,
+								org.springframework.integration.annotation.Poller.class,
+								org.springframework.integration.annotation.Publisher.class
 						})
 		},
 		serializables = {
@@ -127,7 +143,6 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 		@TypeHint(
 				types = {
 						org.springframework.integration.core.GenericSelector.class,
-						org.springframework.messaging.support.GenericMessage.class,
 						org.springframework.integration.transformer.GenericTransformer.class,
 						org.springframework.integration.handler.GenericHandler.class,
 						java.util.function.Function.class,
@@ -187,8 +202,7 @@ public class IntegrationHints implements NativeConfiguration, TypeSystemNativeCo
 		hints.addAll(computeMessagingGatewayHints(typeSystem));
 		hints.addAll(computeAbstractEndpointHints(typeSystem));
 		hints.addAll(computeIntegrationNodeHints(typeSystem));
-		//		TODO Fails with 'Unable to find class file for org/springframework/web/server/WebFilter' on 'spring-aot-maven-plugin:test-generate'
-		//		hints.addAll(computeMessageHints(typeSystem));
+		hints.addAll(computeMessageHints(typeSystem));
 		return hints;
 	}
 
@@ -244,7 +258,7 @@ public class IntegrationHints implements NativeConfiguration, TypeSystemNativeCo
 				.skipMethodInspection()
 				.skipFieldInspection()
 				.skipConstructorInspection()
-				.filter(type -> type.implementsInterface(MESSAGE_TYPE))
+				.filter(type -> type.implementsInterface(MESSAGE_TYPE, true))
 				.onTypeDiscovered((type, context) ->
 						context.addReflectiveAccess(type,
 								new AccessDescriptor(AccessBits.CLASS | AccessBits.PUBLIC_METHODS)))

@@ -17,6 +17,7 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<spring-integration.version>5.5.7-SNAPSHOT</spring-integration.version>
 	</properties>
 
 	<dependencies>
@@ -74,5 +75,53 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<version>3.2.4</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<shadedArtifactAttached>true</shadedArtifactAttached>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.graalvm.buildtools</groupId>
+						<artifactId>native-maven-plugin</artifactId>
+						<version>${native.buildtools.version}</version>
+						<configuration>
+							<skip>false</skip>
+							<imageName>${project.artifactId}</imageName>
+							<mainClass>${exec.mainClass}</mainClass>
+							<buildArgs>
+								<buildArg>--no-fallback</buildArg>
+							</buildArgs>
+							<classpath>
+								<param>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</param>
+							</classpath>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

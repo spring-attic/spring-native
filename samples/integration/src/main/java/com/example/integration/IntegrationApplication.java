@@ -3,6 +3,7 @@ package com.example.integration;
 import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -15,6 +16,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -39,6 +42,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.netty.resolver.DefaultAddressResolverGroup;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
+import reactor.netty.resources.LoopResources;
 
 @SpringBootApplication
 @EnableMessageHistory("dateChannel")
@@ -80,6 +87,25 @@ public class IntegrationApplication {
 
 		System.out.println("CURRENT INTEGRATION GRAPH:\n" + integrationGraph);
 	}
+
+	@Bean
+	ReactorResourceFactory reactorClientResourceFactory() {
+		return new ReactorResourceFactory();
+	}
+
+	@Bean
+	ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory) {
+		ConnectionProvider provider = reactorResourceFactory.getConnectionProvider();
+		LoopResources resources = reactorResourceFactory.getLoopResources();
+		Function<HttpClient, HttpClient> mapper =
+				httpClient -> httpClient.resolver(DefaultAddressResolverGroup.INSTANCE);
+		HttpClient httpClient =
+				mapper.apply(HttpClient.create(provider))
+						.tcpConfiguration(tcpClient -> tcpClient.runOn(resources));
+
+		return new ReactorClientHttpConnector(httpClient);
+	}
+
 
 	@Bean
 	MeterRegistry simpleMeterRegistry() {
