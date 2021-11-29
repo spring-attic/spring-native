@@ -62,6 +62,8 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
@@ -74,10 +76,14 @@ import org.springframework.util.Assert;
 
 /**
  * Simple type system with some rudimentary caching.
+ *
+ * @deprecated {@link NativeConfiguration}, {@link BeanFactoryNativeConfigurationProcessor} or
+ * {@link BeanNativeConfigurationProcessor} should be used instead.
  * 
  * @author Andy Clement
  */
-		public class TypeSystem {
+@Deprecated
+public class TypeSystem {
 
 	private static Log logger = LogFactory.getLog(TypeSystem.class);
 
