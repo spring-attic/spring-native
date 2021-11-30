@@ -86,7 +86,6 @@ public class PrePostSecuredNativeConfigurationProcessor implements BeanFactoryNa
 	static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-
 			new BeanFactoryProcessor(beanFactory).processBeans(
 					(beanType) -> isPrePostSecured(beanType, SearchStrategy.TYPE_HIERARCHY),
 					(beanName, beanType) -> {
