@@ -121,6 +121,19 @@ public class KafkaAvroNativeConfigurationProcessorTests {
 		assertThat(entries).hasSize(2);
 	}
 
+	@Test
+	void notAComponent() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class)
+				.getBeanDefinition());
+		beanFactory.registerBeanDefinition("myListener", BeanDefinitionBuilder
+				.rootBeanDefinition(NotAComponentListener5.class)
+				.getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) ->
+				assertThat(entry.getType()).isSameAs(AvroType3.class));
+	}
+
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new KafkaAvroNativeConfigurationProcessor().process(beanFactory, registry);
@@ -172,12 +185,24 @@ public class KafkaAvroNativeConfigurationProcessorTests {
 
 	}
 
+	static class NotAComponentListener5 {
+
+		@KafkaListener
+		void listen(AvroType3 avro) {
+		}
+
+	}
+
 	@AvroGenerated
 	private static final class AvroType1 {
 	}
 
 	@AvroGenerated
 	private static final class AvroType2 {
+	}
+
+	@AvroGenerated
+	private static final class AvroType3 {
 	}
 
 }

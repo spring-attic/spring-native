@@ -41,7 +41,8 @@ public class KafkaAvroApplication {
 	}
 
 	@Bean
-	public ConcurrentMessageListenerContainer<Object, Object> manualListenerContainer(MyMessageListener listener,
+	public ConcurrentMessageListenerContainer<Object, Object> manualListenerContainer(
+			NotAComponentMessageListener listener,
 			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 
 		factory.setCommonErrorHandler(new CommonContainerStoppingErrorHandler());
@@ -49,6 +50,11 @@ public class KafkaAvroApplication {
 		container.getContainerProperties().setGroupId("graal3");
 		container.getContainerProperties().setMessageListener(listener);
 		return container;
+	}
+
+	@Bean
+	NotAComponentMessageListener otherListner() {
+		return new NotAComponentMessageListener();
 	}
 
 	@Bean
@@ -82,8 +88,7 @@ class RecordListener {
 
 }
 
-@Component
-class MyMessageListener implements MessageListener<String, Thing3> {
+class NotAComponentMessageListener implements MessageListener<String, Thing3> {
 
 	@Override
 	public void onMessage(ConsumerRecord<String, Thing3> record) {
