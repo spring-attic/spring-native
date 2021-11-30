@@ -17,7 +17,9 @@
 package org.springframework.transaction.annotation;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +27,8 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -58,8 +60,8 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 		}
 	}
 
-	private static boolean isTransactional(Class<?> type) {
-		return hasTransactionAnnotation(type, new HashSet<>());
+	private static boolean isTransactional(Class<?> beanType) {
+		return hasTransactionAnnotation(beanType, new HashSet<>());
 	}
 	
 	/**
@@ -148,11 +150,11 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			NativeConfigurationUtils.doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans(TransactionalNativeConfigurationProcessor::isTransactional,
 				(beanName, beanType) -> {
 					if (hasInterfaceMethods(beanType)) {
 					    LinkedHashSet<String> interfaces = new LinkedHashSet<>();
-						collectInterfaces(beanType, interfaces);// new ArrayList<>();
+						collectInterfaces(beanType, interfaces);
 						// jdbc-tx sample requires this kind of JDK Proxy
 						//  [interface org.springframework.boot.CommandLineRunner, 
 						//   interface app.main.Finder, 
@@ -173,9 +175,6 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 						logger.debug("creating AOTProxy for this class: "+beanType.getName());
 						registry.proxy().add(NativeProxyEntry.ofClass(beanType,ProxyBits.IS_STATIC));
 					}
-				},
-				(beanName, beanType) -> {
-					return isTransactional(beanType);
 				});
 		}
 	}
