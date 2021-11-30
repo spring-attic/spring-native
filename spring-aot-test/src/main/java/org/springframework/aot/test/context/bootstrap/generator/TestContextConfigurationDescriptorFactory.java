@@ -31,6 +31,7 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
 import org.springframework.test.context.support.DefaultBootstrapContext;
+import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 
 /**
  * Creates a {@link TestContextConfigurationDescriptor} with a configurable strategy to
@@ -99,11 +100,9 @@ class TestContextConfigurationDescriptorFactory {
 	private Class<? extends TestContextBootstrapper> getTestContextBootstrapperType(Class<?> testClass) {
 		MergedAnnotations annotations = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS);
 		MergedAnnotation<BootstrapWith> annotation = annotations.get(BootstrapWith.class);
-		if (annotation.isPresent()) {
-			return (Class<? extends TestContextBootstrapper>) annotation.getClass("value");
-		}
-		throw new IllegalArgumentException("'" + testClass.getName()
-				+ "' is not a Spring test class, @BootstrapWith annotation not found");
+		return (annotation.isPresent())
+				? (Class<? extends TestContextBootstrapper>) annotation.getClass("value")
+				: DefaultTestContextBootstrapper.class;
 	}
 
 }

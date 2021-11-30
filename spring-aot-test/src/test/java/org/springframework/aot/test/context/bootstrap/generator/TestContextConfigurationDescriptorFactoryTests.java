@@ -27,16 +27,17 @@ import org.springframework.aot.test.samples.app.SampleApplication;
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.aot.test.samples.simple.SimpleSpringTests;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.support.AbstractTestContextBootstrapper;
+import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 import org.springframework.test.context.support.DelegatingSmartContextLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -90,10 +91,9 @@ class TestContextConfigurationDescriptorFactoryTests {
 	}
 
 	@Test
-	void createTestContextBootstrapForNonSpringTest() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.createTestContextBootstrapper(String.class))
-				.withMessageContaining(String.class.getName())
-				.withMessageContaining("is not a Spring test class, @BootstrapWith annotation not found");
+	void createTestContextBootstrapperWithNoSpecificBootstrapperUsesDefault() {
+		assertThat(this.factory.createTestContextBootstrapper(SimpleSpringTests.class))
+				.isExactlyInstanceOf(DefaultTestContextBootstrapper.class);
 	}
 
 	@Test

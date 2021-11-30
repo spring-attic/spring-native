@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.example.commandlinerunner;
+package elsewhere;
 
-import elsewhere.FooBeanFactoryConfiguration;
+import com.example.commandlinerunner.FooBean;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
-@Import({ FooBeanFactoryConfiguration.class, ConditionalConfig.class })
-public class Application {
-	
-	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(Application.class, args);
-		Thread.currentThread().join(); // To be able to measure memory consumption
-	}
-	
+@Configuration
+public class FooBeanFactoryConfiguration {
+    @Bean
+    public FooBean fooBeanFactory() {
+        return new FooBean(); 
+    }
 }
