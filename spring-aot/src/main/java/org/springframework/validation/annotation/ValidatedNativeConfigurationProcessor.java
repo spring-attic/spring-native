@@ -24,8 +24,8 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -57,11 +57,11 @@ public class ValidatedNativeConfigurationProcessor implements BeanFactoryNativeC
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			NativeConfigurationUtils.doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans(this::isValidated,
 				(beanName, beanType) -> {
 					if (TransactionalNativeConfigurationProcessor.hasInterfaceMethods(beanType)) {
-					    LinkedHashSet<String> interfaces = new LinkedHashSet<>();
-					    TransactionalNativeConfigurationProcessor.collectInterfaces(beanType, interfaces);
+						LinkedHashSet<String> interfaces = new LinkedHashSet<>();
+						TransactionalNativeConfigurationProcessor.collectInterfaces(beanType, interfaces);
 						if (interfaces.size()!=0) {
 							interfaces.add(SpringProxy.class.getName());
 							interfaces.add(Advised.class.getName());
@@ -73,12 +73,13 @@ public class ValidatedNativeConfigurationProcessor implements BeanFactoryNativeC
 						logger.debug("creating AOTProxy for this class: "+beanType.getName());
 						registry.proxy().add(NativeProxyEntry.ofClass(beanType,ProxyBits.IS_STATIC));
 					}
-				},
-				(beanName, beanType) -> {
-		            MergedAnnotations mergedAnnotations = MergedAnnotations.from(beanType,SearchStrategy.TYPE_HIERARCHY);
-		            return mergedAnnotations.get(VALIDATED_CLASS_NAME).isPresent();
 				});
 		}
+
+		public boolean isValidated(Class<?> beanType) {
+			MergedAnnotations mergedAnnotations = MergedAnnotations.from(beanType,SearchStrategy.TYPE_HIERARCHY);
+			return mergedAnnotations.get(VALIDATED_CLASS_NAME).isPresent();
+		}
 	}
-	
+
 }
