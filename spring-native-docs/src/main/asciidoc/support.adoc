@@ -124,6 +124,9 @@ implementation("org.springframework.boot:spring-boot-starter-actuator") {
 
 ==== Starters requiring no special dependency management
 
+* `spring-boot-starter-batch`
+** May require some additional hints, see https://github.com/spring-projects-experimental/spring-native/blob/main/samples/batch-io/src/main/java/com/example/batch/BatchApplication.java[`batch-io` sample].
+** See https://github.com/spring-projects-experimental/spring-native/issues/459[related #459 issue] about supporting class that implements multiple interfaces.
 * `spring-boot-starter-data-elasticsearch`
 * `spring-boot-starter-data-jdbc`
 * `spring-boot-starter-data-jpa`
