@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.aot.test;
 
 import java.util.HashMap;
@@ -6,7 +22,7 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.test.boot.SpringBootAotContextLoader;
+import org.springframework.aot.test.boot.AotSpringBootConfigContextLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.SmartContextLoader;
@@ -25,7 +41,7 @@ class AotContextLoaderTests {
 	void loadWithClassNameFindMatchingContextLoader() {
 		AotContextLoader aotContextLoader = new AotContextLoader(TestMapping.class.getName());
 		assertThat(aotContextLoader.getContextLoader(AotContextLoaderTests.class)).isNotNull()
-				.isInstanceOf(SpringBootAotContextLoader.class);
+				.isInstanceOf(AotSpringBootConfigContextLoader.class);
 	}
 
 	@Test
@@ -51,8 +67,8 @@ class AotContextLoaderTests {
 
 		public static Map<String, Supplier<SmartContextLoader>> getContextLoaders() {
 			Map<String, Supplier<SmartContextLoader>> entries = new HashMap<>();
-			entries.put(AotContextLoaderTests.class.getName(), () -> new SpringBootAotContextLoader(TestApplicationContextInitializer.class));
-			entries.put("com.example.SampleTests", () -> new SpringBootAotContextLoader(TestApplicationContextInitializer.class));
+			entries.put(AotContextLoaderTests.class.getName(), () -> new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class));
+			entries.put("com.example.SampleTests", () -> new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class));
 			return entries;
 		}
 	}

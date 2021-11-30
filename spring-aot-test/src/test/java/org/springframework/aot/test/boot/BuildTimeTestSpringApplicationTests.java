@@ -31,24 +31,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link TestContextGeneratorSpringApplication}.
+ * Tests for {@link BuildTimeTestSpringApplication}.
  *
  * @author Stephane Nicoll
  */
-class TestContextGeneratorSpringApplicationTests {
+class BuildTimeTestSpringApplicationTests {
 
 	@Test
 	void runDoesNotRefreshContext() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		GenericApplicationContext context = application.run();
 		assertThat(context.isRunning()).isFalse();
-		assertThat(context.getBeanDefinitionNames()).contains("testContextGeneratorSpringApplicationTests.TestConfiguration")
+		assertThat(context.getBeanDefinitionNames()).contains("buildTimeTestSpringApplicationTests.TestConfiguration")
 				.doesNotContain("sampleBean");
 	}
 
 	@Test
 	void runWithDefaultSettings() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		GenericApplicationContext context = application.run();
 		assertThat(context.getBeanFactory()).isInstanceOfSatisfying(DefaultListableBeanFactory.class,
 				(beanFactory) -> assertThat(beanFactory.isAllowBeanDefinitionOverriding()).isFalse());
@@ -58,7 +58,7 @@ class TestContextGeneratorSpringApplicationTests {
 
 	@Test
 	void runPreserveCustomEnvironment() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		MockEnvironment environment = new MockEnvironment();
 		application.setEnvironment(environment);
 		GenericApplicationContext context = application.run();
@@ -67,7 +67,7 @@ class TestContextGeneratorSpringApplicationTests {
 
 	@Test
 	void runSetAllowBeanDefinitionOverriding() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		application.setAllowBeanDefinitionOverriding(true);
 		GenericApplicationContext context = application.run();
 		assertThat(context.getBeanFactory()).isInstanceOfSatisfying(DefaultListableBeanFactory.class,
@@ -76,7 +76,7 @@ class TestContextGeneratorSpringApplicationTests {
 
 	@Test
 	void runSetLazyInitialization() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		application.setLazyInitialization(true);
 		GenericApplicationContext context = application.run();
 		assertThat(context.getBeanFactoryPostProcessors()).anySatisfy(
@@ -86,14 +86,14 @@ class TestContextGeneratorSpringApplicationTests {
 
 	@Test
 	void runWithInvalidMainProperty() {
-		TestContextGeneratorSpringApplication application = newSpringApplication(TestConfiguration.class);
+		BuildTimeTestSpringApplication application = newSpringApplication(TestConfiguration.class);
 		application.setEnvironment(new MockEnvironment().withProperty("spring.main.web-application-type", "INVALID_TYPE"));
 		assertThatIllegalStateException().isThrownBy(application::run)
 				.withMessageContaining("Cannot bind to SpringApplication");
 	}
 
-	private TestContextGeneratorSpringApplication newSpringApplication(Class<?>... classes) {
-		TestContextGeneratorSpringApplication application = new TestContextGeneratorSpringApplication();
+	private BuildTimeTestSpringApplication newSpringApplication(Class<?>... classes) {
+		BuildTimeTestSpringApplication application = new BuildTimeTestSpringApplication();
 		application.addPrimarySources(Arrays.asList(classes));
 		return application;
 	}

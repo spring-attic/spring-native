@@ -29,16 +29,16 @@ import org.springframework.test.context.support.DefaultBootstrapContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BuildTimeSpringBootContextLoader}.
+ * Tests for {@link SpringBootBuildTimeConfigContextLoader}.
  *
  * @author Stephane Nicoll
  */
-class BuildTimeSpringBootContextLoaderTests {
+class SpringBootBuildTimeConfigContextLoaderTests {
 
-	private final BuildTimeSpringBootContextLoader contextLoader = new BuildTimeSpringBootContextLoader();
+	private final SpringBootBuildTimeConfigContextLoader contextLoader = new SpringBootBuildTimeConfigContextLoader();
 
 	@Test
-	void loadSpringBootTest() {
+	void loadContextForSpringBootTest() {
 		GenericApplicationContext context = loadContext(SampleApplicationTests.class);
 		assertThat(context.isRunning()).isFalse();
 	}

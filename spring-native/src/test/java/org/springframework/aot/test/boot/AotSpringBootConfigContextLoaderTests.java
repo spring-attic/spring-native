@@ -42,15 +42,15 @@ import org.springframework.test.context.support.DefaultBootstrapContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootAotContextLoader}.
+ * Tests for {@link AotSpringBootConfigContextLoader}.
  *
  * @author Stephane Nicoll
  */
-class SpringBootAotContextLoaderTests {
+class AotSpringBootConfigContextLoaderTests {
 
 	@Test
 	void loadContextUsesApplicationContextInitializer() {
-		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class);
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class);
 		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
 			assertThat(context).hasNotFailed().hasBean("testBean").hasSingleBean(String.class);
 			assertThat(context.getBean(String.class)).isEqualTo(TestApplicationContextInitializer.TEST_BEAN);
@@ -59,7 +59,7 @@ class SpringBootAotContextLoaderTests {
 
 	@Test
 	void loadContextUsesApplicationContextInitializerAndWebSettings() {
-		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class,
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class,
 				WebApplicationType.SERVLET, WebEnvironment.MOCK);
 		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
 			assertThat(context).hasNotFailed().hasBean("testBean").hasSingleBean(String.class);
@@ -69,7 +69,7 @@ class SpringBootAotContextLoaderTests {
 
 	@Test
 	void loadContextUseTestProperties() {
-		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class);
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class);
 		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
 			ConfigurableEnvironment environment = context.getEnvironment();
 			assertThat(environment.containsProperty("test.property")).isTrue();
@@ -79,8 +79,8 @@ class SpringBootAotContextLoaderTests {
 
 	@Test
 	void loadContextSetActiveProfiles() {
-		SpringBootAotContextLoader loader = new SpringBootAotContextLoader(TestApplicationContextInitializer.class);
-		run(() -> loader.loadContext(createMergedContextConfiguration(SampleProfileTest.class)), (context) ->
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class);
+		run(() -> loader.loadContext(createMergedContextConfiguration(SampleProfilesTest.class)), (context) ->
 				assertThat(context.getEnvironment().getActiveProfiles()).containsOnly("profile1", "profile2"));
 	}
 
@@ -104,7 +104,7 @@ class SpringBootAotContextLoaderTests {
 
 	@DataJpaTest
 	@ActiveProfiles({ "profile1", "profile2" })
-	static class SampleProfileTest {
+	static class SampleProfilesTest {
 
 	}
 

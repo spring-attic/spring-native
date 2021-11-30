@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  */
-class TestContextGeneratorSpringApplication extends SpringApplication {
+class BuildTimeTestSpringApplication extends SpringApplication {
 
 	private ConfigurableEnvironment environment;
 

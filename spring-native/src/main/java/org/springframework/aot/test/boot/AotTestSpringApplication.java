@@ -34,9 +34,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  *
  * @author Stephane Nicoll
  */
-class SpringTestApplication extends SpringApplication {
+class AotTestSpringApplication extends SpringApplication {
 
-	public SpringTestApplication(ClassLoader classLoader,
+	public AotTestSpringApplication(ClassLoader classLoader,
 			Class<? extends ApplicationContextInitializer<?>> testContextInitializer) {
 		setResourceLoader(new DefaultResourceLoader(classLoader));
 		setInitializers(mergeInitializers(classLoader, testContextInitializer));

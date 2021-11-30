@@ -43,7 +43,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 @Order(0)
 class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 
-	private final BuildTimeSpringBootContextLoader contextLoader = new BuildTimeSpringBootContextLoader();
+	private final SpringBootBuildTimeConfigContextLoader contextLoader = new SpringBootBuildTimeConfigContextLoader();
 
 	@Override
 	public boolean supports(TestContextBootstrapper bootstrapper) {
@@ -63,7 +63,7 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 	@Override
 	public CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer) {
 		Builder code = CodeBlock.builder();
-		code.add("() -> new $T($T.class", SpringBootAotContextLoader.class, applicationContextInitializer);
+		code.add("() -> new $T($T.class", AotSpringBootConfigContextLoader.class, applicationContextInitializer);
 		WebApplicationType webApplicationType = detectWebApplicationType(config);
 		if (webApplicationType.equals(WebApplicationType.NONE)) {
 			code.add(")");

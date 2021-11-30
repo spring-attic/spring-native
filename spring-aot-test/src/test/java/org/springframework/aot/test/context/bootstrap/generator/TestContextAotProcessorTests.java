@@ -28,6 +28,7 @@ import org.springframework.aot.test.context.bootstrap.generator.test.TestContext
 import org.springframework.aot.test.samples.app.SampleApplicationAnotherTests;
 import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
+import org.springframework.aot.test.samples.simple.SimpleSpringTests;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.Flag;
@@ -84,13 +85,14 @@ class TestContextAotProcessorTests {
 	@Test
 	void processWritesContextLoaderMappingAtStandardLocation() {
 		ContextBootstrapStructure structure = this.tester.process(
-				SampleApplicationTests.class, SampleApplicationAnotherTests.class);
+				SampleApplicationTests.class, SampleApplicationAnotherTests.class, SimpleSpringTests.class);
 		assertThat(structure).contextBootstrapInitializer("TestContextBootstrapInitializer")
 				.removeIndent(1).lines().containsSubsequence(
 						"public static Map<String, Supplier<SmartContextLoader>> getContextLoaders() {",
 						"  Map<String, Supplier<SmartContextLoader>> entries = new HashMap<>();",
-						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", () -> new SpringBootAotContextLoader(TestContextBootstrapInitializer0.class));",
-						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", () -> new SpringBootAotContextLoader(TestContextBootstrapInitializer0.class));",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", () -> new AotSpringBootConfigContextLoader(TestContextBootstrapInitializer0.class));",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", () -> new AotSpringBootConfigContextLoader(TestContextBootstrapInitializer0.class));",
+						"  entries.put(\"org.springframework.aot.test.samples.simple.SimpleSpringTests\", () -> new AotDefaultConfigContextLoader(SimpleSpringTestsContextInitializer.class));",
 						"  return entries;",
 						"}");
 	}

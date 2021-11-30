@@ -27,7 +27,7 @@ import org.springframework.test.context.MergedContextConfiguration;
  *
  * @author Stephane Nicoll
  */
-class BuildTimeSpringBootContextLoader extends SpringBootContextLoader {
+class SpringBootBuildTimeConfigContextLoader extends SpringBootContextLoader {
 
 	@Override
 	public GenericApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
@@ -36,7 +36,7 @@ class BuildTimeSpringBootContextLoader extends SpringBootContextLoader {
 
 	@Override
 	protected SpringApplication getSpringApplication() {
-		return new TestContextGeneratorSpringApplication();
+		return new BuildTimeTestSpringApplication();
 	}
 
 }

@@ -99,8 +99,8 @@ class SpringBootAotTestContextProcessorTests {
 		MergedContextConfiguration contextConfiguration = mock(MergedContextConfiguration.class);
 		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
 		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
-				.hasImport(SpringBootAotContextLoader.class)
-				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class)");
+				.hasImport(AotSpringBootConfigContextLoader.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class)");
 	}
 
 	@Test
@@ -108,8 +108,8 @@ class SpringBootAotTestContextProcessorTests {
 		WebMergedContextConfiguration contextConfiguration = mock(WebMergedContextConfiguration.class);
 		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
 		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
-				.hasImport(SpringBootAotContextLoader.class).hasImport(WebApplicationType.class)
-				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.MOCK)");
+				.hasImport(AotSpringBootConfigContextLoader.class).hasImport(WebApplicationType.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.MOCK)");
 	}
 
 	@Test
@@ -117,8 +117,8 @@ class SpringBootAotTestContextProcessorTests {
 		WebMergedContextConfiguration contextConfiguration = mock(WebMergedContextConfiguration.class);
 		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationIntegrationTests.class);
 		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
-				.hasImport(SpringBootAotContextLoader.class)
-				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.RANDOM_PORT)");
+				.hasImport(AotSpringBootConfigContextLoader.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.RANDOM_PORT)");
 	}
 
 	@Test
@@ -126,8 +126,8 @@ class SpringBootAotTestContextProcessorTests {
 		ReactiveWebMergedContextConfiguration contextConfiguration = mock(ReactiveWebMergedContextConfiguration.class);
 		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
 		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
-				.hasImport(SpringBootAotContextLoader.class)
-				.isEqualTo("() -> new SpringBootAotContextLoader(com.example.Test.class, WebApplicationType.REACTIVE, SpringBootTest.WebEnvironment.MOCK)");
+				.hasImport(AotSpringBootConfigContextLoader.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, WebApplicationType.REACTIVE, SpringBootTest.WebEnvironment.MOCK)");
 	}
 
 	private TestContextBootstrapper createSpringBootTestContextBootstrapper(Class<?> testClass) {

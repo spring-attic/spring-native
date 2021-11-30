@@ -47,7 +47,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  *
  * @author Stephane Nicoll
  */
-public class SpringBootAotContextLoader extends SpringBootContextLoader {
+public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 
 	private final Class<? extends ApplicationContextInitializer<?>> testContextInitializer;
 
@@ -62,7 +62,7 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 	 * @param webApplicationType the {@link WebApplicationType} to use for the context
 	 * @param webEnvironment the {@link WebEnvironment} to use for the context
 	 */
-	public SpringBootAotContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer,
+	public AotSpringBootConfigContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer,
 			WebApplicationType webApplicationType, WebEnvironment webEnvironment) {
 		this.testContextInitializer = testContextInitializer;
 		this.webApplicationType = webApplicationType;
@@ -74,7 +74,7 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 	 * a non-web context.
 	 * @param testContextInitializer the context initializer to use
 	 */
-	public SpringBootAotContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer) {
+	public AotSpringBootConfigContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer) {
 		this(testContextInitializer, WebApplicationType.NONE, WebEnvironment.NONE);
 	}
 
@@ -83,7 +83,7 @@ public class SpringBootAotContextLoader extends SpringBootContextLoader {
 		// TODO: handle application arguments
 		String[] args = new String[0];
 
-		SpringApplication application = new SpringTestApplication(config.getTestClass().getClassLoader(), testContextInitializer);
+		SpringApplication application = new AotTestSpringApplication(config.getTestClass().getClassLoader(), testContextInitializer);
 		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(Collections.singleton(testContextInitializer.getName()));
 		ConfigurableEnvironment environment = getEnvironment();
