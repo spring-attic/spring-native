@@ -33,12 +33,14 @@ import picocli.CommandLine.Parameters;
 import org.springframework.aot.build.AotPhase;
 import org.springframework.aot.build.ApplicationStructure;
 import org.springframework.aot.build.BootstrapCodeGenerator;
+import org.springframework.aot.build.BootstrapContributor;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
@@ -80,7 +82,8 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 			loggingSystem.setLogLevel(null, LogLevel.DEBUG);
 		}
 
-		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
+		List<BootstrapContributor> bootstrapContributors = SpringFactoriesLoader.loadFactories(BootstrapContributor.class, classLoader);
+		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions, bootstrapContributors);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
 				Arrays.asList(this.testClassesFolders), null, null, testClassesNames, Arrays.asList(classPath), classLoader);

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.aot.build.BootstrapContributor;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.aot.context.origin.BeanDefinitionOriginAnalyzer;
@@ -59,6 +60,7 @@ class IgnoredFactoriesCodeContributorTests {
 				springFactory(BeanRegistrationWriterSupplier.class),
 				springFactory(BeanDefinitionOriginAnalyzer.class),
 				springFactory(NativeConfiguration.class),
+				springFactory(BootstrapContributor.class),
 				springFactory(ContextCustomizerFactory.class,
 						"org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory"),
 				springFactory(ContextCustomizerFactory.class,

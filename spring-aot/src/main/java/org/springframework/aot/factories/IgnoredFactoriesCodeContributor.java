@@ -43,7 +43,8 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 			"org.springframework.boot.autoconfigure.AutoConfigurationImportFilter",
 			"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
 			"org.springframework.context.annotation.BeanDefinitionPostProcessor",
-			"org.springframework.nativex.type.NativeConfiguration");
+			"org.springframework.nativex.type.NativeConfiguration",
+			"org.springframework.aot.build.BootstrapContributor");
 
 	private static final Predicate<SpringFactory> CONTEXT_CUSTOMIZER_FACTORY = factoryEntry(
 			"org.springframework.test.context.ContextCustomizerFactory",

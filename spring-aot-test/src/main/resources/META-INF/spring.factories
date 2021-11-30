@@ -4,3 +4,6 @@ org.springframework.aot.test.context.support.DefaultAotTestContextProcessor
 
 org.springframework.aot.test.context.bootstrap.generator.nativex.TestConfigurationNativeConfigurationProcessor=\
 org.springframework.aot.test.boot.SpringBootTestConfigurationNativeConfigurationProcessor
+
+org.springframework.aot.build.BootstrapContributor=\
+org.springframework.aot.test.build.TestContextBootstrapContributor

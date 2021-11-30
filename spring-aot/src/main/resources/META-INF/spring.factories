@@ -42,3 +42,9 @@ org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitio
 org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyBeanDefinitionOriginAnalyzer,\
 org.springframework.boot.web.server.WebServerFactoryAutoConfigurationBeanDefinitionOriginAnalyzer,\
 org.springframework.context.annotation.CoreBeanDefinitionOriginAnalyzer
+
+org.springframework.aot.build.BootstrapContributor=\
+org.springframework.aot.build.ContextBootstrapContributor,\
+org.springframework.aot.factories.SpringFactoriesContributor,\
+org.springframework.aot.nativex.ConfigurationContributor,\
+org.springframework.aot.factories.ModifiedSpringApplicationContributor

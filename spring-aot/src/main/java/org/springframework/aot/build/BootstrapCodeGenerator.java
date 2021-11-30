@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.ServiceLoader;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -56,10 +56,13 @@ public class BootstrapCodeGenerator {
 
 	private final AotOptions aotOptions;
 
+	private final List<BootstrapContributor> bootstrapContributors;
+
 	private final Set<Pattern> resourcePatternCache = new HashSet<>();
 
-	public BootstrapCodeGenerator(AotOptions aotOptions) {
+	public BootstrapCodeGenerator(AotOptions aotOptions, List<BootstrapContributor> bootstrapContributors) {
 		this.aotOptions = aotOptions;
+		this.bootstrapContributors = bootstrapContributors;
 	}
 
 	public void generate(AotPhase aotPhase, ApplicationStructure structure) throws IOException {
@@ -82,8 +85,7 @@ public class BootstrapCodeGenerator {
 		// TODO temporary whilst migrating the inferencing to Aot land
 		TypeSystem.setDefaultAotOptions(aotOptions);
 
-		ServiceLoader<BootstrapContributor> contributors = ServiceLoader.load(BootstrapContributor.class);
-		for (BootstrapContributor contributor : contributors) {
+		for (BootstrapContributor contributor : this.bootstrapContributors) {
 			if (contributor.supportsAotPhase(aotPhase)) {
 				logger.debug("Executing Contributor: " + contributor.getClass().getName());
 				contributor.contribute(buildContext, this.aotOptions);

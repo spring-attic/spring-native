@@ -35,6 +35,7 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
@@ -98,7 +99,8 @@ public class GenerateBootstrapCommand implements Callable<Integer> {
 			loggingSystem.setLogLevel(null, LogLevel.DEBUG);
 		}
 
-		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions);
+		List<BootstrapContributor> bootstrapContributors = SpringFactoriesLoader.loadFactories(BootstrapContributor.class, classLoader);
+		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions, bootstrapContributors);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
 				this.classesPaths, this.mainClass, this.applicationClass, Collections.emptyList(), Arrays.asList(classPath), classLoader);
