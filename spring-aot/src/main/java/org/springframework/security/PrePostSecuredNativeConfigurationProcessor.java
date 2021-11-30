@@ -27,8 +27,8 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -86,7 +86,8 @@ public class PrePostSecuredNativeConfigurationProcessor implements BeanFactoryNa
 	static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			NativeConfigurationUtils.doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans(
+					(beanType) -> isPrePostSecured(beanType, SearchStrategy.TYPE_HIERARCHY),
 					(beanName, beanType) -> {
 						// Check if it is an interface or the PrePost annotations are not directly on this 'class' (in which
 						// case we assume it is on a super interface - this is not perfect)
@@ -106,8 +107,8 @@ public class PrePostSecuredNativeConfigurationProcessor implements BeanFactoryNa
 							logger.debug("creating AOTProxy for this class: " + beanType.getName());
 							registry.proxy().add(NativeProxyEntry.ofClass(beanType, ProxyBits.IS_STATIC));
 						}
-					},
-					(beanName, beanType) -> isPrePostSecured(beanType, SearchStrategy.TYPE_HIERARCHY));
+					}
+			);
 		}
 	}
 }

@@ -182,6 +182,25 @@ class PrePostSecuredNativeConfigurationProcessorTests {
 		assertThat(aotProxyDescriptor.getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
 	}
 
+	@Test
+	void preAuthorizeAnnotationOnNonComponent() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("endpoint", BeanDefinitionBuilder.rootBeanDefinition(PreAuthorizeNonComponent.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		Set<NativeProxyEntry> proxyEntries = registry.proxy().getEntries();
+		assertThat(proxyEntries).hasSize(1);
+		ProxiesDescriptor proxiesDescriptor = registry.proxy().toProxiesDescriptor();
+		Set<JdkProxyDescriptor> proxyDescriptors = proxiesDescriptor.getProxyDescriptors();
+		assertThat(proxyDescriptors).hasSize(1);
+		JdkProxyDescriptor proxyDescriptor = proxyDescriptors.iterator().next();
+		assertThat(proxyDescriptor).isInstanceOf(AotProxyDescriptor.class);
+		AotProxyDescriptor aotProxyDescriptor = (AotProxyDescriptor) proxyDescriptor;
+		assertThat(aotProxyDescriptor.getTargetClassType()).isEqualTo(PreAuthorizeNonComponent.class.getName());
+		assertThat(aotProxyDescriptor.getInterfaceTypes()).isEmpty();
+		assertThat(aotProxyDescriptor.getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
+	}
+
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new PrePostSecuredNativeConfigurationProcessor().process(beanFactory, registry);
@@ -244,6 +263,12 @@ class PrePostSecuredNativeConfigurationProcessorTests {
 		@PostFilter("filterObject.length > 5")
 		public List<String> foo() {
 			return Collections.emptyList();
+		}
+	}
+
+	static class PreAuthorizeNonComponent {
+		@PreAuthorize("hasRole('ADMIN')")
+		public void foo() {
 		}
 	}
 }
