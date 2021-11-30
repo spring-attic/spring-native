@@ -64,12 +64,10 @@ public class BatchConfiguration {
 	@Bean
 	// We advice users to return the concrete implementation for use cases like this where a bean is Step or Job scoped
 	// and implement multiple interfaces.
+	// TODO See https://github.com/spring-projects-experimental/spring-native/issues/459
 	public ItemReaderListener reader() {
-//	public ItemStreamReader<Person> reader() {
-
 		ItemReaderListener itemReaderListener = new ItemReaderListener();
 		itemReaderListener.setName("reader");
-
 		return itemReaderListener;
 	}
 

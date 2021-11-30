@@ -87,7 +87,16 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"java.util.Map",
 				"org.springframework.aop.SpringProxy",
 				"org.springframework.aop.framework.Advised",
-				"org.springframework.core.DecoratingProxy"})
+				"org.springframework.core.DecoratingProxy"}),
+		@JdkProxyHint(typeNames = {
+				"org.springframework.batch.item.ItemProcessor",
+				"org.springframework.aop.scope.ScopedObject",
+				"java.io.Serializable",
+				"org.springframework.aop.framework.AopInfrastructureBean",
+				"org.springframework.aop.SpringProxy",
+				"org.springframework.aop.framework.Advised",
+				"org.springframework.core.DecoratingProxy"
+		})
 		}, aotProxies = {
 		// Due to @Transactional inside SimpleJobOperator
 		@AotProxyHint(targetClass=org.springframework.batch.core.launch.support.SimpleJobOperator.class, proxyFeatures = ProxyBits.IS_STATIC)
