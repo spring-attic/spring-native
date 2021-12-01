@@ -15,7 +15,7 @@ public class ConfigClientApplication {
 	}
 
 	@Bean
-	CommandLineRunner commandLineRunner(@Value("${my.prop}") String injected) {
+	CommandLineRunner commandLineRunner(@Value("${my.prop:test}") String injected) {
 		return args -> System.out.println(":" + injected);
 	}
 }
