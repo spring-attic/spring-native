@@ -27,10 +27,6 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.aot.support.BeanFactoryProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.stereotype.Component;
-
 // TODO review - does spring core already do some of these things?
 
 /**
@@ -92,33 +88,6 @@ public class NativeConfigurationUtils {
 				collector.add((Class<?>) type);
 			}
 		}
-	}
-
-
-	// TODO If needing to use this, should the BeanFactoryNativeConfigurationProcessors instead be BeanNativeConfigurationProcessors?
-
-	/**
-	 * Enables execution of specific actions on a subset of the beans identified as
-	 * having the {@link Component} annotation.
-	 * @param beanFactory the bean factory from which to discover the components
-	 * @param callback the action to take for the components
-	 * @param filter the filter used to subset the components
-	 */
-	public static void doWithComponents(ConfigurableListableBeanFactory beanFactory, NativeConfigurationUtils.ComponentCallback callback,
-			NativeConfigurationUtils.ComponentFilter filter) {
-		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Component.class, (beanName, beanType) -> {
-			if (filter == null || filter.test(beanName, beanType)) {
-				callback.invoke(beanName, beanType);
-			}
-		});
-	}
-
-	public interface ComponentCallback {
-		void invoke(String beanName, Class<?> beanType);
-	}
-
-	public interface ComponentFilter {
-		boolean test(String beanName, Class<?> beanType);
 	}
 
 }

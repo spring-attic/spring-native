@@ -137,7 +137,11 @@ public class RepositoryComponentConfigurationProcessor implements BeanFactoryNat
 		}
 	}
 
-	static void doWithRepositories(ConfigurableListableBeanFactory beanFactory, NativeConfigurationUtils.ComponentCallback callback) {
+	public interface ComponentCallback {
+		void invoke(String beanName, Class<?> beanType);
+	}
+
+	static void doWithRepositories(ConfigurableListableBeanFactory beanFactory, ComponentCallback callback) {
 		new BeanFactoryProcessor(beanFactory).processBeansWithAnnotation(Repository.class, callback::invoke);
 	}
 }

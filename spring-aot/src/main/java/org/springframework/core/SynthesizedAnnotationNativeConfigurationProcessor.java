@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AliasFor;
 
@@ -75,9 +75,8 @@ public class SynthesizedAnnotationNativeConfigurationProcessor implements BeanFa
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			NativeConfigurationUtils.doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans((beanType) -> true,
 				(beanName, beanType) -> {
-					logger.debug("analyzing "+beanType.getName());
 					final Set<Class<?>> collector = new HashSet<>();
 					final Queue<Class<?>> toProcess = new LinkedList<>();
 					toProcess.add(beanType);
@@ -92,8 +91,6 @@ public class SynthesizedAnnotationNativeConfigurationProcessor implements BeanFa
 							toProcess.add(superClass);
 						}
 					}
-
-					logger.debug("collected annotations on this component type are: "+collector);
 
 					// From the candidate annotations, determine those that are truly the target
 					// of aliases (either because @AliasFor'd from another annotation or using
@@ -113,10 +110,9 @@ public class SynthesizedAnnotationNativeConfigurationProcessor implements BeanFa
 							proxied.add(aliasForTarget.getName());
 						}
 					}
-					logger.debug("from examining "+beanType.getName()+" registering "+proxied.size()+" types as synthesized proxies: "+proxied);
-				},
-				(beanName, beanType) -> {
-					return true;
+					if (proxied.size()!=0) {
+						logger.debug("from examining "+beanType.getName()+" registering "+proxied.size()+" types as synthesized proxies: "+proxied);
+					}
 				});
 		}
 	}
