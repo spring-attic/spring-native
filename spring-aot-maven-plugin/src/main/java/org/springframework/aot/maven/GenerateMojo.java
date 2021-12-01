@@ -39,7 +39,6 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.aot.build.GenerateBootstrapCommand;
 import org.springframework.boot.loader.tools.RunProcess;
-import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
@@ -73,38 +72,6 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 	@Parameter(defaultValue = "${project.build.directory}/generated-sources/spring-aot/")
 	private File generatedSourcesDirectory;
 
-	@Parameter
-	protected String mode;
-
-	@Parameter
-	private boolean debugVerify;
-
-	@Parameter
-	private boolean verify = true;
-
-	@Parameter
-	private boolean removeYamlSupport;
-
-	@Parameter
-	private boolean removeJmxSupport = true;
-
-	@Parameter
-	private boolean removeXmlSupport = true;
-
-	@Parameter
-	private boolean removeSpelSupport;
-
-	protected AotOptions getAotOptions() {
-		AotOptions aotOptions = new AotOptions();
-		aotOptions.setMode(mode);
-		aotOptions.setDebugVerify(debugVerify);
-		aotOptions.setVerify(verify);
-		aotOptions.setRemoveYamlSupport(removeYamlSupport);
-		aotOptions.setRemoveJmxSupport(removeJmxSupport);
-		aotOptions.setRemoveXmlSupport(removeXmlSupport);
-		aotOptions.setRemoveSpelSupport(removeSpelSupport);
-		return aotOptions;
-	}
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -132,11 +99,6 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
 					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));
 
-			AotOptions aotOptions = getAotOptions();
-
-			RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
-			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-
 			List<String> args = new ArrayList<>();
 			// remote debug
 			if ("true".equals(this.debug)) {
@@ -147,26 +109,11 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			args.add("-cp");
 			args.add(asClasspathArgument(runtimeClasspathElements));
 			args.add(GenerateBootstrapCommand.class.getCanonicalName());
-			args.add("--mode=" + aotOptions.toMode());
 			args.add("--sources-out=" + sourcesPath.toAbsolutePath());
 			args.add("--resources-out=" + resourcesPath.toAbsolutePath());
 			args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
 			args.add("--classes=" + project.getBuild().getOutputDirectory());
-			if (aotOptions.isRemoveXmlSupport()) {
-				args.add("--remove-xml");
-			}
-			if (aotOptions.isRemoveJmxSupport()) {
-				args.add("--remove-jmx");
-			}
-			if (aotOptions.isRemoveSpelSupport()) {
-				args.add("--remove-spel");
-			}
-			if (aotOptions.isRemoveYamlSupport()) {
-				args.add("--remove-yaml");
-			}
-			if (getLogLevel().equals("DEBUG")) {
-				args.add("--debug");
-			}
+			applyAotOptions(args);
 			if (this.mainClass != null) {
 				args.add("--main-class=" + this.mainClass);
 			}
@@ -174,10 +121,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 				args.add("--application-class=" + this.applicationClass);
 			}
 
-			int exitCode = runProcess.run(true, args, Collections.emptyMap());
-			if (exitCode != 0 && exitCode != 130) {
-				throw new IllegalStateException("Bootstrap code generator finished with exit code: " + exitCode);
-			}
+			forkJvm(Paths.get(this.project.getBuild().getDirectory()).toFile(), args, Collections.emptyMap());
 
 			compileGeneratedSources(sourcesPath, runtimeClasspathElements);
 			processGeneratedResources(resourcesPath, Paths.get(project.getBuild().getOutputDirectory()));

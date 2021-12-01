@@ -31,12 +31,15 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.process.CommandLineArgumentProvider;
 
+import org.springframework.aot.gradle.dsl.SpringAotExtension;
 import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
 import org.springframework.aot.test.context.bootstrap.generator.TestContextAotProcessor;
+import org.springframework.nativex.AotOptions;
 import org.springframework.util.StringUtils;
 
 /**
@@ -54,9 +57,12 @@ public class GenerateAotTestSources extends JavaExec {
 
 	private final DirectoryProperty generatedResourcesOutputDirectory;
 
+	private final GenerateAotOptions aotOptions;
+
 	public GenerateAotTestSources() {
 		this.generatedSourcesOutputDirectory = getProject().getObjects().directoryProperty();
 		this.generatedResourcesOutputDirectory = getProject().getObjects().directoryProperty();
+		this.aotOptions = new GenerateAotOptions(getProject().getExtensions().findByType(SpringAotExtension.class));
 		getMainClass().set(GenerateTestBootstrapCommand.class.getCanonicalName());
 		getArgumentProviders().add(new TestBootstrapGeneratorArgumentProvider());
 	}
@@ -89,16 +95,17 @@ public class GenerateAotTestSources extends JavaExec {
 		return this.generatedResourcesOutputDirectory;
 	}
 
+	@Nested
+	public GenerateAotOptions getAotOptions() {
+		return this.aotOptions;
+	}
 
 	private class TestBootstrapGeneratorArgumentProvider implements CommandLineArgumentProvider {
 
 		@Override
 		public Iterable<String> asArguments() {
 			List<String> arguments = new ArrayList<>();
-
-			if (getLogLevel().equals("DEBUG")) {
-				arguments.add("--debug");
-			}
+			AotOptions aotOptions = getAotOptions().toAotOptions();
 			arguments.add("--sources-out=" + GenerateAotTestSources.this.generatedSourcesOutputDirectory.get().getAsFile().toPath());
 			arguments.add("--resources-out=" + GenerateAotTestSources.this.generatedResourcesOutputDirectory.get().getAsFile().toPath());
 			Set<File> resources = new HashSet<>();
@@ -106,7 +113,22 @@ public class GenerateAotTestSources extends JavaExec {
 			resources.addAll(generateAotSources.getResourceDirectories().getSrcDirs());
 			resources.addAll(GenerateAotTestSources.this.resourceDirectories.getSrcDirs());
 			arguments.add("--resources=" + toPathArgument(resources));
-
+			arguments.add("--mode=" + aotOptions.toMode());
+			if (aotOptions.isRemoveXmlSupport()) {
+				arguments.add("--remove-xml");
+			}
+			if (aotOptions.isRemoveJmxSupport()) {
+				arguments.add("--remove-jmx");
+			}
+			if (aotOptions.isRemoveSpelSupport()) {
+				arguments.add("--remove-spel");
+			}
+			if (aotOptions.isRemoveYamlSupport()) {
+				arguments.add("--remove-yaml");
+			}
+			if (getLogLevel().equals("DEBUG")) {
+				arguments.add("--debug");
+			}
 			for (File directory : GenerateAotTestSources.this.testSourceSetOutputDirectories.getClassesDirs()) {
 				arguments.add(directory.getAbsolutePath());
 			}

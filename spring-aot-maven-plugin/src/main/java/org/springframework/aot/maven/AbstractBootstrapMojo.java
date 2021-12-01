@@ -38,6 +38,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.nativex.AotOptions;
 import org.springframework.util.FileSystemUtils;
 
 /**
@@ -70,6 +71,59 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 
 	@Parameter(property = "spring.aot.debug")
 	protected String debug;
+
+	@Parameter
+	protected String mode;
+
+	@Parameter
+	protected boolean debugVerify;
+
+	@Parameter
+	protected boolean verify = true;
+
+	@Parameter
+	protected boolean removeYamlSupport;
+
+	@Parameter
+	protected boolean removeJmxSupport = true;
+
+	@Parameter
+	protected boolean removeXmlSupport = true;
+
+	@Parameter
+	protected boolean removeSpelSupport;
+
+	protected AotOptions getAotOptions() {
+		AotOptions aotOptions = new AotOptions();
+		aotOptions.setMode(mode);
+		aotOptions.setDebugVerify(debugVerify);
+		aotOptions.setVerify(verify);
+		aotOptions.setRemoveYamlSupport(removeYamlSupport);
+		aotOptions.setRemoveJmxSupport(removeJmxSupport);
+		aotOptions.setRemoveXmlSupport(removeXmlSupport);
+		aotOptions.setRemoveSpelSupport(removeSpelSupport);
+		return aotOptions;
+	}
+
+	protected void applyAotOptions(List<String> args) {
+		AotOptions aotOptions = getAotOptions();
+		args.add("--mode=" + aotOptions.toMode());
+		if (aotOptions.isRemoveXmlSupport()) {
+			args.add("--remove-xml");
+		}
+		if (aotOptions.isRemoveJmxSupport()) {
+			args.add("--remove-jmx");
+		}
+		if (aotOptions.isRemoveSpelSupport()) {
+			args.add("--remove-spel");
+		}
+		if (aotOptions.isRemoveYamlSupport()) {
+			args.add("--remove-yaml");
+		}
+		if (getLogLevel().equals("DEBUG")) {
+			args.add("--debug");
+		}
+	}
 
 	protected static String asClasspathArgument(List<String> elements) {
 		StringBuilder classpath = new StringBuilder();
@@ -127,7 +181,7 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 			if (exitCode == 0 || exitCode == 130) {
 				return;
 			}
-			throw new MojoExecutionException("Application finished with exit code: " + exitCode);
+			throw new MojoExecutionException("Bootstrap code generator finished with exit code: " + exitCode);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
