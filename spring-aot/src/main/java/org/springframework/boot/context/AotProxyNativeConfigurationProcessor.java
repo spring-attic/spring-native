@@ -22,11 +22,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeProxyEntry;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.util.ClassUtils;
@@ -53,29 +52,31 @@ public class AotProxyNativeConfigurationProcessor implements BeanFactoryNativeCo
 				.of("org.springframework.scheduling.annotation.Async");
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			NativeConfigurationUtils.doWithComponents(beanFactory, (beanName, beanType) -> {
-				registry.proxy().add(NativeProxyEntry.ofClass(beanType, ProxyBits.IS_STATIC));
-			}, (beanName, beanType) -> {
-				for (String methodLevelAnnotation : METHOD_LEVEL_ANNOTATIONS) {
-					try {
-						@SuppressWarnings("unchecked")
-						Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) ClassUtils
-								.forName(methodLevelAnnotation, beanFactory.getBeanClassLoader());
-						for (Method method : beanType.getDeclaredMethods()) {
-							if (method.getDeclaredAnnotation(annotationClass) != null) {
-								logger.debug("adding AOT proxy for bean '" + beanName + "' of type "
-										+ beanType.getName() + " due to usage of " + methodLevelAnnotation);
-								return true;
-							}
-						}
-					} catch (ClassNotFoundException | LinkageError e) {
-						// Assume problems with the annotation class mean it cannot be annotated with it
-					}
-				}
-				return false;
-			});
+			new BeanFactoryProcessor(beanFactory).processBeans((beanType) -> needsProxy(beanType, beanFactory),
+				(beanName, beanType) -> {
+					registry.proxy().add(NativeProxyEntry.ofClass(beanType, ProxyBits.IS_STATIC));
+				});
 		}
-
+	
+		private boolean needsProxy(Class<?> beanType, ConfigurableListableBeanFactory beanFactory) {
+			for (String methodLevelAnnotation : METHOD_LEVEL_ANNOTATIONS) {
+				try {
+					@SuppressWarnings("unchecked")
+					Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) ClassUtils
+							.forName(methodLevelAnnotation, beanFactory.getBeanClassLoader());
+					for (Method method : beanType.getDeclaredMethods()) {
+						if (method.getDeclaredAnnotation(annotationClass) != null) {
+							logger.debug("adding AOT proxy for bean of type " + beanType.getName() +
+									" due to usage of " + methodLevelAnnotation);
+							return true;
+						}
+					}
+				} catch (ClassNotFoundException | LinkageError e) {
+					// Assume problems with the annotation class mean it cannot be annotated with it
+				}
+			}
+			return false;
+		}
 	}
 
 }
