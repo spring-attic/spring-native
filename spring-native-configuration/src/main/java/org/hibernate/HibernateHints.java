@@ -18,14 +18,13 @@ package org.hibernate;
 
 import org.hibernate.query.Query;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
-
-import static org.springframework.nativex.hint.AccessBits.*;
 
 @NativeHint(trigger = org.hibernate.Session.class,
 		jdkProxies = {
@@ -44,7 +43,7 @@ import static org.springframework.nativex.hint.AccessBits.*;
 			@JdkProxyHint(types = {Query.class, org.hibernate.query.spi.QueryImplementor.class,})
 		},
 		types = {
-			@TypeHint(types = org.hibernate.query.spi.QueryImplementor.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS)
+			@TypeHint(types = org.hibernate.query.spi.QueryImplementor.class, access = { Flag.allPublicMethods, Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors})
 		},
 		initialization = @InitializationHint(types = {
 				org.hibernate.EntityMode.class,

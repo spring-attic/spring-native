@@ -31,13 +31,13 @@ import org.springframework.data.repository.core.support.RepositoryFragment;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = RepositoryFactoryBeanSupport.class,
 		types = {
@@ -51,12 +51,12 @@ import org.springframework.nativex.hint.AccessBits;
 						RepositoryMetadata.class,
 						PropertiesBasedNamedQueries.class
 				}),
-				@TypeHint(types = {ReadingConverter.class, WritingConverter.class}, access = AccessBits.ANNOTATION),
-				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}, access = AccessBits.CLASS),
-				@TypeHint(types = Throwable.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS),
+				@TypeHint(types = {ReadingConverter.class, WritingConverter.class}),
+				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}),
+				@TypeHint(types = Throwable.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredFields }),
 				@TypeHint(typeNames = {
 						"org.springframework.data.projection.SpelEvaluatingMethodInterceptor$TargetWrapper",
-				}, access = AccessBits.ALL)
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource })
 		},
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",

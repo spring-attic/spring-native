@@ -16,12 +16,12 @@
 
 package org.springframework.scheduling.annotation;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger=SchedulingConfiguration.class, types = {
-	@TypeHint(types = Schedules.class, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS)
+	@TypeHint(types = Schedules.class, access = Flag.allDeclaredMethods)
 })
 public class SchedulingHints implements NativeConfiguration { }

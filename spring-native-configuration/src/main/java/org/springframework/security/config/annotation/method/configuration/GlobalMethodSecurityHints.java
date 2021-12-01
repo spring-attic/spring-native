@@ -16,14 +16,14 @@
 
 package org.springframework.security.config.annotation.method.configuration;
 
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=GlobalMethodSecurityConfiguration.class, types = {
-		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access = AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access = Flag.allDeclaredConstructors),
 })
 @NativeHint(jdkProxies = @JdkProxyHint(types = {
 		org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,

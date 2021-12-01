@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /configprops endpoint
 @NativeHint(trigger = ConfigurationPropertiesReportEndpointAutoConfiguration.class, types = {
@@ -30,7 +30,7 @@ import org.springframework.nativex.hint.AccessBits;
 			org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode.class,
 			org.springframework.boot.actuate.metrics.AutoTimer.class,
 	}),
-	@TypeHint(types= ConfigurationPropertiesReportEndpoint.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	@TypeHint(types= ConfigurationPropertiesReportEndpoint.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class ConfigurationPropertiesReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

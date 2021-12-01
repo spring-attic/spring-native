@@ -16,12 +16,12 @@
 
 package kotlin;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
-import static org.springframework.nativex.hint.AccessBits.*;
 
 @NativeHint(trigger = kotlin.Unit.class,
 		resources = {
@@ -31,18 +31,18 @@ import static org.springframework.nativex.hint.AccessBits.*;
 						"META-INF/services/.*"
 				})
 		}, types = {
-				@TypeHint(types = kotlin.KotlinVersion.class, access = PUBLIC_METHODS | DECLARED_FIELDS | DECLARED_METHODS | DECLARED_CONSTRUCTORS),
+				@TypeHint(types = kotlin.KotlinVersion.class, access = { Flag.allPublicMethods, Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors }),
 				@TypeHint(typeNames = "kotlin.KotlinVersion$Companion")
 })
 @NativeHint(trigger = kotlin.reflect.full.KClasses.class,
 	types = {
-		@TypeHint(types = kotlin.reflect.full.KClasses.class, access = CLASS),
-		@TypeHint(types = kotlin.Metadata.class, access = DECLARED_METHODS),
-		@TypeHint(types = kotlin.reflect.jvm.internal.ReflectionFactoryImpl.class, access = DECLARED_CONSTRUCTORS),
-		@TypeHint(types = kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter.class, access = DECLARED_FIELDS)
+		@TypeHint(types = kotlin.reflect.full.KClasses.class, access = {}),
+		@TypeHint(types = kotlin.Metadata.class, access = Flag.allDeclaredMethods),
+		@TypeHint(types = kotlin.reflect.jvm.internal.ReflectionFactoryImpl.class, access = Flag.allDeclaredConstructors),
+		@TypeHint(types = kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter.class, access = Flag.allDeclaredFields)
 	})
 @NativeHint(trigger = kotlin.coroutines.Continuation.class,
-		types = @TypeHint(types = kotlin.coroutines.Continuation.class, access = LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS))
+		types = @TypeHint(types = kotlin.coroutines.Continuation.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }))
 @NativeHint(trigger = com.fasterxml.jackson.module.kotlin.KotlinModule.class,
 		types = {
 			@TypeHint(types = com.fasterxml.jackson.module.kotlin.KotlinModule.class),
@@ -50,7 +50,7 @@ import static org.springframework.nativex.hint.AccessBits.*;
 					"com.fasterxml.jackson.module.kotlin.KotlinModule$Builder",
 					"com.fasterxml.jackson.module.kotlin.SingletonSupport",
 					"java.lang.String"
-			}, access = CLASS)
+			}, access = {})
 		})
 
 public class KotlinHints implements NativeConfiguration {

@@ -26,11 +26,11 @@ import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
 import org.springframework.data.neo4j.repository.support.SimpleReactiveNeo4jRepository;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class,
 		options = "--enable-https", types = {
@@ -44,7 +44,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveIdGeneratingBeforeBindCallback",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveOptimisticLockingBeforeBindCallback"
-	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 	@TypeHint(types = {
 		ReactiveNeo4jRepositoryConfigurationExtension.class,
 		AbstractReactiveNeo4jConfig.class,

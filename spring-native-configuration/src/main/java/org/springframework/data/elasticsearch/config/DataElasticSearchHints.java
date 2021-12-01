@@ -18,7 +18,7 @@ package org.springframework.data.elasticsearch.config;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.elasticsearch.core.event.AuditingEntityCallback;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -29,7 +29,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		types = @TypeHint(types = {
 				PersistentEntitiesFactoryBean.class,
 				AuditingEntityCallback.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
 		imports = DataNonReactiveAuditingHints.class
 )
 public class DataElasticSearchHints implements NativeConfiguration {

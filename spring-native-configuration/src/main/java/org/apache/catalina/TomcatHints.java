@@ -29,11 +29,10 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Tomcat.class, types = {
 		@TypeHint(types = TomcatEmbeddedWebappClassLoader.class),
-		@TypeHint(types = AbstractProtocol.class, methods = @MethodHint(name = "getLocalPort"),access=AccessBits.CLASS),
+		@TypeHint(types = AbstractProtocol.class, methods = @MethodHint(name = "getLocalPort"), access = {}),
 		@TypeHint(types = Http11NioProtocol.class),
 }, initialization = {
 		@InitializationHint(types = {

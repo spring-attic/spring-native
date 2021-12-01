@@ -29,8 +29,8 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 /**
  * Example... this could host @TypeInfo annotations that any other @NativeHint could pull in
@@ -55,7 +55,7 @@ import org.springframework.nativex.hint.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableChildManagementContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 @TypeHint(types = {
 		EndpointWebExtension.class,
 		WebEndpoint.class,

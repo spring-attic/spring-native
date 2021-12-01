@@ -17,14 +17,14 @@
 package org.springframework.boot.context.config;
 
 import org.springframework.boot.context.properties.bind.Name;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(types = {
-	@TypeHint(types = ConfigDataLocation.class, access = AccessBits.DECLARED_METHODS),
-	@TypeHint(types = ConfigDataLocation[].class, access=AccessBits.CLASS),
+	@TypeHint(types = ConfigDataLocation.class, access = Flag.allDeclaredMethods),
+	@TypeHint(types = ConfigDataLocation[].class),
 	@TypeHint(types = {
 			ConfigDataEnvironmentPostProcessor.class,
 			ConfigTreeConfigDataLoader.class,
@@ -33,7 +33,7 @@ import org.springframework.nativex.hint.AccessBits;
 			DelegatingApplicationListener.class,
 			StandardConfigDataLoader.class,
 			StandardConfigDataLocationResolver.class
-	}, access = AccessBits.DECLARED_CONSTRUCTORS),
+	}),
 	@TypeHint(types= {
 		ConfigDataProperties.class,
 		ConfigDataProperties.Activate.class,

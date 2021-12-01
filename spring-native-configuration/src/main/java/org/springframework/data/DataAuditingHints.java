@@ -21,8 +21,8 @@ import org.springframework.aop.target.AbstractBeanFactoryBasedTargetSource;
 import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean;
 import org.springframework.data.auditing.AuditingHandlerSupport;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -35,7 +35,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		types = {
 				@TypeHint(types = {LazyInitTargetSource.class,
 						ObjectFactoryCreatingFactoryBean.class,
-						ProxyFactoryBean.class}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+						ProxyFactoryBean.class}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods}),
 				@TypeHint(types = AbstractBeanFactoryBasedTargetSource.class, fields = {
 						@FieldHint(name = "targetBeanName")}),
 				@TypeHint(types = AdvisedSupport.class, fields = {

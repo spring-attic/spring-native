@@ -20,10 +20,10 @@ import org.springframework.boot.actuate.beans.BeansEndpoint;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
 import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
 import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 			ApplicationBeans.class,
 			BeanDescriptor.class,
 			ContextBeans.class
-	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class BeansEndpointAutoConfigurationHints implements NativeConfiguration {
 }

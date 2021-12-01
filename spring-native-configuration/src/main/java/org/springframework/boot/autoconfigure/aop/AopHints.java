@@ -36,7 +36,7 @@ import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreat
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -47,15 +47,15 @@ import org.springframework.nativex.type.NativeConfiguration;
 				AnnotationAwareAspectJAutoProxyCreator.class,
 				AspectJAwareAdvisorAutoProxyCreator.class,
 				EnableAspectJAutoProxy.class
-		}, access = AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
+		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 })
 @NativeHint(trigger = AopAutoConfiguration.AspectJAutoProxyingConfiguration.class,
 	types = {
-		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access=AccessBits.DECLARED_FIELDS|AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = { AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access=AccessBits.PUBLIC_METHODS),
+		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access = { Flag.allDeclaredFields, Flag.allPublicMethods }),
+		@TypeHint(types = { AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access = Flag.allPublicMethods),
 		@TypeHint(types= InfrastructureAdvisorAutoProxyCreator.class,
-			access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.PUBLIC_METHODS),
-		@TypeHint(types = Proxy.class, access = AccessBits.DECLARED_METHODS), // aspect on proxied bean such as repository
+				access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+		@TypeHint(types = Proxy.class, access = Flag.allDeclaredMethods), // aspect on proxied bean such as repository
 		@TypeHint(types = {
 			Java15AnnotationFinder.class, Java15GenericSignatureInformationProvider.class,
 			Java15ReflectionBasedReferenceTypeDelegate.class})
@@ -69,6 +69,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 		AfterReturning.class,
 		After.class,
 		Around.class
-}, access = AccessBits.ANNOTATION))
+}))
 public class AopHints implements NativeConfiguration {
 }

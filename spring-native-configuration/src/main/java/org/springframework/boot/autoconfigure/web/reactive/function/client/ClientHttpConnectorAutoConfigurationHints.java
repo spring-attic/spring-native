@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -26,7 +26,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorConfiguration$ReactorNetty",
 				"org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorConfiguration$JettyClient",
 				"org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorConfiguration$HttpClient5"
-		}, access = AccessBits.QUERY_DECLARED_METHODS)
+		}, access = Flag.allDeclaredMethods)
 )
 public class ClientHttpConnectorAutoConfigurationHints implements NativeConfiguration {
 }

@@ -27,7 +27,6 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.access.expression.SecurityExpressionOperations;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -53,7 +52,7 @@ import org.springframework.util.ClassUtils;
 @NativeHint(trigger=SecurityAutoConfiguration.class, types = {
 		@TypeHint(
 				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
-				access=AccessBits.CLASS|AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS),
+				access = { Flag.allDeclaredMethods, Flag.allDeclaredFields }),
 		@TypeHint(types= {
 				// From DefaultAuthenticationEventPublisher
 				BadCredentialsException.class,AuthenticationFailureBadCredentialsEvent.class,
@@ -75,13 +74,12 @@ import org.springframework.util.ClassUtils;
 		@TypeHint(
 			typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
 			types= { HttpServletRequestWrapper.class,ServletRequestWrapper.class,ServletRequest.class},
-			access=AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS|AccessBits.DECLARED_FIELDS|AccessBits.DECLARED_METHODS),
-
+			access = { Flag.allDeclaredConstructors, Flag.allPublicMethods, Flag.allDeclaredFields }),
 		@TypeHint(typeNames = {
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-		}, access = AccessBits.ALL)
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource})
 }, resources = @ResourceHint(patterns = "org.springframework.security.messages", isBundle = true))
 public class SecurityHints implements NativeConfiguration {
 	@Override

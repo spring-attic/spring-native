@@ -24,8 +24,8 @@ import com.netflix.discovery.converters.jackson.builder.ApplicationsJacksonBuild
 
 import org.springframework.cloud.netflix.eureka.loadbalancer.EurekaLoadBalancerClientConfiguration;
 import org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -36,12 +36,12 @@ import org.springframework.nativex.type.NativeConfiguration;
 				InstanceInfo.class,
 				DataCenterTypeInfoResolver.class,
 				LeaseInfo.class
-		}, access = AccessBits.FULL_REFLECTION),
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
 		@TypeHint(types = DiscoveryClient.class, fields = @FieldHint(name = "eurekaTransport"))
 })
 @NativeHint(trigger = EurekaDiscoveryClientConfiguration.class,
 		options = "--enable-http")
 @NativeHint(trigger = LoadBalancerEurekaAutoConfiguration.class,
-		types = @TypeHint(types = EurekaLoadBalancerClientConfiguration.class, access = AccessBits.FULL_REFLECTION))
+		types = @TypeHint(types = EurekaLoadBalancerClientConfiguration.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }))
 public class EurekaClientHints implements NativeConfiguration {
 }

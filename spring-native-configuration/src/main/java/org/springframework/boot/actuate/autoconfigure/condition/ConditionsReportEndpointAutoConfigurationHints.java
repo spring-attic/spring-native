@@ -20,10 +20,10 @@ import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReport
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.ContextConditionEvaluation;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndCondition;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint.MessageAndConditions;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -37,7 +37,7 @@ import org.springframework.util.MultiValueMap;
 		MessageAndConditions.class,
 		MultiValueMap.class,
 		LinkedMultiValueMap.class,
-	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class ConditionsReportEndpointAutoConfigurationHints implements NativeConfiguration {
 }

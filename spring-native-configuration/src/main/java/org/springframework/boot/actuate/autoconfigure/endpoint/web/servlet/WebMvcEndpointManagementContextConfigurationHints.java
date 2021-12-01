@@ -28,10 +28,10 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 // The configurations related to actuator are in this key in spring.factories:
 // org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration
@@ -57,12 +57,12 @@ import org.springframework.nativex.hint.AccessBits;
 				ManagementContextType.class,
 				PathMapper.class,
 				ManagementPortType.class,
-		}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 	@TypeHint(typeNames = {
 			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
 			"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
 			"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
-	}, access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS)
+	}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
 })
 public class WebMvcEndpointManagementContextConfigurationHints implements NativeConfiguration {
 }

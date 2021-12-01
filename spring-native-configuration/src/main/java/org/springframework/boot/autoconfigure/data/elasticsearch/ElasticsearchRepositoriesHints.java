@@ -31,6 +31,7 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
 import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;
 import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.support.SimpleReactiveElasticsearchRepository;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.MethodHint;
@@ -39,7 +40,6 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 /**
  * @author Christoph Strobl
@@ -56,10 +56,10 @@ import org.springframework.nativex.hint.AccessBits;
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
 						SimpleElasticsearchRepository.class },
-						access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+						access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 				@TypeHint(types = {
 						org.elasticsearch.Version.class
-				}, access = AccessBits.FULL_REFLECTION)
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods })
 		},
 		resources = @ResourceHint(patterns = "versions.properties"))
 @NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
@@ -91,13 +91,13 @@ import org.springframework.nativex.hint.AccessBits;
 						}, methods = @MethodHint(name = "fromXContent", parameterTypes = XContentParser.class)),
 				@TypeHint(types = {
 						org.elasticsearch.Version.class
-				}, access = AccessBits.FULL_REFLECTION),
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
 				@TypeHint(types = {
 						SimpleReactiveElasticsearchRepository.class,
 						ReactiveBeforeConvertCallback.class,
 						ReactiveAfterSaveCallback.class,
 						ReactiveAfterConvertCallback.class
-				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+				}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 		},
 		jdkProxies = {
 				@JdkProxyHint(types = XContentParser.class)
@@ -111,7 +111,7 @@ import org.springframework.nativex.hint.AccessBits;
 						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
 						org.apache.logging.log4j.message.ParameterizedMessageFactory.class,
 						org.apache.logging.log4j.message.ReusableMessageFactory.class
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				@TypeHint(typeNames = {
 						// those cause a lot of errors and warnings in logs if not present
 						"io.netty.buffer.AbstractByteBufAllocator",

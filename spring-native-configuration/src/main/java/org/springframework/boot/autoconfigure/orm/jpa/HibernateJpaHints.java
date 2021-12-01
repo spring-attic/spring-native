@@ -56,7 +56,7 @@ import org.hibernate.type.EnumType;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -83,13 +83,13 @@ import java.util.EventListener;
 						// petclinic
 						// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
 						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				@TypeHint(types = {
 						Id.class, GeneratedValue.class, Repository.class,
 						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class,
 						OneToOne.class, JoinColumn.class, Table.class, Transient.class
 				}),
-				@TypeHint(types = EventType.class, access = AccessBits.DECLARED_FIELDS),
+				@TypeHint(types = EventType.class, access = Flag.allDeclaredFields),
 				@TypeHint(types = EntityManagerFactory.class, methods = @MethodHint(name = "getMetamodel")),
 				@TypeHint(types = {
 						SessionImpl.class,
@@ -132,16 +132,16 @@ import java.util.EventListener;
 				}),
 				@TypeHint(types = {
 						SimpleJpaRepository.class
-				}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+				}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						// These from EntityTuplizerFactory
 						Tuplizer.class, EntityTuplizer.class, AbstractEntityTuplizer.class, PojoEntityTuplizer.class,
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				// Persisters
 				@TypeHint(types = {org.hibernate.internal.CoreMessageLogger_$logger.class,
 						OneToManyPersister.class, JoinedSubclassEntityPersister.class, SingleTableEntityPersister.class, UnionSubclassEntityPersister.class,
 						BasicCollectionPersister.class,
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				// AST nodes from the org.hibernate.hql.internal.ast.tree package
 				// These are necessary when HQL/JPQL queries are used.
 				@TypeHint(types = {
@@ -221,7 +221,7 @@ import java.util.EventListener;
 						UpdateStatement.class,
 						// other parsing related classes that seem necessary.
 						HqlToken.class
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				// EventListener
 				@TypeHint(types = {
 						ReplicateEventListener[].class,
@@ -235,7 +235,7 @@ import java.util.EventListener;
 						ClearEventListener[].class, MergeEventListener[].class, PostCollectionRecreateEventListener[].class,
 						PostCollectionRemoveEventListener[].class, PostCollectionUpdateEventListener[].class, PostDeleteEventListener[].class,
 
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 				// Id Generators
 				@TypeHint(types = {
 						IdentityGenerator.class, SequenceStyleGenerator.class,
@@ -244,27 +244,27 @@ import java.util.EventListener;
 						SelectGenerator.class, SequenceHiLoGenerator.class, IncrementGenerator.class,
 						ForeignGenerator.class,
 						TableGenerator.class,
-				}, access = AccessBits.DECLARED_CONSTRUCTORS),
+				}, access = Flag.allDeclaredConstructors),
 		})
 // Dialects
 // In memory
-@NativeHint(trigger = org.h2.Driver.class, types = @TypeHint(types = H2Dialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeHint(types = HSQLDialect.class, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = org.h2.Driver.class, types = @TypeHint(types = H2Dialect.class, access = Flag.allDeclaredConstructors))
+@NativeHint(trigger = org.hsqldb.jdbc.JDBCDriver.class, types = @TypeHint(types = HSQLDialect.class, access = Flag.allDeclaredConstructors))
 // Open Source
-@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = {MySQL8Dialect.class, MySQL57Dialect.class, MySQL55Dialect.class, MySQL5Dialect.class, MySQLDialect.class}, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = org.mariadb.jdbc.Driver.class, types = @TypeHint(types = {MariaDB103Dialect.class, MariaDB102Dialect.class, MariaDB10Dialect.class, MariaDB53Dialect.class, MariaDBDialect.class}, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.mysql.cj.jdbc.Driver.class, types = @TypeHint(types = {MySQL8Dialect.class, MySQL57Dialect.class, MySQL55Dialect.class, MySQL5Dialect.class, MySQLDialect.class}, access = Flag.allDeclaredConstructors))
+@NativeHint(trigger = org.mariadb.jdbc.Driver.class, types = @TypeHint(types = {MariaDB103Dialect.class, MariaDB102Dialect.class, MariaDB10Dialect.class, MariaDB53Dialect.class, MariaDBDialect.class}, access = Flag.allDeclaredConstructors))
 @NativeHint(trigger = org.postgresql.Driver.class, types = @TypeHint(types = {PostgreSQL10Dialect.class,
 		PostgreSQL95Dialect.class, PostgreSQL94Dialect.class, PostgreSQL93Dialect.class, PostgreSQL92Dialect.class, PostgreSQL91Dialect.class, PostgreSQL9Dialect.class,
 		PostgresPlusDialect.class,
 		PostgreSQL82Dialect.class, PostgreSQL81Dialect.class,
-}, access = AccessBits.DECLARED_CONSTRUCTORS))
+}, access = Flag.allDeclaredConstructors))
 // Commercial
-@NativeHint(trigger = com.microsoft.sqlserver.jdbc.SQLServerDriver.class, types = @TypeHint(types = {SQLServer2012Dialect.class, SQLServer2008Dialect.class, SQLServer2005Dialect.class, SQLServerDialect.class,}, access = AccessBits.DECLARED_CONSTRUCTORS))
-@NativeHint(trigger = oracle.jdbc.OracleDriver.class, types = @TypeHint(types = {Oracle12cDialect.class, Oracle10gDialect.class, Oracle9iDialect.class, Oracle8iDialect.class,}, access = AccessBits.DECLARED_CONSTRUCTORS))
+@NativeHint(trigger = com.microsoft.sqlserver.jdbc.SQLServerDriver.class, types = @TypeHint(types = {SQLServer2012Dialect.class, SQLServer2008Dialect.class, SQLServer2005Dialect.class, SQLServerDialect.class,}, access = Flag.allDeclaredConstructors))
+@NativeHint(trigger = oracle.jdbc.OracleDriver.class, types = @TypeHint(types = {Oracle12cDialect.class, Oracle10gDialect.class, Oracle9iDialect.class, Oracle8iDialect.class,}, access = Flag.allDeclaredConstructors))
 @NativeHint(trigger = com.ibm.db2.jcc.DB2Driver.class, types = @TypeHint(types = {DB297Dialect.class,
 		DB2390V8Dialect.class, DB2390Dialect.class,
 		DB2400V7R3Dialect.class, DB2400Dialect.class,
 		DB2Dialect.class,
-}, access = AccessBits.DECLARED_CONSTRUCTORS))
+}, access = Flag.allDeclaredConstructors))
 public class HibernateJpaHints implements NativeConfiguration {
 }

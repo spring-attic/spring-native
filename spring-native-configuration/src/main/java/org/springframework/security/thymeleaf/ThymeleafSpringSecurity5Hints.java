@@ -16,10 +16,10 @@
 
 package org.springframework.security.thymeleaf;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -33,7 +33,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProce
 
 @NativeHint(trigger = AuthorizeAttrProcessor.class,
 		types = {
-		@TypeHint(typeNames = "org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility", access = AccessBits.DECLARED_CONSTRUCTORS),
+		@TypeHint(typeNames = "org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility", access = Flag.allDeclaredConstructors),
 		@TypeHint(types = {
 				UsernamePasswordAuthenticationToken.class,
 				AbstractAuthenticationToken.class,
@@ -47,7 +47,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProce
 		}, typeNames = {
 				"org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
 				"org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken"
-		}, access = AccessBits.FULL_REFLECTION)}
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods })}
 )
 public class ThymeleafSpringSecurity5Hints implements NativeConfiguration {
 }

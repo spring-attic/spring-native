@@ -27,7 +27,9 @@ import java.util.List;
  * @author Andy Clement
  * @author Sebastien Deleuze
  * @author Christoph Strobl
+ * @deprecated Use {@link Flag} instead.
  */
+@Deprecated
 public class AccessBits {
 
 	/**
@@ -320,6 +322,10 @@ public class AccessBits {
 
 		Integer value = 0;
 
+		if (flags.length == 0) {
+				value = AccessBits.CLASS;
+		}
+
 		for (Flag flag : flags) { // TODO: is this sufficient?
 			if (Flag.allDeclaredConstructors.equals(flag)) {
 				value = value | AccessBits.DECLARED_CONSTRUCTORS;
@@ -347,6 +353,12 @@ public class AccessBits {
 			}
 			if (Flag.queryAllPublicMethods.equals(flag)) {
 				value = value | AccessBits.QUERY_PUBLIC_METHODS;
+			}
+			if (Flag.resource.equals(flag)) {
+				value = value | AccessBits.RESOURCE;
+			}
+			if (Flag.jni.equals(flag)) {
+				value = value | AccessBits.JNI;
 			}
 		}
 

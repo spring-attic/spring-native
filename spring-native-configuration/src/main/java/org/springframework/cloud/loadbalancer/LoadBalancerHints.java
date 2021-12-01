@@ -18,7 +18,7 @@ package org.springframework.cloud.loadbalancer;
 
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientSpecification;
 import org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -30,7 +30,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"jdk.vm.ci.meta.JavaKind$FormatWithToString[]",
 				"java.lang.reflect.AnnotatedElement[]",
 				"java.lang.reflect.GenericDeclaration[]"
-		}, access = AccessBits.ALL)
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
 })
 public class LoadBalancerHints implements NativeConfiguration {
 }

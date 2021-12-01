@@ -42,6 +42,7 @@ import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -81,10 +82,10 @@ import org.springframework.util.StringUtils;
 						Affordance.class,
 						AffordanceModel.class,
 						RestTemplateHateoasConfiguration.class,
-				}, access = AccessBits.ALL),
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
 				@TypeHint(typeNames = {
 						"org.atteo.evo.inflector.English",
-				}, access = AccessBits.ALL),
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
 				@TypeHint(
 						types = CollectionModel.class,
 						fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true)

@@ -17,10 +17,10 @@
 package org.springframework.web.bind.annotation;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 
 @NativeHint(trigger = Mapping.class, types = {
@@ -40,7 +40,7 @@ import org.springframework.nativex.hint.AccessBits;
 				PathVariable.class,
 				Mapping.class, RequestMapping.class, GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
 				ResponseStatus.class, HttpStatus.class
-		}, access = AccessBits.ANNOTATION)
+		}, access = Flag.allPublicMethods)
 	})
 public class WebAnnotationHints implements NativeConfiguration {
 }

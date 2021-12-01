@@ -8,7 +8,7 @@ import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.core.ResolvableType;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -20,14 +20,14 @@ import org.springframework.nativex.type.NativeConfiguration;
  * @author Stephane Nicoll
  */
 @NativeHint(trigger = BasicJsonTester.class, types = @TypeHint(types = BasicJsonTester.class,
-		access = AccessBits.DECLARED_CONSTRUCTORS,
+		access = Flag.allDeclaredConstructors,
 		methods = @MethodHint(name = "initialize", parameterTypes = Class.class)))
 @NativeHint(trigger = JacksonTester.class, types = @TypeHint(types = JacksonTester.class,
-		access = AccessBits.DECLARED_CONSTRUCTORS))
+		access = Flag.allDeclaredConstructors))
 @NativeHint(trigger = Gson.class, types = @TypeHint(types = GsonTester.class,
-		access = AccessBits.DECLARED_CONSTRUCTORS))
+		access = Flag.allDeclaredConstructors))
 @NativeHint(trigger = JsonbTester.class, types = @TypeHint(types = JsonbTester.class,
-		access = AccessBits.DECLARED_CONSTRUCTORS))
+		access = Flag.allDeclaredConstructors))
 @NativeHint(trigger = AbstractJsonMarshalTester.class, types = @TypeHint(types = AbstractJsonMarshalTester.class,
 		methods = @MethodHint(name = "initialize", parameterTypes = { Class.class, ResolvableType.class })))
 public class JsonTesterHints implements NativeConfiguration {

@@ -18,13 +18,13 @@ package org.springframework.cloud.config.client;
 
 import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.environment.PropertySource;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = ConfigClientAutoConfiguration.class,
 		options = {"--enable-http", "--enable-https"},
-		types = @TypeHint(types = { Environment.class, PropertySource.class }, access = AccessBits.FULL_REFLECTION))
+		types = @TypeHint(types = { Environment.class, PropertySource.class }, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }))
 public class ConfigClientHints implements NativeConfiguration {
 }

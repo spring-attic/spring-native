@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ext.Java7HandlersImpl;
 import com.fasterxml.jackson.databind.ext.Java7Support;
 import com.fasterxml.jackson.databind.ext.Java7SupportImpl;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -42,8 +42,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				JsonAnyGetter.class, JsonAnySetter.class,
 				JsonSerialize.class, JsonUnwrapped.class,
 				JsonIgnore.class, JsonInclude.class,
-				JsonInclude.Include.class}, access = AccessBits.ANNOTATION),
-		@TypeHint(types = JsonGenerator.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS)},
+				JsonInclude.Include.class}),
+		@TypeHint(types = JsonGenerator.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods})},
 		initialization = @InitializationHint(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
 public class JacksonHints implements NativeConfiguration {
 

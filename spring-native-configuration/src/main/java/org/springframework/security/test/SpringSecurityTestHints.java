@@ -16,8 +16,8 @@
 
 package org.springframework.security.test;
 
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -31,10 +31,10 @@ import org.springframework.nativex.type.NativeConfiguration;
  */
 @NativeHint(trigger = org.springframework.security.test.context.support.WithSecurityContext.class,
 	types = {
-		@TypeHint(types = org.springframework.security.web.FilterChainProxy.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
-		@TypeHint(types = org.springframework.security.web.context.SecurityContextPersistenceFilter.class, access = AccessBits.FULL_REFLECTION),
-		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = AccessBits.FULL_REFLECTION, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
-		@TypeHint(types = org.springframework.security.test.context.support.WithSecurityContext.class, access = AccessBits.ANNOTATION),
+		@TypeHint(types = org.springframework.security.web.FilterChainProxy.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
+		@TypeHint(types = org.springframework.security.web.context.SecurityContextPersistenceFilter.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
+		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
+		@TypeHint(types = org.springframework.security.test.context.support.WithSecurityContext.class, access = Flag.allPublicMethods),
 		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory"),
 		@TypeHint(typeNames = "reactor.core.publisher.Hooks")
 	},

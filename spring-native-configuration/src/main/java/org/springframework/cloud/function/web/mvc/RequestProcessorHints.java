@@ -17,14 +17,14 @@
 package org.springframework.cloud.function.web.mvc;
 
 import org.springframework.cloud.function.web.RequestProcessor;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = RequestProcessor.class,
 		types = @TypeHint(types = java.util.function.Consumer.class,
-		access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS))
+		access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }))
 public class RequestProcessorHints implements NativeConfiguration {
 }
 

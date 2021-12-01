@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -37,7 +37,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		MetricsEndpoint.Sample.class,
 		MetricsEndpoint.AvailableTag.class, 
 		MetricsEndpoint.ListNamesResponse.class
-	}, access=AccessBits.DECLARED_METHODS|AccessBits.DECLARED_FIELDS)
+	}, access = { Flag.allDeclaredMethods, Flag.allDeclaredFields })
 })
 public class MetricsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.startup;
 
 import org.springframework.boot.actuate.startup.StartupEndpoint;
 import org.springframework.boot.context.metrics.buffering.StartupTimeline;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -33,7 +33,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		},
 		typeNames = {"org.springframework.boot.context.metrics.buffering.BufferedStartupStep",
 		"org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag"},
-		access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+				access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class StartupEndpointAutoConfigurationHints implements NativeConfiguration {
 }

@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.actuate.system.DiskSpaceHealthIndicator;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 			DiskSpaceHealthIndicator.class,
 	}, typeNames = {
 		"org.springframework.core.LocalVariableTableParameterNameDiscoverer",
-	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 		@TypeHint(types = {
 				Endpoint.class,
 				EndpointExtension.class,

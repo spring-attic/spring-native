@@ -32,10 +32,10 @@ import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.actuate.health.SystemHealth;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /health endpoint
 @NativeHint(trigger = HealthEndpointAutoConfiguration.class, types = {
@@ -44,7 +44,7 @@ import org.springframework.nativex.hint.AccessBits;
 		SimpleStatusAggregator.class,
 		HttpCodeStatusMapper.class,
 		SimpleHttpCodeStatusMapper.class,
-	},access= AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 	@TypeHint(types = {
 		ReactiveHealthEndpointWebExtension.class,
 		HealthEndpointWebExtension.class,
@@ -66,11 +66,11 @@ import org.springframework.nativex.hint.AccessBits;
 		"org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebExtensionConfiguration",
 		"org.springframework.boot.actuate.autoconfigure.health.ReactiveHealthContributorRegistryReactiveHealthIndicatorRegistryAdapter",
 		"org.springframework.boot.actuate.autoconfigure.health.HealthContributorRegistryHealthIndicatorRegistryAdapter"
-	}, access= AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 	@TypeHint(
 		types = HealthEndpoint.class,
 		typeNames = "org.springframework.boot.actuate.autoconfigure.health.AutoConfiguredHealthEndpointGroups",
-		access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
-,@TypeHint(types = Health.class, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_FIELDS | AccessBits.DECLARED_METHODS)})
+			access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+,@TypeHint(types = Health.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredFields})})
 public class HealthEndpointAutoConfigurationHints implements NativeConfiguration {
 }

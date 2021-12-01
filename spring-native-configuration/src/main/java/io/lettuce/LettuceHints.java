@@ -16,8 +16,8 @@
 
 package io.lettuce;
 
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -60,7 +60,7 @@ import org.springframework.nativex.hint.TypeHint;
 				@TypeHint(types = {
 						io.netty.buffer.AbstractByteBufAllocator.class,
 						io.netty.util.ReferenceCountUtil.class,
-				}, access = AccessBits.DECLARED_METHODS), // TODO optimize with only the specific method required
+				}, access = Flag.allDeclaredMethods), // TODO optimize with only the specific method required
 				@TypeHint(typeNames = {
 						"io.lettuce.core.ChannelGroupListener",
 						"io.lettuce.core.ConnectionEventTrigger",

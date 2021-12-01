@@ -26,11 +26,11 @@ import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigura
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
 import org.springframework.data.neo4j.repository.support.SimpleNeo4jRepository;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
 	@TypeHint(types = {
@@ -41,7 +41,7 @@ import org.springframework.nativex.hint.AccessBits;
 			"org.springframework.data.neo4j.repository.query.SimpleQueryByExampleExecutor",
 			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
 			"org.springframework.data.neo4j.core.mapping.callback.IdGeneratingBeforeBindCallback"
-	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS),
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 	@TypeHint(types = {
 		Neo4jRepositoryFactoryBean.class,
 		Neo4jRepositoryConfigurationExtension.class,

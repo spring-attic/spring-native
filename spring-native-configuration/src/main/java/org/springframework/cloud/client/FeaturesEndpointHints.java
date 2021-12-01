@@ -17,16 +17,16 @@
 package org.springframework.cloud.client;
 
 import org.springframework.cloud.client.actuator.FeaturesEndpoint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint(trigger = CommonsClientAutoConfiguration.ActuatorConfiguration.class, types = {
-		@TypeHint(types = FeaturesEndpoint.class, access = AccessBits.ALL),
+		@TypeHint(types = FeaturesEndpoint.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
 		@TypeHint(typeNames = {
 				"org.springframework.cloud.client.actuator.FeaturesEndpoint$Features",
 				"org.springframework.cloud.client.actuator.FeaturesEndpoint$Feature"
-		}, access = AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS) })
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }) })
 public class FeaturesEndpointHints implements NativeConfiguration {
 }

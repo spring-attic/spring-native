@@ -16,7 +16,7 @@
 
 package org.springframework.test;
 
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -54,10 +54,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 			org.springframework.test.context.transaction.AfterTransaction.class,
 			org.springframework.test.context.transaction.BeforeTransaction.class,
 			org.springframework.test.context.web.WebAppConfiguration.class
-		}, access = AccessBits.ANNOTATION),
+		}, access = Flag.allPublicMethods),
 		@TypeHint(types = {
 				org.springframework.test.context.support.DelegatingSmartContextLoader.class
-		}, access = AccessBits.DECLARED_CONSTRUCTORS)
+		}, access = Flag.allDeclaredConstructors)
 	},
 	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.test.context.ActiveProfiles.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
@@ -84,7 +84,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 			org.springframework.test.context.jdbc.SqlConfig.class,
 			org.springframework.test.context.jdbc.SqlGroup.class,
 			org.springframework.test.context.jdbc.SqlMergeMode.class
-		}, access = AccessBits.ANNOTATION)
+		}, access = Flag.allPublicMethods)
 	},
 	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.test.context.jdbc.Sql.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),

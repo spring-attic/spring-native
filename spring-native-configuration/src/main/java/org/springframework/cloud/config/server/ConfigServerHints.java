@@ -49,7 +49,7 @@ import org.springframework.cloud.config.server.ssh.HostKeyAndAlgoBothExistValida
 import org.springframework.cloud.config.server.ssh.KnownHostsFileValidator;
 import org.springframework.cloud.config.server.ssh.PrivateKeyValidator;
 import org.springframework.core.annotation.SynthesizedAnnotation;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -75,7 +75,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 				KnownHostsFileValidator.class,
 				HostKeyAlgoSupportedValidator.class,
 				HostKeyAndAlgoBothExistValidator.class,
-				PropertyValueDescriptor.class}, access = AccessBits.FULL_REFLECTION),
+				PropertyValueDescriptor.class}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
 		initialization = {
 		@InitializationHint(types = {
 				AttributesHandler.class,

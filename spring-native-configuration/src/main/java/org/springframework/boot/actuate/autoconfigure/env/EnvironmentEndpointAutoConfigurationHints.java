@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.env;
 
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 // Hitting /env endpoint
 @NativeHint(trigger = EnvironmentEndpointAutoConfiguration.class, types = {
@@ -29,7 +29,7 @@ import org.springframework.nativex.hint.AccessBits;
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor.class
-	}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class EnvironmentEndpointAutoConfigurationHints implements NativeConfiguration {
 }

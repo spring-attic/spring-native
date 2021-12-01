@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.jolokia;
 import org.jolokia.http.AgentServlet;
 import org.jolokia.http.Jsr160ProxyNotEnabledByDefaultAnymoreDispatcher;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -28,7 +27,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 	@TypeHint(types = {
 		Jsr160ProxyNotEnabledByDefaultAnymoreDispatcher.class,
 		AgentServlet.class
-	},access=AccessBits.LOAD_AND_CONSTRUCT),
+	}),
 	@TypeHint(types = ServletEndpoint.class)
 })
 public class JolokiaEndpointAutoConfigurationHints implements NativeConfiguration {

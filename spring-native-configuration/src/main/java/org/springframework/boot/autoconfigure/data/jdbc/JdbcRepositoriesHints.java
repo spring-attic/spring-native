@@ -20,7 +20,7 @@ import org.springframework.data.jdbc.core.convert.RelationResolver;
 import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.jdbc.repository.support.JdbcRepositoryFactoryBean;
 import org.springframework.data.jdbc.repository.support.SimpleJdbcRepository;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -36,7 +36,7 @@ import org.springframework.nativex.hint.TypeHint;
 						JdbcRepositoryConfigExtension.class,
 						RelationResolver.class
 				}),
-				@TypeHint(types = SimpleJdbcRepository.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+				@TypeHint(types = SimpleJdbcRepository.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 		}, jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jdbc.core.convert.RelationResolver",
 				"org.springframework.aop.SpringProxy",

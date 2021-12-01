@@ -15,7 +15,7 @@
  */
 package org.springframework.plugin;
 
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.TypeHint;
 
 @TypeHint(
@@ -31,7 +31,7 @@ import org.springframework.nativex.hint.TypeHint;
 				org.springframework.plugin.core.support.AbstractTypeAwareSupport.class,
 				org.springframework.plugin.core.support.PluginRegistryFactoryBean.class,
 		},
-		access = AccessBits.ALL)
+		access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource })
 public class PluginHints {
 
 }

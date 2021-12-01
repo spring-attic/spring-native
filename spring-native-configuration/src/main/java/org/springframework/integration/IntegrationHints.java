@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -52,7 +53,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				}),
 		resources = @ResourceHint(patterns = "META-INF/spring.integration.properties"),
 		types = {
-				@TypeHint(access = AccessBits.FULL_REFLECTION,
+				@TypeHint(access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods },
 						types = {
 								org.springframework.integration.dsl.IntegrationFlow.class,
 								org.springframework.integration.gateway.RequestReplyExchanger.class,
@@ -64,7 +65,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 								org.springframework.integration.http.management.IntegrationGraphController.class,
 								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class
 						}),
-				@TypeHint(access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS,
+				@TypeHint(access = Flag.allPublicMethods,
 						types = {
 								org.springframework.beans.factory.config.BeanExpressionContext.class,
 								org.springframework.integration.config.ConsumerEndpointFactoryBean.class,
@@ -151,7 +152,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 						kotlin.jvm.functions.Function1.class,
 						kotlin.Unit.class
 				},
-				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
+				access = Flag.allPublicMethods))
 @NativeHint(trigger = org.springframework.integration.file.splitter.FileSplitter.class,
 		serializables =
 		@SerializationHint(types = {
@@ -161,26 +162,26 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 @NativeHint(trigger = org.springframework.integration.xml.transformer.XsltPayloadTransformer.class,
 		types =
 		@TypeHint(types = org.springframework.web.context.support.ServletContextResource.class,
-				access = AccessBits.CLASS))
+				access = {}))
 @NativeHint(trigger = org.springframework.integration.xml.transformer.UnmarshallingTransformer.class,
 		types =
 		@TypeHint(types = org.springframework.ws.mime.MimeMessage.class,
-				access = AccessBits.CLASS))
+				access = {}))
 @NativeHint(trigger = org.springframework.integration.http.inbound.BaseHttpInboundEndpoint.class,
 		types =
 		@TypeHint(types = javax.xml.bind.Binder.class,
 				typeNames = "com.rometools.rome.feed.atom.Feed",
-				access = AccessBits.CLASS))
+				access = {}))
 @NativeHint(trigger = org.springframework.integration.http.inbound.IntegrationRequestMappingHandlerMapping.class,
 		types =
 		@TypeHint(
 				types = org.springframework.web.HttpRequestHandler.class,
-				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
+				access = Flag.allPublicMethods))
 @NativeHint(trigger = org.springframework.integration.webflux.inbound.WebFluxIntegrationRequestMappingHandlerMapping.class,
 		types =
 		@TypeHint(
 				types = org.springframework.web.server.WebHandler.class,
-				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
+				access = Flag.allPublicMethods))
 @NativeHint(trigger = com.fasterxml.jackson.databind.ObjectMapper.class,
 		initialization =
 		@InitializationHint(initTime = InitializationTime.BUILD,

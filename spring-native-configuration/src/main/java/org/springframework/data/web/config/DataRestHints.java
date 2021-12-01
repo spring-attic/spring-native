@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.TypeProcessor;
@@ -68,14 +69,11 @@ import reactor.core.publisher.Flux;
 
 						"org.springframework.data.rest.webmvc.config.WebMvcRepositoryRestConfiguration",
 
-						// JACKSON
-//						"org.springframework.hateoas.EntityModel$MapSuppressingUnwrappingSerializer",
-
 						// EvoInflector
 						"org.atteo.evo.inflector.English"
 				},
 
-				access = AccessBits.ALL
+				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }
 
 		),
 },

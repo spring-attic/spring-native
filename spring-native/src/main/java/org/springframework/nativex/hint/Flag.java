@@ -28,6 +28,27 @@ import java.util.List;
  * @author Sebastien Deleuze
  */
 public enum Flag {
+
+	/**
+	 * Inferred with:
+	 * <ul>
+	 *     <li>{@link Flag#allPublicMethods} for annotations and interfaces</li>
+	 *     <li>None for arrays (class access)</li>
+	 *     <li>{@link Flag#allDeclaredConstructors} for other types</li>
+	 * </ul>
+	 */
+	autoDetect,
+
+	/**
+	 * Configure related JNI reflection entry, to be combined with other `Flag` entries.
+	 */
+	jni,
+
+	/**
+	 * Configure access to the *.class file resource.
+	 */
+	resource,
+
 	allPublicFields,
 	allDeclaredFields,
 	allDeclaredConstructors,

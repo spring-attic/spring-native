@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -171,7 +172,7 @@ public class TypeTests {
 		Map<String, AccessDescriptor> jniTypes = hd.getJNITypes();
 		assertEquals(1, jniTypes.size());
 		assertTrue(jniTypes.containsKey("java.lang.String"));
-		assertEquals(AccessBits.LOAD_AND_CONSTRUCT, jniTypes.get("java.lang.String").getAccessBits());
+		assertEquals(AccessBits.DECLARED_CONSTRUCTORS, jniTypes.get("java.lang.String").getAccessBits());
 	}
 	
 	@Test
@@ -184,15 +185,15 @@ public class TypeTests {
 		Map<String, AccessDescriptor> jniTypes = hd.getJNITypes();
 		assertEquals(1, jniTypes.size());
 		assertTrue(jniTypes.containsKey("java.lang.Boolean"));
-		assertEquals(AccessBits.LOAD_AND_CONSTRUCT, jniTypes.get("java.lang.Boolean").getAccessBits());
+		assertEquals(AccessBits.DECLARED_CONSTRUCTORS, jniTypes.get("java.lang.Boolean").getAccessBits());
 	}
 
-	@TypeHint(types = String.class, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.JNI)
+	@TypeHint(types = String.class, access = { Flag.allDeclaredConstructors, Flag.jni })
 	static class Jni1 {
 	}
 
 	@NativeHint(trigger=Integer.class,types = 
-			@TypeHint(types = Boolean.class, access=AccessBits.LOAD_AND_CONSTRUCT|AccessBits.JNI)
+			@TypeHint(types = Boolean.class, access = { Flag.allDeclaredConstructors, Flag.jni })
 	)
 	static class Jni2 {
 	}
@@ -565,18 +566,18 @@ public class TypeTests {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeHint(types = { Float.class }, access = AccessBits.CLASS) })
+			@TypeHint(types = { Float.class }, access = {}) })
 	static class TestClass5 {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeHint(types = { Float.class }, access = AccessBits.CLASS),
-			@TypeHint(types = { Integer.class }, access = AccessBits.RESOURCE) })
+			@TypeHint(types = { Float.class }, access = {}),
+			@TypeHint(types = { Integer.class }, access = Flag.resource) })
 	static class TestClass6 {
 	}
 
 	@NativeHint(trigger = String.class, types = {
-			@TypeHint(typeNames = { "java.lang.String" }, types = { Float.class }, access = AccessBits.CLASS) })
+			@TypeHint(typeNames = { "java.lang.String" }, types = { Float.class }, access = {}) })
 	static class TestClass7 {
 	}
 

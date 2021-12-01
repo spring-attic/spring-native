@@ -31,7 +31,7 @@ import org.springframework.cloud.task.configuration.DefaultTaskConfigurer;
 import org.springframework.cloud.task.configuration.SimpleTaskAutoConfiguration;
 import org.springframework.cloud.task.repository.support.TaskRepositoryInitializer;
 import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -48,7 +48,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		types = {
 		@TypeHint(types = {
 			AbstractDataSourceInitializer.class,
-		}, access = AccessBits.LOAD_AND_CONSTRUCT|AccessBits.DECLARED_METHODS),
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
 		@TypeHint(types = {
 			DefaultTaskConfigurer.class,
 			JobLauncherApplicationRunner.class,
@@ -62,12 +62,12 @@ import org.springframework.nativex.type.NativeConfiguration;
 			TaskBatchEventListenerBeanPostProcessor.class,
 			JobLaunchCondition.class,
 			BatchEventAutoConfiguration.class
-		}, access = AccessBits.ALL),
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
 		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$FailOnJobFailureCondition"
-		}, access = AccessBits.ALL),
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
 		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$SpringBatchJobCondition"
-		}, access = AccessBits.ALL),
-		@TypeHint(types= {DatabaseMetaData.class})},
+		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
+		@TypeHint(types= DatabaseMetaData.class)},
 		jdkProxies = {
 		@JdkProxyHint(typeNames = {
 				"org.springframework.aop.SpringProxy",

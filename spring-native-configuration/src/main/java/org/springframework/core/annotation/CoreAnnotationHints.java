@@ -16,15 +16,15 @@
 
 package org.springframework.core.annotation;
 
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 
 @NativeHint( types =
 @TypeHint(types= {
 		AliasFor.class,
 		Order.class
-}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS))
+}, access = Flag.allDeclaredMethods))
 public class CoreAnnotationHints implements NativeConfiguration {
 }

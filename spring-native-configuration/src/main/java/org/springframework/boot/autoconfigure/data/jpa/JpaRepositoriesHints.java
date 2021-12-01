@@ -19,12 +19,12 @@ package org.springframework.boot.autoconfigure.data.jpa;
 import org.springframework.data.jpa.repository.query.JpaQueryMethodFactory;
 import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
@@ -37,7 +37,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 		} , typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				}, access = AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.RESOURCE)
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.resource })
 		,
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",

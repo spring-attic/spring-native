@@ -16,7 +16,7 @@
 
 package org.thymeleaf;
 
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -49,8 +49,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				}
 		),
-		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.DECLARED_METHODS),
-		@TypeHint(types = IterationStatusVar.class, access = AccessBits.FULL_REFLECTION),
+		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
+		@TypeHint(types = IterationStatusVar.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods, Flag.allDeclaredMethods }),
 		@TypeHint(types = { Aggregates.class,
 							Arrays.class,
 							Bools.class,
@@ -67,7 +67,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 							Sets.class,
 							Strings.class,
 							Uris.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
 })
 public class ThymeleafHints implements NativeConfiguration {
 }

@@ -51,20 +51,10 @@ public @interface TypeHint {
 	String[] typeNames() default {};
 
 	/**
-	 * Access scope to be configured, See the various predefined ones defined in {@link AccessBits}.
-	 *
-	 * <p>Inferred when not specified with:
-	 * <ul>
-	 *     <li>{@link AccessBits#ANNOTATION} for annotations</li>
-	 *     <li>{@link AccessBits#INTERFACE} for interfaces</li>
-	 *     <li>{@link AccessBits#CLASS} for arrays</li>
-	 *     <li>{@link AccessBits#LOAD_AND_CONSTRUCT} for other types</li>
-	 * </ul>
-	 *
-	 * <p>It is possible to combine multiple accesses with bitwise OR operator, for example
-	 * {@code access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS}.
+	 * Defined the scope of the reflection entries or resource access to be configured. Autodetected when not set,
+	 * see {@link Flag#autoDetect} related documentation. Use {code {}} for class access only.
 	 */
-	int access() default 0;
+	Flag[] access() default Flag.autoDetect;
 
 	/**
 	 * Specific method information for reflective invocation and metadata query, useful to reduce the footprint impact of the generated configuration.

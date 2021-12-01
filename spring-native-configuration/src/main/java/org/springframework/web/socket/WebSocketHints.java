@@ -29,10 +29,10 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
 import org.springframework.messaging.simp.user.UserDestinationResolver;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketConfiguration;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -56,12 +56,12 @@ import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsSe
 				UserDestinationMessageHandler.class,
 				MessageHandler.class,
 				SimpUserRegistry.class
-		}, access = AccessBits.RESOURCE),
+		}, access = Flag.resource), // TODO Suspicious entry, try to remove it
 		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
 		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
-@NativeHint(trigger = TransportHandlingSockJsService.class, types = @TypeHint(types = ObjectMapper.class, access = AccessBits.CLASS))
+@NativeHint(trigger = TransportHandlingSockJsService.class, types = @TypeHint(types = ObjectMapper.class, access = {}))
 public class WebSocketHints implements NativeConfiguration {
 }

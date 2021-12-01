@@ -19,7 +19,7 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -54,15 +54,15 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {
 			LogManager.class,
 			JavaLoggingSystem.class
-		}, access = AccessBits.LOAD_AND_CONSTRUCT | AccessBits.PUBLIC_METHODS),
+		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
 			@TypeHint(types = {
 					java.util.LinkedHashSet.class,
 					java.util.ArrayList.class
-			}, access = AccessBits.LOAD_AND_CONSTRUCT), // Required for configuration properties binding since we do not process implementations
+			}), // Required for configuration properties binding since we do not process implementations
 			@TypeHint(types= SpringApplication.class, methods = {
 				@MethodHint(name="setBannerMode", parameterTypes = Banner.Mode.class), // Enables property control of banner mode
 				@MethodHint(name="setWebApplicationType",parameterTypes = WebApplicationType.class)
-			}, access = AccessBits.CLASS)
+			}, access = {})
 	},
 	initialization = @InitializationHint(types = {
 			org.springframework.boot.BeanDefinitionLoader.class,

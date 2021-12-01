@@ -29,6 +29,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 		Service.class,
 		Resource.class,
 		Controller.class
-}, access = AccessBits.ANNOTATION)
+})
 public class ComponentHints implements NativeConfiguration {
 }

@@ -20,11 +20,11 @@ import org.springframework.boot.autoconfigure.web.CommonWebInfos;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryConfiguration.EmbeddedNetty;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.nativex.hint.Flag;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.AccessBits;
 import org.springframework.web.reactive.HandlerResult;
 
 import reactor.netty.DisposableServer;
@@ -37,7 +37,7 @@ import reactor.netty.DisposableServer;
 				org.springframework.web.reactive.DispatcherHandler.class
 		}),
 		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
-				access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
+				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
 })
 @NativeHint(trigger = WebServerFactoryCustomizerBeanPostProcessor.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
 @NativeHint(trigger = ReactiveWebServerFactoryAutoConfiguration.class, types = {
@@ -45,24 +45,24 @@ import reactor.netty.DisposableServer;
 				types= {
 						AnnotationConfigReactiveWebServerApplicationContext.class,
 						DisposableServer.class
-				}, access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS | AccessBits.DECLARED_METHODS)
+				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
 })
 @NativeHint(trigger = EmbeddedNetty.class, imports = CommonWebInfos.class)
 // HandshakeWebSocketService support, no support for Jetty 10: too much reflection in Jetty10RequestUpgradeStrategy and no support string based triggers yet.
 @NativeHint(trigger = org.apache.tomcat.websocket.server.WsHttpUpgradeHandler.class, types = {
-		@TypeHint(types = org.apache.tomcat.websocket.server.WsHttpUpgradeHandler.class, access = AccessBits.CLASS),
+		@TypeHint(types = org.apache.tomcat.websocket.server.WsHttpUpgradeHandler.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = org.eclipse.jetty.websocket.server.WebSocketServerFactory.class, types = {
-		@TypeHint(types = org.eclipse.jetty.websocket.server.WebSocketServerFactory.class, access = AccessBits.CLASS),
+		@TypeHint(types = org.eclipse.jetty.websocket.server.WebSocketServerFactory.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.JettyRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = io.undertow.websockets.WebSocketProtocolHandshakeHandler.class, types = {
-		@TypeHint(types = io.undertow.websockets.WebSocketProtocolHandshakeHandler.class, access = AccessBits.CLASS),
+		@TypeHint(types = io.undertow.websockets.WebSocketProtocolHandshakeHandler.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.UndertowRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = reactor.netty.http.server.HttpServerResponse.class, types = {
-		@TypeHint(types = reactor.netty.http.server.HttpServerResponse.class, access = AccessBits.CLASS),
+		@TypeHint(types = reactor.netty.http.server.HttpServerResponse.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy.class)
 })
 public class WebFluxHints implements NativeConfiguration {
