@@ -16,6 +16,7 @@
 
 package org.springframework.data;
 
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -65,6 +66,7 @@ class RepositoryFactoryBeanPostProcessor implements BeanDefinitionPostProcessor,
 			ResolvableType resolvedRepositoryType = ResolvableType.forClassWithGenerics(
 					beanDefinition.getBeanClass(), ResolvableType.forClass(repositoryType), entityType, idType);
 			beanDefinition.setTargetType(resolvedRepositoryType);
+			beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, true);
 		}
 	}
 

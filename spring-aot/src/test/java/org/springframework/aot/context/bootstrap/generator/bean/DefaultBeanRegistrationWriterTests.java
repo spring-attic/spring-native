@@ -33,6 +33,8 @@ import org.springframework.aot.context.bootstrap.generator.sample.InnerComponent
 import org.springframework.aot.context.bootstrap.generator.sample.InnerComponentConfiguration.NoDependencyComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.SampleFactory;
+import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBean;
+import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBeanConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionComponent;
 import org.springframework.aot.context.bootstrap.generator.sample.injection.InjectionConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedConstructorComponent;
@@ -48,6 +50,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.samples.simple.SimpleComponent;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,6 +169,55 @@ class DefaultBeanRegistrationWriterTests {
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo(
 				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(context);\n");
+	}
+
+	@Test
+	void writeWithUnresolvedGenerics() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(TestGenericFactoryBean.class)
+				.getBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClass(TestGenericFactoryBean.class));
+		assertUnresolvedTargetTypeNotPreserved(beanDefinition);
+	}
+
+	@Test
+	void writeWithUnresolvedGenericsPreserveTargetTypeToFalse() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(TestGenericFactoryBean.class)
+				.getBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClass(TestGenericFactoryBean.class));
+		beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, false);
+		assertUnresolvedTargetTypeNotPreserved(beanDefinition);
+	}
+
+	@Test
+	void writeWithUnresolvedGenericsPreserveTargetTypeToNonBoolean() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(TestGenericFactoryBean.class)
+				.getBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClass(TestGenericFactoryBean.class));
+		beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, "something");
+		assertUnresolvedTargetTypeNotPreserved(beanDefinition);
+	}
+
+	private void assertUnresolvedTargetTypeNotPreserved(RootBeanDefinition beanDefinition) {
+		BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(String.class)
+				.withInstanceCreator(ReflectionUtils.findMethod(TestGenericFactoryBeanConfiguration.class, "testGenericFactoryBean")).build();
+		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
+				.hasImport(TestGenericFactoryBean.class).lines().containsOnly(
+						"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
+						"    .instanceSupplier(() -> test).register(context);");
+	}
+
+	@Test
+	void writeWithUnresolvedGenericsAndPreserveTargetType() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(TestGenericFactoryBean.class)
+				.getBeanDefinition();
+		beanDefinition.setTargetType(ResolvableType.forClass(TestGenericFactoryBean.class));
+		beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, true);
+		BeanInstanceDescriptor descriptor = BeanInstanceDescriptor.of(String.class)
+				.withInstanceCreator(ReflectionUtils.findMethod(TestGenericFactoryBeanConfiguration.class, "testGenericFactoryBean")).build();
+		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
+				.hasImport(TestGenericFactoryBean.class).lines().containsOnly(
+						"BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Serializable.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
+						"    .instanceSupplier(() -> test).register(context);");
 	}
 
 	@Test

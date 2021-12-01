@@ -318,12 +318,20 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	private void writeBeanType(Builder code) {
 		ResolvableType resolvableType = this.beanDefinition.getResolvableType();
-		if (resolvableType.hasGenerics() && !hasUnresolvedGenerics(resolvableType)) {
+		if (shouldPreserveTargetType()) {
+			code.add(typeWriter.generateTypeFor(resolvableType));
+		}
+		else if (resolvableType.hasGenerics() && !hasUnresolvedGenerics(resolvableType)) {
 			code.add(typeWriter.generateTypeFor(resolvableType));
 		}
 		else {
 			code.add("$T.class", ClassUtils.getUserClass(this.beanDefinition.getResolvableType().toClass()));
 		}
+	}
+
+	private boolean shouldPreserveTargetType() {
+		Object preserveTargetType = beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE);
+		return (preserveTargetType instanceof Boolean && (Boolean) preserveTargetType);
 	}
 
 	private boolean hasUnresolvedGenerics(ResolvableType resolvableType) {

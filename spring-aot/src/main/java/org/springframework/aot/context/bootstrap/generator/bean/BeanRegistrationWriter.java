@@ -29,6 +29,12 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Bootst
 public interface BeanRegistrationWriter {
 
 	/**
+	 * Property to set on a bean definition to request the target type to be preserved.
+	 */
+	String PRESERVE_TARGET_TYPE = "beanRegistrationWriterPreserveType";
+	// FIXME: leaking abstraction, we need something better
+
+	/**
 	 * Generate the necessary {@code statements} to register a bean in the context.
 	 * @param context the writer context
 	 * @param code the builder to use to add the registration statement(s)

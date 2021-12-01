@@ -18,6 +18,7 @@ package org.springframework.data;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -42,6 +43,7 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
 		postProcess(beanDefinition);
 		assertFactoryBeanForSpeakerRepository(beanDefinition.getResolvableType());
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
 	}
 
 	@Test
@@ -59,6 +61,7 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
 		postProcess(beanDefinition);
 		assertFactoryBeanForSpeakerRepository(beanDefinition.getResolvableType());
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
 	}
 
 	@Test
@@ -68,6 +71,7 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
 		postProcess(beanDefinition);
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		assertThat(beanDefinition.hasAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isFalse();
 	}
 
 	@Test
@@ -77,6 +81,7 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
 		postProcess(beanDefinition);
 		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		assertThat(beanDefinition.hasAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isFalse();
 	}
 
 	@Test
@@ -85,6 +90,7 @@ class RepositoryFactoryBeanPostProcessorTests {
 				.getBeanDefinition();
 		postProcess(beanDefinition);
 		assertThat(beanDefinition.getResolvableType().resolve()).isEqualTo(String.class);
+		assertThat(beanDefinition.hasAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isFalse();
 	}
 
 	@Test
