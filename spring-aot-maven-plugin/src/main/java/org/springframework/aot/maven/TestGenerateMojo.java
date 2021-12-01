@@ -40,7 +40,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
-import org.springframework.boot.loader.tools.RunProcess;
 import org.springframework.util.StringUtils;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
@@ -99,9 +98,6 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			findJarFile(this.pluginArtifacts, "net.bytebuddy", "byte-buddy")
 					.ifPresent(artifact -> prependDependency(artifact, testClasspathElements));
 
-			RunProcess runProcess = new RunProcess(Paths.get(this.project.getBuild().getDirectory()).toFile(), getJavaExecutable());
-			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-
 			// consider main and test resources
 			Set<Path> resourceFolders = new HashSet<>();
 			for (Resource r : project.getResources()) {
@@ -125,16 +121,11 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			args.add("--sources-out=" + sourcesPath.toAbsolutePath());
 			args.add("--resources-out=" + resourcesPath.toAbsolutePath());
 			args.add("--resources=" + StringUtils.collectionToDelimitedString(resourceFolders, File.pathSeparator));
-			if (getLogLevel().equals("DEBUG")) {
-				args.add("--debug");
-			}
+			applyAotOptions(args);
 			// test output directory
 			args.add(testOutputDirectory.toString());
 
-			int exitCode = runProcess.run(true, args, Collections.emptyMap());
-			if (exitCode != 0 && exitCode != 130) {
-				throw new IllegalStateException("Test bootstrap code generator finished with exit code: " + exitCode);
-			}
+			forkJvm(Paths.get(this.project.getBuild().getDirectory()).toFile(), args, Collections.emptyMap());
 
 			compileGeneratedTestSources(sourcesPath, testClasspathElements);
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));

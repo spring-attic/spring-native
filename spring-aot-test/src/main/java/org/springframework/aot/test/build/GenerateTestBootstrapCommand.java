@@ -57,8 +57,23 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 	@Option(names = {"--resources"}, required = true, split = "${sys:path.separator}", description = "Paths to the application compiled resources.")
 	private Set<Path> resourcesPaths;
 
+	@Option(names = "--mode", required = true, description = "The mode which could be native or native-agent")
+	private String mode;
+	
 	@Option(names = {"--debug"}, description = "Enable debug logging.")
 	private boolean isDebug;
+
+	@Option(names = {"--remove-yaml"}, description = "Remove Yaml support.")
+	private boolean removeYaml;
+
+	@Option(names = {"--remove-jmx"}, description = "Remove JMX support.")
+	private boolean removeJmx;
+
+	@Option(names = {"--remove-xml"}, description = "Remove XML support.")
+	private boolean removeXml;
+
+	@Option(names = {"--remove-spel"}, description = "Remove SpEL support.")
+	private boolean removeSpel;
 
 	@Parameters(index = "0", arity = "1..*", description = "Folders containing the application test classes.")
 	private Path[] testClassesFolders;
@@ -72,7 +87,13 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 			testClassesNames.addAll(TestClassesFinder.findTestClasses(testClassesFolder));
 		}
 		AotOptions aotOptions = new AotOptions();
+		aotOptions.setMode(this.mode);
 		aotOptions.setDebugVerify(this.isDebug);
+		aotOptions.setRemoveYamlSupport(this.removeYaml);
+		aotOptions.setRemoveJmxSupport(this.removeJmx);
+		aotOptions.setRemoveXmlSupport(this.removeXml);
+		aotOptions.setRemoveSpelSupport(this.removeSpel);
+
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		LogFile logFile = LogFile.get(environment);
 		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);

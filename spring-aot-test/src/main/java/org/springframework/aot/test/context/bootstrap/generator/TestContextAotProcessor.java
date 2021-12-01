@@ -72,7 +72,7 @@ public class TestContextAotProcessor {
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
 		List<TestContextConfigurationDescriptor> descriptors = this.configurationDescriptorFactory.buildConfigurationDescriptors(testClasses);
 		AtomicInteger count = new AtomicInteger();
-		Supplier<String> fallbackClassName = () -> TEST_BOOTSTRAP_CLASS_NAME + count.getAndIncrement();
+		Supplier<ClassName> fallbackClassName = () -> ClassName.get("org.springframework.aot", TEST_BOOTSTRAP_CLASS_NAME + count.getAndIncrement());
 		Map<ClassName, TestContextConfigurationDescriptor> entries = new HashMap<>();
 		for (TestContextConfigurationDescriptor descriptor : descriptors) {
 			ClassName className = generateTestContext(writerContext, fallbackClassName, descriptor);
@@ -100,10 +100,10 @@ public class TestContextAotProcessor {
 				.forGeneratedType(boostrapClass.getClassName()).withMethods(method);
 	}
 
-	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<String> fallbackClassName,
+	protected ClassName generateTestContext(BootstrapWriterContext writerContext, Supplier<ClassName> fallbackClassName,
 			TestContextConfigurationDescriptor descriptor) {
 		GenericApplicationContext context = descriptor.parseTestContext();
-		String className = determineClassName(descriptor.getTestClasses(), fallbackClassName);
+		ClassName className = determineClassName(descriptor.getTestClasses(), fallbackClassName);
 		BootstrapWriterContext testWriterContext = writerContext.fork(className);
 		this.contextProcessor.process(context, testWriterContext);
 		BootstrapClass mainBootstrapClass = testWriterContext.getMainBootstrapClass();
@@ -146,9 +146,11 @@ public class TestContextAotProcessor {
 		return code.build();
 	}
 
-	private String determineClassName(List<Class<?>> testClasses, Supplier<String> fallback) {
-		return (testClasses.size() == 1)
-				? String.format("%sContextInitializer", testClasses.get(0).getSimpleName())
-				: fallback.get();
+	private ClassName determineClassName(List<Class<?>> testClasses, Supplier<ClassName> fallback) {
+		if (testClasses.size() == 1) {
+			Class<?> testClass = testClasses.get(0);
+			return ClassName.get(testClass.getPackageName(), String.format("%sContextInitializer", testClass.getSimpleName()));
+		}
+		return fallback.get();
 	}
 }
