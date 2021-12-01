@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
+import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -84,7 +85,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
 			final Set<String> added = new HashSet<>();
-			NativeConfigurationUtils.doWithComponents(beanFactory,
+			new BeanFactoryProcessor(beanFactory).processBeans(this::isController,
 				(beanName, controllerType) -> {
 					logger.debug("reviewing mappings in controller "+controllerType);
 					for (Method controllerMethod: controllerType.getDeclaredMethods()) {
@@ -107,12 +108,12 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 							}
 						}
 					}
-				},
-				(beanName, beanType) -> {
-					logger.debug("Checking "+beanType);
-		            MergedAnnotations mergedAnnotations = MergedAnnotations.from(beanType,SearchStrategy.TYPE_HIERARCHY);
-		            return mergedAnnotations.get(CONTROLLER_ANNOTATION_NAME).isPresent();
 				});
+		}
+		
+		private boolean isController(Class<?> beanType) {
+			MergedAnnotations mergedAnnotations = MergedAnnotations.from(beanType,SearchStrategy.TYPE_HIERARCHY);
+			return mergedAnnotations.get(CONTROLLER_ANNOTATION_NAME).isPresent();
 		}
 
 	}
