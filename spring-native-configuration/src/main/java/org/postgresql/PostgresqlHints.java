@@ -16,14 +16,14 @@
 
 package org.postgresql;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = Driver.class, types = {
 		@TypeHint(types = Driver.class),
-		@TypeHint(types = PGProperty.class, access = Flag.allDeclaredFields)
+		@TypeHint(types = PGProperty.class, access = TypeAccess.DECLARED_FIELDS)
 })
 public class PostgresqlHints implements NativeConfiguration {
 }

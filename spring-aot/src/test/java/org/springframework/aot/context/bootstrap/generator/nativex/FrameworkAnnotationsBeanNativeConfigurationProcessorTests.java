@@ -35,7 +35,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.condition.Conditi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -85,7 +85,7 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessorTests {
 	private Consumer<DefaultNativeReflectionEntry> annotation(Class<? extends Annotation> annotationType) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(annotationType);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS);
 			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).isEmpty();
 			assertThat(entry.getFields()).isEmpty();

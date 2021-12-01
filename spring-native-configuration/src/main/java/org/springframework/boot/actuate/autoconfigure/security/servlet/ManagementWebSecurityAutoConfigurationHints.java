@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -26,6 +26,6 @@ import org.springframework.nativex.hint.TypeHint;
 		"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 		"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 		"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource })})
+}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})})
 public class ManagementWebSecurityAutoConfigurationHints implements NativeConfiguration {
 }

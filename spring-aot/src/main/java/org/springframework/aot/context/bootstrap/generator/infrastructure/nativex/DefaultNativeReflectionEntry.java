@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -119,23 +119,23 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 	@Override
 	protected ClassDescriptor initializerClassDescriptor() {
 		ClassDescriptor descriptor = ClassDescriptor.of(this.type);
-		registerIfNecessary(this.constructors, Flag.allDeclaredConstructors, Flag.allPublicConstructors,
+		registerIfNecessary(this.constructors, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS,
 				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
-		registerIfNecessary(this.queriedConstructors, Flag.queryAllDeclaredConstructors, Flag.queryAllPublicConstructors,
+		registerIfNecessary(this.queriedConstructors, TypeAccess.QUERY_DECLARED_CONSTRUCTORS, TypeAccess.QUERY_PUBLIC_CONSTRUCTORS,
 				(constructor) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(constructor)));
-		registerIfNecessary(this.methods, Flag.allDeclaredMethods, Flag.allPublicMethods,
+		registerIfNecessary(this.methods, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS,
 				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
-		registerIfNecessary(this.queriedMethods, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
+		registerIfNecessary(this.queriedMethods, TypeAccess.QUERY_DECLARED_METHODS, TypeAccess.QUERY_PUBLIC_METHODS,
 				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
-		registerFieldIfNecessary(this.fields, Flag.allDeclaredFields, Flag.allPublicFields,
+		registerFieldIfNecessary(this.fields, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_FIELDS,
 				(field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field.getKey(), field.getValue())));
 		return descriptor;
 	}
 
-	private void registerFieldIfNecessary(MultiValueMap<Field, FieldAccess> members, Flag allFlag,
-			Flag publicFlag, Consumer<Entry<Field, List<FieldAccess>>> memberConsumer) {
-		if (!getFlags().contains(allFlag)) {
-			boolean checkVisibility = getFlags().contains(publicFlag);
+	private void registerFieldIfNecessary(MultiValueMap<Field, FieldAccess> members, TypeAccess allAccess,
+			TypeAccess publicAccess, Consumer<Entry<Field, List<FieldAccess>>> memberConsumer) {
+		if (!getAccess().contains(allAccess)) {
+			boolean checkVisibility = getAccess().contains(publicAccess);
 			for (Entry<Field, List<FieldAccess>> member : members.entrySet()) {
 				if (!checkVisibility || !Modifier.isPublic(member.getKey().getModifiers())) {
 					memberConsumer.accept(member);
@@ -150,9 +150,9 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 		}
 	}
 
-	private <T extends Member> void registerIfNecessary(Iterable<T> members, Flag allFlag,
-			Flag publicFlag, Consumer<T> memberConsumer) {
-		registerIfNecessary(members, allFlag, publicFlag,
+	private <T extends Member> void registerIfNecessary(Iterable<T> members, TypeAccess allAccess,
+			TypeAccess publicAccess, Consumer<T> memberConsumer) {
+		registerIfNecessary(members, allAccess, publicAccess,
 				(member) -> Modifier.isPublic(member.getModifiers()), memberConsumer);
 	}
 
@@ -172,7 +172,7 @@ public class DefaultNativeReflectionEntry extends NativeReflectionEntry {
 				.add("type=" + this.type).add("constructors=" + this.constructors)
 				.add("methods=" + this.methods).add("fields=" + this.fields)
 				.add("queriedConstructors=" + this.queriedConstructors).add("queriedMethods=" + this.queriedMethods)
-				.add("flags=" + getFlags()).toString();
+				.add("access=" + getAccess()).toString();
 	}
 
 	public enum FieldAccess {

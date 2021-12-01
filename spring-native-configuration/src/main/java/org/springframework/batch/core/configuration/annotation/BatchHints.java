@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.nativex.hint.AotProxyHint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyBits;
@@ -44,13 +44,13 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"org/springframework/batch/core/schema-sybase.sql"
 		}),
 		types = {
-		@TypeHint(types = AbstractDataSourceInitializer.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
+		@TypeHint(types = AbstractDataSourceInitializer.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
 		@TypeHint(types = {
 			BasicBatchConfigurer.class,
 			JobLauncherApplicationRunner.class,
 			DataSourcePoolMetadataProvider.class,
 			InfrastructureAdvisorAutoProxyCreator.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 		@TypeHint(types= {
 				ModularBatchConfiguration.class,
 				SimpleBatchConfiguration.class,

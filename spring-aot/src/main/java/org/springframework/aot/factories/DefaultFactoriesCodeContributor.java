@@ -23,7 +23,7 @@ import com.squareup.javapoet.CodeBlock;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -94,7 +94,7 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
 		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
-		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		factoryDescriptor.setAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 

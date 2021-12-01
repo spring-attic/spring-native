@@ -17,13 +17,13 @@
 package org.springframework.boot.context.config;
 
 import org.springframework.boot.context.properties.bind.Name;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(types = {
-	@TypeHint(types = ConfigDataLocation.class, access = Flag.allDeclaredMethods),
+	@TypeHint(types = ConfigDataLocation.class, access = TypeAccess.DECLARED_METHODS),
 	@TypeHint(types = ConfigDataLocation[].class),
 	@TypeHint(types = {
 			ConfigDataEnvironmentPostProcessor.class,

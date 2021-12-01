@@ -31,7 +31,7 @@ import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
 import org.springframework.aot.test.samples.simple.SimpleSpringTests;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -111,7 +111,7 @@ class TestContextAotProcessorTests {
 				assertThat(methodDescriptor.getName()).isEqualTo("getContextLoaders");
 				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
 			});
-			assertThat(descriptor.getFlags()).isNull();
+			assertThat(descriptor.getAccess()).isNull();
 			assertThat(descriptor.getFields()).isNull();
 		});
 	}
@@ -127,14 +127,14 @@ class TestContextAotProcessorTests {
 	void processRegisterReflectionForSpringBootTestContextBootstrapper() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasClassDescriptor(SpringBootTestContextBootstrapper.class.getName(),
-				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors));
+				(descriptor) -> assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS));
 	}
 
 	@Test
 	void processRegisterReflectionForSliceTestContextBootstrapper() {
 		ContextBootstrapStructure structure = this.tester.process(SampleJdbcTests.class);
 		assertThat(structure).hasClassDescriptor("org.springframework.boot.test.autoconfigure.jdbc.JdbcTestContextBootstrapper",
-				(descriptor) -> assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors));
+				(descriptor) -> assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS));
 	}
 
 	private Consumer<ClassDescriptor> assertContextInitializerMetadata() {
@@ -143,7 +143,7 @@ class TestContextAotProcessorTests {
 				assertThat(methodDescriptor.getName()).isEqualTo("<init>");
 				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
 			});
-			assertThat(descriptor.getFlags()).isNull();
+			assertThat(descriptor.getAccess()).isNull();
 			assertThat(descriptor.getFields()).isNull();
 		};
 	}

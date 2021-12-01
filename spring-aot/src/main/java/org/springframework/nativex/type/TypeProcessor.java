@@ -37,7 +37,7 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -1092,8 +1092,8 @@ public class TypeProcessor {
 		}
 
 		@Override
-		public void addReflectiveAccess(String key, Flag... flags) {
-			addReflectiveAccess(key, new AccessDescriptor(AccessBits.fromFlags(flags).getValue()));
+		public void addReflectiveAccess(String key, TypeAccess... access) {
+			addReflectiveAccess(key, new AccessDescriptor(AccessBits.fromTypeAccess(access).getValue()));
 		}
 
 		@Override

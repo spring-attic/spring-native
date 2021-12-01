@@ -26,7 +26,7 @@ import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
 import org.springframework.test.context.support.DefaultBootstrapContext;
@@ -65,7 +65,7 @@ class TestContextConfigurationDescriptorTests {
 		descriptor.contributeNativeConfiguration(registry);
 		assertThat(registry.reflection().toClassDescriptors()).singleElement().satisfies((classDescriptor) -> {
 			assertThat(classDescriptor.getName()).isEqualTo(SpringBootTestContextBootstrapper.class.getName());
-			assertThat(classDescriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors);
+			assertThat(classDescriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS);
 			assertThat(classDescriptor.getFields()).isNull();
 			assertThat(classDescriptor.getMethods()).isNull();
 		});

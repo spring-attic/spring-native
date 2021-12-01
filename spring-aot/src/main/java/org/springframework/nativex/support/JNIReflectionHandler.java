@@ -25,7 +25,7 @@ import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 
 /**
@@ -41,8 +41,8 @@ public class JNIReflectionHandler extends Handler {
 		super(collector);
 	}
 
-	public void addAccess(String typename, Flag...flags) {
-		addAccess(typename, null, null, false, flags);
+	public void addAccess(String typename, TypeAccess... access) {
+		addAccess(typename, null, null, false, access);
 	}
 
 	public void addAccess(String typename, AccessDescriptor accessDescriptor) {
@@ -50,12 +50,12 @@ public class JNIReflectionHandler extends Handler {
 				MethodDescriptor.toStringArray(accessDescriptor.getMethodDescriptors()),
 				FieldDescriptor.toStringArray(accessDescriptor.getFieldDescriptors()), 
 				true, 
-				AccessBits.getFlags(accessDescriptor.getAccessBits()));
+				AccessBits.getAccess(accessDescriptor.getAccessBits()));
 	}
 	
 	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
 		if (ad.noMembersSpecified()) {
-			addAccess(typename, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, null, silent, AccessBits.getAccess(ad.getAccessBits()));
 		} else {
 			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 			String[][] methodsAndConstructors = new String[mds.size()][];
@@ -78,7 +78,7 @@ public class JNIReflectionHandler extends Handler {
 					fields[m]=new String[] {fieldDescriptor.getName()};
 				}
 			}
-			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, methodsAndConstructors, fields, silent, AccessBits.getAccess(ad.getAccessBits()));
 		}
 	}
 	
@@ -90,18 +90,18 @@ public class JNIReflectionHandler extends Handler {
 		}
 	}
 
-	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
+	public void addAccess(String typename, String[][] methodsAndConstructors, String[][] fields, boolean silent, TypeAccess... access) {
 		if (!silent) {
-			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
+			logger.debug("Registering reflective access to " + typename+": "+(access ==null?"":Arrays.asList(access)));
 		}
 		
 		ClassDescriptor cd = ClassDescriptor.of(typename);
 		if (cd == null) {
 			cd  = ClassDescriptor.of(typename);
 		}
-		// Update flags...
-		for (Flag f : flags) {
-			cd.setFlag(f);
+		// Update access...
+		for (TypeAccess f : access) {
+			cd.setAccess(f);
 		}
 		if (methodsAndConstructors != null) {
 			for (String[] mc: methodsAndConstructors) {

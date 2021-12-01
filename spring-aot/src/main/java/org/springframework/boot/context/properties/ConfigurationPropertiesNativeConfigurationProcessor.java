@@ -41,7 +41,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.env.Environment;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -103,7 +103,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 			if (isClassOnlyReflectionType()) {
 				return;
 			}
-			reflection.withFlags(Flag.allDeclaredMethods, Flag.allPublicMethods); // Flag.allPublicMethods required to handle inherited methods
+			reflection.withAccess(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS); // Flag.allPublicMethods required to handle inherited methods
 			Constructor<?> constructor = handleConstructor(reflection);
 			if (this.constructorBinding && constructor != null) {
 				handleValueObjectProperties(registry, constructor);
@@ -127,7 +127,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 				return bindingConstructor;
 			}
 			else {
-				reflection.withFlags(Flag.allDeclaredConstructors);
+				reflection.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 				return null;
 			}
 		}

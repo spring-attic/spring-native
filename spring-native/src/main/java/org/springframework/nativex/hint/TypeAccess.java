@@ -21,49 +21,59 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The various types of access that can be requested. The names of these match
+ * The various types of access that can be requested. The values of these match
  * the names that go into the json configuration for native-image.
  * 
  * @author Andy Clement
  * @author Sebastien Deleuze
  */
-public enum Flag {
+public enum TypeAccess {
 
 	/**
 	 * Inferred with:
 	 * <ul>
-	 *     <li>{@link Flag#allPublicMethods} for annotations and interfaces</li>
+	 *     <li>{@link TypeAccess#PUBLIC_METHODS} for annotations and interfaces</li>
 	 *     <li>None for arrays (class access)</li>
-	 *     <li>{@link Flag#allDeclaredConstructors} for other types</li>
+	 *     <li>{@link TypeAccess#DECLARED_CONSTRUCTORS} for other types</li>
 	 * </ul>
 	 */
-	autoDetect,
+	AUTO_DETECT("autoDetect"),
 
 	/**
 	 * Configure related JNI reflection entry, to be combined with other `Flag` entries.
 	 */
-	jni,
+	JNI("jni"),
 
 	/**
 	 * Configure access to the *.class file resource.
 	 */
-	resource,
+	RESOURCE("resource"),
 
-	allPublicFields,
-	allDeclaredFields,
-	allDeclaredConstructors,
-	allPublicConstructors,
-	allDeclaredMethods,
-	allPublicMethods,
-	allDeclaredClasses,
-	allPublicClasses,
-	queryAllDeclaredMethods,
-	queryAllPublicMethods,
-	queryAllDeclaredConstructors,
-	queryAllPublicConstructors;
+	PUBLIC_FIELDS("allPublicFields"),
+	DECLARED_FIELDS("allDeclaredFields"),
+	DECLARED_CONSTRUCTORS("allDeclaredConstructors"),
+	PUBLIC_CONSTRUCTORS("allPublicConstructors"),
+	DECLARED_METHODS("allDeclaredMethods"),
+	PUBLIC_METHODS("allPublicMethods"),
+	DECLARED_CLASSES("allDeclaredClasses"),
+	PUBLIC_CLASSES("allPublicClasses"),
+	QUERY_DECLARED_METHODS("queryAllDeclaredMethods"),
+	QUERY_PUBLIC_METHODS("queryAllPublicMethods"),
+	QUERY_DECLARED_CONSTRUCTORS("queryAllDeclaredConstructors"),
+	QUERY_PUBLIC_CONSTRUCTORS("queryAllPublicConstructors");
 
-	public static String toString(Flag[] flags) {
-		List<Flag> asList = Arrays.asList(flags);
+	private final String value;
+
+	TypeAccess(String value) {
+		this.value = value;
+	}
+
+	public String value() {
+		return value;
+	}
+
+	public static String toString(TypeAccess[] access) {
+		List<TypeAccess> asList = Arrays.asList(access);
 		Collections.sort(asList);
 		return asList.toString();
 	}

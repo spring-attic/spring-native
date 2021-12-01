@@ -29,7 +29,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
 import org.springframework.messaging.simp.user.UserDestinationResolver;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -56,7 +56,7 @@ import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsSe
 				UserDestinationMessageHandler.class,
 				MessageHandler.class,
 				SimpUserRegistry.class
-		}, access = Flag.resource), // TODO Suspicious entry, try to remove it
+		}, access = TypeAccess.RESOURCE), // TODO Suspicious entry, try to remove it
 		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {

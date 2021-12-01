@@ -17,14 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.info;
 
 import org.springframework.boot.actuate.info.InfoEndpoint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 // Hitting /info endpoint
 @NativeHint(trigger = InfoEndpointAutoConfiguration.class, types = {
-	@TypeHint( types = InfoEndpoint.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+	@TypeHint( types = InfoEndpoint.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 })
 public class InfoEndpointAutoConfigurationHints implements NativeConfiguration {
 }

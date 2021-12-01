@@ -32,7 +32,7 @@ import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -68,7 +68,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 				String name = fieldSignatureType.getName();
 				if (!ignore(name) && added.add(name)) {
 					// TODO we are not included the hierarchy of the target here, is that OK because we are using allPublic* ?
-					registry.reflection().forType(fieldSignatureType).withFlags(Flag.allDeclaredConstructors, Flag.allPublicConstructors, Flag.allDeclaredFields, Flag.allPublicFields, Flag.allDeclaredMethods, Flag.allPublicMethods);
+					registry.reflection().forType(fieldSignatureType).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 					recursivelyAnalyzeSignatureRelatedType(registry, fieldSignatureType, added);
 				}
 			}
@@ -101,7 +101,7 @@ public class WebNativeConfigurationProcessor implements BeanFactoryNativeConfigu
 									continue;
 								}
 								if (added.add(name)) {
-									registry.reflection().forType(clazz).withFlags(Flag.allDeclaredConstructors, Flag.allPublicConstructors, Flag.allDeclaredFields, Flag.allPublicFields, Flag.allDeclaredMethods, Flag.allPublicMethods);
+									registry.reflection().forType(clazz).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 									recursivelyAnalyzeSignatureRelatedType(registry, clazz, added);
 									logger.debug("adding reflective access to "+added+" (whilst introspecting controller: "+controllerType.getName()+" mapping: "+controllerMethod.getName()+")");
 								}

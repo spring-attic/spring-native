@@ -26,7 +26,7 @@ import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
 import org.springframework.data.neo4j.repository.support.SimpleReactiveNeo4jRepository;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -44,7 +44,7 @@ import org.springframework.nativex.hint.TypeHint;
 			"org.springframework.data.neo4j.repository.query.SimpleReactiveQueryByExampleExecutor",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveIdGeneratingBeforeBindCallback",
 			"org.springframework.data.neo4j.core.mapping.callback.ReactiveOptimisticLockingBeforeBindCallback"
-	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+	}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 	@TypeHint(types = {
 		ReactiveNeo4jRepositoryConfigurationExtension.class,
 		AbstractReactiveNeo4jConfig.class,

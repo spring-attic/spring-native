@@ -19,7 +19,7 @@ package org.springframework.nativex.domain.reflect;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
@@ -48,11 +48,11 @@ public class JsonConverter {
 			conditionJsonObject.put("typeReachable", cd.getCondition().getTypeReachable());
 			jsonObject.put("condition", conditionJsonObject);
 		}
-		Set<Flag> flags = cd.getFlags();
-		if (flags != null) {
-			for (Flag flag: Flag.values()) {
-				if (flags.contains(flag)) {
-					putTrueFlag(jsonObject,flag.name());
+		Set<TypeAccess> accesses = cd.getAccess();
+		if (accesses != null) {
+			for (TypeAccess access : TypeAccess.values()) {
+				if (accesses.contains(access)) {
+					putTrueFlag(jsonObject, access.value());
 				}
 			}
 		}

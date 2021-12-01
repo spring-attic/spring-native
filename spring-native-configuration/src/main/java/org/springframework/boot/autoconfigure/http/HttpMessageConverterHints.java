@@ -17,15 +17,15 @@
 package org.springframework.boot.autoconfigure.http;
 
 import org.springframework.boot.web.servlet.server.Encoding;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.http.converter.FormHttpMessageConverter;
 
 @NativeHint(trigger = HttpMessageConvertersAutoConfiguration.class, options = "--enable-http", types = {
-	@TypeHint(types= FormHttpMessageConverter.class, access = Flag.allDeclaredFields),
-	@TypeHint(types= Encoding.class, access = Flag.allDeclaredConstructors)
+	@TypeHint(types= FormHttpMessageConverter.class, access = TypeAccess.DECLARED_FIELDS),
+	@TypeHint(types= Encoding.class, access = TypeAccess.DECLARED_CONSTRUCTORS)
 })
 public class HttpMessageConverterHints implements NativeConfiguration {
 }

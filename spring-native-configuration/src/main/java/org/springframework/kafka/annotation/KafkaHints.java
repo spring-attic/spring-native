@@ -97,7 +97,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.support.serializer.ParseStringDeserializer;
 import org.springframework.kafka.support.serializer.StringOrBytesSerializer;
 import org.springframework.kafka.support.serializer.ToStringSerializer;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -115,22 +115,22 @@ import org.springframework.nativex.type.NativeConfiguration;
 				ProducerListener.class,
 				KafkaListener.class,
 				EnableKafka.class
-		}, access = Flag.allDeclaredMethods),
+		}, access = TypeAccess.DECLARED_METHODS),
 		@TypeHint(types= {
 				org.apache.kafka.common.protocol.Message.class,
 				org.apache.kafka.common.utils.ImplicitLinkedHashCollection.Element.class,
 				KafkaListener.class,
 				org.springframework.messaging.handler.annotation.MessageMapping.class,
 				KafkaListeners.class,
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
 		@TypeHint(types= {
 			KafkaListenerAnnotationBeanPostProcessor.class,
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allDeclaredFields }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}),
 		@TypeHint(types= {
 			KafkaBootstrapConfiguration.class,
 			CreatableTopic.class,
 			KafkaListenerEndpointRegistry.class
-		}, access = { Flag.allDeclaredConstructors, Flag.resource }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.RESOURCE}),
 		@TypeHint(types = {
 				NewTopic.class,
 				AbstractKafkaListenerContainerFactory.class,
@@ -147,7 +147,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				KafkaOperations.class,
 				ConsumerFactory.class,
 				LoggingProducerListener.class
-			}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredFields, Flag.allDeclaredMethods }),
+			}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS}),
 		@TypeHint(types = {
 				AppInfo.class,
 				// standard assignors
@@ -246,7 +246,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 					ConfigUpdateRequest.class,
 					ModeUpdateRequest.class,
 					ServerClusterId.class
-			}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods })
+			}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS})
 	}
 )
 @NativeHint(trigger = org.springframework.kafka.support.KafkaUtils.class,

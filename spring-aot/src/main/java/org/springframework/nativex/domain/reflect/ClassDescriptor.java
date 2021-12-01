@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * Reflection information about a single class.
@@ -43,18 +43,18 @@ public final class ClassDescriptor {
 
 	private List<MethodDescriptor> queriedMethods; // includes constructors "<init>"
 
-	private Set<Flag> flags; // Inclusion in list indicates they are set
+	private Set<TypeAccess> access; // Inclusion in list indicates they are set
 
 	ClassDescriptor() {
 	}
 
-	ClassDescriptor(String name, ConditionDescriptor condition, List<FieldDescriptor> fields, List<MethodDescriptor> methods, List<MethodDescriptor> queriedMethods, Set<Flag> flags) {
+	ClassDescriptor(String name, ConditionDescriptor condition, List<FieldDescriptor> fields, List<MethodDescriptor> methods, List<MethodDescriptor> queriedMethods, Set<TypeAccess> access) {
 		this.name = name;
 		this.condition = condition;
 		this.fields = fields;
 		this.methods = methods;
 		this.queriedMethods = queriedMethods;
-		this.flags = flags;
+		this.access = access;
 	}
 
 	public String getName() {
@@ -77,7 +77,7 @@ public final class ClassDescriptor {
 		boolean result = true;
 		result = result && nullSafeEquals(this.name, other.name);
 		result = result && nullSafeEquals(this.condition, other.condition);
-		result = result && nullSafeEquals(this.flags, other.flags);
+		result = result && nullSafeEquals(this.access, other.access);
 		result = result && nullSafeEquals(this.fields, other.fields);
 		result = result && nullSafeEquals(this.methods, other.methods);
 		result = result && nullSafeEquals(this.queriedMethods, other.queriedMethods);
@@ -88,7 +88,7 @@ public final class ClassDescriptor {
 	public int hashCode() {
 		int result = nullSafeHashCode(this.name);
 		result = 31 * result + nullSafeHashCode(this.condition);
-		result = 31 * result + nullSafeHashCode(this.flags);
+		result = 31 * result + nullSafeHashCode(this.access);
 		result = 31 * result + nullSafeHashCode(this.fields);
 		result = 31 * result + nullSafeHashCode(this.methods);
 		result = 31 * result + nullSafeHashCode(this.queriedMethods);
@@ -113,7 +113,7 @@ public final class ClassDescriptor {
 	public String toString() {
 		StringBuilder string = new StringBuilder(this.name);
 		buildToStringProperty(string, "condition", this.condition);
-		buildToStringProperty(string, "setFlags", this.flags);
+		buildToStringProperty(string, "access", this.access);
 		buildToStringProperty(string, "fields", this.fields);
 		buildToStringProperty(string, "methods", this.methods);
 		buildToStringProperty(string, "queriedMethods", this.queriedMethods);
@@ -130,8 +130,8 @@ public final class ClassDescriptor {
 		return condition;
 	}
 
-	public Set<Flag> getFlags() {
-		return this.flags;
+	public Set<TypeAccess> getAccess() {
+		return this.access;
 	}
 
 	public List<FieldDescriptor> getFields() {
@@ -156,24 +156,24 @@ public final class ClassDescriptor {
 		this.condition = condition;
 	}
 
-	public void setFlag(Flag f) {
-		if (flags == null) {
-			flags = new TreeSet<>();
+	public void setAccess(TypeAccess f) {
+		if (access == null) {
+			access = new TreeSet<>();
 		}
-		flags.add(f);
+		access.add(f);
 	}
 	
-	public void setFlags(Set<Flag> flags) {
-		for (Flag flag: flags) {
-			this.setFlag(flag);
+	public void setAccess(Set<TypeAccess> accesses) {
+		for (TypeAccess access : accesses) {
+			this.setAccess(access);
 		}
 	}
 	
-	public void unsetFlag(Flag f) {
-		if (flags == null) {
+	public void unsetAccess(TypeAccess f) {
+		if (access == null) {
 			return;
 		}
-		flags.remove(f);
+		access.remove(f);
 	}
 
 	public void addMethodDescriptor(MethodDescriptor methodDescriptor) {
@@ -225,9 +225,9 @@ public final class ClassDescriptor {
 		if (cd.getCondition() != null && condition == null) {
 			condition = cd.getCondition();
 		}
-		if (cd.getFlags()!= null) {
-			for (Flag flag : cd.getFlags()) {
-				this.setFlag(flag);
+		if (cd.getAccess()!= null) {
+			for (TypeAccess access : cd.getAccess()) {
+				this.setAccess(access);
 			}
 		}
 		if (cd.getFields() != null) {
@@ -403,12 +403,12 @@ public final class ClassDescriptor {
 	}
 
 	public ClassDescriptor subtract(ClassDescriptor toSubtract) {
-		Set<Flag> resultFlags = new HashSet<>();
-		if (this.getFlags()!=null) {
-			resultFlags.addAll(this.getFlags());
+		Set<TypeAccess> access = new HashSet<>();
+		if (this.getAccess()!=null) {
+			access.addAll(this.getAccess());
 		}
-		if (toSubtract.getFlags()!=null) {
-			resultFlags.removeAll(toSubtract.getFlags());
+		if (toSubtract.getAccess()!=null) {
+			access.removeAll(toSubtract.getAccess());
 		}
 
 		List<MethodDescriptor> resultMethods = new ArrayList<>();
@@ -435,8 +435,8 @@ public final class ClassDescriptor {
 			resultFields.removeAll(toSubtract.getFields());
 		}
 		ClassDescriptor result = ClassDescriptor.of(this.getName());
-		if (!resultFlags.isEmpty()) {
-			result.setFlags(resultFlags);
+		if (!access.isEmpty()) {
+			result.setAccess(access);
 		}
 		if (!resultMethods.isEmpty()) {
 			result.addMethodDescriptors(resultMethods);
@@ -472,12 +472,12 @@ public final class ClassDescriptor {
 				queriedMethodsCopy.add(md.copy());
 			}
 		}
-		Set<Flag> flagsCopy = null;
-		if (flags != null) {
-			flagsCopy = new HashSet<>();
-			flagsCopy.addAll(flags);
+		Set<TypeAccess> accessCopy = null;
+		if (access != null) {
+			accessCopy = new HashSet<>();
+			accessCopy.addAll(access);
 		}
-		return new ClassDescriptor(name, condition, fieldsCopy, methodsCopy, queriedMethodsCopy, flagsCopy);
+		return new ClassDescriptor(name, condition, fieldsCopy, methodsCopy, queriedMethodsCopy, accessCopy);
 	}
 
 	public FieldDescriptor getFieldDescriptorNamed(String name) {

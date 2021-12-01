@@ -30,7 +30,7 @@ import org.quartz.utils.StringKeyDirtyFlagMap;
 
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.SerializationHint;
@@ -59,7 +59,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				name = "lock"
 			)
 		},
-		access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }
+		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
 	),
 	serializables = @SerializationHint(
 			types = {
@@ -86,7 +86,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				allowUnsafeAccess = true, name = "loadFactor"
 			)
 		},
-		access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }
+		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
 	)
 )
 @NativeHint(
@@ -94,7 +94,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 	types = {
 		@TypeHint(types = java.util.HashMap.class),
 		@TypeHint(
-			access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource },
+			access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE},
 			types = {
 				org.quartz.impl.triggers.SimpleTriggerImpl.class,
 				org.quartz.utils.DirtyFlagMap.class,

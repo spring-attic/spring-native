@@ -18,7 +18,7 @@ package org.springframework.cloud.function.context.config;
 
 import java.util.function.Supplier;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -29,7 +29,7 @@ import org.springframework.messaging.MessageHeaders;
 		@TypeHint(types= {
 						MessageHeaders.class,
 						Supplier.class
-				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredFields, Flag.allDeclaredMethods })
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS})
 		, @TypeHint(types = { java.util.function.Function.class, java.util.function.Consumer.class })} // For Spring Cloud Function + Kotlin
 )
 public class ContextFunctionCatalogHints implements NativeConfiguration {

@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.env;
 
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -29,7 +29,7 @@ import org.springframework.nativex.hint.TypeHint;
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDescriptor.class,
 		org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor.class
-	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+	}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 })
 public class EnvironmentEndpointAutoConfigurationHints implements NativeConfiguration {
 }

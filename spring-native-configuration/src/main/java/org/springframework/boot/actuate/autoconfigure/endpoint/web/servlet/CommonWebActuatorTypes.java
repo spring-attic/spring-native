@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 
 /**
@@ -55,7 +55,7 @@ import org.springframework.nativex.hint.TypeHint;
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableManagementContext",
 		"org.springframework.boot.actuate.autoconfigure.web.server.EnableChildManagementContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointFilter",
-	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+	}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 @TypeHint(types = {
 		EndpointWebExtension.class,
 		WebEndpoint.class,

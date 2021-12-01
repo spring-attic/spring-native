@@ -47,7 +47,7 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
 import org.springframework.nativex.type.Method;
@@ -130,40 +130,40 @@ public class ResourcesHandler extends Handler {
 						org.springframework.nativex.type.ResourcesDescriptor resourcesDescriptor = org.springframework.nativex.type.ResourcesDescriptor.ofType(typename);
 						registerResourcesDescriptor(resourcesDescriptor);
 					}
-					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
+					TypeAccess[] access = AccessBits.getAccess(ad.getAccessBits());
 					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
 							AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
 						logger.debug("  type has #" + mds.size()
-								+ " members specified, removing typewide method access flags");
-						accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+								+ " members specified, removing typewide method access");
+						access = filterAccess(access, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 					}
 					List<org.springframework.nativex.type.MethodDescriptor> qmds = ad.getQueriedMethodDescriptors();
 					if (qmds != null && qmds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
 							AccessBits.QUERY_DECLARED_METHODS | AccessBits.QUERY_PUBLIC_METHODS)) {
 						logger.debug("  type has #" + qmds.size()
-								+ " queried members specified, removing typewide method access flags");
-						accessFlags = filterFlags(accessFlags, Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods);
+								+ " queried members specified, removing typewide method access");
+						access = filterAccess(access, TypeAccess.QUERY_DECLARED_METHODS, TypeAccess.QUERY_PUBLIC_METHODS);
 					}
 					List<FieldDescriptor> fds = ad.getFieldDescriptors();
 					reflectionHandler.addAccess(typename, ch.getTriggerTypename(), MethodDescriptor.toStringArray(mds),
-							MethodDescriptor.toStringArray(qmds), FieldDescriptor.toStringArray(fds), true, accessFlags);
+							MethodDescriptor.toStringArray(qmds), FieldDescriptor.toStringArray(fds), true, access);
 				}
 				for (Map.Entry<String, AccessDescriptor> dependantType : ch.getJNITypes().entrySet()) {
 					String typename = dependantType.getKey();
 					AccessDescriptor ad = dependantType.getValue();
 					logger.debug("  fixed JNI access type registered " + typename + " with " + ad);
 					List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
-					Flag[] accessFlags = AccessBits.getFlags(ad.getAccessBits());
+					TypeAccess[] access = AccessBits.getAccess(ad.getAccessBits());
 					if (mds != null && mds.size() != 0 && AccessBits.isSet(ad.getAccessBits(),
 							AccessBits.DECLARED_METHODS | AccessBits.PUBLIC_METHODS)) {
 						logger.debug("  type has #" + mds.size()
-								+ " members specified, removing typewide method access flags");
-						accessFlags = filterFlags(accessFlags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+								+ " members specified, removing typewide method access");
+						access = filterAccess(access, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 					}
 					List<FieldDescriptor> fds = ad.getFieldDescriptors();
 					jniReflectionHandler.addAccess(typename, MethodDescriptor.toStringArray(mds),
-							FieldDescriptor.toStringArray(fds), true, accessFlags);
+							FieldDescriptor.toStringArray(fds), true, access);
 				}
 				List<JdkProxyDescriptor> proxyDescriptors = ch.getProxyDescriptors();
 				for (JdkProxyDescriptor pd : proxyDescriptors) {
@@ -277,7 +277,7 @@ public class ResourcesHandler extends Handler {
 			// The context start/stop test may not exercise the @SpringBootApplication class
 			if (keyType.isAtSpringBootApplication()) {
 				logger.debug("hybrid: adding access to "+keyType+" since @SpringBootApplication");
-				reflectionHandler.addAccess(key,  Flag.allDeclaredMethods, Flag.allDeclaredFields, Flag.allDeclaredConstructors);
+				reflectionHandler.addAccess(key,  TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_CONSTRUCTORS);
 				collector.addResource(key.replace(".", "/")+".class", false);
 			}
 			if (keyType.isAtController()) {
@@ -344,20 +344,20 @@ public class ResourcesHandler extends Handler {
 		if (metaAnnotated != null) {
 			for (Type t: metaAnnotated.getValue()) {
 				String name = t.getDottedName();
-				reflectionHandler.addAccess(name, Flag.allDeclaredMethods);
+				reflectionHandler.addAccess(name, TypeAccess.DECLARED_METHODS);
 				collector.addResource(name.replace(".", "/")+".class", false);
 			}
 		}
 
 		if (!kType.isAtConfiguration()) {
 			try {
-				reflectionHandler.addAccess(componentTypename, Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-					Flag.allDeclaredClasses, Flag.allDeclaredFields);
+				reflectionHandler.addAccess(componentTypename, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS,
+					TypeAccess.DECLARED_CLASSES, TypeAccess.DECLARED_FIELDS);
 				collector.addResource(componentTypename.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : kType.getNestedTypes()) {
-					reflectionHandler.addAccess(t.getDottedName(), Flag.allDeclaredConstructors, Flag.allDeclaredMethods,
-							Flag.allDeclaredClasses);
+					reflectionHandler.addAccess(t.getDottedName(), TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS,
+							TypeAccess.DECLARED_CLASSES);
 					collector.addResource(t.getName()+".class", false);
 				}
 				registerHierarchy(pc, kType, requestor);
@@ -379,12 +379,12 @@ public class ResourcesHandler extends Handler {
 			}
 			try {
 				Type baseType = ts.resolveDotted(tt);
-				reflectionHandler.addAccess(tt, Flag.allDeclaredMethods);
+				reflectionHandler.addAccess(tt, TypeAccess.DECLARED_METHODS);
 				collector.addResource(tt.replace(".", "/")+".class", false);
 				// Register nested types of the component
 				for (Type t : baseType.getNestedTypes()) {
 					String n = t.getName().replace("/", ".");
-					reflectionHandler.addAccess(n, Flag.allDeclaredMethods);
+					reflectionHandler.addAccess(n, TypeAccess.DECLARED_METHODS);
 					collector.addResource(t.getName() + ".class", false);
 				}
 				registerHierarchy(pc, baseType, requestor);
@@ -436,8 +436,8 @@ public class ResourcesHandler extends Handler {
 		}
 
 		@Override
-		public void addReflectiveAccess(String key, Flag... flags) {
-			reflectionHandler.addAccess(key, flags);
+		public void addReflectiveAccess(String key, TypeAccess... access) {
+			reflectionHandler.addAccess(key, access);
 		}
 
 		@Override
@@ -466,7 +466,7 @@ public class ResourcesHandler extends Handler {
 		private void registerHierarchy(Type type, Set<String> visited, int accessBits) {
 			String typename = type.getDottedName();
 			if (visited.add(typename)) {
-				addReflectiveAccess(typename, AccessBits.getFlags(accessBits));
+				addReflectiveAccess(typename, AccessBits.getAccess(accessBits));
 				Set<String> relatedTypes = type.getTypesInSignature();
 				for (String relatedType: relatedTypes) {
 					Type t = ts.resolveSlashed(relatedType, true);
@@ -501,7 +501,7 @@ public class ResourcesHandler extends Handler {
 		  if (returnType.getDottedName().startsWith("java.lang")) {
 			  continue;
 		  }
-		  reflectionHandler.addAccess(returnType.getDottedName(), Flag.allDeclaredMethods, Flag.allDeclaredConstructors,Flag.allDeclaredFields);
+		  reflectionHandler.addAccess(returnType.getDottedName(), TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS);
 	  }
 	}
 
@@ -745,19 +745,19 @@ public class ResourcesHandler extends Handler {
 					reflectionConfigurationAlreadyAdded.put(dname, access);
 				}
 			}
-			Flag[] flags = AccessBits.getFlags(requestedAccess);
+			TypeAccess[] accesses = AccessBits.getAccess(requestedAccess);
 			Type rt = ts.resolveDotted(dname, true);
 
 			if (methods != null) {
-				// methods are explicitly specified, remove them from flags
+				// methods are explicitly specified, remove them from accesses
 				logger.debug(dname+" has #"+methods.size()+" methods directly specified so removing any general method access needs");
-				flags = filterFlags(flags, Flag.allDeclaredMethods, Flag.allPublicMethods);
+				accesses = filterAccess(accesses, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 			}
 
 			String typeReachable = accessRequestor.getTypeReachableFor(dname);
 
 			// TODO See if query method configuration is needed here
-			reflectionHandler.addAccess(dname, typeReachable, MethodDescriptor.toStringArray(methods), null, FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, flags);
+			reflectionHandler.addAccess(dname, typeReachable, MethodDescriptor.toStringArray(methods), null, FieldDescriptor.toStringArray(accessRequestor.getFieldAccessRequestedFor(dname)), true, accesses);
 			if (AccessBits.isResourceAccessRequired(requestedAccess)) {
 				collector.addResource(fromTypenameToClassResource(dname), false);
 			}
@@ -768,20 +768,20 @@ public class ResourcesHandler extends Handler {
 		return name.replace(".", "/").replace("$", ".").replace("[", "\\[").replace("]", "\\]") + ".class";
 	}
 	
-	private Flag[] filterFlags(Flag[] flags, Flag... toFilter) {
-		List<Flag> ok = new ArrayList<>();
-		for (Flag flag: flags) {
+	private TypeAccess[] filterAccess(TypeAccess[] accesses, TypeAccess... toFilter) {
+		List<TypeAccess> ok = new ArrayList<>();
+		for (TypeAccess access : accesses) {
 			boolean skip  =false;
-			for (Flag f: toFilter) {
-				if (f==flag) {
+			for (TypeAccess f: toFilter) {
+				if (f== access) {
 					skip = true;
 				}
 			}
 			if (!skip) {
-				ok.add(flag);
+				ok.add(access);
 			}
 		}
-		return ok.toArray(new Flag[0]);
+		return ok.toArray(new TypeAccess[0]);
 	}
 
 	private String spaces(int depth) {

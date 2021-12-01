@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.NativeContext;
 import org.springframework.nativex.type.Type;
@@ -86,8 +86,8 @@ public class NativeTestContext implements NativeContext {
 	}
 
 	@Override
-	public void addReflectiveAccess(String key, Flag... flags) {
-		reflection.add(key, new AccessDescriptor(AccessBits.fromFlags(flags).getValue()));
+	public void addReflectiveAccess(String key, TypeAccess... access) {
+		reflection.add(key, new AccessDescriptor(AccessBits.fromTypeAccess(access).getValue()));
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class NativeTestContext implements NativeContext {
 	private void registerHierarchy(Type type, Set<String> visited, int accessBits) {
 		String typename = type.getDottedName();
 		if (visited.add(typename)) {
-			addReflectiveAccess(typename, AccessBits.getFlags(accessBits));
+			addReflectiveAccess(typename, AccessBits.getAccess(accessBits));
 			Set<String> relatedTypes = type.getTypesInSignature();
 			for (String relatedType : relatedTypes) {
 				Type t = typeSystem.resolveSlashed(relatedType, true);
@@ -119,7 +119,6 @@ public class NativeTestContext implements NativeContext {
 
 	@Override
 	public void addReflectiveAccess(String parameterTypename, int accessBits) {
-		// something is off about the flags conversion in addReflectiveAccess(String key, Flag... flags)
 		addReflectiveAccess(parameterTypename, new AccessDescriptor(accessBits));
 	}
 

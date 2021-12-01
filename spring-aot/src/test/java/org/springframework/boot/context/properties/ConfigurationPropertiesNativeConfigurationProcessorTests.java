@@ -33,7 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -160,7 +160,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((descriptor) -> {
 			assertThat(descriptor.getType()).isEqualTo(SampleImmutablePropertiesWithSeveralConstructorsNoCandidate.class);
 			assertThat(descriptor.getConstructors()).isEmpty();
-			assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.allDeclaredConstructors);
+			assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 	}
 
@@ -239,7 +239,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).isEmpty();
-			assertThat(entry.getFlags()).isEmpty();
+			assertThat(entry.getAccess()).isEmpty();
 		};
 	}
 
@@ -251,7 +251,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 		};
 	}
 
@@ -259,7 +259,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
 			assertThat(entry.getConstructors()).containsOnly(constructor);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods, Flag.allPublicMethods);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 		};
 	}
 

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.SpringProperties;
 import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.http.MediaTypeFactory;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.ResourceHint;
@@ -119,7 +119,7 @@ import org.springframework.nativex.hint.JdkProxyHint;
 
 )
 @NativeHint(trigger = MediaTypeFactory.class, resources = @ResourceHint(patterns = "org/springframework/http/mime.types"))
-@TypeHint(types = { Qualifier.class, Value.class }, access = Flag.allDeclaredMethods)
+@TypeHint(types = { Qualifier.class, Value.class }, access = TypeAccess.DECLARED_METHODS)
 @NativeHint(trigger = SpringProperties.class, resources = @ResourceHint(patterns = "spring.properties"))
 public class SpringFrameworkHints implements NativeConfiguration {
 }

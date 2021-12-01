@@ -47,7 +47,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -167,7 +167,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				if (entityListener.isPresent()) {
 					Class<?>[] values = entityListener.getClassArray("value");
 					for (Class<?> listener : values) {
-						registry.reflection().forType(listener).withFlags(Flag.allDeclaredConstructors, Flag.allPublicMethods);
+						registry.reflection().forType(listener).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 					}
 				}
 
@@ -178,10 +178,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				typeModelProcessor.inspect(type).forEach(typeModel -> {
 
 					DefaultNativeReflectionEntry.Builder builder = registry.reflection().forType(typeModel.getType());
-					builder.withFlags(Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors);
+					builder.withAccess(TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS);
 
 					if(typeModel.hasDeclaredClasses()) {
-						builder.withFlags(Flag.allDeclaredClasses);
+						builder.withAccess(TypeAccess.DECLARED_CLASSES);
 					}
 
 					typeModel.doWithFields(field -> {
@@ -210,7 +210,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 					.map(MergedAnnotation::getType)
 					.filter(annotationFilter::matches)
 					.forEach(annotation -> {
-						registry.reflection().forType(annotation).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+						registry.reflection().forType(annotation).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 					});
 			if (element instanceof Constructor) {
 				for (Parameter parameter : ((Constructor<?>) element).getParameters()) {
@@ -303,7 +303,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			}
 			Class<Object> objectClass = loadIfPresent("org.hibernate.type.EnumType", classLoader);
 			if (objectClass != null) {
-				registry.reflection().forType(objectClass).withFlags(Flag.allDeclaredConstructors);
+				registry.reflection().forType(objectClass).withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 			}
 		}
 	}

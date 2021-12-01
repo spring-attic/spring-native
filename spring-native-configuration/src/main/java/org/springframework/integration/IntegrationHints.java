@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -53,7 +53,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				}),
 		resources = @ResourceHint(patterns = "META-INF/spring.integration.properties"),
 		types = {
-				@TypeHint(access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods },
+				@TypeHint(access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS},
 						types = {
 								org.springframework.integration.dsl.IntegrationFlow.class,
 								org.springframework.integration.gateway.RequestReplyExchanger.class,
@@ -65,7 +65,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 								org.springframework.integration.http.management.IntegrationGraphController.class,
 								org.springframework.integration.handler.AbstractReplyProducingMessageHandler.RequestHandler.class
 						}),
-				@TypeHint(access = Flag.allPublicMethods,
+				@TypeHint(access = TypeAccess.PUBLIC_METHODS,
 						types = {
 								org.springframework.beans.factory.config.BeanExpressionContext.class,
 								org.springframework.integration.config.ConsumerEndpointFactoryBean.class,
@@ -152,7 +152,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 						kotlin.jvm.functions.Function1.class,
 						kotlin.Unit.class
 				},
-				access = Flag.allPublicMethods))
+				access = TypeAccess.PUBLIC_METHODS))
 @NativeHint(trigger = org.springframework.integration.file.splitter.FileSplitter.class,
 		serializables =
 		@SerializationHint(types = {
@@ -176,12 +176,12 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 		types =
 		@TypeHint(
 				types = org.springframework.web.HttpRequestHandler.class,
-				access = Flag.allPublicMethods))
+				access = TypeAccess.PUBLIC_METHODS))
 @NativeHint(trigger = org.springframework.integration.webflux.inbound.WebFluxIntegrationRequestMappingHandlerMapping.class,
 		types =
 		@TypeHint(
 				types = org.springframework.web.server.WebHandler.class,
-				access = Flag.allPublicMethods))
+				access = TypeAccess.PUBLIC_METHODS))
 @NativeHint(trigger = com.fasterxml.jackson.databind.ObjectMapper.class,
 		initialization =
 		@InitializationHint(initTime = InitializationTime.BUILD,

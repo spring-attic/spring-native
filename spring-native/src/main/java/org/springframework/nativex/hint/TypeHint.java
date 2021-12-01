@@ -52,9 +52,10 @@ public @interface TypeHint {
 
 	/**
 	 * Defined the scope of the reflection entries or resource access to be configured. Autodetected when not set,
-	 * see {@link Flag#autoDetect} related documentation. Use {code {}} for class access only.
+	 * see {@link TypeAccess#AUTO_DETECT} related documentation. Use {code {}} for class access only.
 	 */
-	Flag[] access() default Flag.autoDetect;
+
+	TypeAccess[] access() default TypeAccess.AUTO_DETECT;
 
 	/**
 	 * Specific method information for reflective invocation and metadata query, useful to reduce the footprint impact of the generated configuration.

@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
 
@@ -94,9 +94,9 @@ public class JsonMarshaller {
 	private static ClassDescriptor toClassDescriptor(JSONObject object) throws Exception {
 		ClassDescriptor cd = new ClassDescriptor();
 		cd.setName(object.getString("name"));
-		for (Flag f: Flag.values()) {
+		for (TypeAccess f: TypeAccess.values()) {
 			if (object.optBoolean(f.name())) {
-				cd.setFlag(f);
+				cd.setAccess(f);
 			}
 		}
 		JSONArray fields = object.optJSONArray("fields");

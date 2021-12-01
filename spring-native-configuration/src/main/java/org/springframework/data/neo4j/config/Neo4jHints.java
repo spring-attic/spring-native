@@ -18,7 +18,7 @@ package org.springframework.data.neo4j.config;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.mapping.context.PersistentEntities;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -28,7 +28,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		trigger = Neo4jDataAutoConfiguration.class,
 		types = @TypeHint(types = {
 				PersistentEntities.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 		imports = DataNonReactiveAuditingHints.class
 )
 public class Neo4jHints implements NativeConfiguration {

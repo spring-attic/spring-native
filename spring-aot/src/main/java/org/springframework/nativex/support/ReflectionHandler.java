@@ -21,14 +21,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.nativex.AotOptions;
+
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ConditionDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
-import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 
 
@@ -51,7 +50,7 @@ public class ReflectionHandler extends Handler {
 
 	/**
 	 * Record that reflective access to a type (and a selection of its members based
-	 * on the flags) should be possible at runtime. This method will pre-emptively
+	 * on the access) should be possible at runtime. This method will pre-emptively
 	 * check all type references to ensure later native-image processing will not
 	 * fail if, for example, it trips up over a type reference in a generic type
 	 * that isn't on the image building classpath. NOTE: it is assumed that if
@@ -60,15 +59,15 @@ public class ReflectionHandler extends Handler {
 	 * cause no attempts to be made to types/members that aren't added here).
 	 * 
 	 * @param typename the dotted type name for which to add reflective access
-	 * @param flags    any members that should be accessible via reflection
+	 * @param access    any members that should be accessible via reflection
 	 */
-	public void addAccess(String typename, Flag...flags) {
-		addAccess(typename, null, null, null, null, false, flags);
+	public void addAccess(String typename, TypeAccess... access) {
+		addAccess(typename, null, null, null, null, false, access);
 	}
 	
 	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
 		if (ad.noMembersSpecified()) {
-			addAccess(typename, null, null, null, null, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, null, null, null, silent, AccessBits.getAccess(ad.getAccessBits()));
 		} else {
 			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
 			String[][] methodsAndConstructors = new String[mds.size()][];
@@ -98,7 +97,7 @@ public class ReflectionHandler extends Handler {
 				FieldDescriptor fd = fds.get(f);
 				fields[f] = FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
 			}
-			addAccess(typename, null, methodsAndConstructors, queriedMethodsAndConstructors, fields, silent, AccessBits.getFlags(ad.getAccessBits()));
+			addAccess(typename, null, methodsAndConstructors, queriedMethodsAndConstructors, fields, silent, AccessBits.getAccess(ad.getAccessBits()));
 		}
 	}
 	
@@ -110,9 +109,9 @@ public class ReflectionHandler extends Handler {
 		}
 	}
 
-	public void addAccess(String typename, String typeReachable, String[][] methodsAndConstructors, String[][] queriedMethodsAndConstructors, String[][] fields, boolean silent, Flag... flags) {
+	public void addAccess(String typename, String typeReachable, String[][] methodsAndConstructors, String[][] queriedMethodsAndConstructors, String[][] fields, boolean silent, TypeAccess... access) {
 		if (!silent) {
-			logger.debug("Registering reflective access to " + typename+": "+(flags==null?"":Arrays.asList(flags)));
+			logger.debug("Registering reflective access to " + typename+": "+(access ==null?"":Arrays.asList(access)));
 		}
 		
 		ClassDescriptor cd = ClassDescriptor.of(typename);
@@ -122,9 +121,9 @@ public class ReflectionHandler extends Handler {
 		if (cd == null) {
 			cd  = ClassDescriptor.of(typename);
 		}
-		// Update flags...
-		for (Flag f : flags) {
-			cd.setFlag(f);
+		// Update access...
+		for (TypeAccess f : access) {
+			cd.setAccess(f);
 		}
 		if (methodsAndConstructors != null) {
 			for (String[] mc: methodsAndConstructors) {

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -29,7 +29,7 @@ import org.springframework.nativex.hint.TypeHint;
 	@TypeHint(types = {
 			AuditEventRepository.class,
 			AuditEventsEndpoint.class
-	}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+	}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 )
 public class AuditEventsEndpointAutoConfigurationHints implements NativeConfiguration {
 }

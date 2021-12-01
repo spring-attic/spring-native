@@ -54,7 +54,7 @@ import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.domain.Page;
 import org.springframework.data.geo.Point;
 import org.springframework.data.repository.query.Param;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.sample.data.config.ConfigForTypeHavingDeclaredClass;
 import org.springframework.sample.data.config.ConfigWithCustomImplementation;
 import org.springframework.sample.data.config.ConfigWithCustomImplementation.CustomImplInterface;
@@ -184,7 +184,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 		NativeConfigRegistryHolder registry = getNativeConfiguration(ConfigForTypeHavingDeclaredClass.class);
 		assertThat(registry.getReflectionEntry(WithDeclaredClass.class))
-				.satisfies(containsFlags(Flag.allDeclaredClasses));
+				.satisfies(containsAccess(TypeAccess.DECLARED_CLASSES));
 	}
 
 	@Test
@@ -192,7 +192,7 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 
 		NativeConfigRegistryHolder registry = getNativeConfiguration(SimpleRepositoryConfig.class);
 		assertThat(registry.getReflectionEntry(Customer.class))
-				.satisfies(doesNotContainFlags(Flag.allDeclaredClasses));
+				.satisfies(doesNotContainAccess(TypeAccess.DECLARED_CLASSES));
 	}
 
 	private NativeConfigRegistryHolder getNativeConfiguration(Class<?> configurationClass) {
@@ -284,39 +284,39 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> doesNotContainsCtorFlag() {
-		return (entry) -> assertThat(entry.getFlags()).doesNotContain(Flag.allDeclaredConstructors);
+		return (entry) -> assertThat(entry.getAccess()).doesNotContain(TypeAccess.DECLARED_CONSTRUCTORS);
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> onlyFields(String... fields) {
 		return (entry) -> assertThat(entry.getFields()).map(Field::getName).containsExactlyInAnyOrder(fields);
 	}
 
-	private Consumer<DefaultNativeReflectionEntry> containsFlags(Flag... flags) {
-		return (entry) -> assertThat(entry.getFlags()).contains(flags);
+	private Consumer<DefaultNativeReflectionEntry> containsAccess(TypeAccess... access) {
+		return (entry) -> assertThat(entry.getAccess()).contains(access);
 	}
 
-	private Consumer<DefaultNativeReflectionEntry> doesNotContainFlags(Flag... flags) {
-		return (entry) -> assertThat(entry.getFlags()).doesNotContain(flags);
+	private Consumer<DefaultNativeReflectionEntry> doesNotContainAccess(TypeAccess... access) {
+		return (entry) -> assertThat(entry.getAccess()).doesNotContain(access);
 	}
 
 	private Consumer<DefaultNativeReflectionEntry.Builder> allConstructors() {
 		return (builder) -> {
 			DefaultNativeReflectionEntry entry = builder.build();
-			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).contains(TypeAccess.DECLARED_CONSTRUCTORS);
 		};
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> allDeclaredMethods(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredMethods);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS);
 		};
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> annotation(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS);
 		};
 	}
 

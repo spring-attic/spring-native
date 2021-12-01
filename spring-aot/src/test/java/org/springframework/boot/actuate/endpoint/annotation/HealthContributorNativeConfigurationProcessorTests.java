@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +54,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = process(beanFactory);
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
-			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).contains(TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 	}
 
@@ -90,7 +90,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = process(beanFactory);
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
-			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).contains(TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 	}
 
@@ -108,7 +108,7 @@ class HealthContributorNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = process(beanFactory);
 		assertThat(registry.reflection().reflectionEntries()).singleElement().satisfies((entry) -> {
 			assertThat(entry.getType()).isEqualTo(PingHealthIndicator.class);
-			assertThat(entry.getFlags()).contains(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).contains(TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 	}
 

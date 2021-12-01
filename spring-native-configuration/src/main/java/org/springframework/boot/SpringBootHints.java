@@ -19,7 +19,7 @@ package org.springframework.boot;
 import java.util.logging.LogManager;
 
 import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -54,7 +54,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {
 			LogManager.class,
 			JavaLoggingSystem.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 			@TypeHint(types = {
 					java.util.LinkedHashSet.class,
 					java.util.ArrayList.class

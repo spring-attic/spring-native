@@ -35,7 +35,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.TypeModelProcessor;
 import org.springframework.data.TypeUtils;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ClassUtils;
@@ -91,7 +91,7 @@ public class RepositoryComponentConfigurationProcessor implements BeanFactoryNat
 				if (inSimilarPackage(it.getType(), beanType)) {
 
 					DefaultNativeReflectionEntry.Builder builder = registry.reflection().forType(it.getType());
-					builder.withFlags(Flag.allPublicMethods, Flag.allDeclaredConstructors);
+					builder.withAccess(TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_CONSTRUCTORS);
 
 					it.doWithFields(field -> {
 

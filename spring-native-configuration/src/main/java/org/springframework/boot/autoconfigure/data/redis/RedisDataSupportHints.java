@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -120,7 +120,7 @@ import org.springframework.nativex.hint.TypeHint;
 						org.springframework.data.redis.repository.support.RedisRepositoryFactoryBean.class,
 						org.springframework.data.redis.repository.query.RedisQueryCreator.class,
 				}),
-				@TypeHint(types = org.springframework.data.keyvalue.repository.support.SimpleKeyValueRepository.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+				@TypeHint(types = org.springframework.data.keyvalue.repository.support.SimpleKeyValueRepository.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 		},
 		jdkProxies = {
 				@JdkProxyHint(typeNames = {

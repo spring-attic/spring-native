@@ -49,7 +49,7 @@ import io.micrometer.core.instrument.config.MeterRegistryConfig;
 import io.micrometer.core.instrument.push.PushMeterRegistry;
 import io.micrometer.core.instrument.push.PushRegistryConfig;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -102,12 +102,12 @@ import org.springframework.web.client.RestTemplate;
 		}),
 		@TypeHint(
 			typeNames = "com.wavefront.spring.autoconfigure.WavefrontMetricsConfiguration$MicrometerConfiguration",
-			access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }
+			access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}
 		),
 		@TypeHint(types = {
 				Timed.class,
 				SimpleClientHttpRequestFactory.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})
 
 }, resources = @ResourceHint(patterns = "build", isBundle = true))
 public class WavefrontHints implements NativeConfiguration {

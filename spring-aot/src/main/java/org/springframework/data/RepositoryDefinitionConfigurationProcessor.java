@@ -63,7 +63,7 @@ import org.springframework.data.repository.core.support.RepositoryFactoryInforma
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.lang.Nullable;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -248,7 +248,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		private void writeRepositoryInterfaceConfiguration(RepositoryConfiguration configuration) {
 			// target access on methods
 			registry.reflection().forType(configuration.getRepositoryInterface())
-					.withFlags(Flag.allPublicMethods);
+					.withAccess(TypeAccess.PUBLIC_METHODS);
 			// proxy configuration
 			registry.proxy().add(NativeProxyEntry.ofInterfaces(configuration.getRepositoryInterface(), SpringProxy.class, Advised.class, DecoratingProxy.class));
 			// transactional proxy configuration
@@ -269,18 +269,18 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 			// Kotlin repo
 			if (configuration.isKotlinRepository()) {
-				registry.reflection().forType(Iterable.class).withFlags(Flag.queryAllPublicMethods);
-				safelyRegister("kotlinx.coroutines.flow.Flow", Flag.queryAllPublicMethods);
-				safelyRegister("kotlin.collections.Iterable", Flag.queryAllPublicMethods);
-				safelyRegister("kotlin.Unit", Flag.queryAllPublicMethods);
-				safelyRegister("kotlin.Long", Flag.queryAllPublicMethods);
-				safelyRegister("kotlin.Boolean", Flag.queryAllPublicMethods);
+				registry.reflection().forType(Iterable.class).withAccess(TypeAccess.QUERY_PUBLIC_METHODS);
+				safelyRegister("kotlinx.coroutines.flow.Flow", TypeAccess.QUERY_PUBLIC_METHODS);
+				safelyRegister("kotlin.collections.Iterable", TypeAccess.QUERY_PUBLIC_METHODS);
+				safelyRegister("kotlin.Unit", TypeAccess.QUERY_PUBLIC_METHODS);
+				safelyRegister("kotlin.Long", TypeAccess.QUERY_PUBLIC_METHODS);
+				safelyRegister("kotlin.Boolean", TypeAccess.QUERY_PUBLIC_METHODS);
 			}
 		}
 
-		private void safelyRegister(String className, Flag... flags) {
+		private void safelyRegister(String className, TypeAccess... access) {
 			try {
-				registry.reflection().forType(Class.forName(className)).withFlags(flags);
+				registry.reflection().forType(Class.forName(className)).withAccess(access);
 			}
 			catch (ClassNotFoundException ex) {
 				// TODO: logging?
@@ -305,14 +305,14 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				}
 				Builder reflectBuilder = registry.reflection().forType(domainType.getType());
 				if(domainType.hasDeclaredClasses()) {
-						reflectBuilder.withFlags(Flag.allDeclaredClasses);
+						reflectBuilder.withAccess(TypeAccess.DECLARED_CLASSES);
 				}
 				if (domainType.hasMethods()) {
 					reflectBuilder.withExecutables(domainType.getMethods().toArray(new Method[0]));
 				}
 				else {
 					if (domainType.isPartOf("java")) {
-						reflectBuilder.withFlags(Flag.allPublicMethods);
+						reflectBuilder.withAccess(TypeAccess.PUBLIC_METHODS);
 					}
 				}
 				if (domainType.hasFields()) {
@@ -322,7 +322,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 					reflectBuilder.withExecutables(domainType.getPersistenceConstructor());
 				}
 				else {
-					reflectBuilder.withFlags(Flag.allDeclaredConstructors);
+					reflectBuilder.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 				}
 				domainType.doWithAnnotatedElements(this::writeAnnotationConfigurationFor);
 			});
@@ -372,7 +372,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				return;
 			}
 			for (Class<?> fragment : configuration.getFragments()) {
-				registry.reflection().forType(fragment).withFlags(Flag.allDeclaredConstructors, Flag.allPublicMethods);
+				registry.reflection().forType(fragment).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 				writeRepositoryMethodConfiguration(fragment, configuration.getDomainType().toClass(),
 						(method) -> Modifier.isPublic(method.getModifiers()));
 			}
@@ -387,10 +387,10 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				return;
 			}
 			Class<?> customImplementation = configuration.getCustomImplementation();
-			registry.reflection().forType(customImplementation).withFlags(Flag.allDeclaredConstructors, Flag.allPublicMethods);
+			registry.reflection().forType(customImplementation).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 			for (Class<?> repoInterface : configuration.getRepositoryInterface().getInterfaces()) {
 				if (ClassUtils.isAssignable(repoInterface, customImplementation)) {
-					registry.reflection().forType(repoInterface).withFlags(Flag.allPublicMethods);
+					registry.reflection().forType(repoInterface).withAccess(TypeAccess.PUBLIC_METHODS);
 					break;
 				}
 			}
@@ -403,7 +403,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 					.forEach(annotation -> {
 						if (TypeUtils.type(annotation.getType()).isPartOf(SPRING_DATA_PACKAGE)
 								|| annotation.getMetaTypes().stream().anyMatch(SPRING_DATA_PACKAGE::matches)) {
-							registry.reflection().forType(annotation.getType()).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+							registry.reflection().forType(annotation.getType()).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 							registry.proxy().add(NativeProxyEntry.ofInterfaces(annotation.getType(), SynthesizedAnnotation.class));
 						}
 					});

@@ -34,7 +34,7 @@ import com.squareup.javapoet.TypeName;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * A {@link NativeReflectionEntry} for generated code.
@@ -73,16 +73,16 @@ public class GeneratedCodeNativeReflectionEntry extends NativeReflectionEntry {
 	protected ClassDescriptor initializerClassDescriptor() {
 		ClassDescriptor descriptor = ClassDescriptor.of(toFullyQualifiedClassName(this.type));
 		registerIfNecessary(this.methods.stream().filter(MethodSpec::isConstructor),
-				Flag.allDeclaredConstructors, Flag.allPublicConstructors,
+				TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS,
 				(constructor) -> descriptor.addMethodDescriptor(toMethodDescriptor(constructor)));
 		registerIfNecessary(this.queriedMethods.stream().filter(MethodSpec::isConstructor),
-				Flag.queryAllDeclaredConstructors, Flag.queryAllPublicConstructors,
+				TypeAccess.QUERY_DECLARED_CONSTRUCTORS, TypeAccess.QUERY_PUBLIC_CONSTRUCTORS,
 				(constructor) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(constructor)));
 		registerIfNecessary(this.methods.stream().filter(Predicate.not(MethodSpec::isConstructor)),
-				Flag.allDeclaredMethods, Flag.allPublicMethods,
+				TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS,
 				(method) -> descriptor.addMethodDescriptor(toMethodDescriptor(method)));
 		registerIfNecessary(this.queriedMethods.stream().filter(Predicate.not(MethodSpec::isConstructor)),
-				Flag.queryAllDeclaredMethods, Flag.queryAllPublicMethods,
+				TypeAccess.QUERY_DECLARED_METHODS, TypeAccess.QUERY_PUBLIC_METHODS,
 				(method) -> descriptor.addQueriedMethodDescriptor(toMethodDescriptor(method)));
 		registerFieldsIfNecessary(this.fields, (field) -> descriptor.addFieldDescriptor(toFieldDescriptor(field)));
 		return descriptor;
@@ -114,14 +114,14 @@ public class GeneratedCodeNativeReflectionEntry extends NativeReflectionEntry {
 		return sb.toString();
 	}
 
-	private void registerIfNecessary(Stream<MethodSpec> methods, Flag allFlag,
-			Flag publicFlag, Consumer<MethodSpec> memberConsumer) {
-		registerIfNecessary(methods.collect(Collectors.toList()), allFlag, publicFlag,
+	private void registerIfNecessary(Stream<MethodSpec> methods, TypeAccess allAccess,
+			TypeAccess publicAccess, Consumer<MethodSpec> memberConsumer) {
+		registerIfNecessary(methods.collect(Collectors.toList()), allAccess, publicAccess,
 				(method) -> method.hasModifier(Modifier.PUBLIC), memberConsumer);
 	}
 
 	private void registerFieldsIfNecessary(Iterable<FieldSpec> fields, Consumer<FieldSpec> memberConsumer) {
-		registerIfNecessary(fields, Flag.allDeclaredFields, Flag.allPublicFields,
+		registerIfNecessary(fields, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_FIELDS,
 				(field) -> field.hasModifier(Modifier.PUBLIC), memberConsumer);
 	}
 

@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -95,7 +95,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 
 	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
 		org.springframework.nativex.domain.reflect.ClassDescriptor factoryDescriptor = org.springframework.nativex.domain.reflect.ClassDescriptor.of(factoryClassName);
-		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		factoryDescriptor.setAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 

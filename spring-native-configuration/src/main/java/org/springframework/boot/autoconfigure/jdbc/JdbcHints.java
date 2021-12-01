@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceConfiguration.Hikar
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.support.JdbcAccessor;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -38,13 +38,13 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=EmbeddedDataSourceConfiguration.class, types = {
 		@TypeHint(types= {EmbeddedDatabase.class, JdbcAccessor.class}, typeNames="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
-				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods})})
+				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})})
 
 @NativeHint(trigger=Hikari.class, types = {
 		@TypeHint(types=DatabaseMetaData.class, methods= @MethodHint(name="getDatabaseProductName")),
 		@TypeHint(types= {IConcurrentBagEntry[].class,IConcurrentBagEntry.class, Statement.class, Statement[].class}),
 		@TypeHint(types = HikariDataSource.class),
-	@TypeHint(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods})})
+	@TypeHint(types = HikariConfig.class, typeNames = "com.zaxxer.hikari.HikariConfigMXBean", access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS})})
 @NativeHint(trigger=DataSourceAutoConfiguration.class, resources = {
 		@ResourceHint(patterns = { "schema.sql","data.sql" })
 })

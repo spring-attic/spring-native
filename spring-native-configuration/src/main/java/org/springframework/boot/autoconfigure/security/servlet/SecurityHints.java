@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -52,7 +52,7 @@ import org.springframework.util.ClassUtils;
 @NativeHint(trigger=SecurityAutoConfiguration.class, types = {
 		@TypeHint(
 				types= {SecurityExpressionOperations.class,SecurityExpressionRoot.class,WebSecurityExpressionRoot.class},
-				access = { Flag.allDeclaredMethods, Flag.allDeclaredFields }),
+				access = { TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}),
 		@TypeHint(types= {
 				// From DefaultAuthenticationEventPublisher
 				BadCredentialsException.class,AuthenticationFailureBadCredentialsEvent.class,
@@ -74,12 +74,12 @@ import org.springframework.util.ClassUtils;
 		@TypeHint(
 			typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
 			types= { HttpServletRequestWrapper.class,ServletRequestWrapper.class,ServletRequest.class},
-			access = { Flag.allDeclaredConstructors, Flag.allPublicMethods, Flag.allDeclaredFields }),
+			access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS}),
 		@TypeHint(typeNames = {
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
 				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource})
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})
 }, resources = @ResourceHint(patterns = "org.springframework.security.messages", isBundle = true))
 public class SecurityHints implements NativeConfiguration {
 	@Override
@@ -88,7 +88,7 @@ public class SecurityHints implements NativeConfiguration {
 		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = ClassUtils.isPresent("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",null);
 		if (javaxServletFilterAround && autowiredWebSecurityConfigurersIgnoreParentsAround) {
 			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
-			registry.reflection().forType(AutowiredWebSecurityConfigurersIgnoreParents.class).withFlags(Flag.allPublicConstructors, Flag.allPublicMethods);
+			registry.reflection().forType(AutowiredWebSecurityConfigurersIgnoreParents.class).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 		}
 	}
 }

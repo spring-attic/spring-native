@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -26,7 +26,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = PrometheusMetricsExportAutoConfiguration.class, types = {
 	@TypeHint(types = {
 		PrometheusScrapeEndpoint.class
-	}, access = { Flag.allDeclaredMethods, Flag.allDeclaredFields })
+	}, access = { TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS})
 })
 public class PrometheusEndpointAutoConfigurationHints implements NativeConfiguration {
 }

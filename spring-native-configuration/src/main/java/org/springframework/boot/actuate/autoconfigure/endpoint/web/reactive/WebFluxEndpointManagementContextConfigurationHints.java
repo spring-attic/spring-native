@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.CommonWebActuatorTypes;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -31,7 +31,7 @@ import org.springframework.nativex.hint.TypeHint;
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration",
 		"org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler",
 		"org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextFactory",
-	}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
+	}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})
 )
 public class WebFluxEndpointManagementContextConfigurationHints implements NativeConfiguration {
 }

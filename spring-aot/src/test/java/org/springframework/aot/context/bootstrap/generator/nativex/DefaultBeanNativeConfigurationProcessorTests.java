@@ -220,7 +220,7 @@ class DefaultBeanNativeConfigurationProcessorTests {
 			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
 			assertThat(entry.getFields()).isEmpty();
 			assertThat(entry.getMethods()).isEmpty();
-			assertThat(entry.getFlags()).isEmpty();
+			assertThat(entry.getAccess()).isEmpty();
 		};
 	}
 

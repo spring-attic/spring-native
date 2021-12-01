@@ -25,7 +25,7 @@ import com.netflix.discovery.converters.jackson.builder.ApplicationsJacksonBuild
 import org.springframework.cloud.netflix.eureka.loadbalancer.EurekaLoadBalancerClientConfiguration;
 import org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration;
 import org.springframework.nativex.hint.FieldHint;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -36,12 +36,12 @@ import org.springframework.nativex.type.NativeConfiguration;
 				InstanceInfo.class,
 				DataCenterTypeInfoResolver.class,
 				LeaseInfo.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
 		@TypeHint(types = DiscoveryClient.class, fields = @FieldHint(name = "eurekaTransport"))
 })
 @NativeHint(trigger = EurekaDiscoveryClientConfiguration.class,
 		options = "--enable-http")
 @NativeHint(trigger = LoadBalancerEurekaAutoConfiguration.class,
-		types = @TypeHint(types = EurekaLoadBalancerClientConfiguration.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }))
+		types = @TypeHint(types = EurekaLoadBalancerClientConfiguration.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}))
 public class EurekaClientHints implements NativeConfiguration {
 }

@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Indexed;
 
@@ -58,7 +58,7 @@ class FrameworkAnnotationsBeanNativeConfigurationProcessor implements BeanNative
 
 	private void registerAnnotations(ReflectionConfiguration reflectionConfiguration, MergedAnnotations annotations) {
 		annotations.stream().filter(this::isRuntimeFrameworkAnnotation).forEach((ann) ->
-				reflectionConfiguration.forType(ann.getType()).withFlags(Flag.allDeclaredMethods));
+				reflectionConfiguration.forType(ann.getType()).withAccess(TypeAccess.DECLARED_METHODS));
 	}
 
 	protected boolean isRuntimeFrameworkAnnotation(MergedAnnotation<?> annotation) {

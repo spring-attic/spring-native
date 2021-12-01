@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * Allows plugins to the native image build process to participate in programmatic analysis of the application
@@ -58,11 +58,11 @@ public interface NativeContext {
 
 	TypeSystem getTypeSystem();
 
-	default void addReflectiveAccess(Type type, Flag... flags) {
-		addReflectiveAccess(type.getDottedName(), flags);
+	default void addReflectiveAccess(Type type, TypeAccess... access) {
+		addReflectiveAccess(type.getDottedName(), access);
 	}
 
-	void addReflectiveAccess(String key, Flag... flags);
+	void addReflectiveAccess(String key, TypeAccess... access);
 
 	/**
 	 * Add full {@link AccessDescriptor} for the given type (dotted type name).
@@ -103,7 +103,7 @@ public interface NativeContext {
 	void log(String string);
 
 	default void addReflectiveAccess(String parameterTypename, int accessBits) {
-		addReflectiveAccess(parameterTypename, AccessBits.getFlags(accessBits));
+		addReflectiveAccess(parameterTypename, AccessBits.getAccess(accessBits));
 	}
 
 	// TODO Should probably be named addResource and provide a isBundle parameter

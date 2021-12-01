@@ -31,7 +31,7 @@ import org.springframework.data.repository.core.support.RepositoryFragment;
 import org.springframework.data.repository.core.support.RepositoryFragmentsFactoryBean;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -53,10 +53,10 @@ import org.springframework.nativex.hint.TypeHint;
 				}),
 				@TypeHint(types = {ReadingConverter.class, WritingConverter.class}),
 				@TypeHint(types = {Properties.class, BeanFactory.class, InputStreamSource[].class}),
-				@TypeHint(types = Throwable.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredFields }),
+				@TypeHint(types = Throwable.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS}),
 				@TypeHint(typeNames = {
 						"org.springframework.data.projection.SpelEvaluatingMethodInterceptor$TargetWrapper",
-				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource })
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})
 		},
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",

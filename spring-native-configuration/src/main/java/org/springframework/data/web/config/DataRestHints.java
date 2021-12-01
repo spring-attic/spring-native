@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcHints;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.MissingTypeException;
 import org.springframework.nativex.type.TypeProcessor;
@@ -73,7 +73,7 @@ import reactor.core.publisher.Flux;
 						"org.atteo.evo.inflector.English"
 				},
 
-				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }
+				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
 
 		),
 },

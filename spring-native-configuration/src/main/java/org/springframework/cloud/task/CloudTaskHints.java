@@ -31,7 +31,7 @@ import org.springframework.cloud.task.configuration.DefaultTaskConfigurer;
 import org.springframework.cloud.task.configuration.SimpleTaskAutoConfiguration;
 import org.springframework.cloud.task.repository.support.TaskRepositoryInitializer;
 import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -48,7 +48,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		types = {
 		@TypeHint(types = {
 			AbstractDataSourceInitializer.class,
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
 		@TypeHint(types = {
 			DefaultTaskConfigurer.class,
 			JobLauncherApplicationRunner.class,
@@ -62,11 +62,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 			TaskBatchEventListenerBeanPostProcessor.class,
 			JobLaunchCondition.class,
 			BatchEventAutoConfiguration.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
 		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$FailOnJobFailureCondition"
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
 		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$SpringBatchJobCondition"
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods, Flag.resource }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
 		@TypeHint(types= DatabaseMetaData.class)},
 		jdkProxies = {
 		@JdkProxyHint(typeNames = {

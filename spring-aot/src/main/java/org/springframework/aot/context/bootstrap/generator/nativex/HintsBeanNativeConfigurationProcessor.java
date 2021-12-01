@@ -93,7 +93,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						AccessDescriptor value = entry.getValue();
 						Integer accessBits = value.getAccessBits();
 						if (accessBits != 0) {
-							reflectionConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
+							reflectionConfiguration.forType(keyClass).withAccess(AccessBits.getAccess(accessBits));
 						}
 						if ((accessBits & AccessBits.RESOURCE) != 0) {
 							if (keyClass.isArray()) {
@@ -180,7 +180,7 @@ class HintsBeanNativeConfigurationProcessor implements BeanNativeConfigurationPr
 						AccessDescriptor value = entry.getValue();
 						Integer accessBits = value.getAccessBits();
 						if (accessBits != 0) {
-							jniConfiguration.forType(keyClass).withFlags(AccessBits.getFlags(accessBits));
+							jniConfiguration.forType(keyClass).withAccess(AccessBits.getAccess(accessBits));
 						}
 						for (MethodDescriptor methodDescriptor : value.getMethodDescriptors()) {
 							Executable method = methodDescriptor.findOnClass(keyClass);

@@ -29,7 +29,7 @@ import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
 import io.netty.resolver.HostsFileEntriesResolver;
 import io.netty.util.internal.PlatformDependent;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -53,7 +53,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
 		})
 })
-@NativeHint(trigger = NioSocketChannel.class, types = @TypeHint(types = NioSocketChannel.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }))
+@NativeHint(trigger = NioSocketChannel.class, types = @TypeHint(types = NioSocketChannel.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}))
 // Enable reflective access for PlatformDependent#useDirectBufferNoCleaner - otherwise there's a strange behaviour with
 // direct memory buffers
 @NativeHint(trigger = PlatformDependent.class, options = "-Dio.netty.tryReflectionSetAccessible=true")

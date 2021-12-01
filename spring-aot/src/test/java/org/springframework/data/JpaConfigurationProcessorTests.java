@@ -36,7 +36,7 @@ import org.springframework.data.JpaConfigurationProcessor.JpaEntityProcessor;
 import org.springframework.data.JpaConfigurationProcessor.JpaPersistenceContextProcessor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.sample.data.jpa.AuditingListener;
 import org.springframework.sample.data.jpa.ComponentWithPersistenceContext;
 import org.springframework.sample.data.jpa.EntityWithListener;
@@ -148,11 +148,11 @@ public class JpaConfigurationProcessorTests {
 	@Test
 	public void shouldSetDeclaredClassesFlagIfRequired()  {
 		assertThat(processJpaEntities(WithDeclaredClass.class)).satisfies(it -> {
-			assertThat(it.getReflectionEntry(WithDeclaredClass.class).getFlags()).contains(Flag.allDeclaredClasses);
+			assertThat(it.getReflectionEntry(WithDeclaredClass.class).getAccess()).contains(TypeAccess.DECLARED_CLASSES);
 		});
 
 		assertThat(processJpaEntities(Order.class)).satisfies(it -> {
-			assertThat(it.getReflectionEntry(Order.class).getFlags()).doesNotContain(Flag.allDeclaredClasses);
+			assertThat(it.getReflectionEntry(Order.class).getAccess()).doesNotContain(TypeAccess.DECLARED_CLASSES);
 		});
 	}
 

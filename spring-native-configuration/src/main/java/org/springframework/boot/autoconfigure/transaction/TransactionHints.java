@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.transaction.TransactionDefinition;
 
 @NativeHint(trigger = TransactionDefinition.class, types = {
-		@TypeHint(types = TransactionDefinition.class, access = { Flag.allDeclaredMethods, Flag.allDeclaredFields })
+		@TypeHint(types = TransactionDefinition.class, access = { TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS})
 })
 public class TransactionHints implements NativeConfiguration {
 }

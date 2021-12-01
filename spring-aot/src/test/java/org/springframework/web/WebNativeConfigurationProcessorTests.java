@@ -29,7 +29,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,9 +45,9 @@ import reactor.core.publisher.Mono;
  */
 class WebNativeConfigurationProcessorTests {
 
-	private static Set<Flag> ALL_MEMBERS;
+	private static Set<TypeAccess> ALL_MEMBERS;
 	{
-		ALL_MEMBERS = new HashSet<>(Arrays.asList(Flag.allPublicFields, Flag.allDeclaredFields, Flag.allDeclaredConstructors, Flag.allPublicConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods));
+		ALL_MEMBERS = new HashSet<>(Arrays.asList(TypeAccess.PUBLIC_FIELDS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS));
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ class WebNativeConfigurationProcessorTests {
 		assertThat(classDescriptors).hasSize(1);
 		ClassDescriptor cd = classDescriptors.get(0);
 		assertThat(cd.getName()).isEqualTo(Foo.class.getName());
-		assertThat(cd.getFlags()).containsAll(ALL_MEMBERS);
+		assertThat(cd.getAccess()).containsAll(ALL_MEMBERS);
 	}
 
 	@Test
@@ -83,9 +83,9 @@ class WebNativeConfigurationProcessorTests {
 			barCD = cd1;
 		}
 		assertThat(fooCD.getName()).isEqualTo(Foo.class.getName());
-		assertThat(fooCD.getFlags()).containsAll(ALL_MEMBERS);
+		assertThat(fooCD.getAccess()).containsAll(ALL_MEMBERS);
 		assertThat(barCD.getName()).isEqualTo(Bar.class.getName());
-		assertThat(barCD.getFlags()).containsAll(ALL_MEMBERS);
+		assertThat(barCD.getAccess()).containsAll(ALL_MEMBERS);
 	}
 	
 	@Test
@@ -97,10 +97,10 @@ class WebNativeConfigurationProcessorTests {
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
 		assertThat(classDescriptors).hasSize(2);
 		ClassDescriptor monoCd = ClassDescriptor.of(Mono.class);
-		monoCd.setFlags(ALL_MEMBERS);
+		monoCd.setAccess(ALL_MEMBERS);
 		assertThat(classDescriptors).contains(monoCd);
 		ClassDescriptor messageCd = ClassDescriptor.of(Message.class);
-		messageCd.setFlags(ALL_MEMBERS);
+		messageCd.setAccess(ALL_MEMBERS);
 		assertThat(classDescriptors).contains(messageCd);
 	}
 
@@ -113,10 +113,10 @@ class WebNativeConfigurationProcessorTests {
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
 		assertThat(classDescriptors).hasSize(2);
 		ClassDescriptor monoCd = ClassDescriptor.of(Foo.class);
-		monoCd.setFlags(ALL_MEMBERS);
+		monoCd.setAccess(ALL_MEMBERS);
 		assertThat(classDescriptors).contains(monoCd);
 		ClassDescriptor messageCd = ClassDescriptor.of(Boo.class);
-		messageCd.setFlags(ALL_MEMBERS);
+		messageCd.setAccess(ALL_MEMBERS);
 		assertThat(classDescriptors).contains(messageCd);
 	}
 

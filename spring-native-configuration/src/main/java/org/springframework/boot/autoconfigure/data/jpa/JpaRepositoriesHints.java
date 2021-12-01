@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.data.jpa;
 import org.springframework.data.jpa.repository.query.JpaQueryMethodFactory;
 import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -37,7 +37,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 		} , typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.resource })
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.RESOURCE})
 		,
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",

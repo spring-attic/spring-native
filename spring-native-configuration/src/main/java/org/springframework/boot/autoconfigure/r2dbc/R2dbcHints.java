@@ -30,7 +30,7 @@ import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.AfterSaveCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeSaveCallback;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -47,8 +47,8 @@ import reactor.core.publisher.Mono;
 @NativeHint(trigger = R2dbcAutoConfiguration.class, types = {
 		@TypeHint(types = { Statement.class, Statement[].class }),
 		@TypeHint(types = EmbeddedDatabase.class, typeNames = "org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory$EmbeddedDataSourceProxy",
-				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
-		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor", access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods }),
+				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
+		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor", access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
 		@TypeHint(typeNames = "org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryConfigurations$PooledConnectionFactoryCondition"),
 		@TypeHint(types = {
 				io.r2dbc.spi.Connection.class,
@@ -56,7 +56,7 @@ import reactor.core.publisher.Mono;
 				ReactiveDataAccessStrategy.class, ReactiveDeleteOperation.class, ReactiveInsertOperation.class,
 				ReactiveSelectOperation.class, ReactiveUpdateOperation.class, AfterConvertCallback.class,
 				AfterSaveCallback.class, BeforeConvertCallback.class, BeforeSaveCallback.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})
 		})
 @NativeHint(trigger=R2dbcAutoConfiguration.class,
 		resources = {
@@ -71,9 +71,9 @@ import reactor.core.publisher.Mono;
 				// Can't find it now but there was some form of wrapper list in R2DBC that listed this plus others
 				Mono.class,
 				Flux.class
-		}, access = Flag.allDeclaredConstructors),
+		}, access = TypeAccess.DECLARED_CONSTRUCTORS),
 		// Enables 'dispose' method to be found
-		@TypeHint(types= ConnectionPool.class, access = Flag.allDeclaredMethods)},
+		@TypeHint(types= ConnectionPool.class, access = TypeAccess.DECLARED_METHODS)},
 		initialization = @InitializationHint(packageNames = { "org.springframework.data.r2dbc.connectionfactory", "io.r2dbc.spi" }, initTime = InitializationTime.BUILD))
 public class R2dbcHints implements NativeConfiguration {
 }

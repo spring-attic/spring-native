@@ -30,7 +30,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,11 +93,11 @@ public class KafkaAvroNativeConfigurationProcessorTests {
 		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(AvroType1.class);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 		assertThat(entries).anySatisfy((entry) -> {
 			assertThat(entry.getType()).isEqualTo(AvroType2.class);
-			assertThat(entry.getFlags()).containsOnly(Flag.allDeclaredConstructors);
+			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS);
 		});
 		assertThat(entries).hasSize(2);
 	}

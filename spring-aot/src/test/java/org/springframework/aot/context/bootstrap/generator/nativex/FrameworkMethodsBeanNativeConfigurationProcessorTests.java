@@ -56,7 +56,7 @@ public class FrameworkMethodsBeanNativeConfigurationProcessorTests {
 	private Consumer<DefaultNativeReflectionEntry> method(Method method) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(method.getDeclaringClass());
-			assertThat(entry.getFlags()).isEmpty();
+			assertThat(entry.getAccess()).isEmpty();
 			assertThat(entry.getConstructors()).isEmpty();
 			assertThat(entry.getMethods()).singleElement().isEqualTo(method);
 			assertThat(entry.getFields()).isEmpty();

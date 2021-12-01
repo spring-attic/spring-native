@@ -16,7 +16,7 @@
 
 package kotlin;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -31,18 +31,18 @@ import org.springframework.nativex.type.NativeConfiguration;
 						"META-INF/services/.*"
 				})
 		}, types = {
-				@TypeHint(types = kotlin.KotlinVersion.class, access = { Flag.allPublicMethods, Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors }),
+				@TypeHint(types = kotlin.KotlinVersion.class, access = { TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS}),
 				@TypeHint(typeNames = "kotlin.KotlinVersion$Companion")
 })
 @NativeHint(trigger = kotlin.reflect.full.KClasses.class,
 	types = {
 		@TypeHint(types = kotlin.reflect.full.KClasses.class, access = {}),
-		@TypeHint(types = kotlin.Metadata.class, access = Flag.allDeclaredMethods),
-		@TypeHint(types = kotlin.reflect.jvm.internal.ReflectionFactoryImpl.class, access = Flag.allDeclaredConstructors),
-		@TypeHint(types = kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter.class, access = Flag.allDeclaredFields)
+		@TypeHint(types = kotlin.Metadata.class, access = TypeAccess.DECLARED_METHODS),
+		@TypeHint(types = kotlin.reflect.jvm.internal.ReflectionFactoryImpl.class, access = TypeAccess.DECLARED_CONSTRUCTORS),
+		@TypeHint(types = kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter.class, access = TypeAccess.DECLARED_FIELDS)
 	})
 @NativeHint(trigger = kotlin.coroutines.Continuation.class,
-		types = @TypeHint(types = kotlin.coroutines.Continuation.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }))
+		types = @TypeHint(types = kotlin.coroutines.Continuation.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}))
 @NativeHint(trigger = com.fasterxml.jackson.module.kotlin.KotlinModule.class,
 		types = {
 			@TypeHint(types = com.fasterxml.jackson.module.kotlin.KotlinModule.class),

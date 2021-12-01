@@ -16,7 +16,7 @@
 
 package org.springframework.core.annotation;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -25,6 +25,6 @@ import org.springframework.nativex.hint.TypeHint;
 @TypeHint(types= {
 		AliasFor.class,
 		Order.class
-}, access = Flag.allDeclaredMethods))
+}, access = TypeAccess.DECLARED_METHODS))
 public class CoreAnnotationHints implements NativeConfiguration {
 }

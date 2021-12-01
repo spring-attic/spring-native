@@ -21,12 +21,12 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.data.repository.core.support.ReactiveRepositoryFactorySupport;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 
 
 @TypeHint(types = { Flux.class, Mono.class }, access = {})
 @TypeHint(types = ReactiveRepositoryFactorySupport.class)
-@TypeHint(types = ReactiveQueryByExampleExecutor.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+@TypeHint(types = ReactiveQueryByExampleExecutor.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 	public class SpringDataReactiveHints {
 }

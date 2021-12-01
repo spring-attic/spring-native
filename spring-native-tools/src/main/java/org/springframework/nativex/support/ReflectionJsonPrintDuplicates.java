@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
@@ -44,7 +44,7 @@ public class ReflectionJsonPrintDuplicates {
 		List<ClassDescriptor> cds = rd1.getClassDescriptors();
 
 		for (ClassDescriptor cd : cds) {
-			if (cd.getFlags()!=null && cd.getFlags().contains(Flag.allDeclaredMethods)) {
+			if (cd.getAccess()!=null && cd.getAccess().contains(TypeAccess.DECLARED_METHODS)) {
 				// Does it specify them more precisely?
 				List<MethodDescriptor> methods = cd.getMethods();
 				boolean specifiesMethods = false;
@@ -57,10 +57,10 @@ public class ReflectionJsonPrintDuplicates {
 				}
 				if (specifiesMethods) {
 					System.out.println("Removing allDeclaredMethods for " + cd.getName());
-					cd.unsetFlag(Flag.allDeclaredMethods);
+					cd.unsetAccess(TypeAccess.DECLARED_METHODS);
 				}
 			}
-			if (cd.getFlags()!=null && cd.getFlags().contains(Flag.allDeclaredConstructors)) {
+			if (cd.getAccess()!=null && cd.getAccess().contains(TypeAccess.DECLARED_CONSTRUCTORS)) {
 				// Does it specify them more precisely?
 				List<MethodDescriptor> methods = cd.getMethods();
 				boolean specifiesConstructors = false;
@@ -73,7 +73,7 @@ public class ReflectionJsonPrintDuplicates {
 				}
 				if (specifiesConstructors) {
 					System.out.println("Removing allDeclaredConstructors for " + cd.getName());
-					cd.unsetFlag(Flag.allDeclaredConstructors);
+					cd.unsetAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 				}
 			}
 		}

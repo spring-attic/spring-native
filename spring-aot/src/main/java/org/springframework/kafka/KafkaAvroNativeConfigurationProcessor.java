@@ -30,7 +30,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.kafka.listener.GenericMessageListener;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -165,7 +165,7 @@ public class KafkaAvroNativeConfigurationProcessor implements BeanFactoryNativeC
             avroTypes.forEach(avroType -> registry
                     .reflection()
                     .forType(avroType)
-                    .withFlags(Flag.allDeclaredConstructors));
+                    .withAccess(TypeAccess.DECLARED_CONSTRUCTORS));
         }
 
 		private boolean isCandidate(Class<?> type) {

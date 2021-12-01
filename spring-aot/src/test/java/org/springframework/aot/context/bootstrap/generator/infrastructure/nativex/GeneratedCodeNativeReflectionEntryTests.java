@@ -24,7 +24,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,19 +138,19 @@ class GeneratedCodeNativeReflectionEntryTests {
 	}
 
 	@Test
-	void toClassDescriptorShouldRegisterFieldsFlags() {
-		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withFlags(Flag.allDeclaredConstructors)
-				.withFlags(Flag.allDeclaredMethods).build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors, Flag.allDeclaredMethods);
+	void toClassDescriptorShouldRegisterFieldsAccess() {
+		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withAccess(TypeAccess.DECLARED_CONSTRUCTORS)
+				.withAccess(TypeAccess.DECLARED_METHODS).build().toClassDescriptor();
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS);
 	}
 
 	@Test
 	void toClassDescriptorShouldNotRegisterSpecificConstructorIfAllDeclaredConstructorsIsSet() {
 		MethodSpec methodSpec = MethodSpec.constructorBuilder().build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allDeclaredConstructors)
+				.withAccess(TypeAccess.DECLARED_CONSTRUCTORS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredConstructors);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS);
 		assertThat(descriptor.getMethods()).isNull();
 	}
 
@@ -158,9 +158,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldNotRegisterSpecificConstructorIfAllPublicConstructorsIsSet() {
 		MethodSpec methodSpec = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC).build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allPublicConstructors)
+				.withAccess(TypeAccess.PUBLIC_CONSTRUCTORS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicConstructors);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.PUBLIC_CONSTRUCTORS);
 		assertThat(descriptor.getMethods()).isNull();
 	}
 
@@ -168,9 +168,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldRegisterSpecificConstructorIfNotMatchingAllPublicConstructorsFlag() {
 		MethodSpec methodSpec = MethodSpec.constructorBuilder().addParameter(String.class, "name").build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(VISIBILITY_TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allPublicConstructors)
+				.withAccess(TypeAccess.PUBLIC_CONSTRUCTORS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicConstructors);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.PUBLIC_CONSTRUCTORS);
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("<init>");
 			assertThat(methodDescriptor.getParameterTypes()).containsOnly("java.lang.String");
@@ -181,9 +181,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldNotRegisterMethodIfAllDeclaredMethodsIsSet() {
 		MethodSpec methodSpec = MethodSpec.methodBuilder("test").build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allDeclaredMethods)
+				.withAccess(TypeAccess.DECLARED_METHODS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allDeclaredMethods);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS);
 		assertThat(descriptor.getMethods()).isNull();
 	}
 
@@ -191,9 +191,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldNotRegisterMethodIfAllPublicMethodsIsSet() {
 		MethodSpec methodSpec = MethodSpec.methodBuilder("test").addModifiers(Modifier.PUBLIC).build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allPublicMethods)
+				.withAccess(TypeAccess.PUBLIC_METHODS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicMethods);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.PUBLIC_METHODS);
 		assertThat(descriptor.getMethods()).isNull();
 	}
 
@@ -201,9 +201,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldRegisterMethodIfNotMatchingAllPublicMethodsIsSet() {
 		MethodSpec methodSpec = MethodSpec.methodBuilder("test").addParameter(String.class, "name").build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(VISIBILITY_TEST_CLASS).withMethods(methodSpec)
-				.withFlags(Flag.allPublicMethods)
+				.withAccess(TypeAccess.PUBLIC_METHODS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).containsOnly(Flag.allPublicMethods);
+		assertThat(descriptor.getAccess()).containsOnly(TypeAccess.PUBLIC_METHODS);
 		assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
 			assertThat(methodDescriptor.getName()).isEqualTo("test");
 			assertThat(methodDescriptor.getParameterTypes()).containsOnly("java.lang.String");
@@ -214,9 +214,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldNotRegisterFieldIfAllDeclaredFieldsIsSet() {
 		FieldSpec fieldSpec = FieldSpec.builder(String.class, "test").build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withFields(fieldSpec)
-				.withFlags(Flag.allDeclaredFields)
+				.withAccess(TypeAccess.DECLARED_FIELDS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).contains(Flag.allDeclaredFields);
+		assertThat(descriptor.getAccess()).contains(TypeAccess.DECLARED_FIELDS);
 		assertThat(descriptor.getFields()).isNull();
 	}
 
@@ -224,9 +224,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldNotRegisterFieldIfAllPublicFieldsIsSet() {
 		FieldSpec fieldSpec = FieldSpec.builder(String.class, "test").addModifiers(Modifier.PUBLIC).build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(TEST_CLASS).withFields(fieldSpec)
-				.withFlags(Flag.allPublicFields)
+				.withAccess(TypeAccess.PUBLIC_FIELDS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).contains(Flag.allPublicFields);
+		assertThat(descriptor.getAccess()).contains(TypeAccess.PUBLIC_FIELDS);
 		assertThat(descriptor.getFields()).isNull();
 	}
 
@@ -234,9 +234,9 @@ class GeneratedCodeNativeReflectionEntryTests {
 	void toClassDescriptorShouldRegisterFieldIfNotMatchingAllPublicFieldsIsSet() {
 		FieldSpec fieldSpec = FieldSpec.builder(String.class, "test").build();
 		ClassDescriptor descriptor = GeneratedCodeNativeReflectionEntry.of(VISIBILITY_TEST_CLASS).withFields(fieldSpec)
-				.withFlags(Flag.allPublicFields)
+				.withAccess(TypeAccess.PUBLIC_FIELDS)
 				.build().toClassDescriptor();
-		assertThat(descriptor.getFlags()).contains(Flag.allPublicFields);
+		assertThat(descriptor.getAccess()).contains(TypeAccess.PUBLIC_FIELDS);
 		assertThat(descriptor.getFields()).singleElement().satisfies((fieldDescriptor) -> {
 			assertThat(fieldDescriptor.getName()).isEqualTo("test");
 			assertThat(fieldDescriptor.isAllowWrite()).isTrue();

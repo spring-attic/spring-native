@@ -47,7 +47,7 @@ import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.serialization.SerializationDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
@@ -282,7 +282,7 @@ public class ConfigurationCollector {
 		if (fields != null && !fields.isEmpty()) {
 			return true;
 		}
-		if (cd.getFlags()!=null && (cd.getFlags().contains(Flag.allDeclaredConstructors) || cd.getFlags().contains(Flag.allPublicConstructors))) {
+		if (cd.getAccess()!=null && (cd.getAccess().contains(TypeAccess.DECLARED_CONSTRUCTORS) || cd.getAccess().contains(TypeAccess.PUBLIC_CONSTRUCTORS))) {
 			return true;
 		}
 		return false;
@@ -305,7 +305,7 @@ public class ConfigurationCollector {
 			if (areMembersSpecified(classDescriptor)) {
 				if (!verifyMembers(classDescriptor)) {
 					logger.debug("Stripped down to a base class descriptor for "+classDescriptor.getName());
-					Set<Flag> existingFlags = classDescriptor.getFlags();
+					Set<TypeAccess> access = classDescriptor.getAccess();
 					classDescriptor = ClassDescriptor.of(classDescriptor.getName());
 					// TODO should set some flags here?
 					anyFailed=true;
@@ -346,9 +346,9 @@ public class ConfigurationCollector {
 		}
 		if (areMembersSpecified(classDescriptor)) {
 			if (!verifyMembers(classDescriptor)) {
-				Set<Flag> existingFlags = classDescriptor.getFlags();
+				Set<TypeAccess> access = classDescriptor.getAccess();
 				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
-				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
+				// TODO should set some access here? e.g	classDescriptor.setAccess(access);
 			}
 		}
 		jniReflectionDescriptor.merge(classDescriptor);
@@ -360,9 +360,9 @@ public class ConfigurationCollector {
 		}
 		if (areMembersSpecified(classDescriptor)) {
 			if (!verifyMembers(classDescriptor)) {
-				Set<Flag> existingFlags = classDescriptor.getFlags();
+				Set<TypeAccess> access = classDescriptor.getAccess();
 				classDescriptor = ClassDescriptor.of(classDescriptor.getName());
-				// TODO should set some flags here? e.g	classDescriptor.setFlags(existingFlags);
+				// TODO should set some flags here? e.g	classDescriptor.setAccess(access);
 			}
 		}
 		reflectionDescriptor.merge(classDescriptor);

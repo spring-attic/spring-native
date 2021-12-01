@@ -36,7 +36,7 @@ import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreat
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -47,15 +47,15 @@ import org.springframework.nativex.type.NativeConfiguration;
 				AnnotationAwareAspectJAutoProxyCreator.class,
 				AspectJAwareAdvisorAutoProxyCreator.class,
 				EnableAspectJAutoProxy.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 })
 @NativeHint(trigger = AopAutoConfiguration.AspectJAutoProxyingConfiguration.class,
 	types = {
-		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access = { Flag.allDeclaredFields, Flag.allPublicMethods }),
-		@TypeHint(types = { AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access = Flag.allPublicMethods),
+		@TypeHint(types = { ProxyConfig.class, ProxyProcessorSupport.class }, access = { TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_METHODS}),
+		@TypeHint(types = { AbstractAdvisorAutoProxyCreator.class, AbstractAutoProxyCreator.class }, access = TypeAccess.PUBLIC_METHODS),
 		@TypeHint(types= InfrastructureAdvisorAutoProxyCreator.class,
-				access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
-		@TypeHint(types = Proxy.class, access = Flag.allDeclaredMethods), // aspect on proxied bean such as repository
+				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
+		@TypeHint(types = Proxy.class, access = TypeAccess.DECLARED_METHODS), // aspect on proxied bean such as repository
 		@TypeHint(types = {
 			Java15AnnotationFinder.class, Java15GenericSignatureInformationProvider.class,
 			Java15ReflectionBasedReferenceTypeDelegate.class})

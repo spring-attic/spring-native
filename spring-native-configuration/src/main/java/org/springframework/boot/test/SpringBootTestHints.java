@@ -17,7 +17,7 @@
 package org.springframework.boot.test;
 
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -49,7 +49,7 @@ import org.springframework.test.web.client.SimpleRequestExpectationManager;
 			org.springframework.boot.SpringBootConfiguration.class,
 			org.springframework.boot.test.context.SpringBootTest.class,
 			org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc.class,
-		}, access = Flag.allPublicMethods)
+		}, access = TypeAccess.PUBLIC_METHODS)
 	},
 	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.context.annotation.Import.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),

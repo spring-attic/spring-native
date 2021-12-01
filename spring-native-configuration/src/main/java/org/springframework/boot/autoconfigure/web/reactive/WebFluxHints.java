@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.web.CommonWebInfos;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryConfiguration.EmbeddedNetty;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -37,7 +37,7 @@ import reactor.netty.DisposableServer;
 				org.springframework.web.reactive.DispatcherHandler.class
 		}),
 		@TypeHint(typeNames = "org.springframework.web.reactive.result.method.AbstractHandlerMethodMapping$PreFlightAmbiguousMatchHandler",
-				access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
+				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})
 })
 @NativeHint(trigger = WebServerFactoryCustomizerBeanPostProcessor.class, types = @TypeHint(types= WebServerFactoryCustomizerBeanPostProcessor.class))
 @NativeHint(trigger = ReactiveWebServerFactoryAutoConfiguration.class, types = {
@@ -45,7 +45,7 @@ import reactor.netty.DisposableServer;
 				types= {
 						AnnotationConfigReactiveWebServerApplicationContext.class,
 						DisposableServer.class
-				}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods })
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS})
 })
 @NativeHint(trigger = EmbeddedNetty.class, imports = CommonWebInfos.class)
 // HandshakeWebSocketService support, no support for Jetty 10: too much reflection in Jetty10RequestUpgradeStrategy and no support string based triggers yet.

@@ -21,7 +21,7 @@ import org.springframework.data.r2dbc.repository.config.R2dbcRepositoryConfigura
 import org.springframework.data.r2dbc.repository.support.R2dbcRepositoryFactoryBean;
 import org.springframework.data.r2dbc.repository.support.SimpleR2dbcRepository;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -35,7 +35,7 @@ import org.springframework.nativex.hint.TypeHint;
 				RepositoryMetadata.class,
 				R2dbcDialectProvider.class
 		}, typeNames = {"org.springframework.data.r2dbc.dialect.DialectResolver.R2dbcDialectProvider.BuiltInDialectProvider"}
-				, access = { Flag.allDeclaredFields, Flag.allDeclaredMethods, Flag.allDeclaredConstructors, Flag.resource }
+				, access = { TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.RESOURCE}
 		)
 })
 public class R2dbcRepositoriesHints implements NativeConfiguration {

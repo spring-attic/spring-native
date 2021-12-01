@@ -23,7 +23,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.AbstractCompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.core.ResolvableType;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -45,7 +45,7 @@ class HealthContributorNativeConfigurationProcessor implements BeanFactoryNative
 		if (ClassUtils.isPresent(HEALTH_CONTRIBUTOR_CLASS_NAME, beanFactory.getBeanClassLoader())) {
 			processor.processBeansWithType(HealthContributor.class, (beanName, beanType) -> {
 				if (!beanType.isInterface()) {
-					registry.reflection().forType(beanType).withFlags(Flag.allDeclaredConstructors).build();
+					registry.reflection().forType(beanType).withAccess(TypeAccess.DECLARED_CONSTRUCTORS).build();
 				}
 			});
 		}
@@ -54,7 +54,7 @@ class HealthContributorNativeConfigurationProcessor implements BeanFactoryNative
 				ResolvableType type = ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class,
 						beanType);
 				Class<?> indicatorType = type.resolveGeneric(1);
-				registry.reflection().forType(indicatorType).withFlags(Flag.allDeclaredConstructors).build();
+				registry.reflection().forType(indicatorType).withAccess(TypeAccess.DECLARED_CONSTRUCTORS).build();
 			});
 		}
 	}

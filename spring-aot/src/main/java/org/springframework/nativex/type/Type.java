@@ -59,7 +59,7 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.hint.AotProxyHints;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationHints;
 import org.springframework.nativex.hint.InitializationTime;
@@ -1928,7 +1928,7 @@ public class Type {
 			if (key.equals("types")) {
 				types = (ArrayList<org.objectweb.asm.Type>) value;
 			} else if (key.equals("access")) {
-				accessRequired = AccessBits.fromFlags(unpackFlags((List<String[]>) value)).getValue();
+				accessRequired = AccessBits.fromTypeAccess(unpackAccess((List<String[]>) value)).getValue();
 				if (accessRequired == AccessBits.JNI) {
 					accessRequired = -1; // reset to allow inferencing to occur
 					isJniHint = true;
@@ -1985,13 +1985,13 @@ public class Type {
 		}
 	}
 
-	private Flag[] unpackFlags(List<String[]> values) {
-		Flag[] flags = new Flag[values.size()];
+	private TypeAccess[] unpackAccess(List<String[]> values) {
+		TypeAccess[] access = new TypeAccess[values.size()];
 		for (int i = 0; i < values.size(); i++) {
 			String value = ((String[])values.get(i))[1];
-			flags[i] = Flag.valueOf(value);
+			access[i] = TypeAccess.valueOf(value);
 		}
-		return flags;
+		return access;
 	}
 
 	private void unpackAotProxyHint(AnnotationNode typeInfo, HintDeclaration ch) {

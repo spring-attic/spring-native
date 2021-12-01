@@ -27,7 +27,7 @@ import java.util.List;
  * @author Andy Clement
  * @author Sebastien Deleuze
  * @author Christoph Strobl
- * @deprecated Use {@link Flag} instead.
+ * @deprecated Use {@link TypeAccess} instead.
  */
 @Deprecated
 public class AccessBits {
@@ -159,36 +159,36 @@ public class AccessBits {
 		return toString(value);
 	}
 
-	public static Flag[] getFlags(int value) {
-		List<Flag> flags = new ArrayList<>();
+	public static TypeAccess[] getAccess(int value) {
+		List<TypeAccess> access = new ArrayList<>();
 		if ((value & DECLARED_FIELDS) != 0) {
-			flags.add(Flag.allDeclaredFields);
+			access.add(TypeAccess.DECLARED_FIELDS);
 		}
 		if ((value & DECLARED_CONSTRUCTORS) != 0) {
-			flags.add(Flag.allDeclaredConstructors);
+			access.add(TypeAccess.DECLARED_CONSTRUCTORS);
 		}
 		if ((value & PUBLIC_CONSTRUCTORS) != 0) {
-			flags.add(Flag.allPublicConstructors);
+			access.add(TypeAccess.PUBLIC_CONSTRUCTORS);
 		}
 		if ((value & DECLARED_METHODS) != 0) {
-			flags.add(Flag.allDeclaredMethods);
+			access.add(TypeAccess.DECLARED_METHODS);
 		}
 		if ((value & PUBLIC_METHODS) != 0) {
-			flags.add(Flag.allPublicMethods);
+			access.add(TypeAccess.PUBLIC_METHODS);
 		}
 		if ((value & QUERY_DECLARED_CONSTRUCTORS) != 0) {
-			flags.add(Flag.queryAllDeclaredConstructors);
+			access.add(TypeAccess.QUERY_DECLARED_CONSTRUCTORS);
 		}
 		if ((value & QUERY_PUBLIC_CONSTRUCTORS) != 0) {
-			flags.add(Flag.queryAllPublicConstructors);
+			access.add(TypeAccess.QUERY_PUBLIC_CONSTRUCTORS);
 		}
 		if ((value & QUERY_DECLARED_METHODS) != 0) {
-			flags.add(Flag.queryAllDeclaredMethods);
+			access.add(TypeAccess.QUERY_DECLARED_METHODS);
 		}
 		if ((value & QUERY_PUBLIC_METHODS) != 0) {
-			flags.add(Flag.queryAllPublicMethods);
+			access.add(TypeAccess.QUERY_PUBLIC_METHODS);
 		}
-		return flags.toArray(new Flag[0]);
+		return access.toArray(new TypeAccess[0]);
 	}
 
 	public AccessBits() {
@@ -318,46 +318,46 @@ public class AccessBits {
 		return result;
 	}
 
-	public static AccessBits fromFlags(Flag... flags) {
+	public static AccessBits fromTypeAccess(TypeAccess... accesses) {
 
 		Integer value = 0;
 
-		if (flags.length == 0) {
+		if (accesses.length == 0) {
 				value = AccessBits.CLASS;
 		}
 
-		for (Flag flag : flags) { // TODO: is this sufficient?
-			if (Flag.allDeclaredConstructors.equals(flag)) {
+		for (TypeAccess access : accesses) { // TODO: is this sufficient?
+			if (TypeAccess.DECLARED_CONSTRUCTORS.equals(access)) {
 				value = value | AccessBits.DECLARED_CONSTRUCTORS;
 			}
-			if (Flag.allPublicConstructors.equals(flag)) {
+			if (TypeAccess.PUBLIC_CONSTRUCTORS.equals(access)) {
 				value = value | AccessBits.PUBLIC_CONSTRUCTORS;
 			}
-			if (Flag.allDeclaredMethods.equals(flag)) {
+			if (TypeAccess.DECLARED_METHODS.equals(access)) {
 				value = value | AccessBits.DECLARED_METHODS;
 			}
-			if (Flag.allPublicMethods.equals(flag)) {
+			if (TypeAccess.PUBLIC_METHODS.equals(access)) {
 				value = value | AccessBits.PUBLIC_METHODS;
 			}
-			if (Flag.allDeclaredFields.equals(flag)) {
+			if (TypeAccess.DECLARED_FIELDS.equals(access)) {
 				value = value | AccessBits.DECLARED_FIELDS;
 			}
-			if (Flag.queryAllDeclaredConstructors.equals(flag)) {
+			if (TypeAccess.QUERY_DECLARED_CONSTRUCTORS.equals(access)) {
 				value = value | AccessBits.QUERY_DECLARED_CONSTRUCTORS;
 			}
-			if (Flag.queryAllPublicConstructors.equals(flag)) {
+			if (TypeAccess.QUERY_PUBLIC_CONSTRUCTORS.equals(access)) {
 				value = value | AccessBits.QUERY_PUBLIC_CONSTRUCTORS;
 			}
-			if (Flag.queryAllDeclaredMethods.equals(flag)) {
+			if (TypeAccess.QUERY_DECLARED_METHODS.equals(access)) {
 				value = value | AccessBits.QUERY_DECLARED_METHODS;
 			}
-			if (Flag.queryAllPublicMethods.equals(flag)) {
+			if (TypeAccess.QUERY_PUBLIC_METHODS.equals(access)) {
 				value = value | AccessBits.QUERY_PUBLIC_METHODS;
 			}
-			if (Flag.resource.equals(flag)) {
+			if (TypeAccess.RESOURCE.equals(access)) {
 				value = value | AccessBits.RESOURCE;
 			}
-			if (Flag.jni.equals(flag)) {
+			if (TypeAccess.JNI.equals(access)) {
 				value = value | AccessBits.JNI;
 			}
 		}

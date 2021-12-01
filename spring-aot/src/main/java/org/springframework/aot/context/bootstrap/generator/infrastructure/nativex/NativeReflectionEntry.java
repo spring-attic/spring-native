@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ConditionDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 
 /**
  * Describe the need for reflection for a particular type.
@@ -39,21 +39,21 @@ import org.springframework.nativex.hint.Flag;
  */
 public abstract class NativeReflectionEntry {
 
-	private final Set<Flag> flags;
+	private final Set<TypeAccess> access;
 
 	private final String conditionalOnTypeReachable;
 
 	protected NativeReflectionEntry(Builder<?, ?> builder) {
-		this.flags = Collections.unmodifiableSet(builder.flags);
+		this.access = Collections.unmodifiableSet(builder.access);
 		this.conditionalOnTypeReachable = builder.conditionalOnTypeReachable;
 	}
 
 	/**
-	 * Return the {@link Flag flags} to set.
-	 * @return the flags to set
+	 * Return the {@link TypeAccess access} to set.
+	 * @return the access to set
 	 */
-	public Set<Flag> getFlags() {
-		return this.flags;
+	public Set<TypeAccess> getAccess() {
+		return this.access;
 	}
 
 	/**
@@ -65,16 +65,16 @@ public abstract class NativeReflectionEntry {
 		if (this.conditionalOnTypeReachable != null) {
 			descriptor.setCondition(new ConditionDescriptor(this.conditionalOnTypeReachable));
 		}
-		descriptor.setFlags(this.flags);
+		descriptor.setAccess(this.access);
 		return descriptor;
 	}
 
 	protected abstract ClassDescriptor initializerClassDescriptor();
 
-	protected <T> void registerIfNecessary(Iterable<T> members, Flag allFlag,
-			Flag publicFlag, Predicate<T> isPublicMember, Consumer<T> memberConsumer) {
-		if (!this.flags.contains(allFlag)) {
-			boolean checkVisibility = this.flags.contains(publicFlag);
+	protected <T> void registerIfNecessary(Iterable<T> members, TypeAccess allAccess,
+			TypeAccess publicAccess, Predicate<T> isPublicMember, Consumer<T> memberConsumer) {
+		if (!this.access.contains(allAccess)) {
+			boolean checkVisibility = this.access.contains(publicAccess);
 			for (T member : members) {
 				if (!checkVisibility || !isPublicMember.test(member)) {
 					memberConsumer.accept(member);
@@ -85,17 +85,17 @@ public abstract class NativeReflectionEntry {
 
 	public abstract static class Builder<B extends Builder<B, T>, T extends NativeReflectionEntry> {
 
-		private final Set<Flag> flags = new LinkedHashSet<>();
+		private final Set<TypeAccess> access = new LinkedHashSet<>();
 
 		protected String conditionalOnTypeReachable;
 
 		/**
-		 * Set the specified {@link Flag flags}.
-		 * @param flags the flags to set
+		 * Set the specified {@link TypeAccess access}.
+		 * @param access the access to set
 		 * @return this for method chaining
 		 */
-		public B withFlags(Flag... flags) {
-			this.flags.addAll(Arrays.asList(flags));
+		public B withAccess(TypeAccess... access) {
+			this.access.addAll(Arrays.asList(access));
 			return self();
 		}
 

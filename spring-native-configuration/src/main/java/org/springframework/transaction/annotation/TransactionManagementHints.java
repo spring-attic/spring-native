@@ -17,7 +17,7 @@
 package org.springframework.transaction.annotation;
 
 import org.springframework.context.annotation.AutoProxyRegistrar;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.TypeHint;
@@ -36,7 +36,7 @@ import org.springframework.transaction.aspectj.AspectJTransactionManagementConfi
 				Transactional.class,
 				javax.transaction.Transactional.class
 		}),
-		@TypeHint(types = Propagation.class, access = { Flag.allDeclaredMethods, Flag.allDeclaredFields }) // TODO this is an enum - we can probably infer what access an enum requires if exposed
+		@TypeHint(types = Propagation.class, access = { TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}) // TODO this is an enum - we can probably infer what access an enum requires if exposed
 		})
 @NativeHint(trigger = AspectJJtaTransactionManagementConfiguration.class,
 		types = @TypeHint(types = {

@@ -24,7 +24,7 @@ import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 
@@ -66,7 +66,7 @@ class TestContextConfigurationDescriptor {
 	 */
 	void contributeNativeConfiguration(NativeConfigurationRegistry nativeConfigurationRegistry) {
 		nativeConfigurationRegistry.reflection().forType(this.testContextBootstrapperType)
-				.withFlags(Flag.allDeclaredConstructors);
+				.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 	}
 
 	/**

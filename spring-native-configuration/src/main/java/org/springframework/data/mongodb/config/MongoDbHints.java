@@ -21,7 +21,7 @@ import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.DataReactiveAuditingHints;
 import org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback;
 import org.springframework.data.mongodb.core.mapping.event.ReactiveAuditingEntityCallback;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.NativeHints;
 import org.springframework.nativex.hint.TypeHint;
@@ -35,7 +35,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				types = @TypeHint(types = {
 						PersistentEntitiesFactoryBean.class,
 						AuditingEntityCallback.class,
-				}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods }),
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 				imports = DataNonReactiveAuditingHints.class
 		),
 
@@ -45,7 +45,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				types = {@TypeHint(types = {
 						PersistentEntitiesFactoryBean.class,
 						ReactiveAuditingEntityCallback.class
-				}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })},
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})},
 				imports = DataReactiveAuditingHints.class
 		)
 })

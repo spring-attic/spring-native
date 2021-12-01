@@ -47,7 +47,7 @@ import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.support.ConfigurationCollector;
 import org.springframework.nativex.support.SpringAnalyzer;
 import org.springframework.nativex.type.TypeSystem;
@@ -144,10 +144,10 @@ public class ConfigurationContributor implements BootstrapContributor {
 		if (!classProxyNames.isEmpty()) {
 			for (String classProxyName : classProxyNames) {
 				ClassDescriptor classDescriptor = ClassDescriptor.of(classProxyName);
-				classDescriptor.setFlag(Flag.allDeclaredConstructors);
+				classDescriptor.setAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 				// TODO [build time proxies] not all proxy variants will need method access - depends on what
 				// it is for - perhaps surface access bit configuration in the classproxyhint to allow flexibility?
-				classDescriptor.setFlag(Flag.allDeclaredMethods);
+				classDescriptor.setAccess(TypeAccess.DECLARED_METHODS);
 				reflectionDescriptor.add(classDescriptor);
 			}
 			configurationCollector.addReflectionDescriptor(reflectionDescriptor, false);

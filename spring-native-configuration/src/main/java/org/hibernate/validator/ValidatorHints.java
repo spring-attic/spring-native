@@ -293,7 +293,7 @@ import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -337,11 +337,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 		}, typeNames = {
 				"org.hibernate.validator.internal.engine.resolver.TraverseAllTraversableResolver",
 		}),
-				@TypeHint(types = Messages_$bundle.class, access = { Flag.allDeclaredConstructors, Flag.allDeclaredFields }),
+				@TypeHint(types = Messages_$bundle.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS}),
 				@TypeHint(
 					types = javax.validation.Validator.class,
 					typeNames = "java.lang.Module",
-						access = Flag.allDeclaredConstructors),
+						access = TypeAccess.DECLARED_CONSTRUCTORS),
 				@TypeHint(types = {
 						ValidatorFactory.class,
 						Pattern.class,

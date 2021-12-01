@@ -21,8 +21,7 @@ import java.lang.reflect.Constructor;
 import org.springframework.aot.build.context.BuildContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
-import org.springframework.nativex.hint.Flag;
-import org.springframework.util.ClassUtils;
+import org.springframework.nativex.hint.TypeAccess;
 
 import com.squareup.javapoet.ClassName;
 
@@ -60,7 +59,7 @@ public class NoArgConstructorFactoriesCodeContributor implements FactoriesCodeCo
 
 	private void generateReflectionMetadata(String factoryClassName, BuildContext context) {
 		ClassDescriptor factoryDescriptor = ClassDescriptor.of(factoryClassName);
-		factoryDescriptor.setFlag(Flag.allDeclaredConstructors);
+		factoryDescriptor.setAccess(TypeAccess.DECLARED_CONSTRUCTORS);
 		context.describeReflection(reflect -> reflect.add(factoryDescriptor));
 	}
 

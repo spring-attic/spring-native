@@ -43,7 +43,7 @@ import org.springframework.data.mongodb.repository.support.SimpleMongoRepository
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.nativex.hint.TypeHint;
@@ -67,7 +67,7 @@ import org.springframework.util.ClassUtils;
 				BeforeSaveCallback.class,
 				AfterSaveCallback.class,
 				AfterConvertCallback.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 })
 @NativeHint(trigger = MongoReactiveRepositoriesAutoConfiguration.class,
 		imports = SpringDataReactiveHints.class,
@@ -83,7 +83,7 @@ import org.springframework.util.ClassUtils;
 						ReactiveBeforeSaveCallback.class,
 						ReactiveAfterSaveCallback.class,
 						ReactiveAfterConvertCallback.class
-				}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 		}
 )
 public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNativeConfiguration {

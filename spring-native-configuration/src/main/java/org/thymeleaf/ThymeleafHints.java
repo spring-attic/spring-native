@@ -16,7 +16,7 @@
 
 package org.thymeleaf;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -49,8 +49,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 						"org.thymeleaf.spring5.expression.Mvc$NonSpring41MvcUriComponentsBuilderDelegate"
 				}
 		),
-		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods }),
-		@TypeHint(types = IterationStatusVar.class, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods, Flag.allDeclaredMethods }),
+		@TypeHint(types = { Fields.class, Temporals.class, AdditionExpression.class }, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
+		@TypeHint(types = IterationStatusVar.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_METHODS}),
 		@TypeHint(types = { Aggregates.class,
 							Arrays.class,
 							Bools.class,
@@ -67,7 +67,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 							Sets.class,
 							Strings.class,
 							Uris.class
-		}, access = { Flag.allDeclaredConstructors, Flag.allPublicMethods })
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 })
 public class ThymeleafHints implements NativeConfiguration {
 }

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -188,18 +188,18 @@ public class TypeTests {
 		assertEquals(AccessBits.DECLARED_CONSTRUCTORS, jniTypes.get("java.lang.Boolean").getAccessBits());
 	}
 
-	@TypeHint(types = String.class, access = { Flag.allDeclaredConstructors, Flag.jni })
+	@TypeHint(types = String.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.JNI})
 	static class Jni1 {
 	}
 
 	@NativeHint(trigger=Integer.class,types = 
-			@TypeHint(types = Boolean.class, access = { Flag.allDeclaredConstructors, Flag.jni })
+			@TypeHint(types = Boolean.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.JNI})
 	)
 	static class Jni2 {
 	}
 
 	@Test
-	public void flags() {
+	public void access() {
 		Type testClass = typeSystem.resolveName(TestClass4.class.getName());
 		List<HintDeclaration> compilationHints = testClass.getCompilationHints();
 		assertEquals(1, compilationHints.size());
@@ -572,7 +572,7 @@ public class TypeTests {
 
 	@NativeHint(trigger = String.class, types = {
 			@TypeHint(types = { Float.class }, access = {}),
-			@TypeHint(types = { Integer.class }, access = Flag.resource) })
+			@TypeHint(types = { Integer.class }, access = TypeAccess.RESOURCE) })
 	static class TestClass6 {
 	}
 

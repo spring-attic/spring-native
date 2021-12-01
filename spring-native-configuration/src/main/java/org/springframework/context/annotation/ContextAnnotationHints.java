@@ -16,12 +16,12 @@
 
 package org.springframework.context.annotation;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = Import.class, follow = true) // Whatever is @Imported should be followed
-@NativeHint(types = @TypeHint(types = { ComponentScan.class }, access = Flag.allDeclaredMethods))
+@NativeHint(types = @TypeHint(types = { ComponentScan.class }, access = TypeAccess.DECLARED_METHODS))
 public class ContextAnnotationHints implements NativeConfiguration {
 }

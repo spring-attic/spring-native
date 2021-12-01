@@ -16,7 +16,7 @@
 
 package org.springframework.security.thymeleaf;
 
-import org.springframework.nativex.hint.Flag;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
@@ -33,7 +33,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProce
 
 @NativeHint(trigger = AuthorizeAttrProcessor.class,
 		types = {
-		@TypeHint(typeNames = "org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility", access = Flag.allDeclaredConstructors),
+		@TypeHint(typeNames = "org.thymeleaf.extras.springsecurity5.util.Spring5VersionSpecificUtility", access = TypeAccess.DECLARED_CONSTRUCTORS),
 		@TypeHint(types = {
 				UsernamePasswordAuthenticationToken.class,
 				AbstractAuthenticationToken.class,
@@ -47,7 +47,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProce
 		}, typeNames = {
 				"org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
 				"org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken"
-		}, access = { Flag.allDeclaredConstructors, Flag.allDeclaredMethods, Flag.allPublicMethods })}
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS})}
 )
 public class ThymeleafSpringSecurity5Hints implements NativeConfiguration {
 }
