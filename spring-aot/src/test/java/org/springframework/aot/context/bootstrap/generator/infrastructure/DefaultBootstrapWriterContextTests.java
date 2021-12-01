@@ -48,7 +48,7 @@ class DefaultBootstrapWriterContextTests {
 	@Test
 	void createDefaultLinkPackageName() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		assertThat(writerContext.getMainBootstrapClass().getClassName()).isEqualTo(ClassName.get("com.acme", "Test"));
+		assertThat(writerContext.getMainBootstrapClass().getClassName()).isEqualTo(ClassName.get("com.acme", "Main"));
 		assertThat(writerContext.getBootstrapClass("com.acme")).isSameAs(writerContext.getMainBootstrapClass());
 	}
 
@@ -75,7 +75,7 @@ class DefaultBootstrapWriterContextTests {
 		assertThat(writerContext.hasBootstrapClass("com.example")).isFalse();
 		BootstrapClass bootstrapClass = writerContext.getBootstrapClass("com.example");
 		assertThat(bootstrapClass).isNotNull();
-		assertThat(bootstrapClass.getClassName().simpleName()).isEqualTo("Test");
+		assertThat(bootstrapClass.getClassName().simpleName()).isEqualTo("Main");
 		assertThat(writerContext.hasBootstrapClass("com.example")).isTrue();
 	}
 
@@ -125,26 +125,52 @@ class DefaultBootstrapWriterContextTests {
 	}
 
 	@Test
-	void forkWithClassName() {
+	void forkWithClassNameUseContextPackageName() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		BootstrapWriterContext context = writerContext.fork("Test");
+		BootstrapWriterContext context = writerContext.fork(ClassName.get("com.example", "Test"));
 		assertThat(context).isNotNull();
 		assertThat(context.getMainBootstrapClass().getClassName())
 				.isEqualTo(ClassName.get("com.acme", "Test"));
 	}
 
 	@Test
+	void forkWithClassNameWithExistingSimpleNameCreatesUniqueName() {
+		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
+		BootstrapWriterContext firstContext = writerContext.fork(ClassName.get("com.example", "Test"));
+		BootstrapWriterContext secondContext = writerContext.fork(ClassName.get("com.example.another", "Test"));
+		assertThat(secondContext).isNotNull();
+		assertThat(secondContext.getMainBootstrapClass().getClassName())
+				.isEqualTo(ClassName.get("com.acme", "Test1"));
+		assertThat(firstContext).isNotNull();
+		assertThat(firstContext.getMainBootstrapClass().getClassName())
+				.isEqualTo(ClassName.get("com.acme", "Test"));
+	}
+
+	@Test
+	void forkWithSeveralContextsWithIdenticalSimpleNameCreatesUniqueName() {
+		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
+		writerContext.fork(ClassName.get("com.example.first", "Test"));
+		writerContext.fork(ClassName.get("com.example.second", "Test"));
+		writerContext.fork(ClassName.get("com.example.third", "Test"));
+		BootstrapWriterContext context = writerContext.fork(ClassName.get("com.example.fourth", "Test"));
+		assertThat(context).isNotNull();
+		assertThat(context.getMainBootstrapClass().getClassName())
+				.isEqualTo(ClassName.get("com.acme", "Test3"));
+
+	}
+
+	@Test
 	void forkWithClassNameThatIsAlreadyRegistered() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		writerContext.fork("Test");
-		assertThatIllegalArgumentException().isThrownBy(() -> writerContext.fork("Test"))
-				.withMessageContaining("'Test'");
+		writerContext.fork(ClassName.get("com.example", "Test"));
+		assertThatIllegalArgumentException().isThrownBy(() -> writerContext.fork(ClassName.get("com.example", "Test")))
+				.withMessageContaining("'com.example.Test'");
 	}
 
 	@Test
 	void forkWithClassNameApplyDefaultFactoryForMainBootstrapClass() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		BootstrapWriterContext context = writerContext.fork("Test");
+		BootstrapWriterContext context = writerContext.fork(ClassName.get("com.example", "Test"));
 		assertThat(context).isNotNull();
 		JavaFile javaFile = context.getMainBootstrapClass().toJavaFile();
 		assertThat(javaFile.typeSpec.modifiers).containsOnly(Modifier.PUBLIC);
@@ -155,7 +181,7 @@ class DefaultBootstrapWriterContextTests {
 	@Test
 	void forkWithClassNameApplyDefaultFactoryForBootstrapClass() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		BootstrapWriterContext context = writerContext.fork("Test");
+		BootstrapWriterContext context = writerContext.fork(ClassName.get("com.example", "Test"));
 		assertThat(context).isNotNull();
 		JavaFile javaFile = context.getBootstrapClass("com.example.another").toJavaFile();
 		assertThat(javaFile.typeSpec.modifiers).containsOnly(Modifier.PUBLIC, Modifier.FINAL);
@@ -189,10 +215,10 @@ class DefaultBootstrapWriterContextTests {
 	@Test
 	void compositeKeepsTrackOfJavaFiles() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		BootstrapWriterContext test1 = writerContext.fork("Test1");
+		BootstrapWriterContext test1 = writerContext.fork(ClassName.get("com.example", "Test1"));
 		test1.getMainBootstrapClass();
 		test1.getBootstrapClass("com.acme.test1");
-		BootstrapWriterContext test2 = writerContext.fork("Test2");
+		BootstrapWriterContext test2 = writerContext.fork(ClassName.get("com.example", "Test2"));
 		test2.getBootstrapClass("com.acme.test2");
 		List<JavaFile> javaFiles = writerContext.toJavaFiles();
 		assertThat(javaFiles.stream().map((javaFile) -> javaFile.packageName + "." + javaFile.typeSpec.name)).containsOnly(
@@ -202,9 +228,9 @@ class DefaultBootstrapWriterContextTests {
 	@Test
 	void compositeKeepsTrackOfNativeConfiguration() {
 		DefaultBootstrapWriterContext writerContext = createComAcmeWriterContext();
-		writerContext.fork("Test1").getNativeConfigurationRegistry()
+		writerContext.fork(ClassName.get("com.example", "Test1")).getNativeConfigurationRegistry()
 				.reflection().forType(String.class);
-		writerContext.fork("Test2").getNativeConfigurationRegistry()
+		writerContext.fork(ClassName.get("com.example", "Test2")).getNativeConfigurationRegistry()
 				.reflection().forType(Integer.class);
 		List<Class<?>> reflectionTypes = writerContext.getNativeConfigurationRegistry().reflection().reflectionEntries()
 				.map(DefaultNativeReflectionEntry::getType).collect(Collectors.toList());
@@ -217,7 +243,7 @@ class DefaultBootstrapWriterContextTests {
 	}
 
 	private DefaultBootstrapWriterContext createComAcmeWriterContext() {
-		return new DefaultBootstrapWriterContext("com.acme", "Test");
+		return new DefaultBootstrapWriterContext("com.acme", "Main");
 	}
 
 }

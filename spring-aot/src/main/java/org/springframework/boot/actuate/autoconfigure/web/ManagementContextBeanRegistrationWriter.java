@@ -22,7 +22,7 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 class ManagementContextBeanRegistrationWriter implements BeanRegistrationWriter {
 
-	private static final String MANAGEMENT_BOOSTRAP_CLASS_NAME = "ManagementContextBoostrapInitializer";
+	private static final ClassName MANAGEMENT_BOOSTRAP_CLASS_NAME = ClassName.get("org.springframework.aot", "ManagementContextBoostrapInitializer");
 
 	private final GenericApplicationContext parent;
 

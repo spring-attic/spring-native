@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
@@ -119,8 +120,9 @@ public class DefaultBootstrapWriterContext implements BootstrapWriterContext {
 	}
 
 	@Override
-	public BootstrapWriterContext fork(String className) {
-		return fork(className, BootstrapWriterContext.bootstrapClassFactory(this.packageName, className));
+	public BootstrapWriterContext fork(ClassName className) {
+		return fork(className.canonicalName(), BootstrapWriterContext.bootstrapClassFactory(this.packageName,
+				determineDefaultSimpleName(className.simpleName(), 0)));
 	}
 
 	@Override
@@ -141,6 +143,24 @@ public class DefaultBootstrapWriterContext implements BootstrapWriterContext {
 		return this.allContexts.values().stream()
 				.flatMap((context) -> context.bootstrapClasses.values().stream().map(BootstrapClass::toJavaFile))
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Determine a candidate name for the specified simple name and index.
+	 * @param simpleName the chosen {@link Class#getSimpleName() simple name}
+	 * @param index the current index (0 for the first attempt)
+	 * @return the simple name to use (unchanged if no such name is in use already)
+	 */
+	private String determineDefaultSimpleName(String simpleName, int index) {
+		String candidate = (index == 0) ? simpleName : simpleName + index;
+		DefaultBootstrapWriterContext existingContext = this.allContexts.values().stream().filter((context) -> {
+			BootstrapClass bootstrapClass = context.bootstrapClassFactory.apply(this.packageName);
+			return bootstrapClass.getClassName().simpleName().equals(candidate);
+		}).findFirst().orElse(null);
+		if (existingContext == null) {
+			return candidate;
+		}
+		return determineDefaultSimpleName(simpleName, ++index);
 	}
 
 }

@@ -68,13 +68,17 @@ public interface BootstrapWriterContext {
 	BootstrapClass getMainBootstrapClass();
 
 	/**
-	 * Fork a new {@link BootstrapWriterContext} for the specified {@code className}.
-	 * @param className the class name of a context.
+	 * Fork a new {@link BootstrapWriterContext} for the specified {@code ClassName} using
+	 * a factory that creates a {@link BootstrapClass} for the main context as an
+	 * {@link ApplicationContextInitializer} and the package protected boostrap classes
+	 * as empty {@code public final} types. The specified {@link ClassName} is used as
+	 * an identifier for the forked context.
+	 * @param className the root class name for a context.
 	 * @return a {@link BootstrapWriterContext} for the specified class name
 	 * @see BootstrapWriterContext#bootstrapClassFactory(String, String)
 	 * @throws IllegalArgumentException if a context with that class name already exists
 	 */
-	BootstrapWriterContext fork(String className);
+	BootstrapWriterContext fork(ClassName className);
 
 	/**
 	 * Fork a new {@link BootstrapWriterContext} for the specified {@code id}, using the

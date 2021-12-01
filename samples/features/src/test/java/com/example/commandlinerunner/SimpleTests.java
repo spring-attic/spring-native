@@ -14,25 +14,45 @@
  * limitations under the License.
  */
 
-package elsewhere;
+package com.example.commandlinerunner;
 
-import com.example.commandlinerunner.FooBean;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(FooBeanFactoryConfiguration.class)
-public class FooBeanFactoryConfigurationTests {
+/**
+ * Named to validate that identical test classes can be handled, see
+ * {@link elsewhere.SimpleTests}.
+ *
+ * @author Stephane Nicoll
+ */
+@SpringJUnitConfig
+@TestPropertySource(properties = "test.world=World!")
+public class SimpleTests {
 
 	@Autowired
-	private FooBean fooBean;
+	private String bean;
 
 	@Test
-	void validateAutowiredMember() {
-		assertThat(fooBean).isNotNull();
+	void localTestConfigurationIsProcessed() {
+		assertThat(this.bean).isEqualTo("Hello World!");
 	}
 
+
+	@Configuration
+	static class TestConfiguration {
+
+		@Bean
+		String testBean(@Value("${test.world}") String name) {
+			return "Hello " + name;
+		}
+
+	}
 }
