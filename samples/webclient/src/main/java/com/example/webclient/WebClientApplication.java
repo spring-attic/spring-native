@@ -2,10 +2,10 @@ package com.example.webclient;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.nativex.hint.AccessBits;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 
-@TypeHint(types = Data.class, access = AccessBits.LOAD_AND_CONSTRUCT_AND_PUBLIC_METHODS)
+@TypeHint(types = Data.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
 @SpringBootApplication
 public class WebClientApplication {
 

@@ -68,6 +68,7 @@ import org.springframework.nativex.hint.JdkProxyHint;
 				org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter.class,
 				org.springframework.beans.factory.xml.XmlBeanDefinitionReader.class,
 				org.springframework.beans.PropertyEditorRegistrySupport.class,
+
 				org.springframework.util.ReflectionUtils.class,
 				org.springframework.util.DefaultPropertiesPersister.class,
 				org.springframework.util.ClassUtils.class,
@@ -92,6 +93,7 @@ import org.springframework.nativex.hint.JdkProxyHint;
 				"org.springframework.core.annotation.TypeMappedAnnotations",
 				"org.springframework.format.annotation.DateTimeFormat$ISO",
 				"org.springframework.http.codec.CodecConfigurerFactory",
+				"org.springframework.web.reactive.function.client.DefaultWebClientBuilder",
 				// For XML removal
 				"org.springframework.http.codec.support.BaseDefaultCodecs"
 		}, packageNames = {

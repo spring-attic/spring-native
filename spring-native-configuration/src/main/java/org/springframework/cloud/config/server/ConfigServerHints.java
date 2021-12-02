@@ -75,7 +75,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 				KnownHostsFileValidator.class,
 				HostKeyAlgoSupportedValidator.class,
 				HostKeyAndAlgoBothExistValidator.class,
-				PropertyValueDescriptor.class}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
+				PropertyValueDescriptor.class}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS }),
 		initialization = {
 		@InitializationHint(types = {
 				AttributesHandler.class,

@@ -44,6 +44,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"org/springframework/batch/core/schema-sybase.sql"
 		}),
 		types = {
+		@TypeHint(types = TypeAccess.class, access = {}), // Required for @EnableBatchProcessing + @TypeHint(types = Person.class, access = ...) ?
 		@TypeHint(types = AbstractDataSourceInitializer.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
 		@TypeHint(types = {
 			BasicBatchConfigurer.class,

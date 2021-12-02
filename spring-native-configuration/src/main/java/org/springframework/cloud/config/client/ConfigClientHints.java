@@ -25,6 +25,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = ConfigClientAutoConfiguration.class,
 		options = {"--enable-http", "--enable-https"},
-		types = @TypeHint(types = { Environment.class, PropertySource.class }, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}))
+		types = @TypeHint(types = { Environment.class, PropertySource.class }, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS }))
 public class ConfigClientHints implements NativeConfiguration {
 }
