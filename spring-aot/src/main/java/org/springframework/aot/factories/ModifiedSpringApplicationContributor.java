@@ -277,6 +277,8 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 					mv.visitMethodInsn(INVOKEVIRTUAL, "org/springframework/boot/SpringApplication", "setInitializers", "(Ljava/util/Collection;)V", false);
 					mv.visitJumpInsn(GOTO, end);
 					mv.visitLabel(elseClause);
+					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/nativex/AotModeDetector", "isGeneratingAotTests", "()Z", false);
+					mv.visitJumpInsn(IFNE, end);
 					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplication", "logger",
 							"Lorg/apache/commons/logging/Log;");
 					mv.visitLdcInsn("AOT mode disabled");

@@ -52,8 +52,13 @@ public abstract class AotModeDetector {
 		}
 		return false;
 	}
+
 	public static boolean isRunningAotTests() {
 		return generatedTestClassPresent && !aotTestClassPresent;
+	}
+
+	public static boolean isGeneratingAotTests() {
+		return aotTestClassPresent;
 	}
 
 }
