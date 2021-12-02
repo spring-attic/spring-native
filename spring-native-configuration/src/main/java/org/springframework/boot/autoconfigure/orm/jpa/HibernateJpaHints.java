@@ -128,8 +128,10 @@ import java.util.EventListener;
 						"org.hibernate.service.jta.platform.internal.NoJtaPlatform",
 						"org.hibernate.annotations.common.util.impl.Log_$logger",
 						"org.hibernate.annotations.common.util.impl.Log",
-						"org.hibernate.cfg.beanvalidation.TypeSafeActivator"
 				}),
+				@TypeHint(typeNames = {
+						"org.hibernate.cfg.beanvalidation.TypeSafeActivator"
+				}, access = { TypeAccess.PUBLIC_METHODS }),
 				@TypeHint(types = {
 						SimpleJpaRepository.class
 				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
