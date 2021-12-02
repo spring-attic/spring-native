@@ -27,6 +27,7 @@ import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanI
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedParameter;
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicFactoryBean;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -152,6 +153,12 @@ class ProtectedAccessAnalyzerTests {
 				PublicFactoryBean.class.getPackageName()).isAccessible()).isTrue();
 	}
 
+	@Test
+	void analyzeWithRecursiveType() {
+		analyze(BeanInstanceDescriptor.of(ResolvableType.forClassWithGenerics(
+				SelfReference.class, SelfReference.class)).build());
+	}
+
 	private ProtectedAccessAnalysis analyze(BeanInstanceDescriptor descriptor) {
 		return analyze(descriptor, "com.example.public");
 	}
@@ -204,6 +211,15 @@ class ProtectedAccessAnalyzerTests {
 
 		public String stringBean() {
 			return "public";
+		}
+
+	}
+
+	static class SelfReference<T extends SelfReference<T>> {
+
+		@SuppressWarnings("unchecked")
+		T getThis() {
+			return (T) this;
 		}
 
 	}

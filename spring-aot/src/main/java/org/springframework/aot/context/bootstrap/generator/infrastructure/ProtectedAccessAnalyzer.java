@@ -23,7 +23,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanInstanceDescriptor;
@@ -68,7 +70,7 @@ public class ProtectedAccessAnalyzer {
 
 	private List<ProtectedElement> analyze(ResolvableType target) {
 		List<ProtectedElement> elements = new ArrayList<>();
-		analyze(target, target, elements);
+		analyze(new HashSet<>(), target, target, elements);
 		return elements;
 	}
 
@@ -103,7 +105,12 @@ public class ProtectedAccessAnalyzer {
 		return protectedElements;
 	}
 
-	private void analyze(ResolvableType rootType, ResolvableType target, List<ProtectedElement> elements) {
+	private void analyze(Set<ResolvableType> seen, ResolvableType rootType, ResolvableType target,
+			List<ProtectedElement> elements) {
+		if (seen.contains(target)) {
+			return;
+		}
+		seen.add(target);
 		// resolve to the actual class as the proxy won't have the same characteristics
 		ResolvableType nonProxyTarget = target.as(ClassUtils.getUserClass(target.toClass()));
 		if (!isAccessible(nonProxyTarget.toClass())) {
@@ -117,7 +124,7 @@ public class ProtectedAccessAnalyzer {
 		}
 		if (nonProxyTarget.hasGenerics()) {
 			for (ResolvableType generic : nonProxyTarget.getGenerics()) {
-				analyze(rootType, generic, elements);
+				analyze(seen, rootType, generic, elements);
 			}
 		}
 	}
