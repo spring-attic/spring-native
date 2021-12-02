@@ -127,8 +127,7 @@ public class EventListenerMethodRegistrationGenerator {
 		MultiCodeBlock multi = new MultiCodeBlock();
 		generatorsPerPackage.forEach((packageName, generators) -> {
 			BootstrapClass bootstrapClass = context.getBootstrapClass(packageName);
-			MethodSpec method = createEventListenersMetadataMethod(generators);
-			bootstrapClass.addMethod(method);
+			MethodSpec method = bootstrapClass.addMethod(eventListenersMetadataMethod(generators));
 			multi.add("$T.$N()", bootstrapClass.getClassName(), method);
 		});
 		registrations.add(multi.join(",\n"));
@@ -154,7 +153,7 @@ public class EventListenerMethodRegistrationGenerator {
 		return generatorsPerPackage;
 	}
 
-	private MethodSpec createEventListenersMetadataMethod(List<EventListenerMetadataGenerator> generators) {
+	private MethodSpec.Builder eventListenersMetadataMethod(List<EventListenerMetadataGenerator> generators) {
 		Builder code = CodeBlock.builder();
 		code.add("return $T.of(", List.class);
 		code.add("\n").indent();
@@ -164,7 +163,7 @@ public class EventListenerMethodRegistrationGenerator {
 		code.add("\n").unindent().addStatement(")");
 		return MethodSpec.methodBuilder("getEventListenersMetadata")
 				.returns(ParameterizedTypeName.get(List.class, EventListenerMetadata.class))
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build()).build();
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build());
 	}
 
 	public List<EventListenerMetadataGenerator> process(String beanName) {

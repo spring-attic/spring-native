@@ -88,10 +88,10 @@ public class ApplicationContextAotProcessor {
 		this.beanRegistrationWriterSuppliers.forEach((supplier) -> invokeAwareMethods(supplier, context));
 		ConfigurableListableBeanFactory beanFactory = this.buildTimeBeanDefinitionsRegistrar.processBeanDefinitions(context);
 		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
-		writerContext.getMainBootstrapClass().addMethod(generateBootstrapMethod(beanFactory, writerContext, selector));
+		writerContext.getMainBootstrapClass().addMethod(bootstrapMethod(beanFactory, writerContext, selector));
 	}
 
-	private MethodSpec generateBootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,
+	private MethodSpec.Builder bootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,
 			BeanDefinitionSelector selector) {
 		MethodSpec.Builder method = MethodSpec.methodBuilder("initialize").addModifiers(Modifier.PUBLIC)
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
@@ -108,7 +108,7 @@ public class ApplicationContextAotProcessor {
 		new EventListenerMethodRegistrationGenerator(beanFactory).writeEventListenersRegistration(writerContext, code);
 
 		method.addCode(code.build());
-		return method.build();
+		return method;
 	}
 
 	private List<BeanInstanceDescriptor> writeBeanDefinitions(ConfigurableListableBeanFactory beanFactory,

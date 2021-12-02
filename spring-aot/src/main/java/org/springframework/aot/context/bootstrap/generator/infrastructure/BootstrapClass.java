@@ -19,6 +19,8 @@ package org.springframework.aot.context.bootstrap.generator.infrastructure;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
 
@@ -87,11 +89,15 @@ public class BootstrapClass {
 	}
 
 	/**
-	 * Add the specified {@link MethodSpec method}.
-	 * @param method the method to add
+	 * Add a method using the state of the specified {@link MethodSpec.Builder}, updating
+	 * the name of the method if a similar method already exists.
+	 * @param method a method builder representing the method to add
+	 * @return the added method
 	 */
-	public void addMethod(MethodSpec method) {
-		this.methods.add(method);
+	public MethodSpec addMethod(MethodSpec.Builder method) {
+		MethodSpec methodToAdd = createUniqueNameIfNecessary(method.build());
+		this.methods.add(methodToAdd);
+		return methodToAdd;
 	}
 
 	/**
@@ -101,6 +107,21 @@ public class BootstrapClass {
 	public JavaFile toJavaFile() {
 		return JavaFile.builder(this.className.packageName(),
 				this.type.addMethods(this.methods).build()).build();
+	}
+
+	private MethodSpec createUniqueNameIfNecessary(MethodSpec method) {
+		List<MethodSpec> candidates = this.methods.stream().filter(isSimilar(method))
+				.collect(Collectors.toList());
+		if (candidates.isEmpty()) {
+			return method;
+		}
+		MethodSpec updatedMethod = method.toBuilder().setName(method.name + "_").build();
+		return createUniqueNameIfNecessary(updatedMethod);
+	}
+
+	private Predicate<MethodSpec> isSimilar(MethodSpec method) {
+		return (candidate) -> method.name.equals(candidate.name)
+				&& method.parameters.size() == candidate.parameters.size();
 	}
 
 }

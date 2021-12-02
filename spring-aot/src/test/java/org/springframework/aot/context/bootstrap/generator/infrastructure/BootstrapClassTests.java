@@ -69,7 +69,7 @@ class BootstrapClassTests {
 	void addMethod() {
 		BootstrapClass bootstrapClass = createTestBootstrapClass();
 		bootstrapClass.addMethod(MethodSpec.methodBuilder("test").returns(Integer.class)
-				.addCode(CodeBlock.of("return 42;")).build());
+				.addCode(CodeBlock.of("return 42;")));
 		assertThat(generateCode(bootstrapClass)).containsSequence(
 				"  Integer test() {\n",
 				"    return 42;\n",
@@ -79,11 +79,35 @@ class BootstrapClassTests {
 	@Test
 	void addMultipleMethods() {
 		BootstrapClass bootstrapClass = createTestBootstrapClass();
-		bootstrapClass.addMethod(MethodSpec.methodBuilder("first").build());
-		bootstrapClass.addMethod(MethodSpec.methodBuilder("second").build());
+		bootstrapClass.addMethod(MethodSpec.methodBuilder("first"));
+		bootstrapClass.addMethod(MethodSpec.methodBuilder("second"));
 		assertThat(generateCode(bootstrapClass))
 				.containsSequence("  void first() {\n", "  }")
 				.containsSequence("  void second() {\n", "  }");
+	}
+
+	@Test
+	void addSimilarMethodGenerateUniqueNames() {
+		BootstrapClass bootstrapClass = createTestBootstrapClass();
+		MethodSpec firstMethod = bootstrapClass.addMethod(MethodSpec.methodBuilder("test"));
+		MethodSpec secondMethod = bootstrapClass.addMethod(MethodSpec.methodBuilder("test"));
+		MethodSpec thirdMethod = bootstrapClass.addMethod(MethodSpec.methodBuilder("test"));
+		assertThat(firstMethod.name).isEqualTo("test");
+		assertThat(secondMethod.name).isEqualTo("test_");
+		assertThat(thirdMethod.name).isEqualTo("test__");
+		assertThat(generateCode(bootstrapClass))
+				.containsSequence("  void test() {\n", "  }")
+				.containsSequence("  void test_() {\n", "  }")
+				.containsSequence("  void test__() {\n", "  }");
+	}
+
+	@Test
+	void addMethodWithSameNameAndDifferentArgumentsDoesNotChangeName() {
+		BootstrapClass bootstrapClass = createTestBootstrapClass();
+		bootstrapClass.addMethod(MethodSpec.methodBuilder("test"));
+		MethodSpec secondMethod = bootstrapClass.addMethod(MethodSpec.methodBuilder("test")
+				.addParameter(String.class, "param"));
+		assertThat(secondMethod.name).isEqualTo("test");
 	}
 
 	private BootstrapClass createTestBootstrapClass() {

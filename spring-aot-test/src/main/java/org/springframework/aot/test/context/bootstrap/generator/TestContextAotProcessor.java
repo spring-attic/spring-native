@@ -93,9 +93,8 @@ public class TestContextAotProcessor {
 					ClassName mainClassName = ClassName.get(packageName, TEST_BOOTSTRAP_CLASS_NAME);
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
 				});
-		MethodSpec method = generateContextLoadersMappingMethod(entries);
 		BootstrapClass boostrapClass = mainWriterContext.getMainBootstrapClass();
-		boostrapClass.addMethod(method);
+		MethodSpec method = boostrapClass.addMethod(contextLoadersMappingMethod(entries));
 		writerContext.getNativeConfigurationRegistry().reflection()
 				.forGeneratedType(boostrapClass.getClassName()).withMethods(method);
 	}
@@ -111,7 +110,7 @@ public class TestContextAotProcessor {
 		return mainBootstrapClass.getClassName();
 	}
 
-	private MethodSpec generateContextLoadersMappingMethod(Map<ClassName, TestContextConfigurationDescriptor> entries) {
+	private MethodSpec.Builder contextLoadersMappingMethod(Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		Builder code = CodeBlock.builder();
 		TypeName mapType = ParameterizedTypeName.get(ClassName.get(Map.class),
 				ClassName.get(String.class), ParameterizedTypeName.get(Supplier.class, SmartContextLoader.class));
@@ -124,7 +123,7 @@ public class TestContextAotProcessor {
 				}));
 		code.addStatement("return entries");
 		return MethodSpec.methodBuilder("getContextLoaders").returns(mapType)
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build()).build();
+				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build());
 	}
 
 	private CodeBlock getClassLevelJavadoc(List<Class<?>> testClasses) {

@@ -103,8 +103,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		else {
 			String protectedPackageName = analysis.getPrivilegedPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
-			MethodSpec method = addBeanRegistrationMethod(this::writeBeanRegistration);
-			javaFile.addMethod(method);
+			MethodSpec method = javaFile.addMethod(beanRegistrationMethod(this::writeBeanRegistration));
 			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
 		}
 	}
@@ -346,7 +345,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		return false;
 	}
 
-	private MethodSpec addBeanRegistrationMethod(Consumer<Builder> code) {
+	private MethodSpec.Builder beanRegistrationMethod(Consumer<Builder> code) {
 		String name = registerBeanMethodName();
 		MethodSpec.Builder method = MethodSpec.methodBuilder(name)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -354,7 +353,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		CodeBlock.Builder body = CodeBlock.builder();
 		code.accept(body);
 		method.addCode(body.build());
-		return method.build();
+		return method;
 	}
 
 	private String registerBeanMethodName() {

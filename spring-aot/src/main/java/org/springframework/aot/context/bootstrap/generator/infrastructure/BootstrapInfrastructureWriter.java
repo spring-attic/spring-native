@@ -65,19 +65,20 @@ public class BootstrapInfrastructureWriter {
 	public void writeInfrastructure(CodeBlock.Builder code) {
 		code.addStatement("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new $T())",
 				ContextAnnotationAutowireCandidateResolver.class);
-		MethodSpec importAwareBeanPostProcessorMethod = handleImportAwareBeanPostProcessor();
+		MethodSpec.Builder importAwareBeanPostProcessorMethod = handleImportAwareBeanPostProcessor();
+		BootstrapClass bootstrapClass = this.writerContext.getMainBootstrapClass();
 		if (importAwareBeanPostProcessorMethod != null) {
-			this.writerContext.getMainBootstrapClass().addMethod(importAwareBeanPostProcessorMethod);
-			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", importAwareBeanPostProcessorMethod);
+			MethodSpec method = bootstrapClass.addMethod(importAwareBeanPostProcessorMethod);
+			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", method);
 		}
-		MethodSpec initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
+		MethodSpec.Builder initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
 		if (initDestroyBeanPostProcessorMethod != null) {
-			this.writerContext.getMainBootstrapClass().addMethod(initDestroyBeanPostProcessorMethod);
-			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N(context.getBeanFactory()))", initDestroyBeanPostProcessorMethod);
+			MethodSpec method = bootstrapClass.addMethod(initDestroyBeanPostProcessorMethod);
+			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N(context.getBeanFactory()))", method);
 		}
 	}
 
-	private MethodSpec handleImportAwareBeanPostProcessor() {
+	private MethodSpec.Builder handleImportAwareBeanPostProcessor() {
 		ImportOriginRegistry importOriginRegistry = ImportOriginRegistry.get(this.beanFactory);
 		if (importOriginRegistry == null || importOriginRegistry.getImportOrigins().isEmpty()) {
 			return null;
@@ -95,10 +96,10 @@ public class BootstrapInfrastructureWriter {
 		});
 		code.addStatement("return new $T($L)", ImportAwareBeanPostProcessor.class, "mappings");
 		return MethodSpec.methodBuilder("createImportAwareBeanPostProcessor").returns(ImportAwareBeanPostProcessor.class)
-				.addModifiers(Modifier.PRIVATE).addCode(code.build()).build();
+				.addModifiers(Modifier.PRIVATE).addCode(code.build());
 	}
 
-	private MethodSpec handleInitDestroyBeanPostProcessor() {
+	private MethodSpec.Builder handleInitDestroyBeanPostProcessor() {
 		InitDestroyMethodsDiscoverer initDestroyMethodsDiscoverer = new InitDestroyMethodsDiscoverer(this.beanFactory);
 		Map<String, List<Method>> initMethods = initDestroyMethodsDiscoverer.registerInitMethods(
 				this.writerContext.getNativeConfigurationRegistry());
@@ -113,7 +114,7 @@ public class BootstrapInfrastructureWriter {
 		code.addStatement("return new $T($L, $L, $L)", InitDestroyBeanPostProcessor.class, "beanFactory", "initMethods", "destroyMethods");
 		return MethodSpec.methodBuilder("createInitDestroyBeanPostProcessor").addParameter(ConfigurableBeanFactory.class, "beanFactory")
 				.returns(InitDestroyBeanPostProcessor.class)
-				.addModifiers(Modifier.PRIVATE).addCode(code.build()).build();
+				.addModifiers(Modifier.PRIVATE).addCode(code.build());
 	}
 
 	private void writeLifecycleMethods(Builder code, Map<String, List<Method>> lifecycleMethods, String variableName) {
