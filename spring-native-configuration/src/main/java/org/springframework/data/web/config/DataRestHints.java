@@ -47,34 +47,17 @@ import reactor.core.publisher.Flux;
 
 @NativeHint(trigger = RepositoryRestMvcAutoConfiguration.class, types = {
 		@TypeHint(types = {
-
-				Flux.class,
-				org.reactivestreams.Publisher.class,
-				HalMediaTypeConfiguration.class,
-
 				org.springframework.data.repository.core.support.RepositoryFactoryInformation.class,
 				org.springframework.data.repository.support.Repositories.class,
 				org.springframework.data.repository.support.RepositoryInvoker.class,
 				org.springframework.data.repository.support.RepositoryInvokerFactory.class,
-		},
-				typeNames = {
-
-						"org.springframework.data.rest.core.annotation.Description",
-						"org.springframework.data.rest.core.config.EnumTranslationConfiguration",
-						"org.springframework.data.rest.core.config.RepositoryRestConfiguration",
-
-						"org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration",
-						"org.springframework.data.rest.webmvc.RepositoryRestController",
-						"org.springframework.data.rest.webmvc.BasePathAwareController",
-
-						"org.springframework.data.rest.webmvc.config.WebMvcRepositoryRestConfiguration",
-
-						// EvoInflector
-						"org.atteo.evo.inflector.English"
-				},
-
-				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
-
+		}, typeNames = {
+				"org.springframework.data.rest.core.annotation.Description",
+				"org.springframework.data.rest.webmvc.RepositoryRestController",
+				"org.springframework.data.rest.webmvc.BasePathAwareController",
+				// EvoInflector
+				"org.atteo.evo.inflector.English"
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}
 		),
 },
 		jdkProxies = {

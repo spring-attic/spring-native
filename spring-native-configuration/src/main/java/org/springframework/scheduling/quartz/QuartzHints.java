@@ -47,8 +47,6 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
  * 
  * @author Josh Long
  */
-
-
 @NativeHint(trigger = Job.class,
 	types = @TypeHint(
 		types = CopyOnWriteArrayList.class,
@@ -59,7 +57,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				name = "lock"
 			)
 		},
-		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
+		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}
 	),
 	serializables = @SerializationHint(
 			types = {
@@ -86,7 +84,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 				allowUnsafeAccess = true, name = "loadFactor"
 			)
 		},
-		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}
+		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}
 	)
 )
 @NativeHint(
@@ -94,7 +92,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 	types = {
 		@TypeHint(types = java.util.HashMap.class),
 		@TypeHint(
-			access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE},
+			access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS},
 			types = {
 				org.quartz.impl.triggers.SimpleTriggerImpl.class,
 				org.quartz.utils.DirtyFlagMap.class,

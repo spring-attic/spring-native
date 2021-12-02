@@ -40,25 +40,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService;
 
-@NativeHint(trigger = DelegatingWebSocketMessageBrokerConfiguration.class, types = {
-		@TypeHint(types= {
-				WebSocketHandlerRegistry.class,
-				AbstractSubscribableChannel.class,
-				SimpMessagingTemplate.class,
-				WebSocketHandler.class,
-				WebSocketTransportRegistration.class,
-				AbstractBrokerMessageHandler.class,
-				TaskExecutor.class,
-				ChannelRegistration.class,
-				MessageBrokerRegistry.class,
-				CompositeMessageConverter.class,
-				UserDestinationResolver.class,
-				UserDestinationMessageHandler.class,
-				MessageHandler.class,
-				SimpUserRegistry.class
-		}, access = TypeAccess.RESOURCE), // TODO Suspicious entry, try to remove it
-		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
-})
+
 @NativeHint(trigger = DelegatingWebSocketConfiguration.class, types = {
 		@TypeHint(types = TomcatRequestUpgradeStrategy.class)
 })

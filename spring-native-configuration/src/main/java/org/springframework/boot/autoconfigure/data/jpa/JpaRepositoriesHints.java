@@ -37,7 +37,7 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 		} , typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.RESOURCE})
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS })
 		,
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",

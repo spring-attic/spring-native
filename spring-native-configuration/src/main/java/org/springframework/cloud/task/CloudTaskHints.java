@@ -49,24 +49,6 @@ import org.springframework.nativex.type.NativeConfiguration;
 		@TypeHint(types = {
 			AbstractDataSourceInitializer.class,
 		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
-		@TypeHint(types = {
-			DefaultTaskConfigurer.class,
-			JobLauncherApplicationRunner.class,
-			TaskJobLauncherApplicationRunner.class,
-			DataSourcePoolMetadataProvider.class,
-			TaskRepositoryInitializer.class,
-			LockRegistry.class,
-			TaskBatchExecutionListener.class,
-			TaskBatchAutoConfiguration.class,
-			TaskBatchExecutionListenerBeanPostProcessor.class,
-			TaskBatchEventListenerBeanPostProcessor.class,
-			JobLaunchCondition.class,
-			BatchEventAutoConfiguration.class
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
-		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$FailOnJobFailureCondition"
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
-		@TypeHint(typeNames = { "org.springframework.cloud.task.batch.configuration.JobLaunchCondition$SpringBatchJobCondition"
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
 		@TypeHint(types= DatabaseMetaData.class)},
 		jdkProxies = {
 		@JdkProxyHint(typeNames = {

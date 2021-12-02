@@ -122,7 +122,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				KafkaListener.class,
 				org.springframework.messaging.handler.annotation.MessageMapping.class,
 				KafkaListeners.class,
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
 		@TypeHint(types= {
 			KafkaListenerAnnotationBeanPostProcessor.class,
 		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}),
@@ -130,7 +130,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 			KafkaBootstrapConfiguration.class,
 			CreatableTopic.class,
 			KafkaListenerEndpointRegistry.class
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.RESOURCE}),
+		}, access = { TypeAccess.DECLARED_CONSTRUCTORS}),
 		@TypeHint(types = {
 				NewTopic.class,
 				AbstractKafkaListenerContainerFactory.class,

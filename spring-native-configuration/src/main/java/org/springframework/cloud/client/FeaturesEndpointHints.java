@@ -23,7 +23,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
 @NativeHint(trigger = CommonsClientAutoConfiguration.ActuatorConfiguration.class, types = {
-		@TypeHint(types = FeaturesEndpoint.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
+		@TypeHint(types = FeaturesEndpoint.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS }),
 		@TypeHint(typeNames = {
 				"org.springframework.cloud.client.actuator.FeaturesEndpoint$Features",
 				"org.springframework.cloud.client.actuator.FeaturesEndpoint$Feature"

@@ -65,7 +65,6 @@ import org.springframework.util.StringUtils;
 @NativeHint(trigger = HalConfiguration.class,
 		types = {
 				@TypeHint(types = {
-						org.springframework.stereotype.Controller.class,
 						HypermediaType.class,
 						ExposesResourceFor.class,
 						RepresentationModelAssembler.class,
@@ -74,18 +73,12 @@ import org.springframework.util.StringUtils;
 						LastInvocationAware.class,
 						Relation.class,
 						UriComponentsContributor.class,
-
-						HypermediaConfigurationImportSelector.class,
-						HateoasConfiguration.class,
-						HypermediaHttpMessageConverterConfiguration.class,
-
 						Affordance.class,
 						AffordanceModel.class,
-						RestTemplateHateoasConfiguration.class,
-				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
 				@TypeHint(typeNames = {
 						"org.atteo.evo.inflector.English",
-				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE}),
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
 				@TypeHint(
 						types = CollectionModel.class,
 						fields = @FieldHint(name = "content", allowUnsafeAccess = true, allowWrite = true)
@@ -180,7 +173,7 @@ public class HateoasHints implements NativeConfiguration, TypeSystemNativeConfig
 				.skipAnnotationInspection()
 				.skipMethodInspection()
 				.skipFieldInspection()
-				.onTypeDiscovered((type, context) -> context.addReflectiveAccess(type, new AccessDescriptor(AccessBits.ALL)))
+				.onTypeDiscovered((type, context) -> context.addReflectiveAccess(type, new AccessDescriptor(AccessBits.FULL_REFLECTION)))
 				.use(typeSystem)
 				.toProcessTypesMatching(type -> type.isPartOfDomain("org.springframework.hateoas") && type.isAtConfiguration());
 	}

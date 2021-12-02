@@ -35,7 +35,7 @@ import org.springframework.nativex.hint.TypeHint;
 				RepositoryMetadata.class,
 				R2dbcDialectProvider.class
 		}, typeNames = {"org.springframework.data.r2dbc.dialect.DialectResolver.R2dbcDialectProvider.BuiltInDialectProvider"}
-				, access = { TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.RESOURCE}
+				, access = { TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS }
 		)
 })
 public class R2dbcRepositoriesHints implements NativeConfiguration {

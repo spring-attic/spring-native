@@ -19,19 +19,10 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.nativex.hint.TypeHint;
 import org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents;
 import org.springframework.util.ClassUtils;
 
-@NativeHint(trigger=SecurityAutoConfiguration.class, types = {
-		@TypeHint(typeNames = {
-				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition",
-				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Classes",
-				"org.springframework.boot.autoconfigure.security.DefaultWebSecurityCondition$Beans",
-		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})
-})
 public class SecurityHints implements NativeConfiguration {
 	@Override
 	public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {

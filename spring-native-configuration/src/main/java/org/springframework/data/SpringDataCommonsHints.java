@@ -56,7 +56,7 @@ import org.springframework.nativex.hint.TypeHint;
 				@TypeHint(types = Throwable.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS}),
 				@TypeHint(typeNames = {
 						"org.springframework.data.projection.SpelEvaluatingMethodInterceptor$TargetWrapper",
-				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS })
 		},
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.annotation.QueryAnnotation",

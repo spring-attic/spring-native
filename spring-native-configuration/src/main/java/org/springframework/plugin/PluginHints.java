@@ -31,7 +31,7 @@ import org.springframework.nativex.hint.TypeHint;
 				org.springframework.plugin.core.support.AbstractTypeAwareSupport.class,
 				org.springframework.plugin.core.support.PluginRegistryFactoryBean.class,
 		},
-		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS, TypeAccess.RESOURCE})
+		access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS })
 public class PluginHints {
 
 }
