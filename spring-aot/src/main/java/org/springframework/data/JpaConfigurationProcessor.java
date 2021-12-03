@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,11 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.support.BeanFactoryProcessor;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.index.CandidateComponentsIndex;
 import org.springframework.context.index.CandidateComponentsIndexLoader;
@@ -130,23 +134,11 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				return;
 			}
 
-			new BeanFactoryProcessor(beanFactory).processBeans(
-					(beanType) -> MergedAnnotations.from(beanType).isPresent("org.springframework.boot.autoconfigure.domain.EntityScan"),
-					(beanName, beanType) -> {
-
-						MergedAnnotation<Annotation> entityScanAnnotation = MergedAnnotations.from(beanType).get("org.springframework.boot.autoconfigure.domain.EntityScan");
-						String[] basePackages = entityScanAnnotation.getStringArray("basePackages");
-						Set<Class<?>> resolvedTypes = new LinkedHashSet<>();
-
-						if (ObjectUtils.isEmpty(basePackages)) {
-							resolvedTypes.addAll(scanForEntities(beanType.getPackageName()));
-						} else {
-							for (String basePackage : basePackages) {
-								resolvedTypes.addAll(scanForEntities(basePackage));
-							}
-						}
-						process(resolvedTypes, registry);
-					});
+			Set<Class<?>> resolvedTypes = new LinkedHashSet<>();
+			for(String packageName : getPackagesToScan(beanFactory)) {
+				resolvedTypes.addAll(scanForEntities(packageName));
+			}
+			process(resolvedTypes, registry);
 		}
 
 		/**
@@ -267,6 +259,14 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				entities.add(type);
 			}
 			return entities;
+		}
+
+		private static List<String> getPackagesToScan(BeanFactory beanFactory) {
+			List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
+			if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
+				packages = AutoConfigurationPackages.get(beanFactory);
+			}
+			return packages;
 		}
 	}
 
