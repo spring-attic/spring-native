@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry.Builder;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.BeanFactory;
@@ -53,7 +53,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -66,6 +66,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	private static final String JPA_ENTITY = "javax.persistence.Entity";
 	private static final String JPA_PERSISTENCE_CONTEXT = "javax.persistence.PersistenceContext";
 	private static final String JPA_ENTITY_LISTENERS = "javax.persistence.EntityListeners";
+	private static final String JPA_CONVERTER = "javax.persistence.Converter";
 
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
@@ -74,6 +75,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			logger.debug("JPA detected - processing types.");
 			new JpaPersistenceContextProcessor().process(beanFactory, registry);
 			new JpaEntityProcessor(beanFactory.getBeanClassLoader()).process(beanFactory, registry);
+			new JpaAttributeConverterProcessor(beanFactory.getBeanClassLoader()).process(beanFactory, registry);
 		}
 	}
 
@@ -88,6 +90,62 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 					(beanName, beanType) -> registry.reflection()
 							.forType(beanType)
 							.withFields(TypeUtils.getAnnotatedField(beanType, JPA_PERSISTENCE_CONTEXT).toArray(new Field[0])));
+		}
+	}
+
+	/**
+	 * Processor to inspect {@literal javax.persistence.AttributeConverter} annotated with {@literal javax.persistence.Converter}.
+	 */
+	static class JpaAttributeConverterProcessor {
+
+		private final Class<? extends Annotation> attributeConverterAnnotation;
+		private final ClassLoader classLoader;
+
+		public JpaAttributeConverterProcessor(ClassLoader classLoader) {
+			this.classLoader = classLoader;
+			attributeConverterAnnotation = loadIfPresent(JPA_CONVERTER, classLoader);
+		}
+
+		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
+
+			if (attributeConverterAnnotation == null) {
+				return;
+			}
+
+			Set<Class<?>> attributeConverters = new LinkedHashSet<>();
+			for (String packageName : getPackagesToScan(beanFactory)) {
+				attributeConverters.addAll(scanForJpaTypes(packageName, attributeConverterAnnotation, classLoader));
+			}
+
+			processAttributeConverters(attributeConverters, registry);
+		}
+
+		void processAttributeConverters(Set<Class<?>> attributeConverters, NativeConfigurationRegistry registry) {
+
+			for (Class<?> attributeConverter : attributeConverters) {
+
+				registry.reflection().forType(attributeConverter).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
+
+				ReflectionUtils.doWithLocalMethods(attributeConverter, it -> {
+					if (it.isBridge()) {
+						return;
+					}
+					if ("convertToEntityAttribute".equals(it.getName())) {
+
+						Class<?> returnType = it.getReturnType();
+
+						if (isJavaOrPrimitiveType(returnType)) {
+							return;
+						}
+
+						Builder builder = registry.reflection().forType(ClassUtils.getUserClass(returnType));
+						if(!returnType.isInterface()) {
+							builder.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
+						}
+						registry.reflection().forType(returnType).withAccess(TypeAccess.PUBLIC_METHODS);
+					}
+				});
+			}
 		}
 	}
 
@@ -136,7 +194,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 			Set<Class<?>> resolvedTypes = new LinkedHashSet<>();
 			for(String packageName : getPackagesToScan(beanFactory)) {
-				resolvedTypes.addAll(scanForEntities(packageName));
+				resolvedTypes.addAll(scanForJpaTypes(packageName, entityAnnotation, classLoader));
 			}
 			process(resolvedTypes, registry);
 		}
@@ -151,7 +209,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			TypeModelProcessor typeModelProcessor = new TypeModelProcessor();
 			entities.forEach(type -> {
 
-				if(TypeUtils.type(type).isPartOf("java") || type.isPrimitive() || ClassUtils.isPrimitiveArray(type)) {
+				if (isJavaOrPrimitiveType(type)) {
 					return;
 				}
 
@@ -238,44 +296,51 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			Set<String> candidateTypes = index.getCandidateTypes("*", JPA_ENTITY);
 			return candidateTypes.stream().map(it -> loadIfPresent(it, classLoader)).filter(it -> it != null).collect(Collectors.toSet());
 		}
+	}
 
-		/**
-		 * Scan the classpath for types annotated with {@link #JPA_ENTITY}
-		 *
-		 * @param basePackage must not be null nor empty.
-		 * @return the {@link Set} of top level entities.
-		 */
-		Set<Class<?>> scanForEntities(String basePackage) {
+	private static boolean isJavaOrPrimitiveType(Class<?> type) {
+		if (TypeUtils.type(type).isPartOf("java") || type.isPrimitive() || ClassUtils.isPrimitiveArray(type)) {
+			return true;
+		}
+		return false;
+	}
 
-			if (entityAnnotation == null || !StringUtils.hasText(basePackage)) {
-				return Collections.emptySet();
-			}
+	private static List<String> getPackagesToScan(BeanFactory beanFactory) {
+		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
+			packages = AutoConfigurationPackages.get(beanFactory);
+		}
+		return packages;
+	}
 
-			ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(false, new StandardEnvironment());
-			componentProvider.setResourceLoader(new DefaultResourceLoader(classLoader));
-			componentProvider.addIncludeFilter(new AnnotationTypeFilter(entityAnnotation));
+	/**
+	 * Scan the classpath for types annotated with {@link #JPA_ENTITY}
+	 *
+	 * @param basePackage must not be null nor empty.
+	 * @param requiredAnnotation must not be {@literal null}.
+	 * @param classLoader must not be {@literal null}.
+	 * @return the {@link Set} of top level entities.
+	 */
+	static Set<Class<?>> scanForJpaTypes(String basePackage, Class<? extends Annotation> requiredAnnotation, ClassLoader classLoader) {
 
-			Set<Class<?>> entities = new LinkedHashSet<>();
-			for (BeanDefinition definition : componentProvider.findCandidateComponents(basePackage)) {
-
-				Class<?> type = loadIfPresent(definition.getBeanClassName(), classLoader);
-				if (type == null) {
-					continue;
-				}
-
-				logger.debug("JPA entity" + type + " found on path.");
-				entities.add(type);
-			}
-			return entities;
+		if (requiredAnnotation == null || !StringUtils.hasText(basePackage)) {
+			return Collections.emptySet();
 		}
 
-		private static List<String> getPackagesToScan(BeanFactory beanFactory) {
-			List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
-			if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
-				packages = AutoConfigurationPackages.get(beanFactory);
+		ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(false, new StandardEnvironment());
+		componentProvider.setResourceLoader(new DefaultResourceLoader(classLoader));
+		componentProvider.addIncludeFilter(new AnnotationTypeFilter(requiredAnnotation));
+
+		Set<Class<?>> entities = new LinkedHashSet<>();
+		for (BeanDefinition definition : componentProvider.findCandidateComponents(basePackage)) {
+
+			Class<?> type = loadIfPresent(definition.getBeanClassName(), classLoader);
+			if (type == null) {
+				continue;
 			}
-			return packages;
+			entities.add(type);
 		}
+		return entities;
 	}
 
 	private interface JpaImplementation {

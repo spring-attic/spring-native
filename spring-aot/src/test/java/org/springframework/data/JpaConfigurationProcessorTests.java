@@ -33,20 +33,13 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.data.JpaConfigurationProcessor.JpaAttributeConverterProcessor;
 import org.springframework.data.JpaConfigurationProcessor.JpaEntityProcessor;
 import org.springframework.data.JpaConfigurationProcessor.JpaPersistenceContextProcessor;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.sample.data.jpa.AuditingListener;
-import org.springframework.sample.data.jpa.ComponentWithPersistenceContext;
-import org.springframework.sample.data.jpa.EntityWithClassField;
-import org.springframework.sample.data.jpa.EntityWithListener;
-import org.springframework.sample.data.jpa.EntityWithPrimitive;
-import org.springframework.sample.data.jpa.LineItem;
-import org.springframework.sample.data.jpa.NotAnEntity;
-import org.springframework.sample.data.jpa.Order;
-import org.springframework.sample.data.jpa.SomeAnnotation;
+import org.springframework.sample.data.jpa.*;
 import org.springframework.sample.data.types.WithDeclaredClass;
 import org.springframework.util.ReflectionUtils;
 
@@ -177,6 +170,16 @@ public class JpaConfigurationProcessorTests {
 				.doesNotContain(int.class, byte[].class);
 	}
 
+	@Test
+	public void shouldRegisterAttributeConverter() {
+
+		assertThat(processAttributeConverters(ValueObjectIdAttributeConverter.class).reflectionEntries())
+				.map(DefaultNativeReflectionEntry::getType)
+				.map(Class.class::cast)
+				.contains(ValueObjectIdAttributeConverter.class, ValueObjectId.class)
+				.doesNotContain(java.lang.String.class);
+	}
+
 	private Class<?> createCglibProxyType(Class<?> target) {
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.setTargetClass(target);
@@ -187,6 +190,13 @@ public class JpaConfigurationProcessorTests {
 
 		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
 		new JpaEntityProcessor(this.getClass().getClassLoader()).process(new LinkedHashSet<>(Arrays.asList(entities)), registry);
+		return new NativeConfigRegistryHolder(registry);
+	}
+
+	NativeConfigRegistryHolder processAttributeConverters(Class<?>... entities) {
+
+		NativeConfigurationRegistry registry = new NativeConfigurationRegistry();
+		new JpaAttributeConverterProcessor(this.getClass().getClassLoader()).processAttributeConverters(new LinkedHashSet<>(Arrays.asList(entities)), registry);
 		return new NativeConfigRegistryHolder(registry);
 	}
 
