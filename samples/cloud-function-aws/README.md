@@ -26,9 +26,11 @@ $> ./build.sh
 
 ```
 
+>>NOTE: You will notice we apply `@TypeHint(types = {Person.class}` (see `DemoApplication`). Given that JSON converter will apply reflection to serialize/de-serialize `Person` type for the function input we need to provide minimal reflection configuration and `@TypeHint` will let us do just that.
+
 ### Deploy and test
 
 - Navigate to AWS Lambda dashboard and create a new function (name it anyway you want).
 - In "Runtime" go to `Custom Runtime` and select one of the options available.
 - Upload generated `cloud-function-aws-0.0.1-SNAPSHOT-native-zip.zip`.
-- Finally test by providing JSON-style string value via 'Test' tab. For example `"John"`. The output should be `"Hi John!"`
+- Finally test by providing JSON-style string value via 'Test' tab. For example `"John"`. The output should be `"Hi JOHN!"`
