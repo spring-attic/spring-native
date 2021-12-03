@@ -968,13 +968,13 @@ public class TypeSystem {
 			Type type = resolveDotted(keytype,true);
 			if (type != null) {
 				if (type.isAtConfiguration() || type.isFactoryBean() || type.isInitializingBean() || type.isBeanPostProcessor()) {
-					logger.debug("Skip " + type.getShortName() + " processing since it will be processed on AOT side");
+					logger.debug("Skip " + type.getName() + " processing since it will be processed on AOT side");
 				}
 				else if (type.isImportRegistrar() || type.isImportSelector() ||
 					type.isCondition() || type.isConditional() || type.isAtImport()
 					) {
-					throw new IllegalStateException("Hint trigger " + type.getShortName()
-							+ " should not implement ImportBeanDefinitionRegistrar, ImportSelector, Condition or be annotation with @Conditional or @Import ");
+					throw new IllegalStateException("Hint trigger " + type.getName()
+							+ " should not implement ImportBeanDefinitionRegistrar, ImportSelector, Condition or be annotated with @Conditional or @Import ");
 				} else {
 					for (HintDeclaration hint: proposedhint.getValue()) {
 						logger.debug("Considering hint not targeting config (trigger="+keytype+") as applicable: "+hint);
