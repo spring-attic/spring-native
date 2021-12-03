@@ -63,6 +63,17 @@ public class NativeConfigurationUtils {
 		return collector;
 	}
 
+	public static Set<Class<?>> collectTypesInSignature(Class<?> clazz) {
+		Set<Class<?>> collector = new TreeSet<>((c1,c2) -> c1.getName().compareTo(c2.getName()));
+		Type genericSuperclass = clazz.getGenericSuperclass();
+		collectReferenceTypesUsed(genericSuperclass, collector);
+		Type[] genericInterfaces = clazz.getGenericInterfaces();
+		for (Type genericInterface: genericInterfaces) {
+			collectReferenceTypesUsed(genericInterface, collector);
+		}
+		return collector;
+	}
+
 	// TODO does this handle all relevant cases?
 	public static void collectReferenceTypesUsed(Type type, Set<Class<?>> collector) {
 		if (type instanceof GenericArrayType) {

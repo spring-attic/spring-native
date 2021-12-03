@@ -18,6 +18,7 @@ package org.springframework;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.SpringProperties;
 import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.http.MediaTypeFactory;
@@ -121,7 +122,7 @@ import org.springframework.nativex.hint.JdkProxyHint;
 
 )
 @NativeHint(trigger = MediaTypeFactory.class, resources = @ResourceHint(patterns = "org/springframework/http/mime.types"))
-@TypeHint(types = { Qualifier.class, Value.class }, access = TypeAccess.DECLARED_METHODS)
+@TypeHint(types = { Configuration.class, Qualifier.class, Value.class }, access = TypeAccess.DECLARED_METHODS)
 @NativeHint(trigger = SpringProperties.class, resources = @ResourceHint(patterns = "spring.properties"))
 public class SpringFrameworkHints implements NativeConfiguration {
 }

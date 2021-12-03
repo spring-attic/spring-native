@@ -269,6 +269,8 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			}
 			// Kotlin repo
 			if (configuration.isKotlinRepository()) {
+				registry.reflection().forType(CoroutineCrudRepository.class).withAccess(TypeAccess.PUBLIC_METHODS);
+				registry.reflection().forType(Repository.class).withAccess(TypeAccess.PUBLIC_METHODS);
 				registry.reflection().forType(Iterable.class).withAccess(TypeAccess.QUERY_PUBLIC_METHODS);
 				safelyRegister("kotlinx.coroutines.flow.Flow", TypeAccess.QUERY_PUBLIC_METHODS);
 				safelyRegister("kotlin.collections.Iterable", TypeAccess.QUERY_PUBLIC_METHODS);

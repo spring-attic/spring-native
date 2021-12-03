@@ -1,21 +1,22 @@
 package app.main;
 
+import static org.springframework.web.servlet.function.RouterFunctions.route;
+import static org.springframework.web.servlet.function.ServerResponse.ok;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
-import app.main.Foo;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.function.RouterFunction;
 
-import static org.springframework.web.servlet.function.RouterFunctions.route;
-import static org.springframework.web.servlet.function.ServerResponse.ok;
-
+@TypeHint(types = Foo.class, access={TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_METHODS})
 @SpringBootApplication
 public class SampleApplication {
 
