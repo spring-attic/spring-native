@@ -56,6 +56,7 @@ org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesHints
 org.springframework.boot.autoconfigure.data.redis.RedisDataSupportHints,\
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesHints,\
 org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesHints,\
+org.springframework.boot.autoconfigure.domain.SpringBootDomainHints,\
 org.springframework.boot.autoconfigure.http.HttpMessageConverterHints,\
 org.springframework.boot.autoconfigure.jackson.JacksonHints,\
 org.springframework.boot.autoconfigure.jdbc.JdbcHints,\
