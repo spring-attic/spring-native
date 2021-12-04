@@ -45,6 +45,23 @@
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-native-image-config-folder</id>
+						<phase>test-compile</phase>
+						<configuration>
+							<target>
+								<mkdir dir="target/classes/META-INF/native-image"/>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
 				<configuration>
@@ -56,19 +73,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<!--
-				TODO Configure GraalVM Agent Access Filter once https://github.com/graalvm/native-build-tools/issues/162 is resolved.
-				See also: https://github.com/spring-projects-experimental/spring-native/issues/1247
-			-->
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-DspringAot=true -agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+					<argLine>-agentlib:native-image-agent=access-filter-file=access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
 				</configuration>
 			</plugin>
-			-->
 		</plugins>
 	</build>
 </project>

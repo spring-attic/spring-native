@@ -43,6 +43,9 @@ mkdir -p target/native
 
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Maven (native)"
+  if [[ ${PWD##*/} == *-agent ]] ; then
+    mvn test &> target/native/output.txt
+  fi
   if [ "$NATIVE_TESTS" = false ] ; then
     mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
   else

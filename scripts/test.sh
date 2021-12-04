@@ -95,7 +95,6 @@ then
       BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
       BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
     fi
-    CONFIGLINES=`wc -l $GENERATED_DIR/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
     if [ ! -z "$BUILDMEMORY" ]; then
       echo "Build memory: ${BUILDMEMORY}GB"
     fi
@@ -117,7 +116,12 @@ then
       JTIME=${BASH_REMATCH[2]}
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
-    echo "Lines of reflective config: $CONFIGLINES"
+    if [[ ${PWD##*/} != *-agent ]] ; then
+      CONFIGLINES=`wc -l $GENERATED_DIR/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
+        echo "Lines of reflective config: $CONFIGLINES"
+      else
+        CONFIGLINES=0
+    fi
     echo `date +%Y%m%d-%H%M`,`basename ${PWD##*/}`,$BUILDTIME,$BUILDMEMORY,${RSS},${SIZE},${STIME},${JTIME},${CONFIGLINES}  > $SUMMARY_CSV_FILE
   fi
   if ! kill ${PID} > /dev/null 2>&1; then

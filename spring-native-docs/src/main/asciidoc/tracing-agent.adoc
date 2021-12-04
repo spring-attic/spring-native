@@ -30,7 +30,7 @@ It is possible to use the tracing agent to run the application in AOT mode in or
 
 ==== A basic access-filter file
 
-This is a simple `access-filter.json` file. 
+Create the following `access-filter.json` file at the root of your project.
 
 
 [source,json,subs="attributes,verbatim"]
@@ -71,10 +71,9 @@ package com.example.demo.test;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class AppContextStartupTest {
+@SpringBootTest
+public class ApplicationTests {
 
 	@Test
 	public void contextLoads() {
@@ -82,8 +81,7 @@ public class AppContextStartupTest {
 }
 ----
 
-
-Now take the `access-filter.json` file from above and place it in `src/test/resources` folder.
+NOTE: Make sure to exercise all the required code path to allow the agent to generate all the required native configuration. For example, that could mean to request with an http client all the web endpoints.
 
 This following snippet would go into the maven pom:
 
@@ -96,15 +94,16 @@ This following snippet would go into the maven pom:
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-            <argLine>-DspringAot=true -agentlib:native-image-agent=access-filter-file=src/test/resources/access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+            <argLine>-agentlib:native-image-agent=access-filter-file=access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
         </configuration>
     </plugin>
 </plugins>
 ----
 
-NOTE: You need to activate the AOT mode when running the tracing agent as documented in <<spring-aot-modes>>.
+NOTE: You need to activate the AOT mode when running the tracing agent on the application as documented in <<spring-aot-modes>>,
+for tests this is not needed since AOT mode is enabled automatically when AOT files are detected.
 
-Also update the `spring-aot` build plugin to enable the `native-agent` mode:
+Also update the `spring-aot` build plugin to enable the `native-agent` mode in order to not generate `*-config.json` files since the agent will take care of that:
 
 [source,xml,subs="attributes,verbatim"]
 ----
@@ -117,6 +116,6 @@ Also update the `spring-aot` build plugin to enable the `native-agent` mode:
 </plugin>
 ----
 
+Run the JVM tests with `mvn clean test` to generate the native configuration, then build the native image with `mvn -DskipTests -Pnative package`. If that's not enough, you can add additional native configuration using `@NativeHint` annotations.
 
-That's it, build your native image, it should generate the native configuration during the tests and run with the `native-agent` mode design to just add the missing bits.
-If that's not enough, you can add additional native configuration using `@NativeHint` annotations.
+WARNING: If you see a `java.lang.ClassCastException: sun.reflect.generics.tree.FieldTypeSignature[] cannot be cast to java.lang.reflect.Type[]` error, this is a GraalVM bug related to https://github.com/oracle/graal/pull/4075. A workaround is to replace `queryAll*` entries by "All*" entries.
