@@ -27,6 +27,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.samples.scope.RequestScopedComponent;
 import org.springframework.context.annotation.samples.scope.ScopedComponent;
+import org.springframework.context.annotation.samples.scope.ScopedComponent2;
 import org.springframework.context.annotation.samples.simple.SimpleComponent;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
@@ -41,16 +42,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ScopeNativeConfigurationProcessorTests {
 
 	@Test
-	void typeLevelScope() {
+	void typeLevelScopeWithDefaultMode() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerBeanDefinition("scopedComponent",  BeanDefinitionBuilder.rootBeanDefinition(ScopedComponent.class)
 				.getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		Set<JdkProxyDescriptor> proxyDescriptors =  registry.proxy().toProxiesDescriptor().getProxyDescriptors();
+		assertThat(proxyDescriptors).isEmpty();
+	}
+
+	@Test
+	void typeLevelScopeWithTargetClassMode() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("scopedComponent2",  BeanDefinitionBuilder.rootBeanDefinition(ScopedComponent2.class)
+				.getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		Set<JdkProxyDescriptor> proxyDescriptors =  registry.proxy().toProxiesDescriptor().getProxyDescriptors();
 		assertThat(proxyDescriptors).singleElement().isInstanceOf(AotProxyDescriptor.class).satisfies((descriptor) -> {
-					assertThat(descriptor.isClassProxy()).isEqualTo(true);
-					assertThat(((AotProxyDescriptor)descriptor).getInterfaceTypes()).containsExactly(ScopedObject.class.getName(), Serializable.class.getName(), AopInfrastructureBean.class.getName());
-				});
+			assertThat(descriptor.isClassProxy()).isEqualTo(true);
+			assertThat(((AotProxyDescriptor)descriptor).getInterfaceTypes()).containsExactly(ScopedObject.class.getName(), Serializable.class.getName(), AopInfrastructureBean.class.getName());
+		});
 	}
 
 	@Test
