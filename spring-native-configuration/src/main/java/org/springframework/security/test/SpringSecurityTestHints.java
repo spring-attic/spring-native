@@ -32,7 +32,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = org.springframework.security.test.context.support.WithSecurityContext.class,
 	types = {
 		@TypeHint(types = org.springframework.security.web.FilterChainProxy.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS}),
-		@TypeHint(types = org.springframework.security.web.context.SecurityContextPersistenceFilter.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}),
+		@TypeHint(types = org.springframework.security.web.context.SecurityContextPersistenceFilter.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}, fields = @FieldHint(name = "repo")),
 		@TypeHint(types = org.springframework.security.web.csrf.CsrfFilter.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS}, fields = @FieldHint(name = "tokenRepository", allowWrite = true)),
 		@TypeHint(types = org.springframework.security.test.context.support.WithSecurityContext.class, access = TypeAccess.PUBLIC_METHODS),
 		@TypeHint(typeNames = "org.springframework.security.test.context.support.WithMockUserSecurityContextFactory"),
