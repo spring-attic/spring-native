@@ -28,7 +28,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 				org.springframework.nativex.AotModeDetector.class
 		}, initTime = InitializationTime.BUILD)
 )
-// TODO To be removed when Spring Framework will be more lenient about it, use netty-kotlin or webflux-thymeleaf to check
+// TODO To be removed when https://github.com/spring-projects/spring-framework/issues/27772 is fixed, use netty-kotlin or webflux-thymeleaf to check
 @NativeHint(trigger = org.junit.jupiter.api.Test.class,
 		types = @TypeHint(types = TypeAccess.class, access = TypeAccess.RESOURCE))
 public class SpringNativeHints implements NativeConfiguration {
