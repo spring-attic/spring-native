@@ -204,6 +204,13 @@ public class HateoasHints implements NativeConfiguration, TypeSystemNativeConfig
 					return annotation.isPartOfDomain("org.springframework") ||
 							annotation.isPartOfDomain("com.fasterxml.jackson.annotation");
 				})
+				.onTypeDiscovered((type, ctx) -> {
+					if(type.belongsToPackage("java", true)) {
+						ctx.addReflectiveAccess(type, TypeAccess.RESOURCE);
+					} else {
+						ctx.addReflectiveAccess(type, TypeAccess.PUBLIC_METHODS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS);
+					}
+				})
 				.use(typeSystem)
 				.toProcessTypesMatching(type -> {
 

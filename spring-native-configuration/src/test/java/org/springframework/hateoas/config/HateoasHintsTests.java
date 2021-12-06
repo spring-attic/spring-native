@@ -57,12 +57,13 @@ public class HateoasHintsTests {
 		List<HintDeclaration> hintDeclarations = hateoasHints.computeRepresentationModels(typeSystem);
 
 		assertHints(hintDeclarations)
-				.hasSize(4)
+				.hasSize(5)
 				.doesNotContainResourceConfiguration()
-				.extractReflectionConfigFor(PersonRepresentationModel.class, it -> it.hasAccessBits(FULL_REFLECTION))
-				.extractReflectionConfigFor(Person.class, it -> it.hasAccessBits(FULL_REFLECTION))
-				.extractReflectionConfigFor(DrinksModelProcessor.class, it -> it.hasAccessBits(FULL_REFLECTION))
-				.extractReflectionConfigFor(Drink.class, it -> it.hasAccessBits(FULL_REFLECTION));
+				.extractReflectionConfigFor(PersonRepresentationModel.class, it -> it.hasAccessBits(PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | DECLARED_FIELDS))
+				.extractReflectionConfigFor(Person.class, it -> it.hasAccessBits(PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | DECLARED_FIELDS))
+				.extractReflectionConfigFor(DrinksModelProcessor.class, it -> it.hasAccessBits(PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | DECLARED_FIELDS))
+				.extractReflectionConfigFor(Drink.class, it -> it.hasAccessBits(PUBLIC_METHODS | PUBLIC_CONSTRUCTORS | DECLARED_FIELDS))
+				.extractReflectionConfigFor(String.class, it -> it.hasAccessBits(RESOURCE));
 	}
 
 	@Test

@@ -17,4 +17,5 @@ package com.example.test.hateoas;
 
 public class Drink {
 
+	String name;
 }
