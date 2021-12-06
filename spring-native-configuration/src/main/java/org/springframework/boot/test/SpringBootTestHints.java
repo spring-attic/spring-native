@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test;
 
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.JdkProxyHint;
@@ -61,5 +62,12 @@ import org.springframework.test.web.client.SimpleRequestExpectationManager;
 @NativeHint(trigger = org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration.class,
 	types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
 @NativeHint(trigger = MockServerRestTemplateCustomizer.class, types = @TypeHint(types = SimpleRequestExpectationManager.class))
+@NativeHint(trigger = SpringBootTestContextBootstrapper.class, types = {
+	@TypeHint(types = javax.servlet.Servlet.class, access = {}),
+		@TypeHint(types = org.springframework.web.context.ConfigurableWebApplicationContext.class, access = {}),
+		@TypeHint(types = org.springframework.web.servlet.DispatcherServlet.class, access = {}),
+		@TypeHint(types = org.springframework.web.reactive.DispatcherHandler.class, access = {}),
+		@TypeHint(typeNames = "org.glassfish.jersey.server.ResourceConfig", access = {})
+})
 public class SpringBootTestHints implements NativeConfiguration {
 }
