@@ -16,7 +16,7 @@ if ! (./build.sh); then
     RC=1
 fi
 if [ "$AOT_ONLY" = false ] ; then
-  if ! (./build-samples.sh); then
+  if ! (./build-samples-with-native-tests.sh); then
     RC=1
   fi
 else
