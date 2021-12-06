@@ -75,6 +75,10 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("generate goal could not be applied to pom project.");
+			return;
+		}
 		Set<Path> resourceFolders = new HashSet<>();
 		for (Resource r : project.getResources()) {
 			// TODO respect includes/excludes

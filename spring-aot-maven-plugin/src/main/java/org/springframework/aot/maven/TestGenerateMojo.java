@@ -69,7 +69,10 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("test-generate goal could not be applied to pom project.");
+			return;
+		}
 		Path testOutputDirectory = Paths.get(project.getBuild().getTestOutputDirectory());
 		if (Files.notExists(testOutputDirectory)) {
 			getLog().info("Skip Spring AOT test generation since no test have been detected");
