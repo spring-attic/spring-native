@@ -49,11 +49,11 @@ The plugin should be declared in your `pom.xml` file:
                     </goals>
                 </execution>
                 <execution>
-					<id>test-generate</id>
-					<goals>
-						<goal>test-generate</goal>
-					</goals>
-				</execution>
+                    <id>test-generate</id>
+                    <goals>
+                        <goal>test-generate</goal>
+                    </goals>
+                </execution>
             </executions>
         </plugin>
     </plugins>
