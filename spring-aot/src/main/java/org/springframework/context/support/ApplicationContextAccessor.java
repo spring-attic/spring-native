@@ -21,7 +21,6 @@ public class ApplicationContextAccessor {
 		context.prepareBeanFactory(beanFactory);
 		context.postProcessBeanFactory(beanFactory);
 		context.invokeBeanFactoryPostProcessors(beanFactory);
-		context.registerBeanPostProcessors(beanFactory);
 		return beanFactory;
 	}
 
