@@ -4,6 +4,10 @@ org.springframework.data.RepositoryFactoryBeanPostProcessor,\
 org.springframework.plugin.PluginRegistryFactoryBeanPostProcessor,\
 org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcessor
 
+org.springframework.aot.context.bootstrap.generator.BeanDefinitionExcludeFilter=\
+org.springframework.aot.context.bootstrap.generator.AnnotationInfrastructureExcludeFilter,\
+org.springframework.boot.BootInfrastructureExcludeFilter
+
 org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.aop.scope.ScopedProxyBeanRegistrationWriterSupplier,\
 org.springframework.beans.factory.BeanFactoryBeanRegistrationWriterSupplier,\

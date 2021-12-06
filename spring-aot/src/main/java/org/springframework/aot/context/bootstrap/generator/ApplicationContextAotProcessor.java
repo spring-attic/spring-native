@@ -17,7 +17,6 @@
 package org.springframework.aot.context.bootstrap.generator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.lang.model.element.Modifier;
@@ -66,15 +65,20 @@ public class ApplicationContextAotProcessor {
 
 	private final List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers;
 
+	private final List<BeanDefinitionExcludeFilter> beanDefinitionExcludeFilters;
+
 	private final BuildTimeBeanDefinitionsRegistrar buildTimeBeanDefinitionsRegistrar;
 
-	ApplicationContextAotProcessor(List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers) {
+	ApplicationContextAotProcessor(List<BeanRegistrationWriterSupplier> beanRegistrationWriterSuppliers,
+			List<BeanDefinitionExcludeFilter> beanDefinitionExcludeFilters) {
 		this.beanRegistrationWriterSuppliers = beanRegistrationWriterSuppliers;
+		this.beanDefinitionExcludeFilters = beanDefinitionExcludeFilters;
 		this.buildTimeBeanDefinitionsRegistrar = new BuildTimeBeanDefinitionsRegistrar();
 	}
 
 	public ApplicationContextAotProcessor(ClassLoader classLoader) {
-		this(SpringFactoriesLoader.loadFactories(BeanRegistrationWriterSupplier.class, classLoader));
+		this(SpringFactoriesLoader.loadFactories(BeanRegistrationWriterSupplier.class, classLoader),
+				SpringFactoriesLoader.loadFactories(BeanDefinitionExcludeFilter.class, classLoader));
 	}
 
 	/**
@@ -86,18 +90,17 @@ public class ApplicationContextAotProcessor {
 	 */
 	public void process(GenericApplicationContext context, BootstrapWriterContext writerContext) {
 		this.beanRegistrationWriterSuppliers.forEach((supplier) -> invokeAwareMethods(supplier, context));
+		this.beanDefinitionExcludeFilters.forEach((supplier) -> invokeAwareMethods(supplier, context));
 		ConfigurableListableBeanFactory beanFactory = this.buildTimeBeanDefinitionsRegistrar.processBeanDefinitions(context);
-		DefaultBeanDefinitionSelector selector = new DefaultBeanDefinitionSelector(Collections.emptyList());
-		writerContext.getMainBootstrapClass().addMethod(bootstrapMethod(beanFactory, writerContext, selector));
+		writerContext.getMainBootstrapClass().addMethod(bootstrapMethod(beanFactory, writerContext));
 	}
 
-	private MethodSpec.Builder bootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext,
-			BeanDefinitionSelector selector) {
+	private MethodSpec.Builder bootstrapMethod(ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext) {
 		MethodSpec.Builder method = MethodSpec.methodBuilder("initialize").addModifiers(Modifier.PUBLIC)
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
 		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
-		List<BeanInstanceDescriptor> descriptors = writeBeanDefinitions(beanFactory, writerContext, selector, code);
+		List<BeanInstanceDescriptor> descriptors = writeBeanDefinitions(beanFactory, writerContext, code);
 
 		NativeConfigurationRegistrar nativeConfigurationRegistrar = new NativeConfigurationRegistrar(beanFactory);
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
@@ -112,12 +115,12 @@ public class ApplicationContextAotProcessor {
 	}
 
 	private List<BeanInstanceDescriptor> writeBeanDefinitions(ConfigurableListableBeanFactory beanFactory,
-			BootstrapWriterContext writerContext, BeanDefinitionSelector selector, Builder code) {
+			BootstrapWriterContext writerContext, Builder code) {
 		List<BeanInstanceDescriptor> descriptors = new ArrayList<>();
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-			if (selector.select(beanName, beanDefinition)) {
+			if (!isExcluded(beanName, beanDefinition)) {
 				BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationWriter(
 						beanName, beanDefinition);
 				if (beanRegistrationWriter != null) {
@@ -127,6 +130,15 @@ public class ApplicationContextAotProcessor {
 			}
 		}
 		return descriptors;
+	}
+
+	private boolean isExcluded(String beanName, BeanDefinition beanDefinition) {
+		for (BeanDefinitionExcludeFilter excludeFilter : this.beanDefinitionExcludeFilters) {
+			if (excludeFilter.isExcluded(beanName, beanDefinition)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void registerApplicationContextInfrastructure(ConfigurableListableBeanFactory beanFactory,

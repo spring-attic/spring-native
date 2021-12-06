@@ -17,6 +17,7 @@
 package org.springframework.aot.context.bootstrap.generator;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.util.ClassUtils;
 
 /**
  * Strategy interface to exclude infrastructure beans that should not be included when the
@@ -24,7 +25,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
  *
  * @author Stephane Nicoll
  */
-public interface BeanDefinitionSelector {
+@FunctionalInterface
+public interface BeanDefinitionExcludeFilter {
 
 	/**
 	 * Determine if the specified bean should be added to the generated bootstrap class.
@@ -32,6 +34,42 @@ public interface BeanDefinitionSelector {
 	 * @param beanDefinition the bean definition to consider
 	 * @return {@code true} if it should be selected
 	 */
-	Boolean select(String beanName, BeanDefinition beanDefinition);
+	boolean isExcluded(String beanName, BeanDefinition beanDefinition);
+
+
+	/**
+	 * Create a {@link BeanDefinitionExcludeFilter} excluding the beans matching any of
+	 * the specified bean types
+	 * @param beanTypes the types of the beans to exclude
+	 * @return a filter
+	 */
+	static BeanDefinitionExcludeFilter forTypes(Class<?>... beanTypes) {
+		return (beanName, beanDefinition) -> {
+			Class<?> target = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
+			for (Class<?> type : beanTypes) {
+				if (type.isAssignableFrom(target)) {
+					return true;
+				}
+			}
+			return false;
+		};
+	}
+
+	/**
+	 * Create a {@link BeanDefinitionExcludeFilter} excluding the beans matching any of
+	 * the specified bean names
+	 * @param beanNames the names of the beans to exclude
+	 * @return a filter
+	 */
+	static BeanDefinitionExcludeFilter forBeanNames(String... beanNames) {
+		return (beanNameCandidate, beanDefinition) -> {
+			for (String beanName : beanNames) {
+				if (beanName.equals(beanNameCandidate)) {
+					return true;
+				}
+			}
+			return false;
+		};
+	}
 
 }

@@ -16,7 +16,10 @@
 
 package org.springframework.aot.context.bootstrap.generator;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier;
 import org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapClass;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
@@ -41,6 +45,7 @@ import org.springframework.aot.context.bootstrap.generator.sample.visibility.Pub
 import org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicOuterClassConfiguration;
 import org.springframework.aot.context.bootstrap.generator.test.ApplicationContextAotProcessorTester;
 import org.springframework.aot.context.bootstrap.generator.test.ContextBootstrapStructure;
+import org.springframework.aot.context.bootstrap.generator.test.TextAssert;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -55,6 +60,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.samples.scope.ScopeConfiguration;
+import org.springframework.context.annotation.samples.simple.SimpleComponent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -337,9 +343,10 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
-	void awareCallbacksAreHonored() {
+	void awareCallbacksOnBeanRegistrationWriterAreHonored() {
 		AwareBeanRegistrationWriterSupplier supplier = spy(new AwareBeanRegistrationWriterSupplier());
-		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(List.of(new DefaultBeanRegistrationWriterSupplier(), supplier));
+		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
+				List.of(new DefaultBeanRegistrationWriterSupplier(), supplier), Collections.emptyList());
 		GenericApplicationContext context = new GenericApplicationContext();
 		processor.process(context, new DefaultBootstrapWriterContext("com.acme", "Test"));
 		verify(supplier).setEnvironment(context.getEnvironment());
@@ -351,13 +358,51 @@ class ApplicationContextAotProcessorTests {
 		verifyNoMoreInteractions(supplier);
 	}
 
-	static class AwareBeanRegistrationWriterSupplier implements BeanRegistrationWriterSupplier, EnvironmentAware,
+	@Test
+	void awareCallbacksOnBeanDefinitionExcludeFilterAreHonored() {
+		AwareBeanDefinitionExcludeFilter filter = spy(new AwareBeanDefinitionExcludeFilter());
+		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
+				Collections.emptyList(), List.of(filter));
+		GenericApplicationContext context = new GenericApplicationContext();
+		processor.process(context, new DefaultBootstrapWriterContext("com.acme", "Test"));
+		verify(filter).setEnvironment(context.getEnvironment());
+		verify(filter).setResourceLoader(context);
+		verify(filter).setApplicationEventPublisher(context);
+		verify(filter).setApplicationContext(context);
+		verify(filter).setBeanClassLoader(context.getBeanFactory().getBeanClassLoader());
+		verify(filter).setBeanFactory(context.getBeanFactory());
+		verifyNoMoreInteractions(filter);
+	}
+
+	@Test
+	void beanDefinitionExcludedIsNotWritten() {
+		BeanDefinitionExcludeFilter filter = BeanDefinitionExcludeFilter.forBeanNames("one", "three");
+		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
+				List.of(new DefaultBeanRegistrationWriterSupplier()), List.of(filter));
+		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("com.example", "Test");
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBean("one", SimpleComponent.class);
+		context.registerBean("two", SimpleComponent.class);
+		context.registerBean("three", SimpleComponent.class);
+		processor.process(context, writerContext);
+		assertGeneratedCode(writerContext.getMainBootstrapClass())
+				.doesNotContain("\"one\"").doesNotContain("\"three\"").contains("\"two\"");
+	}
+
+	private TextAssert assertGeneratedCode(BootstrapClass bootstrapClass) {
+		try {
+			StringWriter out = new StringWriter();
+			bootstrapClass.toJavaFile().writeTo(out);
+			return new TextAssert(out.toString());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	static class TestContextAware implements EnvironmentAware,
 			ResourceLoaderAware, ApplicationEventPublisherAware, ApplicationContextAware, BeanClassLoaderAware,
 			BeanFactoryAware {
-		@Override
-		public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
-			return null;
-		}
 
 		@Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
@@ -382,6 +427,24 @@ class ApplicationContextAotProcessorTests {
 		@Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
 		}
+	}
+
+	static class AwareBeanRegistrationWriterSupplier extends TestContextAware implements BeanRegistrationWriterSupplier {
+
+		@Override
+		public BeanRegistrationWriter get(String beanName, BeanDefinition beanDefinition) {
+			return null;
+		}
+
+	}
+
+	static class AwareBeanDefinitionExcludeFilter extends TestContextAware implements BeanDefinitionExcludeFilter {
+
+		@Override
+		public boolean isExcluded(String beanName, BeanDefinition beanDefinition) {
+			return false;
+		}
+
 	}
 
 }
