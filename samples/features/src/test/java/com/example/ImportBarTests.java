@@ -18,7 +18,6 @@ package com.example;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Component;
  */
 @SpringBootTest(classes = Config.class)
 @Import(ImportBarTests.Bar.class)
-@Disabled("Disabled until proper support for context caching with AOT has been implemented")
 class ImportBarTests {
 
 	@Autowired
