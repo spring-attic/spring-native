@@ -28,6 +28,7 @@ import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cloud.function.context.catalog.FunctionTypeUtils;
 import org.springframework.nativex.hint.TypeAccess;
+import org.springframework.util.ClassUtils;
 
 /**
  * Ensures that Function/Consumer input types declared b the user are reflectively available.
@@ -37,10 +38,15 @@ import org.springframework.nativex.hint.TypeAccess;
  */
 public class FunctionTypeProcessor implements BeanFactoryNativeConfigurationProcessor {
 
+	private static final String FUNC_CONFIG_CLASS_NAME = "org.springframework.cloud.function.context.FunctionCatalog";
+
+
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory,
 			NativeConfigurationRegistry registry) {
-		new Processor().process(beanFactory, registry);
+		if (ClassUtils.isPresent(FUNC_CONFIG_CLASS_NAME, beanFactory.getBeanClassLoader())) {
+			new Processor().process(beanFactory, registry);
+		}
 	}
 
 	private static class Processor {
@@ -56,7 +62,7 @@ public class FunctionTypeProcessor implements BeanFactoryNativeConfigurationProc
 						!name.startsWith("javax.")) {
 						if (added.add(name)) {
 							registry.reflection().forType(FunctionTypeUtils.getRawType(inputType))
-								.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS, TypeAccess.PUBLIC_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
+								.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 						}
 					}
 				});

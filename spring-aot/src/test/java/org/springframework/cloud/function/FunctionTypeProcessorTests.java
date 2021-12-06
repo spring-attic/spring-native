@@ -42,7 +42,7 @@ class FunctionTypeProcessorTests {
 
 	private static Set<TypeAccess> ALL_MEMBERS;
 	{
-		ALL_MEMBERS = new HashSet<>(Arrays.asList(TypeAccess.PUBLIC_FIELDS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS));
+		ALL_MEMBERS = new HashSet<>(Arrays.asList(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS));
 	}
 
 	@Test
