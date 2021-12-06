@@ -26,8 +26,6 @@ $> ./build.sh
 
 ```
 
->>NOTE: You will notice we apply `@TypeHint(types = {Person.class}` (see `DemoApplication`). Given that JSON converter will apply reflection to serialize/de-serialize `Person` type for the function input we need to provide minimal reflection configuration and `@TypeHint` will let us do just that.
-
 ### Deploy and test
 
 - Navigate to AWS Lambda dashboard and create a new function (name it anyway you want).
