@@ -151,6 +151,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 			TypeModelProcessor typeModelProcessor = new TypeModelProcessor();
 			entities.forEach(type -> {
 
+				if(TypeUtils.type(type).isPartOf("java") || type.isPrimitive() || ClassUtils.isPrimitiveArray(type)) {
+					return;
+				}
+
 				/*
 				 * If an EntityListener is defined we need to inspect the target and make sure
 				 * reflection is configured so the methods can be invoked
@@ -168,6 +172,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 				 * Final fields require special treatment having allowWrite set.
 				 */
 				typeModelProcessor.inspect(type).forEach(typeModel -> {
+
+					if(typeModel.isPartOf("java") || typeModel.isPrimitiveType()) {
+						return;
+					}
 
 					DefaultNativeReflectionEntry.Builder builder = registry.reflection().forType(typeModel.getType());
 					builder.withAccess(TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_CONSTRUCTORS);

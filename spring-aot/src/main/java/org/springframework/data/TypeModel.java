@@ -134,6 +134,10 @@ public class TypeModel { // TODO: implements TypeInformation
 		return !ObjectUtils.isEmpty(type.getDeclaredClasses());
 	}
 
+	public boolean isPrimitiveType() {
+		return type.isPrimitive() || ClassUtils.isPrimitiveArray(type);
+	}
+
 	@Nullable
 	public Constructor getPersistenceConstructor() {
 
