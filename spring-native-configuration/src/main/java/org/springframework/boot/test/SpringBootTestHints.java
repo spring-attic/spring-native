@@ -57,6 +57,7 @@ import org.springframework.test.web.client.SimpleRequestExpectationManager;
 		@JdkProxyHint(types = { org.springframework.boot.test.context.SpringBootTest.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
 		@JdkProxyHint(types = { org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
+		@JdkProxyHint(types = { org.springframework.boot.test.context.assertj.AssertableApplicationContext.class, org.springframework.context.ConfigurableApplicationContext.class })
 	}
 )
 @NativeHint(trigger = org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration.class,
