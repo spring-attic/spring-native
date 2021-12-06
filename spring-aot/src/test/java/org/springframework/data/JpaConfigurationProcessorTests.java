@@ -18,6 +18,7 @@ package org.springframework.data;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,7 +40,9 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.sample.data.jpa.AuditingListener;
 import org.springframework.sample.data.jpa.ComponentWithPersistenceContext;
+import org.springframework.sample.data.jpa.EntityWithClassField;
 import org.springframework.sample.data.jpa.EntityWithListener;
+import org.springframework.sample.data.jpa.EntityWithPrimitive;
 import org.springframework.sample.data.jpa.LineItem;
 import org.springframework.sample.data.jpa.NotAnEntity;
 import org.springframework.sample.data.jpa.Order;
@@ -156,6 +159,24 @@ public class JpaConfigurationProcessorTests {
 		});
 	}
 
+	@Test
+	public void shouldNotRegisterJavaLangTypes() {
+
+		assertThat(processJpaEntities(EntityWithClassField.class).reflectionEntries())
+				.map(DefaultNativeReflectionEntry::getType)
+				.map(Class.class::cast)
+				.doesNotContain(Class.class);
+	}
+
+	@Test
+	public void shouldNotRegisterPrimitiveTypes() {
+
+		assertThat(processJpaEntities(EntityWithPrimitive.class).reflectionEntries())
+				.map(DefaultNativeReflectionEntry::getType)
+				.map(Class.class::cast)
+				.doesNotContain(int.class, byte[].class);
+	}
+
 	private Class<?> createCglibProxyType(Class<?> target) {
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.setTargetClass(target);
@@ -194,6 +215,10 @@ public class JpaConfigurationProcessorTests {
 
 		boolean hasReflectionEntry(Class<?> type) {
 			return delegate.reflection().reflectionEntries().anyMatch(it -> it.getType().equals(type));
+		}
+
+		public Stream<DefaultNativeReflectionEntry> reflectionEntries() {
+			return delegate.reflection().reflectionEntries();
 		}
 	}
 }
