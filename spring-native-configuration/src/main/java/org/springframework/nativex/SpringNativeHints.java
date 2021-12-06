@@ -19,6 +19,8 @@ package org.springframework.nativex;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeAccess;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(
@@ -26,5 +28,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				org.springframework.nativex.AotModeDetector.class
 		}, initTime = InitializationTime.BUILD)
 )
+// TODO To be removed when Spring Framework will be more lenient about it, use netty-kotlin or webflux-thymeleaf to check
+@NativeHint(trigger = org.junit.jupiter.api.Test.class,
+		types = @TypeHint(types = TypeAccess.class, access = TypeAccess.RESOURCE))
 public class SpringNativeHints implements NativeConfiguration {
 }
