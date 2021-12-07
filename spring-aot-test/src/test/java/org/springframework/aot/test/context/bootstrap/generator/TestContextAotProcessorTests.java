@@ -106,11 +106,11 @@ class TestContextAotProcessorTests {
 				.removeIndent(1).lines().containsSubsequence(
 						"public static Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers(",
 						"    ) {",
-						"  Map<String, Class<? extends ApplicationContextInitializer<?>>> map = new HashMap<>();",
-						"  map.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", TestContextBootstrapInitializer0.class);",
-						"  map.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", TestContextBootstrapInitializer0.class);",
-						"  map.put(\"org.springframework.aot.test.samples.simple.SimpleSpringTests\", SimpleSpringTestsContextInitializer.class);",
-						"  return map;",
+						"  Map<String, Class<? extends ApplicationContextInitializer<?>>> entries = new HashMap<>();",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationTests\", TestContextBootstrapInitializer0.class);",
+						"  entries.put(\"org.springframework.aot.test.samples.app.SampleApplicationAnotherTests\", TestContextBootstrapInitializer0.class);",
+						"  entries.put(\"org.springframework.aot.test.samples.simple.SimpleSpringTests\", SimpleSpringTestsContextInitializer.class);",
+						"  return entries;",
 						"}");
 	}
 
