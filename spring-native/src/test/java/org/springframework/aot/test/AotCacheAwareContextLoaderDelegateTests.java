@@ -20,58 +20,129 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
+import org.springframework.test.context.cache.ContextCache;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
 import org.springframework.test.context.support.DefaultBootstrapContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
- * Tests for {@link AotCacheAwareContextLoaderDelegate}.
+ * Tests for {@link AotCacheAwareContextLoaderDelegate} that interact with a
+ * mock {@link ContextCache}.
  *
  * @author Stephane Nicoll
  * @author Sam Brannen
  */
 class AotCacheAwareContextLoaderDelegateTests {
 
+	private final ContextCache contextCache = mock(ContextCache.class);
+
 	private final ApplicationContext applicationContext = mock(ApplicationContext.class);
 
-	private final SmartContextLoader contextLoader = mockSmartContextLoader(this.applicationContext);
+	private final SmartContextLoader aotSmartContextLoader = mockSmartContextLoader(this.applicationContext);
 
 	@Test
-	void loadContextWithMatchDelegatesToSmartContextLoader() throws Exception {
-		AotCacheAwareContextLoaderDelegate delegate = createAotCacheAwareContextLoaderDelegate(
-				Map.of(SampleTest.class.getName(), () -> this.contextLoader));
-		assertThat(delegate.loadContextInternal(createMergedContextConfiguration(SampleTest.class)))
-				.isSameAs(this.applicationContext);
-		verify(this.contextLoader).loadContext(any(MergedContextConfiguration.class));
+	void loadContextWithMatchUsesAotInfrastructure() throws Exception {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+
+		MergedContextConfiguration mergedConfig = createMergedContextConfiguration(SampleTest.class);
+		assertThat(delegate.loadContext(mergedConfig)).isSameAs(this.applicationContext);
+
+		// loadContext() must actually be invoked with the original MergedContextConfiguration
+		// instead of the AotMergedContextConfiguration, so that the ContextLoader can process
+		// active profiles, test property sources, etc. that are picked up at run time.
+		verify(this.aotSmartContextLoader, times(0)).loadContext(any(AotMergedContextConfiguration.class));
+		ArgumentCaptor<MergedContextConfiguration> mergedConfigCaptor = ArgumentCaptor.forClass(MergedContextConfiguration.class);
+		verify(this.aotSmartContextLoader).loadContext(mergedConfigCaptor.capture());
+		assertThat(mergedConfigCaptor.getValue()).isSameAs(mergedConfig);
+
+		// On the flip side, the AotMergedContextConfiguration should be used instead of the
+		// original MergedContextConfiguration for the context cache.
+		verifyCached(AotMergedContextConfiguration.class);
+		verifyNotCached(MergedContextConfiguration.class);
 	}
 
 	@Test
-	void loadContextWithNoMatchUsesDefaultBehavior() throws Exception {
-		AotCacheAwareContextLoaderDelegate delegate = createAotCacheAwareContextLoaderDelegate(
-				Map.of(SampleTest.class.getName(), () -> this.contextLoader));
-		ApplicationContext actual = delegate.loadContextInternal(
-				createMergedContextConfiguration(SampleAnotherTest.class));
+	void loadContextWithoutMatchUsesDefaultBehavior() {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+		ApplicationContext actual = delegate.loadContext(createMergedContextConfiguration(SampleAnotherTest.class));
 		assertThat(actual).isNotNull();
-		verifyNoInteractions(this.contextLoader);
+		assertThat(actual.getEnvironment().getProperty("spring.main.web-application-type")).isEqualTo("none");
+		verifyNoInteractions(this.aotSmartContextLoader);
+		verifyCached(MergedContextConfiguration.class);
+		verifyNotCached(AotMergedContextConfiguration.class);
+	}
+
+	@Test
+	void isContextLoadedWithMatchUsesAotInfrastructure() {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+		delegate.isContextLoaded(createMergedContextConfiguration(SampleTest.class));
+		verify(this.contextCache, times(0)).contains(exactInstanceOf(MergedContextConfiguration.class));
+		verify(this.contextCache).contains(any(AotMergedContextConfiguration.class));
+	}
+
+	@Test
+	void isContextLoadedWithoutMatchUsesDefaultBehavior() {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+		delegate.isContextLoaded(createMergedContextConfiguration(SampleAnotherTest.class));
+		verify(this.contextCache, times(0)).contains(any(AotMergedContextConfiguration.class));
+		verify(this.contextCache).contains(exactInstanceOf(MergedContextConfiguration.class));
+	}
+
+	@Test
+	void closeContextWithMatchUsesAotInfrastructure() {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+		delegate.closeContext(createMergedContextConfiguration(SampleTest.class), HierarchyMode.CURRENT_LEVEL);
+		verify(this.contextCache, times(0)).remove(exactInstanceOf(MergedContextConfiguration.class), any(HierarchyMode.class));
+		verify(this.contextCache).remove(any(AotMergedContextConfiguration.class), any(HierarchyMode.class));
+	}
+
+	@Test
+	void closeContextWithoutMatchUsesDefaultBehavior() {
+		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
+		delegate.closeContext(createMergedContextConfiguration(SampleAnotherTest.class), HierarchyMode.CURRENT_LEVEL);
+		verify(this.contextCache, times(0)).remove(any(AotMergedContextConfiguration.class), any(HierarchyMode.class));
+		verify(this.contextCache).remove(exactInstanceOf(MergedContextConfiguration.class), any(HierarchyMode.class));
+	}
+
+
+	private AotCacheAwareContextLoaderDelegate createDemoDelegate() {
+		return createAotCacheAwareContextLoaderDelegate(
+				Map.of(SampleTest.class.getName(), () -> this.aotSmartContextLoader),
+				Map.of(SampleTest.class.getName(), DemoApplicationContextInitializer.class));
 	}
 
 	private AotCacheAwareContextLoaderDelegate createAotCacheAwareContextLoaderDelegate(
-			Map<String, Supplier<SmartContextLoader>> contextLoaders) {
-		AotContextLoader aotContextLoader = new AotContextLoader(contextLoaders);
-		return new AotCacheAwareContextLoaderDelegate(aotContextLoader);
+			Map<String, Supplier<SmartContextLoader>> contextLoaders,
+			Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers) {
+		AotTestMappings aotTestMappings = new AotTestMappings(contextLoaders, contextInitializers);
+		return new AotCacheAwareContextLoaderDelegate(aotTestMappings, this.contextCache);
+	}
+
+	private void verifyCached(Class<? extends MergedContextConfiguration> type) {
+		verify(this.contextCache).put(exactInstanceOf(type), any(ApplicationContext.class));
+	}
+
+	private void verifyNotCached(Class<? extends MergedContextConfiguration> type) {
+		verify(this.contextCache, times(0)).put(exactInstanceOf(type), any(ApplicationContext.class));
 	}
 
 	private static SmartContextLoader mockSmartContextLoader(ApplicationContext applicationContext) {
@@ -88,8 +159,15 @@ class AotCacheAwareContextLoaderDelegateTests {
 	private MergedContextConfiguration createMergedContextConfiguration(Class<?> testClass) {
 		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
 		bootstrapper.setBootstrapContext(new DefaultBootstrapContext(testClass,
-				new DefaultCacheAwareContextLoaderDelegate()));
+				new DefaultCacheAwareContextLoaderDelegate(this.contextCache)));
 		return bootstrapper.buildMergedContextConfiguration();
+	}
+
+	/**
+	 * Performs an exact type check instead of an "instance of" check.
+	 */
+	private static <T> T exactInstanceOf(Class<T> type) {
+		return argThat(arg -> arg.getClass() == type);
 	}
 
 
@@ -103,6 +181,12 @@ class AotCacheAwareContextLoaderDelegateTests {
 
 	@SpringBootConfiguration
 	static class SampleConfiguration {
+	}
+
+	static class DemoApplicationContextInitializer implements ApplicationContextInitializer<GenericApplicationContext> {
+		@Override
+		public void initialize(GenericApplicationContext applicationContext) {
+		}
 	}
 
 }
