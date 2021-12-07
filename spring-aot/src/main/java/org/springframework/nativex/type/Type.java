@@ -744,14 +744,6 @@ public class Type {
 		}
 	}
 
-	private boolean isEventListener() {
-		try {
-			return implementsInterface("org/springframework/context/event/EventListenerFactory");
-		} catch (MissingTypeException mte) {
-			return false;
-		}
-	}
-
 	public boolean isAtImport() {
 		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtImports));
 	}
@@ -786,12 +778,12 @@ public class Type {
 		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtController), new HashSet<>(), false);
 	}
 
-	public boolean isAbstractNestedCondition() {
-		if (dimensions > 0) {
-			return false;
-		}
-		return extendsClass("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
-	}
+//	public boolean isAbstractNestedCondition() {
+//		if (dimensions > 0) {
+//			return false;
+//		}
+//		return extendsClass("Lorg/springframework/boot/autoconfigure/condition/AbstractNestedCondition;");
+//	}
 
 	public boolean isMetaAnnotated(String slashedTypeDescriptor) {
 		return isMetaAnnotated(slashedTypeDescriptor, false);
@@ -1254,246 +1246,8 @@ public class Type {
 		return s.toString();
 	}
 
-	/**
-	 * Find compilation hints directly on this type or used as a meta-annotation on
-	 * annotations on this type.
-	 * @return the hints
-	 */
-	public List<HintApplication> getApplicableHints() {
-		if (dimensions > 0) {
-			return Collections.emptyList();
-		}
-		List<HintApplication> hints = new ArrayList<>();
-		List<HintDeclaration> hintDeclarations = typeSystem.findHints(getName());
-		if (hintDeclarations.size() != 0) {
-			List<Type> s = new ArrayList<>();
-			s.add(this);
-			for (HintDeclaration hintDeclaration : hintDeclarations) {
-				hints.add(new HintApplication(s, Collections.emptyMap(), hintDeclaration));
-			}
-		}
-		if (node.visibleAnnotations != null) {
-			for (AnnotationNode an : node.visibleAnnotations) {
-				Type annotationType = typeSystem.Lresolve(an.desc, true);
-				if (annotationType == null) {
-					logger.debug("Couldn't resolve " + an.desc + " annotation type whilst searching for hints on "
-							+ getName());
-				} else {
-					Stack<Type> s = new Stack<>();
-					s.push(this);
-					annotationType.collectHints(an, hints, new HashSet<>(), s);
-				}
-			}
-		}
-		try {
-			if (isImportSelector() && hints.size() == 0) {
-				// Failing early as this will likely result in a problem later - fix is
-				// typically (right now) to add a new Hint in the configuration module
-				logger.debug("WARNING: No access hint found for import selector: " + getDottedName());
-			}
-		} catch (MissingTypeException mte) {
-			logger.debug("Unable to determine if type " + getName()
-					+ " is import selector - can't fully resolve hierarchy - ignoring");
-		}
-		return hints.size() == 0 ? Collections.emptyList() : hints;
-	}
-
-	void collectHints(AnnotationNode an, List<HintApplication> hints, Set<AnnotationNode> visited, Stack<Type> annotationChain) {
-		if (!visited.add(an)) {
-			return;
-		}
-		try {
-			annotationChain.push(this);
-			List<HintDeclaration> hintsOnAnnotation = typeSystem.findHints(an.desc);
-			if (hintsOnAnnotation.size() != 0) {
-				List<String> extractAttributeNames = hintsOnAnnotation.stream().map(hd -> hd.getExtractAttributeNames()).filter(x->x!=null).flatMap(List::stream).collect(Collectors.toList());
-				List<String> typesCollectedFromAnnotation = collectTypeReferencesInAnnotation(an, extractAttributeNames);
-				if (an.desc.equals(Type.AtEnableConfigurationProperties)) {
-					Map<String,Integer> propertyTypesForAccess = processConfigurationProperties(typesCollectedFromAnnotation);
-					Map<String,Integer> newMap = new HashMap<>();
-					for (Map.Entry<String,Integer> entry: propertyTypesForAccess.entrySet()) {
-						newMap.put(fromLdescriptorToDotted(entry.getKey()),entry.getValue());
-					}
-					if (DEBUG_CONFIGURATION_PROPERTY_ANALYSIS) {
-						logger.debug("ConfigurationPropertyAnalysis: whilst looking at type "+typesCollectedFromAnnotation+" making these accessible:"+
-								newMap.entrySet().stream().map(e -> "\n"+e.getKey()+":"+AccessBits.toString(e.getValue())).collect(Collectors.toList()));
-					}
-					for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
-						hints.add(new HintApplication(new ArrayList<>(annotationChain), newMap, hintOnAnnotation));
-					}
-				} else {
-					for (HintDeclaration hintOnAnnotation : hintsOnAnnotation) {
-						HintApplication ha = new HintApplication(new ArrayList<>(annotationChain),
-							asMap(typesCollectedFromAnnotation, hintOnAnnotation.skipIfTypesMissing, hintOnAnnotation.follow),
-							hintOnAnnotation);
-						hints.add(ha);
-					}
-				}
-			}
-			// check for hints on meta annotation
-			if (node.visibleAnnotations != null) {
-				for (AnnotationNode visibleAnnotation : node.visibleAnnotations) {
-					Type annotationType = typeSystem.Lresolve(visibleAnnotation.desc, true);
-					if (annotationType == null) {
-						logger.debug("Couldn't resolve " + visibleAnnotation.desc
-								+ " annotation type whilst searching for hints on " + getName());
-					} else {
-						annotationType.collectHints(visibleAnnotation, hints, visited, annotationChain);
-					}
-				}
-			}
-		} finally {
-			annotationChain.pop();
-		}
-	}
-	
-	private final static boolean DEBUG_CONFIGURATION_PROPERTY_ANALYSIS = false;
-	
-	/**
-	 * Treat this type as a configuration properties, and based on the needs
-	 * of that behaviour compute a map for all the types (including this one)
-	 * that will need reflective access (creating a map of type names to AccessBits).
-	 */
-	public Map<String,Integer> processAsConfigurationProperties() {
-		return processConfigurationProperties(Collections.singletonList(this.getDescriptor()));
-	}
-	
-	private Map<String,Integer> processConfigurationProperties(List<String> propertiesTypes) {
-		if (disablePropertyReflection) return Collections.emptyMap();
-		Map<String,Integer> collector = new HashMap<>();
-		for (String propertiesType: propertiesTypes) {
-			Type type = typeSystem.Lresolve(propertiesType, true);
-			if (type != null) {
-				boolean shouldWalk = true;
-				if (shouldWalk) {
-					walkPropertyType(propertiesType, collector);
-				} else {
-					// Nothing is binding to this so we don't need to expose any fields or methods
-					collector.put(propertiesType, AccessBits.CLASS|AccessBits.DECLARED_CONSTRUCTORS);
-				}
-			}
-		}
-		return collector;
-	}
-	
-	private String getConfigurationPropertiesPrefix() {
-		Map<String,String> values = getAnnotationValuesInHierarchy(AtConfigurationProperties);
-		if (values != null) {
-			String prefix = values.get("prefix");
-			if ((prefix == null || prefix.length()==0) && values.get("value")!=null) {
-				prefix = values.get("value");
-			}
-			return prefix;
-		}
-		return null;
-	}
-
-	private Integer inferPropertyAccessRequired(String propertiesType) {
-		if (propertiesType.startsWith("Ljava/lang/") || // String/Integer/...
-			propertiesType.startsWith("Ljava/nio/") || // Charset
-			propertiesType.startsWith("Ljava/io/") || // File
-			propertiesType.startsWith("Ljava/net/") // InetAddress
-			) {
-			return 0;
-		}
-		// See convertors in ApplicationConversionService.addApplicationConverters
-		if (propertiesType.equals("Ljava/time/Period;") ||
-			propertiesType.equals("Ljava/time/Duration;") ||
-			propertiesType.equals("Lorg/springframework/util/unit/DataSize;") ||
-			propertiesType.startsWith("Lorg/springframework/core/io/") || // catching Resource, anything else?
-			propertiesType.startsWith("Ljava/util/") // Map/List/Set/...   issue #382
-			) { 
-			return AccessBits.CLASS;
-		}
-		Type type = typeSystem.Lresolve(propertiesType, true);
-		if (type.isEnum()) {
-			return AccessBits.CLASS;
-		}
-		int access = AccessBits.CLASS | AccessBits.DECLARED_CONSTRUCTORS;
-		if (type.isAtValidated(false)) {
-			// Need access to the annotations on the fields that define validation constraints
-			access |= AccessBits.DECLARED_FIELDS;
-		}
-		if (!type.isAtConstructorBinding()) {
-			// If not constructor binding, need access to the setters (yes, this will currently give too much access as it will include getters)
-			access |= AccessBits.PUBLIC_METHODS;//DECLARED_METHODS;
-		}
-		return access;
-	}
-
-	/**
-	 * Review the getters in a given configuration properties type, for any types in the return
-	 * types of the getter, add them for later reflective access. Include any in the generic
-	 * signature of the return type too.
-	 */
-	private void walkPropertyType(String propertiesType, Map<String,Integer> collector) {
-		Type type = typeSystem.Lresolve(propertiesType, true);
-		if (type != null) {
-			if (!collector.containsKey(propertiesType)) {
-				int inferredAccess = inferPropertyAccessRequired(propertiesType);
-//				logger.debug("inferPropertyAccessRequired: "+propertiesType+" return "+AccessBits.toString(inferredAccess));
-				if (inferredAccess !=0) {
-					collector.put(propertiesType, inferredAccess);
-					if (inferredAccess != AccessBits.CLASS) { 
-						for (Method method : type.getMethods(m -> (m.getName().startsWith("get")))) {
-							for (Type returnSignatureType: method.getSignatureTypes(true)) {
-								String returnTypeDescriptor = returnSignatureType.getDescriptor();
-								walkPropertyType(returnTypeDescriptor, collector);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	public boolean isEnum() {
 		return (node.access & Opcodes.ACC_ENUM)!=0;
-	}
-
-	private Map<String, Integer> asMap(List<String> typesCollectedFromAnnotation, boolean usingForVisibilityCheck, boolean follow) {
-		Map<String, Integer> map = new HashMap<>();
-		for (String t : typesCollectedFromAnnotation) {
-			Type type = typeSystem.Lresolve(t, true);
-			int ar = -1;
-			if (usingForVisibilityCheck) {
-				ar = AccessBits.CLASS;
-			} else {
-				ar = inferAccessRequired(type);
-			}
-			if (ar!= AccessBits.NONE || follow) {
-				map.put(fromLdescriptorToDotted(t), ar);
-			}
-		}
-		return map;
-	}
-
-	private Type[] getMemberTypes() {
-		if (dimensions > 0)
-			return new Type[0];
-		List<Type> result = new ArrayList<>();
-		List<InnerClassNode> nestMembers = node.innerClasses;
-		if (nestMembers != null) {
-			for (InnerClassNode icn : nestMembers) {
-				if (icn.name.startsWith(this.getName() + "$")) {
-					result.add(typeSystem.resolveSlashed(icn.name));
-				}
-			}
-			logger.debug(this.getName()
-					+ " has inners " + nestMembers.stream().map(f -> "oo=" + this.getDescriptor() + "::o=" + f.outerName
-							+ "::n=" + f.name + "::in=" + f.innerName).collect(Collectors.joining(","))
-					+ "  >> " + result);
-		}
-		return result.toArray(new Type[0]);
-	}
-	
-	public List<String> getMethodsInvokingGetBean() {
-		byte[] bytes = typeSystem.find(getName());
-		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
-			return GetBeanDetectionVisitor.run(bais);
-		} catch (IOException e) {
-			throw new IllegalStateException("Unexpected IOException processing bytes for "+this.getName());
-		}
 	}
 
 	public List<String> getMethodsInvokingAtBeanMethods() {
@@ -1505,84 +1259,12 @@ public class Type {
 		}
 	}
 
-
-	/*
-	private List<CompilationHint> findCompilationHintHelper(HashSet<Type> visited) {
-		if (!visited.add(this)) {
-			return null;
-		}
-		if (node.visibleAnnotations != null) {
-			for (AnnotationNode an : node.visibleAnnotations) {
-				List<CompilationHint> compilationHints = typeSystem.findHints(an.desc);// SpringConfiguration.findProposedHints(an.desc);
-				if (compilationHints.size() != 0) {
-					return compilationHints;
-				}
-				Type resolvedAnnotation = typeSystem.Lresolve(an.desc);
-				compilationHints = resolvedAnnotation.findCompilationHintHelper(visited);
-				if (compilationHints.size() != 0) {
-					return compilationHints;
-				}
-			}
-		}
-		return null;
-	}
-	*/
-
-	@SuppressWarnings("rawtypes")
-	private List<String> collectTypeReferencesInAnnotation(AnnotationNode an, List<String> extractAttributeNames) {
-		List<Object> values = an.values;
-		List<String> importedReferences = new ArrayList<>();
-		if (values != null) {
-			for (int i = 0; i < values.size(); i += 2) {
-				String attributeName = (String)values.get(i);
-				if (attributeName.equals("value") || 
-						extractAttributeNames.contains(attributeName)
-					) {
-					// For some annotations it is a list, for some a single class (e.g.
-					// @ConditionalOnSingleCandidate)
-					Object object = values.get(i + 1);
-					if (object instanceof List) {
-						// Adapt to whatever is in the list
-						List listValue = (List)object;
-						if (listValue.size()>0) {
-							Object listEntry = listValue.get(0);
-							if (listEntry instanceof org.objectweb.asm.Type) {
-								List<String> toAdd = ((List<org.objectweb.asm.Type>) object).stream()
-										.map(t -> t.getDescriptor()).collect(Collectors.toList());
-								importedReferences.addAll(toAdd);
-							} else if (listEntry instanceof String) {
-								for (Object o: listValue) {
-									importedReferences.add("L"+((String)o).replace(".", "/")+";");
-								}
-							}
-						}
-					} else {
-						if (object instanceof org.objectweb.asm.Type) {
-							importedReferences.add(((org.objectweb.asm.Type) object).getDescriptor());
-						} else if (object instanceof String) {
-							importedReferences.add("L" + ((String) object).replace(".", "/") + ";");
-						}
-					}
-				}
-			}
-		}
-		return importedReferences.size() == 0 ? Collections.emptyList() : importedReferences;
-	}
-
 	public boolean isImportSelector() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
 		} catch (MissingTypeException mte) {
 			return false;
 		}
-	}
-	
-	public boolean isAtValidated(boolean includeHierarchy) {
-		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtValidated), includeHierarchy);
-	}
-	
-	public boolean isAtConstructorBinding() {
-		return (dimensions > 0) ? false : isMetaAnnotated(fromLdescriptorToSlashed(AtConstructorBinding));	
 	}
 
 	public boolean isApplicationListener() {
@@ -2385,184 +2067,6 @@ public class Type {
 		return b;
 	}
 
-	public Collection<Type> collectAtMappingMarkedReturnTypes() {
-		Set<Type> returnTypes = new LinkedHashSet<>();
-		List<Method> methodsWithAnnotation = getMethodsWithAnnotation(AtMapping, true);
-		for (Method m : methodsWithAnnotation) {
-			returnTypes.add(m.getReturnType());
-		}
-		return returnTypes;
-	}
-
-	public String findTypeParameterInSupertype(String supertype, int typeParameterNumber) {
-		if (node.signature == null) {
-			return null;
-		}
-		SignatureReader reader = new SignatureReader(node.signature);
-		TypeParamFinder tpm = new TypeParamFinder(supertype);
-		reader.accept(tpm);
-		return tpm.getTypeParameter(typeParameterNumber);
-	}
-
-	static class TypeParamFinder extends SignatureVisitor {
-
-		String typeparameter;
-
-		List<String> types = null;
-
-		private String supertype;
-
-		private boolean nextIsBoundType = false;
-
-		private boolean collectTypeParams = false;
-
-		private List<String> typeParams = new ArrayList<>();
-
-		public TypeParamFinder(String supertype) {
-			super(Opcodes.ASM9);
-			this.supertype = supertype.replace(".", "/");
-		}
-
-		public String getTypeParameter(int typeParameterNumber) {
-			if (typeParameterNumber >= typeParams.size()) {
-				return null;
-			}
-			return typeParams.get(typeParameterNumber).replace("/", ".");
-		}
-
-		@Override
-		public SignatureVisitor visitSuperclass() {
-			nextIsBoundType = true;
-			collectTypeParams = false;
-			return super.visitSuperclass();
-		}
-
-		@Override
-		public SignatureVisitor visitInterface() {
-			nextIsBoundType = true;
-			collectTypeParams = false;
-			return super.visitInterface();
-		}
-
-		@Override
-		public void visitClassType(String name) {
-			if (nextIsBoundType && name.equals(supertype)) {
-				// Hit the bound type of interest, the next few types are what we should collect
-				collectTypeParams = true;
-			} else if (collectTypeParams) {
-				typeParams.add(name);
-			}
-			super.visitClassType(name);
-			nextIsBoundType = false;
-		}
-	}
-
-	public String fetchReactiveCrudRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.repository.reactive.ReactiveCrudRepository", 0);
-	}
-
-	public String fetchCrudRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.repository.CrudRepository", 0);
-	}
-
-	public String fetchJpaRepositoryType() {
-		return findTypeParameterInSupertype("org.springframework.data.jpa.repository.JpaRepository", 0);
-	}
-
-
-	/**
-	 * Verify this type as a component, checking everything is set correctly for
-	 * native-image construction to succeed.
-	 *
-	 */
-	public void verifyComponent() {
-		List<String> methodsInvokingAtBeanMethods = null;
-		try {
-			methodsInvokingAtBeanMethods = getMethodsInvokingAtBeanMethods();
-		} catch (Exception e) {
-			// Probably a MissingTypeException trying to resolve something not on the classpath -
-			// in this case we can't correctly verify something, but it *probably* isn't getting used anyway
-		}
-		if (methodsInvokingAtBeanMethods != null) {
-			throw new IllegalStateException("ERROR: in '"+getDottedName()+"' these methods are directly invoking methods marked @Bean: "+
-					methodsInvokingAtBeanMethods+" - due to the enforced proxyBeanMethods=false for components in a native-image, please consider "+
-					"refactoring to use instance injection. If you are confident this is not going to affect your application, you may turn this check "
-					+ "off using -Dspring.native.verify=false.");
-		}
-	}
-
-	private void verifyProxyBeanMethodsSetting() {
-		List<Method> methodsWithAtBean = getMethodsWithAtBean();
-		if (methodsWithAtBean.size() != 0) {
-			List<AnnotationNode> annos = collectAnnotations();
-			annos = filterAnnotations(annos, an -> {
-				Type annotationType = typeSystem.Lresolve(an.desc);
-				return annotationType.hasMethod("proxyBeanMethods");
-			});
-			// Rule:
-			// At least one annotation in the list has to be setting proxyBeanMethods=false.
-			// Some may not supply it if they are being aliased by other values.
-			// TODO this does not check the default value for proxyBeanMethods
-			// TODO this does not verify/follow AliasFor usage
-			boolean atLeastSetFalseSomewhere = false;
-			if (ClassUtils.isPresent(getDottedName().replace("$", "_") + "Cached", null)) {
-				return;
-			}
-			for (AnnotationNode anode : annos) {
-				if (hasValue(anode, "proxyBeanMethods")) {
-					Boolean value = (Boolean) getValue(anode, "proxyBeanMethods");
-					if (!value) {
-						atLeastSetFalseSomewhere = true;
-					}
-				}
-			}
-			if (!atLeastSetFalseSomewhere) {
-				logger.debug("[verification] Warning: component " + this.getDottedName()
-						+ " does not specify annotation value proxyBeanMethods=false to avoid CGLIB proxies");
-			}
-		}
-	}
-
-	/**
-	 * For an {@link AnnotationNode} retrieve the value for a particular attribute,
-	 * will throw an exception if no value is set for that attribute.
-	 *
-	 * @param anode the annotation node whose values should be checked
-	 * @param name  the annotation attribute name being searched for
-	 * @return the value of that attribute if set on that annotation node
-	 * @throws IllegalStateException if that attribute name is not set
-	 */
-	private Object getValue(AnnotationNode anode, String name) {
-		List<Object> values = anode.values;
-		for (int i = 0; i < values.size(); i += 2) {
-			if (values.get(i).toString().equals(name)) {
-				return values.get(i + 1);
-			}
-		}
-		return new IllegalStateException("Attribute " + name
-				+ " not set on the specified annotation, precede this call to getValue() with a hasValue() check");
-	}
-
-	/**
-	 * For an {@link AnnotationNode} check if it specifies a value for a particular
-	 * attribute.
-	 *
-	 * @param node the annotation node whose values should be checked
-	 * @param name the annotation attribute name being searched for
-	 * @return true if the annotation did specify a value for that attribute
-	 */
-	private boolean hasValue(AnnotationNode node, String name) {
-		List<Object> values = node.values;
-		if (values != null) {
-			for (int i = 0; i < values.size(); i += 2) {
-				if (values.get(i).toString().equals(name)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	public boolean hasMethod(String methodName) {
 		List<MethodNode> methods = node.methods;
 		for (MethodNode method : methods) {
@@ -2571,29 +2075,6 @@ public class Type {
 			}
 		}
 		return false;
-	}
-
-	private List<AnnotationNode> filterAnnotations(List<AnnotationNode> input, Predicate<AnnotationNode> filter) {
-		return input.stream().filter(filter).collect(Collectors.toList());
-	}
-
-	private List<AnnotationNode> collectAnnotations() {
-		List<AnnotationNode> resultsHolder = new ArrayList<>();
-		collectAnnotationsHelper(resultsHolder, new HashSet<String>());
-		return resultsHolder;
-	}
-
-	private void collectAnnotationsHelper(List<AnnotationNode> collector, Set<String> seen) {
-		if (node.visibleAnnotations != null) {
-			for (AnnotationNode anno : node.visibleAnnotations) {
-				if (!seen.add(anno.desc)) {
-					continue;
-				}
-				collector.add(anno);
-				Type annotationType = typeSystem.Lresolve(anno.desc);
-				annotationType.collectAnnotationsHelper(collector, seen);
-			}
-		}
 	}
 
 	public Method getDefaultConstructor() {
@@ -3017,21 +2498,6 @@ public class Type {
 		return verificationProblems.isEmpty();
 	}
 
-	public boolean shouldFollow() {
-		// Example: For isApplicationListener(): DataSourceInitializerInvoker imported from DataSourceInitializationConfiguration
-		return isAtConfiguration() || isImportSelector() || isImportRegistrar() || isBeanFactoryPostProcessor() || isApplicationListener();
-	}
-
-	public boolean hasAutowiredMethods() {
-		List<Method> ms = getMethodsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
-		return !ms.isEmpty();
-	}
-	
-	public boolean hasAutowiredFields() {
-		List<Field> fs = getFieldsWithAnnotationName("org.springframework.beans.factory.annotation.Autowired", false);
-		return !fs.isEmpty();
-	}
-
 	/**
 	 * @return subtypes of the current type
 	 */
@@ -3049,73 +2515,5 @@ public class Type {
 		return subtypes;
 	}
 	
-	/**
-	 * Determine if any methods on this type look like they need to be reflectively accessible and if so return
-	 * the descriptors for them. Managing the list of annotations that should be accessible is painful, so this
-	 * code will assume if the annotation starts with org.springframework it is a candidate of interest (it will
-	 * ignore those containing Null to skip Nullable/etc).
-	 * 
-	 * @return list of {@link MethodDescriptor} for those methods of interest
-	 */
-	public List<MethodDescriptor> getRequiredAccessibleMethods() {
-		List<Method> methods = new ArrayList<>();
-		for (Method method: getMethods()) {
-			boolean ignore = true;
-			for (Type t: method.getAnnotationTypes()) {
-				String name = t.getDottedName();
-				if (name.startsWith("org.springframework.") && !name.contains("Null")) {
-					ignore = false;
-					break;
-				}
-			}
-			if (!ignore) {
-				methods.add(method);
-			}
-		}
-		if (methods.isEmpty()) {
-			return null;
-		}
-		List<MethodDescriptor> methodDescriptors = new ArrayList<>();
-		for (Method method: methods) {
-			String[] array = method.asConfigurationArray(true);
-			if (array != null) {
-				methodDescriptors.add(MethodDescriptor.of(array));
-			}
-		}
-		return methodDescriptors;
-	}
-
-	/**
-	 * Determine if any fields on this type look like they need to be reflectively accessible and if so return
-	 * the descriptors for them. Managing the list of annotations that should be accessible is painful, so this
-	 * code will assume if the annotation starts with org.springframework it is a candidate of interest (it will
-	 * ignore those containing Null to skip Nullable/etc).
-	 * 
-	 * @return list of {@link MethodDescriptor} for those methods of interest
-	 */
-	public List<FieldDescriptor> getRequiredAccessibleFields() {
-		List<Field> fields = new ArrayList<>();
-		for (Field field: getFields()) {
-			boolean ignore = true;
-			for (Type t: field.getAnnotationTypes()) {
-				String name = t.getDottedName();
-				if (name.startsWith("org.springframework.") && !name.contains("Null")) {
-					ignore = false;
-					break;
-				}
-			}
-			if (!ignore) {
-				fields.add(field);
-			}
-		}
-		if (fields.isEmpty()) {
-			return null;
-		}
-		List<FieldDescriptor> fieldDescriptors = new ArrayList<>();
-		for (Field field: fields) {
-			fieldDescriptors.add(FieldDescriptor.of(field.getName(),false,false));
-		}
-		return fieldDescriptors;
-	}
 
 }

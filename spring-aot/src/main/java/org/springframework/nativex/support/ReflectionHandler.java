@@ -48,59 +48,6 @@ public class ReflectionHandler extends Handler {
 		super(collector);
 	}
 
-	/**
-	 * Record that reflective access to a type (and a selection of its members based
-	 * on the access) should be possible at runtime. This method will pre-emptively
-	 * check all type references to ensure later native-image processing will not
-	 * fail if, for example, it trips up over a type reference in a generic type
-	 * that isn't on the image building classpath. NOTE: it is assumed that if
-	 * elements are not accessible that the runtime doesn't need them (this is done
-	 * under the spring model where conditional checks on auto configuration would
-	 * cause no attempts to be made to types/members that aren't added here).
-	 * 
-	 * @param typename the dotted type name for which to add reflective access
-	 * @param access    any members that should be accessible via reflection
-	 */
-	public void addAccess(String typename, TypeAccess... access) {
-		addAccess(typename, null, null, null, null, false, access);
-	}
-	
-	public void addAccess(String typename, boolean silent, AccessDescriptor ad) {
-		if (ad.noMembersSpecified()) {
-			addAccess(typename, null, null, null, null, silent, AccessBits.getAccess(ad.getAccessBits()));
-		} else {
-			List<org.springframework.nativex.type.MethodDescriptor> mds = ad.getMethodDescriptors();
-			String[][] methodsAndConstructors = new String[mds.size()][];
-			for (int m=0;m<mds.size();m++) {
-				org.springframework.nativex.type.MethodDescriptor methodDescriptor = mds.get(m);
-				methodsAndConstructors[m] = new String[methodDescriptor.getParameterTypes().size()+1];
-				methodsAndConstructors[m][0] = methodDescriptor.getName();
-				List<String> ps = methodDescriptor.getParameterTypes();
-				for (int p=0;p<ps.size();p++) {
-					methodsAndConstructors[m][p+1]=ps.get(p);
-				}
-			}
-			List<org.springframework.nativex.type.MethodDescriptor> qmds = ad.getQueriedMethodDescriptors();
-			String[][] queriedMethodsAndConstructors = new String[qmds.size()][];
-			for (int m=0;m<qmds.size();m++) {
-				org.springframework.nativex.type.MethodDescriptor methodDescriptor = qmds.get(m);
-				queriedMethodsAndConstructors[m] = new String[methodDescriptor.getParameterTypes().size()+1];
-				queriedMethodsAndConstructors[m][0] = methodDescriptor.getName();
-				List<String> ps = methodDescriptor.getParameterTypes();
-				for (int p=0;p<ps.size();p++) {
-					queriedMethodsAndConstructors[m][p+1]=ps.get(p);
-				}
-			}
-			List<FieldDescriptor> fds = ad.getFieldDescriptors();
-			String[][] fields = new String[fds.size()][];
-			for (int f=0;f<fds.size();f++) {
-				FieldDescriptor fd = fds.get(f);
-				fields[f] = FieldDescriptor.toStringArray(fd.getName(), fd.isAllowUnsafeAccess(), fd.isAllowWrite());
-			}
-			addAccess(typename, null, methodsAndConstructors, queriedMethodsAndConstructors, fields, silent, AccessBits.getAccess(ad.getAccessBits()));
-		}
-	}
-	
 	public static String[] subarray(String[] array) {
 		if (array.length == 1) {
 			return null;

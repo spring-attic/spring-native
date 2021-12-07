@@ -18,7 +18,6 @@ package org.springframework.nativex.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.type.TypeSystem;
 

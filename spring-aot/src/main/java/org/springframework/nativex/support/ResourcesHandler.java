@@ -16,19 +16,14 @@
 
 package org.springframework.nativex.support;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,12 +34,10 @@ import org.springframework.nativex.domain.init.InitializationDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
-import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.AccessDescriptor;
 import org.springframework.nativex.type.HintDeclaration;
-import org.springframework.nativex.type.Method;
 import org.springframework.nativex.type.Type;
 
 public class ResourcesHandler extends Handler {
@@ -190,26 +183,9 @@ public class ResourcesHandler extends Handler {
 	 */
 	public void handleSpringComponents() {
 		Collection<byte[]> springComponents = ts.getResources("META-INF/spring.components");
-		List<String> alreadyProcessed = new ArrayList<>();
-		if (springComponents.size()!=0) {
-			logger.debug("Processing existing META-INF/spring.components files...");
-			for (byte[] springComponentsFile: springComponents) {
-				Properties p = new Properties();
-				try (ByteArrayInputStream bais = new ByteArrayInputStream(springComponentsFile)) {
-					p.load(bais);
-				} catch (IOException e) {
-					throw new IllegalStateException("Unable to load spring.factories", e);
-				}
-				if (aotOptions.toMode() == Mode.NATIVE_AGENT) {
-					processSpringComponentsAgent(p);
-				}
-			}
-		} else {
+		if (springComponents.size()==0) {
 			logger.debug("Found no META-INF/spring.components -> synthesizing one...");
-			Properties p = synthesizeSpringComponents();
-			if (aotOptions.toMode() == Mode.NATIVE_AGENT) {
-				processSpringComponentsAgent(p);
-			}
+			synthesizeSpringComponents();
 		}
 	}
 
@@ -238,45 +214,6 @@ public class ResourcesHandler extends Handler {
 			throw new IllegalStateException(e);
 		}
 		return p;
-	}
-	
-	private void processSpringComponentsAgent(Properties p) {
-		Enumeration<Object> keys = p.keys();
-		while (keys.hasMoreElements()) {
-			String key = (String)keys.nextElement();
-			String valueString = (String)p.get(key);
-			if (valueString.equals("package-info")) {
-				continue;
-			}
-			Type keyType = ts.resolveDotted(key);
-			// The context start/stop test may not exercise the @SpringBootApplication class
-			if (keyType.isAtSpringBootApplication()) {
-				logger.debug("hybrid: adding access to "+keyType+" since @SpringBootApplication");
-				reflectionHandler.addAccess(key,  TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS, TypeAccess.DECLARED_CONSTRUCTORS);
-				collector.addResource(key.replace(".", "/")+".class", false);
-			}
-			if (keyType.isAtController()) {
-				logger.debug("hybrid: Processing controller "+key);
-				List<Method> mappings = keyType.getMethods(m -> m.isAtMapping());
-				// Example:
-				// @GetMapping("/greeting")
-				// public String greeting( @RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-				for (Method mapping: mappings) {
-					for (int pi=0;pi<mapping.getParameterCount();pi++) {
-						List<Type> parameterAnnotationTypes = mapping.getParameterAnnotationTypes(pi);
-						for (Type parameterAnnotationType: parameterAnnotationTypes) {
-							if (parameterAnnotationType.hasAliasForMarkedMembers()) {
-								List<String> interfaces = new ArrayList<>();
-								interfaces.add(parameterAnnotationType.getDottedName());
-								interfaces.add("org.springframework.core.annotation.SynthesizedAnnotation");
-								logger.debug("Adding dynamic proxy for "+interfaces);
-								dynamicProxiesHandler.addProxy(interfaces);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 
 	private List<Entry<Type, List<Type>>> filterOutNestedConfigurationTypes(List<Entry<Type, List<Type>>> indexedComponents) {

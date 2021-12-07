@@ -68,23 +68,6 @@ public class Method {
 		return mn.desc;
 	}
 
-	public List<HintApplication> getHints() {
-		List<HintApplication> hints = new ArrayList<>();
-		if (mn.visibleAnnotations != null) {
-			for (AnnotationNode an: mn.visibleAnnotations) {
-				Type annotationType = typeSystem.Lresolve(an.desc, true);
-				if (annotationType == null) {
-					logger.debug("Couldn't resolve "+an.desc+" annotation type whilst searching for hints on "+getName());
-				} else {
-					Stack<Type> s = new Stack<>();
-					// s.push(this);
-					annotationType.collectHints(an, hints, new HashSet<>(), s);
-				}
-			}
-		}
-		return hints.size()==0?Collections.emptyList():hints;
-	}
-	
 	public List<Type> getParameterAnnotationTypes(int parameterIndex) {
 		List<Type> results = null;
 		//System.out.println("Method is "+toString()+
