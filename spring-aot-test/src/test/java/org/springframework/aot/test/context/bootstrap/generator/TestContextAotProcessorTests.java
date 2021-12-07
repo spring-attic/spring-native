@@ -31,6 +31,7 @@ import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
 import org.springframework.aot.test.samples.simple.SimpleSpringTests;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
+import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,13 +127,12 @@ class TestContextAotProcessorTests {
 		assertThat(structure).hasClassDescriptor("com.example.TestContextBootstrapInitializer", (descriptor) -> {
 			assertThat(descriptor.getAccess()).isNull();
 			assertThat(descriptor.getFields()).isNull();
-			assertThat(descriptor.getMethods()).hasSize(2);
-			assertThat(descriptor.getMethods()).allSatisfy((methodDescriptor) -> {
-				assertThat(methodDescriptor.getName()).satisfies(name -> {
-					assertThat(name.equals("getContextLoaders") || name.equals("getContextInitializers")).isTrue();
-				});
-				assertThat(methodDescriptor.getParameterTypes()).isEmpty();
-			});
+			assertThat(descriptor.getMethods())
+				.hasSize(2)
+				.allSatisfy((methodDescriptor) -> assertThat(methodDescriptor.getParameterTypes()).isEmpty())
+				.extracting(MethodDescriptor::getName)
+					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextLoaders"))
+					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextInitializers"));
 		});
 	}
 
