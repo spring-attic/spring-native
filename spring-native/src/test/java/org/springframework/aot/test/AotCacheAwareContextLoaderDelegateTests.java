@@ -45,7 +45,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
- * Tests for {@link AotCacheAwareContextLoaderDelegate}.
+ * Tests for {@link AotCacheAwareContextLoaderDelegate} that interact with a
+ * mock {@link ContextCache}.
  *
  * @author Stephane Nicoll
  * @author Sam Brannen
