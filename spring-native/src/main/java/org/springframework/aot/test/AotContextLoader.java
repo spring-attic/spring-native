@@ -51,47 +51,30 @@ class AotContextLoader {
 		this.contextInitializers = contextInitializers;
 	}
 
+	@SuppressWarnings("unchecked")
 	AotContextLoader(String initializerClassName) {
-		this(loadContextLoadersMapping(initializerClassName), loadContextInitializersMapping(initializerClassName));
+		this(loadMap(initializerClassName, "getContextLoaders"), loadMap(initializerClassName, "getContextInitializers"));
 	}
 
 	AotContextLoader() {
 		this(INITIALIZER_NAME);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Map<String, Supplier<SmartContextLoader>> loadContextLoadersMapping(String initializerClassName) {
+	@SuppressWarnings("rawtypes")
+	private static Map loadMap(String className, String methodName) {
 		try {
-			Class<?> type = ClassUtils.forName(initializerClassName, null);
-			Method method = ReflectionUtils.findMethod(type, "getContextLoaders");
+			Class<?> type = ClassUtils.forName(className, null);
+			Method method = ReflectionUtils.findMethod(type, methodName);
 			if (method == null) {
-				throw new IllegalStateException("No getContextLoaders() method found on " + type.getName());
+				throw new IllegalStateException(String.format("No %s() method found on %s", methodName, type.getName()));
 			}
-			return (Map<String, Supplier<SmartContextLoader>>) ReflectionUtils.invokeMethod(method, null);
+			return (Map) ReflectionUtils.invokeMethod(method, null);
 		}
 		catch (IllegalStateException ex) {
 			throw ex;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Failed to load context loaders mapping", ex);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, Class<? extends ApplicationContextInitializer<?>>> loadContextInitializersMapping(String initializerClassName) {
-		try {
-			Class<?> type = ClassUtils.forName(initializerClassName, null);
-			Method method = ReflectionUtils.findMethod(type, "getContextInitializers");
-			if (method == null) {
-				throw new IllegalStateException("No getContextInitializers() method found on " + type.getName());
-			}
-			return (Map<String, Class<? extends ApplicationContextInitializer<?>>>) ReflectionUtils.invokeMethod(method, null);
-		}
-		catch (IllegalStateException ex) {
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to load context initializers mapping", ex);
+			throw new IllegalStateException(String.format("Failed to load %s() method in %s", methodName, className), ex);
 		}
 	}
 

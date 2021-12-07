@@ -19,6 +19,7 @@ package org.springframework.aot.test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
@@ -79,7 +80,9 @@ class AotContextLoaderTests {
 
 	@Test
 	void loadWithClassNameThatDoesNotExist() {
-		assertThatIllegalStateException().isThrownBy(() -> new AotContextLoader("com.example.DoesNotExist"))
+		String className = "com.example.DoesNotExist";
+		assertThatIllegalStateException().isThrownBy(() -> new AotContextLoader(className))
+				.withMessageMatching("Failed to load .+ method in " + Pattern.quote(className))
 				.withCauseInstanceOf(ClassNotFoundException.class);
 	}
 
