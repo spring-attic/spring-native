@@ -28,7 +28,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 			<exclusions>
-				<!-- Exclude metrics when not used in order to reduce significantly the memory footprint -->
+				<!-- Exclude metrics when not used in order to optimize the memory footprint -->
 				<exclusion>
 					<groupId>io.micrometer</groupId>
 					<artifactId>micrometer-core</artifactId>
