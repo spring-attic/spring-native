@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-
 import org.mockito.ArgumentCaptor;
+
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
@@ -143,8 +143,8 @@ class AotCacheAwareContextLoaderDelegateTests {
 	private AotCacheAwareContextLoaderDelegate createAotCacheAwareContextLoaderDelegate(
 			Map<String, Supplier<SmartContextLoader>> contextLoaders,
 			Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers) {
-		AotContextLoader aotContextLoader = new AotContextLoader(contextLoaders, contextInitializers);
-		return new AotCacheAwareContextLoaderDelegate(aotContextLoader, this.contextCache);
+		AotTestMappings aotTestMappings = new AotTestMappings(contextLoaders, contextInitializers);
+		return new AotCacheAwareContextLoaderDelegate(aotTestMappings, this.contextCache);
 	}
 
 	private void verifyCached(Class<? extends MergedContextConfiguration> type) {

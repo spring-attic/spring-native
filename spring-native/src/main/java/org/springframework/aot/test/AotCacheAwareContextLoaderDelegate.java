@@ -40,20 +40,20 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 
 	private static final Log logger = LogFactory.getLog(AotCacheAwareContextLoaderDelegate.class);
 
-	private final AotContextLoader aotContextLoader;
+	private final AotTestMappings aotTestMappings;
 
 	public AotCacheAwareContextLoaderDelegate() {
-		this.aotContextLoader = new AotContextLoader();
+		this.aotTestMappings = new AotTestMappings();
 	}
 
-	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader, ContextCache contextCache) {
+	AotCacheAwareContextLoaderDelegate(AotTestMappings aotTestMappings, ContextCache contextCache) {
 		super(contextCache);
-		this.aotContextLoader = aotContextLoader;
+		this.aotTestMappings = aotTestMappings;
 	}
 
 	@Override
 	protected ApplicationContext loadContextInternal(MergedContextConfiguration config) throws Exception {
-		SmartContextLoader contextLoader = this.aotContextLoader.getContextLoader(config.getTestClass());
+		SmartContextLoader contextLoader = this.aotTestMappings.getContextLoader(config.getTestClass());
 		if (contextLoader != null) {
 			Assert.isInstanceOf(AotMergedContextConfiguration.class, config);
 			logger.info("Loading test ApplicationContext in AOT mode using " + contextLoader);
@@ -94,7 +94,7 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 
 		Class<?> testClass = mergedContextConfiguration.getTestClass();
 		Class<? extends ApplicationContextInitializer<?>> contextInitializerClass =
-				this.aotContextLoader.getContextInitializerClass(testClass);
+				this.aotTestMappings.getContextInitializerClass(testClass);
 
 		if (contextInitializerClass != null) {
 			return new AotMergedContextConfiguration(testClass, contextInitializerClass, mergedContextConfiguration,
