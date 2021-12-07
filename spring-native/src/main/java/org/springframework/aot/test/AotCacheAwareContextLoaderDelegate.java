@@ -50,7 +50,7 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 	protected ApplicationContext loadContextInternal(MergedContextConfiguration config) throws Exception {
 		SmartContextLoader contextLoader = this.aotContextLoader.getContextLoader(config.getTestClass());
 		if (contextLoader != null) {
-			logger.info("Starting test in AOT mode using " + contextLoader);
+			logger.info("Loading test ApplicationContext in AOT mode using " + contextLoader);
 			return contextLoader.loadContext(config);
 		}
 		return super.loadContextInternal(config);

@@ -98,13 +98,13 @@ class TestContextAotProcessorTests {
 	}
 
 	@Test
-	void processInvokeTestNativeConfigurationRegistrar() {
+	void processInvokesTestNativeConfigurationRegistrar() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasResourcePattern("org/springframework/aot/test/samples/app/SampleApplication.class");
 	}
 
 	@Test
-	void processRegisterReflectionForContextLoadersMappingMethod() {
+	void processRegistersReflectionForContextLoadersMappingMethod() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasClassDescriptor("com.example.TestContextBootstrapInitializer", (descriptor) -> {
 			assertThat(descriptor.getMethods()).singleElement().satisfies((methodDescriptor) -> {
@@ -117,21 +117,21 @@ class TestContextAotProcessorTests {
 	}
 
 	@Test
-	void processRegisterReflectionForContextInitializerClassName() {
+	void processRegistersReflectionForContextInitializerClassNames() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class, SampleJdbcTests.class);
 		assertThat(structure).hasClassDescriptor("com.example.SampleApplicationTestsContextInitializer", assertContextInitializerMetadata());
 		assertThat(structure).hasClassDescriptor("com.example.SampleJdbcTestsContextInitializer", assertContextInitializerMetadata());
 	}
 
 	@Test
-	void processRegisterReflectionForSpringBootTestContextBootstrapper() {
+	void processRegistersReflectionForSpringBootTestContextBootstrapper() {
 		ContextBootstrapStructure structure = this.tester.process(SampleApplicationTests.class);
 		assertThat(structure).hasClassDescriptor(SpringBootTestContextBootstrapper.class.getName(),
 				(descriptor) -> assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS));
 	}
 
 	@Test
-	void processRegisterReflectionForSliceTestContextBootstrapper() {
+	void processRegistersReflectionForSliceTestContextBootstrapper() {
 		ContextBootstrapStructure structure = this.tester.process(SampleJdbcTests.class);
 		assertThat(structure).hasClassDescriptor("org.springframework.boot.test.autoconfigure.jdbc.JdbcTestContextBootstrapper",
 				(descriptor) -> assertThat(descriptor.getAccess()).containsOnly(TypeAccess.DECLARED_CONSTRUCTORS));
