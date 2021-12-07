@@ -43,11 +43,7 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 	private final AotContextLoader aotContextLoader;
 
 	public AotCacheAwareContextLoaderDelegate() {
-		this(new AotContextLoader());
-	}
-
-	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader) {
-		this.aotContextLoader = aotContextLoader;
+		this.aotContextLoader = new AotContextLoader();
 	}
 
 	AotCacheAwareContextLoaderDelegate(AotContextLoader aotContextLoader, ContextCache contextCache) {
