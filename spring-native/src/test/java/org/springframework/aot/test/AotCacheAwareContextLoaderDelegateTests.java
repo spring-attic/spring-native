@@ -59,7 +59,6 @@ class AotCacheAwareContextLoaderDelegateTests {
 
 	private final SmartContextLoader aotSmartContextLoader = mockSmartContextLoader(this.applicationContext);
 
-
 	@Test
 	void loadContextWithMatchUsesAotInfrastructure() throws Exception {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
@@ -82,54 +81,44 @@ class AotCacheAwareContextLoaderDelegateTests {
 	}
 
 	@Test
-	void loadContextWithoutMatchUsesDefaultBehavior() throws Exception {
+	void loadContextWithoutMatchUsesDefaultBehavior() {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
-
 		ApplicationContext actual = delegate.loadContext(createMergedContextConfiguration(SampleAnotherTest.class));
 		assertThat(actual).isNotNull();
 		assertThat(actual.getEnvironment().getProperty("spring.main.web-application-type")).isEqualTo("none");
-
 		verifyNoInteractions(this.aotSmartContextLoader);
 		verifyCached(MergedContextConfiguration.class);
 		verifyNotCached(AotMergedContextConfiguration.class);
 	}
 
 	@Test
-	void isContextLoadedWithMatchUsesAotInfrastructure() throws Exception {
+	void isContextLoadedWithMatchUsesAotInfrastructure() {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
-
 		delegate.isContextLoaded(createMergedContextConfiguration(SampleTest.class));
-
 		verify(this.contextCache, times(0)).contains(exactInstanceOf(MergedContextConfiguration.class));
 		verify(this.contextCache).contains(any(AotMergedContextConfiguration.class));
 	}
 
 	@Test
-	void isContextLoadedWithoutMatchUsesDefaultBehavior() throws Exception {
+	void isContextLoadedWithoutMatchUsesDefaultBehavior() {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
-
 		delegate.isContextLoaded(createMergedContextConfiguration(SampleAnotherTest.class));
-
 		verify(this.contextCache, times(0)).contains(any(AotMergedContextConfiguration.class));
 		verify(this.contextCache).contains(exactInstanceOf(MergedContextConfiguration.class));
 	}
 
 	@Test
-	void closeContextWithMatchUsesAotInfrastructure() throws Exception {
+	void closeContextWithMatchUsesAotInfrastructure() {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
-
 		delegate.closeContext(createMergedContextConfiguration(SampleTest.class), HierarchyMode.CURRENT_LEVEL);
-
 		verify(this.contextCache, times(0)).remove(exactInstanceOf(MergedContextConfiguration.class), any(HierarchyMode.class));
 		verify(this.contextCache).remove(any(AotMergedContextConfiguration.class), any(HierarchyMode.class));
 	}
 
 	@Test
-	void closeContextWithoutMatchUsesDefaultBehavior() throws Exception {
+	void closeContextWithoutMatchUsesDefaultBehavior() {
 		AotCacheAwareContextLoaderDelegate delegate = createDemoDelegate();
-
 		delegate.closeContext(createMergedContextConfiguration(SampleAnotherTest.class), HierarchyMode.CURRENT_LEVEL);
-
 		verify(this.contextCache, times(0)).remove(any(AotMergedContextConfiguration.class), any(HierarchyMode.class));
 		verify(this.contextCache).remove(exactInstanceOf(MergedContextConfiguration.class), any(HierarchyMode.class));
 	}

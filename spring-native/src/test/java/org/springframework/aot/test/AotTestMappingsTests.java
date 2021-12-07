@@ -82,11 +82,11 @@ class AotTestMappingsTests {
 	void loadWithClassNameThatDoesNotExist() {
 		String className = "com.example.DoesNotExist";
 		assertThatIllegalStateException().isThrownBy(() -> new AotTestMappings(className))
-				.withMessageMatching("Failed to load .+ method in " + Pattern.quote(className))
-				.withCauseInstanceOf(ClassNotFoundException.class);
+				.withCauseInstanceOf(ClassNotFoundException.class)
+				.withMessageMatching("Failed to load .+ method in " + Pattern.quote(className));
 	}
 
-
+	@SuppressWarnings("unused")
 	public static class TestMapping {
 
 		public static Map<String, Supplier<SmartContextLoader>> getContextLoaders() {
@@ -107,6 +107,7 @@ class AotTestMappingsTests {
 
 	public static class HalfBakedTestMapping {
 
+		@SuppressWarnings("unused")
 		public static Map<String, Supplier<SmartContextLoader>> getContextLoaders() {
 			return null;
 		}

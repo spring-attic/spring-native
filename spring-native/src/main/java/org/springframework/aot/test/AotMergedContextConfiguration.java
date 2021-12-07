@@ -27,10 +27,10 @@ import org.springframework.test.context.MergedContextConfiguration;
  * {@link MergedContextConfiguration} implementation based on an AOT-generated
  * {@link ApplicationContextInitializer} that is used to load an AOT-generated
  * {@link org.springframework.context.ApplicationContext ApplicationContext}.
- *
- * <p>The {@link #getParent() parent} may optionally be set as well.
- *
- * <p>An {@code ApplicationContext} should not be loaded using the metadata in
+ * <p/>
+ * The {@link #getParent() parent} may optionally be set as well.
+ * <p/>
+ * An {@code ApplicationContext} should not be loaded using the metadata in
  * this {@code AotMergedContextConfiguration}. Rather the metadata from the
  * {@linkplain #getOriginal() original} {@code MergedContextConfiguration} should
  * be used.
@@ -45,14 +45,12 @@ class AotMergedContextConfiguration extends MergedContextConfiguration {
 
 	private final MergedContextConfiguration original;
 
-
 	AotMergedContextConfiguration(Class<?> testClass,
 			Class<? extends ApplicationContextInitializer<?>> contextInitializerClass,
 			MergedContextConfiguration original, AotCacheAwareContextLoaderDelegate cacheAwareContextLoaderDelegate,
 			@Nullable MergedContextConfiguration parent) {
-
 		super(testClass, null, null, Collections.singleton(contextInitializerClass), null, null,
-			cacheAwareContextLoaderDelegate, parent);
+				cacheAwareContextLoaderDelegate, parent);
 		this.contextInitializerClass = contextInitializerClass;
 		this.original = original;
 	}
@@ -73,12 +71,10 @@ class AotMergedContextConfiguration extends MergedContextConfiguration {
 		if (other == null || other.getClass() != getClass()) {
 			return false;
 		}
-
 		AotMergedContextConfiguration that = (AotMergedContextConfiguration) other;
 		if (!this.contextInitializerClass.equals(that.contextInitializerClass)) {
 			return false;
 		}
-
 		if (getParent() == null) {
 			if (that.getParent() != null) {
 				return false;
@@ -87,7 +83,6 @@ class AotMergedContextConfiguration extends MergedContextConfiguration {
 		else if (!getParent().equals(that.getParent())) {
 			return false;
 		}
-
 		return true;
 	}
 

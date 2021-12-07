@@ -44,15 +44,12 @@ class AotTestMappings {
 
 	private static final String INITIALIZER_NAME = "org.springframework.aot.TestContextBootstrapInitializer";
 
-
 	private final Map<String, Supplier<SmartContextLoader>> contextLoaders;
 
 	private final Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers;
 
-
 	AotTestMappings(Map<String, Supplier<SmartContextLoader>> contextLoaders,
 			Map<String, Class<? extends ApplicationContextInitializer<?>>> contextInitializers) {
-
 		this.contextLoaders = contextLoaders;
 		this.contextInitializers = contextInitializers;
 	}
@@ -95,7 +92,6 @@ class AotTestMappings {
 	Class<? extends ApplicationContextInitializer<?>> getContextInitializerClass(Class<?> testClass) {
 		return this.contextInitializers.get(testClass.getName());
 	}
-
 
 	@SuppressWarnings("rawtypes")
 	private static Map loadMap(String className, String methodName) {

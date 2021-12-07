@@ -91,11 +91,9 @@ public class AotCacheAwareContextLoaderDelegate extends DefaultCacheAwareContext
 		if (mergedContextConfiguration == null) {
 			return null;
 		}
-
 		Class<?> testClass = mergedContextConfiguration.getTestClass();
 		Class<? extends ApplicationContextInitializer<?>> contextInitializerClass =
 				this.aotTestMappings.getContextInitializerClass(testClass);
-
 		if (contextInitializerClass != null) {
 			return new AotMergedContextConfiguration(testClass, contextInitializerClass, mergedContextConfiguration,
 					this, replaceIfNecessary(mergedContextConfiguration.getParent()));

@@ -16,11 +16,6 @@
 
 package org.springframework.aot.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -37,9 +32,14 @@ import org.springframework.test.context.cache.ContextCache;
 import org.springframework.test.context.cache.DefaultContextCache;
 import org.springframework.test.context.support.DelegatingSmartContextLoader;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 /**
- * Integration tests for {@link AotCacheAwareContextLoaderDelegate} that
- * interact with the {@link DefaultContextCache}.
+ * Tests for {@link AotCacheAwareContextLoaderDelegate} that interact with the
+ * {@link DefaultContextCache}.
  *
  * @author Sam Brannen
  */
@@ -53,9 +53,8 @@ class AotCacheAwareContextLoaderDelegateIntegrationTests {
 
 	private final AotCacheAwareContextLoaderDelegate delegate = createDelegate(this.contextCache, this.aotSmartContextLoader);
 
-
 	@Test
-	void nonAotTestCase() throws Exception {
+	void nonAotTestCase() {
 		MergedContextConfiguration mergedConfig = createMergedContextConfiguration(DemoTestCase.class);
 
 		assertThat(contextCache.size()).isEqualTo(0);
@@ -92,10 +91,10 @@ class AotCacheAwareContextLoaderDelegateIntegrationTests {
 	}
 
 	@Test
-	void aotTestCase() throws Exception {
+	void aotTestCase() {
 		MergedContextConfiguration mergedConfig = createMergedContextConfiguration(AotTestCase.class);
 		AotMergedContextConfiguration aotMergedConfig = new AotMergedContextConfiguration(AotTestCase.class,
-			DemoApplicationContextInitializer.class, mergedConfig, delegate, null);
+				DemoApplicationContextInitializer.class, mergedConfig, delegate, null);
 
 		assertThat(contextCache.size()).isEqualTo(0);
 		assertThat(delegate.isContextLoaded(mergedConfig)).isFalse();
@@ -142,13 +141,13 @@ class AotCacheAwareContextLoaderDelegateIntegrationTests {
 
 	private MergedContextConfiguration createMergedContextConfiguration(Class<?> testClass) {
 		return new MergedContextConfiguration(testClass, null, new Class<?>[] { DemoConfiguration.class },
-			Set.of(DemoApplicationContextInitializer.class), null, new DelegatingSmartContextLoader());
+				Set.of(DemoApplicationContextInitializer.class), null, new DelegatingSmartContextLoader());
 	}
 
 	private static AotCacheAwareContextLoaderDelegate createDelegate(ContextCache contextCache, SmartContextLoader aotSmartContextLoader) {
 		AotTestMappings aotTestMappings = new AotTestMappings(
-			Map.of(AotTestCase.class.getName(), () -> aotSmartContextLoader),
-			Map.of(AotTestCase.class.getName(), DemoApplicationContextInitializer.class));
+				Map.of(AotTestCase.class.getName(), () -> aotSmartContextLoader),
+				Map.of(AotTestCase.class.getName(), DemoApplicationContextInitializer.class));
 		return new AotCacheAwareContextLoaderDelegate(aotTestMappings, contextCache);
 	}
 

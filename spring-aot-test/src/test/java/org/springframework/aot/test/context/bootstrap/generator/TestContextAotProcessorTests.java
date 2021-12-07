@@ -130,9 +130,7 @@ class TestContextAotProcessorTests {
 			assertThat(descriptor.getMethods())
 				.hasSize(2)
 				.allSatisfy((methodDescriptor) -> assertThat(methodDescriptor.getParameterTypes()).isEmpty())
-				.extracting(MethodDescriptor::getName)
-					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextLoaders"))
-					.anySatisfy((name) -> assertThat(name).isEqualTo("getContextInitializers"));
+				.extracting(MethodDescriptor::getName).containsOnly("getContextLoaders", "getContextInitializers");
 		});
 	}
 

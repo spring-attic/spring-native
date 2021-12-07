@@ -31,7 +31,7 @@ import org.springframework.test.context.cache.ContextCache;
 import org.springframework.test.context.support.DelegatingSmartContextLoader;
 
 /**
- * Unit tests for {@link AotMergedContextConfiguration}.
+ * Tests for {@link AotMergedContextConfiguration}.
  *
  * @author Sam Brannen
  */
@@ -53,7 +53,7 @@ class AotMergedContextConfigurationTests {
 		DemoApplicationContextInitializer.class, mergedConfig, delegate, aotMergedConfig1);
 
 	@Test
-	void testEquals() throws Exception {
+	void testEquals()  {
 		assertThat(aotMergedConfig1).isEqualTo(aotMergedConfig1);
 		assertThat(aotMergedConfig1).isEqualTo(aotMergedConfig2);
 
@@ -63,7 +63,7 @@ class AotMergedContextConfigurationTests {
 	}
 
 	@Test
-	void testHashCode() throws Exception {
+	void testHashCode() {
 		assertThat(aotMergedConfig1).hasSameHashCodeAs(aotMergedConfig2);
 
 		assertThat(aotMergedConfig1).doesNotHaveSameHashCodeAs(mergedConfig);

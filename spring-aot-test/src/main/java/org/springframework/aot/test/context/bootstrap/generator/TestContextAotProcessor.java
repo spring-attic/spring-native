@@ -96,7 +96,6 @@ public class TestContextAotProcessor {
 					ClassName mainClassName = ClassName.get(packageName, TEST_BOOTSTRAP_CLASS_NAME);
 					return BootstrapClass.of(mainClassName, (type) -> type.addModifiers(Modifier.PUBLIC));
 				});
-
 		BootstrapClass boostrapClass = mainWriterContext.getMainBootstrapClass();
 		MethodSpec contextLoadersMappingMethod = boostrapClass.addMethod(contextLoadersMappingMethod(entries));
 		MethodSpec contextInitializersMappingMethod = boostrapClass.addMethod(contextInitializersMappingMethod(entries));
@@ -116,10 +115,6 @@ public class TestContextAotProcessor {
 		return mainBootstrapClass.getClassName();
 	}
 
-	/**
-	 * Generates a public static method with the following signature.
-	 * <p>{@code Map<String, Supplier<SmartContextLoader>> getContextLoaders()}
-	 */
 	private MethodSpec.Builder contextLoadersMappingMethod(Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		Builder code = CodeBlock.builder();
 		TypeName mapType = ParameterizedTypeName.get(ClassName.get(Map.class),
@@ -136,10 +131,6 @@ public class TestContextAotProcessor {
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC).addCode(code.build());
 	}
 
-	/**
-	 * Generates a public static method with the following signature.
-	 * <p>{@code Map<String, Class<? extends ApplicationContextInitializer<?>>> getContextInitializers()}
-	 */
 	private MethodSpec.Builder contextInitializersMappingMethod(Map<ClassName, TestContextConfigurationDescriptor> entries) {
 		TypeName classWildcard = WildcardTypeName.subtypeOf(ParameterizedTypeName.get(ClassName.get(ApplicationContextInitializer.class), WildcardTypeName.subtypeOf(Object.class)));
 		TypeName classType = ParameterizedTypeName.get(ClassName.get(Class.class), classWildcard);
