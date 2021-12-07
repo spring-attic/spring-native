@@ -1250,15 +1250,6 @@ public class Type {
 		return (node.access & Opcodes.ACC_ENUM)!=0;
 	}
 
-	public List<String> getMethodsInvokingAtBeanMethods() {
-		byte[] bytes = typeSystem.find(getName());
-		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
-			return AtBeanMethodInvocationDetectionVisitor.run(typeSystem, bais);
-		} catch (IOException e) {
-			throw new IllegalStateException("Unexpected IOException processing bytes for "+this.getName());
-		}
-	}
-
 	public boolean isImportSelector() {
 		try {
 			return implementsInterface(fromLdescriptorToSlashed(ImportSelector));
@@ -2054,17 +2045,6 @@ public class Type {
 			}
 		}
 		return false;
-	}
-
-	public boolean isAtRepository() {
-		return isAnnotated(AtRepository);
-	}
-
-	public boolean isAtResponseBody() {
-		boolean b = hasAnnotation(AtResponseBody, true);
-		// logger.debug("Checking if " + getName() + " is @ResponseBody meta
-		// annotated: " + b);
-		return b;
 	}
 
 	public boolean hasMethod(String methodName) {

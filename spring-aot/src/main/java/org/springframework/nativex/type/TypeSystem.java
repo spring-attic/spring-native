@@ -1313,41 +1313,6 @@ public class TypeSystem {
 		}
 	}
 	
-	public synchronized Map<String,List<String>> getSpringClassesMakingIsPresentChecks() {
-		if (typesMakingIsPresentChecksInStaticInitializers == null) {
-			for (String classpathentry : classpath) {
-				if (classpathentry.endsWith(".jar") && classpathentry.contains("spring") && !classpathentry.contains("test")) {
-					try {
-						try (ZipFile zf = new ZipFile(classpathentry)) {
-							Enumeration<? extends ZipEntry> entries = zf.entries();
-							while (entries.hasMoreElements()) {
-								ZipEntry entry = entries.nextElement();
-								String name = entry.getName();
-								if (name.endsWith(".class")) {
-									List<String> presenceCheckedTypes = IsPresentDetectionVisitor.run(zf.getInputStream(entry));
-									if (presenceCheckedTypes != null) {
-										if (typesMakingIsPresentChecksInStaticInitializers == null) {
-											typesMakingIsPresentChecksInStaticInitializers = new HashMap<>();
-										}
-										typesMakingIsPresentChecksInStaticInitializers.put(name.substring(0,name.length()-6).replace('/', '.'),presenceCheckedTypes);
-									}
-								}
-							}
-						}
-					} catch (FileNotFoundException fnfe) {
-						System.err.println("WARNING: Unable to find jar '" + classpathentry + "' whilst scanning filesystem for isPresent() checking Spring classes");
-					} catch (IOException ioe) {
-						throw new RuntimeException("Problem during isPresent() checking scan of " + classpathentry, ioe);
-					}
-				}
-			}
-			if (typesMakingIsPresentChecksInStaticInitializers == null) {
-				typesMakingIsPresentChecksInStaticInitializers = Collections.emptyMap();
-			}
-		}
-		return typesMakingIsPresentChecksInStaticInitializers;
-	}
-
 	// TODO Should be able to perform an AOT analysis of @ComponentScan, see https://github.com/spring-projects-experimental/spring-native/issues/801
 	public Stream<Path> findDirectoriesOrTargetDirJar(List<String> classpath) {
 		List<Path> result = new ArrayList<>();
