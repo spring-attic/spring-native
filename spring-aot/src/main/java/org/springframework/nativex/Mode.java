@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.nativex.support;
+package org.springframework.nativex;
 
 import java.util.Locale;
 

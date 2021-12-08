@@ -16,8 +16,6 @@
 
 package org.springframework.nativex;
 
-import org.springframework.nativex.support.Mode;
-
 /**
  * Options for Spring Native.
  *

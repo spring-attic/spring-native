@@ -39,7 +39,7 @@ import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.nativex.domain.serialization.SerializationDescriptor;
 import org.springframework.nativex.domain.serialization.SerializationDescriptorJsonMarshaller;
-import org.springframework.nativex.support.Mode;
+import org.springframework.nativex.Mode;
 import org.springframework.nativex.type.TypeSystem;
 
 /**
