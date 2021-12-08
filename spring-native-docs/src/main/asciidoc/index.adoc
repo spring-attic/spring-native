@@ -69,6 +69,8 @@ include::spring-aot.adoc[]
 
 include::native-hints.adoc[]
 
+include::build-setup.adoc[]
+
 include::samples.adoc[]
 
 include::native-image-options.adoc[]

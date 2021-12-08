@@ -90,7 +90,7 @@ plugins {
 
 ===== Add the Spring AOT plugin
 
-The Spring AOT plugin performs ahead-of-time transformations required to improve native image compatibility and footprint.
+The <<spring-aot,Spring AOT>> plugin performs ahead-of-time transformations required to improve native image compatibility and footprint.
 
 TIP: The transformations also apply to the JVM so this can be applied regardless.
 
