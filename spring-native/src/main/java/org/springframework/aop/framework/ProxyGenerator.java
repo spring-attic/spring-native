@@ -162,6 +162,7 @@ public class ProxyGenerator {
 	 * @param builder     the builder that should be used for creating the proxy
 	 * @param rootClass   the root class that is being proxied
 	 * @param config      the ProxyConfiguration distilled from the AdvisedSupport object
+	 * @param classLoader the classloader to use
 	 * @return a fully configured builder.
 	 * @throws Exception if an error occurs during the configuration.
 	 */

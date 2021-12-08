@@ -27,9 +27,9 @@ import org.springframework.test.context.MergedContextConfiguration;
  * {@link MergedContextConfiguration} implementation based on an AOT-generated
  * {@link ApplicationContextInitializer} that is used to load an AOT-generated
  * {@link org.springframework.context.ApplicationContext ApplicationContext}.
- * <p/>
+ * <p>
  * The {@link #getParent() parent} may optionally be set as well.
- * <p/>
+ * <p>
  * An {@code ApplicationContext} should not be loaded using the metadata in
  * this {@code AotMergedContextConfiguration}. Rather the metadata from the
  * {@linkplain #getOriginal() original} {@code MergedContextConfiguration} should

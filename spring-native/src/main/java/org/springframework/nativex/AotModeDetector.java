@@ -37,7 +37,7 @@ public abstract class AotModeDetector {
 
 	/**
 	 * Returns whether AOT-generated code should be considered at runtime.
-	 * This should return {@code true} only if:
+	 * @return {@code true} only if:
 	 * <ul>
 	 *     <li>The {@code "springAot"} system property is set
 	 *     <li>or {@link NativeDetector#inNativeImage()} returns true
@@ -53,10 +53,16 @@ public abstract class AotModeDetector {
 		return false;
 	}
 
+	/**
+	 * @return {@code true} when running AOT tests
+	 */
 	public static boolean isRunningAotTests() {
 		return generatedTestClassPresent && !aotTestClassPresent;
 	}
 
+	/**
+	 * @return {@code true} when generating AOT tests
+	 */
 	public static boolean isGeneratingAotTests() {
 		return aotTestClassPresent;
 	}
