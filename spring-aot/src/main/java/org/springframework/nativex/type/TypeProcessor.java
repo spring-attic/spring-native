@@ -57,20 +57,16 @@ import org.springframework.util.CollectionUtils;
  * List&lt;HintDeclaration&gt; hints = processor.use(typeSystem)
  * 			.toProcessTypes(ts -> ts.findTypesAnnotated("...", true).stream().map(ts::resolveName));
  * </pre>
- * When used within a {@link org.springframework.nativex.type.ComponentProcessor} implementation the {@link TypeProcessor}
- * can directly write the configuration to the given {@link NativeContext}.
- * <pre class="code">
- * Type domainType = nativeContext.getTypeSystem().resolveName(componentType);
- * processor.use(nativeContext)
- * 			.toProcessType(domainType);
- * </pre>
+ *
  * Use {@literal include/exclude} filters to limit the scope of the type inspection.
  * Synthetic {@link Field Fields} as well as {@link Field Fields} and {@link Method Methods} named {@code $$_hibernate}
  * are filtered out by default. So are all annotations from {@literal java.lang.annotation}, {@literal java.lang.Object}
  * itself and all types from {@literal sun}, {@literal jdk} and the {@literal org.hibernate.engine} namespace.
  *
  * @author Christoph Strobl
+ * @deprecated As of 0.11, Spring Native AOT engine allows to use regular Spring APIs, so use those instead.
  */
+@Deprecated
 public class TypeProcessor {
 
 	private TriConsumer<Type, DiscoveryContext, NativeContext> typeRegistrar;
