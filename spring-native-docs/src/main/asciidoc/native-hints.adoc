@@ -55,10 +55,13 @@ If you need some concrete example of hints, you can {github-tree}/spring-native-
 === Programmatic Hints
 Spring Native provides a {github-tree}/spring-aot/src/main/java/org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/NativeConfigurationRegistry.java[programmatic registry] which exposes a high-level API for all hints.
 
-Two callbacks are provided:
+Three callbacks are provided:
 
 . `BeanFactoryNativeConfigurationProcessor` provides the `BeanFactory` so that it can be introspected for matching beans.
 . `BeanNativeConfigurationProcessor` provides a `BeanInstanceDescriptor` for each bean.
+. `NativeConfiguration` typically used for hints not related to beans or `BeanFactory`.
+
+WARNING: Those types are available via the `org.springframework.experimental:spring-aot` dependency which should not be in the runtime classpath, so you should typically use `<scope>provided</scope>` with Maven or `compileOnly` configuration with Gradle.
 
 `BeanFactoryNativeConfigurationProcessor` should be used when a particular aspect of matching beans is requested.
 A typical example is automatically processing beans having a certain annotation.
