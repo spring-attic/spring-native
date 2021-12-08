@@ -52,9 +52,12 @@ public @interface TypeHint {
 
 	/**
 	 * Defined the scope of the reflection entries or resource access to be configured. Autodetected when not set,
-	 * see {@link TypeAccess#AUTO_DETECT} related documentation. Use {code {}} for class access only.
+	 * see {@link TypeAccess#AUTO_DETECT} related documentation.
+	 *
+	 * <p>Use empty array ({code {}}) for class access only (to allow for example {@code Class.forName(String)}) with
+	 * non-constant argument (with constant argument no need it is inlined at compile time).
+	 * @return the type accesses
 	 */
-
 	TypeAccess[] access() default TypeAccess.AUTO_DETECT;
 
 	/**
