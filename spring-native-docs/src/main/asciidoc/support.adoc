@@ -199,6 +199,7 @@ NOTE: While building a project that contains Spring Cloud Config Client, it is n
 === Others
 
 * https://micrometer.io/[Micrometer]
+* Google Cloud Platform libraries via `com.google.cloud:native-image-support` dependency, see https://github.com/GoogleCloudPlatform/native-image-support-java[this repository] for more information
 * Lombok
 * Spring Kafka
 * Spring Session (Redis and JDBC)
