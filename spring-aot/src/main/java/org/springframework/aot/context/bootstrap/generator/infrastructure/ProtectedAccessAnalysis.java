@@ -35,7 +35,7 @@ public class ProtectedAccessAnalysis {
 	/**
 	 * Specify if the analysis concluded that the elements are accessible from the
 	 * requested package.
-	 * @return {@code true} if the elements are accessible, {@link false} otherwise
+	 * @return {@code true} if the elements are accessible, {@code false} otherwise
 	 */
 	public boolean isAccessible() {
 		return this.protectedElements.isEmpty();

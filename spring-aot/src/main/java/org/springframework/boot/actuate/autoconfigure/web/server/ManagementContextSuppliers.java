@@ -33,7 +33,7 @@ import org.springframework.context.support.GenericApplicationContext;
 /**
  * An AOT variant of the {@link ManagementContextFactory} implementations available in
  * Spring Boot. Required as they assume that the parent context is refreshed.
- * <p/>
+ * <p>
  * Note also that this implementation uses {@code registerBean}, rather than
  * {@code register}, which helps process the bean definitions without having to call
  * protected methods on the bean factory ({@code prepareBeanFactory} and

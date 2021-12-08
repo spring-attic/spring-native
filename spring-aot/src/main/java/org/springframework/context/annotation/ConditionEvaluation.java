@@ -50,7 +50,7 @@ public final class ConditionEvaluation {
 
 	/**
 	 * Specify if this evaluation lead to the component to be skipped.
-	 * @return {@link true} if a condition did not match
+	 * @return {@code true} if a condition did not match
 	 */
 	public boolean shouldSkip() {
 		return this.notMatching != null;

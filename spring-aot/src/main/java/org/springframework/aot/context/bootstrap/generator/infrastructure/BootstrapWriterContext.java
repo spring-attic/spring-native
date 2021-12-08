@@ -31,7 +31,7 @@ import org.springframework.context.support.GenericApplicationContext;
  * Infrastructure used by context writers. Provide a main {@link BootstrapClass} as well
  * as a way to contribute additional {@link BootstrapClass classes} if privileged access
  * is required.
- * <p/>
+ * <p>
  * A component may decide to fork a context at any time if they need to register a
  * separate context, yet keeping a unique native configuration registry and view on the
  * generated bootstrap classes.

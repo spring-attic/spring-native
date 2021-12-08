@@ -59,7 +59,7 @@ public class BeanFactoryProcessor {
 	/**
 	 * Process bean definitions matching the given type (including subclasses), as defined
 	 * by {@link ListableBeanFactory#getBeanNamesForType(Class)}. Eager init is disabled.
-	 * <p/>
+	 * <p>
 	 * If the bean type cannot be determined, the entry is skipped. If the type is a proxy
 	 * the user-facing class is extracted from it.
 	 * @param type the class or interface to match, or {@code null} for all bean definitions
@@ -76,7 +76,7 @@ public class BeanFactoryProcessor {
 	/**
 	 * Process bean definitions annotated with the specified {@code annotationType}, as
 	 * defined by {@link ListableBeanFactory#getBeanNamesForAnnotation(Class)}.
-	 * <p/>
+	 * <p>
 	 * If the bean type cannot be determined, the entry is skipped. If the type is a proxy
 	 * the user-facing class is extracted from it.
 	 * @param annotationType the annotation that must be present on the bean

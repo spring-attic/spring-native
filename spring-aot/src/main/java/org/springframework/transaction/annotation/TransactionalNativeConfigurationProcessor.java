@@ -136,6 +136,8 @@ public class TransactionalNativeConfigurationProcessor implements BeanFactoryNat
 	/**
 	 * Find and collect the list of interfaces implemented by a specified class. It does *not*
 	 * recurse into interfaces.
+	 * @param clazz the related class
+	 * @param collector the set where the interfaces are collected
 	 */
 	public static void collectInterfaces(Class<?> clazz, LinkedHashSet<String> collector) {
 		for (Class<?> intface: clazz.getInterfaces()) {

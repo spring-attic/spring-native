@@ -37,6 +37,7 @@ public interface BootstrapContributor extends Ordered {
 	/**
 	 * Contribute additional sources and resources to the Bootstrap source set.
 	 * @param context the current build context
+	 * @param aotOptions the AOT options
 	 */
 	void contribute(BuildContext context, AotOptions aotOptions);
 

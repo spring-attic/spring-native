@@ -390,7 +390,8 @@ public class TypeSystem {
 	/**
 	 * Verifies the type plus all its super types, interfaces and any type
 	 * references in generic specifications exist.
-	 * 
+	 *
+	 * @param desc the description
 	 * @return List of missing types, empty if all good!
 	 */
 	public Set<String> resolveComplete(String desc) {
@@ -536,7 +537,7 @@ public class TypeSystem {
 	}
 
 	/**
-	 * Prepare a {@link TypeScanner} selecting specific dependencies (.jar files) for {@link Type} scanning. <br />
+	 * Prepare a {@link TypeScanner} selecting specific dependencies (.jar files) for {@link Type} scanning. <br>
 	 *
 	 * <dl>
 	 *     <dt>log4j-core</dt>
@@ -1418,6 +1419,7 @@ public class TypeSystem {
 	 * the form:
 	 * "com.foo.MyType=org.springframework.stereotype.Component,javax.transaction.Transactional"
 	 * @param slashedClassname type upon which to locate stereotypes
+	 * @return the entry
 	 */
 	public Entry<Type, List<Type>> getStereoTypesOnType(String slashedClassname) {
 		return resolveSlashed(slashedClassname).getRelevantStereotypes();
@@ -1781,6 +1783,8 @@ public class TypeSystem {
 
 	/**
 	 * From [J to long[] and java.lang.String to java.lang.String
+	 * @param typename the type name
+	 * @return the decoded name
 	 */
 	public static String decodeName(String typename) {
 		StringBuilder s = new StringBuilder();

@@ -29,7 +29,7 @@ import org.springframework.lang.Nullable;
 
 /**
  * Strategy interface to provide the bean registration writer for a {@link BeanDefinition}.
- * <p/>
+ * <p>
  * Can implement any of the following {@link Aware} interfaces: {@link EnvironmentAware},
  * {@link ResourceLoaderAware}, {@link ApplicationEventPublisherAware},
  * {@link ApplicationContextAware}, {@link BeanClassLoaderAware}, and

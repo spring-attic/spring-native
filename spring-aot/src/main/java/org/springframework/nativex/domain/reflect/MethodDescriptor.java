@@ -106,6 +106,7 @@ public final class MethodDescriptor extends MemberDescriptor {
 	 * Create a {@link MethodDescriptor} for the default no-argument constructor.
 	 * @see #CONSTRUCTOR_NAME
 	 * @see #of(String, String...)
+	 * @return the default constructor
 	 */
 	public static MethodDescriptor defaultConstructor() {
 		return of(CONSTRUCTOR_NAME, (String[]) null);

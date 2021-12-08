@@ -191,6 +191,7 @@ public class SynthesizedAnnotationNativeConfigurationProcessor implements BeanFa
 	 * if there is no @AliasFor otherwise it will be a pair containing the name of the type
 	 * specified for 'annotation' (will be the default Annotation.class if not set) and
 	 * and a boolean indicating if a name was specified for 'value' or 'attribute'.
+	 * @param method the related method
 	 * @return {@code null} or the related pair
 	 */
 	public static Map.Entry<Class<?>,Boolean> getAliasForSummary(Method method) {

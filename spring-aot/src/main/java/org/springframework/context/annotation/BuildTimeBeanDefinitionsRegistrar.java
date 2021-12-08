@@ -40,7 +40,7 @@ import org.springframework.util.ClassUtils;
 /**
  * Process a {@link GenericApplicationContext} refresh phase up to a point where all the
  * bean definitions have been created, but prior to actually creating bean instances.
- * <p/>
+ * <p>
  * This is used at build time to get an overview of an application context.
  *
  * @author Stephane Nicoll

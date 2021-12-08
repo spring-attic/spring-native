@@ -42,7 +42,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * The {@link TypeProcessor} traverses reachable structures from a given root type by inspecting the type itself,
- * its annotations, fields and their annotations, constructors & methods as well as their arguments & annotations.
+ * its annotations, fields and their annotations, constructors and methods as well as their arguments and annotations.
  * Whenever the processor discovers a {@link Type} (might as well be an annotation) it has not seen before it invokes a
  * callback function providing the {@link Type} and a {@link NativeContext} to register configuration in.
  * For usage within {@link org.springframework.nativex.type.NativeConfiguration#computeHints} the {@link TypeProcessor}
@@ -51,11 +51,11 @@ import org.springframework.util.CollectionUtils;
  * <pre class="code">
  * TypeProcessor processor = TypeProcessor.namedProcessor("a prefix used for logging")
  * 			.skipFieldInspection()
- * 			.includeAnnotationsMatching(annotation -> annotation.isPartOfDomain("org.springframework.web.bind.annotation"))
- * 			.onTypeDiscovered((type, registrar) -> registrar.addReflectiveAccess(type, new AccessDescriptor(AccessBits.FULL_REFLECTION)))
- * 			.onAnnotationDiscovered((annotation, registrar) -> registrar.addReflectiveAccess(annotation, new AccessDescriptor(AccessBits.ANNOTATION)));
+ * 			.includeAnnotationsMatching(annotation -&gt; annotation.isPartOfDomain("org.springframework.web.bind.annotation"))
+ * 			.onTypeDiscovered((type, registrar) -&gt; registrar.addReflectiveAccess(type, new AccessDescriptor(AccessBits.FULL_REFLECTION)))
+ * 			.onAnnotationDiscovered((annotation, registrar) -&gt; registrar.addReflectiveAccess(annotation, new AccessDescriptor(AccessBits.ANNOTATION)));
  * List&lt;HintDeclaration&gt; hints = processor.use(typeSystem)
- * 			.toProcessTypes(ts -> ts.findTypesAnnotated("...", true).stream().map(ts::resolveName));
+ * 			.toProcessTypes(ts -&gt; ts.findTypesAnnotated("...", true).stream().map(ts::resolveName));
  * </pre>
  *
  * Use {@literal include/exclude} filters to limit the scope of the type inspection.
@@ -100,6 +100,7 @@ public class TypeProcessor {
 	 * Get the default configuration that uses {@link AccessBits#FULL_REFLECTION} for types and {@link AccessBits#ANNOTATION} for discovered annotations.
 	 * Override the defaults via {@link #onTypeDiscovered(BiConsumer)} and {@link #onAnnotationDiscovered(BiConsumer)}.
 	 *
+	 * @param componentLogName component log name
 	 * @return new instance of {@link TypeProcessor}.
 	 */
 	public static TypeProcessor namedProcessor(String componentLogName) {
@@ -261,7 +262,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * @param includeFilter
+	 * @param includeFilter predicate on including filter or not
 	 * @return this.
 	 */
 	public TypeProcessor filterAnnotations(Predicate<Type> includeFilter) {
@@ -271,7 +272,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * @param excludeFilter
+	 * @param excludeFilter predicate on excluding filter or not
 	 * @return this.
 	 */
 	public TypeProcessor skipAnnotationsMatching(Predicate<Type> excludeFilter) {
@@ -290,7 +291,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * @param excludeFilter
+	 * @param excludeFilter predicate on excluding filter or not
 	 * @return this.
 	 */
 	public TypeProcessor skipTypesMatching(Predicate<Type> excludeFilter) {
@@ -302,7 +303,7 @@ public class TypeProcessor {
 	/**
 	 * Only Look at types matching the given {@link Predicate}.
 	 *
-	 * @param includeFilter
+	 * @param includeFilter predicate on including filter or not
 	 * @return this.
 	 */
 	public TypeProcessor filter(Predicate<Type> includeFilter) {
@@ -312,7 +313,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * @param includeFilter
+	 * @param includeFilter predicate on including filter or not
 	 * @return this.
 	 */
 	TypeProcessor filterConstructors(Predicate<Method> includeFilter) {
@@ -322,7 +323,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * @param includeFilter
+	 * @param includeFilter predicate on including filter or not
 	 * @return this.
 	 */
 	TypeProcessor filterConstructors(BiPredicate<Type, Method> includeFilter) {
@@ -357,7 +358,7 @@ public class TypeProcessor {
 	 * }
 	 * </pre>
 	 *
-	 * @param level
+	 * @param level the depth level
 	 * @return this.
 	 */
 	public TypeProcessor limitInspectionDepth(int level) {
@@ -416,9 +417,8 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * Within a {@link org.springframework.nativex.type.ComponentProcessor} - Use a given {@link NativeContext}
-	 * for a set of operations that remembers {@link Type types} already inspected.
-	 * Reflection-, Proxy-, Resource configuration is registered directly in the {@link NativeContext}.
+	 * Use a given {@link NativeContext} for a set of operations that remembers {@link Type types} already inspected.
+	 * Reflection, Proxy, Resource configuration is registered directly in the {@link NativeContext}.
 	 *
 	 * @param nativeContext must not be {@literal null}.
 	 * @return new instance of {@link TypeCapturingProcessor}.
@@ -442,7 +442,7 @@ public class TypeProcessor {
 	}
 
 	/**
-	 * Within {@link org.springframework.nativex.type.NativeConfiguration#computeHints(TypeSystem)} - Use a given {@link TypeSystem}
+	 * Within {@link org.springframework.nativex.type.TypeSystemNativeConfiguration#computeHints(TypeSystem)} - Use a given {@link TypeSystem}
 	 * for a set of operations that remembers {@link Type types} already inspected.
 	 * Reflection-, Proxy-, Resource configuration that is registered in the {@link NativeContext} is collected and returned when
 	 * processing is finished.
@@ -479,7 +479,7 @@ public class TypeProcessor {
 	 * In case you need to perform a lookup on the type system to provide the types to process call {@link #use(NativeContext)}
 	 * <pre class="code">
 	 * processor.use(context)
-	 *   .toProcessTypes((typeSystem) -> {
+	 *   .toProcessTypes((typeSystem) -&gt; {
 	 *       return typeSystem.findTypesAnnotated("Ljavax/persistent/Entity;", true)
 	 *         .stream()
 	 *         .map(typeSystem::resolveName);
@@ -645,11 +645,6 @@ public class TypeProcessor {
 				.filter(filter);
 	}
 
-	/**
-	 * @param <S>
-	 * @param <T>
-	 * @param <U>
-	 */
 	public interface TriConsumer<S, T, U> {
 
 		void accept(S var1, T var2, U var3);
@@ -725,6 +720,7 @@ public class TypeProcessor {
 		 * Process a multiple {@link Type types}.
 		 *
 		 * @param types must not be {@literal null}.
+		 * @return the list of hint declaration
 		 */
 		default List<HintDeclaration> toProcessTypes(Stream<Type> types) {
 			return toProcessTypes(typeSystem -> types);
@@ -871,7 +867,7 @@ public class TypeProcessor {
 		/**
 		 * The {@link Type} using the {@link #getType() type} in its signature.
 		 *
-		 * @return
+		 * @return the type
 		 */
 		default Type getReferenceSignature() {
 			return null;

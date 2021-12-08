@@ -61,6 +61,7 @@ public abstract class AnnotatedClassFinder {
 	/**
 	 * Find the class from a given directory.
 	 * @param rootDirectory the root directory to search
+	 * @param annotationName the annotation name
 	 * @return the annotated class or {@code null}
 	 * @throws IOException if the directory cannot be read
 	 */

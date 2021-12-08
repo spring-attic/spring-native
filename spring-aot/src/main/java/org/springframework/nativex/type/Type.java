@@ -87,20 +87,10 @@ public class Type {
 
 	private static Log logger = LogFactory.getLog(Type.class);	
 
-	public final static String AtResponseBody = "Lorg/springframework/web/bind/annotation/ResponseBody;";
 	public final static String AtMapping = "Lorg/springframework/web/bind/annotation/Mapping;";
 	public final static String AtMessageMapping = "Lorg/springframework/messaging/handler/annotation/MessageMapping;";
-	public final static String AtTransactional = "Lorg/springframework/transaction/annotation/Transactional;";
-	public final static String AtEndpoint = "Lorg/springframework/boot/actuate/endpoint/annotation/Endpoint;";
-	public final static String AtJavaxTransactional = "Ljavax/transaction/Transactional;";
 	public final static String AtBean = "Lorg/springframework/context/annotation/Bean;";
 	public final static String AtConditionalOnClass = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnClass;";
-	public final static String AtConditionalOnCloudPlatform = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnCloudPlatform;";
-
-	public final static String AtConditionalOnProperty = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
-//	public final static String AtConditionalOnAvailableEndpoint = "Lorg/springframework/boot/actuate/autoconfigure/endpoint/condition/ConditionalOnAvailableEndpoint;";
-//	public final static String AtConditionalOnEnabledHealthIndicator = "Lorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator;";
-//	public final static String AtConditionalOnEnabledMetricsExport = "Lorg/springframework/boot/actuate/autoconfigure/metrics/export/ConditionalOnEnabledMetricsExport;";
 
 	public final static String AtConditionalOnMissingBean = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
 	public final static String AtConditionalOnSingleCandidate = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate;";
@@ -2277,6 +2267,7 @@ public class Type {
 	}
 
 	/**
+	 * @param checkHierarchy {@code true} if should check hierarchy
 	 * @return true if type or a method inside is marked @PostAuthorize, @PostFilter, @PreAuthorize or @PreFilter
 	 */
 	public boolean isAtPrePostSecured(boolean checkHierarchy) {
@@ -2371,7 +2362,8 @@ public class Type {
 	}
 
 	/**
-	 * The callback string will be of the dotted form, for example: javax.persistence.PersistenceContext
+	 * @param annotationCheck The callback string will be of the dotted form, for example: javax.persistence.PersistenceContext
+	 * @return {@code true} if it has annotated field
 	 */
 	public boolean hasAnnotatedField(Predicate<String> annotationCheck) {
 		if (node.fields != null) {
@@ -2435,6 +2427,7 @@ public class Type {
 	}
 	/**
 	 * Check all the type references from the types signature and the signatures of its members can be resolved.
+	 * @param debugVerification {@code true} if debug verification should be enabled
 	 * @return true if verification is OK, false if there is a problem
 	 */
 	public boolean verifyMembers(boolean debugVerification) {
