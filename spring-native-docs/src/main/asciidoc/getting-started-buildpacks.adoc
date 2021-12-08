@@ -144,6 +144,7 @@ The plugin provides a number of options to customize the transformations, see <<
 Spring Boot's {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Cloud Native Buildpacks support] lets you build a container for your Spring Boot application.
 The https://github.com/paketo-buildpacks/native-image[native image buildpack] can be enabled using the `BP_NATIVE_IMAGE` environment variable as follows:
 
+NOTE: As of Spring Native 0.11, https://bell-sw.com/pages/liberica-native-image-kit/[Liberica Native Image Kit] (NIK) is the `native-image` compiler distribution used by default with Buildpacks.
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
