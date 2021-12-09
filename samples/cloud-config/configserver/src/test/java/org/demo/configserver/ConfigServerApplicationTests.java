@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.cloud.config.server.config.CompositeConfiguration;
 import org.springframework.cloud.config.server.config.ConfigServerAutoConfiguration;
 import org.springframework.cloud.config.server.config.ConfigServerConfiguration;
@@ -11,7 +12,7 @@ import org.springframework.cloud.config.server.config.ConfigServerEncryptionConf
 import org.springframework.cloud.config.server.config.ConfigServerMvcConfiguration;
 import org.springframework.cloud.config.server.config.ConfigServerProperties;
 import org.springframework.cloud.config.server.config.ResourceRepositoryConfiguration;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,22 +23,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigServerApplicationTests {
 
 	@Autowired
-	ApplicationContext applicationContext;
+	ConfigurableApplicationContext applicationContext;
 
 	@Test
 	void shouldLoadContext() {
-		assertThat(applicationContext.getBean(ConfigServerConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBean(CompositeConfiguration.class)).isNotNull();
-		assertThat(applicationContext.getBean(ResourceRepositoryConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBean(ConfigServerEncryptionConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBean(ConfigServerMvcConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBean(ConfigServerAutoConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBean(ConfigServerProperties.class)).isNotNull();
+		AssertableApplicationContext context = AssertableApplicationContext
+				.get(() -> applicationContext);
+		assertThat(context).hasSingleBean(ConfigServerConfiguration.class);
+		assertThat(context).hasSingleBean(CompositeConfiguration.class);
+		assertThat(context).hasSingleBean(ResourceRepositoryConfiguration.class);
+		assertThat(context).hasSingleBean(ConfigServerEncryptionConfiguration.class);
+		assertThat(context).hasSingleBean(ConfigServerMvcConfiguration.class);
+		assertThat(context).hasSingleBean(ConfigServerAutoConfiguration.class);
+		assertThat(context).hasSingleBean(ConfigServerProperties.class);
 	}
 
 }
