@@ -104,6 +104,7 @@ plugins {
 
 The plugin creates two `SourceSets` for testing and running the application: "aot" and "aotTest".
 The resulting classes and resources are automatically added to the runtime classpath of the application when running the `test`, `bootRun` and `bootJar` tasks.
+You can also call directly `generateAot` and `generateTestAot` tasks to perform only the generation.
 
 Sources are generated in `build/generated/sources/aot/`, `build/generated/resources/aot/` and test sources in `build/generated/sources/aotTest/`, `build/generated/resources/aotTest/`.
 
