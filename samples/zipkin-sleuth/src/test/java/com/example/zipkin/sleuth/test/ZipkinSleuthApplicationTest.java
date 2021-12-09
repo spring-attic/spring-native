@@ -4,13 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.cloud.sleuth.autoconfig.SleuthAnnotationConfiguration;
 import org.springframework.cloud.sleuth.autoconfig.TraceConfiguration;
 import org.springframework.cloud.sleuth.autoconfig.brave.BraveAutoConfiguration;
 import org.springframework.cloud.sleuth.autoconfig.brave.SleuthProperties;
 import org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinAutoConfiguration;
 import org.springframework.cloud.sleuth.zipkin2.ZipkinProperties;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,20 +19,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ZipkinSleuthApplicationTest {
 
 	@Autowired
-	ApplicationContext applicationContext;
+	ConfigurableApplicationContext applicationContext;
 
 	@Test
 	public void contextLoads() {
-		assertThat(applicationContext.getBeansOfType(ZipkinAutoConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBeansOfType(ZipkinProperties.class)).isNotNull();
-		assertThat(applicationContext.getBeansOfType(TraceConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBeansOfType(SleuthAnnotationConfiguration.class))
-				.isNotNull();
-		assertThat(applicationContext.getBeansOfType(SleuthProperties.class)).isNotNull();
-		assertThat(applicationContext.getBeansOfType(BraveAutoConfiguration.class))
-				.isNotNull();
+		AssertableApplicationContext context = AssertableApplicationContext
+				.get(() -> applicationContext);
+		assertThat(context).hasSingleBean(ZipkinAutoConfiguration.class);
+		assertThat(context).hasSingleBean(ZipkinProperties.class);
+		assertThat(context).hasSingleBean(TraceConfiguration.class);
+		assertThat(context).hasSingleBean(SleuthAnnotationConfiguration.class);
+		assertThat(context).hasSingleBean(SleuthProperties.class);
+		assertThat(context).hasSingleBean(BraveAutoConfiguration.class);
 	}
 
 }
