@@ -193,6 +193,7 @@
 										<sourceFileInclude>org/springframework/nativex/Mode.java</sourceFileInclude>
 										<sourceFileInclude>org/springframework/nativex/type/NativeConfiguration.java</sourceFileInclude>
 										<sourceFileInclude>org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/*.java</sourceFileInclude>
+										<sourceFileInclude>org/springframework/aot/context/bootstrap/generator/bean/descriptor/BeanInstanceDescriptor.java</sourceFileInclude>
 									</sourceFileIncludes>
 									<detectJavaApiLink>false</detectJavaApiLink>
 									<detectOfflineLinks>false</detectOfflineLinks>
@@ -202,6 +203,7 @@
 									<links>
 										<link>https://docs.oracle.com/javase/8/docs/api</link>
 										<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+										<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 									</links>
 								</configuration>
 							</execution>
