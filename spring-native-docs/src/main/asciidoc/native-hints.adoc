@@ -28,10 +28,10 @@ There should not really be a trigger specified on hints included `initialization
 Hints can be provided statically using an annotated model, or programmatically by implementing one of the callback interfaces.
 
 === Annotated Hints
-Annotated hints can be put on any `@Configuration`-annotated class of your application, including `@SpringBootApplication`:
+{spring-native-api}/org/springframework/nativex/hint/package-summary.html[Annotated hints] can be put on any `@Configuration`-annotated class of your application, including `@SpringBootApplication`:
 
-* `@TypeHint` for simple reflection hints
-* `@NativeHint` is a container for `@TypeHint` and offer more options.
+* {spring-native-api}/org/springframework/nativex/hint/TypeHint.html[`@TypeHint`] for simple reflection hints
+* {spring-native-api}/org/springframework/nativex/hint/NativeHint.html[`@NativeHint`] is a container for `@TypeHint` and offer more options.
 
 Let us take an example of an application using `WebClient` to deserialize a `Data` class with a `SuperHero` nested class using Jackson.
 Such process requires reflective access to the class and can be configured as shown in the following example.
@@ -53,13 +53,13 @@ Hints classes should implement `NativeConfiguration` and be registered in `META-
 If you need some concrete example of hints, you can {github-tree}/spring-native-configuration/src/main/java[browse ours].
 
 === Programmatic Hints
-Spring Native provides a {github-tree}/spring-aot/src/main/java/org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/NativeConfigurationRegistry.java[programmatic registry] which exposes a high-level API for all hints.
+Spring Native provides a {spring-native-api}/org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/NativeConfigurationRegistry.html[programmatic registry] which exposes a high-level API for all hints.
 
 Three callbacks are provided:
 
-. `BeanFactoryNativeConfigurationProcessor` provides the `BeanFactory` so that it can be introspected for matching beans.
-. `BeanNativeConfigurationProcessor` provides a `BeanInstanceDescriptor` for each bean.
-. `NativeConfiguration` typically used for hints not related to beans or `BeanFactory`.
+. {spring-native-api}/org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/BeanFactoryNativeConfigurationProcessor.html[`BeanFactoryNativeConfigurationProcessor`] provides the `BeanFactory` so that it can be introspected for matching beans.
+. {spring-native-api}/org/springframework/aot/context/bootstrap/generator/infrastructure/nativex/BeanNativeConfigurationProcessor.html[`BeanNativeConfigurationProcessor`] provides a `BeanInstanceDescriptor` for each bean.
+. {spring-native-api}/org/springframework/nativex/type/NativeConfiguration.html[`NativeConfiguration`] typically used for hints not related to beans or `BeanFactory`.
 
 WARNING: Those types are available via the `org.springframework.experimental:spring-aot` dependency which should not be in the runtime classpath, so you should typically use `<scope>provided</scope>` with Maven or `compileOnly` configuration with Gradle.
 
