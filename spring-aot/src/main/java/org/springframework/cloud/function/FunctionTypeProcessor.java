@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.cloud.function;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,10 +29,9 @@ import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
 /**
- * Ensures that Function/Consumer input types declared b the user are reflectively available.
+ * Ensure that Function/Consumer input types are reflectively available.
  *
  * @author Oleg Zhurakousky
- *
  */
 public class FunctionTypeProcessor implements BeanFactoryNativeConfigurationProcessor {
 
@@ -52,26 +49,27 @@ public class FunctionTypeProcessor implements BeanFactoryNativeConfigurationProc
 	private static class Processor {
 
 		void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
-			final Set<String> added = new HashSet<>();
 			new BeanFactoryProcessor(beanFactory).processBeans(this::isFunction,
-				(beanName, functionBeanType) -> {
-					Type functionType = FunctionTypeUtils.discoverFunctionTypeFromClass(functionBeanType);
-					Type inputType = FunctionTypeUtils.getInputType(functionType);
-					String name = inputType.getTypeName();
-					if (!name.startsWith("java.") &&
-						!name.startsWith("javax.")) {
-						if (added.add(name)) {
+					(beanName, functionBeanType) -> {
+						Type functionType = FunctionTypeUtils.discoverFunctionTypeFromClass(functionBeanType);
+						Type inputType = FunctionTypeUtils.getInputType(functionType);
+						String name = inputType.getTypeName();
+						if (!isCoreJavaType(name)) {
 							registry.reflection().forType(FunctionTypeUtils.getRawType(inputType))
-								.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
+									.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS,
+											TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 						}
-					}
-				});
+					});
+		}
+
+		private boolean isCoreJavaType(String className) {
+			return className.startsWith("java.") || className.startsWith("javax.");
 		}
 
 		private boolean isFunction(Class<?> beanType) {
 			return Function.class.isAssignableFrom(beanType)
 					|| Consumer.class.isAssignableFrom(beanType);
-			// we don't care about Suppliers since it's output type is handled by the user code.
+			// we don't care about Suppliers since its output type is handled by the user code.
 		}
 	}
 

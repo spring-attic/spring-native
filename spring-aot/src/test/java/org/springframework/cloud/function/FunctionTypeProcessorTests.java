@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.function;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -27,23 +23,24 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
+ * Tests for {@link FunctionTypeProcessor}.
  *
  * @author Oleg Zhurakousky
- *
  */
 class FunctionTypeProcessorTests {
 
-	private static Set<TypeAccess> ALL_MEMBERS;
-	{
-		ALL_MEMBERS = new HashSet<>(Arrays.asList(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS));
-	}
+	private static final Set<TypeAccess> ALL_MEMBERS = Set.of(TypeAccess.DECLARED_CONSTRUCTORS,
+			TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 
 	@Test
 	void testFunctionTypes() {
@@ -118,4 +115,5 @@ class FunctionTypeProcessorTests {
 			this.name = name;
 		}
 	}
+
 }
