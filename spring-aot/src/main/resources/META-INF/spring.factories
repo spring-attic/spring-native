@@ -34,7 +34,7 @@ org.springframework.validation.annotation.ValidatedNativeConfigurationProcessor,
 org.springframework.web.WebNativeConfigurationProcessor,\
 org.springframework.core.SynthesizedAnnotationNativeConfigurationProcessor,\
 org.springframework.core.IndexedBeanHierarchyNativeConfigurationProcessor,\
-org.springframework.context.annotation.ScopeNativeConfigurationProcessor
+org.springframework.context.annotation.ScopeNativeConfigurationProcessor,\
 org.springframework.cloud.function.FunctionTypeProcessor
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor=\
