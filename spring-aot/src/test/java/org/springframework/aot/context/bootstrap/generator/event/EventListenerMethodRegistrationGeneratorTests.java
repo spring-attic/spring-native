@@ -32,6 +32,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Defaul
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.event.AnotherEventListener;
+import org.springframework.aot.context.bootstrap.generator.sample.event.EventListenerConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.event.SingleEventListener;
 import org.springframework.aot.context.bootstrap.generator.sample.event.SingleTransactionalEventListener;
 import org.springframework.aot.context.bootstrap.generator.sample.scope.SimpleServiceImpl;
@@ -154,6 +155,22 @@ class EventListenerMethodRegistrationGeneratorTests {
 					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
 					"  return List.of(",
 					"    EventListenerMetadata.forBean(\"simpleServiceImpl\", SimpleServiceImpl.class).annotatedMethod(\"onContextRefresh\")",
+					"  );",
+					"}");
+		});
+	}
+
+	@Test
+	void writeEventListenersRegistrationWithCglibProxy() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(EventListenerConfiguration.class);
+		BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
+		ConfigurableListableBeanFactory beanFactory = registrar.processBeanDefinitions(context);
+		assertGeneratedCode(beanFactory, (code, writerContext) -> {
+			assertGeneratedCode(writerContext.getMainBootstrapClass()).removeIndent(1).lines().containsSequence(
+					"public static List<EventListenerMetadata> getEventListenersMetadata() {",
+					"  return List.of(",
+					"    EventListenerMetadata.forBean(\"eventListenerConfiguration\", EventListenerConfiguration.class).annotatedMethod(\"onContextRefresh\", ContextRefreshedEvent.class)",
 					"  );",
 					"}");
 		});

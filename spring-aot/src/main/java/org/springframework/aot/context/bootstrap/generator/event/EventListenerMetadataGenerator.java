@@ -24,6 +24,7 @@ import com.squareup.javapoet.CodeBlock;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.context.event.EventListenerMetadata;
+import org.springframework.util.ClassUtils;
 
 /**
  * Write the necessary code to identify an {@link EventListener @EventListener}-annotated
@@ -48,7 +49,7 @@ class EventListenerMetadataGenerator {
 	EventListenerMetadataGenerator(String beanName, Class<?> beanType, Method method,
 			String eventListenerFactoryBeanName) {
 		this.beanName = beanName;
-		this.beanType = beanType;
+		this.beanType = ClassUtils.getUserClass(beanType);
 		this.method = method;
 		this.eventListenerFactoryBeanName = eventListenerFactoryBeanName;
 	}
