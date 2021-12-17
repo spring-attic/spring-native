@@ -122,6 +122,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		private static final String FRAGMENTS_PROPERTY = "repositoryFragments";
 
 		private static final String CUSTOM_IMPLEMENTATION_PROPERTY = "customImplementation";
+		private static final String REPOSITORY_BASE_CLASS_PROPERTY = "repositoryBaseClass";
 
 		private final ConfigurableListableBeanFactory beanFactory;
 
@@ -135,7 +136,26 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			configuration.setBeanName(beanName);
 			configuration.setCustomImplementation(readCustomImplementationFromBeanDefinition(beanDefinition));
 			configuration.setFragments(readFragmentsFromBeanDefinition(beanDefinition));
+			configuration.setRepositoryBaseClass(readRepositoryBaseClassFromBeanDefinition(beanDefinition));
 			return configuration;
+		}
+
+		private Class<?> readRepositoryBaseClassFromBeanDefinition(BeanDefinition beanDefinition) {
+			if (!beanDefinition.getPropertyValues().contains(REPOSITORY_BASE_CLASS_PROPERTY)) {
+				return null;
+			}
+			PropertyValue customImplementation = beanDefinition.getPropertyValues().getPropertyValue(REPOSITORY_BASE_CLASS_PROPERTY);
+			if (customImplementation.getValue() instanceof String) {
+				String baseClass = (String) customImplementation.getValue();
+				if (!baseClass.startsWith("org.springframework.data") && ClassUtils.isPresent(baseClass, beanFactory.getBeanClassLoader())) {
+					try {
+						return ClassUtils.forName(baseClass, beanFactory.getBeanClassLoader());
+					} catch (ClassNotFoundException e) {
+						throw new InvalidPropertyException(RepositoryFactoryBeanSupport.class, REPOSITORY_BASE_CLASS_PROPERTY, "Unable to load custom repository base class!");
+					}
+				}
+			}
+			return null;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -239,6 +259,16 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 			writeQueryMethodConfiguration(configuration);
 			writeRepositoryFragments(configuration);
 			writeCustomImplementation(configuration);
+			writeCustomRepositoryBaseClass(configuration);
+		}
+
+		private void writeCustomRepositoryBaseClass(RepositoryConfiguration configuration) {
+
+			if (!configuration.hasCustomBaseClass()) {
+				return;
+			}
+
+			registry.reflection().forType(configuration.getCustomRepositoryBaseClass()).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS);
 		}
 
 		/**
@@ -436,6 +466,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 		private String beanName;
 
 		private final Class<?> repositoryInterface;
+		private Class<?> repositoryBaseClass;
 
 		private final ResolvableType repositoryType;
 
@@ -509,6 +540,18 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 
 		public ResolvableType getIdType() {
 			return idType;
+		}
+
+		public void setRepositoryBaseClass(Class<?> repositoryBaseClass) {
+			this.repositoryBaseClass = repositoryBaseClass;
+		}
+
+		public Class<?> getCustomRepositoryBaseClass() {
+			return repositoryBaseClass;
+		}
+
+		public boolean hasCustomBaseClass() {
+			return repositoryBaseClass != null;
 		}
 	}
 
