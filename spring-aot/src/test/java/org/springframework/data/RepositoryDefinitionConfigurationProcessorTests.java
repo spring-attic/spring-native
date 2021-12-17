@@ -53,6 +53,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.domain.Page;
 import org.springframework.data.geo.Point;
+import org.springframework.data.repository.config.DefaultRepositoryBaseClass;
 import org.springframework.data.repository.query.Param;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.sample.data.config.ConfigForTypeHavingDeclaredClass;
@@ -70,6 +71,9 @@ import org.springframework.sample.data.config.ConfigWithQueryMethods;
 import org.springframework.sample.data.config.ConfigWithQueryMethods.CustomerRepositoryWithQueryMethods;
 import org.springframework.sample.data.config.ReactiveConfig;
 import org.springframework.sample.data.config.ReactiveConfig.CustomerRepositoryReactive;
+import org.springframework.sample.data.config.RepositoryConfigWithCustomBaseClass;
+import org.springframework.sample.data.config.RepositoryConfigWithCustomBaseClass.CustomerRepositoryWithCustomBaseRepo;
+import org.springframework.sample.data.config.RepositoryConfigWithCustomBaseClass.RepoBaseClass;
 import org.springframework.sample.data.config.SimpleRepositoryConfig;
 import org.springframework.sample.data.config.SimpleRepositoryConfig.CustomerRepository;
 import org.springframework.sample.data.types.Address;
@@ -102,7 +106,8 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 				.doesNotContain(Instant.class) // Types considered simple ones
 				.contains(TypeAlias.class, Id.class, Persistent.class, Transient.class, PersistenceConstructor.class) // Spring Data Annotations
 				.doesNotContain(Documented.class) // java.lang Annotations
-				.doesNotContain(Component.class); // Spring Stereotype Annotations
+				.doesNotContain(Component.class) // Spring Stereotype Annotations
+				.doesNotContain(DefaultRepositoryBaseClass.class); // Spring Data default repo
 	}
 
 	@Test
@@ -161,6 +166,20 @@ public class RepositoryDefinitionConfigurationProcessorTests {
 				.doesNotContain(Component.class); // Spring Stereotype Annotations
 	}
 
+	@Test
+	void computeReflectionForSimpleCrudRepositoryWithCustomBaseRepoImplementation() {
+		NativeConfigRegistryHolder registry = getNativeConfiguration(RepositoryConfigWithCustomBaseClass.class);
+		assertThat(registry.reflection().reflectionEntries()).<Class>extracting(DefaultNativeReflectionEntry::getType)
+				.contains(CustomerRepositoryWithCustomBaseRepo.class) // Repository Interface
+				.contains(RepoBaseClass.class) // Custom Repository Base Class
+				.contains(BaseEntity.class, Customer.class, Address.class, LocationHolder.class) // User Domain Types
+				.doesNotContain(Point.class) // Spring Data Domain Types
+				.doesNotContain(Instant.class) // Types considered simple ones
+				.contains(TypeAlias.class, Id.class, Persistent.class, Transient.class, PersistenceConstructor.class) // Spring Data Annotations
+				.doesNotContain(Documented.class) // java.lang Annotations
+				.doesNotContain(Component.class) // Spring Stereotype Annotations
+				.doesNotContain(DefaultRepositoryBaseClass.class); // Spring Data default repo
+	}
 
 	@Test
 	void onlyRegistersPreferredCtorIfPresent() {
