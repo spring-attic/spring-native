@@ -18,14 +18,14 @@ import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Helper class to register bean definitions in the context.
+ * Helper class to register bean definitions in a bean factory.
  *
  * @author Stephane Nicoll
  */
@@ -101,7 +101,7 @@ public class BeanDefinitionRegistrar {
 		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(instanceSupplier));
 	}
 
-	public void register(GenericApplicationContext context) {
+	public void register(DefaultListableBeanFactory beanFactory) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Register bean definition with name '" + this.beanName + "'");
 		}
@@ -109,7 +109,7 @@ public class BeanDefinitionRegistrar {
 		if (this.beanName == null) {
 			throw new IllegalStateException("Bean name not set. Could not register " + beanDefinition);
 		}
-		context.registerBeanDefinition(this.beanName, beanDefinition);
+		beanFactory.registerBeanDefinition(this.beanName, beanDefinition);
 	}
 
 	public RootBeanDefinition toBeanDefinition() {
@@ -144,7 +144,7 @@ public class BeanDefinitionRegistrar {
 				ObjectUtils.getIdentityHexString(this.beanDefinition);
 	}
 
-	private BeanDefinition resolveBeanDefinition(GenericApplicationContext context) {
+	private BeanDefinition resolveBeanDefinition(DefaultListableBeanFactory beanFactory) {
 		return this.beanDefinition;
 	}
 
@@ -189,8 +189,8 @@ public class BeanDefinitionRegistrar {
 			this.beanType = beanType;
 		}
 
-		public <T> T create(GenericApplicationContext context, ThrowableFunction<InjectedElementAttributes, T> factory) {
-			return resolveInstanceCreator(BeanDefinitionRegistrar.this.instanceCreator).create(context, factory);
+		public <T> T create(DefaultListableBeanFactory beanFactory, ThrowableFunction<InjectedElementAttributes, T> factory) {
+			return resolveInstanceCreator(BeanDefinitionRegistrar.this.instanceCreator).create(beanFactory, factory);
 		}
 
 		private InjectedElementResolver resolveInstanceCreator(Executable instanceCreator) {

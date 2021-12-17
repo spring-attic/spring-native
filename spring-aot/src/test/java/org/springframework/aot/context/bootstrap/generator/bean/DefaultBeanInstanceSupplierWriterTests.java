@@ -79,21 +79,21 @@ class DefaultBeanInstanceSupplierWriterTests {
 	void writeConstructorWithParameter() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(InjectionComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, InjectionComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"(instanceContext) -> instanceContext.create(context, (attributes) -> new InjectionComponent(attributes.get(0)))");
+				"(instanceContext) -> instanceContext.create(beanFactory, (attributes) -> new InjectionComponent(attributes.get(0)))");
 	}
 
 	@Test
 	void writeConstructorWithInnerClassAndNoExtraArg() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(NoDependencyComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, NoDependencyComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"() -> context.getBean(InnerComponentConfiguration.class).new NoDependencyComponent()");
+				"() -> beanFactory.getBean(InnerComponentConfiguration.class).new NoDependencyComponent()");
 	}
 
 	@Test
 	void writeConstructorWithInnerClassAndExtraArg() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(EnvironmentAwareComponent.class.getName()).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, EnvironmentAwareComponent.class.getDeclaredConstructors()[0])).lines().containsOnly(
-				"(instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(InnerComponentConfiguration.class).new EnvironmentAwareComponent(attributes.get(1)))");
+				"(instanceContext) -> instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(InnerComponentConfiguration.class).new EnvironmentAwareComponent(attributes.get(1)))");
 	}
 
 	@Test
@@ -116,9 +116,9 @@ class DefaultBeanInstanceSupplierWriterTests {
 				"(instanceContext) -> {",
 				"  InjectionConfiguration bean = new InjectionConfiguration();",
 				"  instanceContext.method(\"setEnvironment\", Environment.class)",
-				"      .invoke(context, (attributes) -> bean.setEnvironment(attributes.get(0)));",
+				"      .invoke(beanFactory, (attributes) -> bean.setEnvironment(attributes.get(0)));",
 				"  instanceContext.method(\"setBean\", String.class)",
-				"      .resolve(context, false).ifResolved((attributes) -> bean.setBean(attributes.get(0)));",
+				"      .resolve(beanFactory, false).ifResolved((attributes) -> bean.setBean(attributes.get(0)));",
 				"  return bean;",
 				"}");
 
@@ -128,7 +128,7 @@ class DefaultBeanInstanceSupplierWriterTests {
 	void writeMethodWithNoArgUseShortcut() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		assertThat(generateCode(beanDefinition, ReflectionUtils.findMethod(SimpleConfiguration.class, "stringBean")))
-				.isEqualTo("() -> context.getBean(SimpleConfiguration.class).stringBean()");
+				.isEqualTo("() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()");
 	}
 
 	@Test
@@ -146,9 +146,9 @@ class DefaultBeanInstanceSupplierWriterTests {
 				new MemberDescriptor<>(ReflectionUtils.findMethod(InjectionComponent.class, "setCounter", Integer.class), false))
 		).lines().containsOnly(
 				"(instanceContext) -> {",
-				"  InjectionComponent bean = context.getBean(InjectionConfiguration.class).injectionComponent();",
+				"  InjectionComponent bean = beanFactory.getBean(InjectionConfiguration.class).injectionComponent();",
 				"  instanceContext.method(\"setCounter\", Integer.class)",
-				"      .resolve(context, false).ifResolved((attributes) -> bean.setCounter(attributes.get(0)));",
+				"      .resolve(beanFactory, false).ifResolved((attributes) -> bean.setCounter(attributes.get(0)));",
 				"  return bean;",
 				"}");
 	}
@@ -159,7 +159,7 @@ class DefaultBeanInstanceSupplierWriterTests {
 				.setFactoryMethod("integerBean").getBeanDefinition();
 		Method method = ReflectionUtils.findMethod(SimpleConfiguration.class, "integerBean");
 		assertThat(generateCode(beanDefinition, method)).isEqualTo(
-				"() -> context.getBean(SimpleConfiguration.class).integerBean()");
+				"() -> beanFactory.getBean(SimpleConfiguration.class).integerBean()");
 	}
 
 

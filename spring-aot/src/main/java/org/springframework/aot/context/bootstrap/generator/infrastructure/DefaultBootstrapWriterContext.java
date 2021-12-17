@@ -128,7 +128,7 @@ public class DefaultBootstrapWriterContext implements BootstrapWriterContext {
 	@Override
 	public BootstrapWriterContext fork(String id, Function<String, BootstrapClass> bootstrapClassFactory) {
 		if (this.allContexts.containsKey(id)) {
-			throw new IllegalArgumentException("context with id '" + id + "' already exists");
+			throw new IllegalArgumentException("writer context with id '" + id + "' already exists");
 		}
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext(this, bootstrapClassFactory);
 		this.allContexts.put(id, writerContext);

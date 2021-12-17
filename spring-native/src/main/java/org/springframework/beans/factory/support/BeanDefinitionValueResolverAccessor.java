@@ -19,7 +19,6 @@ package org.springframework.beans.factory.support;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Accessor for {@code BeanDefinitionValueResolver} as we require the logic and the
@@ -29,13 +28,13 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 public class BeanDefinitionValueResolverAccessor {
 
-	public static ValueResolver get(GenericApplicationContext context, String beanName, BeanDefinition beanDefinition) {
-		return new ValueResolver((AbstractAutowireCapableBeanFactory) context.getBeanFactory(), beanName, beanDefinition);
+	public static ValueResolver get(DefaultListableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {
+		return new ValueResolver(beanFactory, beanName, beanDefinition);
 	}
 
 	public static class ValueResolver extends BeanDefinitionValueResolver {
 
-		public ValueResolver(AbstractAutowireCapableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {
+		public ValueResolver(DefaultListableBeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {
 			super(beanFactory, beanName, beanDefinition, initializeTypeConverter(beanFactory));
 		}
 

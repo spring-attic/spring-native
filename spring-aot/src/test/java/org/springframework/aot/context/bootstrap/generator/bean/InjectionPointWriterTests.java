@@ -59,32 +59,32 @@ class InjectionPointWriterTests {
 	@Test
 	void writeInstantiationForConstructorWithNonGenericParameter() {
 		Constructor<?> constructor = SimpleConstructorBean.class.getDeclaredConstructors()[0];
-		assertThat(writeInstantiation(constructor)).lines().containsExactly("instanceContext.create(context, (attributes) -> new InjectionPointWriterTests.SimpleConstructorBean(attributes.get(0), attributes.get(1)))");
+		assertThat(writeInstantiation(constructor)).lines().containsExactly("instanceContext.create(beanFactory, (attributes) -> new InjectionPointWriterTests.SimpleConstructorBean(attributes.get(0), attributes.get(1)))");
 	}
 
 	@Test
 	void writeInstantiationForConstructorWithGenericParameter() {
 		Constructor<?> constructor = GenericConstructorBean.class.getDeclaredConstructors()[0];
 		assertThat(writeInstantiation(constructor)).lines().containsExactly(
-				"instanceContext.create(context, (attributes) -> new InjectionPointWriterTests.GenericConstructorBean(attributes.get(0)))");
+				"instanceContext.create(beanFactory, (attributes) -> new InjectionPointWriterTests.GenericConstructorBean(attributes.get(0)))");
 	}
 
 	@Test
 	void writeInstantiationForAmbiguousConstructor() throws Exception {
 		Constructor<?> constructor = AmbiguousConstructorBean.class.getDeclaredConstructor(String.class, Number.class);
-		assertThat(writeInstantiation(constructor)).lines().containsExactly("instanceContext.create(context, (attributes) -> new InjectionPointWriterTests.AmbiguousConstructorBean(attributes.get(0, String.class), attributes.get(1, Number.class)))");
+		assertThat(writeInstantiation(constructor)).lines().containsExactly("instanceContext.create(beanFactory, (attributes) -> new InjectionPointWriterTests.AmbiguousConstructorBean(attributes.get(0, String.class), attributes.get(1, Number.class)))");
 	}
 
 	@Test
 	void writeInstantiationForConstructorInInnerClass() {
 		Constructor<?> constructor = InnerClass.class.getDeclaredConstructors()[0];
-		assertThat(writeInstantiation(constructor)).lines().containsExactly("context.getBean(InjectionPointWriterTests.SimpleConstructorBean.class).new InnerClass()");
+		assertThat(writeInstantiation(constructor)).lines().containsExactly("beanFactory.getBean(InjectionPointWriterTests.SimpleConstructorBean.class).new InnerClass()");
 	}
 
 	@Test
 	void writeInstantiationForMethodWithNoArgUseShortcut() {
 		Method method = ReflectionUtils.findMethod(SimpleConfiguration.class, "stringBean");
-		assertThat(writeInstantiation(method)).lines().containsExactly("context.getBean(SimpleConfiguration.class).stringBean()");
+		assertThat(writeInstantiation(method)).lines().containsExactly("beanFactory.getBean(SimpleConfiguration.class).stringBean()");
 	}
 
 	@Test
@@ -97,21 +97,21 @@ class InjectionPointWriterTests {
 	void writeInstantiationForMethodWithNonGenericParameter() {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "source", Integer.class);
 		assertThat(writeInstantiation(method)).lines().containsExactly(
-				"instanceContext.create(context, (attributes) -> context.getBean(InjectionPointWriterTests.SampleBean.class).source(attributes.get(0)))");
+				"instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(InjectionPointWriterTests.SampleBean.class).source(attributes.get(0)))");
 	}
 
 	@Test
 	void writeInstantiationForStaticMethodWithNonGenericParameter() {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "staticSource", Integer.class);
 		assertThat(writeInstantiation(method)).lines().containsExactly(
-				"instanceContext.create(context, (attributes) -> InjectionPointWriterTests.SampleBean.staticSource(attributes.get(0)))");
+				"instanceContext.create(beanFactory, (attributes) -> InjectionPointWriterTests.SampleBean.staticSource(attributes.get(0)))");
 	}
 
 	@Test
 	void writeInstantiationForMethodWithGenericParameters() {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "source", ObjectProvider.class);
 		assertThat(writeInstantiation(method)).lines().containsExactly(
-				"instanceContext.create(context, (attributes) -> context.getBean(InjectionPointWriterTests.SampleBean.class).source(attributes.get(0)))");
+				"instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(InjectionPointWriterTests.SampleBean.class).source(attributes.get(0)))");
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class InjectionPointWriterTests {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "sourceAndCounter", String.class, Integer.class);
 		assertThat(writeInjection(method, false)).lines().containsExactly(
 				"instanceContext.method(\"sourceAndCounter\", String.class, Integer.class)",
-				"    .resolve(context, false).ifResolved((attributes) -> bean.sourceAndCounter(attributes.get(0), attributes.get(1)))");
+				"    .resolve(beanFactory, false).ifResolved((attributes) -> bean.sourceAndCounter(attributes.get(0), attributes.get(1)))");
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class InjectionPointWriterTests {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "nameAndCounter", String.class, ObjectProvider.class);
 		assertThat(writeInjection(method, true)).lines().containsExactly(
 				"instanceContext.method(\"nameAndCounter\", String.class, ObjectProvider.class)",
-				"    .invoke(context, (attributes) -> bean.nameAndCounter(attributes.get(0), attributes.get(1)))");
+				"    .invoke(beanFactory, (attributes) -> bean.nameAndCounter(attributes.get(0), attributes.get(1)))");
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class InjectionPointWriterTests {
 		Method method = ReflectionUtils.findMethod(SampleBean.class, "nameAndCounter", String.class, ObjectProvider.class);
 		assertThat(writeInjection(method, false)).lines().containsExactly(
 				"instanceContext.method(\"nameAndCounter\", String.class, ObjectProvider.class)",
-				"    .resolve(context, false).ifResolved((attributes) -> bean.nameAndCounter(attributes.get(0), attributes.get(1)))");
+				"    .resolve(beanFactory, false).ifResolved((attributes) -> bean.nameAndCounter(attributes.get(0), attributes.get(1)))");
 	}
 
 	@Test
@@ -148,7 +148,7 @@ class InjectionPointWriterTests {
 		Field field = ReflectionUtils.findField(SampleBean.class, "counter", Integer.class);
 		assertThat(writeInjection(field, true)).lines().containsExactly(
 				"instanceContext.field(\"counter\", Integer.class)",
-				"    .invoke(context, (attributes) -> bean.counter = attributes.get(0))");
+				"    .invoke(beanFactory, (attributes) -> bean.counter = attributes.get(0))");
 	}
 
 	@Test
@@ -156,7 +156,7 @@ class InjectionPointWriterTests {
 		Field field = ReflectionUtils.findField(SampleBean.class, "counter", Integer.class);
 		assertThat(writeInjection(field, false)).lines().containsExactly(
 				"instanceContext.field(\"counter\", Integer.class)",
-				"    .resolve(context, false).ifResolved((attributes) -> bean.counter = attributes.get(0))");
+				"    .resolve(beanFactory, false).ifResolved((attributes) -> bean.counter = attributes.get(0))");
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class InjectionPointWriterTests {
 		Field field = ReflectionUtils.findField(SampleBean.class, "source", String.class);
 		assertThat(writeInjection(field, true)).lines().containsExactly(
 				"instanceContext.field(\"source\", String.class)",
-				"    .invoke(context, (attributes) -> {",
+				"    .invoke(beanFactory, (attributes) -> {",
 				"      Field sourceField = ReflectionUtils.findField(InjectionPointWriterTests.SampleBean.class, \"source\", String.class);",
 				"      ReflectionUtils.makeAccessible(sourceField);",
 				"      ReflectionUtils.setField(sourceField, bean, attributes.get(0));",

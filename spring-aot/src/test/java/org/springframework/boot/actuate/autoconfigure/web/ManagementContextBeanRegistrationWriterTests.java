@@ -47,7 +47,7 @@ class ManagementContextBeanRegistrationWriterTests {
 				new GenericApplicationContext(), "servlet", false);
 		assertThat(CodeSnippet.of((code) -> writer.writeBeanRegistration(createWriterContext(), code))).lines().contains(
 				"BeanDefinitionRegistrar.of(\"servlet\", AotManagementContextFactory.class)",
-				"    .instanceSupplier(() -> new AotManagementContextFactory(() -> new ManagementContextBoostrapInitializer(), false)).register(context);");
+				"    .instanceSupplier(() -> new AotManagementContextFactory(() -> new ManagementContextBoostrapInitializer(), false)).register(beanFactory);");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class ManagementContextBeanRegistrationWriterTests {
 		assertThat(source).isNotNull();
 		assertSource(source).doesNotContain("ReactiveWebServerFactory").removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"ServletWebServerFactory\", TomcatServletWebServerFactory.class)",
-				"    .instanceSupplier(() -> new TomcatServletWebServerFactory()).register(context);");
+				"    .instanceSupplier(() -> new TomcatServletWebServerFactory()).register(beanFactory);");
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class ManagementContextBeanRegistrationWriterTests {
 				new GenericApplicationContext(), "reactive", true);
 		assertThat(CodeSnippet.of((code) -> writer.writeBeanRegistration(createWriterContext(), code))).lines().contains(
 				"BeanDefinitionRegistrar.of(\"reactive\", AotManagementContextFactory.class)",
-				"    .instanceSupplier(() -> new AotManagementContextFactory(() -> new ManagementContextBoostrapInitializer(), true)).register(context);");
+				"    .instanceSupplier(() -> new AotManagementContextFactory(() -> new ManagementContextBoostrapInitializer(), true)).register(beanFactory);");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class ManagementContextBeanRegistrationWriterTests {
 		assertThat(source).isNotNull();
 		assertSource(source).doesNotContain("ServletWebServerFactory").removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"ReactiveWebServerFactory\", TomcatReactiveWebServerFactory.class)",
-				"    .instanceSupplier(() -> new TomcatReactiveWebServerFactory()).register(context);");
+				"    .instanceSupplier(() -> new TomcatReactiveWebServerFactory()).register(beanFactory);");
 	}
 
 	private DefaultBootstrapWriterContext createWriterContext() {

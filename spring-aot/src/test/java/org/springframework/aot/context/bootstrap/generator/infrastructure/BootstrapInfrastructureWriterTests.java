@@ -29,6 +29,7 @@ import org.springframework.aot.context.bootstrap.generator.sample.callback.InitD
 import org.springframework.aot.context.bootstrap.generator.sample.callback.NestedImportConfiguration;
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
@@ -47,9 +48,16 @@ class BootstrapInfrastructureWriterTests {
 	private final BuildTimeBeanDefinitionsRegistrar registrar = new BuildTimeBeanDefinitionsRegistrar();
 
 	@Test
+	void writeInfrastructureAssignBeanFactory() {
+		assertThat(writeInfrastructure(createBootstrapContext()))
+				.contains("DefaultListableBeanFactory beanFactory = context.getDefaultListableBeanFactory();")
+				.hasImport(DefaultListableBeanFactory.class);
+	}
+
+	@Test
 	void writeInfrastructureSetAutowireCandidateResolver() {
 		assertThat(writeInfrastructure(createBootstrapContext()))
-				.contains("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());")
+				.contains("beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());")
 				.hasImport(ContextAnnotationAutowireCandidateResolver.class);
 	}
 
@@ -72,7 +80,7 @@ class BootstrapInfrastructureWriterTests {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean(ImportConfiguration.class);
 		assertThat(writeInfrastructure(createBootstrapContext(), context))
-				.contains("context.getBeanFactory().addBeanPostProcessor(createImportAwareBeanPostProcessor());");
+				.contains("beanFactory.addBeanPostProcessor(createImportAwareBeanPostProcessor());");
 	}
 
 	@Test
@@ -155,7 +163,7 @@ class BootstrapInfrastructureWriterTests {
 		GenericApplicationContext context = new AnnotationConfigApplicationContext();
 		context.registerBean("testBean", InitDestroySampleBean.class);
 		assertThat(writeInfrastructure(createBootstrapContext(), context)).contains(
-				"context.getBeanFactory().addBeanPostProcessor(createInitDestroyBeanPostProcessor(context.getBeanFactory()));");
+				"beanFactory.addBeanPostProcessor(createInitDestroyBeanPostProcessor(beanFactory));");
 	}
 
 	private CodeSnippet writeInfrastructure(BootstrapWriterContext writerContext) {

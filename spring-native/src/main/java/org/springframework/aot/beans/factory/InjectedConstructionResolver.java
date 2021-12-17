@@ -19,13 +19,12 @@ import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor;
 import org.springframework.beans.factory.support.BeanDefinitionValueResolverAccessor.ValueResolver;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.MethodParameter;
 
@@ -43,10 +42,10 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 
 	private final String beanName;
 
-	private final Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver;
+	private final Function<DefaultListableBeanFactory, BeanDefinition> beanDefinitionResolver;
 
 	InjectedConstructionResolver(Executable executable, Class<?> targetType, String beanName,
-			Function<GenericApplicationContext, BeanDefinition> beanDefinitionResolver) {
+			Function<DefaultListableBeanFactory, BeanDefinition> beanDefinitionResolver) {
 		this.executable = executable;
 		this.targetType = targetType;
 		this.beanName = beanName;
@@ -58,13 +57,12 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 	}
 
 	@Override
-	public InjectedElementAttributes resolve(GenericApplicationContext context, boolean required) {
-		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+	public InjectedElementAttributes resolve(DefaultListableBeanFactory beanFactory, boolean required) {
 		int argumentCount = this.executable.getParameterCount();
 		List<Object> arguments = new ArrayList<>();
 		Set<String> autowiredBeans = new LinkedHashSet<>(argumentCount);
 		TypeConverter typeConverter = beanFactory.getTypeConverter();
-		ConstructorArgumentValues argumentValues = resolveArgumentValues(context);
+		ConstructorArgumentValues argumentValues = resolveArgumentValues(beanFactory);
 		for (int i = 0; i < argumentCount; i++) {
 			MethodParameter methodParam = createMethodParameter(i);
 			ValueHolder valueHolder = argumentValues.getIndexedArgumentValue(i, null);
@@ -73,7 +71,7 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 					arguments.add(valueHolder.getConvertedValue());
 				}
 				else {
-					Object userValue = context.getBeanFactory().getTypeConverter()
+					Object userValue = beanFactory.getTypeConverter()
 							.convertIfNecessary(valueHolder.getValue(), methodParam.getParameterType());
 					arguments.add(userValue);
 				}
@@ -114,14 +112,14 @@ class InjectedConstructionResolver implements InjectedElementResolver {
 		}
 	}
 
-	private ConstructorArgumentValues resolveArgumentValues(GenericApplicationContext context) {
+	private ConstructorArgumentValues resolveArgumentValues(DefaultListableBeanFactory beanFactory) {
 		ConstructorArgumentValues resolvedValues = new ConstructorArgumentValues();
-		BeanDefinition beanDefinition = this.beanDefinitionResolver.apply(context);
+		BeanDefinition beanDefinition = this.beanDefinitionResolver.apply(beanFactory);
 		if (beanDefinition == null || !beanDefinition.hasConstructorArgumentValues()) {
 			return resolvedValues;
 		}
 		ConstructorArgumentValues argumentValues = beanDefinition.getConstructorArgumentValues();
-		ValueResolver valueResolver = BeanDefinitionValueResolverAccessor.get(context, this.beanName, beanDefinition);
+		ValueResolver valueResolver = BeanDefinitionValueResolverAccessor.get(beanFactory, this.beanName, beanDefinition);
 		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : argumentValues.getIndexedArgumentValues().entrySet()) {
 			int index = entry.getKey();
 			ConstructorArgumentValues.ValueHolder valueHolder = entry.getValue();

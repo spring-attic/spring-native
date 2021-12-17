@@ -47,7 +47,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.AttributeAccessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
@@ -104,7 +104,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 			String protectedPackageName = analysis.getPrivilegedPackageName();
 			BootstrapClass javaFile = context.getBootstrapClass(protectedPackageName);
 			MethodSpec method = javaFile.addMethod(beanRegistrationMethod(this::writeBeanRegistration));
-			code.addStatement("$T.$N(context)", javaFile.getClassName(), method);
+			code.addStatement("$T.$N(beanFactory)", javaFile.getClassName(), method);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 
 	void writeBeanRegistration(Builder code) {
 		initializeBeanDefinitionRegistrar(code);
-		code.addStatement(".register(context)");
+		code.addStatement(".register(beanFactory)");
 	}
 
 	void writeBeanDefinition(Builder code) {
@@ -349,7 +349,7 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		String name = registerBeanMethodName();
 		MethodSpec.Builder method = MethodSpec.methodBuilder(name)
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(GenericApplicationContext.class, "context");
+				.addParameter(DefaultListableBeanFactory.class, "beanFactory");
 		CodeBlock.Builder body = CodeBlock.builder();
 		code.accept(body);
 		method.addCode(body.build());

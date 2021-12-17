@@ -72,7 +72,7 @@ class DefaultBeanInstanceSupplierWriter {
 		// Shortcut for common case
 		if (!multiStatements && constructor.getParameterTypes().length < minArgs) {
 			if (innerClass) {
-				code.add("() -> context.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
+				code.add("() -> beanFactory.getBean($T.class).new $L()", declaringType.getEnclosingClass(), declaringType.getSimpleName());
 			}
 			else {
 				// Only apply the shortcut if there's one candidate
@@ -116,7 +116,7 @@ class DefaultBeanInstanceSupplierWriter {
 			code.add("() -> ");
 			branch(Modifier.isStatic(method.getModifiers()),
 					() -> code.add("$T", declaringType),
-					() -> code.add("context.getBean($T.class)", declaringType));
+					() -> code.add("beanFactory.getBean($T.class)", declaringType));
 			code.add(".$L()", method.getName());
 			return;
 		}

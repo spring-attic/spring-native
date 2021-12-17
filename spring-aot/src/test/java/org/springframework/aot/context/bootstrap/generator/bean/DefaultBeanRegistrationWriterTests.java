@@ -70,7 +70,7 @@ class DefaultBeanRegistrationWriterTests {
 				.withInstanceCreator(InjectionComponent.class.getDeclaredConstructors()[0]).build();
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test"))).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InjectionComponent.class).withConstructor(String.class)",
-				"    .instanceSupplier(() -> test).register(context);");
+				"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -80,7 +80,7 @@ class DefaultBeanRegistrationWriterTests {
 				.withInstanceCreator(SimpleConfiguration.class.getDeclaredConstructors()[0]).build();
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test"))).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", SimpleConfiguration.class)",
-				"    .instanceSupplier(() -> test).register(context);");
+				"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class DefaultBeanRegistrationWriterTests {
 				.withInstanceCreator(EnvironmentAwareComponent.class.getDeclaredConstructors()[0]).build();
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test"))).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InnerComponentConfiguration.EnvironmentAwareComponent.class).withConstructor(InnerComponentConfiguration.class, Environment.class)",
-				"    .instanceSupplier(() -> test).register(context);");
+				"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class DefaultBeanRegistrationWriterTests {
 				.withInstanceCreator(NoDependencyComponent.class.getDeclaredConstructors()[0]).build();
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test"))).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InnerComponentConfiguration.NoDependencyComponent.class)",
-				"    .instanceSupplier(() -> test).register(context);");
+				"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -111,7 +111,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
 				.hasImport(SampleFactory.class).lines().containsOnly(
 						"BeanDefinitionRegistrar.of(\"test\", String.class).withFactoryMethod(SampleFactory.class, \"create\", String.class)",
-						"    .instanceSupplier(() -> test).register(context);");
+						"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -123,12 +123,12 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(context.hasBootstrapClass(ProtectedConstructorComponent.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(ProtectedConstructorComponent.class.getPackageName());
 		assertThat(beanRegistration(bootstrapClass)).containsSequence(
-				"  public static void registerTest(GenericApplicationContext context) {\n",
+				"  public static void registerTest(DefaultListableBeanFactory beanFactory) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ProtectedConstructorComponent.class)\n",
-				"        .instanceSupplier(ProtectedConstructorComponent::new).register(context);\n",
+				"        .instanceSupplier(ProtectedConstructorComponent::new).register(beanFactory);\n",
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo(
-				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(context);\n");
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(beanFactory);\n");
 	}
 
 	@Test
@@ -143,12 +143,12 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(context.hasBootstrapClass(ProtectedFactoryMethod.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(ProtectedFactoryMethod.class.getPackageName());
 		assertThat(beanRegistration(bootstrapClass)).containsSequence(
-				"  public static void registerProtectedFactoryMethod_test(GenericApplicationContext context) {\n",
+				"  public static void registerProtectedFactoryMethod_test(DefaultListableBeanFactory beanFactory) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", String.class).withFactoryMethod(ProtectedFactoryMethod.class, \"testBean\", Integer.class)\n",
-				"        .instanceSupplier(() -> factory.testBean(42)).register(context);\n",
+				"        .instanceSupplier(() -> factory.testBean(42)).register(beanFactory);\n",
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo(
-				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerProtectedFactoryMethod_test(context);\n");
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerProtectedFactoryMethod_test(beanFactory);\n");
 	}
 
 	@Test
@@ -163,12 +163,12 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(context.hasBootstrapClass(PublicFactoryBean.class.getPackageName())).isTrue();
 		BootstrapClass bootstrapClass = context.getBootstrapClass(PublicFactoryBean.class.getPackageName());
 		assertThat(beanRegistration(bootstrapClass)).containsSequence(
-				"  public static void registerTest(GenericApplicationContext context) {\n",
+				"  public static void registerTest(DefaultListableBeanFactory beanFactory) {\n",
 				"    BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(PublicFactoryBean.class, ProtectedType.class))\n",
-				"        .instanceSupplier(PublicFactoryBean::new).register(context);\n",
+				"        .instanceSupplier(PublicFactoryBean::new).register(beanFactory);\n",
 				"  }");
 		assertThat(CodeSnippet.of(code.build())).isEqualTo(
-				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(context);\n");
+				ProtectedConstructorComponent.class.getPackageName() + ".Test.registerTest(beanFactory);\n");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
 				.hasImport(TestGenericFactoryBean.class).lines().containsOnly(
 						"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
-						"    .instanceSupplier(() -> test).register(context);");
+						"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(beanRegistration(beanDefinition, descriptor, (code) -> code.add("() -> test")))
 				.hasImport(TestGenericFactoryBean.class).lines().containsOnly(
 						"BeanDefinitionRegistrar.of(\"test\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, Serializable.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
-						"    .instanceSupplier(() -> test).register(context);");
+						"    .instanceSupplier(() -> test).register(beanFactory);");
 	}
 
 	@Test
@@ -226,7 +226,7 @@ class DefaultBeanRegistrationWriterTests {
 				.setSynthetic(true).getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
-						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.setSynthetic(true)).register(context);");
+						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.setSynthetic(true)).register(beanFactory);");
 	}
 
 	@Test
@@ -239,7 +239,7 @@ class DefaultBeanRegistrationWriterTests {
 						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> {",
 						"  bd.setSynthetic(true);",
 						"  bd.setPrimary(true);",
-						"}).register(context);");
+						"}).register(beanFactory);");
 	}
 
 	@Test
@@ -248,7 +248,7 @@ class DefaultBeanRegistrationWriterTests {
 				.setLazyInit(true).getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
-						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setLazyInit(true)).register(context);");
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setLazyInit(true)).register(beanFactory);");
 	}
 
 	@Test
@@ -257,7 +257,7 @@ class DefaultBeanRegistrationWriterTests {
 				.setScope(ConfigurableBeanFactory.SCOPE_PROTOTYPE).getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
-						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setScope(\"prototype\")).register(context);");
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setScope(\"prototype\")).register(beanFactory);");
 	}
 
 	@Test
@@ -275,7 +275,7 @@ class DefaultBeanRegistrationWriterTests {
 		beanDefinition.setAutowireCandidate(false);
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SimpleComponent::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SimpleComponent.class)",
-						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setAutowireCandidate(false)).register(context);");
+						"    .instanceSupplier(() -> SimpleComponent::new).customize((bd) -> bd.setAutowireCandidate(false)).register(beanFactory);");
 	}
 
 	@Test
@@ -302,7 +302,7 @@ class DefaultBeanRegistrationWriterTests {
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, "test");
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
-						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getConstructorArgumentValues().addIndexedArgumentValue(0, \"test\")).register(context);");
+						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getConstructorArgumentValues().addIndexedArgumentValue(0, \"test\")).register(beanFactory);");
 	}
 
 	@Test
@@ -319,7 +319,7 @@ class DefaultBeanRegistrationWriterTests {
 						"  ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues();",
 						"  argumentValues.addIndexedArgumentValue(0, new RuntimeBeanReference(\"test\"));",
 						"  argumentValues.addIndexedArgumentValue(2, 42);",
-						"}).register(context);");
+						"}).register(beanFactory);");
 		assertThat(generateCode).hasImport(ConstructorArgumentValues.class);
 	}
 
@@ -329,7 +329,7 @@ class DefaultBeanRegistrationWriterTests {
 				.addPropertyValue("test", "Hello").getBeanDefinition();
 		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
 				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
-						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"test\", \"Hello\")).register(context);");
+						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"test\", \"Hello\")).register(beanFactory);");
 	}
 
 	@Test
@@ -343,7 +343,7 @@ class DefaultBeanRegistrationWriterTests {
 				"  MutablePropertyValues propertyValues = bd.getPropertyValues();",
 				"  propertyValues.addPropertyValue(\"test\", \"Hello\");",
 				"  propertyValues.addPropertyValue(\"counter\", 42);",
-				"}).register(context);");
+				"}).register(beanFactory);");
 		assertThat(generateCode).hasImport(MutablePropertyValues.class);
 	}
 
@@ -354,7 +354,7 @@ class DefaultBeanRegistrationWriterTests {
 		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"));
 		assertThat(generatedCode).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
-				"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"myService\", new RuntimeBeanReference(\"test\"))).register(context);");
+				"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"myService\", new RuntimeBeanReference(\"test\"))).register(beanFactory);");
 		assertThat(generatedCode).hasImport(RuntimeBeanReference.class);
 	}
 
@@ -368,7 +368,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(generatedCode).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
 				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"name\", BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition())).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition())).register(beanFactory);");
 		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
 	}
 
@@ -382,8 +382,8 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(generatedCode).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
 				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"names\", List.of(BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition(), BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition()))).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition(), BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition()))).register(beanFactory);");
 		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
 	}
 
@@ -445,7 +445,7 @@ class DefaultBeanRegistrationWriterTests {
 		assertThat(generatedCode).lines().contains(
 				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
 				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"name\", BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).customize((bd_) -> bd_.setRole(2)).toBeanDefinition())).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).customize((bd_) -> bd_.setRole(2)).toBeanDefinition())).register(beanFactory);");
 	}
 
 	@Test

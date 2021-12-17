@@ -116,11 +116,11 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(SimpleConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"simpleConfiguration\", SimpleConfiguration.class)",
-				"    .instanceSupplier(SimpleConfiguration::new).register(context);",
+				"    .instanceSupplier(SimpleConfiguration::new).register(beanFactory);",
 				"BeanDefinitionRegistrar.of(\"stringBean\", String.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).stringBean()).register(context);",
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).register(beanFactory);",
 				"BeanDefinitionRegistrar.of(\"integerBean\", Integer.class).withFactoryMethod(SimpleConfiguration.class, \"integerBean\")",
-				"    .instanceSupplier(() -> context.getBean(SimpleConfiguration.class).integerBean()).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).integerBean()).register(beanFactory);");
 	}
 
 	@Test
@@ -129,20 +129,20 @@ class ApplicationContextAotProcessorTests {
 		// NOTE: application context runner does not register auto-config as FQNs
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"projectInfoAutoConfiguration\", ProjectInfoAutoConfiguration.class).withConstructor(ProjectInfoProperties.class)",
-				".instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new ProjectInfoAutoConfiguration(attributes.get(0)))).register(context);",
+				".instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> new ProjectInfoAutoConfiguration(attributes.get(0)))).register(beanFactory);",
 				"BeanDefinitionRegistrar.of(\"spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties\", ProjectInfoProperties.class)",
-				".instanceSupplier(ProjectInfoProperties::new).register(context);");
+				".instanceSupplier(ProjectInfoProperties::new).register(beanFactory);");
 	}
 
 	@Test
 	void processWithAutoConfigurationPackages() {
 		ContextBootstrapStructure structure = this.tester.process(AutoConfigurationPackagesConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer()
-				.contains("ContextBootstrapInitializer.registerAutoConfigurationPackages_BasePackages(context)");
+				.contains("ContextBootstrapInitializer.registerAutoConfigurationPackages_BasePackages(beanFactory)");
 		assertThat(structure).contextBootstrapInitializer("org.springframework.boot.autoconfigure").contains(
 				"BeanDefinitionRegistrar.of(\"org.springframework.boot.autoconfigure.AutoConfigurationPackages\", AutoConfigurationPackages.BasePackages.class)",
 				".instanceSupplier(() -> new AutoConfigurationPackages.BasePackages(new String[] { \"org.springframework.aot.context.bootstrap.generator.sample.autoconfigure\" }))"
-						+ ".customize((bd) -> bd.setRole(2)).register(context);");
+						+ ".customize((bd) -> bd.setRole(2)).register(beanFactory);");
 	}
 
 	@Test
@@ -150,7 +150,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(ConfigurationPropertiesAutoConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar.methodValidationExcludeFilter\", MethodValidationExcludeFilter.class)",
-				"    .instanceSupplier(() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class)).customize((bd) -> bd.setRole(2)).register(context);");
+				"    .instanceSupplier(() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class)).customize((bd) -> bd.setRole(2)).register(beanFactory);");
 	}
 
 	@Test
@@ -158,8 +158,8 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(MetadataConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"primaryBean\", String.class).withFactoryMethod(MetadataConfiguration.class, \"primaryBean\")",
-				"    .instanceSupplier(() -> context.getBean(MetadataConfiguration.class).primaryBean())"
-						+ ".customize((bd) -> bd.setPrimary(true)).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(MetadataConfiguration.class).primaryBean())"
+						+ ".customize((bd) -> bd.setPrimary(true)).register(beanFactory);");
 	}
 
 	@Test
@@ -167,7 +167,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(MetadataConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"infrastructureBean\", String.class).withFactoryMethod(MetadataConfiguration.class, \"infrastructureBean\")",
-				"    .instanceSupplier(() -> context.getBean(MetadataConfiguration.class).infrastructureBean()).customize((bd) -> bd.setRole(2)).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(MetadataConfiguration.class).infrastructureBean()).customize((bd) -> bd.setRole(2)).register(beanFactory);");
 	}
 
 	@Test
@@ -177,13 +177,13 @@ class ApplicationContextAotProcessorTests {
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
 						"public static void registerProtectedConfiguration_anotherStringBean(",
-						"    GenericApplicationContext context) {",
+						"    DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"anotherStringBean\", String.class).withFactoryMethod(ProtectedConfiguration.class, \"anotherStringBean\")",
-						"      .instanceSupplier(() -> context.getBean(ProtectedConfiguration.class).anotherStringBean()).register(context);",
+						"      .instanceSupplier(() -> beanFactory.getBean(ProtectedConfiguration.class).anotherStringBean()).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
-				"ContextBootstrapInitializer.registerProtectedConfiguration(context);",
-				"ContextBootstrapInitializer.registerProtectedConfiguration_anotherStringBean(context);");
+				"ContextBootstrapInitializer.registerProtectedConfiguration(beanFactory);",
+				"ContextBootstrapInitializer.registerProtectedConfiguration_anotherStringBean(beanFactory);");
 	}
 
 	@Test
@@ -193,14 +193,14 @@ class ApplicationContextAotProcessorTests {
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
 						"public static void registerPublicInnerClassConfiguration_InnerConfiguration(",
-						"    GenericApplicationContext context) {",
+						"    DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.PublicInnerClassConfiguration$InnerConfiguration\", PublicInnerClassConfiguration.InnerConfiguration.class)",
-						"      .instanceSupplier(PublicInnerClassConfiguration.InnerConfiguration::new).register(context);",
+						"      .instanceSupplier(PublicInnerClassConfiguration.InnerConfiguration::new).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
-				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration(context);",
-				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration_InnerConfiguration(context);",
-				"ContextBootstrapInitializer.registerInnerConfiguration_innerBean(context);");
+				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration(beanFactory);",
+				"ContextBootstrapInitializer.registerPublicInnerClassConfiguration_InnerConfiguration(beanFactory);",
+				"ContextBootstrapInitializer.registerInnerConfiguration_innerBean(beanFactory);");
 	}
 
 	@Test
@@ -210,15 +210,15 @@ class ApplicationContextAotProcessorTests {
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
 						"public static void registerProtectedInnerConfiguration_anotherInnerBean(",
-						"    GenericApplicationContext context) {",
+						"    DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"anotherInnerBean\", String.class).withFactoryMethod(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class, \"anotherInnerBean\")",
-						"      .instanceSupplier(() -> context.getBean(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class).anotherInnerBean()).register(context);",
+						"      .instanceSupplier(() -> beanFactory.getBean(PublicOuterClassConfiguration.ProtectedInnerConfiguration.class).anotherInnerBean()).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"publicOuterClassConfiguration\", PublicOuterClassConfiguration.class)",
-				"    .instanceSupplier(PublicOuterClassConfiguration::new).register(context);",
-				"ContextBootstrapInitializer.registerPublicOuterClassConfiguration_ProtectedInnerConfiguration(context);",
-				"ContextBootstrapInitializer.registerProtectedInnerConfiguration_anotherInnerBean(context);");
+				"    .instanceSupplier(PublicOuterClassConfiguration::new).register(beanFactory);",
+				"ContextBootstrapInitializer.registerPublicOuterClassConfiguration_ProtectedInnerConfiguration(beanFactory);",
+				"ContextBootstrapInitializer.registerProtectedInnerConfiguration_anotherInnerBean(beanFactory);");
 	}
 
 	@Test
@@ -227,14 +227,14 @@ class ApplicationContextAotProcessorTests {
 		assertThat(structure)
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
-						"public static void registerProtectedType(GenericApplicationContext context) {",
+						"public static void registerProtectedType(DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"org.springframework.aot.context.bootstrap.generator.sample.visibility.ProtectedType\", ProtectedType.class)",
-						"      .instanceSupplier(ProtectedType::new).register(context);",
+						"      .instanceSupplier(ProtectedType::new).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedConstructorParameterConfiguration\", ProtectedConstructorParameterConfiguration.class)",
-				"    .instanceSupplier(ProtectedConstructorParameterConfiguration::new).register(context);",
-				"ContextBootstrapInitializer.registerProtectedParameter(context);");
+				"    .instanceSupplier(ProtectedConstructorParameterConfiguration::new).register(beanFactory);",
+				"ContextBootstrapInitializer.registerProtectedParameter(beanFactory);");
 	}
 
 	@Test
@@ -244,14 +244,14 @@ class ApplicationContextAotProcessorTests {
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
 						"public static void registerProtectedMethodParameterConfiguration_protectedParameter(",
-						"    GenericApplicationContext context) {",
+						"    DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"protectedParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedParameter\", ProtectedType.class)",
-						"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedParameter(attributes.get(0)))).register(context);",
+						"      .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(ProtectedMethodParameterConfiguration.class).protectedParameter(attributes.get(0)))).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedMethodParameterConfiguration\", ProtectedMethodParameterConfiguration.class)",
-				"    .instanceSupplier(ProtectedMethodParameterConfiguration::new).register(context);",
-				"ContextBootstrapInitializer.registerProtectedMethodParameterConfiguration_protectedParameter(context);");
+				"    .instanceSupplier(ProtectedMethodParameterConfiguration::new).register(beanFactory);",
+				"ContextBootstrapInitializer.registerProtectedMethodParameterConfiguration_protectedParameter(beanFactory);");
 	}
 
 	@Test
@@ -261,14 +261,14 @@ class ApplicationContextAotProcessorTests {
 				.contextBootstrapInitializer("org.springframework.aot.context.bootstrap.generator.sample.visibility")
 				.removeIndent(1).lines().containsSequence(
 						"public static void registerProtectedMethodParameterConfiguration_protectedGenericParameter(",
-						"    GenericApplicationContext context) {",
+						"    DefaultListableBeanFactory beanFactory) {",
 						"  BeanDefinitionRegistrar.of(\"protectedGenericParameter\", ProtectedParameter.class).withFactoryMethod(ProtectedMethodParameterConfiguration.class, \"protectedGenericParameter\", ObjectProvider.class)",
-						"      .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(ProtectedMethodParameterConfiguration.class).protectedGenericParameter(attributes.get(0)))).register(context);",
+						"      .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(ProtectedMethodParameterConfiguration.class).protectedGenericParameter(attributes.get(0)))).register(beanFactory);",
 						"}");
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"protectedMethodParameterConfiguration\", ProtectedMethodParameterConfiguration.class)",
-				"    .instanceSupplier(ProtectedMethodParameterConfiguration::new).register(context);",
-				"ContextBootstrapInitializer.registerProtectedMethodParameterConfiguration_protectedGenericParameter(context);");
+				"    .instanceSupplier(ProtectedMethodParameterConfiguration::new).register(beanFactory);",
+				"ContextBootstrapInitializer.registerProtectedMethodParameterConfiguration_protectedGenericParameter(beanFactory);");
 	}
 
 	@Test
@@ -276,7 +276,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(GenericConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().contains(
 				"BeanDefinitionRegistrar.of(\"stringRepository\", ResolvableType.forClassWithGenerics(Repository.class, String.class)).withFactoryMethod(GenericConfiguration.class, \"stringRepository\")",
-				"    .instanceSupplier(() -> context.getBean(GenericConfiguration.class).stringRepository()).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(GenericConfiguration.class).stringRepository()).register(beanFactory);");
 	}
 
 	@Test
@@ -285,7 +285,7 @@ class ApplicationContextAotProcessorTests {
 				GenericConfiguration.class, GenericObjectProviderConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"repositoryId\", String.class).withFactoryMethod(GenericObjectProviderConfiguration.class, \"repositoryId\", ObjectProvider.class)",
-				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> context.getBean(GenericObjectProviderConfiguration.class).repositoryId(attributes.get(0)))).register(context);");
+				"    .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(GenericObjectProviderConfiguration.class).repositoryId(attributes.get(0)))).register(beanFactory);");
 	}
 
 	@Test
@@ -293,7 +293,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(ScopeConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"counterBean\", ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class)).withFactoryMethod(ScopeConfiguration.class, \"counterBean\")",
-				"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).counterBean()).customize((bd) -> bd.setScope(\"prototype\")).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(ScopeConfiguration.class).counterBean()).customize((bd) -> bd.setScope(\"prototype\")).register(beanFactory);");
 	}
 
 	@Test
@@ -302,7 +302,7 @@ class ApplicationContextAotProcessorTests {
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines()
 				.contains(
 						"BeanDefinitionRegistrar.of(\"scopedTarget.timeBean\", StringHolder.class).withFactoryMethod(ScopeConfiguration.class, \"timeBean\")",
-						"    .instanceSupplier(() -> context.getBean(ScopeConfiguration.class).timeBean()).customize((bd) -> {",
+						"    .instanceSupplier(() -> beanFactory.getBean(ScopeConfiguration.class).timeBean()).customize((bd) -> {",
 						"  bd.setScope(\"prototype\");",
 						"  bd.setAutowireCandidate(false);")
 				.contains(
@@ -310,9 +310,9 @@ class ApplicationContextAotProcessorTests {
 						"    .instanceSupplier(() ->  {",
 						"      ScopedProxyFactoryBean factory = new ScopedProxyFactoryBean();",
 						"      factory.setTargetBeanName(\"scopedTarget.timeBean\");",
-						"      factory.setBeanFactory(context.getBeanFactory());",
+						"      factory.setBeanFactory(beanFactory);",
 						"      return factory.getObject();",
-						"    }).register(context);");
+						"    }).register(beanFactory);");
 	}
 
 	@Test
@@ -320,12 +320,12 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(ArgumentValueRegistrarConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"argumentValueString\", String.class).withConstructor(char[].class, int.class, int.class)",
-				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new String(attributes.get(0, char[].class), attributes.get(1, int.class), attributes.get(2, int.class)))).customize((bd) -> {",
+				"    .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> new String(attributes.get(0, char[].class), attributes.get(1, int.class), attributes.get(2, int.class)))).customize((bd) -> {",
 				"  ConstructorArgumentValues argumentValues = bd.getConstructorArgumentValues();",
 				"  argumentValues.addIndexedArgumentValue(0, new char[] { 'a', ' ', 't', 'e', 's', 't' });",
 				"  argumentValues.addIndexedArgumentValue(1, 2);",
 				"  argumentValues.addIndexedArgumentValue(2, 4);",
-				"}).register(context);"
+				"}).register(beanFactory);"
 		);
 	}
 
@@ -334,7 +334,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(TestGenericFactoryBeanConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"testStringFactoryBean\", ResolvableType.forClassWithGenerics(TestGenericFactoryBean.class, String.class)).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testStringFactoryBean\")",
-				"    .instanceSupplier(() -> context.getBean(TestGenericFactoryBeanConfiguration.class).testStringFactoryBean()).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(TestGenericFactoryBeanConfiguration.class).testStringFactoryBean()).register(beanFactory);");
 	}
 
 	@Test
@@ -342,7 +342,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(TestGenericFactoryBeanConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"testGenericFactoryBean\", TestGenericFactoryBean.class).withFactoryMethod(TestGenericFactoryBeanConfiguration.class, \"testGenericFactoryBean\")",
-				"    .instanceSupplier(() -> context.getBean(TestGenericFactoryBeanConfiguration.class).testGenericFactoryBean()).register(context);");
+				"    .instanceSupplier(() -> beanFactory.getBean(TestGenericFactoryBeanConfiguration.class).testGenericFactoryBean()).register(beanFactory);");
 	}
 
 	@Test

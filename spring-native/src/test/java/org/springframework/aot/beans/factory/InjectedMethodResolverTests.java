@@ -1,15 +1,15 @@
 package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,19 +27,18 @@ class InjectedMethodResolverTests {
 
 	@Test
 	void resolveSingleDependency() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("test", String.class, () -> "testValue");
-		assertAttributes(context, createResolver(TestBean.class, "injectString", String.class), true, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((String) attributes.get(0)).isEqualTo("testValue");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("test", "testValue");
+		InjectedElementAttributes attributes = createResolver(TestBean.class, "injectString", String.class).resolve(beanFactory, true);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((String) attributes.get(0)).isEqualTo("testValue");
 	}
 
 	@Test
 	void resolveRequiredDependencyNotPresentThrowsUnsatisfiedDependencyException() {
 		Method method = ReflectionUtils.findMethod(TestBean.class, "injectString", String.class);
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertThatThrownBy(() -> createResolver(TestBean.class, "injectString", String.class).resolve(context))
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		assertThatThrownBy(() -> createResolver(TestBean.class, "injectString", String.class).resolve(beanFactory))
 				.isInstanceOfSatisfying(UnsatisfiedDependencyException.class, (ex) -> {
 					assertThat(ex.getBeanName()).isEqualTo("test");
 					assertThat(ex.getInjectionPoint()).isNotNull();
@@ -49,71 +48,59 @@ class InjectedMethodResolverTests {
 
 	@Test
 	void resolveNonRequiredDependency() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, createResolver(TestBean.class, "injectString", String.class), false,
-				(attributes) -> assertThat(attributes.isResolved()).isFalse());
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = createResolver(TestBean.class, "injectString", String.class).resolve(beanFactory, false);
+		assertThat(attributes.isResolved()).isFalse();
 	}
 
 	@Test
 	void resolveDependencyAndEnvironment() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("test", String.class, () -> "testValue");
-		assertAttributes(context, createResolver(TestBean.class, "injectStringAndEnvironment", String.class, Environment.class), true, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			String string = attributes.get(0);
-			assertThat(string).isEqualTo("testValue");
-			Environment environment = attributes.get(1);
-			assertThat(environment).isEqualTo(context.getEnvironment());
-		});
+		MockEnvironment environment = new MockEnvironment();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("environment", environment);
+		beanFactory.registerSingleton("test", "testValue");
+		InjectedElementAttributes attributes = createResolver(TestBean.class, "injectStringAndEnvironment",
+				String.class, Environment.class).resolve(beanFactory, true);
+		assertThat(attributes.isResolved()).isTrue();
+		String string = attributes.get(0);
+		assertThat(string).isEqualTo("testValue");
+		assertThat((Environment) attributes.get(1)).isEqualTo(environment);
 	}
 
 	@Test
 	void resolveQualifiedDependency() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
-				new ContextAnnotationAutowireCandidateResolver());
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, createResolver(TestBean.class, "injectQualifiedString", String.class), true, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((String) attributes.get(0)).isEqualTo("2");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = createResolver(TestBean.class, "injectQualifiedString", String.class).resolve(beanFactory, true);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((String) attributes.get(0)).isEqualTo("2");
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void createWithUnresolvedAttributesDoesNotInvokeCallback() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		ThrowableFunction<InjectedElementAttributes, ?> callback = mock(ThrowableFunction.class);
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> createResolver(TestBean.class, "injectString", String.class)
-				.create(context, callback));
+				.create(beanFactory, callback));
 		verifyNoInteractions(callback);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void invokeWithUnresolvedAttributesDoesNotInvokeCallback() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		ThrowableConsumer<InjectedElementAttributes> callback = mock(ThrowableConsumer.class);
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> createResolver(TestBean.class, "injectString", String.class)
-				.invoke(context, callback));
+				.invoke(beanFactory, callback));
 		verifyNoInteractions(callback);
 	}
 
 	private InjectedMethodResolver createResolver(Class<?> beanType, String methodName, Class<?>... parameterTypes) {
 		return new InjectedMethodResolver(ReflectionUtils.findMethod(beanType, methodName, parameterTypes), beanType, "test");
 	}
-
-	private void assertAttributes(GenericApplicationContext context, InjectedMethodResolver resolver, boolean required,
-			Consumer<InjectedElementAttributes> attributes) {
-		try (context) {
-			if (!context.isRunning()) {
-				context.refresh();
-			}
-			attributes.accept(resolver.resolve(context, required));
-		}
-	}
-
 
 	@SuppressWarnings("unused")
 	static class TestBean {

@@ -47,9 +47,9 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplierTests {
 		BeanRegistrationWriter writer = supplier.get("test", rootBeanDefinition);
 		assertThat(CodeSnippet.of((code) -> writer.writeBeanRegistration(createBootstrapContext(), code))).lines().contains(
 				"BeanDefinitionRegistrar.of(\"test\", ValueObjectSampleBean.class)",
-				"    .instanceSupplier(() -> ConstructorBindingValueSupplier.bind(context.getBeanFactory(), \"test\", ValueObjectSampleBean.class))"
+				"    .instanceSupplier(() -> ConstructorBindingValueSupplier.bind(beanFactory, \"test\", ValueObjectSampleBean.class))"
 						+ ".customize((bd) -> bd.setAttribute(\"org.springframework.boot.context.properties.ConfigurationPropertiesBean$BindMethod\", ConfigurationPropertiesBean.BindMethod.VALUE_OBJECT))"
-						+ ".register(context);");
+						+ ".register(beanFactory);");
 	}
 
 	@Test

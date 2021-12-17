@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.assertj.core.util.Arrays;
@@ -23,12 +22,15 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,27 +46,27 @@ class InjectedConstructionResolverTests {
 
 	@Test
 	void resolveNoArgConstructor() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, createResolverForConstructor(InjectedConstructionResolverTests.class),
-				(attributes) -> assertThat(attributes.isResolved()).isTrue());
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = createResolverForConstructor(
+				InjectedConstructionResolverTests.class).resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void resolveSingleArgConstructor(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((String) attributes.get(0)).isEqualTo("1");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((String) attributes.get(0)).isEqualTo("1");
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void resolveRequiredDependencyNotPresentThrowsUnsatisfiedDependencyException(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertThatThrownBy(() -> resolver.resolve(context))
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		assertThatThrownBy(() -> resolver.resolve(beanFactory))
 				.isInstanceOfSatisfying(UnsatisfiedDependencyException.class, (ex) -> {
 					assertThat(ex.getBeanName()).isEqualTo("test");
 					assertThat(ex.getInjectionPoint()).isNotNull();
@@ -75,27 +77,26 @@ class InjectedConstructionResolverTests {
 	@ParameterizedTest
 	@MethodSource("arrayOfBeansConstruction")
 	void resolveArrayOfBeans(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(Arrays.isArray(attribute)).isTrue();
-			assertThat((Object[]) attribute).containsExactly("1", "2");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(Arrays.isArray(attribute)).isTrue();
+		assertThat((Object[]) attribute).containsExactly("1", "2");
 	}
 
 	@ParameterizedTest
 	@MethodSource("arrayOfBeansConstruction")
 	void resolveRequiredArrayOfBeansInjectEmptyArray(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(Arrays.isArray(attribute)).isTrue();
-			assertThat((Object[]) attribute).isEmpty();
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(Arrays.isArray(attribute)).isTrue();
+		assertThat((Object[]) attribute).isEmpty();
+
 	}
 
 	static Stream<Arguments> arrayOfBeansConstruction() {
@@ -106,27 +107,24 @@ class InjectedConstructionResolverTests {
 	@ParameterizedTest
 	@MethodSource("listOfBeansConstruction")
 	void resolveListOfBeans(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(List.class);
-			assertThat((List<String>) attribute).containsExactly("1", "2");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(List.class).asList().containsExactly("1", "2");
 	}
 
 	@ParameterizedTest
 	@MethodSource("listOfBeansConstruction")
 	void resolveRequiredListOfBeansInjectEmptyList(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(List.class);
-			assertThat((List<?>) attribute).isEmpty();
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(List.class);
+		assertThat((List<?>) attribute).isEmpty();
 	}
 
 	static Stream<Arguments> listOfBeansConstruction() {
@@ -137,27 +135,25 @@ class InjectedConstructionResolverTests {
 	@ParameterizedTest
 	@MethodSource("setOfBeansConstruction")
 	void resolveSetOfBeans(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(Set.class);
-			assertThat((Set<String>) attribute).containsExactly("1", "2");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(Set.class);
+		assertThat((Set<String>) attribute).containsExactly("1", "2");
 	}
 
 	@ParameterizedTest
 	@MethodSource("setOfBeansConstruction")
 	void resolveRequiredSetOfBeansInjectEmptySet(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(Set.class);
-			assertThat((Set<?>) attribute).isEmpty();
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(Set.class);
+		assertThat((Set<?>) attribute).isEmpty();
 	}
 
 	static Stream<Arguments> setOfBeansConstruction() {
@@ -168,27 +164,25 @@ class InjectedConstructionResolverTests {
 	@ParameterizedTest
 	@MethodSource("mapOfBeansConstruction")
 	void resolveMapOfBeans(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(Map.class);
-			assertThat((Map<String, String>) attribute).containsExactly(entry("one", "1"), entry("two", "2"));
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(Map.class);
+		assertThat((Map<String, String>) attribute).containsExactly(entry("one", "1"), entry("two", "2"));
 	}
 
 	@ParameterizedTest
 	@MethodSource("mapOfBeansConstruction")
 	void resolveRequiredMapOfBeansInjectEmptySet(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(Map.class);
-			assertThat((Map<?, ?>) attribute).isEmpty();
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(Map.class);
+		assertThat((Map<?, ?>) attribute).isEmpty();
 	}
 
 	static Stream<Arguments> mapOfBeansConstruction() {
@@ -199,141 +193,134 @@ class InjectedConstructionResolverTests {
 	@ParameterizedTest
 	@MethodSource("multiArgsConstruction")
 	void resolveMultiArgsConstructor(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((ResourceLoader) attributes.get(0)).isEqualTo(context);
-			assertThat((Environment) attributes.get(1)).isEqualTo(context.getEnvironment());
-			ObjectProvider<String> provider = attributes.get(2);
-			assertThat(provider.getIfAvailable()).isEqualTo("1");
-		});
+		ResourceLoader resourceLoader = new DefaultResourceLoader();
+		MockEnvironment environment = new MockEnvironment();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerResolvableDependency(ResourceLoader.class, resourceLoader);
+		beanFactory.registerSingleton("environment", environment);
+		beanFactory.registerSingleton("one", "1");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((ResourceLoader) attributes.get(0)).isEqualTo(resourceLoader);
+		assertThat((Environment) attributes.get(1)).isEqualTo(environment);
+		ObjectProvider<String> provider = attributes.get(2);
+		assertThat(provider.getIfAvailable()).isEqualTo("1");
 	}
 
 	@ParameterizedTest
 	@MethodSource("mixedArgsConstruction")
 	void resolveMixedArgsConstructorWithUserValue(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		ApplicationContext applicationContext = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerResolvableDependency(ApplicationContext.class, applicationContext);
+		beanFactory.registerSingleton("environment", environment);
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgsConstructor.class)
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, "user-value");
-		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
-			assertThat((String) attributes.get(1)).isEqualTo("user-value");
-			assertThat((Environment) attributes.get(2)).isEqualTo(context.getEnvironment());
-		});
+		beanFactory.registerBeanDefinition("test", beanDefinition);
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((ApplicationContext) attributes.get(0)).isEqualTo(applicationContext);
+		assertThat((String) attributes.get(1)).isEqualTo("user-value");
+		assertThat((Environment) attributes.get(2)).isEqualTo(environment);
 	}
 
 	@ParameterizedTest
 	@MethodSource("mixedArgsConstruction")
 	void resolveMixedArgsConstructorWithUserBeanReference(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, "1");
-		context.registerBean("two", String.class, "2");
+		ApplicationContext applicationContext = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerResolvableDependency(ApplicationContext.class, applicationContext);
+		beanFactory.registerSingleton("environment", environment);
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(MixedArgsConstructor.class)
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, new RuntimeBeanReference("two"));
-		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((ApplicationContext) attributes.get(0)).isEqualTo(context);
-			assertThat((String) attributes.get(1)).isEqualTo("2");
-			assertThat((Environment) attributes.get(2)).isEqualTo(context.getEnvironment());
-		});
+		beanFactory.registerBeanDefinition("test", beanDefinition);
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((ApplicationContext) attributes.get(0)).isEqualTo(applicationContext);
+		assertThat((String) attributes.get(1)).isEqualTo("2");
+		assertThat((Environment) attributes.get(2)).isEqualTo(environment);
 	}
 
 	@Test
 	void resolveUserValueWithTypeConversionRequired() {
-		GenericApplicationContext context = new GenericApplicationContext();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(CharDependency.class)
 				.setAutowireMode(RootBeanDefinition.AUTOWIRE_CONSTRUCTOR).getBeanDefinition();
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, "\\");
-		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, createResolverForConstructor(CharDependency.class, char.class), (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isInstanceOf(Character.class);
-			assertThat((Character) attribute).isEqualTo('\\');
-		});
+		beanFactory.registerBeanDefinition("test", beanDefinition);
+		InjectedElementAttributes attributes = createResolverForConstructor(CharDependency.class, char.class).resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isInstanceOf(Character.class);
+		assertThat((Character) attribute).isEqualTo('\\');
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void resolveUserValueWithBeanReference(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("stringBean", String.class, () -> "string");
-		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("stringBean", "string");
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
 				.addConstructorArgReference("stringBean").getBeanDefinition());
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isEqualTo("string");
-		});
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isEqualTo("string");
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void resolveUserValueWithBeanDefinition(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		AbstractBeanDefinition userValue = BeanDefinitionBuilder.rootBeanDefinition(String.class, () -> "string").getBeanDefinition();
-		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
+		beanFactory.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class)
 				.addConstructorArgValue(userValue).getBeanDefinition());
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isEqualTo("string");
-		});
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isEqualTo("string");
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void resolveUserValueThatIsAlreadyResolved(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SingleArgConstructor.class).getBeanDefinition();
 		ValueHolder valueHolder = new ValueHolder('a');
 		valueHolder.setConvertedValue("this is an a");
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, valueHolder);
-		context.registerBeanDefinition("test", beanDefinition);
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			Object attribute = attributes.get(0);
-			assertThat(attribute).isEqualTo("this is an a");
-		});
+		beanFactory.registerBeanDefinition("test", beanDefinition);
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		Object attribute = attributes.get(0);
+		assertThat(attribute).isEqualTo("this is an a");
 	}
 
 	@ParameterizedTest
 	@MethodSource("qualifiedDependencyConstruction")
 	void resolveQualifiedDependency(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getDefaultListableBeanFactory().setAutowireCandidateResolver(
-				new ContextAnnotationAutowireCandidateResolver());
-		context.registerBean("one", String.class, () -> "1");
-		context.registerBean("two", String.class, () -> "2");
-		assertAttributes(context, resolver, (attributes) -> {
-			assertThat(attributes.isResolved()).isTrue();
-			assertThat((String) attributes.get(0)).isEqualTo("2");
-		});
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
+		beanFactory.registerSingleton("one", "1");
+		beanFactory.registerSingleton("two", "2");
+		InjectedElementAttributes attributes = resolver.resolve(beanFactory);
+		assertThat(attributes.isResolved()).isTrue();
+		assertThat((String) attributes.get(0)).isEqualTo("2");
 	}
 
 	@ParameterizedTest
 	@MethodSource("singleArgConstruction")
 	void createInvokeFactory(InjectedConstructionResolver resolver) {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
-		String instance = resolver.create(context, (attributes) -> attributes.get(0));
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
+		String instance = resolver.create(beanFactory, (attributes) -> attributes.get(0));
 		assertThat(instance).isEqualTo("1");
-	}
-
-	private void assertAttributes(GenericApplicationContext context, InjectedConstructionResolver resolver,
-			Consumer<InjectedElementAttributes> attributes) {
-		try (context) {
-			if (!context.isRunning()) {
-				context.refresh();
-			}
-			attributes.accept(resolver.resolve(context));
-		}
 	}
 
 	private static InjectedConstructionResolver createResolverForConstructor(Class<?> beanType, Class<?>... parameterTypes) {
@@ -354,9 +341,9 @@ class InjectedConstructionResolverTests {
 				InjectedConstructionResolverTests::safeGetBeanDefinition);
 	}
 
-	private static BeanDefinition safeGetBeanDefinition(GenericApplicationContext context) {
+	private static BeanDefinition safeGetBeanDefinition(DefaultListableBeanFactory beanFactory) {
 		try {
-			return context.getBeanDefinition("test");
+			return beanFactory.getBeanDefinition("test");
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			return null;

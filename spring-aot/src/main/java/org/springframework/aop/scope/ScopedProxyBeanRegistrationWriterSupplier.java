@@ -78,7 +78,7 @@ class ScopedProxyBeanRegistrationWriterSupplier implements BeanRegistrationWrite
 				MultiStatement statements = new MultiStatement();
 				statements.add("$T factory = new $T()", ScopedProxyFactoryBean.class, ScopedProxyFactoryBean.class);
 				statements.add("factory.setTargetBeanName($S)", targetBeanName);
-				statements.add(("factory.setBeanFactory(context.getBeanFactory())"));
+				statements.add("factory.setBeanFactory(beanFactory)");
 				statements.add("return factory.getObject()");
 				code.add(statements.toCodeBlock("() -> "));
 			}

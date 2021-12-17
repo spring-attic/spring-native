@@ -9,9 +9,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DependencyDescriptor;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
  * An {@link InjectedElementResolver} for a {@link Field}.
@@ -35,8 +34,7 @@ class InjectedFieldResolver implements InjectedElementResolver {
 	}
 
 	@Override
-	public InjectedElementAttributes resolve(GenericApplicationContext context, boolean required) {
-		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+	public InjectedElementAttributes resolve(DefaultListableBeanFactory beanFactory, boolean required) {
 		DependencyDescriptor desc = new DependencyDescriptor(this.field, required);
 		desc.setContainingClass(this.field.getType());
 		Set<String> autowiredBeanNames = new LinkedHashSet<>(1);

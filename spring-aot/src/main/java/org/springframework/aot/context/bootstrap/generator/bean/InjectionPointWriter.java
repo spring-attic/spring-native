@@ -42,7 +42,7 @@ import org.springframework.util.ReflectionUtils;
  * <p/>
  * The writer expects a number of variables to be available and/or accessible:
  * <ul>
- *     <li>{@code context}: the general {@code GenericApplicationContext}</li>
+ *     <li>{@code beanFactory}: the general {@code DefaultListableBeanFactory}</li>
  *     <li>{@code instanceContext}: the {@link InstanceSupplierContext} callback</li>
  *     <li>{@code bean}: the variable that refers to the bean instance</li>
  * </ul>
@@ -82,7 +82,7 @@ class InjectionPointWriter {
 				.toArray(Class<?>[]::new);
 		// Shortcut for common case
 		if (innerClass && parameterTypes.length == 1) {
-			code.add("context.getBean($T.class).new $L()", declaringType.getEnclosingClass(),
+			code.add("beanFactory.getBean($T.class).new $L()", declaringType.getEnclosingClass(),
 					declaringType.getSimpleName());
 			return code.build();
 		}
@@ -92,7 +92,7 @@ class InjectionPointWriter {
 		}
 		boolean isAmbiguous = Arrays.stream(creator.getDeclaringClass().getDeclaredConstructors())
 				.filter(constructor -> constructor.getParameterCount() == parameterTypes.length).count() > 1;
-		code.add("instanceContext.create(context, (attributes) ->");
+		code.add("instanceContext.create(beanFactory, (attributes) ->");
 		List<CodeBlock> parameters = resolveParameters(creator.getParameters(), isAmbiguous);
 		if (innerClass) { // Remove the implicit argument
 			parameters.remove(0);
@@ -100,7 +100,7 @@ class InjectionPointWriter {
 
 		code.add(" ");
 		if (innerClass) {
-			code.add("context.getBean($T.class).new $L(", declaringType.getEnclosingClass(),
+			code.add("beanFactory.getBean($T.class).new $L(", declaringType.getEnclosingClass(),
 					declaringType.getSimpleName());
 		}
 		else {
@@ -129,21 +129,21 @@ class InjectionPointWriter {
 				code.add("$T", declaringType);
 			}
 			else {
-				code.add("context.getBean($T.class)", declaringType);
+				code.add("beanFactory.getBean($T.class)", declaringType);
 			}
 			code.add(".$L()", injectionPoint.getName());
 			return code.build();
 		}
-		return write(injectionPoint, (code) -> code.add(".create(context, (attributes) ->"), true);
+		return write(injectionPoint, (code) -> code.add(".create(beanFactory, (attributes) ->"), true);
 	}
 
 	private CodeBlock writeMethodInjection(Method injectionPoint, boolean required) {
 		Consumer<Builder> attributesResolver = (code) -> {
 			if (required) {
-				code.add(".invoke(context, (attributes) ->");
+				code.add(".invoke(beanFactory, (attributes) ->");
 			}
 			else {
-				code.add(".resolve(context, false).ifResolved((attributes) ->");
+				code.add(".resolve(beanFactory, false).ifResolved((attributes) ->");
 			}
 		};
 		return write(injectionPoint, attributesResolver, false);
@@ -165,7 +165,7 @@ class InjectionPointWriter {
 				code.add("$T", injectionPoint.getDeclaringClass());
 			}
 			else {
-				code.add("context.getBean($T.class)", injectionPoint.getDeclaringClass());
+				code.add("beanFactory.getBean($T.class)", injectionPoint.getDeclaringClass());
 			}
 		}
 		else {
@@ -191,10 +191,10 @@ class InjectionPointWriter {
 		code.add("instanceContext.field($S, $T.class", injectionPoint.getName(), injectionPoint.getType());
 		code.add(")\n").indent().indent();
 		if (required) {
-			code.add(".invoke(context, (attributes) ->");
+			code.add(".invoke(beanFactory, (attributes) ->");
 		}
 		else {
-			code.add(".resolve(context, false).ifResolved((attributes) ->");
+			code.add(".resolve(beanFactory, false).ifResolved((attributes) ->");
 		}
 		boolean hasAssignment = Modifier.isPrivate(injectionPoint.getModifiers());
 		if (hasAssignment) {

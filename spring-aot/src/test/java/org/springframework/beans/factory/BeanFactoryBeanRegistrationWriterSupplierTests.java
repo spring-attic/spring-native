@@ -45,7 +45,7 @@ class BeanFactoryBeanRegistrationWriterSupplierTests {
 		assertThat(beanRegistrationWriter).isNotNull();
 		assertThat(CodeSnippet.of((code) -> beanRegistrationWriter.writeBeanRegistration(createBootstrapContext(), code))).lines().contains(
 				"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withConstructor(Serializable.class)",
-				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class))).register(context);");
+				"    .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", ResolvableType.forClassWithGenerics(NumberHolder.class, Integer.class))).register(beanFactory);");
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class BeanFactoryBeanRegistrationWriterSupplierTests {
 		assertThat(beanRegistrationWriter).isNotNull();
 		assertThat(CodeSnippet.of((code) -> beanRegistrationWriter.writeBeanRegistration(createBootstrapContext(), code))).lines().contains(
 				"BeanDefinitionRegistrar.of(\"test\", TestGenericFactoryBean.class).withConstructor(Serializable.class)",
-				"    .instanceSupplier((instanceContext) -> instanceContext.create(context, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", Integer.class)).register(context);");
+				"    .instanceSupplier((instanceContext) -> instanceContext.create(beanFactory, (attributes) -> new TestGenericFactoryBean(attributes.get(0)))).customize((bd) -> bd.setAttribute(\"factoryBeanObjectType\", Integer.class)).register(beanFactory);");
 	}
 
 	@Test

@@ -22,7 +22,7 @@ import org.springframework.aot.context.bootstrap.generator.bean.descriptor.BeanI
 import org.springframework.aot.context.bootstrap.generator.infrastructure.BootstrapWriterContext;
 
 /**
- * Abstract how to register a bean in the context.
+ * Abstract how to register a bean in the bean factory.
  *
  * @author Stephane Nicoll
  */
@@ -35,7 +35,7 @@ public interface BeanRegistrationWriter {
 	// FIXME: leaking abstraction, we need something better
 
 	/**
-	 * Generate the necessary {@code statements} to register a bean in the context.
+	 * Generate the necessary {@code statements} to register a bean in the bean factory.
 	 * @param context the writer context
 	 * @param code the builder to use to add the registration statement(s)
 	 */

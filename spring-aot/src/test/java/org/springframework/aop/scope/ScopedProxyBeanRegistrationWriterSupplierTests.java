@@ -89,9 +89,9 @@ class ScopedProxyBeanRegistrationWriterSupplierTests {
 				"    .instanceSupplier(() ->  {",
 				"      ScopedProxyFactoryBean factory = new ScopedProxyFactoryBean();",
 				"      factory.setTargetBeanName(\"numberHolder\");",
-				"      factory.setBeanFactory(context.getBeanFactory());",
+				"      factory.setBeanFactory(beanFactory);",
 				"      return factory.getObject();",
-				"    }).register(context);");
+				"    }).register(beanFactory);");
 	}
 
 	private CodeSnippet writeBeanRegistration(BeanFactory beanFactory, String beanName, BeanDefinition beanDefinition) {

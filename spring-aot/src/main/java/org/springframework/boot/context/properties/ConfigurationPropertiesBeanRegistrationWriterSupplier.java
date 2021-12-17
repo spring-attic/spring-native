@@ -62,7 +62,7 @@ class ConfigurationPropertiesBeanRegistrationWriterSupplier implements BeanRegis
 
 			@Override
 			protected void writeInstanceSupplier(Builder code) {
-				code.add("() -> $T.bind(context.getBeanFactory(), $S, $T.class)",
+				code.add("() -> $T.bind(beanFactory, $S, $T.class)",
 						ConstructorBindingValueSupplier.class, beanName, descriptor.getUserBeanClass());
 			}
 		};

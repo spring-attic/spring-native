@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.context.support.GenericApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,10 +32,10 @@ class BeanDefinitionValueResolverAccessorTests {
 
 	@Test
 	void resolveBeanReference() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.registerBean("one", String.class, () -> "1");
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerSingleton("one", "1");
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(TestComponent.class).getBeanDefinition();
-		assertThat(BeanDefinitionValueResolverAccessor.get(context, "test", beanDefinition)
+		assertThat(BeanDefinitionValueResolverAccessor.get(beanFactory, "test", beanDefinition)
 				.resolveValueIfNecessary("test", new RuntimeBeanReference("one"))).isEqualTo("1");
 	}
 

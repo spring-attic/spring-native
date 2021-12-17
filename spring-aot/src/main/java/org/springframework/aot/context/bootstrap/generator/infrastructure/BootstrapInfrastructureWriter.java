@@ -37,6 +37,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeResourcesEntry;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.ImportOriginRegistry;
 import org.springframework.core.ResolvableType;
@@ -63,18 +64,18 @@ public class BootstrapInfrastructureWriter {
 	}
 
 	public void writeInfrastructure(CodeBlock.Builder code) {
-		code.addStatement("context.getDefaultListableBeanFactory().setAutowireCandidateResolver(new $T())",
-				ContextAnnotationAutowireCandidateResolver.class);
+		code.addStatement("$T beanFactory = context.getDefaultListableBeanFactory()", DefaultListableBeanFactory.class);
+		code.addStatement("beanFactory.setAutowireCandidateResolver(new $T())", ContextAnnotationAutowireCandidateResolver.class);
 		MethodSpec.Builder importAwareBeanPostProcessorMethod = handleImportAwareBeanPostProcessor();
 		BootstrapClass bootstrapClass = this.writerContext.getMainBootstrapClass();
 		if (importAwareBeanPostProcessorMethod != null) {
 			MethodSpec method = bootstrapClass.addMethod(importAwareBeanPostProcessorMethod);
-			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N())", method);
+			code.addStatement("beanFactory.addBeanPostProcessor($N())", method);
 		}
 		MethodSpec.Builder initDestroyBeanPostProcessorMethod = handleInitDestroyBeanPostProcessor();
 		if (initDestroyBeanPostProcessorMethod != null) {
 			MethodSpec method = bootstrapClass.addMethod(initDestroyBeanPostProcessorMethod);
-			code.addStatement("context.getBeanFactory().addBeanPostProcessor($N(context.getBeanFactory()))", method);
+			code.addStatement("beanFactory.addBeanPostProcessor($N(beanFactory))", method);
 		}
 	}
 
