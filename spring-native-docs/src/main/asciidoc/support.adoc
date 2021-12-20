@@ -120,6 +120,7 @@ implementation("org.springframework.boot:spring-boot-starter-actuator") {
 ----
 
 * `spring-boot-starter-test`
+** https://github.com/spring-projects-experimental/spring-native/issues/1063[Mockito is not yet supported].
 ** See testing support documentation in <<getting-started-native-build-tools>>.
 
 ==== Starters requiring no special build configuration

@@ -1,3 +1,6 @@
+org.springframework.aot.context.bootstrap.generator.BeanDefinitionExcludeFilter=\
+org.springframework.aot.test.boot.SpringBootTestInfrastructureExcludeFilter
+
 org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor=\
 org.springframework.aot.test.boot.SpringBootAotTestContextProcessor,\
 org.springframework.aot.test.context.support.DefaultAotTestContextProcessor
