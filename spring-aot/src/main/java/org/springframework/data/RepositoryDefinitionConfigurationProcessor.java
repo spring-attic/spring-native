@@ -268,7 +268,7 @@ public class RepositoryDefinitionConfigurationProcessor implements BeanFactoryNa
 				return;
 			}
 
-			registry.reflection().forType(configuration.getCustomRepositoryBaseClass()).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS);
+			registry.reflection().forType(configuration.getCustomRepositoryBaseClass()).withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 		}
 
 		/**
