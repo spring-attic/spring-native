@@ -16,6 +16,7 @@
 
 package org.springframework.aot.context.bootstrap.generator.bean.support;
 
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.time.temporal.ChronoUnit;
@@ -45,6 +46,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -206,6 +208,12 @@ class ParameterWriterTests {
 	void writeBeanDefinitionWithoutConsumerFails() {
 		ParameterWriter writer = new ParameterWriter();
 		assertThatIllegalStateException().isThrownBy(() -> writer.writeParameterValue(new RootBeanDefinition()));
+	}
+
+	@Test
+	void writeUnsupportedParameter() {
+		assertThatIllegalArgumentException().isThrownBy(() -> write(new StringWriter()))
+				.withMessageContaining(StringWriter.class.getName());
 	}
 
 	private CodeSnippet write(Object value) {

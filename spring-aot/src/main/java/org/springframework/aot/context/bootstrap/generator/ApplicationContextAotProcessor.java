@@ -120,13 +120,20 @@ public class ApplicationContextAotProcessor {
 		String[] beanNames = beanFactory.getBeanDefinitionNames();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
-			if (!isExcluded(beanName, beanDefinition)) {
-				BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationWriter(
-						beanName, beanDefinition);
-				if (beanRegistrationWriter != null) {
-					beanRegistrationWriter.writeBeanRegistration(writerContext, code);
-					descriptors.add(beanRegistrationWriter.getBeanInstanceDescriptor());
+			try {
+				if (!isExcluded(beanName, beanDefinition)) {
+					BeanRegistrationWriter beanRegistrationWriter = getBeanRegistrationWriter(
+							beanName, beanDefinition);
+					if (beanRegistrationWriter != null) {
+						beanRegistrationWriter.writeBeanRegistration(writerContext, code);
+						descriptors.add(beanRegistrationWriter.getBeanInstanceDescriptor());
+					}
 				}
+			}
+			catch (Exception ex) {
+				String msg = String.format("Failed to handle bean with name '%s' and type '%s'",
+						beanName, beanDefinition.getResolvableType());
+				throw new BeanDefinitionGenerationException(msg, ex, beanName);
 			}
 		}
 		return descriptors;

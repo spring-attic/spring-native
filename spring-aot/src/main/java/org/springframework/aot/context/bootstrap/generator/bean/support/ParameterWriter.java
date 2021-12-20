@@ -164,8 +164,11 @@ public final class ParameterWriter {
 		else if (value instanceof BeanDefinition) {
 			this.innerBeanDefinitionWriter.accept((BeanDefinition) value, code);
 		}
-		if (value instanceof BeanReference) {
+		else if (value instanceof BeanReference) {
 			code.add("new $T($S)", RuntimeBeanReference.class, ((BeanReference) value).getBeanName());
+		}
+		else {
+			throw new IllegalArgumentException("Parameter of type " + parameterType + " is not supported");
 		}
 	}
 

@@ -33,6 +33,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.Bootst
 import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
 import org.springframework.aot.context.bootstrap.generator.sample.SimpleConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.autoconfigure.AutoConfigurationPackagesConfiguration;
+import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBean;
 import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBeanConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericConfiguration;
 import org.springframework.aot.context.bootstrap.generator.sample.generic.GenericObjectProviderConfiguration;
@@ -51,6 +52,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -66,6 +68,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -387,6 +390,19 @@ class ApplicationContextAotProcessorTests {
 		processor.process(context, writerContext);
 		assertGeneratedCode(writerContext.getMainBootstrapClass())
 				.doesNotContain("\"one\"").doesNotContain("\"three\"").contains("\"two\"");
+	}
+
+	@Test
+	void processUnsupportedTypeThrowsMeaningfulException() {
+		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(getClass().getClassLoader());
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.registerBeanDefinition("test", BeanDefinitionBuilder.rootBeanDefinition(TestGenericFactoryBean.class)
+				.addConstructorArgValue(new StringWriter()).getBeanDefinition());
+		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("com.example", "Test");
+		assertThatThrownBy(() ->processor.process(context, writerContext))
+				.isInstanceOf(BeanDefinitionGenerationException.class)
+				.hasMessage("Failed to handle bean with name 'test' and type 'org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBean<?>'")
+				.getCause().hasMessageContaining(StringWriter.class.getName());
 	}
 
 	private TextAssert assertGeneratedCode(BootstrapClass bootstrapClass) {
