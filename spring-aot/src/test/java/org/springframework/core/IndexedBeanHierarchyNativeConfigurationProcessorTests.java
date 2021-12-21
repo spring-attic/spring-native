@@ -34,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
  * Tests for {@link IndexedBeanHierarchyNativeConfigurationProcessor}.
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 class IndexedBeanHierarchyNativeConfigurationProcessorTests {
 
@@ -48,8 +49,7 @@ class IndexedBeanHierarchyNativeConfigurationProcessorTests {
 		assertThat(classDescriptors).contains(getClassDescriptor(Foo.class,TypeAccess.DECLARED_METHODS));
 		assertThat(classDescriptors).contains(getClassDescriptor(Boo.class,TypeAccess.DECLARED_METHODS));
 		assertThat(classDescriptors).contains(getClassDescriptor(Bar.class,TypeAccess.DECLARED_METHODS));
-		// TODO maybe filter out the java.* types in the configuration processor
-		assertThat(classDescriptors).contains(getClassDescriptor(Object.class,TypeAccess.DECLARED_METHODS));
+		assertThat(classDescriptors).contains(getClassDescriptor(Object.class));
 	}
 	
 	@Test

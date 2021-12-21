@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationUtils;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry;
+import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeReflectionEntry.Builder;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,6 +42,7 @@ import org.springframework.validation.annotation.Validated;
  * Register as much of the hierarchy of {@link Indexed} marked beans as is required.
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 public class IndexedBeanHierarchyNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
@@ -66,7 +69,10 @@ public class IndexedBeanHierarchyNativeConfigurationProcessor implements BeanFac
 		if (!visited.add(type)) {
 			return;
 		}
-		registry.reflection().forType(type).withAccess(TypeAccess.DECLARED_METHODS);
+		Builder builder = registry.reflection().forType(type);
+		if (!type.getPackageName().startsWith("java.")) {
+			builder.withAccess(TypeAccess.DECLARED_METHODS);
+		}
 		Set<Class<?>> collector = new TreeSet<>((c1,c2) -> c1.getName().compareTo(c2.getName()));
 		Type genericSuperclass = type.getGenericSuperclass();
 		NativeConfigurationUtils.collectReferenceTypesUsed(genericSuperclass, collector);
