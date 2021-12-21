@@ -27,8 +27,8 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 @NativeHint(trigger = WebMvcAutoConfiguration.class,
 	types = {
-		@TypeHint(types = Servlet.class),
-		@TypeHint(types = ConfigurableWebApplicationContext.class)
+		@TypeHint(types = Servlet.class, access = {}),
+		@TypeHint(types = ConfigurableWebApplicationContext.class, access = {})
 	},
 	resources = @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties"))
 public class WebMvcHints implements NativeConfiguration {
