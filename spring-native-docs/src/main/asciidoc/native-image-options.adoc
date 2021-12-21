@@ -33,7 +33,6 @@ You can find more details in GraalVM https://github.com/oracle/graal/blob/master
 * `--trace-class-initialization` provides a comma-separated list of fully-qualified class names that a class initialization is traced for.
 * `--trace-object-instantiation` provides a comma-separated list of fully-qualified class names that an object instantiation is traced for.
 * `--enable-https` enables HTTPS support (common need when using `WebClient` or `RestTemplate` for example).
-* `--exclude-config jar-filename-pattern,resources-pattern` excludes native configurations from JARs in order, for example, to provide more optimized ones, see https://github.com/oracle/graal/pull/3179 for more details.
 
 [[native-image-options-unsupported]]
 === Unsupported options
