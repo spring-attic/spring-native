@@ -47,9 +47,12 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		if (AotModeDetector.isAotModeEnabled() || AotModeDetector.isRunningAotTests()) {
-			logger.info("This application is bootstrapped with code generated with Spring AOT");
+			logger.info("AOT mode enabled");
 			ConfigurableEnvironment environment = event.getEnvironment();
 			environment.getPropertySources().addFirst(new PropertiesPropertySource("native", NativeUtils.getNativeProperties()));
+		}
+		else {
+			logger.info("AOT mode disabled");
 		}
 	}
 }

@@ -241,11 +241,6 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 							"()Z", false);
 					Label elseClause = new Label();
 					mv.visitJumpInsn(IFEQ, elseClause);
-					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplication", "logger",
-							"Lorg/apache/commons/logging/Log;");
-					mv.visitLdcInsn("AOT mode enabled");
-					mv.visitMethodInsn(INVOKEINTERFACE, "org/apache/commons/logging/Log", "info",
-							"(Ljava/lang/Object;)V", true);
 					mv.visitVarInsn(ALOAD, 0);
 					mv.visitFieldInsn(GETSTATIC, "org/springframework/aot/SpringApplicationAotUtils", "AOT_FACTORY",
 							"Lorg/springframework/boot/ApplicationContextFactory;");
@@ -279,11 +274,6 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 					mv.visitLabel(elseClause);
 					mv.visitMethodInsn(INVOKESTATIC, "org/springframework/nativex/AotModeDetector", "isGeneratingAotTests", "()Z", false);
 					mv.visitJumpInsn(IFNE, end);
-					mv.visitFieldInsn(GETSTATIC, "org/springframework/boot/SpringApplication", "logger",
-							"Lorg/apache/commons/logging/Log;");
-					mv.visitLdcInsn("AOT mode disabled");
-					mv.visitMethodInsn(INVOKEINTERFACE, "org/apache/commons/logging/Log", "info",
-							"(Ljava/lang/Object;)V", true);
 					mv.visitLabel(end);
 					successfulPatches.add("patched-constructor-endbit");
 				}
