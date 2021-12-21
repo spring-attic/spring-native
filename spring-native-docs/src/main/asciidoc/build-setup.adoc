@@ -249,26 +249,33 @@ You can set such a property when running an executable Jar from the command line
 java -DspringAot=true -jar myapplication-0.0.1-SNAPSHOT.jar
 ----
 
-When running an application with the https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#running-your-application-passing-system-properties[Spring Boot Gradle plugin]:
+For running an application with `gradle bootRun` or `mvn spring-boot:run`:
 
-[source,bash,subs="attributes,verbatim"]
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
 ----
-./gradlew bootRun -PspringAot=true
-./gradlew check -PspringAot=true
-----
-
-Or configure the Spring Boot Maven plugin for `./mvnw spring-boot:run`:
-
-[source,xml,subs="attributes,verbatim"]
-----
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <!-- ... -->
-          <systemPropertyVariables>
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <!-- ... -->
+        <systemPropertyVariables>
             <springAot>true</springAot>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
+        </systemPropertyVariables>
+    </configuration>
+</plugin>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+bootRun {
+	systemProperty 'springAot', 'true'
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+tasks.getByName<BootRun>("bootRun") {
+	systemProperty("springAot", "true")
+}
 ----
