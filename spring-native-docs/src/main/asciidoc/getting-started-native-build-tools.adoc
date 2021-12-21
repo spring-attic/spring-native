@@ -317,8 +317,6 @@ $ gradle nativeCompile
 $ gradle nativeCompile
 ----
 
-NOTE: During the native compilation, you will see a lot of `WARNING: Could not register reflection metadata` messages. They are expected and will be removed in a future version, see https://github.com/spring-projects-experimental/spring-native/issues/502#issuecomment-786933142[#502] for more details.
-
 IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in the {graalvm-native-docs}/#prerequisites[GraalVM native-image prerequisites].
 
 This command creates a native executable containing your Spring Boot application in the `target` directory.
