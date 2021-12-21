@@ -26,6 +26,9 @@ import io.netty.handler.codec.compression.BrotliDecoder;
 import io.netty.handler.codec.http2.CleartextHttp2ServerUpgradeHandler;
 import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import io.netty.handler.codec.http2.Http2ServerUpgradeCodec;
+import io.netty.handler.ssl.OpenSslAsyncPrivateKeyMethod;
+import io.netty.handler.ssl.OpenSslPrivateKeyMethod;
+import io.netty.handler.ssl.ReferenceCountedOpenSslEngine;
 import io.netty.resolver.HostsFileEntriesResolver;
 import io.netty.util.internal.PlatformDependent;
 
@@ -38,7 +41,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = DefaultChannelId.class, initialization = {
 		@InitializationHint(initTime=InitializationTime.RUN,
-		packageNames = "io.netty.channel.epoll",
+		packageNames = { "io.netty.channel.epoll", "io.netty.internal.tcnative" },
 		types = {
 				DefaultChannelId.class,
 				Socket.class,
@@ -48,7 +51,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 				CleartextHttp2ServerUpgradeHandler.class,
 				Http2ConnectionHandler.class,
 				HostsFileEntriesResolver.class,
-				BrotliDecoder.class
+				BrotliDecoder.class,
+				OpenSslPrivateKeyMethod.class,
+				OpenSslAsyncPrivateKeyMethod.class,
+				ReferenceCountedOpenSslEngine.class
 		}, typeNames = {
 				"io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder"
 		})
