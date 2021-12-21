@@ -217,4 +217,3 @@ NOTE: While building a project that contains Spring Cloud Config Client, it is n
 * Kotlin Coroutines are supported but currently require additional reflection entries due to how Coroutines generates bytecode with an `Object` return type.
 * Sealed class are not supported yet due to https://github.com/oracle/graal/issues/3870.
 * https://docs.spring.io/spring-data/commons/docs/current/reference/html/#repositories.custom-implementations[Custom repository] implementation fragments need to be annotated with `@Component`.
-* Spring Integration requires Spring Integration 5.5.7 or later.
