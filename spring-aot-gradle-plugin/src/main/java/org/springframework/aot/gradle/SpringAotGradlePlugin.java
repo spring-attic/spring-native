@@ -97,6 +97,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
 			GraalVMExtension graal = project.getExtensions().findByType(GraalVMExtension.class);
+			graal.getToolchainDetection().set(false);
 
 			// Create the "springAot" DSL extension for user configuration
 			project.getExtensions().create(EXTENSION_NAME, SpringAotExtension.class, project.getObjects());

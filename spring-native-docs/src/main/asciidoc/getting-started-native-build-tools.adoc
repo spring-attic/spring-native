@@ -219,6 +219,7 @@ The following example adds a `native` profile that triggers the plugin during th
 // The GraalVM native build tools plugin is applied and configured automatically
 ----
 
+NOTE: When used with Spring AOT, Native Build Tools Gradle toolchain support is disabled by default in order to avoid current limitations related to identifying in a reliable way JDK with native capabilities. See https://github.com/gradle/gradle/issues/18896[this related Gradle issue].
 
 ===== Maven Repository
 
