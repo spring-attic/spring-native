@@ -15,26 +15,28 @@
  */
 package app.main;
 
-import app.main.model.Flurb;
-import app.main.model.Foo;
-import app.main.model.FooRepository;
+import static org.springframework.web.servlet.function.RequestPredicates.GET;
+import static org.springframework.web.servlet.function.RouterFunctions.route;
+import static org.springframework.web.servlet.function.ServerResponse.ok;
+
+import java.util.Optional;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.function.RouterFunction;
 
-import java.util.Optional;
-
-import static org.springframework.web.servlet.function.RequestPredicates.*;
-import static org.springframework.web.servlet.function.RouterFunctions.*;
-import static org.springframework.web.servlet.function.ServerResponse.*;
+import app.main.model.Flurb;
+import app.main.model.Foo;
+import app.main.model.FooRepository;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "fixedAuditor")
+@EnableJpaRepositories(basePackageClasses = FooRepository.class)
 public class SampleApplication {
 
 	private final FooRepository entities;
