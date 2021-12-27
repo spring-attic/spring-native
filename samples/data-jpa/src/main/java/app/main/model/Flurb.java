@@ -18,14 +18,20 @@ package app.main.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
+
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 public class Flurb {
 	@Id
 	@GeneratedValue
 	Long id;
 
 	String value;
+	
+	@Version Long version;
 
 	public void setValue(String value) {
 		this.value = value;
