@@ -99,6 +99,9 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		}
 
 		private void process(NativeConfigurationRegistry registry) {
+			if (registry.reflection().reflectionEntries().anyMatch(x -> x.getType() == this.type)) {
+				return;
+			}
 			Builder reflection = registry.reflection().forType(this.type);
 			if (isClassOnlyReflectionType()) {
 				return;

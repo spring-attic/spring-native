@@ -235,6 +235,17 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 				.anySatisfy(classOnlyBinding(Environment.class)).hasSize(3);
 	}
 
+	@Test
+	void processConfigurationPropertiesWithCrossReference() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithCrossReference.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries())
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithCrossReference.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceA.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceB.class)).hasSize(3);
+	}
+
 	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
@@ -521,6 +532,46 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 			this.recursive = recursive;
 		}
 
+	}
+
+
+	@ConfigurationProperties("crossReference")
+	static class SamplePropertiesWithCrossReference {
+
+		@NestedConfigurationProperty
+		private CrossReferenceA crossReferenceA;
+
+		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+			this.crossReferenceA = crossReferenceA;
+		}
+
+		public CrossReferenceA getCrossReferenceA() {
+			return crossReferenceA;
+		}
+	}
+
+	static class CrossReferenceA {
+		private CrossReferenceB crossReferenceB;
+
+		public void setCrossReferenceB(CrossReferenceB crossReferenceB) {
+			this.crossReferenceB = crossReferenceB;
+		}
+
+		public CrossReferenceB getCrossReferenceB() {
+			return crossReferenceB;
+		}
+	}
+
+	static class CrossReferenceB {
+		private CrossReferenceA crossReferenceA;
+
+		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+			this.crossReferenceA = crossReferenceA;
+		}
+
+		public CrossReferenceA getCrossReferenceA() {
+			return crossReferenceA;
+		}
 	}
 
 }
