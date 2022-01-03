@@ -46,7 +46,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 		try {
 			Constructor<?> constructor = BeanUtils.getResolvableConstructor(factory);
 			return !Modifier.isPublic(factory.getModifiers()) ||
-					(constructor != null && constructor.getParameterCount() == 0 && !Modifier.isPublic(constructor.getModifiers()));
+					(constructor.getParameterCount() == 0 && !Modifier.isPublic(constructor.getModifiers()));
 		} catch (IllegalStateException | NoClassDefFoundError ex) {
 			return false;
 		}
