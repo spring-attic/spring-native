@@ -34,6 +34,7 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.boot.logging.logback.ColorConverter;
 import org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter;
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.MethodHint;
@@ -63,6 +64,9 @@ public class LogbackHints implements NativeConfiguration {
 
         @Override
         public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {
+                if (new ClassPathResource("logback.xml").exists()) {
+                        throw new LogbackXmlException("Embedded logback.xml file is not supported yet with Spring Native, read the support section of the documentation for more details");
+                }
                 if (!aotOptions.isRemoveXmlSupport() &&
                         ClassUtils.isPresent("org.codehaus.janino.ScriptEvaluator", null) &&
                         ClassUtils.isPresent("ch.qos.logback.classic.Level", null)) {
@@ -82,6 +86,13 @@ public class LogbackHints implements NativeConfiguration {
                                 .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/defaults.xml"))
                                 .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/console-appender.xml"))
                                 .add(NativeResourcesEntry.of("org/springframework/boot/logging/logback/file-appender.xml"));
+                }
+        }
+
+        static class LogbackXmlException extends RuntimeException {
+
+                public LogbackXmlException(String message) {
+                        super(message, null, true, false);
                 }
         }
 }
