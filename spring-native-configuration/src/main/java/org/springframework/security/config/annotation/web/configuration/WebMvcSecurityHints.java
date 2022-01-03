@@ -37,7 +37,6 @@ import org.springframework.security.oauth2.server.authorization.config.ProviderS
 		// TODO interesting that gs-securing-web causes these to be needed although it is in thymeleaf (due to SpEL expressions I think)
 		types = {@TypeHint(
 				typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
-				types = {HttpServletRequestWrapper.class, ServletRequestWrapper.class, ServletRequest.class},
 				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS})
 		})
 public class WebMvcSecurityHints implements NativeConfiguration {
