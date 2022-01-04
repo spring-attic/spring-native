@@ -92,7 +92,7 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 
 				for (String factoryName : factoryNames) {
 					logger.debug("Loading factory Impl:" + factoryName);
-					SpringFactory springFactory = SpringFactory.resolve(factoryTypeName, factoryName, buildContext.getClassLoader());
+					SpringFactory springFactory = SpringFactory.resolve(factoryTypeName, factoryName.trim(), buildContext.getClassLoader());
 					if (springFactory != null) {
 						factories.add(springFactory);
 					}
