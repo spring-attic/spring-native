@@ -37,6 +37,9 @@ It is not expected that projects have to define their own writers, but this coul
 Writers are identified via implementations of `BeanRegistrationWriterSupplier`, registered in `META-INF/spring.factories`.
 Suppliers are ordered with a first-win approach, and a {github-tree}/spring-aot/src/main/java/org/springframework/aot/context/bootstrap/generator/bean/DefaultBeanRegistrationWriterSupplier.java[default implementation] with lowest precedence that handles most use cases is provided.
 
+NOTE: Explicit care is required if a bean requires privileged access in more than one package.
+This happens typically if the bean use `protected` access and extends from another class in a different package that does the same.
+As a rule of thumb, make sure that each custom bean of yours can be instantiated in a test in a usable form.
 
 [[spring-aot-additional-processing]]
 === Additional Processing
