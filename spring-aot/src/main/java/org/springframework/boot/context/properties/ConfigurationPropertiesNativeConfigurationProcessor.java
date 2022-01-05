@@ -169,7 +169,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 				Method readMethod = propertyDescriptor.getReadMethod();
 				if (readMethod != null && !readMethod.getName().equals("getClass")) {
 					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
-					Class<?> propertyClass = propertyType.resolve();
+					Class<?> propertyClass = propertyType.toClass();
 					if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
 						return; // Prevent infinite recursion
 					}

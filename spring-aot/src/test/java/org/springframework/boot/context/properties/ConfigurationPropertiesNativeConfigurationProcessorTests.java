@@ -132,7 +132,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		NativeConfigurationRegistry registry = process(beanFactory);
 		List<DefaultNativeReflectionEntry> entries = registry.reflection().reflectionEntries().collect(Collectors.toList());
 		assertThat(entries).anySatisfy(valueObjectBinding(SampleImmutableProperties.class,
-						SampleImmutableProperties.class.getDeclaredConstructors()[0]));
+				SampleImmutableProperties.class.getDeclaredConstructors()[0]));
 		assertThat(entries).anySatisfy(classOnlyBinding(String.class));
 		assertThat(entries).hasSize(2);
 	}
@@ -246,6 +246,16 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 				.anySatisfy(javaBeanBinding(CrossReferenceB.class)).hasSize(3);
 	}
 
+	@Test
+	void processConfigurationPropertiesWithUnresolvedGeneric() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithGeneric.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries())
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithGeneric.class))
+				.anySatisfy(javaBeanBinding(GenericObject.class));
+	}
+
 	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
@@ -261,7 +271,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	private Consumer<DefaultNativeReflectionEntry> javaBeanBinding(Class<?> type, Constructor<?> constructor) {
 		return (entry) -> {
 			assertThat(entry.getType()).isEqualTo(type);
-			assertThat(entry.getConstructors()).containsOnly(type.getDeclaredConstructors()[0]);
+			assertThat(entry.getConstructors()).containsOnly(constructor);
 			assertThat(entry.getAccess()).containsOnly(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 		};
 	}
@@ -575,6 +585,30 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 			return crossReferenceA;
 		}
 
+	}
+
+	@ConfigurationProperties(prefix = "generic")
+	static class SamplePropertiesWithGeneric {
+
+		private GenericObject<?> generic;
+
+		public GenericObject<?> getGeneric() {
+			return generic;
+		}
+
+	}
+
+	static final class GenericObject<T> {
+
+		private final T value;
+
+		GenericObject(T value) {
+			this.value = value;
+		}
+
+		public T getValue() {
+			return value;
+		}
 	}
 
 }
