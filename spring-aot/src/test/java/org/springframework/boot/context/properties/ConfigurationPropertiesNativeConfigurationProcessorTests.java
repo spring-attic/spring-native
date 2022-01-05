@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,6 +233,17 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class))
 				.anySatisfy(classOnlyBinding(ApplicationContext.class))
 				.anySatisfy(classOnlyBinding(Environment.class)).hasSize(3);
+	}
+
+	@Test
+	void processConfigurationPropertiesWithCrossReference() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("beanA", BeanDefinitionBuilder.rootBeanDefinition(SamplePropertiesWithCrossReference.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		assertThat(registry.reflection().reflectionEntries())
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithCrossReference.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceA.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceB.class)).hasSize(3);
 	}
 
 	private Consumer<DefaultNativeReflectionEntry> classOnlyBinding(Class<?> type) {
@@ -519,6 +530,49 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 		public ImmutableRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;
+		}
+
+	}
+
+	@ConfigurationProperties("crossreference")
+	static class SamplePropertiesWithCrossReference {
+
+		@NestedConfigurationProperty
+		private CrossReferenceA crossReferenceA;
+
+		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+			this.crossReferenceA = crossReferenceA;
+		}
+
+		public CrossReferenceA getCrossReferenceA() {
+			return crossReferenceA;
+		}
+	}
+
+	static class CrossReferenceA {
+
+		private CrossReferenceB crossReferenceB;
+
+		public void setCrossReferenceB(CrossReferenceB crossReferenceB) {
+			this.crossReferenceB = crossReferenceB;
+		}
+
+		public CrossReferenceB getCrossReferenceB() {
+			return crossReferenceB;
+		}
+
+	}
+
+	static class CrossReferenceB {
+
+		private CrossReferenceA crossReferenceA;
+
+		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+			this.crossReferenceA = crossReferenceA;
+		}
+
+		public CrossReferenceA getCrossReferenceA() {
+			return crossReferenceA;
 		}
 
 	}
