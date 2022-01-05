@@ -26,6 +26,10 @@ While certain properties like passwords or url can be changed once the applicati
 Conditions on the runtime environment, such as enabling features based on your chosen cloud platform, will no longer run at runtime.
 ====
 
+A profile is a special sort of condition so these are also evaluated at build-time.
+It is recommended to avoid the use of profiles as processing them at build-time does not allow you to enable or disable them at runtime anyway.
+If you want to keep using them, they should be enabled at build-time, for instance by adding the `spring.profiles.active` property in `application.properties`.
+
 Low-level framework callbacks, such as `BeanDefinitionRegistryPostProcessor` are invoked at build-time to create any additional bean definitions.
 To prevent such a callback to be invoked at runtime again, it is not registered as bean, unless it does not have an `infrastructure` role.
 
