@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
@@ -67,7 +69,7 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 	private void processConfigurationProperties(NativeConfigurationRegistry registry, BeanDefinition beanDefinition) {
 		Class<?> type = ClassUtils.getUserClass(beanDefinition.getResolvableType().toClass());
-		TypeProcessor.process(type, registry);
+		TypeProcessor.processConfigurationProperties(type, registry);
 	}
 
 	/**
@@ -84,14 +86,25 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private final BeanInfo beanInfo;
 
-		private TypeProcessor(Class<?> type, boolean constructorBinding) {
+		private final Set<Class<?>> seen;
+
+		private TypeProcessor(Class<?> type, boolean constructorBinding, Set<Class<?>> seen) {
 			this.type = type;
 			this.constructorBinding = constructorBinding;
 			this.beanInfo = getBeanInfo(type);
+			this.seen = seen;
 		}
 
-		public static void process(Class<?> type, NativeConfigurationRegistry registry) {
-			new TypeProcessor(type, hasConstructorBinding(type)).process(registry);
+		public static void processConfigurationProperties(Class<?> type, NativeConfigurationRegistry registry) {
+			new TypeProcessor(type, hasConstructorBinding(type), new HashSet<>()).process(registry);
+		}
+
+		private void processNestedType(Class<?> type, NativeConfigurationRegistry registry) {
+			processNestedType(type, hasConstructorBinding(type), registry);
+		}
+
+		private void processNestedType(Class<?> type, boolean constructorBinding, NativeConfigurationRegistry registry) {
+			new TypeProcessor(type, constructorBinding, this.seen).process(registry);
 		}
 
 		private static boolean hasConstructorBinding(AnnotatedElement element) {
@@ -99,9 +112,10 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		}
 
 		private void process(NativeConfigurationRegistry registry) {
-			if (registry.reflection().reflectionEntries().anyMatch(x -> x.getType() == this.type)) {
+			if (this.seen.contains(this.type)) {
 				return;
 			}
+			this.seen.add(this.type);
 			Builder reflection = registry.reflection().forType(this.type);
 			if (isClassOnlyReflectionType()) {
 				return;
@@ -142,10 +156,10 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 				if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
 					return; // Prevent infinite recursion
 				}
-				new TypeProcessor(propertyType.resolve(), true).process(registry);
+				processNestedType(propertyType.resolve(), true, registry);
 				Class<?> nestedType = getNestedType(constructor.getParameters()[i].getName(), propertyType);
 				if (nestedType != null) {
-					new TypeProcessor(nestedType, true).process(registry);
+					processNestedType(nestedType, true, registry);
 				}
 			}
 		}
@@ -159,10 +173,10 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 					if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
 						return; // Prevent infinite recursion
 					}
-					TypeProcessor.process(propertyClass, registry);
+					processNestedType(propertyClass, registry);
 					Class<?> nestedType = getNestedType(propertyDescriptor.getName(), propertyType);
 					if (nestedType != null) {
-						TypeProcessor.process(nestedType, registry);
+						processNestedType(nestedType, registry);
 					}
 				}
 			}

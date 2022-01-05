@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -534,8 +534,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 
 	}
 
-
-	@ConfigurationProperties("crossReference")
+	@ConfigurationProperties("crossreference")
 	static class SamplePropertiesWithCrossReference {
 
 		@NestedConfigurationProperty
@@ -551,6 +550,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 	}
 
 	static class CrossReferenceA {
+
 		private CrossReferenceB crossReferenceB;
 
 		public void setCrossReferenceB(CrossReferenceB crossReferenceB) {
@@ -560,9 +560,11 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		public CrossReferenceB getCrossReferenceB() {
 			return crossReferenceB;
 		}
+
 	}
 
 	static class CrossReferenceB {
+
 		private CrossReferenceA crossReferenceA;
 
 		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
@@ -572,6 +574,7 @@ class ConfigurationPropertiesNativeConfigurationProcessorTests {
 		public CrossReferenceA getCrossReferenceA() {
 			return crossReferenceA;
 		}
+
 	}
 
 }
