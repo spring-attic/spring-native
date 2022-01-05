@@ -18,11 +18,14 @@ package org.springframework.aot.factories;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +34,7 @@ import org.springframework.aot.build.context.BuildContext;
 import org.springframework.aot.build.CodeGenerationException;
 import org.springframework.aot.build.context.SourceFiles;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -87,9 +91,6 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 				logger.debug("Loading factory Type:" + factoryTypeName);
 				String[] factoryNames = StringUtils.commaDelimitedListToStringArray((String) entry.getValue());
 
-				// TODO: sorting required here
-				// AnnotationAwareOrderComparator.sort();
-
 				for (String factoryName : factoryNames) {
 					logger.debug("Loading factory Impl:" + factoryName);
 					SpringFactory springFactory = SpringFactory.resolve(factoryTypeName, factoryName.trim(), buildContext.getClassLoader());
@@ -102,7 +103,17 @@ public class SpringFactoriesContributor implements BootstrapContributor {
 				}
 			}
 		}
-		return factories;
+
+		// sort: group by factory type and sort factories, then flatmap back to the sorted set
+		Set<SpringFactory> sorted = factories.stream()
+				.collect(Collectors.groupingBy(SpringFactory::getFactoryType))
+				.values()
+				.stream()
+				.peek(list -> list.sort(Comparator.comparing(SpringFactory::getFactory,
+									     AnnotationAwareOrderComparator.INSTANCE)))
+				.flatMap(List::stream)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+		return sorted;
 	}
 
 }
