@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -321,6 +321,16 @@ class DefaultBeanRegistrationWriterTests {
 						"  argumentValues.addIndexedArgumentValue(2, 42);",
 						"}).register(beanFactory);");
 		assertThat(generateCode).hasImport(ConstructorArgumentValues.class);
+	}
+
+	@Test
+	void writeWithNonIndexedConstructorArgument() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class, "create")
+				.getBeanDefinition();
+		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue("test");
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
+						"    .instanceSupplier(() -> SampleFactory::new).register(beanFactory);");
 	}
 
 	@Test

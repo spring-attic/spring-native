@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,8 +218,10 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		if (this.beanDefinition.getRole() != BeanDefinition.ROLE_APPLICATION) {
 			statements.add("$L.setRole($L)", bdVariable, this.beanDefinition.getRole());
 		}
-		if (this.beanDefinition.hasConstructorArgumentValues()) {
-			handleArgumentValues(statements, bdVariable, this.beanDefinition.getConstructorArgumentValues());
+		Map<Integer, ValueHolder> indexedArgumentValues = this.beanDefinition.getConstructorArgumentValues()
+				.getIndexedArgumentValues();
+		if (!indexedArgumentValues.isEmpty()) {
+			handleArgumentValues(statements, bdVariable, indexedArgumentValues);
 		}
 		if (this.beanDefinition.hasPropertyValues()) {
 			handlePropertyValues(statements, bdVariable, this.beanDefinition.getPropertyValues());
@@ -235,17 +237,16 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 	}
 
 	private void handleArgumentValues(MultiStatement statements, String bdVariable,
-			ConstructorArgumentValues constructorArgumentValues) {
-		Map<Integer, ValueHolder> values = constructorArgumentValues.getIndexedArgumentValues();
-		if (values.size() == 1) {
-			Entry<Integer, ValueHolder> entry = values.entrySet().iterator().next();
+			Map<Integer, ValueHolder> indexedArgumentValues) {
+		if (indexedArgumentValues.size() == 1) {
+			Entry<Integer, ValueHolder> entry = indexedArgumentValues.entrySet().iterator().next();
 			statements.add(writeArgumentValue(bdVariable + ".getConstructorArgumentValues().",
 					entry.getKey(), entry.getValue()));
 		}
 		else {
 			String avVariable = determineVariableName("argumentValues");
 			statements.add("$T $L = $L.getConstructorArgumentValues()", ConstructorArgumentValues.class, avVariable, bdVariable);
-			statements.addAll(values.entrySet(), (entry) -> writeArgumentValue(avVariable + ".",
+			statements.addAll(indexedArgumentValues.entrySet(), (entry) -> writeArgumentValue(avVariable + ".",
 					entry.getKey(), entry.getValue()));
 		}
 	}
