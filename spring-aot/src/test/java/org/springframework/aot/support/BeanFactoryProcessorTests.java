@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.sample.factory.TestGenericFactoryBeanConfiguration;
+import org.springframework.aot.support.BeanFactoryProcessor.AnnotatedBeanDescriptor;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
@@ -107,6 +108,20 @@ class BeanFactoryProcessorTests {
 		new BeanFactoryProcessor(beanFactory).processBeans(
 				type -> AnnotatedElementUtils.isAnnotated(type, Import.class), consumer);
 		assertThat(consumer.callbacks).isEmpty();
+	}
+
+	@Test
+	void beansWithAnnotationWhenMatchingAnnotationExposesBeanName() {
+		ListableBeanFactory beanFactory = prepare(ScanConfiguration.class);
+		assertThat(new BeanFactoryProcessor(beanFactory).beansWithAnnotation(Configuration.class)
+				.map(AnnotatedBeanDescriptor::getBeanName))
+				.containsOnly("scanConfiguration", "configurationOne", "configurationTwo");
+	}
+
+	@Test
+	void beansWithAnnotationWhenNoMatchesReturnEmptyStream() {
+		ListableBeanFactory beanFactory = prepare(ConfigurationOne.class);
+		assertThat(new BeanFactoryProcessor(beanFactory).beansWithAnnotation(Import.class)).isEmpty();
 	}
 
 	private ListableBeanFactory prepare(Class<?>... candidates) {
