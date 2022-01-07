@@ -39,7 +39,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger = RepositoryFactoryBeanSupport.class,
+@NativeHint(trigger = MappingContext.class,
 		types = {
 				@TypeHint(types = {
 						RepositoryFactoryBeanSupport.class,
