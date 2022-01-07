@@ -31,20 +31,30 @@ import org.springframework.beans.factory.config.Scope;
  */
 public final class NoOpScope implements Scope {
 
+	private final Object lock = new Object();
+
 	private final Map<String, Object> map = new HashMap<>();
 
 	private final List<Runnable> callbacks = new ArrayList<>();
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
-		synchronized (this.map) {
-			return this.map.computeIfAbsent(name, (key) -> objectFactory.getObject());
+		Object target = this.map.get(name);
+		if (target == null) {
+			synchronized (this.lock) {
+				target = this.map.get(name);
+				if (target == null) {
+					target = objectFactory.getObject();
+					this.map.put(name, target);
+				}
+			}
 		}
+		return target;
 	}
 
 	@Override
 	public Object remove(String name) {
-		synchronized (this.map) {
+		synchronized (this.lock) {
 			return this.map.remove(name);
 		}
 	}
