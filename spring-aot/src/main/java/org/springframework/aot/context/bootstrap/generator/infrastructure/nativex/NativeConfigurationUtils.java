@@ -91,7 +91,13 @@ public class NativeConfigurationUtils {
 			// not interesting, although should bound be considered?
 		}
 		else if (type instanceof WildcardType) {
-			// not interesting, although should bound be considered?
+			WildcardType wType = (WildcardType) type;
+			for (Type typeUpper : wType.getUpperBounds()) {
+				collectReferenceTypesUsed(typeUpper, collector);
+			}
+			for (Type typeLower : wType.getLowerBounds()) {
+				collectReferenceTypesUsed(typeLower, collector);
+			}
 		}
 		else if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
