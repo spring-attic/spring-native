@@ -23,9 +23,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.springframework.core.KotlinDetector;
 
 // TODO review - does spring core already do some of these things?
 
@@ -56,8 +59,19 @@ public class NativeConfigurationUtils {
 	 */
 	public static Set<Class<?>> collectTypesInSignature(Method controllerMethod) {
 		Set<Class<?>> collector = new TreeSet<>(Comparator.comparing(Class::getName));
-		collectReferenceTypesUsed(controllerMethod.getGenericReturnType(), collector);
-		for (Type parameterType : controllerMethod.getGenericParameterTypes()) {
+		Type genericReturnType;
+		Type[] genericParameterTypes;
+		if (KotlinDetector.isSuspendingFunction(controllerMethod)) {
+			Type[] types = controllerMethod.getGenericParameterTypes();
+			ParameterizedType continuation = (ParameterizedType) types[types.length - 1];
+			genericReturnType = ((WildcardType) continuation.getActualTypeArguments()[0]).getLowerBounds()[0];
+			genericParameterTypes = Arrays.copyOf(types, types.length - 1);
+		} else {
+			genericReturnType = controllerMethod.getGenericReturnType();
+			genericParameterTypes = controllerMethod.getGenericParameterTypes();
+		}
+		collectReferenceTypesUsed(genericReturnType, collector);
+		for (Type parameterType : genericParameterTypes) {
 			collectReferenceTypesUsed(parameterType, collector);
 		}
 		return collector;
