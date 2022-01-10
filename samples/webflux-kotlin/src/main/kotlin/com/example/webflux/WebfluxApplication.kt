@@ -7,8 +7,6 @@ import org.springframework.nativex.hint.NativeHint
 import org.springframework.nativex.hint.TypeAccess
 import org.springframework.nativex.hint.TypeHint
 
-// Reflection entry required due to how Coroutines generates bytecode with an Object return type, see https://github.com/spring-projects/spring-framework/issues/21546 related issue
-@TypeHint(types = [Bar::class], access = [ TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS ])
 @SpringBootApplication
 class WebfluxApplication
 
