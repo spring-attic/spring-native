@@ -22,17 +22,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import kotlin.Metadata;
+import kotlin.coroutines.Continuation;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link NativeConfigurationUtils}.
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
 class NativeConfigurationUtilsTests {
 
 	@Test
-	public void typesInSignature() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
+	public void typesInSignatureForMethods() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
 		Set<Class<?>> collected = NativeConfigurationUtils.collectTypesInSignature(this.getClass().getDeclaredMethod("one"));
 		assertThat(collected).containsOnly(Foo.class);
 		collected = NativeConfigurationUtils.collectTypesInSignature(this.getClass().getDeclaredMethod("two", Foo.class));
@@ -41,9 +44,20 @@ class NativeConfigurationUtilsTests {
 		assertThat(collected).containsOnly(List.class, Foo.class);
 		collected = NativeConfigurationUtils.collectTypesInSignature(this.getClass().getDeclaredMethod("four", Integer.TYPE, List.class, Map.class));
 		assertThat(collected).containsOnly(Map.class, String.class, List.class, Foo.class, Bar.class, Integer.class);
-		collected = NativeConfigurationUtils.collectTypesInSignature(Boo.class.getDeclaredField("foos"));
+	}
+
+	@Test
+	public void typesInSignatureForFields() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
+		Set<Class<?>> collected = NativeConfigurationUtils.collectTypesInSignature(Boo.class.getDeclaredField("foos"));
 		assertThat(collected).containsOnly(List.class,Foo.class);
 	}
+
+	@Test
+	public void typesInSignatureForSuspendingMethods() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
+		Set<Class<?>> collected = NativeConfigurationUtils.collectTypesInSignature(Baz.class.getDeclaredMethod("greet", Continuation.class));
+		assertThat(collected).containsOnly(Bar.class);
+	}
+
 	
 	static class Foo {
 		
@@ -69,6 +83,13 @@ class NativeConfigurationUtilsTests {
 	
 	static class Boo {
 		List<Foo> foos;
+	}
+
+	@Metadata
+	static class Baz {
+		Object greet(Continuation<? super Bar> completion) {
+			return null;
+		}
 	}
 
 }

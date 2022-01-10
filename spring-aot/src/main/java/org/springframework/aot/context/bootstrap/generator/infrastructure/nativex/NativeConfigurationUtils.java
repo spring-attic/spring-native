@@ -61,7 +61,7 @@ public class NativeConfigurationUtils {
 		Set<Class<?>> collector = new TreeSet<>(Comparator.comparing(Class::getName));
 		Type genericReturnType;
 		Type[] genericParameterTypes;
-		if (KotlinDetector.isSuspendingFunction(controllerMethod)) {
+		if (KotlinDetector.isSuspendingFunction(controllerMethod) && !controllerMethod.isSynthetic()) {
 			Type[] types = controllerMethod.getGenericParameterTypes();
 			ParameterizedType continuation = (ParameterizedType) types[types.length - 1];
 			genericReturnType = ((WildcardType) continuation.getActualTypeArguments()[0]).getLowerBounds()[0];
