@@ -23,16 +23,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.map.MapKeyValueAdapter;
+import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.Person;
+import org.springframework.samples.petclinic.vet.Vet;
 
 /**
  * PetClinic Spring Boot Application.
  *
  * @author Dave Syer
- *
  */
 @SpringBootApplication
-@TypeHint(types = ConcurrentHashMap.class)
+@TypeHint(types = { ConcurrentHashMap.class })
+@SerializationHint(types = { BaseEntity.class, Person.class, Vet.class, Integer.class, String.class, Number.class })
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
