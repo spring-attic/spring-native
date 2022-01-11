@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -88,7 +89,10 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 		Path sourcesPath = this.generatedSourcesDirectory.toPath().resolve(Paths.get("src", "main", "java"));
 		Path resourcesPath = this.generatedSourcesDirectory.toPath().resolve(Paths.get("src", "main", "resources"));
 		try {
-			List<String> runtimeClasspathElements = project.getRuntimeClasspathElements();
+			List<String> runtimeClasspathElements = project.getRuntimeClasspathElements()
+					.stream()
+					.filter(element -> !element.contains("spring-boot-devtools"))
+					.collect(Collectors.toList());
 
 			findJarFile(this.pluginArtifacts, "org.springframework.experimental", "spring-native-configuration")
 					.ifPresent(artifact -> prependDependency(artifact, runtimeClasspathElements));

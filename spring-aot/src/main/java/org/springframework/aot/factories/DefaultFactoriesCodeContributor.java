@@ -87,7 +87,7 @@ class DefaultFactoriesCodeContributor implements FactoriesCodeContributor {
 		} else if (factoryName.equals("org.springframework.boot.env.YamlPropertySourceLoader")) {
 			return !aotOptions.isRemoveYamlSupport();
 		} else if (factoryName.startsWith("org.springframework.boot.devtools")) {
-			throw new IllegalStateException("Devtools is not supported yet, please remove the related dependency for now.");
+			return false;
 		}
 		return true;
 	}

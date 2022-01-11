@@ -74,6 +74,19 @@ public class SpringAotGradlePluginTest {
 	}
 
 	@Test
+	void devtoolsIsIgnoredDuringAotGeneration() {
+		Project project = createTestProject();
+		project.getDependencies().add(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME, "org.springframework.boot:spring-boot-devtools");
+		JavaPluginExtension java = project.getExtensions().findByType(JavaPluginExtension.class);
+		SourceSet aotSourceSet = java.getSourceSets().findByName(SpringAotGradlePlugin.AOT_MAIN_SOURCE_SET_NAME);
+		assertThat(aotSourceSet).isNotNull();
+		assertThat(aotSourceSet.getCompileClasspath().getFiles()).noneMatch(file -> file.getName().contains("spring-boot-devtools"));
+		SourceSet aotTestSourceSet = java.getSourceSets().findByName(SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME);
+		assertThat(aotTestSourceSet).isNotNull();
+		assertThat(aotTestSourceSet.getCompileClasspath().getFiles()).noneMatch(file -> file.getName().contains("spring-boot-devtools"));
+	}
+
+	@Test
 	void pluginRegistersAotTestSourceSet() {
 		Project project = createTestProject();
 

@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -79,7 +80,10 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			return;
 		}
 		try {
-			List<String> testClasspathElements = this.project.getTestClasspathElements();
+			List<String> testClasspathElements = this.project.getTestClasspathElements()
+					.stream()
+					.filter(element -> !element.contains("spring-boot-devtools"))
+					.collect(Collectors.toList());
 			Files.createDirectories(this.generatedTestSourcesDirectory.toPath());
 
 			Path sourcesPath = this.generatedTestSourcesDirectory.toPath().resolve(Paths.get("src", "test", "java"));

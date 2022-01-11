@@ -26,7 +26,6 @@ public abstract class NativeUtils {
 		props.put("spring.cloud.refresh.enabled", "false"); // Sampler is a class and can't be proxied
 		props.put("spring.sleuth.async.enabled", "false"); // Too much proxy created
 		props.put("spring.cloud.compatibility-verifier.enabled", "false"); // To avoid false positive due to SpringApplication patched copy
-		props.put("spring.devtools.restart.enabled", "false"); // Deactivate dev tools
 		return props;
 	}
 }

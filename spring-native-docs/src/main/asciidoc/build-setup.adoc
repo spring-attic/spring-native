@@ -242,6 +242,8 @@ This means that running the application or its tests from the IDE or the command
 Any application using Spring AOT can use the `springAot` System property in order to use the AOT classes with a regular JVM.
 This is mainly useful for debugging purposes in case of issues during native image generation.
 
+NOTE: When AOT more is enabled, Spring Boot Developer Tools are ignored as they are not compatible with an AOT approach.
+
 You can set such a property when running an executable Jar from the command line:
 
 [source,bash,subs="attributes,verbatim"]
