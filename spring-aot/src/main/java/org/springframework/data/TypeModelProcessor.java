@@ -35,15 +35,22 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ReflectionUtils;
 
 /**
  * @author Christoph Strobl
+ * @author Sebastien Deleuze
  */
 public class TypeModelProcessor {
 
-	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor.", "kotlinx.", "kotlin."));
+	private static Log logger = LogFactory.getLog(TypeModelProcessor.class);
+
+	static final Set<String> EXCLUDED_DOMAINS = new HashSet<>(Arrays.asList("sun.", "jdk.", "reactor.", "kotlinx.", "kotlin.",
+			"org.springframework.core.", "org.springframework.data.", "org.springframework.boot."));
 
 	private Predicate<Class<?>> typeFilter = (type) -> EXCLUDED_DOMAINS.stream().noneMatch(it -> {
 		if (type.getPackageName().startsWith("java.")) {
@@ -151,17 +158,21 @@ public class TypeModelProcessor {
 			return Collections.emptySet();
 		}
 		Set<Type> discoveredTypes = new LinkedHashSet<>();
-		ReflectionUtils.doWithLocalMethods(type.toClass(), method -> {
-			if (!methodFilter.test(method)) {
-				return;
-			}
-			result.addMethod(method);
-			for (Class<?> signatureType : TypeUtils.resolveTypesInSignature(type.toClass(), method)) {
-				if (typeFilter.test(signatureType)) {
-					discoveredTypes.add(signatureType);
+		try {
+			ReflectionUtils.doWithLocalMethods(type.toClass(), method -> {
+				if (!methodFilter.test(method)) {
+					return;
 				}
-			}
-		});
+				result.addMethod(method);
+				for (Class<?> signatureType : TypeUtils.resolveTypesInSignature(type.toClass(), method)) {
+					if (typeFilter.test(signatureType)) {
+						discoveredTypes.add(signatureType);
+					}
+				}
+			});
+		} catch (Exception ex) {
+			logger.warn(ex);
+		}
 		return new HashSet<>(discoveredTypes);
 	}
 

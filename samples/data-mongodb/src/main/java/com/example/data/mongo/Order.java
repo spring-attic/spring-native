@@ -25,11 +25,17 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.index.IndexDefinition;
+import org.springframework.data.mongodb.core.index.IndexResolver;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.PartialIndexFilter;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 @Document
 public class Order {
@@ -189,4 +195,15 @@ public class Order {
 				", reduction=" + reduction +
 				'}';
 	}
+
+	// Reproducer for https://github.com/spring-projects-experimental/spring-native/issues/1376
+	public static List<IndexDefinition> getIndexes(IndexResolver indexResolver) {
+		List<IndexDefinition> ret = new ArrayList<>();
+		indexResolver.resolveIndexFor(Order.class).forEach(ret::add);
+		ret.add(new Index()
+				.unique()
+				.on("createdBy", Sort.Direction.ASC)
+				.partial(PartialIndexFilter.of(Criteria.where("createdBy").exists(true))));
+				return ret;
+		}
 }
