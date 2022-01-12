@@ -16,6 +16,10 @@
 
 package org.springframework.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -34,6 +38,7 @@ import org.springframework.util.ClassUtils;
  * repository with the resolved generics of the repository.
  *
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  */
 class RepositoryFactoryBeanPostProcessor implements BeanDefinitionPostProcessor, BeanFactoryAware {
 
@@ -61,10 +66,10 @@ class RepositoryFactoryBeanPostProcessor implements BeanDefinitionPostProcessor,
 		Class<?> repositoryType = loadRepositoryType(valueHolder);
 		if (repositoryType != null) {
 			ResolvableType resolvableType = ResolvableType.forClass(repositoryType).as(Repository.class);
-			ResolvableType entityType = resolvableType.getGenerics()[0];
-			ResolvableType idType = resolvableType.getGenerics()[1];
+			List<ResolvableType> typeArgs = new ArrayList<>(Arrays.asList(resolvableType.getGenerics()));
+			typeArgs.add(0, ResolvableType.forClass(repositoryType));
 			ResolvableType resolvedRepositoryType = ResolvableType.forClassWithGenerics(
-					beanDefinition.getBeanClass(), ResolvableType.forClass(repositoryType), entityType, idType);
+					beanDefinition.getBeanClass(), typeArgs.toArray(new ResolvableType[0]));
 			beanDefinition.setTargetType(resolvedRepositoryType);
 			beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, true);
 		}

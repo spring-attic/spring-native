@@ -47,6 +47,16 @@ class RepositoryFactoryBeanPostProcessorTests {
 	}
 
 	@Test
+	void resolveRepositoryTypeIfNotDirectSubOfRepository() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(JpaRepositoryFactoryBean.class)
+				.addConstructorArgValue("org.springframework.data.RepositoryFactoryBeanPostProcessorTests.RockstarRepository").getBeanDefinition();
+		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		postProcess(beanDefinition);
+		assertFactoryBeanForRockstarRepository(beanDefinition.getResolvableType());
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
+	}
+
+	@Test
 	void resolveRepositoryTypeWithTypeAsStringThatDoesNotExist() {
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder.rootBeanDefinition(JpaRepositoryFactoryBean.class)
 				.addConstructorArgValue("does-not-exist").getBeanDefinition();
@@ -109,6 +119,13 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(resolvedType.getGenerics()[2].resolve()).isEqualTo(Integer.class);
 	}
 
+	private void assertFactoryBeanForRockstarRepository(ResolvableType resolvedType) {
+		assertThat(resolvedType.hasUnresolvableGenerics()).isFalse();
+		assertThat(resolvedType.getGenerics()[0].resolve()).isEqualTo(RockstarRepository.class);
+		assertThat(resolvedType.getGenerics()[1].resolve()).isEqualTo(Speaker.class);
+		assertThat(resolvedType.getGenerics()[2].resolve()).isEqualTo(Integer.class);
+	}
+
 	private void postProcess(RootBeanDefinition beanDefinition) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		RepositoryFactoryBeanPostProcessor processor = new RepositoryFactoryBeanPostProcessor();
@@ -117,6 +134,10 @@ class RepositoryFactoryBeanPostProcessorTests {
 	}
 
 	interface SpeakerRepository extends CrudRepository<Speaker, Integer> {
+
+	}
+
+	interface RockstarRepository extends SpeakerRepository {
 
 	}
 
