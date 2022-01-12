@@ -21,6 +21,8 @@ import org.springframework.data.DataAuditingHints;
 import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.jpa.domain.support.AuditingBeanFactoryPostProcessor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
+import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -34,6 +36,18 @@ import org.springframework.nativex.type.NativeConfiguration;
 				AuditingEntityListener.class
 		}),
 		imports = DataNonReactiveAuditingHints.class
+)
+@NativeHint(
+		trigger = JpaRepositoryFactory.class,
+		jdkProxies = {
+				@JdkProxyHint(types = {
+						org.springframework.data.jpa.repository.support.CrudMethodMetadata.class,
+						org.springframework.aop.SpringProxy.class,
+						org.springframework.aop.framework.Advised.class,
+						org.springframework.core.DecoratingProxy.class
+				})
+		}
+
 )
 public class DataJpaHints implements NativeConfiguration {
 

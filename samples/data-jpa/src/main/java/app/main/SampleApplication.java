@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.function.RouterFunction;
 
 import java.util.Optional;
@@ -35,6 +35,7 @@ import static org.springframework.web.servlet.function.ServerResponse.*;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "fixedAuditor")
+@EnableJpaRepositories(basePackageClasses = FooRepository.class)
 public class SampleApplication {
 
 	private final FooRepository entities;
