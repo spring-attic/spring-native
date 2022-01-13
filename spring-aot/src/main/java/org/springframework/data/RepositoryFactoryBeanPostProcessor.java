@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,17 +57,32 @@ class RepositoryFactoryBeanPostProcessor implements BeanDefinitionPostProcessor,
 		if (!beanDefinition.hasBeanClass() || !RepositoryFactoryBeanSupport.class.isAssignableFrom(beanDefinition.getBeanClass())) {
 			return;
 		}
+		ResolvableType resolvedRepositoryFactoryBeanType = resolveRepositoryFactoryBeanType(beanDefinition.getBeanClass(), beanDefinition);
+		if (resolvedRepositoryFactoryBeanType != null) {
+			beanDefinition.setTargetType(resolvedRepositoryFactoryBeanType);
+			beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, true);
+		}
+	}
+
+	private ResolvableType resolveRepositoryFactoryBeanType(Class<?> repositoryFactoryBeanRawType, RootBeanDefinition beanDefinition) {
+		if (repositoryFactoryBeanRawType.getTypeParameters().length == 0) {
+			return ResolvableType.forClass(repositoryFactoryBeanRawType);
+		}
 		ValueHolder valueHolder = beanDefinition.getConstructorArgumentValues().getIndexedArgumentValue(0, null);
 		Class<?> repositoryType = loadRepositoryType(valueHolder);
 		if (repositoryType != null) {
 			ResolvableType resolvableType = ResolvableType.forClass(repositoryType).as(Repository.class);
-			ResolvableType entityType = resolvableType.getGenerics()[0];
-			ResolvableType idType = resolvableType.getGenerics()[1];
-			ResolvableType resolvedRepositoryType = ResolvableType.forClassWithGenerics(
-					beanDefinition.getBeanClass(), ResolvableType.forClass(repositoryType), entityType, idType);
-			beanDefinition.setTargetType(resolvedRepositoryType);
-			beanDefinition.setAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE, true);
+			ResolvableType[] repositoryFactoryBeanGenerics = new ResolvableType[3];
+			repositoryFactoryBeanGenerics[0] = ResolvableType.forClass(repositoryType);
+			repositoryFactoryBeanGenerics[1] = resolvableType.getGenerics()[0];
+			repositoryFactoryBeanGenerics[2] = resolvableType.getGenerics()[1];
+			ResolvableType[] resolvedGenerics = ParameterizedTypeMapper
+					.of(repositoryFactoryBeanRawType, RepositoryFactoryBeanSupport.class)
+					.mapGenericTypes(repositoryFactoryBeanGenerics);
+			return ResolvableType.forClassWithGenerics(
+					repositoryFactoryBeanRawType, resolvedGenerics);
 		}
+		return null;
 	}
 
 	private Class<?> loadRepositoryType(ValueHolder valueHolder) {

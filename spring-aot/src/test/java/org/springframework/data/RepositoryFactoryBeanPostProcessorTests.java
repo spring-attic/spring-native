@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.data;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriter;
@@ -23,8 +25,10 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.Repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -102,11 +106,66 @@ class RepositoryFactoryBeanPostProcessorTests {
 		assertThat(beanDefinition.getResolvableType()).isSameAs(initialType);
 	}
 
+	@Test
+	void resolveRepositoryTypeWithSpecificFactoryBean() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+				.rootBeanDefinition(SpecificJpaRepositoryFactoryBean.class)
+				.addConstructorArgValue(SpeakerRepository.class).getBeanDefinition();
+		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		postProcess(beanDefinition);
+		ResolvableType resolvedType = beanDefinition.getResolvableType();
+		assertThat(resolvedType.hasUnresolvableGenerics()).isFalse();
+		assertThat(resolvedType.getGenerics()).satisfies(ofTypes(Speaker.class, Integer.class));
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
+	}
+
+	@Test
+	void resolveRepositoryTypeWithSpecificPrimaryKey() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+				.rootBeanDefinition(SpecificPrimaryKeyFactoryBean.class)
+				.addConstructorArgValue(SpeakerRepository.class).getBeanDefinition();
+		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		postProcess(beanDefinition);
+		ResolvableType resolvedType = beanDefinition.getResolvableType();
+		assertThat(resolvedType.hasUnresolvableGenerics()).isFalse();
+		assertThat(resolvedType.getGenerics()).satisfies(ofTypes(SpeakerRepository.class, Speaker.class));
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
+	}
+
+	@Test
+	void resolveRepositoryTypeWithSpecificFactoryBeanAndPrimaryKey() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+				.rootBeanDefinition(SpecificJpaRepositoryAndPrimaryKeyFactoryBean.class)
+				.addConstructorArgValue(SpeakerRepository.class).getBeanDefinition();
+		assertThat(beanDefinition.getResolvableType().hasUnresolvableGenerics()).isTrue();
+		postProcess(beanDefinition);
+		ResolvableType resolvedType = beanDefinition.getResolvableType();
+		assertThat(resolvedType.hasUnresolvableGenerics()).isFalse();
+		assertThat(resolvedType.getGenerics()).satisfies(ofTypes(Speaker.class));
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
+	}
+
+	@Test
+	void resolveRepositoryTypeWithGenericsResolvedUpfront() {
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) BeanDefinitionBuilder
+				.rootBeanDefinition(SpeakerRepositoryFactoryBean.class)
+				.addConstructorArgValue(SpeakerRepository.class).getBeanDefinition();
+		postProcess(beanDefinition);
+		ResolvableType resolvedType = beanDefinition.getResolvableType();
+		assertThat(resolvedType.toClass()).isEqualTo(SpeakerRepositoryFactoryBean.class);
+		assertThat(resolvedType.hasGenerics()).isFalse();
+		assertThat(beanDefinition.getAttribute(BeanRegistrationWriter.PRESERVE_TARGET_TYPE)).isEqualTo(true);
+	}
+
 	private void assertFactoryBeanForSpeakerRepository(ResolvableType resolvedType) {
 		assertThat(resolvedType.hasUnresolvableGenerics()).isFalse();
-		assertThat(resolvedType.getGenerics()[0].resolve()).isEqualTo(SpeakerRepository.class);
-		assertThat(resolvedType.getGenerics()[1].resolve()).isEqualTo(Speaker.class);
-		assertThat(resolvedType.getGenerics()[2].resolve()).isEqualTo(Integer.class);
+		assertThat(resolvedType.getGenerics()).satisfies(ofTypes(SpeakerRepository.class, Speaker.class, Integer.class));
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Consumer<? super ResolvableType[]> ofTypes(Class<?>... classes) {
+		return (types) -> assertThat(types).extracting((type) -> (Class) type.toClass())
+				.containsExactly(classes);
 	}
 
 	private void postProcess(RootBeanDefinition beanDefinition) {
@@ -122,6 +181,35 @@ class RepositoryFactoryBeanPostProcessorTests {
 
 	static class Speaker {
 
+	}
+
+
+	static class SpecificJpaRepositoryFactoryBean<T, ID> extends JpaRepositoryFactoryBean<JpaRepository<T, ID>, T, ID> {
+
+		public SpecificJpaRepositoryFactoryBean(Class<JpaRepository<T, ID>> repositoryInterface) {
+			super(repositoryInterface);
+		}
+	}
+
+	static class SpecificPrimaryKeyFactoryBean<T extends Repository<E, Long>, E> extends JpaRepositoryFactoryBean<T, E, Long> {
+
+		public SpecificPrimaryKeyFactoryBean(Class<T> repositoryInterface) {
+			super(repositoryInterface);
+		}
+	}
+
+	static class SpecificJpaRepositoryAndPrimaryKeyFactoryBean<E> extends JpaRepositoryFactoryBean<JpaRepository<E, Long>, E, Long> {
+
+		public SpecificJpaRepositoryAndPrimaryKeyFactoryBean(Class<JpaRepository<E, Long>> repositoryInterface) {
+			super(repositoryInterface);
+		}
+	}
+
+	static class SpeakerRepositoryFactoryBean extends JpaRepositoryFactoryBean<SpeakerRepository, Speaker, Integer> {
+
+		public SpeakerRepositoryFactoryBean() {
+			super(SpeakerRepository.class);
+		}
 	}
 
 }
