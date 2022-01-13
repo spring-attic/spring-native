@@ -19,19 +19,14 @@ package org.springframework.nativex.substitutions.logback;
 import java.net.URL;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.gaffer.GafferUtil;
-import ch.qos.logback.classic.util.EnvUtil;
 import ch.qos.logback.core.LogbackException;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.status.ErrorStatus;
-import ch.qos.logback.core.status.StatusManager;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.nativex.substitutions.LogbackIsAround;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
-import org.springframework.nativex.substitutions.RemoveXmlSupport;
 
 @TargetClass(className = "ch.qos.logback.classic.util.ContextInitializer", onlyWith = { OnlyIfPresent.class, LogbackIsAround.class })
 final class Target_ContextInitializer {
