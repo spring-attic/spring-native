@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
@@ -64,7 +65,7 @@ public class NameDiscoverer {
 
 	public static String getClassName(URL resource) {
 		try {
-			return getClassName(Path.of(resource.toURI()));
+			return getClassName(Paths.get(resource.toURI()));
 		} catch (URISyntaxException e) {
 			throw new IllegalStateException(e);
 		}
