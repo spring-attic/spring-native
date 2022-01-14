@@ -19,6 +19,8 @@ GraalVM issues impacting the Spring ecosystem are identified on their issue trac
 
 Java 11, Java 17 and Kotlin 1.5+ are supported.
 
+WARNING: Java compiler `-parameters` flag is required since the `.class` resources, used as a fallback mechanism on the JVM to retrieve parameter names, are typically not available on native. Spring Boot plugin automatically configures it on modules where it is applied, but make sure to configure it explicitly when that's not the case (typically in multi modules projects or when using Kotlin multiplatform).
+
 [[support-tooling]]
 === Tooling
 
