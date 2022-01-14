@@ -265,11 +265,30 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 		 */
 		private void writeAnnotationConfigurationFor(AnnotatedElement element, NativeConfigurationRegistry registry) {
 			TypeUtils.resolveAnnotationsFor(element)
-					.map(MergedAnnotation::getType)
-					.filter(annotationFilter::matches)
+					.filter(it -> annotationFilter.matches(it.getType()))
 					.forEach(annotation -> {
-						registry.reflection().forType(annotation).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
+
+						// the annotation itself
+						registry.reflection().forType(annotation.getType()).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
+
+						// check if the annotation holds a reference to a class value we might require reflection for
+						annotation.asMap().entrySet().forEach(entry -> {
+							if(entry.getValue() instanceof Class) {
+								Class<?> attributeValue = (Class<?>) entry.getValue();
+								if(!isJavaOrPrimitiveType(attributeValue)) {
+									registry.reflection().forType(attributeValue).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS);
+								}
+							}
+							else if(entry.getValue() instanceof Class[]) {
+								for(Class<?> attributeValue : (Class<?>[]) entry.getValue()) {
+									if(!isJavaOrPrimitiveType(attributeValue)) {
+										registry.reflection().forType(attributeValue).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS);
+									}
+								}
+ 							}
+						});
 					});
+
 			if (element instanceof Constructor) {
 				for (Parameter parameter : ((Constructor<?>) element).getParameters()) {
 					writeAnnotationConfigurationFor(parameter, registry);

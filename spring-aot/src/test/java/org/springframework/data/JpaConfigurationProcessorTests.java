@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -178,6 +179,25 @@ public class JpaConfigurationProcessorTests {
 				.map(Class.class::cast)
 				.contains(ValueObjectIdAttributeConverter.class, ValueObjectId.class)
 				.doesNotContain(java.lang.String.class);
+	}
+
+	@Test
+	public void shouldDetectAndRegisterClassAttributesInAnnotations() {
+
+		assertThat(processJpaEntities(EntityWithIdClass.class).reflectionEntries())
+				.map(DefaultNativeReflectionEntry::getType)
+				.map(Class.class::cast)
+				.contains(MyIdClass.class);
+	}
+
+	@Test
+	public void shouldSkipJavaClassAttributesInAnnotations() {
+
+		assertThat(processJpaEntities(EntityWithEmptyIdClass.class).reflectionEntries())
+				.map(DefaultNativeReflectionEntry::getType)
+				.map(Class.class::cast)
+				.contains(IdClass.class)
+				.doesNotContain(void.class);
 	}
 
 	private Class<?> createCglibProxyType(Class<?> target) {
