@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,23 @@
 
 package org.springframework.aot.test.boot;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -84,6 +95,38 @@ class AotSpringBootConfigContextLoaderTests {
 				assertThat(context.getEnvironment().getActiveProfiles()).containsOnly("profile1", "profile2"));
 	}
 
+	@ParameterizedTest
+	@MethodSource("applicationArguments")
+	void loadContextUsesArguments(String[] arguments, List<Entry<String, String>> expectedEntries) {
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class, arguments);
+		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
+			ApplicationArguments args = context.getBean(ApplicationArguments.class);
+			Set<String> keys = expectedEntries.stream().map(Entry::getKey).collect(Collectors.toSet());
+			assertThat(args.getOptionNames()).containsExactlyElementsOf(keys);
+			for (Entry<String, String> expectedEntry : expectedEntries) {
+				String key = expectedEntry.getKey();
+				String value = expectedEntry.getValue();
+				assertThat(args.getOptionValues(key)).containsOnly(value);
+			}
+		});
+	}
+
+	@ParameterizedTest
+	@MethodSource("applicationArguments")
+	void loadContextUsesArgumentsAndWebSettings(String[] arguments, List<Entry<String, String>> expectedEntries) {
+		AotSpringBootConfigContextLoader loader = new AotSpringBootConfigContextLoader(TestApplicationContextInitializer.class, WebApplicationType.SERVLET, WebEnvironment.MOCK, arguments);
+		run(() -> loader.loadContext(createMergedContextConfiguration(SampleTest.class)), (context) -> {
+			ApplicationArguments args = context.getBean(ApplicationArguments.class);
+			Set<String> keys = expectedEntries.stream().map(Entry::getKey).collect(Collectors.toSet());
+			assertThat(args.getOptionNames()).containsExactlyElementsOf(keys);
+			for (Entry<String, String> expectedEntry : expectedEntries) {
+				String key = expectedEntry.getKey();
+				String value = expectedEntry.getValue();
+				assertThat(args.getOptionValues(key)).containsOnly(value);
+			}
+		});
+	}
+
 	private void run(Supplier<ConfigurableApplicationContext> supplier, Consumer<AssertableApplicationContext> context) {
 		try (ConfigurableApplicationContext ctx = supplier.get()) {
 			context.accept(AssertableApplicationContext.get(() -> ctx));
@@ -123,6 +166,14 @@ class AotSpringBootConfigContextLoaderTests {
 					.rootBeanDefinition(ResolvableType.forClass(String.class), () -> TEST_BEAN).getBeanDefinition());
 		}
 
+	}
+
+	static Stream<Arguments> applicationArguments() {
+		return Stream.of(
+				Arguments.of(new String[] {}, Collections.emptyList()),
+				Arguments.of(new String[] { "--app.test=one"}, List.of(Map.entry("app.test", "one"))),
+				Arguments.of(new String[] { "--app.test=one", "--app.name=foo" }, List.of(Map.entry("app.test", "one"), Map.entry("app.name", "foo")))
+		);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.aot.test.boot;
 
+import java.util.Set;
+
 import com.squareup.javapoet.ClassName;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +27,11 @@ import org.springframework.aot.test.samples.app.SampleApplicationTests;
 import org.springframework.aot.test.samples.app.slice.SampleJdbcTests;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTestArgsAccessor;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate;
@@ -130,10 +135,37 @@ class SpringBootAotTestContextProcessorTests {
 				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, WebApplicationType.REACTIVE, SpringBootTest.WebEnvironment.MOCK)");
 	}
 
+	@Test
+	void writeInstanceSupplierForNonWebWithArguments() {
+		Set<ContextCustomizer> customizers = Set.of(SpringBootTestArgsAccessor.create(SampleApplicationWithArgumentsTests.class));
+		MergedContextConfiguration contextConfiguration = mock(MergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
+		given(contextConfiguration.getContextCustomizers()).willAnswer((context) -> customizers);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(AotSpringBootConfigContextLoader.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, \"--app.test=one\", \"--app.name=foo\")");
+	}
+
+	@Test
+	void writeInstanceSupplierForServletWithArguments() {
+		Set<ContextCustomizer> customizers = Set.of(SpringBootTestArgsAccessor.create(SampleApplicationWithArgumentsTests.class));
+		WebMergedContextConfiguration contextConfiguration = mock(WebMergedContextConfiguration.class);
+		given(contextConfiguration.getTestClass()).willAnswer((context) -> SampleApplicationTests.class);
+		given(contextConfiguration.getContextCustomizers()).willAnswer((context) -> customizers);
+		assertThat(CodeSnippet.of(this.processor.writeInstanceSupplier(contextConfiguration, ClassName.get("com.example", "Test"))))
+				.hasImport(AotSpringBootConfigContextLoader.class).hasImport(WebApplicationType.class)
+				.isEqualTo("() -> new AotSpringBootConfigContextLoader(com.example.Test.class, WebApplicationType.SERVLET, SpringBootTest.WebEnvironment.MOCK, \"--app.test=one\", \"--app.name=foo\")");
+	}
+
 	private TestContextBootstrapper createSpringBootTestContextBootstrapper(Class<?> testClass) {
 		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
 		bootstrapper.setBootstrapContext(new DefaultBootstrapContext(testClass, new DefaultCacheAwareContextLoaderDelegate()));
 		return bootstrapper;
+	}
+
+	@SpringBootTest(args = { "--app.test=one", "--app.name=foo" })
+	static class SampleApplicationWithArgumentsTests {
+
 	}
 
 }
