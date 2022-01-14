@@ -44,15 +44,21 @@ class ParameterizedTypeMapperTests {
 	}
 
 	@Test
-	void mapGenericsWithFirstResolvedParameter() {
+	void mapGenericsWithFirstResolvedGenericParameter() {
 		ParameterizedTypeMapper mapper = ParameterizedTypeMapper.of(StringInMapping.class, Mapping.class);
 		assertThat(mapper.mapGenericTypes(Integer.class, String.class)).satisfies(ofTypes(String.class));
 	}
 
 	@Test
-	void mapGenericsWithSecondResolvedParameter() {
+	void mapGenericsWithSecondResolvedGenericParameter() {
 		ParameterizedTypeMapper mapper = ParameterizedTypeMapper.of(StringOutMapping.class, Mapping.class);
 		assertThat(mapper.mapGenericTypes(Integer.class, String.class)).satisfies(ofTypes(Integer.class));
+	}
+
+	@Test
+	void mapGenericsWithExtraGenericParameter() {
+		ParameterizedTypeMapper mapper = ParameterizedTypeMapper.of(ExtraGenericMapping.class, Mapping.class);
+		assertThat(mapper.mapGenericTypes(Integer.class, String.class)).satisfies(ofTypes(Integer.class, String.class, Object.class));
 	}
 
 
@@ -83,6 +89,10 @@ class ParameterizedTypeMapperTests {
 	}
 
 	static class StringOutMapping<X> extends Mapping<X, String> {
+
+	}
+
+	static class ExtraGenericMapping<A,B, N extends Number> extends Mapping<A,B> {
 
 	}
 

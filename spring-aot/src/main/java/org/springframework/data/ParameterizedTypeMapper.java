@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.util.Assert;
 
 /**
  * Map generic types of a base class to a configurable parent.
@@ -91,8 +90,9 @@ final class ParameterizedTypeMapper {
 		int parametersSize = this.baseClass.getTypeParameters().length;
 		ResolvableType[] genericTypes = new ResolvableType[parametersSize];
 		for (int i = 0; i < parametersSize; i++) {
-			int targetIndex = getTargetGenericIndexFor(i);
-			genericTypes[i] = parentGenericTypes[targetIndex];
+			Integer targetIndex = getTargetGenericIndexFor(i);
+			genericTypes[i] = (targetIndex != null
+					? parentGenericTypes[targetIndex] : ResolvableType.NONE);
 		}
 		return genericTypes;
 	}
@@ -102,23 +102,28 @@ final class ParameterizedTypeMapper {
 				.map(ResolvableType::forClass).toArray(ResolvableType[]::new));
 	}
 
-	private int getTargetGenericIndexFor(int baseClassGenericIndex) {
-		Assert.state(baseClassGenericIndex < this.baseClass.getTypeParameters().length,
-				"Out-of-bound generic index " + baseClassGenericIndex);
+	private Integer getTargetGenericIndexFor(int baseClassGenericIndex) {
+		if (baseClassGenericIndex >= this.baseClass.getTypeParameters().length) {
+			throw new IllegalArgumentException(createExceptionMessage(
+					"out-of-bound generic index " + baseClassGenericIndex));
+		}
 		return mapGeneric(this.baseClass, baseClassGenericIndex, 0);
 	}
 
-	private int mapGeneric(Class<?> currentClass, int genericIndex, int hierarchyIndex) {
+	private Integer mapGeneric(Class<?> currentClass, int genericIndex, int hierarchyIndex) {
 		TypeVariable<? extends Class<?>> typeParameter = currentClass.getTypeParameters()[genericIndex];
 		ParameterizedType parent = this.types.get(hierarchyIndex);
-		int parentIndex = findMatchingTypeVariable(parent, typeParameter);
+		Integer parentIndex = findMatchingTypeVariable(parent, typeParameter);
+		if (parentIndex == null) {
+			return null;
+		}
 		if (hierarchyIndex == this.types.size() - 1) {
 			return parentIndex;
 		}
 		return mapGeneric((Class<?>) parent.getRawType(), parentIndex, ++hierarchyIndex);
 	}
 
-	private int findMatchingTypeVariable(ParameterizedType type, TypeVariable<?> typeVariable) {
+	private Integer findMatchingTypeVariable(ParameterizedType type, TypeVariable<?> typeVariable) {
 		Type[] actualTypeArguments = type.getActualTypeArguments();
 		for (int i = 0; i < actualTypeArguments.length; i++) {
 			Type candidate = actualTypeArguments[i];
@@ -126,7 +131,11 @@ final class ParameterizedTypeMapper {
 				return i;
 			}
 		}
-		throw new IllegalArgumentException("Type " + typeVariable + " not found on " + type);
+		return null;
+	}
+
+	private String createExceptionMessage(String cause) {
+		return String.format("Failed to match generics for '%s': %s", this.baseClass.getName(), cause);
 	}
 
 }
