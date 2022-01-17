@@ -61,7 +61,6 @@ import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
-
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
@@ -71,7 +70,6 @@ import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.domain.reflect.JsonMarshaller;
 import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
 import org.springframework.nativex.domain.resources.ResourcesDescriptor;
-import org.springframework.nativex.domain.resources.ResourcesJsonMarshaller;
 import org.springframework.util.Assert;
 
 /**
@@ -87,11 +85,7 @@ public class TypeSystem {
 
 	private static Log logger = LogFactory.getLog(TypeSystem.class);
 
-	public static String SPRING_AT_CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
-
 	private JavaModuleLookupSystem javaModuleLookupSystem = JavaModuleLookupSystem.get();
-
-	public Map<TypeId, Type> primitives = new HashMap<>();
 
 	// Map of all types on the classpath that have some kind of annotations on them
 	Map<String, AnnotationInfo> annotatedTypes;
@@ -110,16 +104,6 @@ public class TypeSystem {
 	// Map of which application files contain particular packages
 	private Map<String, List<File>> appPackages = new HashMap<>();
 
-	private Map<String, ResourcesDescriptor> resourceConfigurations;
-	
-	private List<String> excludedAutoConfigurations;
-
-	private Map<String, ReflectionDescriptor> reflectionConfigurations;
-	
-	// A map from the types whose clinits make isPresent checks to the types that they are checking the presence
-	// of (the parameters to the isPresent calls)
-	private Map<String,List<String>> typesMakingIsPresentChecksInStaticInitializers;
-	
 	private AotOptions aotOptions;
 
 	private final String mainClass;
@@ -163,10 +147,10 @@ public class TypeSystem {
 		return this.registry;
 	}
 
-
 	public void setRegistry(NativeConfigurationRegistry registry) {
 		this.registry = registry;
 	}
+
 	/**
 	 * Resolve the {@link Type} from this {@code TypeSystem} classpath,
 	 * returning {@code null} if not found.
@@ -377,52 +361,10 @@ public class TypeSystem {
 		}
 	}
 
-	public Set<String> findMissingTypesInHierarchyOfThisType(Type type) {
-		return resolveComplete(type.getDescriptor());
-	}
-
 	public Set<String> resolveCompleteFindMissingAnnotationTypes(Type type) {
 		Set<String> missingAnnotationTypes = new LinkedHashSet<>();
 		type.collectMissingAnnotationTypesHelper(missingAnnotationTypes, new HashSet<>());
 		return missingAnnotationTypes;
-	}
-
-	/**
-	 * Verifies the type plus all its super types, interfaces and any type
-	 * references in generic specifications exist.
-	 *
-	 * @param desc the description
-	 * @return List of missing types, empty if all good!
-	 */
-	public Set<String> resolveComplete(String desc) {
-		Set<String> missingTypes = new LinkedHashSet<>();
-		resolveComplete(desc.substring(1, desc.length() - 1), missingTypes, new HashSet<>());
-		return missingTypes;
-	}
-
-	private void resolveComplete(String slashedDescriptor, Set<String> missingTypes, Set<String> visited) {
-		if (visited.add(slashedDescriptor)) {
-			Type baseType = resolve(slashedDescriptor, true);
-			if (baseType == null) {
-				missingTypes.add(slashedDescriptor);
-			} else {
-				// Check generics
-				Set<String> typesInSignature = baseType.getTypesInSignature();
-//				for (String t: typesInSignature) {
-//					logger.debug("Found this "+t+" in signature of "+baseType.getName());
-//				}
-				String superclassString = baseType.getSuperclassString();
-				if (superclassString != null) {
-					resolveComplete(superclassString, missingTypes, visited);
-				}
-				List<String> interfaces = baseType.getInterfacesStrings();
-				if (interfaces != null) {
-					for (String interfce : interfaces) {
-						resolveComplete(interfce, missingTypes, visited);
-					}
-				}
-			}
-		}
 	}
 
 	public void index() {
@@ -953,10 +895,6 @@ public class TypeSystem {
 		}
 	}
 
-	public List<String> findTypesAnnotationAtConfiguration(boolean metaAnnotated) {
-		return findTypesAnnotated(SPRING_AT_CONFIGURATION, metaAnnotated);
-	}
-
 	public List<HintDeclaration> findActiveDefaultHints() {
 		List<HintDeclaration> activeDefaultHints = new ArrayList<>();
 		activeDefaultHints.addAll(findHints("java.lang.Object"));
@@ -1061,150 +999,6 @@ public class TypeSystem {
 	}
 
 	/**
-	 * Retrieve the map from files (possibly inside jar files) to {@link ResourcesDescriptor} objects parsed
-	 * from the contents of those files. This method is looking for files that start {@code META-INF/native-image}
-	 * and end with {@code resource-config.json}. If the file is a path into a jar it has the form
-	 * {@code path/to/foo.jar!path/to/file}.
-	 * 
-	 * @return map from files to @link {@link ResourcesDescriptor}
-	 */
-	public Map<String, ResourcesDescriptor> getResourceConfigurationsOnClasspath() {
-		if (this.resourceConfigurations == null) {
-			Map<String,ResourcesDescriptor> configs = new HashMap<>();
-			for (String s: classpath) {
-				File f = new File(s);
-				if (f.isDirectory()) {
-					searchDir(f, filepath -> { 
-						return filepath.contains("META-INF/native-image") && filepath.endsWith("resource-config.json");
-					}, 
-					ResourcesJsonMarshaller::read,
-					configs);
-				} else if (f.isFile() && f.toString().endsWith(".jar")) {
-					searchJar(f, filepath -> { 
-						return filepath.contains("META-INF/native-image") && filepath.endsWith("resource-config.json");
-					}, 
-					ResourcesJsonMarshaller::read,
-					configs);
-				}
-			}
-			if (configs.isEmpty()) {
-				this.resourceConfigurations = Collections.emptyMap();
-			} else {
-				this.resourceConfigurations = configs;
-			}
-		}
-		return this.resourceConfigurations;
-	}
-	
-	public Map<String, Map<String, String>> scanForApplicationProperties() {
-		Map<String, Map<String,String>> collectedProperties = new HashMap<>();
-		for (String s: classpath) {
-			File f = new File(s);
-			if (f.isDirectory()) {
-				searchDir(f, filepath -> { 
-					return filepath.contains("application") && filepath.endsWith(".properties");
-				},
-				TypeSystem::loadApplicationProperties,
-				collectedProperties);
-			} else if (f.isFile() && f.toString().endsWith(".jar")) {
-				searchJar(f, filepath -> { 
-					return filepath.contains("application") && filepath.endsWith(".properties");
-				}, 
-				TypeSystem::loadApplicationProperties,
-				collectedProperties);
-			}
-		}	
-		return collectedProperties;
-	}
-	
-	public List<String> getExcludedAutoConfigurations() {
-		if (this.excludedAutoConfigurations == null) {
-			excludedAutoConfigurations = new ArrayList<>();
-			Map<String, List<String>> collectedExclusions = new HashMap<>();
-			for (String s: classpath) {
-				File f = new File(s);
-				if (f.isDirectory()) {
-					searchDir(f, filepath -> { 
-						return  filepath.contains("application") && filepath.endsWith(".properties");
-					},
-					TypeSystem::findExcludedAutoconfigurationsInPropertiesFile,
-					collectedExclusions);
-				} else if (f.isFile() && f.toString().endsWith(".jar")) {
-					searchJar(f, filepath -> { 
-						return filepath.contains("application") && filepath.endsWith(".properties");
-					}, 
-					TypeSystem::findExcludedAutoconfigurationsInPropertiesFile,
-					collectedExclusions);
-				}
-			}
-			for (Map.Entry<String,List<String>> entry: collectedExclusions.entrySet()) {
-				excludedAutoConfigurations.addAll(entry.getValue());
-			}
-			logger.debug("INFO: these spring auto configuration exclusions have been detected: "+excludedAutoConfigurations);
-		}
-		return this.excludedAutoConfigurations;
-	}
-	
-	public static List<String> findExcludedAutoconfigurationsInPropertiesFile(InputStream is) {
-		try {
-			Properties p = new Properties();
-			p.load(is);
-			String value = p.getProperty("spring.autoconfigure.exclude");
-			if (value == null) {
-				return Collections.emptyList();
-			} else {
-				return Arrays.asList(value.split(","));
-			}
-		} catch (IOException e) {
-			throw new IllegalStateException("Unable to read properties file",e);
-		}
-	}
-
-	public static Map<String,String> loadApplicationProperties(InputStream is) {
-		try {
-			Properties p = new Properties();
-			p.load(is);
-			Map<String,String> ret = new HashMap<>();
-			for (final String name: p.stringPropertyNames()) {
-				ret.put(name, p.getProperty(name));
-			}
-			return ret;
-		} catch (IOException e) {
-			throw new IllegalStateException("Unable to read properties file",e);
-		}
-	}
-	
-
-	public Map<String, ReflectionDescriptor> getReflectionConfigurationsOnClasspath() {
-		if (this.reflectionConfigurations == null) {
-			Map<String,ReflectionDescriptor> configs = new HashMap<>();
-			for (String s: classpath) {
-				File f = new File(s);
-				if (f.isDirectory()) {
-					searchDir(f, filepath -> { 
-						return filepath.contains("META-INF/native-image") && filepath.endsWith("reflect-config.json");
-					},
-					JsonMarshaller::read,
-					configs);
-				} else if (f.isFile() && f.toString().endsWith(".jar")) {
-					searchJar(f, filepath -> { 
-						return filepath.contains("META-INF/native-image") && filepath.endsWith("reflect-config.json");
-					}, 
-					JsonMarshaller::read,
-					configs);
-				}
-			}
-			if (configs.isEmpty()) {
-				this.reflectionConfigurations = Collections.emptyMap();
-			} else {
-				this.reflectionConfigurations = configs;
-			}
-		}
-		return this.reflectionConfigurations;
-	}
-	
-
-	/**
 	 * Recursively search a specified directory. Any files that match the specified predicate will have
 	 * their contents converted by the supplied function and the resultant information stored in the collector map.
 	 * 
@@ -1264,33 +1058,6 @@ public class TypeSystem {
 		} catch (IOException ioe) {
 			throw new RuntimeException("Problem during scan of " + jar, ioe);
 		}
-	}
-
-	/**
-	 * Discover if there is any {@code resource-config.json} on the classpath for this type system that
-	 * contains an entry that would include {@code META-INF/spring.factories}.
-	 * 
-	 * @return the file path to the {@code resource-config.json} containing {@code META-INF/spring.factories} or null if there is none
-	 */
-	public String findAnyResourceConfigIncludingSpringFactoriesPattern() {
-		String existingConfigThatIncludesSpringFactories = null; 
-		Map<String,ResourcesDescriptor> resourceConfigurations = getResourceConfigurationsOnClasspath();
-		outer: for (Map.Entry<String,ResourcesDescriptor> resourceConfiguration: resourceConfigurations.entrySet()) {
-			if (resourceConfiguration.getValue() == null) {
-				logger.debug("WARNING: unexpected null resourceconfiguration loaded from spring.factories at "+resourceConfiguration.getKey());
-				continue;
-			}
-			Set<String> patterns = resourceConfiguration.getValue().getPatterns();
-			for (String pattern: patterns) {
-				String slash = File.separator;
-				// Catches it raw or escaped (as the agent would do) - will not currently catch funky wildcarded variants
-				if (pattern.equals("META-INF"+slash+"spring.factories") || pattern.equals("\\QMETA-INF"+slash+"spring.factories\\E")) {
-					existingConfigThatIncludesSpringFactories = resourceConfiguration.getKey();
-					break outer;
-				}
-			}
-		}
-		return existingConfigThatIncludesSpringFactories;
 	}
 
 	/**
@@ -1505,26 +1272,6 @@ public class TypeSystem {
 				.map(this::resolveSlashed)
 				.filter(filter);
 	}
-
-	public ReflectionDescriptor scanForLiteUsesOfAutowiredAndBean() {
-		List<org.springframework.nativex.domain.reflect.ClassDescriptor> classDescriptors = 
-				findUserCodeDirectoriesAndSpringJars(getClasspath())
-				.flatMap(this::findClasses)
-				.map(this::typenameOfClass)
-				.map(this::findMembersAutowiredOrBean)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.collect(Collectors.toList());
-		if (!classDescriptors.isEmpty()) {
-			return new ReflectionDescriptor(classDescriptors);
-		} else {
-			return null;
-		}
-	}
-
-	public Type getType_Import() {
-		return resolve(Type.fromLdescriptorToSlashed(Type.AtImports));
-	}
 	
 	enum TypeId {
 		INT("I"), DOUBLE("D"), LONG("J"), SHORT("S"), BYTE("B"), CHAR("C"), FLOAT("F"), BOOLEAN("Z"), REFERENCE(null);
@@ -1537,23 +1284,6 @@ public class TypeSystem {
 		public String getSignature() {
 			return signature;
 		}
-	}
-
-	private static Map<String, Map<String, String>> applicationPropertiesFiles = null;
-	private static Map<String, String> mergedApplicationProperties = null;
-
-	public Map<String,String> getActiveProperties() {
-		if (mergedApplicationProperties == null) {
-			applicationPropertiesFiles = scanForApplicationProperties();
-			mergedApplicationProperties = new HashMap<>();
-			Collection<Map<String, String>> propertiesFiles = applicationPropertiesFiles.values();
-			for (Map<String,String> propertiesFile: propertiesFiles) {
-				for (Map.Entry<String,String> property: propertiesFile.entrySet()) {
-					mergedApplicationProperties.put(property.getKey(), property.getValue());
-				}
-			}
-		}
-		return mergedApplicationProperties;
 	}
 
 	public boolean isVoidOrPrimitive(String type) {
@@ -1573,31 +1303,6 @@ public class TypeSystem {
 		}
 		return false;
 		*/
-	}
-
-	public <T> T getJson(String string,Function<InputStream,T> reader) {
-		long t = System.currentTimeMillis();
-		Map<String,T> configs = new HashMap<>();
-		for (String s: classpath) {
-			File f = new File(s);
-			if (f.isDirectory()) {
-				searchDir(f, filepath -> { 
-					return filepath.equals(string);
-				}, 
-						reader,
-//				ResourcesJsonMarshaller::read,
-				configs);
-			} else if (f.isFile() && f.toString().endsWith(".jar")) {
-				searchJar(f, filepath -> { 
-					return filepath.equals(string);
-				}, 
-				reader,
-//				ResourcesJsonMarshaller::read,
-				configs);
-			}
-		}
-		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms");
-		return configs.values().iterator().next();
 	}
 	
 	private byte[] readInputStream(InputStream is) {
@@ -1663,10 +1368,6 @@ public class TypeSystem {
 		}
 		logger.debug("Took: "+(System.currentTimeMillis()-t)+"ms to find "+resource+" returning "+resources.values().size()+" entries: "+resources.keySet());
 		return resources.values();
-	}
-
-	public boolean shouldRemoveXmlSupport() {
-		return this.aotOptions.isRemoveXmlSupport();
 	}
 
 	public AotOptions getAotOptions() {
