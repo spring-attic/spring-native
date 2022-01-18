@@ -220,7 +220,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 	}
 
 	private SourceSet createAotMainSourceSet(SourceSetContainer sourceSets, ConfigurationContainer configurations, Path generatedFilesPath) {
-		File aotSourcesDirectory = generatedFilesPath.resolve("sources").resolve(AOT_MAIN_SOURCE_SET_NAME).toFile();
+		File aotSourcesDirectory = generatedFilesPath.resolve("runtimeSources").resolve(AOT_MAIN_SOURCE_SET_NAME).toFile();
 		File aotResourcesDirectory = generatedFilesPath.resolve("resources").resolve(AOT_MAIN_SOURCE_SET_NAME).toFile();
 		SourceSet aotMainSourceSet = sourceSets.create(AOT_MAIN_SOURCE_SET_NAME);
 		FileCollection aotCompileClasspath = sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
@@ -272,7 +272,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 	}
 
 	private SourceSet createAotTestSourceSet(SourceSetContainer sourceSets, ConfigurationContainer configurations, Path generatedFilesPath) {
-		File aotTestSourcesDirectory = generatedFilesPath.resolve("sources").resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
+		File aotTestSourcesDirectory = generatedFilesPath.resolve("runtimeSources").resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
 		File aotTestResourcesDirectory = generatedFilesPath.resolve("resources").resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
 		SourceSet aotTestSourceSet = sourceSets.create(AOT_TEST_SOURCE_SET_NAME);
 		FileCollection aotTestCompileClasspath = sourceSets.findByName(SourceSet.TEST_SOURCE_SET_NAME).getRuntimeClasspath()

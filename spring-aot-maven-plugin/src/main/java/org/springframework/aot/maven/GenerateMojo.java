@@ -70,7 +70,7 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 	/**
 	 * Location of generated source files created by Spring AOT to bootstrap the application.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-sources/spring-aot/")
+	@Parameter(defaultValue = "${project.build.directory}/generated-runtime-sources/spring-aot/")
 	private File generatedSourcesDirectory;
 
 

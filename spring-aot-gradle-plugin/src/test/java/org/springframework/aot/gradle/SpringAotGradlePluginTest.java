@@ -65,7 +65,7 @@ public class SpringAotGradlePluginTest {
 		assertThat(aotSourceSet.getJava().getSourceDirectories())
 				.hasSize(1)
 				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
-						+ File.separator + "sources" + File.separator + SpringAotGradlePlugin.AOT_MAIN_SOURCE_SET_NAME));
+						+ File.separator + "runtimeSources" + File.separator + SpringAotGradlePlugin.AOT_MAIN_SOURCE_SET_NAME));
 		assertThat(aotSourceSet.getResources().getSourceDirectories())
 				.hasSize(1)
 				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
@@ -98,7 +98,7 @@ public class SpringAotGradlePluginTest {
 		assertThat(aotTestSourceSet.getJava().getSourceDirectories())
 				.hasSize(1)
 				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"
-						+ File.separator + "sources" + File.separator + SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME));
+						+ File.separator + "runtimeSources" + File.separator + SpringAotGradlePlugin.AOT_TEST_SOURCE_SET_NAME));
 		assertThat(aotTestSourceSet.getResources().getSourceDirectories())
 				.hasSize(1)
 				.allMatch(file -> file.getAbsolutePath().endsWith(File.separator + "build" + File.separator + "generated"

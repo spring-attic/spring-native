@@ -39,7 +39,7 @@ done
 if [ -f pom.xml ]; then
   EXECUTABLE_DIR=target
   JAR_DIR=target
-  GENERATED_DIR=target/generated-sources/spring-aot/src/main/resources
+  GENERATED_DIR=target/generated-runtime-sources/spring-aot/src/main/resources
   REPORT_DIR=target/native
 else
   EXECUTABLE_DIR=build/native/nativeCompile

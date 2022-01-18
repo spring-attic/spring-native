@@ -65,7 +65,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 	/**
 	 * Location of generated source files created by Spring AOT to bootstrap the test context.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-test-sources/spring-aot/")
+	@Parameter(defaultValue = "${project.build.directory}/generated-runtime-test-sources/spring-aot/")
 	private File generatedTestSourcesDirectory;
 
 	@Override

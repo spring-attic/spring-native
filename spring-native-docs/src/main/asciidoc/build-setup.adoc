@@ -44,7 +44,7 @@ The plugin should be declared in your `pom.xml` file:
 
 Maven goals `spring-aot:generate` (`prepare-package` phase) and `spring-aot:test-generate` (`process-test-classes` phase) are automatically invoked in the Maven lifecycle when using the `mvn verify` or `mvn package` commands.
 The `spring-aot:*` goals are not meant to be called directly since they rely on other parts of the lifecycle.
-Sources are generated in `target/generated-sources/spring-aot/` and test sources in `target/generated-test-sources/spring-aot/`.
+Sources are generated in `target/generated-runtime-sources/spring-aot/` and test sources in `target/generated-runtime-test-sources/spring-aot/`.
 
 Configuration can be performed if needed within the `<configuration>` element, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
 
@@ -106,7 +106,7 @@ The plugin creates two `SourceSets` for testing and running the application: "ao
 The resulting classes and resources are automatically added to the runtime classpath of the application when running the `test`, `bootRun` and `bootJar` tasks.
 You can also call directly `generateAot` and `generateTestAot` tasks to perform only the generation.
 
-Sources are generated in `build/generated/sources/aot/`, `build/generated/resources/aot/` and test sources in `build/generated/sources/aotTest/`, `build/generated/resources/aotTest/`.
+Sources are generated in `build/generated/runtimeSources/aotMain/`, `build/generated/resources/aotMain/` and test sources in `build/generated/runtimeSources/aotTest/`, `build/generated/resources/aotTest/`.
 
 Configuration can be performed if needed using the `springAot` DSL extension, for example to remove SpEL support at build-time if your application does not use it in order to optimize the footprint:
 
