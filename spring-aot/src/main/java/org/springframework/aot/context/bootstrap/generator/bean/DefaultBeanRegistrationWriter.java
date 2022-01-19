@@ -51,6 +51,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.AttributeAccessor;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -204,6 +205,11 @@ public class DefaultBeanRegistrationWriter implements BeanRegistrationWriter {
 		String scope = this.beanDefinition.getScope();
 		if (StringUtils.hasText(scope) && !ConfigurableBeanFactory.SCOPE_SINGLETON.equals(scope)) {
 			statements.add("$L.setScope($S)", bdVariable, scope);
+		}
+		String[] dependsOn = this.beanDefinition.getDependsOn();
+		if (!ObjectUtils.isEmpty(dependsOn)) {
+			statements.add("$L.setDependsOn($L)", bdVariable,
+					this.parameterWriter.writeParameterValue(dependsOn));
 		}
 		if (this.beanDefinition.isLazyInit()) {
 			statements.add("$L.setLazyInit(true)", bdVariable);

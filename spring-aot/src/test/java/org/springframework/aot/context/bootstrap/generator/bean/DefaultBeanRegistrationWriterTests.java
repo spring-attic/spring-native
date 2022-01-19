@@ -230,6 +230,15 @@ class DefaultBeanRegistrationWriterTests {
 	}
 
 	@Test
+	void writeWithDependsOn() {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class, "create")
+				.addDependsOn("test").getBeanDefinition();
+		assertThat(beanRegistration(beanDefinition, (code) -> code.add("() -> SampleFactory::new"))).lines()
+				.containsOnly("BeanDefinitionRegistrar.of(\"test\", SampleFactory.class)",
+						"    .instanceSupplier(() -> SampleFactory::new).customize((bd) -> bd.setDependsOn(new String[] { \"test\" })).register(beanFactory);");
+	}
+
+	@Test
 	void writeWithMultipleFlags() {
 		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class, "create")
 				.setSynthetic(true).setPrimary(true).getBeanDefinition();
