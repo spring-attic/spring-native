@@ -91,6 +91,8 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 
 	public static final String GENERATE_TEST_TASK_NAME = "generateTestAot";
 
+	public static final String AOT_TEST_TASK_NAME = "aotTest";
+
 
 	@Override
 	public void apply(final Project project) {
@@ -154,18 +156,8 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 				jar.getArchiveClassifier().convention("aot-test");
 			});
 
-			project.getTasks().withType(Test.class)
-					.configureEach(test -> {
-						// Prepend the generatedTestSourcesJar to the classpath so that generated code
-						// overrides any types already in the classpath -- for example, the standard
-						// SpringFactoriesLoader implementation in spring-core must be overridden by
-						// the SpringFactoriesLoader implementation that uses StaticSpringFactories.
-						FileCollection classpath = project.files(project.files(generatedTestSourcesJar.getArchiveFile()),
-								test.getClasspath());
-						test.setClasspath(classpath);
-						test.systemProperty("spring.test.context.default.CacheAwareContextLoaderDelegate",
-								"org.springframework.aot.test.AotCacheAwareContextLoaderDelegate");
-					});
+			// Create the aotTest task to allow execution of both regular and aotTest
+			createAotTestTask(project, sourceSets, generatedTestSourcesJar);
 
 			project.getPlugins().withType(NativeImagePlugin.class, nativeImagePlugin -> {
 				project.getTasks().named(NativeImagePlugin.NATIVE_COMPILE_TASK_NAME).configure(nativeCompile -> {
@@ -297,6 +289,22 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		generate.setGroup(JavaBasePlugin.VERIFICATION_GROUP);
 		configureToolchainConvention(project, generate);
 		return generate;
+	}
+
+	private Test createAotTestTask(Project project, SourceSetContainer sourceSets, Jar generatedTestSourcesJar) {
+		Test test = project.getTasks().create(AOT_TEST_TASK_NAME, Test.class);
+		test.useJUnitPlatform();
+		test.setTestClassesDirs(sourceSets.findByName(SourceSet.TEST_SOURCE_SET_NAME).getOutput().getClassesDirs());
+		// Prepend the generatedTestSourcesJar to the classpath so that generated code
+		// overrides any types already in the classpath -- for example, the standard
+		// SpringFactoriesLoader implementation in spring-core must be overridden by
+		// the SpringFactoriesLoader implementation that uses StaticSpringFactories.
+		FileCollection classpath = project.files(project.files(generatedTestSourcesJar.getArchiveFile()),
+				test.getClasspath());
+		test.setClasspath(classpath);
+		test.systemProperty("spring.test.context.default.CacheAwareContextLoaderDelegate",
+				"org.springframework.aot.test.AotCacheAwareContextLoaderDelegate");
+		return test;
 	}
 
 	/**

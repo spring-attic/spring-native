@@ -17,6 +17,7 @@
 package org.springframework.nativex;
 
 import org.springframework.core.NativeDetector;
+import org.springframework.core.SpringProperties;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -30,8 +31,6 @@ public abstract class AotModeDetector {
 	private static final String GENERATED_CLASS = "org.springframework.aot.StaticSpringFactories";
 
 	private static final boolean generatedClassPresent = ClassUtils.isPresent(GENERATED_CLASS, null);
-
-	private static final boolean generatedTestClassPresent = ClassUtils.isPresent("org.springframework.aot.TestContextBootstrapInitializer", null);
 
 	private static final boolean aotTestClassPresent = ClassUtils.isPresent("org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor", null);
 
@@ -57,7 +56,8 @@ public abstract class AotModeDetector {
 	 * @return {@code true} when running AOT tests
 	 */
 	public static boolean isRunningAotTests() {
-		return generatedTestClassPresent && !aotTestClassPresent;
+			return "org.springframework.aot.test.AotCacheAwareContextLoaderDelegate"
+					.equals(SpringProperties.getProperty("spring.test.context.default.CacheAwareContextLoaderDelegate"));
 	}
 
 	/**

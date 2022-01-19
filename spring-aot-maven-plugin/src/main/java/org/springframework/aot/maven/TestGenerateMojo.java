@@ -70,16 +70,28 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (this.project.getPackaging().equals("pom")) {
-			getLog().debug("test-generate goal could not be applied to pom project.");
-			return;
-		}
-		Path testOutputDirectory = Paths.get(project.getBuild().getTestOutputDirectory());
-		if (Files.notExists(testOutputDirectory)) {
-			getLog().info("Skip Spring AOT test generation since no test have been detected");
-			return;
-		}
 		try {
+			// Remove existing spring.properties to not default to AOT execution if previously created
+			Path springProperties = Path.of(project.getBuild().getTestOutputDirectory(), "spring.properties");
+			if (springProperties.toFile().exists()) {
+				Files.delete(springProperties);
+			}
+
+			if ("false".equals(System.getProperty("springAot"))) {
+				getLog().info("Skip Spring AOT test generation and execution since disabled with -DspringAot=false");
+				return;
+			}
+
+			if (this.project.getPackaging().equals("pom")) {
+				getLog().debug("test-generate goal could not be applied to pom project.");
+				return;
+			}
+			Path testOutputDirectory = Paths.get(project.getBuild().getTestOutputDirectory());
+			if (Files.notExists(testOutputDirectory)) {
+				getLog().info("Skip Spring AOT test generation since no test have been detected");
+				return;
+			}
+
 			List<String> testClasspathElements = this.project.getTestClasspathElements()
 					.stream()
 					.filter(element -> !element.contains("spring-boot-devtools"))
@@ -138,10 +150,6 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
 
 			// Write system property as spring.properties file in test resources.
-			Path springProperties = Path.of(project.getBuild().getTestOutputDirectory(), "spring.properties");
-			if (springProperties.toFile().exists()) {
-				Files.delete(springProperties);
-			}
 			Files.write(springProperties,
 					Collections.singletonList("spring.test.context.default.CacheAwareContextLoaderDelegate=org.springframework.aot.test.AotCacheAwareContextLoaderDelegate"),
 					StandardOpenOption.CREATE, StandardOpenOption.APPEND);
