@@ -51,6 +51,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 			})
 	},
 	types = {
+		@TypeHint(typeNames = "org.springframework.boot.context.properties.ConfigurationPropertiesBinder$Factory"),
 		@TypeHint(types = {
 			LogManager.class,
 			JavaLoggingSystem.class
