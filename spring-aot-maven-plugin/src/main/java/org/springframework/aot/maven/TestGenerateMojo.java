@@ -77,8 +77,13 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 				Files.delete(springProperties);
 			}
 
+			if ("true".equals(System.getProperty("skipTests")) || "true".equals(System.getProperty("maven.test.skip"))) {
+				getLog().info("Skip Spring AOT test generation since tests are skipped");
+				return;
+			}
+
 			if ("false".equals(System.getProperty("springAot"))) {
-				getLog().info("Skip Spring AOT test generation and execution since disabled with -DspringAot=false");
+				getLog().info("Skip Spring AOT test generation since disabled with -DspringAot=false");
 				return;
 			}
 
