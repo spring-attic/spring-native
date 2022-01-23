@@ -134,8 +134,10 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			// Generated+compiled sources must be used by 'bootRun' and packaged by 'bootJar'
 			project.getPlugins().withType(SpringBootPlugin.class, springBootPlugin -> {
 				Provider<RegularFile> generatedSources = generatedSourcesJar.getArchiveFile();
-				project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) ->
-						bootJar.classpath(generatedSources));
+				project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
+					FileCollection existingClasspath = bootJar.getClasspath();
+					bootJar.setClasspath(bootJar.getProject().files(generatedSources, new Object[]{existingClasspath != null ? existingClasspath : Collections.emptyList()}));
+				});
 				project.getTasks().named("bootRun", BootRun.class, (bootRun) ->
 						bootRun.classpath(generatedSources));
 			});
