@@ -138,8 +138,10 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 					FileCollection existingClasspath = bootJar.getClasspath();
 					bootJar.setClasspath(bootJar.getProject().files(generatedSources, new Object[]{existingClasspath != null ? existingClasspath : Collections.emptyList()}));
 				});
-				project.getTasks().named("bootRun", BootRun.class, (bootRun) ->
-						bootRun.classpath(generatedSources));
+				project.getTasks().named("bootRun", BootRun.class, (bootRun) -> {
+					FileCollection existingClasspath = bootRun.getClasspath();
+					bootRun.setClasspath(bootRun.getProject().files(generatedSources, new Object[]{existingClasspath != null ? existingClasspath : Collections.emptyList()}));
+				});
 			});
 
 			// Create a detached configuration that holds dependencies for AOT test generation
