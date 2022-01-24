@@ -15,6 +15,8 @@ There are various distributions of the `native-image` compiler available, here w
 * https://www.graalvm.org/[GraalVM] CE based on the https://github.com/oracle/graal[GraalVM open-source repository] and LabsJDK
 * Bellsoft https://bell-sw.com/pages/liberica-native-image-kit/[Liberica Native Image Kit] (NIK) based on the https://github.com/oracle/graal[GraalVM open-source repository] and Liberica JDK
 
+===== Linux and MacOS
+
 To install the native image compiler on MacOS or Linux, we recommend using https://sdkman.io/[SDKMAN]:
 
 * https://sdkman.io/install[Install SDKMAN].
@@ -22,7 +24,13 @@ To install the native image compiler on MacOS or Linux, we recommend using https
 * Make sure to use the newly installed JDK with `sdk use java {graalvm-version}.r11-nik`
 * Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
-Alternatively or if you are on Microsoft Windows, you can manually install builds from https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK]. Don't forget to set `JAVA_HOME` / `PATH` appropriately if needed and to run `gu install native-image` to bring in the native-image extensions.
+Alternatively, you can manually install builds from . Don't forget to set `JAVA_HOME` / `PATH` appropriately if needed and to run `gu install native-image` to bring in the native-image extensions.
+
+===== Windows
+
+On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[those instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK], Visual Studio Build Tools and Windows SDK. Due to a well-known https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows limitations related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
+
+WARNING: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html#long_classpath_and_shading_support[Maven requires additional verbose configuration], so make sure to follow those instructions or use <<getting-started-buildpacks,Buildacks support>> instead.
 
 ==== Sample Project Setup
 
@@ -316,8 +324,6 @@ $ gradle nativeCompile
 ----
 $ gradle nativeCompile
 ----
-
-IMPORTANT: On Windows make sure to use x64 Native Tools Command Prompt as recommended in the {graalvm-native-docs}/#prerequisites[GraalVM native-image prerequisites].
 
 This command creates a native executable containing your Spring Boot application in the `target` directory.
 
