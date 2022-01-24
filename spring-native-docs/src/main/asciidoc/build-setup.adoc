@@ -246,7 +246,7 @@ This means that running the application or its tests from the IDE or the command
 Any application using Spring AOT can use the `springAot` System property in order to use the AOT classes with a regular JVM.
 This is mainly useful for debugging purposes in case of issues during native image generation.
 
-NOTE: When AOT more is enabled, Spring Boot Developer Tools are ignored as they are not compatible with an AOT approach.
+NOTE: When AOT mode is enabled, Spring Boot Developer Tools are ignored as they are not compatible with an AOT approach.
 
 You can set such a property when running an executable Jar from the command line:
 
@@ -255,7 +255,15 @@ You can set such a property when running an executable Jar from the command line
 java -DspringAot=true -jar myapplication-0.0.1-SNAPSHOT.jar
 ----
 
-For running an application with `gradle bootRun` or `mvn spring-boot:run`:
+==== IDEs
+
+In IDEs, you can specify `-DspringAot=true` when running the application to enable the AOT mode. It requires AOT generation has been invoked before manually via Maven or Gradle.
+
+WARNING: With IntelliJ IDEA Gradle support, be aware running application in AOT mode is broken in IDEA when delegated to Gradle, see https://youtrack.jetbrains.com/issue/IDEA-287067[IDEA-287067] related issue. As a workaround, you can go to "File -> Plugins ... -> Build, Execution, Deployment -> Build tools -> Gradle" and change "Build and run using" from "Gradle" to "IntelliJ IDEA".
+
+==== Plugins
+
+For running an application with `gradle bootRun` or `mvn spring-boot:run`, configure your build as following:
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
