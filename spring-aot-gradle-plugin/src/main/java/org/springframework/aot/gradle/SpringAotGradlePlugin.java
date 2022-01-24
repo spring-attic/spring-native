@@ -135,12 +135,10 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			project.getPlugins().withType(SpringBootPlugin.class, springBootPlugin -> {
 				Provider<RegularFile> generatedSources = generatedSourcesJar.getArchiveFile();
 				project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
-					FileCollection existingClasspath = bootJar.getClasspath();
-					bootJar.setClasspath(bootJar.getProject().files(generatedSources, new Object[]{existingClasspath != null ? existingClasspath : Collections.emptyList()}));
+					bootJar.setClasspath(project.files(generatedSources).plus(bootJar.getClasspath()));
 				});
 				project.getTasks().named("bootRun", BootRun.class, (bootRun) -> {
-					FileCollection existingClasspath = bootRun.getClasspath();
-					bootRun.setClasspath(bootRun.getProject().files(generatedSources, new Object[]{existingClasspath != null ? existingClasspath : Collections.emptyList()}));
+					bootRun.setClasspath(project.files(generatedSources).plus(bootRun.getClasspath()));
 				});
 			});
 
