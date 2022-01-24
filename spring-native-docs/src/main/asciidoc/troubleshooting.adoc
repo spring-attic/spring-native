@@ -27,7 +27,7 @@ Error: Classes that should be initialized at run time got initialized during ima
 ----
 
 You have probably tried to compile a Spring Boot application to native without the `spring-native` dependency and Spring AOT plugin.
-See related <<getting-started-native-image>> and <<getting-started-buildpacks>> documentation.
+See related <<getting-started-native-build-tools>> and <<getting-started-buildpacks>> documentation.
 
 ==== WARNING: Could not register reflection metadata
 

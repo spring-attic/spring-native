@@ -41,21 +41,19 @@ Spring Native is composed of the following modules:
 * `spring-native-configuration`: configuration hints for Spring classes used by Spring AOT plugins, including various Spring Boot auto-configurations.
 * `spring-native-docs`: reference guide, in asciidoc format.
 * `spring-native-tools`: tools used for reviewing image building configuration and output.
-* `spring-aot`: AOT transformation infrastructure common to Maven and Gradle plugins.
-* `spring-aot-test`: Test-specific AOT transformation infrastructure.
-* `spring-aot-gradle-plugin`: Gradle plugin that invokes AOT transformations.
-* `spring-aot-maven-plugin`: Maven plugin that invokes AOT transformations.
+* `spring-aot`: AOT generation infrastructure common to Maven and Gradle plugins.
+* `spring-aot-test`: Test-specific AOT generation infrastructure.
+* `spring-aot-gradle-plugin`: Gradle plugin that invokes AOT generation.
+* `spring-aot-maven-plugin`: Maven plugin that invokes AOT generation.
 * `samples`: contains various samples that demonstrate features usage and are used as integration tests.
 
 [[getting-started]]
-== Getting Started
-
-NOTE: Applications using Spring Native should be compiled with either Java 11 or Java 17.
+== Getting started
 
 There are two main ways to build a Spring Boot native application:
 
 * Using <<getting-started-buildpacks, Spring Boot Buildpacks support>> to generate a lightweight container containing a native executable.
-* Using <<getting-started-native-image, the GraalVM native image Maven plugin support>> to generate a native executable.
+* Using <<getting-started-native-build-tools, the Native Build Tools>> to generate a native executable.
 
 TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io, add the "Spring Native" dependency and generate the project.
 
@@ -65,11 +63,9 @@ include::getting-started-native-build-tools.adoc[]
 
 include::support.adoc[]
 
-include::spring-aot.adoc[]
+include::aot.adoc[]
 
 include::native-hints.adoc[]
-
-include::build-setup.adoc[]
 
 include::samples.adoc[]
 

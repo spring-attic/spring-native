@@ -59,7 +59,7 @@ It is fine to use reflection in a native world but it is most optimal to do it i
 * In the static block/fields of a class initialized at build-time.
 * In an AOT transformation run as a Spring AOT build plugin.
 
-NOTE: More guidelines will be provided here as <<spring-aot>> matures.
+NOTE: More guidelines will be provided here as <<aot>> matures.
 
 [[how-to-contribute-new-hints]]
 === Contributing new hints

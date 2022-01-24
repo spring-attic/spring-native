@@ -7,12 +7,12 @@ This can be useful for various use cases:
 * Keep the regular JVM pipeline and turn the JVM Spring Boot application to native on the CI/CD platform.
 * Keep an architecture neutral deployment artifact, as `native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation].
 
-WARNING: A mandatory pre-requisite is to use <<spring-aot>> Maven or Gradle upstream to build the Spring Boot executable JAR.
+WARNING: A mandatory pre-requisite is to use <<aot>> Maven or Gradle upstream to build the Spring Boot executable JAR.
 
 === With Buildpacks
 
 Spring Boot applications usually use {buildpacks}[Buildpacks] via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integration.
-You can also use directly {buildpacks-docs}/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<spring-aot>> into an optimized container image.
+You can also use directly {buildpacks-docs}/tools/pack/[the `pack` CLI] to turn a Spring Boot executable JAR built with <<aot>> into an optimized container image.
 
 First, make sure that a Docker daemon is available, either https://hub.docker.com/search?type=edition&offering=community[locally] or {buildpacks-docs}/app-developer-guide/build-a-windows-app/#using-remote-docker-hosts[remotely].
 You also need to {buildpacks-docs}/tools/pack/[Install `pack`].
@@ -29,7 +29,7 @@ NOTE: This does not require a local `native-image` installation.
 
 === With `native-image`
 
-Another option is to turn a Spring Boot executable JAR built with <<spring-aot>> into a native executable using the GraalVM `native-image` compiler.
+Another option is to turn a Spring Boot executable JAR built with <<aot>> into a native executable using the GraalVM `native-image` compiler.
 For this to work, you need to <<getting-started-native-image-system-requirements,Install native-image>>.
 
 Assuming a Spring Boot executable JAR built as `my-app-0.0.1-SNAPSHOT.jar` in the `target` directory:

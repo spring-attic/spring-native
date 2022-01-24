@@ -1,10 +1,14 @@
-[[build-setup]]
-== Build Setup
-This section covers how to configure your build for <<build-setup-maven,Maven>> or <<build-setup-gradle,Gradle>>.
-You'll also learn more about <<build-setup-modes,the types of sources generated and how they're used>>
+[[aot]]
+== AOT generation
 
-[[build-setup-maven]]
-=== Maven
+This section covers AOT (Ahead Of Time) generation plugins, including how to configure your build for <<aot-build-setup-maven,Maven>> or <<aot-build-setup-gradle,Gradle>>.
+You'll also learn more about <<aot-modes,AOT runtime modes>> and more details on the <<aot-engine, AOT engine>>.
+
+[[aot-build-setup]]
+=== Build setup
+
+[[aot-build-setup-maven]]
+==== Maven
 
 The plugin should be declared in your `pom.xml` file:
 
@@ -57,12 +61,12 @@ Configuration can be performed if needed within the `<configuration>` element, f
 </configuration>
 ----
 
-See <<build-setup-configuration>> for a list of the configuration options available.
+See <<aot-build-setup-configuration>> for a list of the configuration options available.
 
 
 
-[[build-setup-gradle]]
-=== Gradle
+[[aot-build-setup-gradle]]
+==== Gradle
 
 You can configure the Gradle Spring AOT plugin by declaring first the plugin repositories in your `settings.gradle(.kts)` file:
 
@@ -168,12 +172,12 @@ springAot {
 
 NOTE: The non-idomatic `property.set(...)` syntax in the Gradle Kotlin DSL is due to https://github.com/gradle/gradle/issues/9268[gradle#9268], feel free to vote for this issue.
 
-See <<build-setup-configuration>> for more details on the configuration options.
+See <<aot-build-setup-configuration>> for more details on the configuration options.
 
 
 
-[[build-setup-configuration]]
-=== AOT Configuration
+[[aot-build-setup-configuration]]
+==== AOT configuration
 
 The Spring AOT plugins allow you to express opinions about the source generation process.
 Here are all the options available:
@@ -198,7 +202,7 @@ Here are all the options available:
 
 * `applicationClass` allows to specify an application class (typically annotated with `@SpringBootApplication`), useful when multiple ones are present.
 
-==== Debugging the source generation
+=== Debugging the source generation
 
 The Spring AOT plugins spawns a new process to perform the source generation.
 To remote debug this process, you can set a debug System property on the command line; then, the source generation process launches with a listener accepting a remote debugger on port `8000` for Maven or `5005` for Gradle.
@@ -237,8 +241,8 @@ $ ./gradlew generateAot -Dorg.gradle.debug=true --no-daemon
 ----
 
 
-[[build-setup-modes]]
-=== AOT Modes
+[[aot-modes]]
+=== AOT runtime modes
 
 The generated sources are automatically used by the native image compilation, but are not used by default when running your application with a JVM.
 This means that running the application or its tests from the IDE or the command line will not involve those classes.
@@ -293,3 +297,58 @@ tasks.getByName<BootRun>("bootRun") {
 	systemProperty("springAot", "true")
 }
 ----
+
+
+[[aot-engine]]
+=== AOT engine
+
+Spring AOT inspects an application at build-time and generates an optimized version of it.
+Based on your `@SpringBootApplication`-annotated main class, the AOT engine generates a persistent view of the beans that are going to be contributed at runtime in a way that bean instantiation is as straightforward as possible.
+Additional post-processing of the factory is possible using callbacks.
+For instance, these are used to generate the necessary <<native-hints,reflection configuration>> that GraalVM needs to initialize the context in a native image.
+
+The engine goes through the following phases:
+
+. Prepare the underlying `BeanFactory` so that the relevant bean definitions are available.
+This typically includes bean definitions model parsing (such as `@Configuration`-annotated classes) as well as any additional post-processing of the bean factory.
+. Code generation based on the prepared `BeanFactory`.
+Each bean definition is handled one by one and the necessary code to instantiate the bean and its necessary runtime semantics (such as primary flag) is generated.
+. Additional processing of the bean factory used to optimize the runtime.
+
+[[aot-bean-factory-preparation]]
+==== BeanFactory Preparation
+As the `BeanFactory` is fully prepared at build-time, conditions are also evaluated.
+This has an important difference compared to what a regular Spring Boot application does at runtime.
+For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
+
+While certain properties like passwords or url can be changed once the application has been prepared, properties that affect, typically, auto-configurations should be set at build-time.
+
+[NOTE]
+====
+Conditions on the runtime environment, such as enabling features based on your chosen cloud platform, will no longer run at runtime.
+====
+
+A profile is a special sort of condition so these are also evaluated at build-time.
+It is recommended to avoid the use of profiles as processing them at build-time does not allow you to enable or disable them at runtime anyway.
+If you want to keep using them, they should be enabled at build-time, for instance by adding the `spring.profiles.active` property in `application.properties`.
+
+Low-level framework callbacks, such as `BeanDefinitionRegistryPostProcessor` are invoked at build-time to create any additional bean definitions.
+To prevent such a callback to be invoked at runtime again, it is not registered as bean, unless it does not have an `infrastructure` role.
+
+[[aot-code-generation]]
+==== Code Generation
+Based on a bean name and a merged `RootBeanDefinition`, the engine identifies a suitable `BeanRegistrationWriter` that is responsible to write the necessary code to instantiate the bean at runtime.
+
+It is not expected that projects have to define their own writers, but this could happen for corner-cases.
+Writers are identified via implementations of `BeanRegistrationWriterSupplier`, registered in `META-INF/spring.factories`.
+Suppliers are ordered with a first-win approach, and a {github-tree}/spring-aot/src/main/java/org/springframework/aot/context/bootstrap/generator/bean/DefaultBeanRegistrationWriterSupplier.java[default implementation] with lowest precedence that handles most use cases is provided.
+
+NOTE: Explicit care is required if a bean requires privileged access in more than one package.
+This happens typically if the bean use `protected` access and extends from another class in a different package that does the same.
+As a rule of thumb, make sure that each custom bean of yours can be instantiated in a test in a usable form.
+
+[[aot-additional-processing]]
+==== Additional Processing
+Additional processing of the `BeanFactory` currently only scans for `@EventListener`-annotated methods, but future versions may provide additional implementations.
+
+More core to GraalVM support is the generation of an optimized set of native configuration based on the actual beans of the application, as covered by the next section.
