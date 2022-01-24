@@ -6,8 +6,7 @@ org.springframework.context.annotation.CommonAnnotationBeanDefinitionPostProcess
 
 org.springframework.aot.context.bootstrap.generator.BeanDefinitionExcludeFilter=\
 org.springframework.aot.context.bootstrap.generator.AnnotationInfrastructureExcludeFilter,\
-org.springframework.boot.BootInfrastructureExcludeFilter,\
-org.springframework.boot.context.properties.ConfigurationPropertiesBinderBeanRegistrationWriterSupplier
+org.springframework.boot.BootInfrastructureExcludeFilter
 
 org.springframework.aot.context.bootstrap.generator.bean.BeanRegistrationWriterSupplier=\
 org.springframework.aop.scope.ScopedProxyBeanRegistrationWriterSupplier,\
@@ -16,7 +15,6 @@ org.springframework.boot.actuate.autoconfigure.web.ManagementContextBeanRegistra
 org.springframework.boot.autoconfigure.AutoConfigurationPackagesBeanRegistrationWriterSupplier,\
 org.springframework.boot.autoconfigure.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationWriterSupplier,\
-org.springframework.boot.context.properties.ConfigurationPropertiesBinderBeanRegistrationWriterSupplier,\
 org.springframework.aot.context.bootstrap.generator.bean.DefaultBeanRegistrationWriterSupplier
 
 org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor=\
