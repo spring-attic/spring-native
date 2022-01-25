@@ -57,6 +57,7 @@ import org.springframework.nativex.hint.AccessBits;
 			})
 	},
 	types = {
+		@TypeHint(typeNames = "org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor"),
 		@TypeHint(types = {
 			SpringBootConfiguration.class,
 			LogManager.class,
