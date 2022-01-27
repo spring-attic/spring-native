@@ -134,8 +134,14 @@ import org.springframework.nativex.type.TypeSystem;
 						java.util.function.Supplier.class,
 						kotlin.jvm.functions.Function0.class,
 						kotlin.jvm.functions.Function1.class,
-						kotlin.Unit.class
+						kotlin.Unit.class,
+						org.springframework.integration.context.IntegrationContextUtils.class,
+						org.springframework.beans.factory.config.BeanExpressionContext.class,
+						org.springframework.integration.channel.PublishSubscribeChannel.class,
+						org.springframework.integration.config.ConsumerEndpointFactoryBean.class,
+						org.springframework.integration.support.DefaultMessageBuilderFactory.class
 				},
+				typeNames = "org.springframework.integration.config.MessageHandlerMethodFactoryCreatingFactoryBean",
 				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
 @NativeHint(trigger = org.springframework.integration.file.splitter.FileSplitter.class,
 		serializables =
