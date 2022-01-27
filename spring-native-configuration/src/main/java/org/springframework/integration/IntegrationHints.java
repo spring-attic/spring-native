@@ -139,7 +139,10 @@ import org.springframework.nativex.type.TypeSystem;
 						org.springframework.beans.factory.config.BeanExpressionContext.class,
 						org.springframework.integration.channel.PublishSubscribeChannel.class,
 						org.springframework.integration.config.ConsumerEndpointFactoryBean.class,
-						org.springframework.integration.support.DefaultMessageBuilderFactory.class
+						org.springframework.integration.support.DefaultMessageBuilderFactory.class,
+						org.springframework.integration.webflux.inbound.WebFluxIntegrationRequestMappingHandlerMapping.class,
+						org.springframework.integration.history.MessageHistoryConfigurer.class,
+						org.springframework.integration.channel.interceptor.GlobalChannelInterceptorWrapper.class
 				},
 				typeNames = "org.springframework.integration.config.MessageHandlerMethodFactoryCreatingFactoryBean",
 				access = AccessBits.CLASS | AccessBits.PUBLIC_METHODS))
