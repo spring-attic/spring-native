@@ -90,10 +90,8 @@ then
   printf "${GREEN}SUCCESS${NC}\n"
   if [ $SILENT == 'false' ]; then
     if [[ "$AOT_ONLY" == false ]]; then
-      TOTALINFO=`cat $BUILD_OUTPUT_FILE | grep "\[total\]"`
-      BUILDTIME=`echo $TOTALINFO | sed 's/^.*\[total\]: \(.*\) ms.*$/\1/' | tr -d -c 0-9\.`
-      BUILDTIME=`bc <<< "scale=1; ${BUILDTIME}/1024"`
-      BUILDMEMORY=`echo $TOTALINFO | grep GB | sed 's/^.*\[total\]: .* ms,\(.*\) GB$/\1/' | tr -d -c 0-9\.`
+      BUILDTIME=`cat $BUILD_OUTPUT_FILE | grep "Finished generating" | sed 's/Finished generating '.*' in \(.*\)s./\1/'`
+      BUILDMEMORY=`cat $BUILD_OUTPUT_FILE | grep "Peak RSS: " | sed 's/.*Peak RSS: \(.*\)GB | .*/\1/'`
     fi
     if [ ! -z "$BUILDMEMORY" ]; then
       echo "Build memory: ${BUILDMEMORY}GB"

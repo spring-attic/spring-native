@@ -15,6 +15,6 @@ jdk-url-java11: "https://github.com/adoptium/temurin11-binaries/releases/downloa
 jdk-url-java17: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz"
 
 graalvm-repo: "https://github.com/oracle/graal.git"
-graalvm-branch: "release/graal-vm/21.3"
+graalvm-branch: "release/graal-vm/22.0"
 labsjdk-identifier-java11: "labsjdk-ce-11"
 labsjdk-identifier-java17: "labsjdk-ce-17"

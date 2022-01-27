@@ -20,7 +20,7 @@
 :github-issues: https://github.com/{github-repo}/issues
 :github-prs: https://github.com/{github-repo}/pulls
 
-:graalvm-version: 21.3.0
+:graalvm-version: 22.0.0
 :graalvm-docs: https://www.graalvm.org/reference-manual
 :graalvm-native-docs: {graalvm-docs}/native-image
 :graalvm-native-buildtools: https://github.com/graalvm/native-build-tools
