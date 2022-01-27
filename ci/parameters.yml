@@ -12,7 +12,7 @@ registry-mirror-username: ((artifactory-username))
 registry-mirror-password: ((artifactory-password))
 
 graalvm-repo: "https://github.com/oracle/graal.git"
-graalvm-stable-branch: "release/graal-vm/21.2"
+graalvm-stable-branch: "release/graal-vm/21.3"
 graalvm-dev-branch: "release/graal-vm/21.3"
-jvmci-stable-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.2-b08/labsjdk-ce-11.0.12+6-jvmci-21.2-b08-linux-amd64.tar.gz"
-jvmci-dev-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.3-b03/labsjdk-ce-11.0.12+5-jvmci-21.3-b03-linux-amd64.tar.gz"
+jvmci-stable-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.3-b05/labsjdk-ce-11.0.13+7-jvmci-21.3-b05-linux-amd64.tar.gz"
+jvmci-dev-java11: "https://github.com/graalvm/labs-openjdk-11/releases/download/jvmci-21.3-b05/labsjdk-ce-11.0.13+7-jvmci-21.3-b05-linux-amd64.tar.gz"
