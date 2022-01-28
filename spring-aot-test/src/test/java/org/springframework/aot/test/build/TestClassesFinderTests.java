@@ -42,7 +42,9 @@ class TestClassesFinderTests {
 
 	static List<String> TEST_CLASSES = Arrays.asList("ExtendedWithSpring.class", "ExtendedWithTestWatcher.class",
 			"SpringBootTestAnnotated.class", "SimpleClass.class", "MultipleExtendsWithSpring.class",
-			"SpringWithNestedTest.class", "SpringWithNestedTest$NestedTest.class", "SpringWithNestedTest$NestedTest$NestedTest2.class");
+			"SpringWithNestedTest.class", "SpringWithNestedTest$NestedTest.class", "SpringWithNestedTest$NestedTest$NestedTest2.class",
+			"RandomClassWithNested.class", "RandomClassWithNested$NestedTest.class"
+	);
 
 	@TempDir
 	static Path tempDirectory;
