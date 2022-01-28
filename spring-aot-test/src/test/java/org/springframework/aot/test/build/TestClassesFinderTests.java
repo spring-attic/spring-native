@@ -16,6 +16,10 @@
 
 package org.springframework.aot.test.build;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,10 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +41,8 @@ class TestClassesFinderTests {
 	static String PACKAGE = "/org/springframework/aot/test/samples/tests/";
 
 	static List<String> TEST_CLASSES = Arrays.asList("ExtendedWithSpring.class", "ExtendedWithTestWatcher.class",
-			"SpringBootTestAnnotated.class", "SimpleClass.class");
+			"SpringBootTestAnnotated.class", "SimpleClass.class", "MultipleExtendsWithSpring.class",
+			"SpringWithNestedTest.class", "SpringWithNestedTest$NestedTest.class", "SpringWithNestedTest$NestedTest$NestedTest2.class");
 
 	@TempDir
 	static Path tempDirectory;
@@ -62,6 +63,10 @@ class TestClassesFinderTests {
 	void detectTestClasses() throws IOException {
 		List<String> testClasses = TestClassesFinder.findTestClasses(tempDirectory);
 		assertThat(testClasses).containsOnly("org.springframework.aot.test.samples.tests.ExtendedWithSpring",
-				"org.springframework.aot.test.samples.tests.SpringBootTestAnnotated");
+				"org.springframework.aot.test.samples.tests.SpringBootTestAnnotated",
+				"org.springframework.aot.test.samples.tests.MultipleExtendsWithSpring",
+				"org.springframework.aot.test.samples.tests.SpringWithNestedTest",
+				"org.springframework.aot.test.samples.tests.SpringWithNestedTest$NestedTest",
+				"org.springframework.aot.test.samples.tests.SpringWithNestedTest$NestedTest$NestedTest2");
 	}
 }

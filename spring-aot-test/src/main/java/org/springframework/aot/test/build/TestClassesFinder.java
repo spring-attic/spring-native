@@ -16,6 +16,13 @@
 
 package org.springframework.aot.test.build;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.ClassMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.MultiValueMap;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -25,13 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 /**
  * Find Spring test Classes, which means classes annotated or meta-annotated with
@@ -44,6 +48,8 @@ public abstract class TestClassesFinder {
 	public static final String EXTEND_WITH_ANNOTATION_NAME = "org.junit.jupiter.api.extension.ExtendWith";
 
 	public static final String SPRING_EXTENSION_ANNOTATION_NAME = "org.springframework.test.context.junit.jupiter.SpringExtension";
+
+	public static final String NESTED_ANNOTATION_NAME = "org.junit.jupiter.api.Nested";
 
 	private static final FileFilter CLASS_FILE_FILTER = TestClassesFinder::isClassFile;
 
@@ -61,6 +67,7 @@ public abstract class TestClassesFinder {
 			throw new IllegalArgumentException("Invalid root directory '" + rootDirectory + "'");
 		}
 		else {
+			Map<String, String> nestedClass=new HashMap<>();
 			Deque<File> stack = new ArrayDeque<>();
 			stack.push(rootDirectory);
 			while (!stack.isEmpty()) {
@@ -69,11 +76,22 @@ public abstract class TestClassesFinder {
 					try {
 						MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(new FileSystemResource(file));
 						AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-						Map<String, Object> extendWith = annotationMetadata.getAnnotationAttributes(EXTEND_WITH_ANNOTATION_NAME, true);
+						ClassMetadata classMetadata = metadataReader.getClassMetadata();
+
+						// Keeping track of nested classes as enclosing class may not be processed yet.
+						if (annotationMetadata.hasAnnotation(NESTED_ANNOTATION_NAME) && classMetadata.hasEnclosingClass()){
+							nestedClass.put(classMetadata.getClassName(), classMetadata.getEnclosingClassName());
+							continue;
+						}
+
+						MultiValueMap<String, Object> extendWith=annotationMetadata.getAllAnnotationAttributes(EXTEND_WITH_ANNOTATION_NAME, true);
 						if (extendWith != null) {
-							String[] values = (String[]) extendWith.get("value");
-							if (Arrays.asList(values).contains(SPRING_EXTENSION_ANNOTATION_NAME)) {
-								testClasses.add(metadataReader.getClassMetadata().getClassName());
+							List<Object> values=extendWith.getOrDefault("value", Collections.emptyList());
+							boolean isStringTest = values.stream()
+									.flatMap(x->Arrays.stream((String[])x))
+									.anyMatch(x->x.equals(SPRING_EXTENSION_ANNOTATION_NAME));
+							if (isStringTest) {
+								testClasses.add(classMetadata.getClassName());
 							}
 						}
 					}
@@ -86,6 +104,27 @@ public abstract class TestClassesFinder {
 					Arrays.stream(file.listFiles(CLASS_FILE_FILTER)).forEach(stack::push);
 				}
 
+			}
+
+			// Processing nested class.
+			// Iterating to check if enclosing class is a Spring test.
+			while(!nestedClass.isEmpty()){
+				Iterator<Map.Entry<String, String>> iterator = nestedClass.entrySet().iterator();
+
+				while (iterator.hasNext()) {
+					Map.Entry<String, String> entry = iterator.next();
+					String enclosingClass = entry.getValue();
+					String className = entry.getKey();
+
+					if (testClasses.contains(enclosingClass)) {
+						// Enclosing class is a Spring test, ok, this nested class is also a Spring test.
+						testClasses.add(className);
+						iterator.remove();
+					}else if (!nestedClass.containsKey(enclosingClass)){
+						// Enclosing class is not a Spring test, nor a nested class, it will never be a Spring test.
+						iterator.remove();
+					}
+				}
 			}
 		}
 		return Collections.unmodifiableList(testClasses);
