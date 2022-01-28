@@ -1,4 +1,4 @@
-:documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
+:documentation-url: https://docs.spring.io/spring-native/docs/0.10.x/reference/htmlsingle
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native-0.10.x/jobs/build-samples-stable-java11/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native-0.10.x?group=builds"] image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
 
