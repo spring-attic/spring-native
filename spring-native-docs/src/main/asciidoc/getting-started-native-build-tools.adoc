@@ -369,3 +369,10 @@ $ gradle nativeTest
 ----
 
 You can find more details about the native build tools https://github.com/graalvm/native-build-tools[here].
+
+To conditionally enable/disable tests, we provide the following annotations:
+
+- `@EnabledOnAot`
+- `@DisabledOnAot`
+- `@EnabledOnNative`
+- `@DisabledOnNative`
