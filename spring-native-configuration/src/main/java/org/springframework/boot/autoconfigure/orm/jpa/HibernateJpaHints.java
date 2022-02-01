@@ -84,6 +84,25 @@ import java.util.EventListener;
 						// These three are due to org.hibernate.hql.internal.ast.util.TokenPrinters
 						HqlTokenTypes.class, SqlTokenTypes.class, GeneratedOrderByFragmentRendererTokenTypes.class,
 				}, access = TypeAccess.DECLARED_CONSTRUCTORS),
+				@TypeHint(
+						/*  Required types to support maintaining order in element collection.
+						 *
+						 *	@OrderBy
+						 *	@ElementCollection
+						 *	private List<String> phoneNumbers;
+						 */
+						types = {
+							org.hibernate.sql.ordering.antlr.NodeSupport.class,
+							org.hibernate.sql.ordering.antlr.OrderByFragment.class,
+							org.hibernate.sql.ordering.antlr.SortSpecification.class,
+							org.hibernate.sql.ordering.antlr.SortKey.class,
+							org.hibernate.sql.ordering.antlr.OrderingSpecification.class,
+							org.hibernate.sql.ordering.antlr.CollationSpecification.class
+						},
+						typeNames = {
+							"antlr.CommonAST",
+							"antlr.CommonToken",
+				}),
 				@TypeHint(types = {
 						Id.class, GeneratedValue.class, Repository.class,
 						PersistenceContext.class, MappedSuperclass.class, Column.class, ManyToOne.class, OneToMany.class,
