@@ -30,6 +30,13 @@ import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
+/**
+ * Why this substitution exists?
+ * To avoid using SpringFactoriesLoader#loadFactoryNames() in order to use reflection-less variant when possible.
+ *
+ * How this substitution workarounds the problem?
+ * It invokes SpringFactoriesLoader#loadFactories() when possible instead (which is using underneath StaticSpringFactories generated AOT).
+ */
 @TargetClass(className="org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_DatabaseInitializationDependencyConfigurer {
 

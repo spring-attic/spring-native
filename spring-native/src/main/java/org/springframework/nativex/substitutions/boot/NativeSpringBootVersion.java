@@ -27,7 +27,9 @@ import java.util.jar.JarFile;
 
 import org.springframework.boot.origin.Origin;
 
-// TODO Work with Boot team on build time invocation of determineSpringBootVersion() and avoid generated code in org.springframework.boot package
+/**
+ * See {@link Target_SpringBootVersion}.
+ */
 final class NativeSpringBootVersion {
 
 	private static String VERSION = determineSpringBootVersion();

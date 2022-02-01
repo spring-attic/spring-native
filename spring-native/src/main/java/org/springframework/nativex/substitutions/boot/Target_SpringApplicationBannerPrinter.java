@@ -24,6 +24,13 @@ import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
+/**
+ * Why this substitution exists?
+ * To avoid shipping ImageBanner in the native image which is shipping itself a subset of AWT (really bad for the memory footprint).
+ *
+ * How this substitution workarounds the problem?
+ * It disables image banner support and just returns the default one.
+ */
 @TargetClass(className = "org.springframework.boot.SpringApplicationBannerPrinter", onlyWith = OnlyIfPresent.class)
 final class Target_SpringApplicationBannerPrinter {
 

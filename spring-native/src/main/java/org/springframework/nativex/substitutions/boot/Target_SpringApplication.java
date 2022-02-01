@@ -35,6 +35,16 @@ import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithAot;
 import org.springframework.util.StringUtils;
 
+/**
+ * Why this substitution exists?
+ *  - It provide different codepaths when AOT mode is enabled.
+ *
+ * How this substitution workarounds the problem?
+ * - It skips BeanDefinitionLoader#load() when AOT mode is enabled in order to skip A LOT of runtime infrastructure to be included in the native image
+ *   like AnnotatedBeanDefinitionReader, XmlBeanDefinitionReader, GroovyBeanDefinitionReader and ClassPathBeanDefinitionScanner.
+ * - It uses org.springframework.aot.ContextBootstrapInitializer (via getSpringFactoriesInstances(ApplicationContextInitializer.class)) when AOT mode
+ *   is enabled to load the precomputed beans.
+ */
 @TargetClass(className = "org.springframework.boot.SpringApplication", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_SpringApplication {
 

@@ -27,6 +27,16 @@ import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.RemoveYamlSupport;
 import org.springframework.util.ClassUtils;
 
+/**
+ * Why this substitution exists?
+ * To avoid shipping YamlJsonParser in the native image when Yaml support is disabled via removeYamlSupport Spring AOT flag.
+ *
+ * How this substitution workarounds the problem?
+ * It substitutes JsonParserFactory#getJsonParser with an alternative version without the related if clause when removeYamlSupport is true.
+ *
+ * Possible improvements
+ * Perform all the ClassUtils#isPresent() checks (including Gson one) at build time.
+ */
 @TargetClass(className = "org.springframework.boot.json.JsonParserFactory", onlyWith = { RemoveYamlSupport.class, OnlyIfPresent.class })
 final class Target_JsonParserFactory {
 

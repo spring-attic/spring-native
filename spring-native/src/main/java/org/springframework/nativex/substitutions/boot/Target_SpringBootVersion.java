@@ -21,6 +21,15 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 
+/**
+ * Why this substitution exists?
+ * SpringBootVersion#determineSpringBootVersion() current implementation is triggering usage of a lot of infrastructure
+ * (especially via jarFile.getManifest()) to identify the Spring Boot version at runtime.
+ *
+ * How this substitution workarounds the problem?
+ * NativeSpringBootVersion#determineSpringBootVersion() is invoked at build time because it is invoked to populate
+ * NativeSpringBootVersion#VERSION + NativeSpringBootVersion configured to be initialized at build time in SpringBootHints.
+ */
 @TargetClass(className = "org.springframework.boot.SpringBootVersion", onlyWith = OnlyIfPresent.class)
 final class Target_SpringBootVersion {
 

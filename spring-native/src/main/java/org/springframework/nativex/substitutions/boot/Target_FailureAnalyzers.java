@@ -27,6 +27,13 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
 import org.springframework.nativex.substitutions.WithAot;
 
+/**
+ * Why this substitution exists?
+ * To avoid using SpringFactoriesLoader#loadFactoryNames() in order to use reflection-less variant when possible.
+ *
+ * How this substitution workarounds the problem?
+ * It invokes SpringFactoriesLoader#loadFactories instead (which is using underneath StaticSpringFactories generated AOT).
+ */
 @TargetClass(className="org.springframework.boot.diagnostics.FailureAnalyzers", onlyWith = { WithAot.class, OnlyIfPresent.class })
 final class Target_FailureAnalyzers {
 
