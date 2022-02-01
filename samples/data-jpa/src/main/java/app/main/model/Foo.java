@@ -21,6 +21,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Enumerated;
@@ -28,7 +29,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import java.time.Instant;
+import java.util.List;
 
 @EntityListeners(AuditingListener.class)
 @Entity
@@ -50,6 +53,10 @@ public class Foo {
 	Instant modifiedAt;
 	@LastModifiedBy
 	String modifiedBy;
+
+	@OrderBy
+	@ElementCollection
+	private List<String> phoneNumbers;
 
 	public Foo() {
 	}
