@@ -21,7 +21,7 @@ import java.util.Set;
 import org.springframework.test.context.ContextCustomizer;
 
 /**
- * Provide access to the package private {@link SpringBootTestArgs} class.
+ * Accessor to privileged methods of {@link SpringBootTestArgs}.
  *
  * @author Tadaya Tsuyukubo
  */

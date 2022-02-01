@@ -67,7 +67,6 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 	@Override
 	public CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer) {
 		String[] args = SpringBootTestArgsAccessor.get(config.getContextCustomizers());
-
 		Builder code = CodeBlock.builder();
 		code.add("() -> new $T($T.class", AotSpringBootConfigContextLoader.class, applicationContextInitializer);
 		WebApplicationType webApplicationType = detectWebApplicationType(config);
@@ -81,7 +80,6 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 			code.add(", $L", multi.join(", "));
 		}
 		code.add(")");
-
 		return code.build();
 	}
 
