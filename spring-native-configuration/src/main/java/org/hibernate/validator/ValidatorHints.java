@@ -622,5 +622,10 @@ import org.springframework.nativex.type.NativeConfiguration;
 				org.hibernate.validator.internal.util.ReflectionHelper.class
 		}, packageNames = "org.hibernate.validator.internal.engine.valueextraction", initTime = InitializationTime.BUILD)
 )
+@NativeHint(trigger = org.springframework.validation.beanvalidation.SpringValidatorAdapter.class,
+	types = @TypeHint(
+			typeNames = "org.springframework.validation.beanvalidation.SpringValidatorAdapter$ViolationFieldError",
+			access = { TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS }
+))
 public class ValidatorHints implements NativeConfiguration {
 }
