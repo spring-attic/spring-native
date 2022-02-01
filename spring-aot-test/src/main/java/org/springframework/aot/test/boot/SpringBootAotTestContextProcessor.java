@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,19 @@
 
 package org.springframework.aot.test.boot;
 
+import java.util.Arrays;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
+import org.springframework.aot.context.bootstrap.generator.bean.support.MultiCodeBlock;
 import org.springframework.aot.test.context.bootstrap.generator.AotTestContextProcessor;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.SpringBootTestArgsAccessor;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -62,16 +66,20 @@ class SpringBootAotTestContextProcessor implements AotTestContextProcessor {
 
 	@Override
 	public CodeBlock writeInstanceSupplier(MergedContextConfiguration config, ClassName applicationContextInitializer) {
+		String[] args = SpringBootTestArgsAccessor.get(config.getContextCustomizers());
 		Builder code = CodeBlock.builder();
 		code.add("() -> new $T($T.class", AotSpringBootConfigContextLoader.class, applicationContextInitializer);
 		WebApplicationType webApplicationType = detectWebApplicationType(config);
-		if (webApplicationType.equals(WebApplicationType.NONE)) {
-			code.add(")");
-		}
-		else {
-			code.add(", $T.$L, $T.$L)", WebApplicationType.class, webApplicationType,
+		if (!webApplicationType.equals(WebApplicationType.NONE)) {
+			code.add(", $T.$L, $T.$L", WebApplicationType.class, webApplicationType,
 					WebEnvironment.class, detectWebEnvironment(config));
 		}
+		if (args.length > 0) {
+			MultiCodeBlock multi = new MultiCodeBlock();
+			Arrays.stream(args).forEach((arg) -> multi.add("$S", arg));
+			code.add(", $L", multi.join(", "));
+		}
+		code.add(")");
 		return code.build();
 	}
 

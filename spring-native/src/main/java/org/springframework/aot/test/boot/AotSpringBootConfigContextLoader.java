@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,34 +55,36 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 
 	private final WebEnvironment webEnvironment;
 
+	private final String[] args;
+
 	/**
 	 * Create an instance for the specified {@link ApplicationContextInitializer} and
 	 * web-related details.
 	 * @param testContextInitializer the context initializer to use
 	 * @param webApplicationType the {@link WebApplicationType} to use for the context
 	 * @param webEnvironment the {@link WebEnvironment} to use for the context
+	 * @param args the command line arguments
 	 */
 	public AotSpringBootConfigContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer,
-			WebApplicationType webApplicationType, WebEnvironment webEnvironment) {
+			WebApplicationType webApplicationType, WebEnvironment webEnvironment, String... args) {
 		this.testContextInitializer = testContextInitializer;
 		this.webApplicationType = webApplicationType;
 		this.webEnvironment = webEnvironment;
+		this.args = args;
 	}
 
 	/**
 	 * Create a new instance using the specified {@link ApplicationContextInitializer} for
 	 * a non-web context.
 	 * @param testContextInitializer the context initializer to use
+	 * @param args the command line arguments
 	 */
-	public AotSpringBootConfigContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer) {
-		this(testContextInitializer, WebApplicationType.NONE, WebEnvironment.NONE);
+	public AotSpringBootConfigContextLoader(Class<? extends ApplicationContextInitializer<?>> testContextInitializer, String... args) {
+		this(testContextInitializer, WebApplicationType.NONE, WebEnvironment.NONE, args);
 	}
 
 	@Override
 	public ConfigurableApplicationContext loadContext(MergedContextConfiguration config) {
-		// TODO: handle application arguments
-		String[] args = new String[0];
-
 		SpringApplication application = new AotTestSpringApplication(config.getTestClass().getClassLoader(), testContextInitializer);
 		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(Collections.singleton(testContextInitializer.getName()));
@@ -108,7 +110,7 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
 			}
 		}
-		ConfigurableApplicationContext context = application.run(args);
+		ConfigurableApplicationContext context = application.run(this.args);
 
 		return context;
 	}
