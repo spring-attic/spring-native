@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
+import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.BeanInstanceContext;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -378,7 +378,7 @@ class BeanDefinitionRegistrarTests {
 	void innerBeanDefinitionHasInnerBeanNameInInstanceSupplier() {
 		RootBeanDefinition beanDefinition = BeanDefinitionRegistrar.inner(String.class)
 				.instanceSupplier((instanceContext) -> {
-					Field field = ReflectionUtils.findField(InstanceSupplierContext.class, "beanName", String.class);
+					Field field = ReflectionUtils.findField(BeanInstanceContext.class, "beanName", String.class);
 					ReflectionUtils.makeAccessible(field);
 					return ReflectionUtils.getField(field, instanceContext);
 				}).toBeanDefinition();

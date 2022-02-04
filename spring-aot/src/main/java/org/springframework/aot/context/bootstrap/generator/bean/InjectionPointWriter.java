@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
 
-import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.InstanceSupplierContext;
+import org.springframework.aot.beans.factory.BeanDefinitionRegistrar.BeanInstanceContext;
 import org.springframework.aot.context.bootstrap.generator.bean.support.ParameterWriter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -43,7 +43,7 @@ import org.springframework.util.ReflectionUtils;
  * The writer expects a number of variables to be available and/or accessible:
  * <ul>
  *     <li>{@code beanFactory}: the general {@code DefaultListableBeanFactory}</li>
- *     <li>{@code instanceContext}: the {@link InstanceSupplierContext} callback</li>
+ *     <li>{@code instanceContext}: the {@link BeanInstanceContext} callback</li>
  *     <li>{@code bean}: the variable that refers to the bean instance</li>
  * </ul>
  *

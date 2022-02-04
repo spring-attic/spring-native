@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.aot.beans.factory;
 
 import java.lang.reflect.Constructor;
@@ -92,9 +108,9 @@ public class BeanDefinitionRegistrar {
 		return this;
 	}
 
-	public BeanDefinitionRegistrar instanceSupplier(ThrowableFunction<InstanceSupplierContext, ?> instanceContext) {
+	public BeanDefinitionRegistrar instanceSupplier(ThrowableFunction<BeanInstanceContext, ?> instanceContext) {
 		return customize((beanDefinition) -> beanDefinition.setInstanceSupplier(() ->
-				instanceContext.apply(createInstanceSupplierContext())));
+				instanceContext.apply(createBeanInstanceContext())));
 	}
 
 	public BeanDefinitionRegistrar instanceSupplier(ThrowableSupplier<?> instanceSupplier) {
@@ -134,9 +150,9 @@ public class BeanDefinitionRegistrar {
 		return bd;
 	}
 
-	private InstanceSupplierContext createInstanceSupplierContext() {
+	private BeanInstanceContext createBeanInstanceContext() {
 		String resolvedBeanName = this.beanName != null ? this.beanName : createInnerBeanName();
-		return new InstanceSupplierContext(resolvedBeanName, beanClass);
+		return new BeanInstanceContext(resolvedBeanName, beanClass);
 	}
 
 	private String createInnerBeanName() {
@@ -173,7 +189,7 @@ public class BeanDefinitionRegistrar {
 		return Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(", "));
 	}
 
-	public class InstanceSupplierContext {
+	public class BeanInstanceContext {
 
 		private final String beanName;
 
@@ -184,7 +200,7 @@ public class BeanDefinitionRegistrar {
 		 * @param beanName the name of the bean
 		 * @param beanType the type of the bean
 		 */
-		private InstanceSupplierContext(String beanName, Class<?> beanType) {
+		private BeanInstanceContext(String beanName, Class<?> beanType) {
 			this.beanName = beanName;
 			this.beanType = beanType;
 		}
