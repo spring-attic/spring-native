@@ -52,6 +52,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 					"java.lang.String"
 			}, access = {})
 		})
-
+@NativeHint(trigger = kotlinx.serialization.descriptors.SerialDescriptor.class, types =
+	@TypeHint(types = { kotlinx.serialization.encoding.CompositeEncoder.class, kotlinx.serialization.descriptors.SerialDescriptor.class },
+		typeNames = "kotlinx.serialization.internal.SerializationConstructorMarker")
+)
 public class KotlinHints implements NativeConfiguration {
 }
