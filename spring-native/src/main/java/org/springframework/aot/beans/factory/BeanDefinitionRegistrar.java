@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -249,5 +251,77 @@ public class BeanDefinitionRegistrar {
 			return field;
 		}
 
+	}
+
+	/**
+	 * A {@link Consumer} that allows to invoke code that throws a checked exception.
+	 *
+	 * @author Stephane Nicoll
+	 */
+	@FunctionalInterface
+	public interface ThrowableConsumer<T> extends Consumer<T> {
+
+		void acceptWithException(T t) throws Exception;
+
+		@Override
+		default void accept(T t) {
+			try {
+				acceptWithException(t);
+			}
+			catch (RuntimeException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		}
+
+	}
+
+	/**
+	 * A {@link Function} that allows to invoke code that throws a checked exception.
+	 *
+	 * @author Stephane Nicoll
+	 */
+	@FunctionalInterface
+	public interface ThrowableFunction<T, R> extends Function<T, R> {
+
+		R applyWithException(T t) throws Exception;
+
+		@Override
+		default R apply(T t) {
+			try {
+				return applyWithException(t);
+			}
+			catch (RuntimeException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		}
+	}
+
+	/**
+	 * A {@link Supplier} that allows to invoke code that throws a checked exception.
+	 *
+	 * @author Stephane Nicoll
+	 */
+	public interface ThrowableSupplier<T> extends Supplier<T> {
+
+		T getWithException() throws Exception;
+
+		@Override
+		default T get() {
+			try {
+				return getWithException();
+			}
+			catch (RuntimeException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		}
 	}
 }

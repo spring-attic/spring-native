@@ -119,8 +119,8 @@ class BeanDefinitionRegistrarTests {
 	@SuppressWarnings("unchecked")
 	void registerWithCustomizer() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		ThrowableConsumer<RootBeanDefinition> first = mock(ThrowableConsumer.class);
-		ThrowableConsumer<RootBeanDefinition> second = mock(ThrowableConsumer.class);
+		BeanDefinitionRegistrar.ThrowableConsumer<RootBeanDefinition> first = mock(BeanDefinitionRegistrar.ThrowableConsumer.class);
+		BeanDefinitionRegistrar.ThrowableConsumer<RootBeanDefinition> second = mock(BeanDefinitionRegistrar.ThrowableConsumer.class);
 		BeanDefinitionRegistrar.of("test", InjectionSample.class)
 				.instanceSupplier(InjectionSample::new).customize(first).customize(second).register(beanFactory);
 		assertBeanFactory(beanFactory, () -> {
