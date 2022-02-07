@@ -19,6 +19,7 @@ com.mysql.cj.MySqlHints,\
 com.wavefront.spring.actuate.WavefrontEndpointHints,\
 com.wavefront.spring.actuate.WavefrontHints,\
 org.hamcrest.HamcrestHints,\
+org.HdrHistogram.HdrHistogramHints,\
 org.hibernate.HibernateHints,\
 org.hibernate.validator.ValidatorHints,\
 org.postgresql.PostgresqlHints,\
