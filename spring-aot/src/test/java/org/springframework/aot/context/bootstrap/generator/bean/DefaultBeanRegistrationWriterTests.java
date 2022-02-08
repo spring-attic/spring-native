@@ -400,9 +400,9 @@ class DefaultBeanRegistrationWriterTests {
 		CodeSnippet generatedCode = beanRegistration(beanDefinition, (code) -> code.add("() -> InjectionConfiguration::new"));
 		assertThat(generatedCode).lines().containsOnly(
 				"BeanDefinitionRegistrar.of(\"test\", InjectionConfiguration.class)",
-				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"names\", List.of(BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
+				"    .instanceSupplier(() -> InjectionConfiguration::new).customize((bd) -> bd.getPropertyValues().addPropertyValue(\"names\", Stream.of(BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
 				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition(), BeanDefinitionRegistrar.inner(SimpleConfiguration.class).withFactoryMethod(SimpleConfiguration.class, \"stringBean\")",
-				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition()))).register(beanFactory);");
+				"    .instanceSupplier(() -> beanFactory.getBean(SimpleConfiguration.class).stringBean()).toBeanDefinition()).collect(Collectors.toCollection(ArrayList::new)))).register(beanFactory);");
 		assertThat(generatedCode).hasImport(SimpleConfiguration.class);
 	}
 
