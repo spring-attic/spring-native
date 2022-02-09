@@ -41,9 +41,7 @@ class TestClassesFinderTests {
 	static String PACKAGE = "/org/springframework/aot/test/samples/tests/";
 
 	static List<String> TEST_CLASSES = Arrays.asList("ExtendedWithSpring.class", "ExtendedWithTestWatcher.class",
-			"SpringBootTestAnnotated.class", "SimpleClass.class", "MultipleExtendsWithSpring.class",
-			"SpringWithNestedTest.class", "SpringWithNestedTest$NestedTest.class", "SpringWithNestedTest$NestedTest$NestedTest2.class",
-			"RandomClassWithNested.class", "RandomClassWithNested$NestedTest.class"
+			"SpringBootTestAnnotated.class", "SimpleClass.class", "RepeatedExtendWith.class"
 	);
 
 	@TempDir
@@ -66,9 +64,6 @@ class TestClassesFinderTests {
 		List<String> testClasses = TestClassesFinder.findTestClasses(tempDirectory);
 		assertThat(testClasses).containsOnly("org.springframework.aot.test.samples.tests.ExtendedWithSpring",
 				"org.springframework.aot.test.samples.tests.SpringBootTestAnnotated",
-				"org.springframework.aot.test.samples.tests.MultipleExtendsWithSpring",
-				"org.springframework.aot.test.samples.tests.SpringWithNestedTest",
-				"org.springframework.aot.test.samples.tests.SpringWithNestedTest$NestedTest",
-				"org.springframework.aot.test.samples.tests.SpringWithNestedTest$NestedTest$NestedTest2");
+				"org.springframework.aot.test.samples.tests.RepeatedExtendWith");
 	}
 }
