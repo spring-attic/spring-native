@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 package org.springframework.aot.context.bootstrap.generator.bean.support;
 
 import java.lang.reflect.Executable;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +28,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
@@ -114,7 +110,10 @@ public final class ParameterWriter {
 				code.add("$T.emptyList()", Collections.class);
 			}
 			else {
-				writeCollection(code, list, parameterType, ArrayList.class);
+				code.add("$T.of(", List.class);
+				ResolvableType collectionType = parameterType.as(List.class).getGenerics()[0];
+				code.add(writeAll(list, (item) -> collectionType));
+				code.add(")");
 			}
 		}
 		else if (value instanceof Set) {
@@ -123,7 +122,10 @@ public final class ParameterWriter {
 				code.add("$T.emptySet()", Collections.class);
 			}
 			else {
-				writeCollection(code, set, parameterType, LinkedHashSet.class);
+				code.add("$T.of(", Set.class);
+				ResolvableType collectionType = parameterType.as(Set.class).getGenerics()[0];
+				code.add(writeAll(set, (item) -> collectionType));
+				code.add(")");
 			}
 		}
 		else if (value instanceof Map) {
@@ -168,27 +170,6 @@ public final class ParameterWriter {
 		else {
 			throw new IllegalArgumentException("Parameter of type " + parameterType + " is not supported");
 		}
-	}
-
-	private <T> void writeCollection(Builder code, Object value, ResolvableType parameterType, Class<?> fallbackCollectionType) {
-		code.add("$T.of(", Stream.class);
-		ResolvableType collectionType = parameterType.as(Collection.class).getGenerics()[0];
-		code.add(writeAll((Collection<?>) value, (item) -> collectionType));
-		code.add(").collect($T.toCollection($T::new))", Collectors.class,
-				inferCollectionType(value.getClass(), fallbackCollectionType));
-	}
-
-	private Class<?> inferCollectionType(Class<?> valueType, Class<?> fallbackCollectionType) {
-		if (Modifier.isPublic(valueType.getModifiers())) {
-			try {
-				valueType.getConstructor();
-				return valueType;
-			}
-			catch (NoSuchMethodException ex) {
-				// Ignore
-			}
-		}
-		return fallbackCollectionType;
 	}
 
 	private <T> CodeBlock writeAll(Iterable<T> items, Function<T, ResolvableType> elementType) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,9 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +40,6 @@ import org.springframework.aot.context.bootstrap.generator.sample.factory.Sample
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ResourceLoader;
@@ -79,21 +75,10 @@ class ParameterWriterTests {
 	}
 
 	@Test
-	void writeStringNonPublicList() {
+	void writeStringList() {
 		List<String> value = List.of("a", "test");
 		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
-				.isEqualTo("Stream.of(\"a\", \"test\").collect(Collectors.toCollection(ArrayList::new))")
-				.hasImport(Stream.class).hasImport(Collectors.class).hasImport(ArrayList.class);
-	}
-
-	@Test
-	void writeStringCustomList() {
-		ManagedList<String> value = new ManagedList<>();
-		value.add("a");
-		value.add("test");
-		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
-				.isEqualTo("Stream.of(\"a\", \"test\").collect(Collectors.toCollection(ManagedList::new))")
-				.hasImport(Stream.class).hasImport(Collectors.class).hasImport(ManagedList.class);
+				.isEqualTo("List.of(\"a\", \"test\")").hasImport(List.class);
 	}
 
 	@Test
@@ -104,19 +89,10 @@ class ParameterWriterTests {
 	}
 
 	@Test
-	void writeStringNonPublicSet() {
-		Set<String> value = Set.of("a", "test");
+	void writeStringSet() {
+		Set<String> value = new LinkedHashSet<>(Arrays.asList("a", "test"));
 		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
-				.endsWith(").collect(Collectors.toCollection(LinkedHashSet::new))")
-				.hasImport(Stream.class).hasImport(Collectors.class).hasImport(LinkedHashSet.class);
-	}
-
-	@Test
-	void writeStringCustomSet() {
-		Set<String> value = new TreeSet<>(Arrays.asList("a", "test"));
-		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
-				.isEqualTo("Stream.of(\"a\", \"test\").collect(Collectors.toCollection(TreeSet::new))")
-				.hasImport(Stream.class).hasImport(Collectors.class).hasImport(TreeSet.class);
+				.isEqualTo("Set.of(\"a\", \"test\")").hasImport(Set.class);
 	}
 
 	@Test
