@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
@@ -139,6 +140,12 @@ public class ApplicationStructure {
 					String applicationClass = AnnotatedClassFinder.findSingleAnnotatedClass(file, SpringBootApplication.class.getName());
 					if (StringUtils.hasText(applicationClass)) {
 						return applicationClass;
+					}
+					else {
+						String configurationClass = AnnotatedClassFinder.findSingleAnnotatedClass(file, SpringBootConfiguration.class.getName());
+						if (StringUtils.hasText(configurationClass)) {
+							return configurationClass;
+						}
 					}
 				} catch (IllegalStateException ex) {
 					// More that one class have been found
