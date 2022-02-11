@@ -96,11 +96,11 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 		}
 
 		public static void processConfigurationProperties(Class<?> type, NativeConfigurationRegistry registry) {
-			new TypeProcessor(type, hasConstructorBinding(type), new HashSet<>()).process(registry);
+			new TypeProcessor(type, isConstructorBindingType(type), new HashSet<>()).process(registry);
 		}
 
 		private void processNestedType(Class<?> type, NativeConfigurationRegistry registry) {
-			processNestedType(type, hasConstructorBinding(type), registry);
+			processNestedType(type, isConstructorBindingType(type), registry);
 		}
 
 		private void processNestedType(Class<?> type, boolean constructorBinding, NativeConfigurationRegistry registry) {
@@ -109,6 +109,15 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private static boolean hasConstructorBinding(AnnotatedElement element) {
 			return MergedAnnotations.from(element).isPresent(ConstructorBinding.class);
+		}
+
+		private static boolean isConstructorBindingType(Class<?> type) {
+			return isImplicitConstructorBindingType(type) || hasConstructorBinding(type);
+		}
+
+		private static boolean isImplicitConstructorBindingType(Class<?> type) {
+			Class<?> superclass = type.getSuperclass();
+			return (superclass != null) && "java.lang.Record".equals(superclass.getName());
 		}
 
 		private void process(NativeConfigurationRegistry registry) {
