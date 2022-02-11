@@ -71,13 +71,13 @@ public class NativeProxyEntryTests {
 	@Test
 	void contributeClass() {
 		ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
-		NativeProxyEntry.ofClass(String.class, ProxyBits.IS_STATIC, SpringProxy.class, Advised.class).contribute(proxiesDescriptor);
+		NativeProxyEntry.ofClass(NativeProxyEntryTests.class, ProxyBits.IS_STATIC, SpringProxy.class, Advised.class).contribute(proxiesDescriptor);
 		assertThat(proxiesDescriptor.getProxyDescriptors()).singleElement()
 				.satisfies((proxyDescriptor) -> {
 					assertThat(proxyDescriptor.isClassProxy()).isTrue();
 					assertThat(proxyDescriptor).isInstanceOf(AotProxyDescriptor.class);
 					assertThat(((AotProxyDescriptor) proxyDescriptor).getInterfaceTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName());
-					assertThat(((AotProxyDescriptor) proxyDescriptor).getTargetClassType()).isEqualTo(String.class.getName());
+					assertThat(((AotProxyDescriptor) proxyDescriptor).getTargetClassType()).isEqualTo(NativeProxyEntryTests.class.getName());
 					assertThat(((AotProxyDescriptor) proxyDescriptor).getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
 				});
 	}
@@ -85,13 +85,13 @@ public class NativeProxyEntryTests {
 	@Test
 	void contributeClassNames() {
 		ProxiesDescriptor proxiesDescriptor = new ProxiesDescriptor();
-		NativeProxyEntry.ofClassName(String.class.getName(), ProxyBits.IS_STATIC, SpringProxy.class.getName(), Advised.class.getName()).contribute(proxiesDescriptor);
+		NativeProxyEntry.ofClassName(NativeProxyEntryTests.class.getName(), ProxyBits.IS_STATIC, SpringProxy.class.getName(), Advised.class.getName()).contribute(proxiesDescriptor);
 		assertThat(proxiesDescriptor.getProxyDescriptors()).singleElement()
 				.satisfies((proxyDescriptor) -> {
 					assertThat(proxyDescriptor.isClassProxy()).isTrue();
 					assertThat(proxyDescriptor).isInstanceOf(AotProxyDescriptor.class);
 					assertThat(((AotProxyDescriptor) proxyDescriptor).getInterfaceTypes()).containsExactly(SpringProxy.class.getName(), Advised.class.getName());
-					assertThat(((AotProxyDescriptor) proxyDescriptor).getTargetClassType()).isEqualTo(String.class.getName());
+					assertThat(((AotProxyDescriptor) proxyDescriptor).getTargetClassType()).isEqualTo(NativeProxyEntryTests.class.getName());
 					assertThat(((AotProxyDescriptor) proxyDescriptor).getProxyFeatures()).isEqualTo(ProxyBits.IS_STATIC);
 				});
 	}

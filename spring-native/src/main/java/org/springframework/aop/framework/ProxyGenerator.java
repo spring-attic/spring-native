@@ -69,6 +69,10 @@ public class ProxyGenerator {
 
 			Class<?> proxySuperClass = ClassUtils.forName(targetClass, classLoader);
 
+			if (Modifier.isFinal(proxySuperClass.getModifiers())) {
+				throw new IllegalStateException("Cannot create a build time proxy for a final class: "+targetClass);
+			}
+			
 			validateClassIfNecessary(proxySuperClass, classLoader);
 
 			Class<?> target = resolve(targetClass, classLoader);

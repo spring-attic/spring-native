@@ -239,6 +239,7 @@ public class HateoasHints implements NativeConfiguration, TypeSystemNativeConfig
 				})
 				.distinct()
 				.filter(Objects::nonNull)
+				.filter(t -> !t.isFinal())
 				.map(type -> {
 
 					HintDeclaration hint = new HintDeclaration();
