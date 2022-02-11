@@ -40,6 +40,8 @@ import org.springframework.aot.context.bootstrap.generator.sample.factory.Sample
 import org.springframework.aot.context.bootstrap.generator.test.CodeSnippet;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedSet;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ResourceLoader;
@@ -82,6 +84,13 @@ class ParameterWriterTests {
 	}
 
 	@Test
+	void writeStringManagedList() {
+		List<String> value = ManagedList.of("a", "test");
+		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
+				.isEqualTo("ManagedList.of(\"a\", \"test\")").hasImport(ManagedList.class);
+	}
+
+	@Test
 	void writeEmptyList() {
 		List<String> value = List.of();
 		assertThat(write(value, ResolvableType.forClassWithGenerics(List.class, String.class)))
@@ -93,6 +102,13 @@ class ParameterWriterTests {
 		Set<String> value = new LinkedHashSet<>(Arrays.asList("a", "test"));
 		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
 				.isEqualTo("Set.of(\"a\", \"test\")").hasImport(Set.class);
+	}
+
+	@Test
+	void writeStringManagedSet() {
+		Set<String> value = ManagedSet.of("a", "test");
+		assertThat(write(value, ResolvableType.forClassWithGenerics(Set.class, String.class)))
+				.isEqualTo("ManagedSet.of(\"a\", \"test\")").hasImport(ManagedSet.class);
 	}
 
 	@Test

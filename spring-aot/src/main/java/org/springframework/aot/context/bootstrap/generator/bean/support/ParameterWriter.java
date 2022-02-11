@@ -35,6 +35,8 @@ import com.squareup.javapoet.CodeBlock.Builder;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedSet;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
@@ -110,7 +112,8 @@ public final class ParameterWriter {
 				code.add("$T.emptyList()", Collections.class);
 			}
 			else {
-				code.add("$T.of(", List.class);
+				Class<?> listType = (value instanceof ManagedList ? ManagedList.class : List.class);
+				code.add("$T.of(", listType);
 				ResolvableType collectionType = parameterType.as(List.class).getGenerics()[0];
 				code.add(writeAll(list, (item) -> collectionType));
 				code.add(")");
@@ -122,7 +125,8 @@ public final class ParameterWriter {
 				code.add("$T.emptySet()", Collections.class);
 			}
 			else {
-				code.add("$T.of(", Set.class);
+				Class<?> setType = (value instanceof ManagedSet ? ManagedSet.class : Set.class);
+				code.add("$T.of(", setType);
 				ResolvableType collectionType = parameterType.as(Set.class).getGenerics()[0];
 				code.add(writeAll(set, (item) -> collectionType));
 				code.add(")");
