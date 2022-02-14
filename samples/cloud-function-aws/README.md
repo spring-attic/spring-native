@@ -31,4 +31,4 @@ $> ./build.sh
 - Navigate to AWS Lambda dashboard and create a new function (name it anyway you want).
 - In "Runtime" go to `Custom Runtime` and select one of the options available.
 - Upload generated `cloud-function-aws-0.0.1-SNAPSHOT-native-zip.zip`.
-- Finally test by providing JSON-style string value via 'Test' tab. For example `"John"`. The output should be `"Hi JOHN!"`
+- Finally test by providing JSON-style string value via 'Test' tab. For example `{"name":"john"}`. The output should be `"Hi JOHN!"`

@@ -1,0 +1,22 @@
+source ${PWD%/*samples/*}/scripts/wait.sh
+wait_command_output 'curl -v "http://localhost:8081/" \
+-H "Content-Type:application/json; charset=UTF-8" \
+-H "X-Request-Id:bc3d6628-6bce-4beb-8c0a-e06212782934" \
+-H "timestamp:1644485549319" \
+-H "Forwarded-for:10.40.1.20" \
+-H "Traceparent:00-534443e9aaa8e0ff7f8d9492af7df915-243e7c6d7d9e0a0e-00" \
+-H "X-Forwarded-For:10.40.1.20" \
+-H "K-Proxy-Request:activator" \
+-H "User-Agent:Go-http-client/1.1" \
+-H "Accept-Encoding:gzip" \
+-H "Prefer:reply" \
+-H "Host:level-1.default.svc.cluster.local" \
+-H "X-Forwarded-Proto:http" \
+-H "id:d1dec962-0704-3ca7-fcf8-1f8656a95909" \
+-H "Ce-Id:1" \
+-H "Ce-Subject:test" \
+-H "Ce-Time:2022-02-10T09:32:27.875Z" \
+-H "Ce-Source:cloud-event-example" \
+-H "Ce-Type:KeyPressedEvent" \
+-H "Ce-Specversion:1.0" \
+-d "{\"key\": \"a\", \"position\": \"0\", \"timestamp\": \"1644312102224\"}\""'

@@ -10,9 +10,9 @@
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>cloud-function-aws</artifactId>
+	<artifactId>cloud-function-cloudevent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
+	<name>cloud-function-cloudevent</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -25,12 +25,20 @@
 			<artifactId>spring-native</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-function-adapter-aws</artifactId>
+			<groupId>org.springframework.experimental</groupId>
+			<artifactId>spring-aot</artifactId>
+			<version>0.11.3-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-function-web</artifactId>
+			<version>3.2.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-function-context</artifactId>
+			<version>3.2.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -47,33 +55,7 @@
 		</dependency>
 	</dependencies>
 
-	<profiles>
-		<profile>
-			<id>native</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>native-zip</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<inherited>false</inherited>
-							</execution>
-						</executions>
-						<configuration>
-							<descriptors>
-								<descriptor>src/assembly/native.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	
 
 	<!-- Check out the parent POM for the plugins configuration -->
 	<build>
@@ -89,24 +71,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>java-zip</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<inherited>false</inherited>
-					</execution>
-				</executions>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/java.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
+			
 		</plugins>
 	</build>
 
