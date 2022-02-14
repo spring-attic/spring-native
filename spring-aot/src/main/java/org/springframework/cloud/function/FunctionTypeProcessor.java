@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.function;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,7 +25,9 @@ import org.springframework.aot.context.bootstrap.generator.infrastructure.native
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.aot.support.BeanFactoryProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.cloud.function.context.catalog.FunctionTypeUtils;
+import org.springframework.cloud.function.context.config.FunctionContextUtils;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 
@@ -52,25 +55,52 @@ public class FunctionTypeProcessor implements BeanFactoryNativeConfigurationProc
 			new BeanFactoryProcessor(beanFactory).processBeans(this::isFunction,
 					(beanName, functionBeanType) -> {
 						Type functionType = FunctionTypeUtils.discoverFunctionTypeFromClass(functionBeanType);
-						Type inputType = FunctionTypeUtils.getInputType(functionType);
-						String name = inputType.getTypeName();
-						if (!isCoreJavaType(name)) {
-							registry.reflection().forType(FunctionTypeUtils.getRawType(inputType))
-									.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS,
-											TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
+						if (!(functionType instanceof ParameterizedType)) {
+							functionType = FunctionContextUtils.findType(beanFactory, beanName);
 						}
+						this.registerAllGenericTypes((ParameterizedType) functionType, registry);
 					});
+			registry.reflection().forType(RootBeanDefinition.class).withAccess(TypeAccess.DECLARED_FIELDS);
+			try {
+				// new class, is not available in the release yet. Will remove once 3.2.2 is out
+				Class<?> messageAccessor = ClassUtils
+						.forName("org.springframework.cloud.function.context.message.MessageUtils$MessageStructureWithCaseInsensitiveHeaderKeys", 
+						ClassUtils.getDefaultClassLoader());
+				registry.reflection().forType(messageAccessor).withAccess(TypeAccess.DECLARED_METHODS);
+			} 
+			catch (Exception e) {
+				// ignore
+			}
 		}
-
-		private boolean isCoreJavaType(String className) {
-			return className.startsWith("java.") || className.startsWith("javax.");
-		}
-
+		
 		private boolean isFunction(Class<?> beanType) {
 			return Function.class.isAssignableFrom(beanType)
 					|| Consumer.class.isAssignableFrom(beanType);
 			// we don't care about Suppliers since its output type is handled by the user code.
 		}
+		
+		private void registerAllGenericTypes(ParameterizedType type, NativeConfigurationRegistry registry) {
+			Type gt = FunctionTypeUtils.getImmediateGenericType(type, 0);
+			String name = gt.getTypeName();
+			if (!isCoreJavaType(name)) {
+				registry.reflection().forType(FunctionTypeUtils.getRawType(gt))
+						.withAccess(TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_CONSTRUCTORS,
+								TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
+			}
+			if (gt instanceof ParameterizedType) {
+				this.registerAllGenericTypes((ParameterizedType) gt, registry);
+			}
+			
+		}
+		
+		private boolean isCoreJavaType(String className) {
+			return className.startsWith("java.") || className.startsWith("javax.");
+		}
+
 	}
+	
+	
+
+	
 
 }

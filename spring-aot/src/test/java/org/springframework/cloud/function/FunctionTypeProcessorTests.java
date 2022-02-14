@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 
@@ -39,9 +40,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FunctionTypeProcessorTests {
 
-	private static final Set<TypeAccess> ALL_MEMBERS = Set.of(TypeAccess.DECLARED_CONSTRUCTORS,
+	private static final Set<TypeAccess> METHODS_AND_CONSTRUCTORS = Set.of(TypeAccess.DECLARED_CONSTRUCTORS,
 			TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 
+	private static final Set<TypeAccess> DECLARED_FIELDS = Set.of(TypeAccess.DECLARED_FIELDS);
+
+	@Test
+	void testRootBeanDefinitionAvailable() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		beanFactory.registerBeanDefinition("noise", BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition());
+		beanFactory.registerBeanDefinition("sampleFunction", BeanDefinitionBuilder.rootBeanDefinition(MyFunction.class).getBeanDefinition());
+		NativeConfigurationRegistry registry = process(beanFactory);
+		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
+		assertThat(classDescriptors).hasSize(2);
+		ClassDescriptor cd = classDescriptors.get(1);
+		assertThat(cd.getName()).isEqualTo(RootBeanDefinition.class.getName());
+		assertThat(cd.getAccess()).containsAll(DECLARED_FIELDS);
+	}
+	
 	@Test
 	void testFunctionTypes() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
@@ -49,10 +65,10 @@ class FunctionTypeProcessorTests {
 		beanFactory.registerBeanDefinition("sampleFunction", BeanDefinitionBuilder.rootBeanDefinition(MyFunction.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
-		assertThat(classDescriptors).hasSize(1);
+		assertThat(classDescriptors).hasSize(2);
 		ClassDescriptor cd = classDescriptors.get(0);
 		assertThat(cd.getName()).isEqualTo(Person.class.getName());
-		assertThat(cd.getAccess()).containsAll(ALL_MEMBERS);
+		assertThat(cd.getAccess()).containsAll(METHODS_AND_CONSTRUCTORS);
 	}
 
 	@Test
@@ -62,10 +78,10 @@ class FunctionTypeProcessorTests {
 		beanFactory.registerBeanDefinition("sampleConsumer", BeanDefinitionBuilder.rootBeanDefinition(MyConsumer.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
-		assertThat(classDescriptors).hasSize(1);
+		assertThat(classDescriptors).hasSize(2);
 		ClassDescriptor cd = classDescriptors.get(0);
 		assertThat(cd.getName()).isEqualTo(Person.class.getName());
-		assertThat(cd.getAccess()).containsAll(ALL_MEMBERS);
+		assertThat(cd.getAccess()).containsAll(METHODS_AND_CONSTRUCTORS);
 	}
 
 	@Test
@@ -75,7 +91,7 @@ class FunctionTypeProcessorTests {
 		beanFactory.registerBeanDefinition("sampleSupplier", BeanDefinitionBuilder.rootBeanDefinition(MySupplier.class).getBeanDefinition());
 		NativeConfigurationRegistry registry = process(beanFactory);
 		List<ClassDescriptor> classDescriptors = registry.reflection().toClassDescriptors();
-		assertThat(classDescriptors).hasSize(0);
+		assertThat(classDescriptors).hasSize(1);
 	}
 
 	private NativeConfigurationRegistry process(DefaultListableBeanFactory beanFactory) {
