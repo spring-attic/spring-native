@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.nativex.domain.reflect.ClassDescriptor;
 import org.springframework.nativex.hint.TypeAccess;
 
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FunctionTypeProcessorTests {
 
-	private static final Set<TypeAccess> ALL_MEMBERS = Set.of(TypeAccess.DECLARED_CONSTRUCTORS,
+	private static final Set<TypeAccess> METHODS_AND_CONSTRUCTORS = Set.of(TypeAccess.DECLARED_CONSTRUCTORS,
 			TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
 
 	@Test
@@ -52,7 +53,7 @@ class FunctionTypeProcessorTests {
 		assertThat(classDescriptors).hasSize(1);
 		ClassDescriptor cd = classDescriptors.get(0);
 		assertThat(cd.getName()).isEqualTo(Person.class.getName());
-		assertThat(cd.getAccess()).containsAll(ALL_MEMBERS);
+		assertThat(cd.getAccess()).containsAll(METHODS_AND_CONSTRUCTORS);
 	}
 
 	@Test
@@ -65,7 +66,7 @@ class FunctionTypeProcessorTests {
 		assertThat(classDescriptors).hasSize(1);
 		ClassDescriptor cd = classDescriptors.get(0);
 		assertThat(cd.getName()).isEqualTo(Person.class.getName());
-		assertThat(cd.getAccess()).containsAll(ALL_MEMBERS);
+		assertThat(cd.getAccess()).containsAll(METHODS_AND_CONSTRUCTORS);
 	}
 
 	@Test

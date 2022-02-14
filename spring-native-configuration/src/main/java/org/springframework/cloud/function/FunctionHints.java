@@ -18,8 +18,10 @@ package org.springframework.cloud.function;
 
 import org.springframework.cloud.function.context.config.KotlinLambdaToFunctionAutoConfiguration;
 import org.springframework.cloud.function.web.source.RequestBuilder;
+import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -28,5 +30,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 	@InitializationHint(typeNames = "org.springframework.cloud.function.web.function.FunctionEndpointInitializer", initTime = InitializationTime.BUILD))
 @NativeHint(trigger = KotlinLambdaToFunctionAutoConfiguration.class, types =
 	@TypeHint(typeNames = "org.springframework.cloud.function.context.config.KotlinLambdaToFunctionAutoConfiguration$KotlinFunctionWrapper"))
+@TypeHint(typeNames="org.springframework.beans.factory.support.RootBeanDefinition", fields = {
+		@FieldHint(name="targetType"),
+		@FieldHint(name="factoryMethodReturnType")})
+@TypeHint(typeNames="org.springframework.cloud.function.context.message.MessageUtils$MessageStructureWithCaseInsensitiveHeaderKeys", methods = {	
+		@MethodHint(name = "getPayload"), 
+		@MethodHint(name = "getHeaders")})
 public class FunctionHints implements NativeConfiguration {
 }
