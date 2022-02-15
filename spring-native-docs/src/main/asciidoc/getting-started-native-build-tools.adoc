@@ -30,8 +30,6 @@ Alternatively, you can manually install builds from https://www.graalvm.org/down
 
 On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[those instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK], Visual Studio Build Tools and Windows SDK. Due to a well-known https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows limitations related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
 
-WARNING: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html#long_classpath_and_shading_support[Maven requires additional verbose configuration], so make sure to follow those instructions or use <<getting-started-buildpacks,Buildacks support>> instead.
-
 ==== Sample Project Setup
 
 The completed "RESTful Web Service" guide can be retrieved using the following commands:

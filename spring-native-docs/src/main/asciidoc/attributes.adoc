@@ -24,7 +24,7 @@
 :graalvm-docs: https://www.graalvm.org/reference-manual
 :graalvm-native-docs: {graalvm-docs}/native-image
 :graalvm-native-buildtools: https://github.com/graalvm/native-build-tools
-:graalvm-native-buildtools-version: 0.9.9
+:graalvm-native-buildtools-version: 0.9.10
 
 :spring-boot-version: 2.6.4-SNAPSHOT
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
