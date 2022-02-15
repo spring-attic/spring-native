@@ -5,28 +5,11 @@ In this example we will send CloudEvent over http having it being processed and 
 For additional details on CloudEvent integration in Spring Cloud Function please read these two blog posts - 
 [CE Part One](https://spring.io/blog/2020/12/10/cloud-events-and-spring-part-1) and [CE Part Two](https://spring.io/blog/2020/12/23/cloud-events-and-spring-part-2) 
 
-### Build project (non-MAC users)
+### Build project 
 Builds a native-zip ZIP file in target by executing provided `build.sh` script
 
 ```
 $ ./build.sh
-```
-
-### Build project (MAC users)
-If you are running on Mac, you should build in docker image. To do that, navigate to the root 
-of the native project and execute `run-dev-container.sh` script:
-
-```
-$> cd ../../
-$> ./run-dev-container.sh
-```
-
-That will download and start the docker container where you can now build the project:
-
-```
-$> cd samples/cloud-function-cloudevent
-$> ./build.sh
-
 ```
 
 Once built you can run the native image 
