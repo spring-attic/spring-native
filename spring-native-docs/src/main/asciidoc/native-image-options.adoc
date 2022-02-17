@@ -15,7 +15,6 @@ These options are enabled by default when using Spring Native, since they are ma
 * `--report-unsupported-elements-at-runtime` reports usage of unsupported methods and fields at run time when they are accessed the first time, instead of as an error during image building.
 * `--no-fallback` enforces native image only runtime and disable fallback on regular JVM.
 * `--install-exit-handlers` allows to react to a shutdown request from Docker.
-* `-H:+InlineBeforeAnalysis` enables inlining before analysis in order to allow utility methods returning a constant to be taken in account for code removal for example.
 
 [[native-image-options-useful]]
 === Useful options
