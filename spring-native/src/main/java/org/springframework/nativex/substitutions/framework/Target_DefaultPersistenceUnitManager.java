@@ -22,6 +22,7 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import org.springframework.nativex.substitutions.OnlyIfPresent;
+import org.springframework.nativex.substitutions.PersistenceExceptionIsAround;
 
 /**
  * Workaround for javax.persistence.PersistenceException: Unable to resolve persistence unit
@@ -30,8 +31,9 @@ import org.springframework.nativex.substitutions.OnlyIfPresent;
  * org.springframework.core.io.ClassPathResource.getURL(ClassPathResource.java:195)
  *
  * @author Andy Clement
+ * @author Sebastien Deleuze
  */
-@TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = OnlyIfPresent.class)
+@TargetClass(className = "org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager", onlyWith = { OnlyIfPresent.class, PersistenceExceptionIsAround.class })
 final class Target_DefaultPersistenceUnitManager {
 
 	@Substitute
