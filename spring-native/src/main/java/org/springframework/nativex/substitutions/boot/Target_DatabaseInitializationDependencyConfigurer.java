@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.util.Instantiator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.nativex.substitutions.OnlyIfPresent;
@@ -63,10 +64,7 @@ final class Target_DatabaseInitializationDependencyConfigurer {
 		List<T> result = new ArrayList<>();
 		result.addAll(factories);
 		result.addAll(instantiatedMissingFactories);
-
-		// TODO not ordered, maybe this call might work but annotations may not be available on these types.
-		// AnnotationAwareOrderComparator.sort(instances);
-		// Aot should fix the order perhaps, but how would it cope with this late instantiation for some.
+		AnnotationAwareOrderComparator.sort(result);
 		return result;
 	}
 	
