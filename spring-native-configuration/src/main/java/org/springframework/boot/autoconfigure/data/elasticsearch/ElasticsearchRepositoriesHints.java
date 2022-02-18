@@ -45,7 +45,7 @@ import org.springframework.nativex.hint.TypeHint;
  * @author Christoph Strobl
  * @author Sebastien Deleuze
  */
-@NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ElasticsearchRepositoryFactoryBean.class,
 		types = {
 				@TypeHint(types = {
 						ElasticsearchRepositoryFactoryBean.class,
@@ -62,7 +62,7 @@ import org.springframework.nativex.hint.TypeHint;
 				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS})
 		},
 		resources = @ResourceHint(patterns = "versions.properties"))
-@NativeHint(trigger = ReactiveElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ReactiveElasticsearchRepositoryFactoryBean.class,
 		imports = SpringDataReactiveHints.class,
 		types = {
 				@TypeHint(
@@ -105,13 +105,8 @@ import org.springframework.nativex.hint.TypeHint;
 )
 
 // org.elasticsearch.client.RestClient - required logging configuration
-@NativeHint(trigger = ElasticsearchRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ReactiveElasticsearchRepositoryFactoryBean.class,
 		types = {
-				@TypeHint(types = {
-						org.apache.logging.log4j.message.DefaultFlowMessageFactory.class,
-						org.apache.logging.log4j.message.ParameterizedMessageFactory.class,
-						org.apache.logging.log4j.message.ReusableMessageFactory.class
-				}, access = TypeAccess.DECLARED_CONSTRUCTORS),
 				@TypeHint(typeNames = {
 						// those cause a lot of errors and warnings in logs if not present
 						"io.netty.buffer.AbstractByteBufAllocator",

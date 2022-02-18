@@ -26,7 +26,8 @@ import java.util.stream.Stream;
 import org.springframework.boot.autoconfigure.data.SpringDataReactiveHints;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
-import org.springframework.data.mongodb.config.MongoConfigurationSupport;
+import org.springframework.data.mongodb.core.MongoDatabaseFactorySupport;
+import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertCallback;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveCallback;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertCallback;
@@ -35,8 +36,6 @@ import org.springframework.data.mongodb.core.mapping.event.ReactiveAfterConvertC
 import org.springframework.data.mongodb.core.mapping.event.ReactiveAfterSaveCallback;
 import org.springframework.data.mongodb.core.mapping.event.ReactiveBeforeConvertCallback;
 import org.springframework.data.mongodb.core.mapping.event.ReactiveBeforeSaveCallback;
-import org.springframework.data.mongodb.repository.config.ReactiveMongoRepositoryConfigurationExtension;
-import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactoryBean;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 import org.springframework.data.mongodb.repository.support.SimpleReactiveMongoRepository;
 import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
@@ -53,7 +52,7 @@ import org.springframework.nativex.type.TypeSystemNativeConfiguration;
 import org.springframework.util.ClassUtils;
 
 
-@NativeHint(trigger = MongoDataAutoConfiguration.class, types = {
+@NativeHint(trigger = MongoDatabaseFactorySupport.class, types = {
 		@TypeHint(types = {
 				SimpleMongoRepository.class,
 				BeforeConvertCallback.class,
@@ -62,7 +61,7 @@ import org.springframework.util.ClassUtils;
 				AfterConvertCallback.class
 		}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 })
-@NativeHint(trigger = MongoReactiveDataAutoConfiguration.class,
+@NativeHint(trigger = SimpleReactiveMongoDatabaseFactory.class,
 		imports = SpringDataReactiveHints.class,
 		types = @TypeHint(types = {
 					SimpleReactiveMongoRepository.class,
@@ -73,7 +72,7 @@ import org.springframework.util.ClassUtils;
 			}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})
 
 )
-public class MongoDataHints implements NativeConfiguration, TypeSystemNativeConfiguration {
+public class MongoRepositoriesHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {

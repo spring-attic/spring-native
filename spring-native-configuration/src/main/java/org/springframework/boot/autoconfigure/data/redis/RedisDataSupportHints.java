@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.repository.support.RedisRepositoryFactoryBean;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
@@ -28,7 +30,7 @@ import org.springframework.nativex.hint.TypeHint;
  * @author Christoph Strobl
  * @author Sebastien Deleuze
  */
-@NativeHint(trigger = RedisAutoConfiguration.class,
+@NativeHint(trigger = RedisConnectionFactory.class,
 		types = @TypeHint(types = {
 						org.springframework.data.redis.connection.RedisConnection.class,
 						org.springframework.data.redis.connection.StringRedisConnection.class,
@@ -92,7 +94,7 @@ import org.springframework.nativex.hint.TypeHint;
 				})
 		}
 )
-@NativeHint(trigger = RedisRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = RedisRepositoryFactoryBean.class,
 		types = {
 				@TypeHint(types = {
 						org.springframework.data.keyvalue.annotation.KeySpace.class,

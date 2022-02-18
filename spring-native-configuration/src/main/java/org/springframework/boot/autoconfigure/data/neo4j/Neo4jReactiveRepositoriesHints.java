@@ -25,6 +25,7 @@ import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jEvaluationContextExtension;
+import org.springframework.data.neo4j.repository.support.ReactiveNeo4jRepositoryFactoryBean;
 import org.springframework.data.neo4j.repository.support.SimpleReactiveNeo4jRepository;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.type.NativeConfiguration;
@@ -32,7 +33,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger = Neo4jReactiveRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = ReactiveNeo4jRepositoryFactoryBean.class,
 		options = "--enable-https", types = {
 	@TypeHint(types = {
 			SimpleReactiveNeo4jRepository.class,

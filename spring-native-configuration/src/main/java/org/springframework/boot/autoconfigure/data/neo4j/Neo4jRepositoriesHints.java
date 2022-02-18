@@ -32,7 +32,7 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger = Neo4jRepositoriesAutoConfiguration.class, types = {
+@NativeHint(trigger = Neo4jRepositoryFactoryBean.class, types = {
 	@TypeHint(types = {
 			SimpleNeo4jRepository.class,
 			BeforeBindCallback.class,

@@ -29,7 +29,7 @@ import org.springframework.nativex.hint.TypeHint;
 /**
  * @author Christoph Strobl
  */
-@NativeHint(trigger = JdbcRepositoriesAutoConfiguration.class, //
+@NativeHint(trigger = JdbcRepositoryFactoryBean.class,
 		types = {
 		@TypeHint(types = {
 						JdbcRepositoryFactoryBean.class,

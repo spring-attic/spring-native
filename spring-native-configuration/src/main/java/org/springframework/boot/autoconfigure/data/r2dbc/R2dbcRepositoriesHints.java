@@ -26,7 +26,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;
 
-@NativeHint(trigger = R2dbcRepositoriesAutoConfiguration.class, types = {
+@NativeHint(trigger = R2dbcRepositoryFactoryBean.class, types = {
 		@TypeHint(types = {
 				R2dbcRepositoryFactoryBean.class,
 				R2dbcRepositoryConfigurationExtension.class,

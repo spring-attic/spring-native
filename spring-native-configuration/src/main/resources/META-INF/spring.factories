@@ -51,7 +51,7 @@ org.springframework.boot.autoconfigure.aop.AopHints,\
 org.springframework.boot.autoconfigure.data.RepositoriesHints,\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesHints,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesHints,\
-org.springframework.boot.autoconfigure.data.mongodb.MongoDataHints,\
+org.springframework.boot.autoconfigure.data.mongodb.MongoRepositoriesHints,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesHints,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesHints,\
 org.springframework.boot.autoconfigure.data.redis.RedisDataSupportHints,\

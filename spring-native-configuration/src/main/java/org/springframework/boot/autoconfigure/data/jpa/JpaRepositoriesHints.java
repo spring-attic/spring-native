@@ -27,7 +27,7 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
-@NativeHint(trigger = JpaRepositoriesAutoConfiguration.class,
+@NativeHint(trigger = JpaRepositoryFactoryBean.class,
 		resources = @ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
 		types = @TypeHint(types = {
 				SharedEntityManagerCreator.class, // TODO is this one in the right place?
