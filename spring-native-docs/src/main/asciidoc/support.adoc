@@ -148,8 +148,8 @@ implementation("org.springframework.boot:spring-boot-starter-actuator") {
 * `spring-boot-starter-jdbc`
 * `spring-boot-starter-logging`
 ** Logback is supported with some limitations
-*** Configuration with `logback.xml` embedded in the application https://github.com/spring-projects-experimental/spring-native/issues/625[is not supported yet].
-*** Logback XML configuration via `myapp -Dlogging.config=logback-config.xml` or `myapp --logging.config==logback-config.xml` is supported but you need to enable <<spring-aot-configuration, XML support>> and add https://search.maven.org/artifact/org.codehaus.janino/janino[`org.codehaus.janino:janino` dependency].
+*** Configuration with embedded `logback.xml` https://github.com/spring-projects-experimental/spring-native/issues/625[is not supported yet].
+*** Configuration with embedded `logback-spring.xml`, via `myapp -Dlogging.config=logback-config.xml` or `myapp --logging.config=logback-config.xml` is supported but you need to enable <<aot-build-setup-configuration, XML support>> and add https://search.maven.org/artifact/org.codehaus.janino/janino[`org.codehaus.janino:janino` dependency] (see the `logger` sample).
 *** http://logback.qos.ch/manual/configuration.html#conditional[Conditional processing in Logback] configuration with Janino library has limited support. Only simple expressions of `isDefined()` and `isNull()` having string literal as argument are supported.
 *** See <<logback-workaround, this workaround>> to configure it programmatically.
 ** Log4j2 is not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/115[#115].

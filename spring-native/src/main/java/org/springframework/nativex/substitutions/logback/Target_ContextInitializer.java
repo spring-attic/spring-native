@@ -42,8 +42,6 @@ final class Target_ContextInitializer {
 		final String urlString = url.toString();
 		if (urlString.endsWith("groovy")) {
 			throw new LogbackException("Logback Groovy configuration is not supported on native");
-		} else if (urlString.endsWith("xml")) {
-			throw new LogbackException("Logback XML configuration is not supported yet, see https://github.com/spring-projects-experimental/spring-native/issues/625");
 		}
 	}
 }
