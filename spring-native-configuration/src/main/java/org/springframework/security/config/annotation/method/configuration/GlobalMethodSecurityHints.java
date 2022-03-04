@@ -23,7 +23,9 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=GlobalMethodSecurityConfiguration.class, types = {
-		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access = TypeAccess.DECLARED_CONSTRUCTORS),
+		@TypeHint(
+				typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot",
+				access = {TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}),
 })
 @NativeHint(jdkProxies = @JdkProxyHint(types = {
 		org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,
