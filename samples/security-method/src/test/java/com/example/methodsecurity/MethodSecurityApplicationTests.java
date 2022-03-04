@@ -9,6 +9,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -42,5 +43,13 @@ public class MethodSecurityApplicationTests {
 	public void accessAdminPageAsAdminThenOk() throws Exception {
 		mockMvc.perform(get("/admin/hello"))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser
+	public void accessHelloFilterThenOk() throws Exception {
+		mockMvc.perform(get("/filter/hello"))
+				.andExpect(status().isOk())
+				.andExpect(content().string("Hello"));
 	}
 }
