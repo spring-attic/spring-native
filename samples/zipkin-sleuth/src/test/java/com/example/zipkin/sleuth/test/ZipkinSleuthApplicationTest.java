@@ -28,6 +28,7 @@ import org.springframework.cloud.sleuth.autoconfig.brave.SleuthProperties;
 import org.springframework.cloud.sleuth.autoconfig.zipkin2.ZipkinAutoConfiguration;
 import org.springframework.cloud.sleuth.zipkin2.ZipkinProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +47,8 @@ public class ZipkinSleuthApplicationTest {
 				.hasSingleBean(TraceConfiguration.class)
 				.hasSingleBean(SleuthAnnotationConfiguration.class)
 				.hasSingleBean(SleuthProperties.class)
-				.hasSingleBean(BraveAutoConfiguration.class);
+				.hasSingleBean(BraveAutoConfiguration.class)
+				.hasSingleBean(PlatformTransactionManager.class); // 1524
 	}
 
 }
