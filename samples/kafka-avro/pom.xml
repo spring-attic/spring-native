@@ -16,7 +16,6 @@
 	<description>GraalVM Apache Kafka with Avro Demo</description>
 
 	<properties>
-		<java.version>11</java.version>
 		<avro.version>1.8.2</avro.version>
 		<avro.serializer.version>6.1.0</avro.serializer.version>
 	</properties>

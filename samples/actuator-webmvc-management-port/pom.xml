@@ -15,10 +15,6 @@
 	<name>actuator</name>
 	<description>Actuator sample with WebMVC and separate management port</description>
 
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

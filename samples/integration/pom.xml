@@ -15,10 +15,6 @@
 	<name>integration</name>
 	<description>GraalVM Spring Integration Demo</description>
 
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

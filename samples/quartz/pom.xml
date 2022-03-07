@@ -15,7 +15,6 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <java.version>11</java.version>
         <mainClass>com.example.quartznative.QuartzNativeApplication</mainClass>
     </properties>
 

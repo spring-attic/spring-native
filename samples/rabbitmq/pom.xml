@@ -15,10 +15,6 @@
 	<name>rabbitmq</name>
 	<description>GraalVM RabbitMQ Demo</description>
 
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

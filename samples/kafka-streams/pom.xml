@@ -15,10 +15,6 @@
 	<name>kafka</name>
 	<description>GraalVM Apache Kafka Streams Demo</description>
 
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

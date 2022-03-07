@@ -19,7 +19,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>11</java.version>
 		<docker.image.prefix>springcloud</docker.image.prefix>
 	</properties>
 

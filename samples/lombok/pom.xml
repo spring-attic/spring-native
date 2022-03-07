@@ -12,9 +12,7 @@
 	<artifactId>lombok</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>lombok</name>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>

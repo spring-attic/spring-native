@@ -16,7 +16,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>11</java.version>
 		<os.plugin.version>1.6.2</os.plugin.version>
 		<protobuf.plugin.version>0.6.1</protobuf.plugin.version>
 		<grpc.version>1.43.2</grpc.version>

@@ -23,6 +23,8 @@
 		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
 		<builder>paketobuildpacks/builder:tiny</builder>
 
+		<java.version>11</java.version>
+
 		<wavefront.version>2.2.0</wavefront.version>
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
 		<native.buildtools.version>0.9.10</native.buildtools.version>
