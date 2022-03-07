@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.FieldNode;
+
+import org.springframework.asm.SpringAsmInfo;
 import org.springframework.nativex.type.Type.TypeCollector;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -206,7 +208,7 @@ public class Field {
 		List<String> types = null;
 
 		public FieldSignatureCollector() {
-			super(Opcodes.ASM9);
+			super(SpringAsmInfo.ASM_VERSION);
 		}
 
 		@Override

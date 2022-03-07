@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import org.springframework.asm.SpringAsmInfo;
 import org.springframework.nativex.domain.reflect.MethodDescriptor;
 import org.springframework.nativex.type.Type.TypeCollector;
 
@@ -115,7 +115,7 @@ public class Method {
 		private boolean captureTypes = false;
 		
 		public TypesFromSignatureCollector(boolean returnTypeOnly) {
-			super(Opcodes.ASM9);
+			super(SpringAsmInfo.ASM_VERSION);
 			this.returnTypeOnly = returnTypeOnly;
 			if (!returnTypeOnly) {
 				this.captureTypes=true;

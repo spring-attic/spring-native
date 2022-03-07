@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.nativex.AotOptions;
+
+import static org.springframework.asm.SpringAsmInfo.ASM_VERSION;
 
 /**
  * Modify the {@link SpringApplication} on the classpath with enhancements for
@@ -97,7 +99,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 
 		public SpringApplicationClassRewriter() {
 			// Introducing branches so must recompute frames
-			super(ASM5, new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+			super(ASM_VERSION, new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
 		}
 
 		ModifyConstructor modifyConstructor = null;
@@ -160,7 +162,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			private List<String> successfulPatches = new ArrayList<>();
 
 			public ModifyConstructor(MethodVisitor mv) {
-				super(ASM5, mv);
+				super(ASM_VERSION, mv);
 			}
 
 			public void assertSuccessful() {
@@ -287,7 +289,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			private boolean successfulPatch = false;
 
 			public ModifyLoadMethod(MethodVisitor mv) {
-				super(ASM5, mv);
+				super(ASM_VERSION, mv);
 			}
 
 			public void assertSuccessful() {
@@ -324,7 +326,7 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 			private boolean successfulPatch = false;
 
 			public ModifyGetSpringFactoriesInstances(MethodVisitor mv) {
-				super(ASM5, mv);
+				super(ASM_VERSION, mv);
 			}
 
 			public void assertSuccessful() {
@@ -363,6 +365,6 @@ public class ModifiedSpringApplicationContributor implements BootstrapContributo
 				}
 			}
 		}
-	}	
+	}
 
 }
