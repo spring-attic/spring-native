@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,16 @@ class BeanInstanceExecutableSupplierTests {
 				.addConstructorArgReference("testBean").getBeanDefinition();
 		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
 		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils.findMethod(SampleFactory.class, "create", Number.class, String.class));
+	}
+
+	@Test
+	void beanDefinitionWithFactoryMethodNameAndAssignableConstructorArgWithUnresolvedGeneric() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(SampleFactory.class)
+				.setFactoryMethod("createForAnnotation").addConstructorArgValue(Override.class)
+				.getBeanDefinition();
+		Executable executable = detectBeanInstanceExecutable(beanFactory, beanDefinition);
+		assertThat(executable).isNotNull().isEqualTo(ReflectionUtils.findMethod(SampleFactory.class, "createForAnnotation", Class.class));
 	}
 
 	@Test
