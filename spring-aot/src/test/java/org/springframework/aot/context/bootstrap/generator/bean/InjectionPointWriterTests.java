@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,9 +109,15 @@ class InjectionPointWriterTests {
 
 	@Test
 	void writeInstantiationForMethodWithGenericParameters() {
-		Method method = ReflectionUtils.findMethod(SampleBean.class, "source", ObjectProvider.class);
+		Method method = ReflectionUtils.findMethod(SampleBean.class, "sourceWithProvider", ObjectProvider.class);
 		assertThat(writeInstantiation(method)).lines().containsExactly(
-				"instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(InjectionPointWriterTests.SampleBean.class).source(attributes.get(0)))");
+				"instanceContext.create(beanFactory, (attributes) -> beanFactory.getBean(InjectionPointWriterTests.SampleBean.class).sourceWithProvider(attributes.get(0)))");
+	}
+
+	@Test
+	void writeInstantiationForAmbiguousMethod() {
+		Method method = ReflectionUtils.findMethod(SampleFactory.class, "create", String.class);
+		assertThat(writeInstantiation(method)).lines().containsExactly("instanceContext.create(beanFactory, (attributes) -> SampleFactory.create(attributes.get(0, String.class)))");
 	}
 
 	@Test
@@ -200,7 +206,7 @@ class InjectionPointWriterTests {
 			return "source" + counter;
 		}
 
-		String source(ObjectProvider<Integer> counter) {
+		String sourceWithProvider(ObjectProvider<Integer> counter) {
 			return "source" + counter.getIfAvailable(() -> 0);
 		}
 
