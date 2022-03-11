@@ -15,29 +15,27 @@
  */
 package org.springframework.security.config.annotation.web.configuration;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestWrapper;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.security.config.annotation.web.CommonSecurityResources;
-import org.springframework.security.config.annotation.web.CommonSecurityTypes;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
 @NativeHint(trigger = OAuth2AuthorizationServerConfiguration.class, types =
 	@TypeHint(types = OAuth2AuthorizationCodeAuthenticationProvider.class,
 		methods = @MethodHint(name="setProviderSettings",parameterTypes=ProviderSettings.class)))
 @NativeHint(trigger = WebSecurityConfiguration.class,
-		imports = {CommonSecurityTypes.class, CommonSecurityResources.class},
 		// TODO interesting that gs-securing-web causes these to be needed although it is in thymeleaf (due to SpEL expressions I think)
 		types = {@TypeHint(
 				typeNames = "org.thymeleaf.standard.expression.RestrictedRequestAccessUtils$RestrictedRequestWrapper",
-				access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS})
+				access = {TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS, TypeAccess.DECLARED_FIELDS}),
+				@TypeHint(
+						types = {WebSecurityExpressionRoot.class},
+						access = {TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}
+				)
 		})
 public class WebMvcSecurityHints implements NativeConfiguration {
 }

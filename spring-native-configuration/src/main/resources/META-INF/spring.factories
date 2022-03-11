@@ -112,6 +112,7 @@ org.springframework.kafka.annotation.KafkaHints,\
 org.springframework.messaging.MessagingAnnotationHints,\
 org.springframework.nativex.SpringNativeHints,\
 org.springframework.scheduling.annotation.SchedulingHints,\
+org.springframework.security.core.CoreSecurityHints,\
 org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityHints,\
 org.springframework.security.config.annotation.web.configuration.WebMvcSecurityHints,\
 org.springframework.security.config.annotation.web.reactive.WebFluxSecurityHints,\
