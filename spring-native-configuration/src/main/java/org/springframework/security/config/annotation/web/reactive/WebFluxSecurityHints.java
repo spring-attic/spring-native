@@ -17,11 +17,14 @@
 package org.springframework.security.config.annotation.web.reactive;
 
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeAccess;
+import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
-import org.springframework.security.config.annotation.web.CommonSecurityResources;
-import org.springframework.security.config.annotation.web.CommonSecurityTypes;
+import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
 
 @NativeHint(trigger = WebFluxSecurityConfiguration.class,
-		imports = {CommonSecurityTypes.class, CommonSecurityResources.class})
+		types = @TypeHint(
+				types = {WebSecurityExpressionRoot.class},
+				access = {TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}))
 public class WebFluxSecurityHints implements NativeConfiguration {
 }
