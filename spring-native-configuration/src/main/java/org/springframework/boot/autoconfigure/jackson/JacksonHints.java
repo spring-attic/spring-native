@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jackson;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ext.Java7Handlers;
@@ -43,7 +44,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				JsonSerialize.class, JsonUnwrapped.class,
 				JsonIgnore.class, JsonInclude.class,
 				JsonInclude.Include.class}),
-		@TypeHint(types = JsonGenerator.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS})},
+		@TypeHint(types = JsonGenerator.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
+		@TypeHint(types = PropertyNamingStrategies.class, access = { TypeAccess.PUBLIC_FIELDS })},
 		initialization = @InitializationHint(types = {Java7Handlers.class, Java7HandlersImpl.class, Java7Support.class, Java7SupportImpl.class, ClassUtil.class}, initTime = InitializationTime.BUILD))
 public class JacksonHints implements NativeConfiguration {
 
