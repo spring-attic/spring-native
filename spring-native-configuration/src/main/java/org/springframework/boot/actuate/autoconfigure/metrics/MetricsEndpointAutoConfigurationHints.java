@@ -29,6 +29,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 	@TypeHint(types = {
 		PropertiesConfigAdapter.class,
 		SimplePropertiesConfigAdapter.class,
+		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary.class,
 		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary[].class,
 	}),
 	@TypeHint(types = {
