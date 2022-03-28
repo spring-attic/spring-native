@@ -2,6 +2,9 @@
 
 RC=0
 
+# Uses . as decimal separator
+export LANG=C
+
 echo "Testing buildpacks-based builds"
 if ! (cd "samples/commandlinerunner" && mvn -ntp clean package spring-boot:build-image); then
   RC=1

@@ -2,6 +2,9 @@
 
 RC=0
 
+# Uses . as decimal separator
+export LANG=C
+
 if [ -f samples-summary.csv ]; then
   rm samples-summary.csv
 fi

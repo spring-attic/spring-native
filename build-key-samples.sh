@@ -2,6 +2,9 @@
 
 RC=0
 
+# Uses . as decimal separator
+export LANG=C
+
 echo "GraalVM: `native-image --version`" > samples-summary.csv
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s), ReflectConfig (lines)" >> samples-summary.csv
 for i in commandlinerunner webflux-netty webmvc-tomcat webflux-thymeleaf grpc jdbc-tx class-proxies-aop batch
