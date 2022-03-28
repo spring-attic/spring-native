@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   neo4j:
-    image: neo4j:3.5
+    image: neo4j:4.4.5
     environment:
       - NEO4J_AUTH=neo4j/secret
     ports:
