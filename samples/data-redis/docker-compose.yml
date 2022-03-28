@@ -1,14 +1,6 @@
 version: '3.1'
 services:
   redis:
-    image: 'bitnami/redis:latest'
-    environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
+    image: 'redis:latest'
     ports:
       - '6379:6379'
-    volumes:
-      - 'redis_data:/bitnami/redis/data'
-volumes:
-  redis_data:
-    driver: local
