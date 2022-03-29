@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   mysql-server:
-    image: mysql
+    image: mysql/mysql-server
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=petclinic
