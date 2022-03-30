@@ -125,6 +125,7 @@ org.springframework.session.server.WebSessionHints,\
 org.springframework.stereotype.ComponentHints,\
 org.springframework.test.SpringTestHints,\
 org.springframework.test.web.reactive.server.DefaultWebTestClientBuilderHints,\
+org.springframework.transaction.annotation.TransactionalEventListenerHints,\
 org.springframework.transaction.annotation.TransactionManagementHints,\
 org.springframework.web.bind.annotation.WebAnnotationHints,\
 org.springframework.web.socket.WebSocketHints,\
