@@ -38,7 +38,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.utils.cli.CommandLineUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 import org.springframework.aot.test.build.GenerateTestBootstrapCommand;
 import org.springframework.util.StringUtils;
@@ -151,7 +150,7 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 
 			forkJvm(Paths.get(this.project.getBuild().getDirectory()).toFile(), args, Collections.emptyMap());
 
-			compileGeneratedTestSources(sourcesPath, testClasspathElements);
+			compileGeneratedTestSources(sourcesPath);
 			processGeneratedTestResources(resourcesPath, Paths.get(project.getBuild().getTestOutputDirectory()));
 
 			// Write system property as spring.properties file in test resources.
@@ -167,13 +166,11 @@ public class TestGenerateMojo extends AbstractBootstrapMojo {
 		}
 	}
 
-	protected void compileGeneratedTestSources(Path sourcesPath, List<String> testClasspathElements) throws MojoExecutionException {
+	protected void compileGeneratedTestSources(Path sourcesPath) throws MojoExecutionException {
 		String compilerVersion = this.project.getProperties().getProperty("maven-compiler-plugin.version", DEFAULT_COMPILER_PLUGIN_VERSION);
 		project.addTestCompileSourceRoot(sourcesPath.toString());
 		Xpp3Dom compilerConfig = configuration(
-				element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString())),
-				element("compilePath", testClasspathElements.stream()
-						.map(classpathElement -> element("compilePath", classpathElement)).toArray(MojoExecutor.Element[]::new))
+				element("compileSourceRoots", element("compileSourceRoot", sourcesPath.toString()))
 		);
 		executeMojo(
 				plugin(groupId("org.apache.maven.plugins"), artifactId("maven-compiler-plugin"), version(compilerVersion)),
