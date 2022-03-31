@@ -44,6 +44,7 @@ org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfigur
 org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfigurationHints,\
+org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.startup.StartupEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfigurationHints,\
