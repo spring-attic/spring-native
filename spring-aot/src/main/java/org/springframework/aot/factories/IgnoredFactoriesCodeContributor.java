@@ -17,7 +17,8 @@
 package org.springframework.aot.factories;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
@@ -52,12 +53,21 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 			"org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory",
 			"org.springframework.boot.test.context.ImportsContextCustomizerFactory");
 
+	private static final Predicate<SpringFactory> IGNORED_TEST_EXECUTION_LISTENERS = factoryEntry(
+			"org.springframework.test.context.TestExecutionListener",
+			"org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener",
+			"org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener"
+	);
+
 	private final Log logger = LogFactory.getLog(IgnoredFactoriesCodeContributor.class);
 
 	@Override
 	public boolean canContribute(SpringFactory factory) {
-		return IGNORED_FACTORY_PACKAGES.or(IGNORED_FACTORY_TYPES)
-				.or(CONTEXT_CUSTOMIZER_FACTORY).test(factory);
+		return IGNORED_FACTORY_PACKAGES
+				.or(IGNORED_FACTORY_TYPES)
+				.or(CONTEXT_CUSTOMIZER_FACTORY)
+				.or(IGNORED_TEST_EXECUTION_LISTENERS)
+				.test(factory);
 	}
 
 	@Override
@@ -67,7 +77,7 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 	}
 
 	private static Predicate<SpringFactory> factoryTypes(String... factoryTypes) {
-		List<String> candidates = Arrays.asList(factoryTypes);
+		Set<String> candidates = new HashSet<>(Arrays.asList(factoryTypes));
 		return (springFactory) -> candidates.contains(springFactory.getFactoryType().getName());
 	}
 
@@ -83,7 +93,7 @@ class IgnoredFactoriesCodeContributor implements FactoriesCodeContributor {
 	}
 
 	private static Predicate<SpringFactory> factoryEntry(String factoryType, String... factoryImplementations) {
-		List<String> candidateImplementations = Arrays.asList(factoryImplementations);
+		Set<String> candidateImplementations = new HashSet<>(Arrays.asList(factoryImplementations));
 		return factoryTypes(factoryType).and((springFactory) ->
 				candidateImplementations.contains(springFactory.getFactory().getName()));
 	}
