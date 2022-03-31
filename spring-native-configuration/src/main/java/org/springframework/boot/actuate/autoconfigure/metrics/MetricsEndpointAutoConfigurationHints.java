@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
-import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -28,9 +28,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = MetricsEndpointAutoConfiguration.class, types = {
 	@TypeHint(types = {
 		PropertiesConfigAdapter.class,
-		SimplePropertiesConfigAdapter.class,
-		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary.class,
-		org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary[].class,
+			SimplePropertiesConfigAdapter.class
 	}),
 	@TypeHint(types = {
 		MetricsEndpoint.class,
