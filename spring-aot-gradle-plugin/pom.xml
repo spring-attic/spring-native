@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-gradle-plugin</artifactId>
-			<version>0.9.10</version>
+			<version>0.9.11</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.gradle</groupId>
