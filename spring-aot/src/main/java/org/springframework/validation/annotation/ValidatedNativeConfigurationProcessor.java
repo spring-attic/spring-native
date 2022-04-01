@@ -16,6 +16,7 @@
 
 package org.springframework.validation.annotation;
 
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 
 import org.apache.commons.logging.Log;
@@ -69,7 +70,7 @@ public class ValidatedNativeConfigurationProcessor implements BeanFactoryNativeC
 							logger.debug("creating native JDKProxy configuration for these interfaces: "+interfaces);
 							registry.proxy().add(NativeProxyEntry.ofInterfaceNames(interfaces.toArray(new String[0])));
 						}
-					} else if (!beanType.isInterface()) {
+					} else if (!beanType.isInterface() && !Modifier.isFinal(beanType.getModifiers())) { // record types are final
 						logger.debug("creating AOTProxy for this class: "+beanType.getName());
 						registry.proxy().add(NativeProxyEntry.ofClass(beanType,ProxyBits.IS_STATIC));
 					}
