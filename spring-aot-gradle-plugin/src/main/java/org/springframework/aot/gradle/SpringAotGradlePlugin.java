@@ -108,7 +108,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			// Automatically add the spring-native dependency to the implementation configuration
 			// as it's required for hints
 			addSpringNativeDependency(project);
-			Path generatedFilesPath = createGeneratedSourcesFolder(project);
+			Path generatedFilesPath = resolveGeneratedSourcesFolder(project);
 
 			// deprecation replaced with new API introduced in Gradle 7.1
 			//noinspection deprecation
@@ -117,6 +117,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 			// Create a detached configuration that holds dependencies for AOT generation
 			SourceSet aotMainSourceSet = createAotMainSourceSet(sourceSets, project.getConfigurations(), generatedFilesPath);
 			GenerateAotSources generateAotSources = createGenerateAotSourcesTask(project, sourceSets);
+			generateAotSources.doFirst(task -> clearGeneratedSourcesFolder(project));
 			project.getTasks().named(aotMainSourceSet.getCompileJavaTaskName(), JavaCompile.class, (aotCompileJava) -> {
 				aotCompileJava.source(generateAotSources.getSourcesOutputDirectory());
 			});
@@ -198,19 +199,23 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 	}
 
 	/**
-	 * Recreate a folder for generated sources and resources, deleting files
-	 * possibly contributed in previous builds.
+	 * Resolve the path to the folder for generated sources and resources.
 	 */
-	private Path createGeneratedSourcesFolder(Project project) {
+	private Path resolveGeneratedSourcesFolder(Project project) {
 		String buildPath = project.getBuildDir().getAbsolutePath();
+		return Paths.get(buildPath, "generated");
+	}
+
+	private void clearGeneratedSourcesFolder(Project project) {
+		Path generatedSourcesFolder = resolveGeneratedSourcesFolder(project);
 		try {
-			Path generatedSourcesFolder = Paths.get(buildPath, "generated");
 			FileSystemUtils.deleteRecursively(generatedSourcesFolder);
-			return Files.createDirectories(generatedSourcesFolder);
+			Files.createDirectories(generatedSourcesFolder);
 		}
 		catch (IOException exc) {
-			throw new GradleException("Failed to recreate folder '" + buildPath + "/generated/'", exc);
+			throw new GradleException("Failed to recreate folder '" + generatedSourcesFolder + "'", exc);
 		}
+
 	}
 
 	private SourceSet createAotMainSourceSet(SourceSetContainer sourceSets, ConfigurationContainer configurations, Path generatedFilesPath) {
