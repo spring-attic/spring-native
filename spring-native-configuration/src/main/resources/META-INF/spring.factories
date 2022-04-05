@@ -121,8 +121,8 @@ org.springframework.security.ldap.LdapSecurityHints,\
 org.springframework.security.oauth2.jwt.JwtHints,\
 org.springframework.security.thymeleaf.ThymeleafSpringSecurity5Hints,\
 org.springframework.security.test.SpringSecurityTestHints,\
-org.springframework.session.servlet.HttpSessionHints,\
-org.springframework.session.server.WebSessionHints,\
+org.springframework.session.servlet.HttpSessionSecurityHints,\
+org.springframework.session.server.WebSessionSecurityHints,\
 org.springframework.stereotype.ComponentHints,\
 org.springframework.test.SpringTestHints,\
 org.springframework.test.web.reactive.server.DefaultWebTestClientBuilderHints,\

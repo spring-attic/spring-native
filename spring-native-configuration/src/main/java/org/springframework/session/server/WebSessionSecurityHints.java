@@ -21,22 +21,21 @@ import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.security.web.server.csrf.DefaultCsrfToken;
-import org.springframework.session.CommonSessionSerializables;
+import org.springframework.session.CommonSessionSecuritySerializables;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.util.ClassUtils;
 
 
 @NativeHint(trigger = SpringWebSessionConfiguration.class,
-        imports = CommonSessionSerializables.class,
-        serializables = {@SerializationHint(types = {
-                DefaultCsrfToken.class
-        })
-        }, abortIfTypesMissing = true)
-public class WebSessionHints implements NativeConfiguration {
+        imports = CommonSessionSecuritySerializables.class,
+        serializables = @SerializationHint(types = DefaultCsrfToken.class),
+        abortIfTypesMissing = true)
+public class WebSessionSecurityHints implements NativeConfiguration {
 
     @Override
     public boolean isValid(AotOptions aotOptions) {
         // Similar to check in OnWebApplicationCondition (effectively implementing ConditionalOnWebApplication(REACTIVE))
-        return ClassUtils.isPresent("org.springframework.web.server.WebSession", null);
+        return ClassUtils.isPresent("org.springframework.web.server.WebSession", null)
+                && ClassUtils.isPresent("org.springframework.security.web.csrf.DefaultCsrfToken", null);
     }
 }

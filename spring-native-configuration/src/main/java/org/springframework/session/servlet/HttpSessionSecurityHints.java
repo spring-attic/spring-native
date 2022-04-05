@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedCookie;
-import org.springframework.session.CommonSessionSerializables;
+import org.springframework.session.CommonSessionSecuritySerializables;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 import org.springframework.util.ClassUtils;
 
@@ -32,22 +32,21 @@ import java.util.Locale;
 import java.util.TreeMap;
 
 @NativeHint(trigger = SpringHttpSessionConfiguration.class,
-        imports = CommonSessionSerializables.class,
-        serializables = {@SerializationHint(types = {
+        imports = CommonSessionSecuritySerializables.class,
+        serializables = @SerializationHint(types = {
                 TreeMap.class,
                 Locale.class,
                 DefaultSavedRequest.class,
                 DefaultCsrfToken.class,
                 WebAuthenticationDetails.class,
                 SavedCookie.class
+        }, typeNames = "java.lang.String$CaseInsensitiveComparator")
+        , abortIfTypesMissing = true)
+public class HttpSessionSecurityHints implements NativeConfiguration {
 
-        }, typeNames = {
-                "java.lang.String$CaseInsensitiveComparator",
-        })
-        }, abortIfTypesMissing = true)
-public class HttpSessionHints implements NativeConfiguration {
     @Override
     public boolean isValid(AotOptions aotOptions) {
-        return ClassUtils.isPresent("javax.servlet.http.HttpSession", null);
+        return ClassUtils.isPresent("javax.servlet.http.HttpSession", null)
+                && ClassUtils.isPresent("org.springframework.security.web.csrf.DefaultCsrfToken", null);
     }
 }

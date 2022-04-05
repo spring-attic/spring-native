@@ -80,5 +80,5 @@ import java.util.TreeSet;
         "java.util.Collections$UnmodifiableSet",
         "org.springframework.security.core.userdetails.User$AuthorityComparator"
 })
-public class CommonSessionSerializables {
+public class CommonSessionSecuritySerializables {
 }
