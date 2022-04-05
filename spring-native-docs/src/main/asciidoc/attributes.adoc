@@ -26,7 +26,7 @@
 :graalvm-native-buildtools: https://github.com/graalvm/native-build-tools
 :graalvm-native-buildtools-version: 0.9.11
 
-:spring-boot-version: 2.6.4
+:spring-boot-version: 2.6.6
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/
 :spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/htmlsingle/
