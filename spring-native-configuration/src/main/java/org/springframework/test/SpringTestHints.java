@@ -16,6 +16,12 @@
 
 package org.springframework.test;
 
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.InitializationHint;
+import org.springframework.nativex.hint.MethodHint;
+import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -57,7 +63,9 @@ import org.springframework.nativex.type.NativeConfiguration;
 		}, access = TypeAccess.PUBLIC_METHODS),
 		@TypeHint(types = {
 				org.springframework.test.context.support.DelegatingSmartContextLoader.class
-		}, access = TypeAccess.DECLARED_CONSTRUCTORS)
+		}, access = TypeAccess.DECLARED_CONSTRUCTORS),
+		@TypeHint(types = { AotProxyHint.class, FieldHint.class, InitializationHint.class, JdkProxyHint.class, MethodHint.class,
+				NativeHint.class, ResourceHint.class, SerializationHint.class, TypeHint.class }, typeNames = "org.springframework.core.annotation.TypeMappedAnnotation[]" )
 	},
 	jdkProxies = {
 		@JdkProxyHint(types = { org.springframework.test.context.ActiveProfiles.class, org.springframework.core.annotation.SynthesizedAnnotation.class }),
