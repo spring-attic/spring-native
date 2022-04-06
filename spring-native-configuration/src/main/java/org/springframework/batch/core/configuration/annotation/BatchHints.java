@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,13 @@ import org.springframework.nativex.type.NativeConfiguration;
 				"org/springframework/batch/core/schema-hsqldb.sql",
 				"org/springframework/batch/core/schema-mysql.sql",
 				"org/springframework/batch/core/schema-oracle10g.sql",
+				"org/springframework/batch/core/schema-oracle.sql",
 				"org/springframework/batch/core/schema-postgresql.sql",
 				"org/springframework/batch/core/schema-sqlf.sql",
 				"org/springframework/batch/core/schema-sqlite.sql",
 				"org/springframework/batch/core/schema-sqlserver.sql",
-				"org/springframework/batch/core/schema-sybase.sql"
+				"org/springframework/batch/core/schema-sybase.sql",
+				"org/springframework/batch/core/schema-hana.sql"
 		}),
 		types = {
 		@TypeHint(types = TypeAccess.class, access = {}), // Required for @EnableBatchProcessing + @TypeHint(types = Person.class, access = ...) ?
