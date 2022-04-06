@@ -13,7 +13,7 @@
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-native-sample-parent</artifactId>
 	<name>Spring Native sample parent</name>
-	<version>0.11.4-SNAPSHOT</version>
+	<version>0.12.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -49,7 +49,7 @@
 				<plugin>
 					<groupId>org.springframework.experimental</groupId>
 					<artifactId>spring-aot-maven-plugin</artifactId>
-					<version>0.11.4-SNAPSHOT</version>
+					<version>0.12.0-SNAPSHOT</version>
 					<executions>
 						<execution>
 							<id>generate</id>
@@ -149,7 +149,7 @@
 			<dependency>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-native</artifactId>
-				<version>0.11.4-SNAPSHOT</version>
+				<version>0.12.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
