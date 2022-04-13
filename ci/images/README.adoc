@@ -33,7 +33,7 @@ To build the Spring Native image used namely by the samples, you need to provide
 with the target GraalVM installation, using the `BASE_IMAGE` argument:
 
 ----
-$ docker build --no-cache --build-arg BASE_IMAGE=springci/graalvm-ce:dev-java11-0.11.x -f spring-native-image/Dockerfile .
+$ docker build --no-cache --build-arg BASE_IMAGE=springci/graalvm-ce:dev-java11-0.12.x -f spring-native-image/Dockerfile .
 ----
 
 === Testing
