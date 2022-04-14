@@ -16,7 +16,9 @@ if ! (./build.sh); then
     RC=1
 fi
 if [ "$AOT_ONLY" = false ] ; then
-  if ! (./build-samples-with-native-tests.sh); then
+  # Temporarily skip native tests due to https://github.com/spring-projects-experimental/spring-native/issues/1584
+  # if ! (./build-samples-with-native-tests.sh); then
+  if ! (./build-samples.sh); then
     RC=1
   fi
 else
