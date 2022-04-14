@@ -16,9 +16,12 @@
 
 package org.springframework.aot.maven;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +46,7 @@ import org.springframework.util.FileSystemUtils;
 
 /**
  * @author Brian Clozel
+ * @uthor Moritz Halbritter
  */
 abstract class AbstractBootstrapMojo extends AbstractMojo {
 
@@ -174,17 +178,69 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 
 	protected void forkJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
 			throws MojoExecutionException {
+		Path argFile = createArgFile();
 		try {
+			writeArgumentsToFile(args, argFile);
 			RunProcess runProcess = new RunProcess(workingDirectory, getJavaExecutable());
 			Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			int exitCode = runProcess.run(true, args, environmentVariables);
+			int exitCode = runProcess.run(true, List.of("@" + argFile), environmentVariables);
 			if (exitCode == 0 || exitCode == 130) {
 				return;
 			}
 			throw new MojoExecutionException("Bootstrap code generator finished with exit code: " + exitCode);
 		}
 		catch (Exception ex) {
+			if (getLog().isDebugEnabled()) {
+				getLog().debug("Content of arg file:");
+				getLog().debug(readContent(argFile));
+			}
 			throw new MojoExecutionException("Could not exec java", ex);
+		}
+		finally {
+			deleteFile(argFile);
+		}
+	}
+
+	private String readContent(Path file) {
+		if (!Files.exists(file)) {
+			return "<file doesn't exist>";
+		}
+		try {
+			return Files.readString(file);
+		}
+		catch (IOException e) {
+			return "<exception while reading file: " + e.getMessage() + ">";
+		}
+	}
+
+	private void writeArgumentsToFile(List<String> args, Path argFile) throws IOException {
+		// See https://docs.oracle.com/en/java/javase/11/tools/java.html#GUID-4856361B-8BFD-4964-AE84-121F5F6CF111
+		try (BufferedWriter writer = Files.newBufferedWriter(argFile, StandardCharsets.UTF_8)) {
+			for (String arg : args) {
+				String escaped = arg.replace("\\", "\\\\");
+				writer.write('"');
+				writer.write(escaped);
+				writer.write('"');
+				writer.newLine();
+			}
+		}
+	}
+
+	private void deleteFile(Path file) {
+		try {
+			Files.deleteIfExists(file);
+		}
+		catch (IOException ex) {
+			getLog().debug("Failed to delete file " + file, ex);
+		}
+	}
+
+	private Path createArgFile() throws MojoExecutionException {
+		try {
+			return Files.createTempFile("spring-aot-maven-plugin", ".arg").toAbsolutePath();
+		}
+		catch (IOException ex) {
+			throw new MojoExecutionException("Failed to generate arg file", ex);
 		}
 	}
 
@@ -193,7 +249,7 @@ abstract class AbstractBootstrapMojo extends AbstractMojo {
 		String javaExecutable = (toolchain != null) ? toolchain.findTool("java") : null;
 		return (javaExecutable != null) ? javaExecutable : new JavaExecutable().toString();
 	}
-	
+
 	protected static final class RunProcessKiller implements Runnable {
 
 		private final RunProcess runProcess;
