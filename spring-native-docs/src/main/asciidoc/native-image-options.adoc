@@ -4,7 +4,7 @@
 GraalVM `native-image` options are documented {graalvm-native-docs}/Options/[here].
 Spring Native is enabling automatically some of those, and some others especially useful are documented here as well.
 
-They can be specified using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable in Spring Boot plugin if you are using {spring-boot-docs}/html/spring-boot-features.html#boot-features-container-images-buildpacks[Buildpacks support] or using the `<buildArgs></buildArgs>` configuration element if you are using `native-image-maven-plugin`.
+They can be specified using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable in Spring Boot plugin if you are using {spring-boot-docs}/html/container-images.html#container-images.buildpacks[Cloud Native Buildpacks] or using the `<buildArgs></buildArgs>` configuration element if you are using `native-maven-plugin`.
 
 [[native-image-options-default]]
 === Options enabled by default
