@@ -7,6 +7,7 @@ NC='\033[0m'
 
 AOT_ONLY=false
 NATIVE_TESTS=false
+NICENESS=0
 
 while test $# -gt 0; do
   case "$1" in
@@ -26,6 +27,14 @@ while test $# -gt 0; do
       export NATIVE_TESTS=true
       shift
       ;;
+    -l)
+      export NICENESS=19
+      shift
+      ;;
+    --low-priority)
+      export NICENESS=19
+      shift
+      ;;
     *)
       break
       ;;
@@ -40,9 +49,9 @@ mkdir -p build/native
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Gradle (native)"
   if [ "$NATIVE_TESTS" = false ] ; then
-    ./gradlew nativeCompile &> build/native/output.txt
+    nice -n $NICENESS ./gradlew nativeCompile &> build/native/output.txt
   else
-    ./gradlew nativeTest nativeCompile &> build/native/output.txt
+    nice -n $NICENESS ./gradlew nativeTest nativeCompile &> build/native/output.txt
   fi
 
   if [[ -f build/native/nativeCompile/${PWD##*/} ]]; then
@@ -54,7 +63,7 @@ if [ "$AOT_ONLY" = false ] ; then
   fi
 else
   echo "Packaging ${PWD##*/} with Gradle (AOT only)'"
-  if ./gradlew build &> build/native/output.txt; then
+  if nice -n $NICENESS ./gradlew build &> build/native/output.txt; then
     printf "${GREEN}SUCCESS${NC}\n"
   else
     cat build/native/output.txt

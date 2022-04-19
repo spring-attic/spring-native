@@ -7,6 +7,7 @@ NC='\033[0m'
 
 AOT_ONLY=false
 NATIVE_TESTS=false
+NICENESS=0
 
 while test $# -gt 0; do
   case "$1" in
@@ -24,6 +25,14 @@ while test $# -gt 0; do
       ;;
     --native-tests)
       export NATIVE_TESTS=true
+      shift
+      ;;
+    -l)
+      export NICENESS=19
+      shift
+      ;;
+    --low-priority)
+      export NICENESS=19
       shift
       ;;
     *)
@@ -44,12 +53,12 @@ mkdir -p target/native
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Maven (native)"
   if [[ ${PWD##*/} == *-agent ]] ; then
-    mvn test &> target/native/output.txt
+    nice -n $NICENESS mvn test &> target/native/output.txt
   fi
   if [ "$NATIVE_TESTS" = false ] ; then
-    mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
+    nice -n $NICENESS mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
   else
-    mvn -ntp -Pnative package $* &> target/native/output.txt
+    nice -n $NICENESS mvn -ntp -Pnative package $* &> target/native/output.txt
   fi
 
   if [[ -f target/${PWD##*/} ]]; then
@@ -61,7 +70,7 @@ if [ "$AOT_ONLY" = false ] ; then
   fi
 else
   echo "Packaging ${PWD##*/} with Maven (AOT only)"
-  if mvn -ntp package $* &> target/native/output.txt; then
+  if nice -n $NICENESS mvn -ntp package $* &> target/native/output.txt; then
     printf "${GREEN}SUCCESS${NC}\n"
   else
     cat target/native/output.txt
