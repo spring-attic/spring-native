@@ -355,7 +355,7 @@ public class ProxyGenerator {
 		public AuxiliaryTypeNamingStrategy() {}
 
 		@Override
-		public String name(TypeDescription instrumentedType) {
+		public String name(TypeDescription instrumentedType, AuxiliaryType auxiliaryType) {
 			return instrumentedType.getName()+"$aux$"+Integer.toHexString(counter++);
 		}
 	}

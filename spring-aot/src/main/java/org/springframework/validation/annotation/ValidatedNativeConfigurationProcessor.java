@@ -41,7 +41,7 @@ import org.springframework.util.ClassUtils;
  * @author Petr Hejl
  * @author Andy Clement
  */
-public class ValidatedNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
+	public class ValidatedNativeConfigurationProcessor implements BeanFactoryNativeConfigurationProcessor {
 
 	private static Log logger = LogFactory.getLog(ValidatedNativeConfigurationProcessor.class);
 

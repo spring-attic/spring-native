@@ -16,8 +16,8 @@
 
 package org.mariadb;
 
+import org.mariadb.jdbc.Configuration;
 import org.mariadb.jdbc.Driver;
-import org.mariadb.jdbc.util.Options;
 import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
@@ -25,7 +25,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = Driver.class, types = {
-		@TypeHint(types = Options.class, fields = {
+		@TypeHint(types = Configuration.Builder.class, fields = {
 				// Parameters and categories are explained here:
 				// https://mariadb.com/kb/en/about-mariadb-connector-j/
 

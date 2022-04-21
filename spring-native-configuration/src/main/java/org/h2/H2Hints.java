@@ -16,16 +16,15 @@
 
 package org.h2;
 
-import org.h2.mvstore.db.MVTableEngine;
-import org.h2.store.fs.FilePathAsync;
-import org.h2.store.fs.FilePathDisk;
-import org.h2.store.fs.FilePathMem;
-import org.h2.store.fs.FilePathNio;
-import org.h2.store.fs.FilePathNioMapped;
-import org.h2.store.fs.FilePathNioMem;
-import org.h2.store.fs.FilePathRetryOnInterrupt;
-import org.h2.store.fs.FilePathSplit;
-import org.h2.store.fs.FilePathZip;
+import org.h2.store.fs.async.FilePathAsync;
+import org.h2.store.fs.disk.FilePathDisk;
+import org.h2.store.fs.mem.FilePathMem;
+import org.h2.store.fs.niomapped.FilePathNioMapped;
+import org.h2.store.fs.niomem.FilePathNioMem;
+import org.h2.store.fs.retry.FilePathRetryOnInterrupt;
+import org.h2.store.fs.split.FilePathSplit;
+import org.h2.store.fs.zip.FilePathZip;
+
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
@@ -38,12 +37,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 				FilePathMem.class,
 				FilePathNioMem.class,
 				FilePathSplit.class,
-				FilePathNio.class,
+				FilePathNioMem.class,
 				FilePathNioMapped.class,
 				FilePathAsync.class,
 				FilePathZip.class,
-				FilePathRetryOnInterrupt.class,
-				MVTableEngine.class
+				FilePathRetryOnInterrupt.class
 		}, typeNames= { "org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF" }),
 		initialization = @InitializationHint(types = org.h2.util.Bits.class, initTime = InitializationTime.BUILD)
 		)

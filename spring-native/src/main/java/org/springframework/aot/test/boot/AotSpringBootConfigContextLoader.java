@@ -33,6 +33,7 @@ import org.springframework.boot.web.servlet.support.ServletContextApplicationCon
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -113,6 +114,10 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 		ConfigurableApplicationContext context = application.run(this.args);
 
 		return context;
+	}
+
+	protected ConfigurableEnvironment getEnvironment() {
+		return new StandardEnvironment();
 	}
 
 	private boolean isEmbeddedWebEnvironment() {
