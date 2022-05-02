@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -346,6 +347,7 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
+	@Disabled // See https://github.com/mockito/mockito/issues/2634
 	void awareCallbacksOnBeanRegistrationWriterAreHonored() {
 		AwareBeanRegistrationWriterSupplier supplier = spy(new AwareBeanRegistrationWriterSupplier());
 		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
@@ -362,6 +364,7 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
+	@Disabled // See https://github.com/mockito/mockito/issues/2634
 	void awareCallbacksOnBeanDefinitionExcludeFilterAreHonored() {
 		AwareBeanDefinitionExcludeFilter filter = spy(new AwareBeanDefinitionExcludeFilter());
 		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(

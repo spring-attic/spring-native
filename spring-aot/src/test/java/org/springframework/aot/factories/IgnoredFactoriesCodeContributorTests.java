@@ -2,6 +2,7 @@ package org.springframework.aot.factories;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,6 +45,7 @@ class IgnoredFactoriesCodeContributorTests {
 	}
 
 	@Test
+	@Disabled // See https://github.com/mockito/mockito/issues/2634
 	void contributeIsNoOp() {
 		CodeGenerator codeGenerator = mock(CodeGenerator.class);
 		BuildContext buildContext = mock(BuildContext.class);
