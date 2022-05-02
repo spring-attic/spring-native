@@ -167,6 +167,13 @@ public class ConfigurationContributor implements BootstrapContributor {
 				logger.debug("Cannot reach class proxy target type of: " + classProxyDescriptor);
 				continue;
 			}
+			try {
+				Class<?> proxySuperClass = ClassUtils.forName(classProxyDescriptor.getTargetClassType(), context.getClassLoader());
+				proxySuperClass.getDeclaredMethods();
+			} catch (NoClassDefFoundError | ClassNotFoundException ex) {
+				logger.debug("Unable to proxy methods on class [" + classProxyDescriptor + "] due to missing type: " + ex.getMessage());
+				continue;
+			}
 			classProxyNames.add(generateBuildTimeClassProxy(classProxyDescriptor, context));
 		}
 		return classProxyNames;

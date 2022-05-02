@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.jpa;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.JpaQueryMethodFactory;
 import org.springframework.data.jpa.repository.support.JpaEvaluationContextExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
@@ -29,16 +30,18 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 @NativeHint(trigger = JpaRepositoryFactoryBean.class,
 		resources = @ResourceHint(patterns = "META-INF/jpa-named-queries.properties"),
-		types = @TypeHint(types = {
-				SharedEntityManagerCreator.class, // TODO is this one in the right place?
-				JpaRepositoryFactoryBean.class,
-				JpaEvaluationContextExtension.class,
-				JpaQueryMethodFactory.class
-		} , typeNames = {
+		types = {
+			@TypeHint(types = {
+						SharedEntityManagerCreator.class, // TODO is this one in the right place?
+						JpaRepositoryFactoryBean.class,
+						JpaEvaluationContextExtension.class,
+						JpaQueryMethodFactory.class
+				} , typeNames = {
 						"org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean",
 						"org.springframework.data.jpa.util.JpaMetamodelCacheCleanup"
-				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS })
-		,
+				}, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS }),
+				@TypeHint(types = Query.class)
+		},
 		jdkProxies = @JdkProxyHint(typeNames = {
 				"org.springframework.data.jpa.repository.support.CrudMethodMetadata",
 				"org.springframework.aop.SpringProxy",
