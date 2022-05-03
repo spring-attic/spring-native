@@ -23,12 +23,17 @@ import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.filter.RequestContextFilter;
+
+import static org.springframework.nativex.hint.TypeAccess.PUBLIC_METHODS;
+import static org.springframework.nativex.hint.TypeAccess.QUERY_PUBLIC_METHODS;
 
 
 @NativeHint(trigger = WebMvcAutoConfiguration.class,
 	types = {
 		@TypeHint(types = Servlet.class, access = {}),
-		@TypeHint(types = ConfigurableWebApplicationContext.class, access = {})
+		@TypeHint(types = ConfigurableWebApplicationContext.class, access = {}),
+		@TypeHint(types = RequestContextFilter.class, access = {PUBLIC_METHODS, QUERY_PUBLIC_METHODS})
 	},
 	resources = @ResourceHint(patterns="org/springframework/web/util/HtmlCharacterEntityReferences.properties"))
 public class WebMvcHints implements NativeConfiguration {
