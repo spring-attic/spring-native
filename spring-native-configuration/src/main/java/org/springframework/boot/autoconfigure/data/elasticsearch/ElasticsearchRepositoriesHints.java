@@ -20,6 +20,7 @@ import org.elasticsearch.xcontent.XContentParser;
 
 import org.springframework.boot.autoconfigure.data.SpringDataReactiveHints;
 import org.springframework.data.elasticsearch.core.event.AfterConvertCallback;
+import org.springframework.data.elasticsearch.core.event.AfterLoadCallback;
 import org.springframework.data.elasticsearch.core.event.AfterSaveCallback;
 import org.springframework.data.elasticsearch.core.event.BeforeConvertCallback;
 import org.springframework.data.elasticsearch.core.event.ReactiveAfterConvertCallback;
@@ -55,6 +56,7 @@ import org.springframework.nativex.hint.TypeHint;
 						BeforeConvertCallback.class,
 						AfterSaveCallback.class,
 						AfterConvertCallback.class,
+						AfterLoadCallback.class,
 						SimpleElasticsearchRepository.class },
 						access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
 				@TypeHint(types = {
