@@ -12,27 +12,27 @@ public class Foo {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 
-	private String value;
+	private String name;
 
 	public Foo() {
 	}
 
-	public Foo(String value) {
-		this.value = value;
+	public Foo(String name) {
+		this.name = name;
 	}
 
-	public String getValue() {
-		return this.value;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public String toString() {
 		return String.format(
-				"Foo[id=%d, value='%s']",
-				id, value);
+				"Foo[id=%d, name='%s']",
+				id, name);
 	}
 }

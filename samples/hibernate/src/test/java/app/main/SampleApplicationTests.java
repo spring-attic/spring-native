@@ -37,7 +37,7 @@ public class SampleApplicationTests {
 
 	@Test
 	public void test() {
-		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"value\":\"Hello\"}");
+		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"name\":\"Hello\"}");
 	}
 
 }
