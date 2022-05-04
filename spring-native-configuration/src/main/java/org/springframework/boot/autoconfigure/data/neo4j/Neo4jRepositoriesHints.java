@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.springframework.data.neo4j.config.AbstractNeo4jConfig;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
+import org.springframework.data.neo4j.core.mapping.callback.AfterConvertCallback;
 import org.springframework.data.neo4j.core.mapping.callback.AuditingBeforeBindCallback;
 import org.springframework.data.neo4j.core.mapping.callback.BeforeBindCallback;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
@@ -36,6 +37,7 @@ import org.springframework.nativex.hint.TypeHint;
 	@TypeHint(types = {
 			SimpleNeo4jRepository.class,
 			BeforeBindCallback.class,
+			AfterConvertCallback.class,
 			AuditingBeforeBindCallback.class
 	}, typeNames = {
 			"org.springframework.data.neo4j.repository.query.SimpleQueryByExampleExecutor",
