@@ -35,9 +35,9 @@ import org.springframework.util.Assert;
 @Component
 public class Runner implements CommandLineRunner, Finder<Foo> {
 
-	private static final String GET_FOO = "SELECT VALUE from FOOS where ID=?";
+	private static final String GET_FOO = "SELECT NAME from FOOS where ID=?";
 
-	private static final String ADD_FOO = "INSERT into FOOS (ID, VALUE) values (?, ?)";
+	private static final String ADD_FOO = "INSERT into FOOS (ID, NAME) values (?, ?)";
 
 	private final JdbcTemplate entities;
 
