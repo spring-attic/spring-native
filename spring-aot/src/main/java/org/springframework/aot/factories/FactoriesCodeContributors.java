@@ -40,6 +40,7 @@ class FactoriesCodeContributors {
 		this.contributors = Arrays.asList(new IgnoredFactoriesCodeContributor(),
 				new TestExecutionListenerFactoriesCodeContributor(),
 				new TestAutoConfigurationFactoriesCodeContributor(aotOptions),
+				new FailureAnalyzersCodeContributor(),
 				new NoArgConstructorFactoriesCodeContributor(),
 				new PrivateFactoriesCodeContributor(),
 				new DefaultFactoriesCodeContributor(aotOptions));
