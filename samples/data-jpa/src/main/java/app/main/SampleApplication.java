@@ -52,7 +52,7 @@ public class SampleApplication {
 			Foo foo;
 			foo = maybeFoo.orElseGet(() -> entities.save(new Foo("Hello")));
 			Flurb flurb = new Flurb();
-			flurb.setValue("Balla balla");
+			flurb.setVal("Balla balla");
 			foo.setFlurb(flurb);
 			entities.save(foo);
 

@@ -25,9 +25,9 @@ public class Flurb {
 	@GeneratedValue
 	Long id;
 
-	String value;
+	String val;
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setVal(String val) {
+		this.val = val;
 	}
 }

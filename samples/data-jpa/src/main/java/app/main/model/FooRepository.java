@@ -25,8 +25,8 @@ import java.util.List;
  * @author Dave Syer
  */
 public interface FooRepository extends JpaRepository<Foo, Long> {
-	@Query("select f from Foo f where f.value between :min and :max")
+	@Query("select f from Foo f where f.val between :min and :max")
 	List<Foo> findWithBetween(String min, String max);
 
-	Foo findFirstByFlurbValueContaining(String name);
+	Foo findFirstByFlurbValContaining(String name);
 }

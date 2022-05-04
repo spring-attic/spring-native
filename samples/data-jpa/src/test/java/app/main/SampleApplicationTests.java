@@ -32,7 +32,7 @@ public class SampleApplicationTests {
 
 	@Test
 	public void test() {
-		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"value\":\"Hello\",\"flurb\":{}}");
+		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"val\":\"Hello\",\"flurb\":{}}");
 	}
 
 }

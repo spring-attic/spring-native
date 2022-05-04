@@ -40,7 +40,7 @@ public class Foo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	private String value;
+	private String val;
 	@Enumerated
 	private SomeEnum enumerated;
 	@OneToOne(cascade = CascadeType.ALL)
@@ -61,16 +61,16 @@ public class Foo {
 	public Foo() {
 	}
 
-	public Foo(String value) {
-		this.value = value;
+	public Foo(String val) {
+		this.val = val;
 	}
 
-	public String getValue() {
-		return this.value;
+	public String getVal() {
+		return this.val;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setVal(String val) {
+		this.val = val;
 	}
 
 	public Flurb getFlurb() {
@@ -89,7 +89,7 @@ public class Foo {
 	public String toString() {
 		return String.format(
 				"Foo[id=%d, value='%s']",
-				id, value);
+				id, val);
 	}
 
 }
