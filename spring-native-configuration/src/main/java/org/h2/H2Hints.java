@@ -29,6 +29,7 @@ import org.h2.store.fs.FilePathZip;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
@@ -45,7 +46,8 @@ import org.springframework.nativex.type.NativeConfiguration;
 				FilePathRetryOnInterrupt.class,
 				MVTableEngine.class
 		}, typeNames= { "org.h2.store.fs.FilePathMemLZF","org.h2.store.fs.FilePathNioMemLZF" }),
-		initialization = @InitializationHint(types = org.h2.util.Bits.class, initTime = InitializationTime.BUILD)
+		initialization = @InitializationHint(types = org.h2.util.Bits.class, initTime = InitializationTime.BUILD),
+		resources = @ResourceHint(patterns = "org/h2/util/data.zip")
 		)
 public class H2Hints implements NativeConfiguration {
 }
