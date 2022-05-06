@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.relational.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 
 @Configuration
@@ -37,7 +38,7 @@ public class DataJdbcConfiguration {
 	@Bean
 	public ApplicationListener<?> idSetting() {
 
-		return (ApplicationListener<BeforeSaveEvent>) event -> {
+		return (ApplicationListener<BeforeConvertEvent>) event -> {
 
 			if (event.getEntity() instanceof LegoSet) {
 				setIds((LegoSet) event.getEntity());
