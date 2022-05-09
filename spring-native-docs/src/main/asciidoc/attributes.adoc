@@ -31,7 +31,7 @@
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/
 :spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/htmlsingle/
 
-:spring-cloud-version: 2021.0.2
+:spring-cloud-version: 2021.0.1
 
 :spring-framework-version: current
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api

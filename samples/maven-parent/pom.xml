@@ -26,7 +26,7 @@
 		<java.version>11</java.version>
 
 		<wavefront.version>2.2.0</wavefront.version>
-		<spring-cloud.version>2021.0.2</spring-cloud.version>
+		<spring-cloud.version>2021.0.1</spring-cloud.version>
 		<native.buildtools.version>0.9.11</native.buildtools.version>
 	</properties>
 
