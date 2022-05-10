@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.experimental</groupId>
         <artifactId>spring-native-sample-parent</artifactId>
-        <version>0.11.5-SNAPSHOT</version>
+        <version>0.11.6-SNAPSHOT</version>
         <relativePath>../maven-parent/pom.xml</relativePath>
     </parent>
     <groupId>com.example</groupId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.springframework.experimental</groupId>
             <artifactId>spring-aot</artifactId>
-            <version>0.11.5-SNAPSHOT</version>
+            <version>0.11.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>

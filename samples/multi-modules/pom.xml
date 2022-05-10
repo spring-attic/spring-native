@@ -16,7 +16,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
-		<spring-native.version>0.11.5-SNAPSHOT</spring-native.version>
+		<spring-native.version>0.11.6-SNAPSHOT</spring-native.version>
 	</properties>
 
 	<modules>

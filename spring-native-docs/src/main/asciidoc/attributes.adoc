@@ -3,7 +3,7 @@
 :numbered:
 :icons: font
 :hide-uri-scheme:
-:version: 0.11.4-SNAPSHOT
+:version: 0.11.6-SNAPSHOT
 
 :buildpacks: https://buildpacks.io/
 :buildpacks-docs: {buildpacks}/docs

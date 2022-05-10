@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.springframework.experimental</groupId>
     <artifactId>spring-native-sample-parent</artifactId>
-    <version>0.11.5-SNAPSHOT</version>
+    <version>0.11.6-SNAPSHOT</version>
     <relativePath>../maven-parent/pom.xml</relativePath>
   </parent>
   <name>petclinic-keyvalue</name>

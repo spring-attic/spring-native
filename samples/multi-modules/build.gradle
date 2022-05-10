@@ -1,7 +1,7 @@
 plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'org.springframework.boot' version '2.6.7' apply false
-	id 'org.springframework.experimental.aot' version '0.11.5-SNAPSHOT' apply false
+	id 'org.springframework.experimental.aot' version '0.11.6-SNAPSHOT' apply false
 }
 
 group = 'com.example'
