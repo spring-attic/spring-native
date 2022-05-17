@@ -223,7 +223,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		File aotResourcesDirectory = generatedFilesPath.resolve("resources").resolve(AOT_MAIN_SOURCE_SET_NAME).toFile();
 		SourceSet aotMainSourceSet = sourceSets.create(AOT_MAIN_SOURCE_SET_NAME);
 		FileCollection aotCompileClasspath = sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
-				.minus(configurations.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME));
+				.filter(f -> !f.getName().startsWith("spring-boot-devtools"));
 		aotMainSourceSet.setCompileClasspath(aotCompileClasspath);
 		aotMainSourceSet.getJava().setSrcDirs(Collections.singletonList(aotSourcesDirectory));
 		aotMainSourceSet.getResources().setSrcDirs(Collections.singletonList(aotResourcesDirectory));
@@ -275,7 +275,7 @@ public class SpringAotGradlePlugin implements Plugin<Project> {
 		File aotTestResourcesDirectory = generatedFilesPath.resolve("resources").resolve(AOT_TEST_SOURCE_SET_NAME).toFile();
 		SourceSet aotTestSourceSet = sourceSets.create(AOT_TEST_SOURCE_SET_NAME);
 		FileCollection aotTestCompileClasspath = sourceSets.findByName(SourceSet.TEST_SOURCE_SET_NAME).getRuntimeClasspath()
-				.minus(configurations.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME));
+				.filter(f -> !f.getName().startsWith("spring-boot-devtools"));
 		aotTestSourceSet.setCompileClasspath(aotTestCompileClasspath);
 		aotTestSourceSet.getJava().setSrcDirs(Collections.singletonList(aotTestSourcesDirectory));
 		aotTestSourceSet.getResources().setSrcDirs(Collections.singletonList(aotTestResourcesDirectory));
