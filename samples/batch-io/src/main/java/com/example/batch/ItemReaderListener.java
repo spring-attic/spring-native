@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2021-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,51 +16,18 @@
 
 package com.example.batch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.batch.domain.Person;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
-import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
+import org.springframework.batch.item.file.FlatFileItemReader;
 
 /**
  * @author Michael Minella
+ * @author Mahmoud Ben Hassine
  */
-public class ItemReaderListener extends AbstractItemCountingItemStreamItemReader<Person>  implements StepExecutionListener {
-
-	private List<Person> people;
-
-	@Override
-	protected Person doRead() throws Exception {
-		if(getCurrentItemCount() < people.size()) {
-			return people.get(getCurrentItemCount());
-		}
-		else {
-			return null;
-		}
-	}
-
-	@Override
-	protected void doOpen() throws Exception {
-		people = new ArrayList<>(8);
-
-		people.add(new Person("Andrew", "Clement"));
-		people.add(new Person("Sebastien", "Deleuze"));
-		people.add(new Person("Jens", "Schauder"));
-		people.add(new Person("Michael", "Minella"));
-		people.add(new Person("David", "Syer"));
-		people.add(new Person("Brian", "Clozel"));
-		people.add(new Person("Andy", "Wilkinson"));
-		people.add(new Person("Eleftheria", "Stein"));
-	}
-
-	@Override
-	protected void doClose() throws Exception {
-
-	}
+public class ItemReaderListener extends FlatFileItemReader<Person> implements StepExecutionListener {
 
 	@Override
 	public void beforeStep(StepExecution stepExecution) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2021-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,18 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author Michael Minella
+ * @author Mahmoud Ben Hassine
  */
 @Configuration(proxyBeanMethods = false)
 public class BatchConfiguration {
@@ -68,6 +73,15 @@ public class BatchConfiguration {
 	public ItemReaderListener reader() {
 		ItemReaderListener itemReaderListener = new ItemReaderListener();
 		itemReaderListener.setName("reader");
+		itemReaderListener.setResource(new ClassPathResource("person.csv"));
+		itemReaderListener.setLineMapper(new DefaultLineMapper<>() {{
+			setLineTokenizer(new DelimitedLineTokenizer() {{
+				setNames("firstName", "lastName");
+			}});
+			setFieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+				setTargetType(Person.class);
+			}});
+		}});
 		return itemReaderListener;
 	}
 
