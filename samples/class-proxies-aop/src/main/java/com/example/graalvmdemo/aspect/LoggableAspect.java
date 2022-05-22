@@ -21,7 +21,7 @@ public class LoggableAspect {
 		return joinPoint.proceed();
 	}
 
-	@Pointcut("execution(* com.example.graalvmdemo.rest.PersonController.demo(..))")
+	@Pointcut("execution(* com.example.graalvmdemo.rest.Person*.demo(..))")
 	private void demoMethod() {
 	}
 

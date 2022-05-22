@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class PersonController2 {
+public class PetController {
 
 	@GetMapping(value="/without")
 	String wemo() {
