@@ -75,7 +75,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.nativeimage</groupId>
-			<artifactId>graal-hotspot-library</artifactId>
+			<artifactId>svm</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
