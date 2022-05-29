@@ -136,7 +136,7 @@ plugins {
 
 
 
-The plugin provides a number of options to customize the transformations, see <<spring-aot-configuration>> for more details.
+The plugin provides a number of options to customize the transformations, see <<aot>> for more details.
 
 
 ===== Enable native image support
