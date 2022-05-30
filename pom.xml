@@ -10,7 +10,7 @@
 	<url>https://github.com/spring-projects-experimental/spring-native/</url>
 
 	<properties>
-		<revision>0.12.0-SNAPSHOT</revision>
+		<revision>0.12.0</revision>
 		<asm.version>9.2</asm.version>
 		<graalvm.version>22.1.0.1</graalvm.version>
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
