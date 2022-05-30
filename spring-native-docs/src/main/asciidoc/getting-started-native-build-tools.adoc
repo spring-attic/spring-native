@@ -20,8 +20,8 @@ There are various distributions of the `native-image` compiler available, here w
 To install the native image compiler on MacOS or Linux, we recommend using https://sdkman.io/[SDKMAN]:
 
 * https://sdkman.io/install[Install SDKMAN].
-* Install a GraalVM native-image distribution, either GraalVM CE (`grl` suffix) or Bellsoft Liberica NIK (`nik` suffix), here we go with Liberica NIK Java 11 variant: `sdk install java {graalvm-version}.r11-nik`
-* Make sure to use the newly installed JDK with `sdk use java {graalvm-version}.r11-nik`
+* Install a GraalVM native-image distribution, either GraalVM CE (`grl` suffix) or Bellsoft Liberica NIK (`nik` suffix), here we go with Liberica NIK Java 11 variant: `sdk install java {liberica-nik-version}.r11-nik`
+* Make sure to use the newly installed JDK with `sdk use java {liberica-nik-version}.r11-nik`
 * Run `gu install native-image` to bring in the native-image extensions to the JDK.
 
 Alternatively, you can manually install builds from https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK]. Don't forget to set `JAVA_HOME` / `PATH` appropriately if needed and to run `gu install native-image` to bring in the native-image extensions.

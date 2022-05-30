@@ -21,6 +21,7 @@
 :github-prs: https://github.com/{github-repo}/pulls
 
 :graalvm-version: 22.1.0
+:liberica-nik-version: 22.1
 :graalvm-docs: https://www.graalvm.org/reference-manual
 :graalvm-native-docs: {graalvm-docs}/native-image
 :graalvm-native-buildtools: https://github.com/graalvm/native-build-tools
