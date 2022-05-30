@@ -7,7 +7,7 @@
 
 :buildpacks: https://buildpacks.io/
 :buildpacks-docs: {buildpacks}/docs
-:buildpacks-java-native-image-version: 7.1.0
+:buildpacks-java-native-image-version: 7.19.0
 
 :paketo: https://paketo.io/
 :paketo-docs: {paketo}/docs
