@@ -3,16 +3,14 @@ package app.main;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.function.RouterFunction;
 
@@ -42,8 +40,7 @@ class Bootstrap implements CommandLineRunner {
 	private EntityManager manager;
 
 	@Override
-	public void run(String... args) throws Exception {
-		
+	public void run(String... args) {
 		Foo foo = manager.find(Foo.class, 1L);
 		if (foo == null) {
 			manager.persist(new Foo("Hello"));

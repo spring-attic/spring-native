@@ -17,7 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;

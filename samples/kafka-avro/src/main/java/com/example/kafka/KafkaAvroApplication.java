@@ -14,11 +14,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.CommonContainerStoppingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.nativex.hint.NativeHint;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-@NativeHint(options = "--enable-url-protocols=http")
+// TODO no support for custom options @NativeHint(options = "--enable-url-protocols=http")
 public class KafkaAvroApplication {
 
 	public static void main(String[] args) {

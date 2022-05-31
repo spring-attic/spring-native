@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.12.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
@@ -14,10 +14,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
@@ -53,7 +49,6 @@
 		</dependency>
 	</dependencies>
 
-	<!-- Check out the parent POM for the plugins configuration -->
 	<build>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
@@ -76,14 +71,6 @@
 						<version>${kotlin.version}</version>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-				<configuration>
-					<removeSpelSupport>true</removeSpelSupport>
-					<removeYamlSupport>true</removeYamlSupport>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

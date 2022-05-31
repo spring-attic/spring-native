@@ -7,11 +7,11 @@
 	<parent>
 		<groupId>org.springframework.experimental</groupId>
 		<artifactId>spring-native-sample-parent</artifactId>
-		<version>0.12.1-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.springframework.samples</groupId>
+	<groupId>com.example</groupId>
 	<artifactId>hateoas</artifactId>
 	<name>Spring HATEOAS - Hypermedia</name>
 	<version>0.0.1-SNAPSHOT</version>
@@ -22,10 +22,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
@@ -56,15 +52,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-				<configuration>
-					<removeSpelSupport>true</removeSpelSupport>
-					<removeYamlSupport>true</removeYamlSupport>
-					<removeXmlSupport>false</removeXmlSupport>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

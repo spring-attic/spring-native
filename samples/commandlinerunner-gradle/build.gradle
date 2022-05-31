@@ -1,13 +1,13 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.0'
+	id 'org.springframework.boot' version '3.0.0-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'org.springframework.experimental.aot' version '0.12.1-SNAPSHOT'
+	id 'org.graalvm.buildtools.native' version '0.9.11'
 	id 'java'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
 	mavenLocal()

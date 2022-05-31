@@ -16,9 +16,15 @@
 
 package org.springframework.samples.petclinic;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.nativex.hint.SerializationHint;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.samples.petclinic.PetClinicApplication.Registrar;
+import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.Person;
+import org.springframework.samples.petclinic.vet.Vet;
 
 /**
  * PetClinic Spring Boot Application.
@@ -26,18 +32,21 @@ import org.springframework.nativex.hint.SerializationHint;
  * @author Dave Syer
  */
 @SpringBootApplication
-@SerializationHint(types = {
-		org.springframework.samples.petclinic.model.BaseEntity.class,
-		org.springframework.samples.petclinic.model.Person.class,
-		org.springframework.samples.petclinic.vet.Vet.class,
-		java.lang.Integer.class,
-		java.lang.String.class,
-		java.lang.Number.class
-})
+@ImportRuntimeHints(Registrar.class)
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PetClinicApplication.class, args);
+	}
+
+	static class Registrar implements RuntimeHintsRegistrar {
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.javaSerialization().registerType(BaseEntity.class)
+					.registerType(Person.class).registerType(Vet.class)
+					.registerType(Integer.class).registerType(String.class)
+					.registerType(Number.class);
+		}
 	}
 
 }

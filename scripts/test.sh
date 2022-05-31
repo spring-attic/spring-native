@@ -51,12 +51,12 @@ done
 if [ -f pom.xml ]; then
   EXECUTABLE_DIR=target
   JAR_DIR=target
-  GENERATED_DIR=target/generated-runtime-sources/spring-aot/src/main/resources
+  GENERATED_DIR=target/spring-aot/main/resources
   REPORT_DIR=target/native
 else
   EXECUTABLE_DIR=build/native/nativeCompile
   JAR_DIR=build/libs
-  GENERATED_DIR=build/generated/resources/aotMain
+  GENERATED_DIR=build/generated/aotResources
   REPORT_DIR=build/native
 fi
 
@@ -127,7 +127,7 @@ then
       echo "Startup time: ${STIME} (JVM running for ${JTIME})"
     fi
     if [[ ${PWD##*/} != *-agent ]] ; then
-      CONFIGLINES=`wc -l $GENERATED_DIR/META-INF/native-image/org.springframework.aot/spring-aot/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
+        CONFIGLINES=`wc -l $GENERATED_DIR/META-INF/native-image/com.example/$(basename "$PWD")/reflect-config.json | sed 's/^ *//g' | cut -d" " -f1`
         echo "Lines of reflective config: $CONFIGLINES"
       else
         CONFIGLINES=0

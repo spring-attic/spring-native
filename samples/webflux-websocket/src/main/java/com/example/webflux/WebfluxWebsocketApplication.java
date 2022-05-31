@@ -65,7 +65,7 @@ public class WebfluxWebsocketApplication {
 			DatabaseClient dbc,
 			CustomerRepository customerRepository) {
 		return args -> {
-			Mono<Integer> ddl = dbc
+			Mono<Long> ddl = dbc
 					.sql("create table customer(id serial primary key,name varchar (255) not null)")
 					.fetch()
 					.rowsUpdated();

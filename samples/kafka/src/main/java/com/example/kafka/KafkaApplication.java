@@ -1,22 +1,26 @@
 package com.example.kafka;
 
+import com.example.kafka.KafkaApplication.Registrar;
 import org.apache.kafka.clients.admin.NewTopic;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.nativex.hint.TypeHint;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@TypeHint(types = KafkaApplication.Greeting.class)
 @SpringBootApplication
+@ImportRuntimeHints(Registrar.class)
 public class KafkaApplication {
 
 	public static void main(String[] args) {
@@ -64,6 +68,15 @@ public class KafkaApplication {
 					'}';
 		}
 
+	}
+
+	static class Registrar implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(Greeting.class, hint ->
+					hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+		}
 	}
 
 }

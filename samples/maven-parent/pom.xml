@@ -7,13 +7,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.0</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 	<groupId>org.springframework.experimental</groupId>
 	<artifactId>spring-native-sample-parent</artifactId>
 	<name>Spring Native sample parent</name>
-	<version>0.12.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -23,10 +23,10 @@
 		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
 		<builder>paketobuildpacks/builder:tiny</builder>
 
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 
 		<wavefront.version>2.2.0</wavefront.version>
-		<spring-cloud.version>2021.0.3</spring-cloud.version>
+		<spring-cloud.version>2022.0.0-SNAPSHOT</spring-cloud.version>
 		<native.buildtools.version>0.9.11</native.buildtools.version>
 		<!-- -O1 is the default, but we specify it anyway as this property can't be empty. It's used by the -q commandline parameter to override the value with -Ob to enable quick build mode -->
 		<native.buildtools.buildArg>-O1</native.buildtools.buildArg>
@@ -38,6 +38,14 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>aot-generate</id>
+							<goals>
+								<goal>aot-generate</goal>
+							</goals>
+						</execution>
+					</executions>
 					<configuration>
 						<classifier>${repackage.classifier}</classifier>
 						<image>
@@ -47,25 +55,6 @@
 							</env>
 						</image>
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.springframework.experimental</groupId>
-					<artifactId>spring-aot-maven-plugin</artifactId>
-					<version>0.12.1-SNAPSHOT</version>
-					<executions>
-						<execution>
-							<id>generate</id>
-							<goals>
-								<goal>generate</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>test-generate</id>
-							<goals>
-								<goal>test-generate</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.graalvm.buildtools</groupId>
@@ -154,11 +143,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-native</artifactId>
-				<version>0.12.1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
@@ -176,13 +160,8 @@
 	</dependencyManagement>
 
 	<profiles>
-		<!-- Enable building a native image using a local installation of native-image with GraalVM native-maven-plugin -->
 		<profile>
 			<id>native</id>
-			<properties>
-				<!-- Avoid a clash between Spring Boot repackaging and native-maven-plugin -->
-				<repackage.classifier>exec</repackage.classifier>
-			</properties>
 			<dependencies>
 				<!-- Required with Maven Surefire 2.x -->
 				<dependency>
@@ -191,14 +170,6 @@
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.graalvm.buildtools</groupId>
-						<artifactId>native-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 

@@ -15,7 +15,7 @@
  */
 package com.example.data.rest;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,10 +15,10 @@
  */
 package org.springframework.hateoas.examples;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

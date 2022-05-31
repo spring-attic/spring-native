@@ -18,13 +18,16 @@ package org.springframework.samples.petclinic;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.map.MapKeyValueAdapter;
-import org.springframework.nativex.hint.SerializationHint;
-import org.springframework.nativex.hint.TypeHint;
+import org.springframework.samples.petclinic.PetClinicApplication.Registrar;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.samples.petclinic.vet.Vet;
@@ -35,8 +38,7 @@ import org.springframework.samples.petclinic.vet.Vet;
  * @author Dave Syer
  */
 @SpringBootApplication
-@TypeHint(types = { ConcurrentHashMap.class })
-@SerializationHint(types = { BaseEntity.class, Person.class, Vet.class, Integer.class, String.class, Number.class })
+@ImportRuntimeHints(Registrar.class)
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
@@ -46,6 +48,18 @@ public class PetClinicApplication {
 	@Bean
 	KeyValueTemplate keyValueTemplate() {
 		return new KeyValueTemplate(new MapKeyValueAdapter(new ConcurrentHashMap<>()));
+	}
+
+	static class Registrar implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(ConcurrentHashMap.class,
+					hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			hints.javaSerialization().registerType(BaseEntity.class).registerType(Person.class).registerType(Vet.class)
+					.registerType(Integer.class).registerType(String.class).registerType(Number.class);
+		}
+
 	}
 
 }
