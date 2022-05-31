@@ -1,7 +1,0 @@
-org.springframework.context.ApplicationListener=\
-org.springframework.nativex.NativeListener
-
-org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.nativex.GeneratedClassNotFoundExceptionFailureAnalyzer,\
-org.springframework.nativex.ClassNotFoundExceptionNativeFailureAnalyzer,\
-org.springframework.nativex.NoSuchMethodExceptionNativeFailureAnalyzer

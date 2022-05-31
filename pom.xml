@@ -21,18 +21,6 @@
 		<java.version>11</java.version>
 	</properties>
 
-	<modules>
-		<module>spring-native-configuration</module>
-		<module>spring-native-tools</module>
-		<module>spring-native</module>
-		<module>spring-aot</module>
-		<module>spring-aot-test</module>
-		<module>spring-aot-maven-plugin</module>
-		<module>spring-aot-gradle-plugin</module>
-		<module>org.springframework.experimental.aot.gradle.plugin</module>
-		<module>spring-native-docs</module>
-	</modules>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

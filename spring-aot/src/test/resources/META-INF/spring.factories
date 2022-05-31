@@ -1,8 +1,0 @@
-# Testing entries with space after comma
-org.springframework.aot.factories.fixtures.TestFactory= \
-  org.springframework.aot.factories.fixtures.PublicFactory, org.springframework.aot.factories.fixtures.OtherFactory
-
-org.springframework.aot.factories.fixtures.OrderedFactory=\
-org.springframework.aot.factories.fixtures.OrderedFactoryA,\
-org.springframework.aot.factories.fixtures.OrderedFactoryB,\
-org.springframework.aot.factories.fixtures.OrderedFactoryC
