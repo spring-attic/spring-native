@@ -188,11 +188,11 @@ NOTE: `tiny` builder allows small footprint and reduced surface attack, you can 
 
 TIP: Additional `native-image` arguments can be added using the `BP_NATIVE_IMAGE_BUILD_ARGUMENTS` environment variable.
 
-===== Freeze GraalVM version
+===== Freeze native image version
 
-By default, GraalVM versions will be upgraded automatically by Buildpacks to the latest release.
+By default, `native-image` versions will be upgraded automatically by Buildpacks to the latest release.
 You can explicitly configure Spring Boot {spring-boot-maven-plugin-docs}#build-image-example-buildpacks[Maven] or {spring-boot-gradle-plugin-docs}#build-image-example-buildpacks[Gradle] plugins with a specific version of `java-native-image` buildpack which will freeze GraalVM version, see {paketo-docs}/howto/java/#configure-the-graalvm-version[related versions mapping].
-For example, if you want to force using GraalVM `{graalvm-version}`, you can configure:
+For example, if you want to force using native image `{graalvm-version}`, you can configure:
 
 [source,xml,subs="attributes,verbatim",role="primary"]
 .Maven
@@ -224,6 +224,45 @@ bootBuildImage {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
     // ...
     buildpacks = listOf("gcr.io/paketo-buildpacks/java-native-image:{buildpacks-java-native-image-version}")
+}
+----
+
+===== Use an alternative native image toolkit
+
+If you want to change the default native image toolkit used by Buildpack (Liberica NIK) to an alternative one, you can explicitly configure Spring Boot {spring-boot-maven-plugin-docs}#build-image-example-buildpacks[Maven] or {spring-boot-gradle-plugin-docs}#build-image-example-buildpacks[Gradle] plugins accordingly, see {paketo-docs}/howto/java/#use-an-alternative-java-native-image-toolkit[related Buildpack documentation].
+For example, if you want to use GraalVM CE instead of Liberica NIK, you can configure:
+
+[source,xml,subs="attributes,verbatim",role="primary"]
+.Maven
+----
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <!-- ... -->
+        <image>
+            <buildpacks>
+                <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>
+                <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>
+            </buildpacks>
+        </image>
+    </configuration>
+</plugin>
+----
+[source,subs="attributes,verbatim",role="secondary"]
+.Gradle Groovy
+----
+bootBuildImage {
+    // ...
+    buildpacks = ["gcr.io/paketo-buildpacks/graalvm", "gcr.io/paketo-buildpacks/java-native-image"]
+}
+----
+[source,Kotlin,subs="attributes,verbatim",role="secondary"]
+.Gradle Kotlin
+----
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+    // ...
+    buildpacks = listOf("gcr.io/paketo-buildpacks/graalvm", "gcr.io/paketo-buildpacks/java-native-image")
 }
 ----
 
