@@ -2,8 +2,8 @@ github-repo: "https://github.com/spring-projects-experimental/spring-native.git"
 github-repo-name: "spring-projects-experimental/spring-native"
 docker-hub-organization: "springci"
 artifactory-server: "https://repo.spring.io"
-branch: "main"
-milestone: "0.12.x"
+branch: "sb-3.0.x"
+milestone: "sb-3.0.x"
 build-name: "spring-native"
 concourse-url: "https://ci.spring.io"
 task-timeout: 30m
@@ -11,10 +11,8 @@ registry-mirror-host: docker.repo.spring.io
 registry-mirror-username: ((artifactory-username))
 registry-mirror-password: ((artifactory-password))
 
-jdk-url-java11: "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz"
 jdk-url-java17: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz"
 
 graalvm-repo: "https://github.com/oracle/graal.git"
 graalvm-branch: "release/graal-vm/22.1"
-labsjdk-identifier-java11: "labsjdk-ce-11"
 labsjdk-identifier-java17: "labsjdk-ce-17"

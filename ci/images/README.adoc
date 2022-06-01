@@ -21,11 +21,11 @@ $ docker build --no-cache --build-arg JDK_URL=... -f spring-native-ci-image/Dock
 To build the image that has the required GraalVM installation, you need two build
 arguments:
 
-* `JDK_IDENTIFIER`: The identifier of the JDK to use used by `mx`, for example `labsjdk-ce-11`.
+* `JDK_IDENTIFIER`: The identifier of the JDK to use used by `mx`, for example `labsjdk-ce-17`.
 * `GRAALVM_BRANCH` the `branch` of the https://github.com/oracle/graal[GraalVM GithHub repository] to build.
 
 ----
-$ docker build --no-cache --build-arg LABSJDK_IDENTIFIER=labsjdk-ce-11 \
+$ docker build --no-cache --build-arg LABSJDK_IDENTIFIER=labsjdk-ce-17 \
     --build-arg GRAALVM_BRANCH=master -f graalvm-ce-image/Dockerfile .
 ----
 
@@ -33,7 +33,7 @@ To build the Spring Native image used namely by the samples, you need to provide
 with the target GraalVM installation, using the `BASE_IMAGE` argument:
 
 ----
-$ docker build --no-cache --build-arg BASE_IMAGE=springci/graalvm-ce:dev-java11-0.12.x -f spring-native-image/Dockerfile .
+$ docker build --no-cache --build-arg BASE_IMAGE=springci/graalvm-ce:dev-java17-sb-3.0.x -f spring-native-image/Dockerfile .
 ----
 
 === Testing

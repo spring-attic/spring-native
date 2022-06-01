@@ -11,7 +11,7 @@ The pipeline can be deployed using the following command:
 
 [source]
 ----
-$ fly -t spring-native set-pipeline -p spring-native-0.12.x -c ci/pipeline.yml -l ci/parameters.yml
+$ fly -t spring-native set-pipeline -p spring-native-sb-3.0.x -c ci/pipeline.yml -l ci/parameters.yml
 ----
 
 NOTE: This assumes that you have configured the appropriate secrets.

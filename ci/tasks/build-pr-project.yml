@@ -1,8 +1,0 @@
----
-platform: linux
-inputs:
-  - name: git-repo
-caches:
-  - path: maven
-run:
-  path: git-repo/ci/scripts/build-samples.sh
