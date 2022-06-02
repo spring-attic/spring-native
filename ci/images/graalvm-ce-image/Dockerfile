@@ -5,12 +5,14 @@ ARG GRAALVM_BRANCH
 
 ENV PATH="/opt/mx:$PATH"
 
+ENV MX_PYTHON="/usr/bin/python3.8"
+
 RUN apt-get -y update \
- && apt-get -y install git jq curl build-essential python unzip zlib1g-dev \
+ && apt-get -y install git jq curl build-essential python3.8 python3.8-distutils unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output /tmp/get-pip.py \
- && python /tmp/get-pip.py \
+RUN curl https://bootstrap.pypa.io/get-pip.py --output /tmp/get-pip.py \
+ && python3.8 /tmp/get-pip.py \
  && pip install ninja \
  && pip install ninja_syntax
 
