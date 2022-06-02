@@ -8,11 +8,13 @@ ENV PATH="/opt/mx:$PATH"
 ENV MX_PYTHON="/usr/bin/python3.8"
 
 RUN apt-get -y update \
- && apt-get -y install git jq curl build-essential python3.8 python3-pip unzip zlib1g-dev \
+ && apt-get -y install git jq curl build-essential python3.8 python3.8-distutils unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install ninja \
- && pip3 install ninja_syntax
+RUN curl https://bootstrap.pypa.io/get-pip.py --output /tmp/get-pip.py \
+ && python3.8 /tmp/get-pip.py \
+ && pip install ninja \
+ && pip install ninja_syntax
 
 RUN cd /opt \
  && git clone --single-branch --branch master https://github.com/graalvm/mx.git \
