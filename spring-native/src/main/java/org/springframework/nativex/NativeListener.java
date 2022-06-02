@@ -37,10 +37,7 @@ public class NativeListener implements ApplicationListener<ApplicationEnvironmen
 	private static final Log logger = LogFactory.getLog(NativeListener.class);
 
 	static {
-		if (!NativeDetector.inNativeImage()) {
-			System.setProperty("org.graalvm.nativeimage.imagecode", "runtime");
-		}
-		if (ClassUtils.isPresent("org.hibernate.Session", null)) {
+		if (NativeDetector.inNativeImage() && ClassUtils.isPresent("org.hibernate.Session", null)) {
 			System.setProperty("hibernate.bytecode.provider", "none");
 		}
 	}
