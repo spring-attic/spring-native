@@ -5,6 +5,8 @@ ARG GRAALVM_BRANCH
 
 ENV PATH="/opt/mx:$PATH"
 
+ENV MX_PYTHON="/usr/bin/python3.8"
+
 RUN apt-get -y update \
  && apt-get -y install git jq curl build-essential python3.8 python3-pip unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
