@@ -6,13 +6,11 @@ ARG GRAALVM_BRANCH
 ENV PATH="/opt/mx:$PATH"
 
 RUN apt-get -y update \
- && apt-get -y install git jq curl build-essential python unzip zlib1g-dev \
+ && apt-get -y install git jq curl build-essential python3.8 python3-pip unzip zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output /tmp/get-pip.py \
- && python /tmp/get-pip.py \
- && pip install ninja \
- && pip install ninja_syntax
+RUN pip3 install ninja \
+ && pip3 install ninja_syntax
 
 RUN cd /opt \
  && git clone --single-branch --branch master https://github.com/graalvm/mx.git \
