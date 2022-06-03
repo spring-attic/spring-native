@@ -14,7 +14,7 @@ fi
 cd ../configserver
 ./build.sh $*
 if [[ "$AOT_ONLY" == true ]]; then
-  java -DspringAot=true -jar target/*.jar 2>&1 > target/native/server-output.txt &
+  java -Dspring.aot.enabled=true -jar target/*.jar 2>&1 > target/native/server-output.txt &
 else
   ./target/configserver 2>&1 > target/native/server-output.txt &
 fi

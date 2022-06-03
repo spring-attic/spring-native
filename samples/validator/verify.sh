@@ -5,7 +5,7 @@ RC=0
 if [ -f ./target/validator ]; then
   EXECUTABLE="./target/validator -Dapp.value=123"
 else
-  EXECUTABLE="java -DspringAot=true -Dapp.value=123 -jar target/*.jar"
+  EXECUTABLE="java -Dspring.aot.enabled=true -Dapp.value=123 -jar target/*.jar"
 fi
 RESPONSE=`$EXECUTABLE 2>&1 | grep "Reason: Invalid lastname"`
 if [[ "$RESPONSE" != *"Reason: Invalid lastname"* ]]; then
