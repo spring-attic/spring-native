@@ -27,7 +27,6 @@
 
 		<wavefront.version>2.2.0</wavefront.version>
 		<spring-cloud.version>2022.0.0-SNAPSHOT</spring-cloud.version>
-		<native.buildtools.version>0.9.11</native.buildtools.version>
 		<!-- -O1 is the default, but we specify it anyway as this property can't be empty. It's used by the -q commandline parameter to override the value with -Ob to enable quick build mode -->
 		<native.buildtools.buildArg>-O1</native.buildtools.buildArg>
 	</properties>
