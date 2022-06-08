@@ -8,6 +8,7 @@ NC='\033[0m'
 AOT_ONLY=false
 NATIVE_TESTS=false
 NICENESS=0
+QUICK=false
 
 while test $# -gt 0; do
   case "$1" in
@@ -35,6 +36,14 @@ while test $# -gt 0; do
       export NICENESS=19
       shift
       ;;
+    -q)
+      export QUICK=true
+      shift
+      ;;
+    --quick)
+      export QUICK=true
+      shift
+      ;;
     *)
       break
       ;;
@@ -50,15 +59,21 @@ fi
 rm -rf target
 mkdir -p target/native
 
+# -O1 is the default, but we specify it anyway as this property can't be empty
+export BUILD_ARGS='-O1'
+if [ "$QUICK" = true ] ; then
+  export BUILD_ARGS='-Ob'
+fi
+
 if [ "$AOT_ONLY" = false ] ; then
   echo "Packaging ${PWD##*/} with Maven (native)"
   if [[ ${PWD##*/} == *-agent ]] ; then
     nice -n $NICENESS mvn test &> target/native/output.txt
   fi
   if [ "$NATIVE_TESTS" = false ] ; then
-    nice -n $NICENESS mvn -ntp -DskipTests -Pnative package $* &> target/native/output.txt
+    nice -n $NICENESS mvn -ntp -DskipTests -Pnative -Dnative.buildtools.buildArg=$BUILD_ARGS package $* &> target/native/output.txt
   else
-    nice -n $NICENESS mvn -ntp -Pnative package $* &> target/native/output.txt
+    nice -n $NICENESS mvn -ntp -Pnative -Dnative.buildtools.buildArg=$BUILD_ARGS package $* &> target/native/output.txt
   fi
 
   if [[ -f target/${PWD##*/} ]]; then

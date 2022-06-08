@@ -30,6 +30,18 @@ while test $# -gt 0; do
     --native-tests)
       shift
       ;;
+    -l)
+      shift
+      ;;
+    --low-priority)
+      shift
+      ;;
+    -q)
+      shift
+      ;;
+    --quick)
+      shift
+      ;;
     *)
       break
       ;;

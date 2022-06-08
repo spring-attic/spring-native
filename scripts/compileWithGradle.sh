@@ -35,6 +35,14 @@ while test $# -gt 0; do
       export NICENESS=19
       shift
       ;;
+    -q)
+      printf "${RED}Quick mode with gradle builds is not implemented at the moment${NC}\n"
+      shift
+      ;;
+    --quick)
+      printf "${RED}Quick mode with gradle builds is not implemented at the moment${NC}\n"
+      shift
+      ;;
     *)
       break
       ;;
