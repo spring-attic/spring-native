@@ -1,7 +1,12 @@
 package com.example.securingweb;
 
+import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class MainController {
@@ -15,10 +20,10 @@ public class MainController {
         return "home";
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
+	@GetMapping("/hello")
+	public ModelAndView hello(HttpServletRequest httpServletRequest) {
+		return new ModelAndView("hello", Map.of("user", httpServletRequest.getRemoteUser()));
+	}
 
     @GetMapping("/login")
     public String login() {
