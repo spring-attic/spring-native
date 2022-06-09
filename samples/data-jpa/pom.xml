@@ -12,6 +12,10 @@
 	<artifactId>data-jpa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<properties>
+		<hibernate.version>5.6.4.Final</hibernate.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.aot</groupId>
@@ -22,25 +26,26 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-websocket</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.experimental</groupId>
-			<artifactId>tomcat-embed-programmatic</artifactId>
-			<version>${tomcat.version}</version>
-		</dependency>
+		<!-- TODO: Enable Web again -->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-web</artifactId>-->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<groupId>org.apache.tomcat.embed</groupId>-->
+<!--					<artifactId>tomcat-embed-core</artifactId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<groupId>org.apache.tomcat.embed</groupId>-->
+<!--					<artifactId>tomcat-embed-websocket</artifactId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.tomcat.experimental</groupId>-->
+<!--			<artifactId>tomcat-embed-programmatic</artifactId>-->
+<!--			<version>${tomcat.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
@@ -51,15 +56,29 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- TODO: Enable Web again -->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-webflux</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+		<!-- TODO: Remove context-indexer again -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-indexer</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- TODO: Remove Substitutions -->
+		<dependency>
+			<groupId>org.graalvm.nativeimage</groupId>
+			<artifactId>graal-hotspot-library</artifactId>
+			<version>22.0.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -101,6 +120,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>aot-generate</id>
+						<goals>
+							<goal>aot-generate</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.hibernate.orm.tooling</groupId>

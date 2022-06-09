@@ -39,6 +39,12 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.aot</groupId>
+			<artifactId>3rd-party-hints</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<!-- jdbc  -->
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -64,6 +70,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>aot-generate</id>
+						<goals>
+							<goal>aot-generate</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

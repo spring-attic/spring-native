@@ -22,7 +22,8 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-interface LegoSetRepository extends CrudRepository<LegoSet, Integer> {
+// TODO: package private type cause issues with AOT generated code for the RepositoryFactory
+public interface LegoSetRepository extends CrudRepository<LegoSet, Integer> {
 
 	@Query("SELECT m.name model_name, m.description, l.name set_name" +
 			"  FROM model m" +

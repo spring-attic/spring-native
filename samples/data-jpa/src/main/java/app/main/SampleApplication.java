@@ -15,12 +15,12 @@
  */
 package app.main;
 
+import java.util.List;
 import java.util.Optional;
 
 import app.main.model.Flurb;
 import app.main.model.Foo;
 import app.main.model.FooRepository;
-
 import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -30,16 +30,11 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.web.servlet.function.RouterFunction;
-
-import static org.springframework.web.servlet.function.RequestPredicates.GET;
-import static org.springframework.web.servlet.function.RouterFunctions.route;
-import static org.springframework.web.servlet.function.ServerResponse.ok;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "fixedAuditor")
 @EnableJpaRepositories(basePackageClasses = FooRepository.class)
-@ImportRuntimeHints(HikariRuntimeHints.class)
+@ImportRuntimeHints({HikariRuntimeHints.class, RuntimeHints.class})
 public class SampleApplication {
 
 	private final FooRepository entities;
@@ -60,7 +55,10 @@ public class SampleApplication {
 			foo.setFlurb(flurb);
 			entities.save(foo);
 
-			entities.findWithBetween("a", "X");
+			List<Foo> withBetween = entities.findWithBetween("a", "X");
+			System.out.println("withBetween: " + withBetween);
+			System.out.println(entities.findById(1L));
+			System.out.println("DONE");
 		};
 	}
 
@@ -69,10 +67,10 @@ public class SampleApplication {
 		return () -> Optional.of("Douglas Adams");
 	}
 
-	@Bean
-	public RouterFunction<?> userEndpoints() {
-		return route(GET("/"), request -> ok().body(findOne()));
-	}
+//	@Bean
+//	public RouterFunction<?> userEndpoints() {
+//		return route(GET("/"), request -> ok().body(findOne()));
+//	}
 
 	private Foo findOne() {
 		return entities.findById(1L).get();

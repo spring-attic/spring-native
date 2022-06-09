@@ -53,7 +53,7 @@ public class Order {
 	@DBRef
 	private Coupon simpleRef;
 
-	@DBRef(lazy = true) // AotProxy
+//	@DBRef(lazy = true) // TODO: ClassProxies
 	private Coupon coupon;
 
 	@DBRef(lazy = true) // JdkProxy
@@ -62,7 +62,7 @@ public class Order {
 	@DocumentReference
 	private Discount documentRef;
 
-	@DocumentReference(lazy = true)
+//	@DocumentReference(lazy = true) // TODO: ClassProxies
 	Discount lazyDocumentRef;
 
 	@CreatedDate
@@ -193,6 +193,10 @@ public class Order {
 				", items=" + items +
 				", coupon=" + coupon +
 				", reduction=" + reduction +
+				", createdAt=" + createdAt +
+				", createdBy=" + createdBy +
+				", modifiedAt=" + modifiedAt +
+				", modifiedBy=" + modifiedBy +
 				'}';
 	}
 

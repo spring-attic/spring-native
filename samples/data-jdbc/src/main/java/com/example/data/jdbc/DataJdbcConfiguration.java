@@ -18,14 +18,17 @@ package com.example.data.jdbc;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 
 @Configuration
+@ImportRuntimeHints({ HikariRuntimeHints.class, RuntimeHints.class })
 public class DataJdbcConfiguration {
 
 	final AtomicInteger id = new AtomicInteger(0);

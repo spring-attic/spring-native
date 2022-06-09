@@ -16,6 +16,7 @@
 		<docs.resources.version>0.2.1.RELEASE</docs.resources.version>
 		<spring.boot.version>3.0.0-SNAPSHOT</spring.boot.version>
 		<spring.cloud.version>2022.0.0-SNAPSHOT</spring.cloud.version>
+		<spring-data-bom.version>2022.0.0-SNAPSHOT</spring-data-bom.version>
 		<spring.security.authorization-server.version>0.1.0</spring.security.authorization-server.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>17</java.version>

@@ -293,7 +293,7 @@ public class CLR implements CommandLineRunner {
 		Order order1 = orderRepository.save(newOrder("c42", product1));
 		Order order2 = orderRepository.save(newOrder("b12", product1));
 
-		Example<Order> example = Example.of(newOrder(order1.getCustomerId()),
+		Example<Order> example = Example.of(newOrder(order1.getCustomerId(), order1.getOrderDate()),
 			ExampleMatcher.matching().withIgnorePaths("items"));
 
 		Iterable<Order> result = orderRepository.findAll(example);
