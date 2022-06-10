@@ -347,7 +347,6 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
-	@Disabled // See https://github.com/mockito/mockito/issues/2634
 	void awareCallbacksOnBeanRegistrationWriterAreHonored() {
 		AwareBeanRegistrationWriterSupplier supplier = spy(new AwareBeanRegistrationWriterSupplier());
 		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
@@ -364,7 +363,6 @@ class ApplicationContextAotProcessorTests {
 	}
 
 	@Test
-	@Disabled // See https://github.com/mockito/mockito/issues/2634
 	void awareCallbacksOnBeanDefinitionExcludeFilterAreHonored() {
 		AwareBeanDefinitionExcludeFilter filter = spy(new AwareBeanDefinitionExcludeFilter());
 		ApplicationContextAotProcessor processor = new ApplicationContextAotProcessor(
