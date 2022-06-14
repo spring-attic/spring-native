@@ -15,12 +15,15 @@
  */
 package org.springframework.data.jpa.repository.config;
 
+import javax.persistence.NamedEntityGraph;
+
 import org.springframework.beans.factory.aspectj.AnnotationBeanConfigurerAspect;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.DataAuditingHints;
 import org.springframework.data.DataNonReactiveAuditingHints;
 import org.springframework.data.jpa.domain.support.AuditingBeanFactoryPostProcessor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.NativeHint;
@@ -48,6 +51,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 				})
 		}
 
+)
+@NativeHint(
+		// https://github.com/spring-projects-experimental/spring-native/issues/1619
+		trigger = EntityGraph.class,
+		types = @TypeHint(types = NamedEntityGraph.class, access = {})
 )
 public class DataJpaHints implements NativeConfiguration {
 
