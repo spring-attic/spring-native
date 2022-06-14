@@ -5,6 +5,7 @@ SunManagementHints,\
 com.google.protobuf.ProtobufHints,\
 io.lettuce.LettuceHints,\
 io.netty.NettyHints,\
+io.r2dbc.postgresql.PostgreSqlHints,\
 io.rsocket.RSocketHints,\
 kotlin.KotlinHints,\
 org.apache.catalina.TomcatHints,\

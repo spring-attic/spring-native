@@ -1,4 +1,4 @@
-package com.example.webflux;
+package com.example.r2dbc;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 

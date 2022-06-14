@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.webflux;
+package com.example.r2dbc;
+
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,14 +26,13 @@ import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
 
-import static org.springframework.web.reactive.function.server.RouterFunctions.*;
-import static org.springframework.web.reactive.function.server.ServerResponse.*;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @SpringBootApplication
 @EnableR2dbcAuditing(auditorAwareRef = "fixedAuditor")
-public class WebfluxApplication {
+public class R2DBCApplication {
 
 	@Bean
 	RouterFunction<ServerResponse> routes(ReservationRepository reservationRepository) {
@@ -51,6 +52,6 @@ public class WebfluxApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(WebfluxApplication.class, args);
+		SpringApplication.run(R2DBCApplication.class, args);
 	}
 }

@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  postgresql:
+    image: 'postgres:14'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'spring-native'
+    ports:
+      - '5432:5432'
