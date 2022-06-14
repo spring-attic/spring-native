@@ -26,6 +26,7 @@ import org.springframework.nativex.type.Type;
 import org.springframework.nativex.type.TypeSystem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,11 +59,38 @@ public class TypeSystemTests {
 		assertEquals("Ljava/lang/String;", s.getDescriptor());
 		Type t = typeSystem.resolveName("java.lang.String[]");
 		assertNotNull(t);
-		assertEquals(1,t.getDimensions());
+		assertEquals(1, t.getDimensions());
 		assertTrue(t.isArray());
-		assertEquals("[Ljava/lang/String;",t.getDescriptor());
-		assertEquals("java/lang/String[]",t.getName());
-		assertEquals("java.lang.String[]",t.getDottedName());
+		assertEquals("[Ljava/lang/String;", t.getDescriptor());
+		assertEquals("java/lang/String[]", t.getName());
+		assertEquals("java.lang.String[]", t.getDottedName());
 	}
 
+	@Test
+	void testPrimitives() {
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(byte.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(short.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(int.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(long.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(float.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(double.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(char.class)));
+		assertTrue(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(boolean.class)));
+		assertFalse(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(Object.class)));
+		assertFalse(typeSystem.isPrimitive(org.objectweb.asm.Type.getType(String.class)));
+	}
+
+	@Test
+	void testPrimitivesArray() {
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(byte[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(short[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(int[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(long[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(float[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(double[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(char[].class)));
+		assertTrue(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(boolean[].class)));
+		assertFalse(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(Object[].class)));
+		assertFalse(typeSystem.isPrimitiveArray(org.objectweb.asm.Type.getType(String[].class)));
+	}
 }

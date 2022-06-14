@@ -16,13 +16,10 @@
 
 package org.springframework.nativex.type;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -60,22 +56,21 @@ import org.springframework.nativex.domain.reflect.FieldDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.AotProxyHint;
 import org.springframework.nativex.hint.AotProxyHints;
-import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationHints;
 import org.springframework.nativex.hint.InitializationTime;
+import org.springframework.nativex.hint.JdkProxyHint;
+import org.springframework.nativex.hint.JdkProxyHints;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.NativeHints;
 import org.springframework.nativex.hint.ProxyBits;
-import org.springframework.nativex.hint.JdkProxyHint;
-import org.springframework.nativex.hint.JdkProxyHints;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.ResourcesHints;
 import org.springframework.nativex.hint.SerializationHint;
 import org.springframework.nativex.hint.SerializationHints;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.hint.TypeHints;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -1808,11 +1803,17 @@ public class Type {
 		List<String> resolvedParameterTypes = new ArrayList<>();
 		for (org.objectweb.asm.Type ptype : parameterTypes) {
 			String typeName = ptype.getClassName();
-			Type resolvedType = typeSystem.resolveName(typeName, true);
-			if (resolvedType != null) {
+			if (typeSystem.isPrimitive(ptype) || typeSystem.isPrimitiveArray(ptype)) {
 				resolvedParameterTypes.add(typeName);
-			} else {
-				unresolvable = true;
+			}
+			else {
+				Type resolvedType = typeSystem.resolveName(typeName, true);
+				if (resolvedType != null) {
+					resolvedParameterTypes.add(typeName);
+				}
+				else {
+					unresolvable = true;
+				}
 			}
 		}
 		if (unresolvable) {

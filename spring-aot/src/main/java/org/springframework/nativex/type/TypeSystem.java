@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -61,15 +60,13 @@ import org.apache.commons.logging.LogFactory;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.lang.Nullable;
 import org.springframework.nativex.AotOptions;
-import org.springframework.nativex.domain.reflect.JsonMarshaller;
-import org.springframework.nativex.domain.reflect.ReflectionDescriptor;
-import org.springframework.nativex.domain.resources.ResourcesDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -1474,12 +1471,34 @@ public class TypeSystem {
 	}
 
 	public Type resolve(Class<?> clazz, boolean silent) {
-		return resolve(clazz.getName().replace(".","/"), silent);
+		return resolve(clazz.getName().replace(".", "/"), silent);
 	}
 
 	public boolean exists(TypeName typename) {
 		Type resolvedType = resolve(typename);
 		return resolvedType != null;
+	}
+
+	public boolean isPrimitive(org.objectweb.asm.Type type) {
+		return
+				type.equals(org.objectweb.asm.Type.BOOLEAN_TYPE) ||
+						type.equals(org.objectweb.asm.Type.CHAR_TYPE) ||
+						type.equals(org.objectweb.asm.Type.BYTE_TYPE) ||
+						type.equals(org.objectweb.asm.Type.SHORT_TYPE) ||
+						type.equals(org.objectweb.asm.Type.INT_TYPE) ||
+						type.equals(org.objectweb.asm.Type.FLOAT_TYPE) ||
+						type.equals(org.objectweb.asm.Type.LONG_TYPE) ||
+						type.equals(org.objectweb.asm.Type.DOUBLE_TYPE);
+	}
+
+	public boolean isPrimitiveArray(org.objectweb.asm.Type type) {
+		if (!type.getInternalName().startsWith("[")) {
+			// That's no array
+			return false;
+		}
+		// Strip the array prefix and see if its now primitive
+		org.objectweb.asm.Type typeNoArray = org.objectweb.asm.Type.getType(type.getInternalName().substring(1));
+		return isPrimitive(typeNoArray);
 	}
 
 	/**
@@ -1490,7 +1509,9 @@ public class TypeSystem {
 	public static String decodeName(String typename) {
 		StringBuilder s = new StringBuilder();
 		int dims = 0;
-		while (typename.charAt(dims)=='[') { dims++; }
+		while (typename.charAt(dims) == '[') {
+			dims++;
+		}
 		if (dims>0) {
 			if (typename.endsWith(";")) {
 				s.append(typename.substring(dims+1,typename.length()-1).replace("/", "."));
