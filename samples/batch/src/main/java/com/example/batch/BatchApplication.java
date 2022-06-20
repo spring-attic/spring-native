@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 @EnableBatchProcessing
 @SpringBootApplication
-// TODO: Move the hints for Hikari from META-INF/native-image to graalvm-reachability-metadata
+@ImportRuntimeHints(HikariRuntimeHintsRegistrar.class)
 public class BatchApplication {
 
 	private static final Log logger = LogFactory.getLog(BatchApplication.class);
