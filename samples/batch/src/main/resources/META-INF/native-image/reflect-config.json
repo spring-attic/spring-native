@@ -1,0 +1,8 @@
+[
+  {
+    "name": "java.sql.Statement[]"
+  },
+  {
+    "name": "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]"
+  }
+]
