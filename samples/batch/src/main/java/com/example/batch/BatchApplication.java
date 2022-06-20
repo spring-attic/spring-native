@@ -3,7 +3,6 @@ package com.example.batch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -17,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 
 @EnableBatchProcessing
 @SpringBootApplication
+// TODO: Move the hints for Hikari from META-INF/native-image to graalvm-reachability-metadata
 public class BatchApplication {
 
 	private static final Log logger = LogFactory.getLog(BatchApplication.class);
