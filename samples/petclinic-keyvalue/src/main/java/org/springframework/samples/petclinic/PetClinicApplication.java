@@ -56,7 +56,7 @@ public class PetClinicApplication {
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			hints.reflection().registerType(ConcurrentHashMap.class,
 					hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
-			hints.javaSerialization().registerType(BaseEntity.class).registerType(Person.class).registerType(Vet.class)
+			hints.serialization().registerType(BaseEntity.class).registerType(Person.class).registerType(Vet.class)
 					.registerType(Integer.class).registerType(String.class).registerType(Number.class);
 		}
 
