@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 @EnableBatchProcessing
 @SpringBootApplication
-@ImportRuntimeHints(Registrar.class)
+@ImportRuntimeHints({ Registrar.class, HikariRuntimeHintsRegistrar.class })
 public class BatchApplication {
 
 	public static void main(String[] args) throws InterruptedException {
@@ -26,9 +26,10 @@ public class BatchApplication {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(Person.class, hint -> hint.withMembers(
-					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection().registerType(Person.class, hint -> hint
+					.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS));
 		}
+
 	}
 
 }
