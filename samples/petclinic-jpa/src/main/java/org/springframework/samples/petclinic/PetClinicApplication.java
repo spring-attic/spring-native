@@ -42,7 +42,7 @@ public class PetClinicApplication {
 	static class Registrar implements RuntimeHintsRegistrar {
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.javaSerialization().registerType(BaseEntity.class)
+			hints.serialization().registerType(BaseEntity.class)
 					.registerType(Person.class).registerType(Vet.class)
 					.registerType(Integer.class).registerType(String.class)
 					.registerType(Number.class);
