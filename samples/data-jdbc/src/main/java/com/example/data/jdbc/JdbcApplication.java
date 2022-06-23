@@ -15,8 +15,14 @@
  */
 package com.example.data.jdbc;
 
+import javax.sql.DataSource;
+
+import com.zaxxer.hikari.HikariDataSource;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 
 @SpringBootApplication
@@ -26,5 +32,11 @@ public class JdbcApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(JdbcApplication.class);
 		Thread.currentThread().join(); // To be able to measure memory consumption
+	}
+
+	@Bean
+	// See https://github.com/spring-projects-experimental/spring-native/issues/1599
+	public DataSource datasource(DataSourceProperties dataSourceProperties) {
+		return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
 	}
 }

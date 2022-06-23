@@ -19,6 +19,7 @@ org.mariadb.MariaDbHints,\
 com.mysql.cj.MySqlHints,\
 com.wavefront.spring.actuate.WavefrontEndpointHints,\
 com.wavefront.spring.actuate.WavefrontHints,\
+com.zaxxer.HikariHints,\
 org.hamcrest.HamcrestHints,\
 org.HdrHistogram.HdrHistogramHints,\
 org.hibernate.HibernateHints,\
