@@ -6,10 +6,15 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import org.springframework.aot.thirdpartyhints.NettyRuntimeHints;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -37,13 +42,11 @@ import org.springframework.integration.webflux.dsl.WebFlux;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-
 @SpringBootApplication
 @EnableMessageHistory("dateChannel")
 @EnableIntegrationManagement
 @EnableIntegrationGraphController("/integration-graph")
+@ImportRuntimeHints(NettyRuntimeHints.class)
 public class IntegrationApplication {
 
 	public static void main(String[] args) throws InterruptedException {
