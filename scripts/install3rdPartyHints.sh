@@ -10,8 +10,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 printf "=== ${BLUE}Building 3rd party hints${NC} ===\n"
 
-if ! mvn -ntp clean install --file "${SCRIPT_DIR}"/../3rd-party-hints/pom.xml &> target/native/3rd-party-samples-output.txt; then
+mvn -ntp clean install --file "${SCRIPT_DIR}"/../3rd-party-hints/pom.xml &> target/native/3rd-party-samples-output.txt
+
+retVal=$?
+if [ $retVal -ne 0 ]; then
   printf "${RED}Building 3rd party hints failed!${NC}\n"
   cat target/native/3rd-party-samples-output.txt
-  exit 1
+  exit $retVal
 fi
