@@ -1,9 +1,0 @@
-server:
-  port: 8080
-
-spring:
-  application:
-    name: graalvm-demo
-  jackson:
-    serialization:
-      FAIL_ON_EMPTY_BEANS: false

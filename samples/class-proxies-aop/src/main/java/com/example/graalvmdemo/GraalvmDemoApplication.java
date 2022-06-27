@@ -1,28 +1,30 @@
 package com.example.graalvmdemo;
 
-import com.example.graalvmdemo.GraalvmDemoApplication.Registrar;
-import com.example.graalvmdemo.rest.PersonController;
+import com.example.graalvmdemo.service.TestComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@ImportRuntimeHints(Registrar.class)
 public class GraalvmDemoApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GraalvmDemoApplication.class, args);
-	}
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraalvmDemoApplication.class);
 
-	static class Registrar implements RuntimeHintsRegistrar {
+    public static void main(String[] args) throws InterruptedException {
+        SpringApplication.run(GraalvmDemoApplication.class, args);
+        Thread.currentThread().join(); // To be able to measure memory consumption
+    }
 
-		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.proxies().registerClassProxy(PersonController.class, hint -> {});
-		}
-	}
+    @Bean
+    CommandLineRunner commandLineRunner(TestComponent testComponent) {
+        return args -> {
+            LOGGER.info("methodA: {}", testComponent.methodA());
+            LOGGER.info("methodB: {}", testComponent.methodB());
+        };
+    }
 
 }
