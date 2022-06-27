@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Log4j2
 @Configuration
-public class ApacheLoggingConfiguration {
+public class Log4j2Configuration {
 
-	@Bean
-	ApplicationRunner apacheLoggingRunner() {
-		return event -> log.info("Hello, Apache Logging world!");
-	}
+    @Bean
+    ApplicationRunner apacheLoggingRunner() {
+        return event -> log.info("Hello, Apache Logging world!");
+    }
 
 }
