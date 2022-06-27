@@ -10,20 +10,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.aot.thirdpartyhints.NettyRuntimeHints;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.WebSocketMessage;
 
 @SpringBootApplication
+@ImportRuntimeHints(NettyRuntimeHints.class)
 public class WebfluxWebsocketApplication {
 
 	@Bean
@@ -36,15 +35,15 @@ public class WebfluxWebsocketApplication {
 	@Bean
 	public WebSocketHandler webSocketHandler(ObjectMapper mapper) {
 		return webSocketSession -> {
-			Flux ongoing = Flux
-					.fromStream(Stream.generate(() -> {
-						Map<String, String> stringStringMap = new java.util.HashMap<>();
-						stringStringMap.put("greeting", "Hello, world @ " + Instant.now() + "!");
-						return stringStringMap;
-					}))
-					.delayElements(Duration.ofSeconds(1))
-					.map((Map<String, String> o) -> toJson(o, mapper))
-					.map(webSocketSession::textMessage);
+            Flux<WebSocketMessage> ongoing = Flux
+                    .fromStream(Stream.generate(() -> {
+                        Map<String, String> stringStringMap = new java.util.HashMap<>();
+                        stringStringMap.put("greeting", "Hello, world @ " + Instant.now() + "!");
+                        return stringStringMap;
+                    }))
+                    .delayElements(Duration.ofSeconds(1))
+                    .map((Map<String, String> o) -> toJson(o, mapper))
+                    .map(webSocketSession::textMessage);
 			return webSocketSession.send(ongoing);
 		};
 	}
