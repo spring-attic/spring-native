@@ -21,6 +21,7 @@ import app.main.model.Flurb;
 import app.main.model.Foo;
 import app.main.model.FooRepository;
 
+import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,7 +39,7 @@ import static org.springframework.web.servlet.function.ServerResponse.ok;
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "fixedAuditor")
 @EnableJpaRepositories(basePackageClasses = FooRepository.class)
-@ImportRuntimeHints(HikariRuntimeHintsRegistrar.class)
+@ImportRuntimeHints(HikariRuntimeHints.class)
 public class SampleApplication {
 
 	private final FooRepository entities;

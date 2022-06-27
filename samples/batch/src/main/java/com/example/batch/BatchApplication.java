@@ -3,6 +3,7 @@ package com.example.batch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -17,37 +18,37 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 @EnableBatchProcessing
 @SpringBootApplication
-@ImportRuntimeHints(HikariRuntimeHintsRegistrar.class)
+@ImportRuntimeHints(HikariRuntimeHints.class)
 public class BatchApplication {
 
-	private static final Log logger = LogFactory.getLog(BatchApplication.class);
+    private static final Log logger = LogFactory.getLog(BatchApplication.class);
 
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
 
-	@Bean
-	public Job job(Step step1) {
-		return this.jobBuilderFactory.get("job")
-				.start(step1)
-				.build();
-	}
+    @Bean
+    public Job job(Step step1) {
+        return this.jobBuilderFactory.get("job")
+                .start(step1)
+                .build();
+    }
 
-	@Bean
-	public Step step1() {
-		return this.stepBuilderFactory.get("step1")
-				.tasklet((stepContribution, chunkContext) -> {
-					System.out.println("Batch ran!");
-					logger.info("INFO log message");
-					return RepeatStatus.FINISHED;
-				}).build();
-	}
+    @Bean
+    public Step step1() {
+        return this.stepBuilderFactory.get("step1")
+                .tasklet((stepContribution, chunkContext) -> {
+                    System.out.println("Batch ran!");
+                    logger.info("INFO log message");
+                    return RepeatStatus.FINISHED;
+                }).build();
+    }
 
-	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(BatchApplication.class, args);
-		Thread.currentThread().join(); // To be able to measure memory consumption
-	}
+    public static void main(String[] args) throws InterruptedException {
+        SpringApplication.run(BatchApplication.class, args);
+        Thread.currentThread().join(); // To be able to measure memory consumption
+    }
 
 }

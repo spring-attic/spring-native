@@ -6,6 +6,7 @@ import com.example.batch.domain.Person;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 @EnableBatchProcessing
 @SpringBootApplication
-@ImportRuntimeHints({ Registrar.class, HikariRuntimeHintsRegistrar.class })
+@ImportRuntimeHints({ Registrar.class, HikariRuntimeHints.class })
 public class BatchApplication {
 
 	public static void main(String[] args) throws InterruptedException {

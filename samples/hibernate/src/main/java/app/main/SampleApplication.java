@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+import org.springframework.aot.thirdpartyhints.HikariRuntimeHints;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +17,7 @@ import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
 @SpringBootApplication
-@ImportRuntimeHints(HikariRuntimeHintsRegistrar.class)
+@ImportRuntimeHints(HikariRuntimeHints.class)
 public class SampleApplication {
 
 	@PersistenceContext
