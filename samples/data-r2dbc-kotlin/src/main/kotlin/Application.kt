@@ -15,10 +15,12 @@
  */
 package com.example.webflux
 
+import org.springframework.aot.thirdpartyhints.NettyRuntimeHints
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.data.annotation.Id
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.r2dbc.core.DatabaseClient
@@ -30,6 +32,7 @@ data class Reservation(@Id var name: String, var id: Int? = null)
 interface ReservationRepository : CoroutineCrudRepository<Reservation, Int>
 
 @SpringBootApplication
+@ImportRuntimeHints(NettyRuntimeHints::class)
 class WebfluxApplication {
 
 	@Bean
