@@ -114,6 +114,7 @@ public class NettyRuntimeHints implements RuntimeHintsRegistrar {
                 TypeReference.of("io.netty.util.internal.shaded.org.jctools.queues.SpscArrayQueueProducerIndexFields"),
                 hint -> hint.withMembers(MemberCategory.DECLARED_FIELDS));
         hints.reflection().registerType(TypeReference.of("io.netty.channel.socket.nio.NioSocketChannel"), hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+        hints.reflection().registerType(TypeReference.of("io.netty.channel.socket.nio.NioDatagramChannel"), hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
     }
 
 }
