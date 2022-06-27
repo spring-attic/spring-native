@@ -15,15 +15,18 @@
  */
 package com.example.data.elasticsearch;
 
+import org.springframework.aot.thirdpartyhints.NettyRuntimeHints;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.elasticsearch.config.EnableElasticsearchAuditing;
 
 @SpringBootApplication
 @EnableElasticsearchAuditing(auditorAwareRef = "fixedAuditor")
+@ImportRuntimeHints(NettyRuntimeHints.class)
 public class ElasticsearchApplication {
 
 	public static void main(String[] args) throws Exception {
