@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,16 +16,13 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-				.authorizeRequests(authorize -> authorize
-						.antMatchers("/", "/home").permitAll()
-						.antMatchers("/admin").hasRole("ADMIN")
-						.anyRequest().authenticated()
-				)
-				.formLogin(formLogin -> formLogin
-						.loginPage("/login")
-						.permitAll()
-				)
-				.logout(LogoutConfigurer::permitAll)
+                .authorizeRequests(authorize -> authorize
+                        .mvcMatchers("/rest/anonymous").permitAll()
+                        .mvcMatchers("/rest/admin").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .httpBasic()
+                .and()
 				.build();
 	}
 
