@@ -6,14 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.FormLoginRequestBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -23,56 +18,42 @@ public class SecuringWebApplicationTests {
 	private MockMvc mockMvc;
 
 	@Test
-	public void loginWithValidUserThenAuthenticated() throws Exception {
-		FormLoginRequestBuilder login = formLogin()
-			.user("user")
-			.password("password");
+    public void anonymousWorksWithoutLogin() throws Exception {
+        mockMvc.perform(get("/rest/anonymous"))
+                .andExpect(status().isOk());
+    }
 
-		mockMvc.perform(login)
-			.andExpect(authenticated().withUsername("user"));
-	}
+    @Test
+    public void authorizedDoesntWorkWithoutLogin() throws Exception {
+        mockMvc.perform(get("/rest/authorized"))
+                .andExpect(status().is(401));
+    }
 
-	@Test
-	public void loginWithInvalidUserThenUnauthenticated() throws Exception {
-		FormLoginRequestBuilder login = formLogin()
-			.user("invalid")
-			.password("invalidpassword");
+    @Test
+    @WithMockUser(username = "user", password = "password")
+    public void authorizedWorksWithLogin() throws Exception {
+        mockMvc.perform(get("/rest/authorized"))
+                .andExpect(status().is(200));
+    }
 
-		mockMvc.perform(login)
-			.andExpect(unauthenticated());
-	}
+    @Test
+    public void adminDoesntWorkWithoutLogin() throws Exception {
+        mockMvc.perform(get("/rest/admin"))
+                .andExpect(status().is(401));
+    }
 
-	@Test
-	public void accessUnsecuredResourceThenOk() throws Exception {
-		mockMvc.perform(get("/"))
-			.andExpect(status().isOk());
-	}
+    @Test
+    @WithMockUser(username = "user", password = "password")
+    public void adminDoesntWorkWithWrongLogin() throws Exception {
+        mockMvc.perform(get("/rest/admin"))
+                .andExpect(status().is(403));
+    }
 
-	@Test
-	public void accessSecuredResourceUnauthenticatedThenRedirectsToLogin() throws Exception {
-		mockMvc.perform(get("/hello"))
-			.andExpect(status().is3xxRedirection())
-			.andExpect(redirectedUrlPattern("**/login"));
-	}
+    @Test
+    @WithMockUser(username = "admin", password = "password", roles = "ADMIN")
+    public void adminWorksWithLogin() throws Exception {
+        mockMvc.perform(get("/rest/admin"))
+                .andExpect(status().is(200));
+    }
 
-	@Test
-	@WithMockUser
-	public void accessSecuredResourceAuthenticatedThenOk() throws Exception {
-		mockMvc.perform(get("/hello"))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	@WithMockUser
-	public void accessAdminPageAsUserThenForbidden() throws Exception {
-		mockMvc.perform(get("/admin"))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	@WithMockUser(roles = "ADMIN")
-	public void accessAdminPageAsAdminThenOk() throws Exception {
-		mockMvc.perform(get("/admin"))
-				.andExpect(status().isOk());
-	}
 }
