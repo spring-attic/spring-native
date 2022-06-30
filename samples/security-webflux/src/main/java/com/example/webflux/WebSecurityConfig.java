@@ -1,6 +1,7 @@
 package com.example.webflux;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -9,20 +10,19 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
+@Configuration
 @EnableWebFluxSecurity
-public class SecurityConfig {
+public class WebSecurityConfig {
     @Bean
-    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
                 .authorizeExchange((exchanges) -> exchanges
-                        .pathMatchers("/", "/home").permitAll()
-                        .pathMatchers("/admin").hasRole("ADMIN")
+                        .pathMatchers("/rest/anonymous").permitAll()
+                        .pathMatchers("/rest/admin").hasRole("ADMIN")
                         .anyExchange().authenticated()
                 )
-                .httpBasic(withDefaults())
-                .formLogin(withDefaults())
+                .httpBasic()
+                .and()
                 .build();
     }
 

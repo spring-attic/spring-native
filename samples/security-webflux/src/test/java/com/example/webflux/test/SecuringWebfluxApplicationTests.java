@@ -1,6 +1,7 @@
 package com.example.webflux.test;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -23,53 +24,61 @@ public class SecuringWebfluxApplicationTests {
                 .configureClient()
                 .build();
     }
-    
+
     @Test
-    public void accessUnsecuredResourceThenOk() throws Exception {
+    public void anonymousWorksWithoutLogin() throws Exception {
         this.rest
                 .get()
-                .uri("/")
+                .uri("/rest/anonymous")
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
-    public void accessSecuredResourceUnauthenticatedThenRedirectsToLogin() throws Exception {
+    public void authorizedDoesntWorkWithoutLogin() throws Exception {
         this.rest
                 .get()
-                .uri("/hello")
+                .uri("/rest/authorized")
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isEqualTo(401);
     }
 
     @Test
-    @WithMockUser
-    public void accessSecuredResourceAuthenticatedThenOk() throws Exception {
+    @WithMockUser(username = "user", password = "password")
+    public void authorizedWorksWithLogin() throws Exception {
         this.rest
                 .get()
-                .uri("/hello")
+                .uri("/rest/authorized")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isEqualTo(200);
     }
 
     @Test
-    @WithMockUser
-    public void accessAdminPageAsUserThenForbidden() throws Exception {
+    public void adminDoesntWorkWithoutLogin() throws Exception {
         this.rest
                 .get()
-                .uri("/admin")
+                .uri("/rest/admin")
                 .exchange()
-                .expectStatus().isForbidden();
+                .expectStatus().isEqualTo(401);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    public void accessAdminPageAsAdminThenOk() throws Exception {
+    @WithMockUser(username = "user", password = "password")
+    public void adminDoesntWorkWithWrongLogin() throws Exception {
         this.rest
                 .get()
-                .uri("/admin")
+                .uri("/rest/admin")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isEqualTo(403);
     }
 
+    @Test
+    @WithMockUser(username = "admin", password = "password", roles = "ADMIN")
+    public void adminWorksWithLogin() throws Exception {
+        this.rest
+                .get()
+                .uri("/rest/admin")
+                .exchange()
+                .expectStatus().isEqualTo(200);
+    }
 }
