@@ -15,6 +15,7 @@
  */
 package com.example.webflux
 
+import org.springframework.aot.thirdpartyhints.KotlinRuntimeHints
 import org.springframework.aot.thirdpartyhints.NettyRuntimeHints
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -32,7 +33,7 @@ data class Reservation(@Id var name: String, var id: Int? = null)
 interface ReservationRepository : CoroutineCrudRepository<Reservation, Int>
 
 @SpringBootApplication
-@ImportRuntimeHints(NettyRuntimeHints::class)
+@ImportRuntimeHints(NettyRuntimeHints::class, KotlinRuntimeHints::class)
 class WebfluxApplication {
 
 	@Bean
