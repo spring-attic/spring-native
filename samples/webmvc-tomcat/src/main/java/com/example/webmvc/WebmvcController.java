@@ -13,6 +13,11 @@ public class WebmvcController {
         return "Hello from Spring MVC and Tomcat";
     }
 
+    @GetMapping("/record")
+    public SampleRecord record() {
+        return new SampleRecord("Hello from Spring MVC and Tomcat");
+    }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/status")
     public String status() {
