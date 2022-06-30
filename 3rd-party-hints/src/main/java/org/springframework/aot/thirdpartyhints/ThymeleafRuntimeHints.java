@@ -49,10 +49,15 @@ public class ThymeleafRuntimeHints implements RuntimeHintsRegistrar {
         if (!ClassUtils.isPresent("org.thymeleaf.spring6.ISpringTemplateEngine", classLoader)) {
             return;
         }
+        hints.reflection().registerType(TypeReference.of("org.thymeleaf.spring6.view.ThymeleafView"), hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
         hints.reflection().registerType(TypeReference.of("org.thymeleaf.spring6.view.reactive.ThymeleafReactiveView"), hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
         hints.reflection().registerType(TypeReference.of("org.thymeleaf.spring6.expression.Mvc$Spring41MvcUriComponentsBuilderDelegate"), hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
         EXPRESSIONS.forEach(expression -> hints.reflection().registerType(TypeReference.of(expression), hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)));
         hints.reflection().registerType(TypeReference.of("org.thymeleaf.engine.IterationStatusVar"), hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+        hints.reflection().registerType(TypeReference.of("org.thymeleaf.extras.springsecurity6.util.Spring6VersionSpecificUtility"), hint -> hint.withMembers(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+        // TODO: This is used by Thymeleaf but belongs to Spring Security - what to do with it?
+        hints.reflection().registerType(TypeReference.of("org.springframework.security.authentication.UsernamePasswordAuthenticationToken"), hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+        hints.reflection().registerType(TypeReference.of("org.springframework.security.core.userdetails.User"), hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
         // TODO: This should really be in Spring Framework (or in Boot?)
         hints.resources().registerPattern("templates/*.html");
     }
