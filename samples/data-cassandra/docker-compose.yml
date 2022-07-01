@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+  cassandra:
+    image: cassandra:4.0.4
+    ports:
+      - 7000:7000
+      - 7001:7001
+      - 9042:9042
