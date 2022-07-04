@@ -30,7 +30,12 @@
   </properties>
 
   <dependencies>
-    <!-- Spring and Spring Boot dependencies -->
+	  <dependency>
+		  <groupId>org.springframework.aot</groupId>
+		  <artifactId>3rd-party-hints</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+	  </dependency>
+	  <!-- Spring and Spring Boot dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>

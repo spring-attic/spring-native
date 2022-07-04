@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.thirdpartyhints.HibernateValidatorRuntimeHints;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,7 @@ import org.springframework.samples.petclinic.vet.Vet;
  * @author Dave Syer
  */
 @SpringBootApplication
-@ImportRuntimeHints(Registrar.class)
+@ImportRuntimeHints({ Registrar.class, HibernateValidatorRuntimeHints.class })
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
