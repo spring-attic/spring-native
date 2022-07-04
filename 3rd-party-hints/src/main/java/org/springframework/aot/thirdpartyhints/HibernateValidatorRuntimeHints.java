@@ -19,6 +19,10 @@ public class HibernateValidatorRuntimeHints implements RuntimeHintsRegistrar {
 		}
 		hints.reflection().registerType(TypeReference.of("org.hibernate.validator.internal.util.logging.Log_$logger"),
 				hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+		hints.reflection().registerType(
+				TypeReference.of("org.hibernate.validator.internal.util.logging.Messages_$bundle"),
+				hint -> hint.withField("INSTANCE", fieldHint -> {
+				}));
 	}
 
 }
