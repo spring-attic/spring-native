@@ -40,6 +40,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cloud.SpringCloudRefreshScopeHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -101,7 +102,14 @@ public class ApplicationContextAotProcessor {
 				.addParameter(GenericApplicationContext.class, "context").addAnnotation(Override.class);
 		CodeBlock.Builder code = CodeBlock.builder();
 		registerApplicationContextInfrastructure(beanFactory, writerContext, code);
-		List<BeanInstanceDescriptor> descriptors = writeBeanDefinitions(beanFactory, writerContext, code);
+
+		List<BeanInstanceDescriptor> descriptors = new ArrayList<>();
+		String[] beanNames = beanFactory.getBeanDefinitionNames();
+		logger.info("********** count of beans is " + beanNames.length);
+		for (int i = 0; i < beanNames.length; i = i + 1000) {
+			descriptors.addAll(bootstrapBeanDefinitionsMethod(beanFactory, writerContext, beanNames, i, Math.min(beanNames.length, i + 1000)));
+			code.add("initialize" + i + "(context, beanFactory);\n");
+		}
 
 		NativeConfigurationRegistrar nativeConfigurationRegistrar = new NativeConfigurationRegistrar(beanFactory);
 		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
@@ -116,11 +124,24 @@ public class ApplicationContextAotProcessor {
 		return method;
 	}
 
-	private List<BeanInstanceDescriptor> writeBeanDefinitions(ConfigurableListableBeanFactory beanFactory,
-			BootstrapWriterContext writerContext, Builder code) {
+	private List<BeanInstanceDescriptor> bootstrapBeanDefinitionsMethod(ConfigurableListableBeanFactory beanFactory,
+			BootstrapWriterContext writerContext, String[] beanNames, int from, int to) {
+		MethodSpec.Builder method = MethodSpec.methodBuilder("initialize" + from).addModifiers(Modifier.PUBLIC)
+				.addParameter(GenericApplicationContext.class, "context")
+				.addParameter(DefaultListableBeanFactory.class, "beanFactory");
+		CodeBlock.Builder code = CodeBlock.builder();
+		List<BeanInstanceDescriptor> descriptors = writeBeanDefinitions(beanNames, from, to, beanFactory, writerContext, code);
+		method.addCode(code.build());
+		writerContext.getMainBootstrapClass().addMethod(method);
+		return descriptors;
+	}
+
+	private List<BeanInstanceDescriptor> writeBeanDefinitions(String[] beanNames, int from, int to,
+			ConfigurableListableBeanFactory beanFactory, BootstrapWriterContext writerContext, Builder code) {
 		List<BeanInstanceDescriptor> descriptors = new ArrayList<>();
-		String[] beanNames = beanFactory.getBeanDefinitionNames();
-		for (String beanName : beanNames) {
+		int wroteBeans = 0;
+		for (int i = from; i < to; i++) {
+			String beanName = beanNames[i];
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			try {
 				if (!isExcluded(beanName, beanDefinition)) {
@@ -131,6 +152,7 @@ public class ApplicationContextAotProcessor {
 						descriptors.add(beanRegistrationWriter.getBeanInstanceDescriptor());
 					}
 				}
+				wroteBeans++;
 			}
 			catch (Exception ex) {
 				String msg = String.format("Failed to handle bean with name '%s' and type '%s'",
@@ -138,6 +160,7 @@ public class ApplicationContextAotProcessor {
 				throw new BeanDefinitionGenerationException(msg, ex, beanName);
 			}
 		}
+		logger.info("********** wrote " + wroteBeans + " beans");
 		return descriptors;
 	}
 
