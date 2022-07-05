@@ -127,4 +127,11 @@ public class InitializationDescriptor {
 		this.runtimePackages.addAll(initializationDescriptor.getRuntimePackages());
 	}
 
+	public void mergeTo(InitializationDescriptor initializationDescriptor) {
+		initializationDescriptor.getBuildtimeClasses().addAll(this.buildtimeClasses);
+		initializationDescriptor.getBuildtimePackages().addAll(this.buildtimePackages);
+		initializationDescriptor.getRuntimeClasses().addAll(this.runtimeClasses);
+		initializationDescriptor.getRuntimePackages().addAll(this.runtimePackages);
+	}
+
 }

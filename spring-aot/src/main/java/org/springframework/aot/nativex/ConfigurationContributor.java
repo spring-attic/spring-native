@@ -77,7 +77,7 @@ public class ConfigurationContributor implements BootstrapContributor {
 		context.describeProxies(proxies -> proxies.merge(configurationCollector.getProxyDescriptors()));
 		context.describeSerialization(serial -> serial.merge(configurationCollector.getSerializationDescriptor()));
 		context.describeJNIReflection(jniReflect -> jniReflect.merge(configurationCollector.getJNIReflectionDescriptor()));
-		context.describeInitialization(init -> init.merge(configurationCollector.getInitializationDescriptor()));
+		context.describeInitialization(init -> init.mergeTo(configurationCollector.getInitializationDescriptor()));
 		context.getOptions().forEach(configurationCollector::addOption);
 		String mainClass = getMainClass(context);
 		if (mainClass != null) {
