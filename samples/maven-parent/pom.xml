@@ -32,6 +32,8 @@
 
 		<!-- Use Spring Security Snapshots -->
 		<spring-security.version>6.0.0-SNAPSHOT</spring-security.version>
+		<!-- Use Spring Session Bom Snapshots -->
+		<spring-session-bom.version>2022.1.0-SNAPSHOT</spring-session-bom.version>
 	</properties>
 
 	<build>
@@ -90,6 +92,11 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
+		<repository>
+			<id>local</id>
+			<name>local</name>
+			<url>file://${user.home}/.m2/repository</url>
+		</repository>
 		<repository>
 			<id>spring-release</id>
 			<name>Spring release</name>
