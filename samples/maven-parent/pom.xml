@@ -93,11 +93,6 @@
 	</pluginRepositories>
 	<repositories>
 		<repository>
-			<id>local</id>
-			<name>local</name>
-			<url>file://${user.home}/.m2/repository</url>
-		</repository>
-		<repository>
 			<id>spring-release</id>
 			<name>Spring release</name>
 			<url>https://repo.spring.io/release</url>
