@@ -31,6 +31,12 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import org.springframework.web.servlet.function.RouterFunction;
+
+import static org.springframework.web.servlet.function.RequestPredicates.GET;
+import static org.springframework.web.servlet.function.RouterFunctions.route;
+import static org.springframework.web.servlet.function.ServerResponse.ok;
+
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "fixedAuditor")
 @EnableJpaRepositories(basePackageClasses = FooRepository.class)
@@ -67,10 +73,10 @@ public class SampleApplication {
 		return () -> Optional.of("Douglas Adams");
 	}
 
-//	@Bean
-//	public RouterFunction<?> userEndpoints() {
-//		return route(GET("/"), request -> ok().body(findOne()));
-//	}
+	@Bean
+	public RouterFunction<?> userEndpoints() {
+		return route(GET("/"), request -> ok().body(findOne()));
+	}
 
 	private Foo findOne() {
 		return entities.findById(1L).get();

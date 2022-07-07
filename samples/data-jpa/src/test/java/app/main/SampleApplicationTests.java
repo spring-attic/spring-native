@@ -17,19 +17,22 @@
 package app.main;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * @author Dave Syer
  */
-// TODO: Enable tests once web is back
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SampleApplicationTests {
 
-//	@Autowired
-//	private WebTestClient client;
+	@Autowired
+	private WebTestClient client;
 
 	@Test
 	public void test() {
-//		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"val\":\"Hello\",\"flurb\":{}}");
+		client.get().uri("/").exchange().expectBody(String.class).isEqualTo("{\"val\":\"Hello\",\"flurb\":{}}");
 	}
+
 }
