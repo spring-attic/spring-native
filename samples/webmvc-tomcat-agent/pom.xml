@@ -62,27 +62,37 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>create-native-image-config-folder</id>
-						<phase>test-compile</phase>
-						<configuration>
-							<target>
-								<mkdir dir="target/classes/META-INF/native-image"/>
-							</target>
-						</configuration>
+						<id>copy-agent-config</id>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
+						<configuration>
+							<target>
+								<mkdir dir="${project.build.directory}/native/agent-output/main"/>
+								<copy todir="${project.build.directory}/native/agent-output/main">
+									<fileset dir="${project.build.directory}/native/agent-output/test" />
+								</copy>
+							</target>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
+				<groupId>org.graalvm.buildtools</groupId>
+				<artifactId>native-maven-plugin</artifactId>
+				<extensions>true</extensions>
 				<configuration>
-					<argLine>-agentlib:native-image-agent=access-filter-file=access-filter.json,config-merge-dir=target/classes/META-INF/native-image</argLine>
+					<agent>
+						<enabled>true</enabled>
+						<options name="test">
+							<option>access-filter-file=${basedir}/access-filter.json</option>
+						</options>
+					</agent>
 				</configuration>
 			</plugin>
 		</plugins>
