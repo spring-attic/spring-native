@@ -1,1 +1,2 @@
-Very basic Spring Boot project using a `CommandLineRunner` bean.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/command-line-runner)
