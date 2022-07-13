@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
+import org.springframework.nativex.json.JSONTokener;
+import org.springframework.nativex.json.JSONValue;
 
 /**
  * Marshaller to write {@link SerializationDescriptor} as JSON.
@@ -39,8 +41,8 @@ public class SerializationDescriptorJsonMarshaller {
 			throws IOException {
 		try {
 			SerializationDescriptorJsonConverter converter = new SerializationDescriptorJsonConverter();
-			JSONArray jsonArray = converter.toJsonArray(descriptor);
-			outputStream.write(jsonArray.toString(2).getBytes(StandardCharsets.UTF_8));
+			JSONValue jsonValue = converter.toJsonValue(descriptor);
+			outputStream.write(jsonValue.toString(2).getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
 			if (ex instanceof IOException) {
@@ -67,18 +69,38 @@ public class SerializationDescriptorJsonMarshaller {
 
 	public static SerializationDescriptor read(InputStream inputStream) {
 		try {
-			SerializationDescriptor descriptor = toSerializationDescriptor(new JSONArray(toString(inputStream)));
+			SerializationDescriptor descriptor = toSerializationDescriptor(new JSONTokener(toString(inputStream)));
 			return descriptor;
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to read ProxiesDescriptor from inputstream", e);
 		}
 	}
 	
-	private static SerializationDescriptor toSerializationDescriptor(JSONArray array) throws Exception {
+	private static SerializationDescriptor toSerializationDescriptor(JSONTokener tokenizer) throws Exception {
 		SerializationDescriptor descriptor = new SerializationDescriptor();
-		for (int i=0;i<array.length();i++) {
-			JSONObject object = (JSONObject) array.get(i);
-			descriptor.add(object.getString("name"));
+		Object jsonValue = tokenizer.nextValue();
+		if (jsonValue instanceof JSONArray) {
+			JSONArray array = (JSONArray) jsonValue;
+			for (int i=0;i<array.length();i++) {
+				JSONObject object = (JSONObject) array.get(i);
+				descriptor.add(object.getString("name"));
+			}
+		} else {
+			JSONObject object = (JSONObject) jsonValue;
+			JSONArray typesArray = object.optJSONArray("types");
+			if (typesArray != null) {
+				for (int i=0;i<typesArray.length();i++) {
+					JSONObject typeObject = (JSONObject) typesArray.get(i);
+					descriptor.add(typeObject.getString("name"));
+				}
+			}
+			JSONArray lambdaCapturingTypesArray = object.optJSONArray("lambdaCapturingTypes");
+			if (lambdaCapturingTypesArray != null) {
+				for (int i=0;i<lambdaCapturingTypesArray.length();i++) {
+					JSONObject lambdaCapturingTypeObject = (JSONObject) lambdaCapturingTypesArray.get(i);
+					descriptor.add(lambdaCapturingTypeObject.getString("name"), true);
+				}
+			}
 		}
 		return descriptor;
 	}

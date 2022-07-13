@@ -29,5 +29,9 @@ public class SerializationHandler extends Handler {
 	public void addType(String className) {
 		collector.addSerializationType(className, true);
 	}
+
+	public void addLambdaCapturingType(String className) {
+		collector.addSerializationLambdaCapturingType(className, true);
+	}
 	
 }

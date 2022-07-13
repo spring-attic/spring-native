@@ -26,21 +26,36 @@ import java.util.function.Consumer;
 public class SerializationDescriptor {
 
 	private final Set<String> serializableTypes;
+	private final Set<String> serializableLambdaCapturingTypes;
 
 	public SerializationDescriptor() {
 		this.serializableTypes = new HashSet<>();
+		this.serializableLambdaCapturingTypes = new HashSet<>();
 	}
 
 	public SerializationDescriptor(SerializationDescriptor metadata) {
 		this.serializableTypes = new HashSet<>(metadata.serializableTypes);
+		this.serializableLambdaCapturingTypes = new HashSet<>(metadata.serializableLambdaCapturingTypes);
 	}
 
 	public Set<String> getSerializableTypes() {
 		return this.serializableTypes;
 	}
 
+	public Set<String> getSerializableLambdaCapturingTypes() {
+		return this.serializableLambdaCapturingTypes;
+	}
+
 	public void add(String className) {
 		this.serializableTypes.add(className);
+	}
+
+	public void add(String className, boolean lambdaCapturing) {
+		if (lambdaCapturing) {
+			this.serializableLambdaCapturingTypes.add(className);
+		} else {
+			this.serializableTypes.add(className);
+		}
 	}
 
 	@Override
@@ -64,12 +79,21 @@ public class SerializationDescriptor {
 		serializableTypes.stream().forEach(t -> consumer.accept(t));
 	}
 
+	public void consumeLambdaCapturing(Consumer<String> consumer) {
+		serializableLambdaCapturingTypes.forEach(consumer);
+	}
+
 	public void merge(SerializationDescriptor otherSerializationDescriptor) {
 		serializableTypes.addAll(otherSerializationDescriptor.serializableTypes);
+		serializableLambdaCapturingTypes.addAll(otherSerializationDescriptor.serializableLambdaCapturingTypes);
 	}
 	
 	public boolean contains(String className) {
 		return serializableTypes.contains(className);
+	}
+
+	public boolean containsLambdaCapturing(String className) {
+		return serializableLambdaCapturingTypes.contains(className);
 	}
 
 }

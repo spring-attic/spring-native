@@ -47,4 +47,16 @@ public @interface SerializationHint {
 	 */
 	String[] typeNames() default {};
 
+	/**
+	 * configure lambdaCapturingTypes for Lambda functions serialization
+	 * @return the lambda capturing types
+	 */
+	Class<?>[] lambdaCapturingTypes() default {};
+
+	/**
+	 * Alternative way to configure lambdaCapturingTypes for Lambda functions serialization
+	 * @return the lambda capturing type names
+	 */
+	String[] lambdaCapturingTypeNames() default {};
+
 }

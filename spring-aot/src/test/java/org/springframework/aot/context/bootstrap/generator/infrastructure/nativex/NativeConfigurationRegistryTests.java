@@ -212,11 +212,22 @@ class NativeConfigurationRegistryTests {
 	}
 
 	@Test
+	void addLambdaCapturingSerialization() {
+		registry.serialization().add(NativeSerializationEntry.ofLambdaCapturingType(String.class));
+		assertThat(registry.serialization().toSerializationDescriptor()).satisfies((serializationDescriptor) ->
+				assertThat(serializationDescriptor.getSerializableLambdaCapturingTypes()).singleElement().isEqualTo(String.class.getName()));
+	}
+
+	@Test
 	void addSeveralSerializations() {
 		registry.serialization().add(NativeSerializationEntry.ofType(String.class));
 		registry.serialization().add(NativeSerializationEntry.ofType(Long.class));
+		registry.serialization().add(NativeSerializationEntry.ofLambdaCapturingType(String.class));
+		registry.serialization().add(NativeSerializationEntry.ofLambdaCapturingType(Long.class));
 		assertThat(registry.serialization().toSerializationDescriptor()).satisfies((serializationDescriptor) ->
 				assertThat(serializationDescriptor.getSerializableTypes()).containsOnly(String.class.getName(), Long.class.getName()));
+		assertThat(registry.serialization().toSerializationDescriptor()).satisfies((serializationDescriptor) ->
+				assertThat(serializationDescriptor.getSerializableLambdaCapturingTypes()).containsOnly(String.class.getName(), Long.class.getName()));
 	}
 
 	@Test

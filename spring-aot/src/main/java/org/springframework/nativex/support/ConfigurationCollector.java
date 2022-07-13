@@ -272,6 +272,17 @@ public class ConfigurationCollector {
 		serializationDescriptor.add(className);
 		return true;
 	}
+
+	public boolean addSerializationLambdaCapturingType(String className, boolean verify) {
+		if (verify) {
+			Type clazz = ts.resolveDotted(className, true);
+			if (clazz == null) {
+				return false;
+			}
+		}
+		serializationDescriptor.add(className, true);
+		return true;
+	}
 	
 	private boolean areMembersSpecified(ClassDescriptor cd) {
 		List<MethodDescriptor> methods = cd.getMethods();

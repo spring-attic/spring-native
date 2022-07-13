@@ -18,6 +18,7 @@ package org.springframework.nativex.domain.serialization;
 
 import org.springframework.nativex.json.JSONArray;
 import org.springframework.nativex.json.JSONObject;
+import org.springframework.nativex.json.JSONValue;
 
 /**
  * Converter to change {@link SerializationDescriptor} objects into JSON objects
@@ -26,14 +27,32 @@ import org.springframework.nativex.json.JSONObject;
  */
 class SerializationDescriptorJsonConverter {
 
-	public JSONArray toJsonArray(SerializationDescriptor sd) throws Exception {
-		JSONArray jsonArray = new JSONArray();
+	public JSONValue toJsonValue(SerializationDescriptor sd) throws Exception {
+		if (sd.getSerializableLambdaCapturingTypes().isEmpty()) {
+			JSONArray jsonArray = new JSONArray();
+			for (String type: sd.getSerializableTypes()) {
+				JSONObject jo = new JSONObject();
+				jo.put("name", type);
+				jsonArray.put(jo);
+			}
+			return jsonArray;
+		}
+		JSONObject jsonObject = new JSONObject();
+		JSONArray types = new JSONArray();
 		for (String type: sd.getSerializableTypes()) {
 			JSONObject jo = new JSONObject();
 			jo.put("name", type);
-			jsonArray.put(jo);
+			types.put(jo);
 		}
-		return jsonArray;
+		jsonObject.put("types", types);
+		JSONArray lambdaCapturingTypes = new JSONArray();
+		for (String type: sd.getSerializableLambdaCapturingTypes()) {
+			JSONObject jo = new JSONObject();
+			jo.put("name", type);
+			lambdaCapturingTypes.put(jo);
+		}
+		jsonObject.put("lambdaCapturingTypes", lambdaCapturingTypes);
+		return jsonObject;
 	}
 
 }

@@ -27,9 +27,15 @@ import org.springframework.util.ClassUtils;
 public class NativeSerializationEntry {
 
 	private final Class<?> type;
+	private final boolean lambdaCapturing;
 
 	private NativeSerializationEntry(Class<?> type) {
+		this(type, false);
+	}
+
+	private NativeSerializationEntry(Class<?> type, boolean lambdaCapturing) {
 		this.type = type;
+		this.lambdaCapturing = lambdaCapturing;
 	}
 
 	/**
@@ -43,6 +49,16 @@ public class NativeSerializationEntry {
 	}
 
 	/**
+	 * Create a new {@link NativeSerializationEntry} for the lambda capturing types.
+	 * @param type the lambda capturing type
+	 * @return the serialization entry
+	 */
+	public static NativeSerializationEntry ofLambdaCapturingType(Class<?> type) {
+		Assert.notNull(type, "type must not be null");
+		return new NativeSerializationEntry(type, true);
+	}
+
+	/**
 	 * Create a new {@link NativeSerializationEntry} for the specified types.
 	 * @param typeName the related type name
 	 * @return the serialization entry
@@ -52,7 +68,17 @@ public class NativeSerializationEntry {
 		return new NativeSerializationEntry(ClassUtils.resolveClassName(typeName, null));
 	}
 
+	/**
+	 * Create a new {@link NativeSerializationEntry} for the lambda capturing types.
+	 * @param typeName the lambda capturing type name
+	 * @return the serialization entry
+	 */
+	public static NativeSerializationEntry ofLambdaCapturingTypeName(String typeName) {
+		Assert.notNull(typeName, "typeName must not be null");
+		return new NativeSerializationEntry(ClassUtils.resolveClassName(typeName, null), true);
+	}
+
 	public void contribute(SerializationDescriptor descriptor) {
-		descriptor.add(this.type.getName());
+		descriptor.add(this.type.getName(), lambdaCapturing);
 	}
 }

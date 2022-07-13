@@ -32,24 +32,30 @@ public class NativeSerializationEntryTests {
 	@Test
 	void ofTypeWithNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NativeSerializationEntry.ofType(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeSerializationEntry.ofLambdaCapturingType(null));
 	}
 
 	@Test
 	void contributeType() {
 		SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
 		NativeSerializationEntry.ofType(String.class).contribute(serializationDescriptor);
+		NativeSerializationEntry.ofLambdaCapturingType(String.class).contribute(serializationDescriptor);
 		assertThat(serializationDescriptor.getSerializableTypes()).singleElement().isEqualTo(String.class.getName());
+		assertThat(serializationDescriptor.getSerializableLambdaCapturingTypes()).singleElement().isEqualTo(String.class.getName());
 	}
 
 	@Test
 	void ofTypeNameWithNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NativeSerializationEntry.ofTypeName(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> NativeSerializationEntry.ofLambdaCapturingTypeName(null));
 	}
 
 	@Test
 	void contributeTypeName() {
 		SerializationDescriptor serializationDescriptor = new SerializationDescriptor();
 		NativeSerializationEntry.ofTypeName(String.class.getName()).contribute(serializationDescriptor);
+		NativeSerializationEntry.ofLambdaCapturingTypeName(String.class.getName()).contribute(serializationDescriptor);
 		assertThat(serializationDescriptor.getSerializableTypes()).singleElement().isEqualTo(String.class.getName());
+		assertThat(serializationDescriptor.getSerializableLambdaCapturingTypes()).singleElement().isEqualTo(String.class.getName());
 	}
 }

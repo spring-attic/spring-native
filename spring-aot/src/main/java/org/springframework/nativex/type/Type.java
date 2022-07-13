@@ -1715,6 +1715,8 @@ public class Type {
 		List<Object> values = typeInfo.values;
 		List<org.objectweb.asm.Type> types = new ArrayList<>();
 		List<String> typeNames = new ArrayList<>();
+		List<org.objectweb.asm.Type> lambdaCapturingTypes = new ArrayList<>();
+		List<String> lambdaCapturingTypeNames = new ArrayList<>();
 		for (int i = 0; i < values.size(); i += 2) {
 			String key = (String) values.get(i);
 			Object value = values.get(i + 1);
@@ -1722,6 +1724,10 @@ public class Type {
 				types = (ArrayList<org.objectweb.asm.Type>) value;
 			} else if (key.equals("typeNames")) {
 				typeNames = (ArrayList<String>) value;
+			} else if (key.equals("lambdaCapturingTypes")) {
+				lambdaCapturingTypes = (List<org.objectweb.asm.Type>) value;
+			} else if (key.equals("lambdaCapturingTypeNames")) {
+				lambdaCapturingTypeNames = (List<String>) value;
 			}
 		}
 		for (org.objectweb.asm.Type type : types) {
@@ -1731,6 +1737,15 @@ public class Type {
 			Type resolvedType = typeSystem.resolveName(typeName, true);
 			if (resolvedType != null) {
 				ch.addSerializationType(typeName);
+			}
+		}
+		for (org.objectweb.asm.Type type : lambdaCapturingTypes) {
+			ch.addSerializationLambdaCapturingType(type.getClassName());
+		}
+		for (String typeName : lambdaCapturingTypeNames) {
+			Type resolvedType = typeSystem.resolveName(typeName, true);
+			if (resolvedType != null) {
+				ch.addSerializationLambdaCapturingType(typeName);
 			}
 		}
 	}

@@ -43,6 +43,8 @@ public class HintDeclaration {
 	private Map<String, AccessDescriptor> jniTypes = new LinkedHashMap<>();
 
 	private Set<String> serializationTypes = new HashSet<>();
+
+	private Set<String> serializationLambdaCapturingTypes = new HashSet<>();
 	
 	private List<JdkProxyDescriptor> proxyDescriptor = new ArrayList<>();
 
@@ -109,11 +111,19 @@ public class HintDeclaration {
 	public void addSerializationType(String className) {
 		serializationTypes.add(className);
 	}
+
+	public void addSerializationLambdaCapturingType(String className) {
+		serializationLambdaCapturingTypes.add(className);
+	}
 	
 	public Set<String> getSerializationTypes() {
 		return serializationTypes;
 	}
-	
+
+	public Set<String> getSerializationLambdaCapturingTypes() {
+		return serializationLambdaCapturingTypes;
+	}
+
 	public void addDependantType(String className, AccessDescriptor accessDescriptor) {
 		specificTypes.put(className, accessDescriptor);
 	}

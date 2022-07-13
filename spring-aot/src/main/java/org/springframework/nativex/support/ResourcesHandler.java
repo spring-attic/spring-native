@@ -151,6 +151,14 @@ public class ResourcesHandler extends Handler {
 						serializationHandler.addType(st);
 					}
 				}
+
+				Set<String> serializationLambdaCapturingTypes = ch.getSerializationLambdaCapturingTypes();
+				if (!serializationLambdaCapturingTypes.isEmpty()) {
+					logger.debug("Registering lambda capturing types as serializable: "+serializationLambdaCapturingTypes);
+					for (String st: serializationLambdaCapturingTypes) {
+						serializationHandler.addLambdaCapturingType(st);
+					}
+				}
 				List<org.springframework.nativex.type.ResourcesDescriptor> resourcesDescriptors = ch
 						.getResourcesDescriptors();
 				for (org.springframework.nativex.type.ResourcesDescriptor rd : resourcesDescriptors) {

@@ -44,7 +44,7 @@ import java.util.List;
  * overridable methods is not specified. See <i>Effective Java</i> Item 17, "Design and
  * Document or inheritance or else prohibit it" for further information.
  */
-public class JSONArray {
+public class JSONArray implements JSONValue {
 
 	private final List<Object> values;
 
