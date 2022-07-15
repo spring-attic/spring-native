@@ -1,1 +1,2 @@
-Very basic Spring Boot project using a `CommandLineRunner` bean with Log4j2.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/logging-log4j2)
