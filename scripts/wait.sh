@@ -7,7 +7,7 @@ wait_log() {
 
   for ((i=0; i<=timeout; i++)); do
     if test -f "$file"; then
-      cat "$file" | grep -q "$search_term" && return 0
+      cat "$file" | grep -Eq "$search_term" && return 0
     fi
     sleep 1
   done
