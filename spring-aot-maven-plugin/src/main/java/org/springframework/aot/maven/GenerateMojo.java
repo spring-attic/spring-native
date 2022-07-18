@@ -67,6 +67,9 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 	@Parameter(property = "spring.aot.applicationClass")
 	protected String applicationClass;
 
+	@Parameter(property = "spring.aot.primaryClasses")
+	protected List<String> primaryClasses;
+
 	/**
 	 * Location of generated source files created by Spring AOT to bootstrap the application.
 	 */
@@ -127,6 +130,9 @@ public class GenerateMojo extends AbstractBootstrapMojo {
 			}
 			if (this.applicationClass != null) {
 				args.add("--application-class=" + this.applicationClass);
+			}
+			if (this.primaryClasses != null && !this.primaryClasses.isEmpty()) {
+				args.add("--primary-classes=" + String.join(",", this.primaryClasses));
 			}
 
 			forkJvm(Paths.get(this.project.getBuild().getDirectory()).toFile(), args, Collections.emptyMap());

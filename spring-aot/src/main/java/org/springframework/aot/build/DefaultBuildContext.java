@@ -43,6 +43,8 @@ class DefaultBuildContext implements BuildContext {
 
 	private final String applicationClass;
 
+	private final List<String> primaryClasses;
+
 	private final List<String> testClasses;
 
 	private final List<String> classpath;
@@ -68,6 +70,7 @@ class DefaultBuildContext implements BuildContext {
 	DefaultBuildContext(ApplicationStructure applicationStructure) {
 		this.mainClass = applicationStructure.getMainClass();
 		this.applicationClass = applicationStructure.getApplicationClass();
+		this.primaryClasses = applicationStructure.getPrimaryClasses();
 		this.testClasses = applicationStructure.getTestClasses();
 		this.classpath = applicationStructure.getClasspath();
 		this.classLoader = applicationStructure.getClassLoader();
@@ -96,6 +99,11 @@ class DefaultBuildContext implements BuildContext {
 	@Override
 	public String getApplicationClass() {
 		return this.applicationClass;
+	}
+
+	@Override
+	public List<String> getPrimaryClasses() {
+		return primaryClasses;
 	}
 
 	@Override

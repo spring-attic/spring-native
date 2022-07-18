@@ -157,7 +157,7 @@ class BootstrapCodeGeneratorTests {
 	private ApplicationStructure getApplicationStructure(File tempDir) throws IOException {
 		return new ApplicationStructure(tempDir.toPath().resolve("sources"), tempDir.toPath().resolve("resources"),
 				Collections.emptySet(), Collections.emptyList(), "", "",
-				Collections.emptyList(), Collections.emptyList(), Thread.currentThread().getContextClassLoader());
+				Collections.emptyList(), Collections.emptyList(), Thread.currentThread().getContextClassLoader(), Collections.emptyList());
 	}
 
 	private BootstrapCodeGenerator createCodeGenerator(BootstrapContributor... contributors) {

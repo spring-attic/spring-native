@@ -35,6 +35,9 @@ import org.springframework.nativex.utils.NativeUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Brian Clozel
  * @author Sebastien Deleuze
@@ -69,11 +72,25 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 			throw new IllegalStateException("Could not load application class " + applicationClassName, exc);
 		}
 
+		List<String> primaryClassNames;
+		List<Class<?>> primaryClasses = new ArrayList<>();
+		if ((primaryClassNames = context.getPrimaryClasses()) != null && !primaryClassNames.isEmpty()) {
+			for (final String primaryClassName : primaryClassNames) {
+				try {
+					logger.info("primary class: " + primaryClassName);
+					primaryClasses.add(ClassUtils.forName(primaryClassName, classLoader));
+				}
+				catch (ClassNotFoundException exc) {
+					throw new IllegalStateException("Could not load primary class " + primaryClassName, exc);
+				}
+			}
+		}
+
 		StopWatch watch = new StopWatch();
 		logger.info("Processing application context");
 		watch.start();
 		GenericApplicationContext applicationContext = new AotApplicationContextFactory(resourceLoader)
-				.createApplicationContext(applicationClass);
+				.createApplicationContext(applicationClass, primaryClasses.toArray(Class<?>[]::new));
 		configureEnvironment(applicationContext.getEnvironment());
 		ApplicationContextAotProcessor aotProcessor = new ApplicationContextAotProcessor(classLoader);
 		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);

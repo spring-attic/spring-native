@@ -57,6 +57,9 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 	@Option(names = {"--resources"}, required = true, split = "${sys:path.separator}", description = "Paths to the application compiled resources.")
 	private Set<Path> resourcesPaths;
 
+	@Option(names = {"--primary-classes"}, split = ",", description = "spring primary classes")
+	private Set<String> primaryClasses;
+
 	@Option(names = "--mode", required = true, description = "The mode which could be native or native-agent")
 	private String mode;
 	
@@ -107,7 +110,7 @@ public class GenerateTestBootstrapCommand implements Callable<Integer> {
 		BootstrapCodeGenerator generator = new BootstrapCodeGenerator(aotOptions, bootstrapContributors);
 		String[] classPath = StringUtils.tokenizeToStringArray(System.getProperty("java.class.path"), File.pathSeparator);
 		ApplicationStructure applicationStructure = new ApplicationStructure(this.sourceOutputPath, this.resourcesOutputPath, this.resourcesPaths,
-				Arrays.asList(this.testClassesFolders), null, null, testClassesNames, Arrays.asList(classPath), classLoader);
+				Arrays.asList(this.testClassesFolders), null, null, testClassesNames, Arrays.asList(classPath), classLoader, new ArrayList<>(primaryClasses));
 		generator.generate(AotPhase.TEST, applicationStructure);
 		return 0;
 	}

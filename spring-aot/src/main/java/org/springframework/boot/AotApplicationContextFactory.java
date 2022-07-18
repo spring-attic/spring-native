@@ -27,6 +27,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ResourceLoader;
 
+import java.util.Arrays;
+
 /**
  * Prepare an application context for AOT processing.
  *
@@ -47,8 +49,9 @@ public final class AotApplicationContextFactory {
 	 * @param applicationClass an application class to be used as the root of the context
 	 * @return an application context whose environment has been loaded, but not refreshed
 	 */
-	public GenericApplicationContext createApplicationContext(Class<?> applicationClass) {
+	public GenericApplicationContext createApplicationContext(Class<?> applicationClass, Class<?>... primaryClasses) {
 		SpringApplication application = new SpringApplication(this.resourceLoader, applicationClass);
+		application.addPrimarySources(Arrays.asList(primaryClasses));
 		ConfigurableEnvironment environment = loadEnvironment(application);
 		GenericApplicationContext applicationContext = createApplicationContext(application);
 		applicationContext.setResourceLoader(this.resourceLoader);

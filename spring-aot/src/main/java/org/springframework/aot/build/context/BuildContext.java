@@ -54,6 +54,8 @@ public interface BuildContext {
 	 */
 	String getApplicationClass();
 
+	List<String> getPrimaryClasses();
+
 	List<String> getTestClasses();
 
 	/**

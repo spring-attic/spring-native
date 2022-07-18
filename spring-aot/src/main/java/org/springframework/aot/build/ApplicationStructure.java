@@ -53,13 +53,15 @@ public class ApplicationStructure {
 
 	private final String applicationClass;
 
+	private final List<String> primaryClasses;
+
 	private final List<String> testClasses;
 
 	private final ClassLoader classLoader;
 
 	public ApplicationStructure(Path sourcesPath, Path resourcesPath, Set<Path> resourceFolders, List<Path> classesPaths,
 			@Nullable String mainClass, @Nullable String applicationClass, List<String> testClasses, List<String> classpath,
-			@Nullable ClassLoader classLoader) throws IOException {
+			@Nullable ClassLoader classLoader, @Nullable List<String> primaryClasses) throws IOException {
 		this.sourcesPath = sourcesPath;
 		this.resourcesPath = resourcesPath;
 		this.resourceFolders = resourceFolders;
@@ -72,6 +74,7 @@ public class ApplicationStructure {
 			String detectedApplicationClass = detectApplicationClass(classesPaths);
 			this.applicationClass = detectedApplicationClass != null ? detectedApplicationClass : mainClass;
 		}
+		this.primaryClasses = primaryClasses;
 		this.testClasses = testClasses;
 		this.classpath = classpath;
 		this.classLoader = classLoader;
@@ -99,6 +102,10 @@ public class ApplicationStructure {
 
 	public String getApplicationClass() {
 		return applicationClass;
+	}
+
+	public List<String> getPrimaryClasses() {
+		return primaryClasses;
 	}
 
 	public List<String> getTestClasses() {
