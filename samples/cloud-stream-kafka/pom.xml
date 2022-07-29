@@ -15,6 +15,21 @@
 	<name>cloud-stream-kafka</name>
 	<description>Demo project for SCSt Kafka</description>
 
+	<!-- TODO Remove the following dependencyManagement section once SCSt goes back to Boot snapshots and
+			fixes https://github.com/spring-cloud/spring-cloud-stream/issues/2465
+	-->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>3.0.0-M4</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
