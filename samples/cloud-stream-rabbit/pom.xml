@@ -10,10 +10,10 @@
 		<relativePath>../maven-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>cloud-stream-kafka</artifactId>
+	<artifactId>cloud-stream-rabbit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cloud-stream-kafka</name>
-	<description>Demo project for SCSt Kafka</description>
+	<name>cloud-stream-rabbit</name>
+	<description>Demo project for SCSt Rabbit</description>
 
 	<!-- TODO Remove the following dependencyManagement section once SCSt goes back to Boot snapshots and
 			fixes https://github.com/spring-cloud/spring-cloud-stream/issues/2465
@@ -41,7 +41,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-kafka</artifactId>
+			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
 		</dependency>
 	</dependencies>
 
