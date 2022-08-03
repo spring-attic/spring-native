@@ -1,1 +1,2 @@
-Spring Boot project with Spring Webflux, Netty and Jackson designed to test websocket support.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/webflux-netty)
