@@ -297,6 +297,8 @@ jobs:
         privileged: true
         image: spring-native-java11-image
         file: git-repo/ci/tasks/build-key-samples.yml
+        tags:
+          - native
         params:
           <<: *docker-hub-task-params
   - name: build-samples-aot-java11
@@ -343,6 +345,8 @@ jobs:
             privileged: true
             image: spring-native-java11-image
             file: git-repo/ci/tasks/build-samples.yml
+            tags:
+              - native
             params:
               AOT_ONLY: false
               <<: *docker-hub-task-params
@@ -364,6 +368,8 @@ jobs:
             privileged: true
             image: spring-native-java17-image
             file: git-repo/ci/tasks/build-samples.yml
+            tags:
+              - native
             params:
               AOT_ONLY: false
               <<: *docker-hub-task-params
