@@ -1,1 +1,2 @@
-Spring Boot project with Spring MVC, Tomcat and Spring Session JDBC.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/session-jdbc)
