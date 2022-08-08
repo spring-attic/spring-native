@@ -1,1 +1,2 @@
-Spring Boot project with Apache Kafka and Confluent Avro Serialization, and Avro schema-registry client.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/spring-kafka-avro)
