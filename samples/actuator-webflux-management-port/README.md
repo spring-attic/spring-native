@@ -1,1 +1,2 @@
-Spring Boot project with Spring WebFlux and Spring Boot actuators running on a separate port.
+This sample has been migrated to
+the [Spring AOT Smoke Tests](https://github.com/spring-projects/spring-aot-smoke-tests/tree/main/actuator-webflux-mgmt-port)
