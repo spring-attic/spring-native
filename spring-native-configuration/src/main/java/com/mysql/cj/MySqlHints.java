@@ -59,10 +59,10 @@ import com.mysql.cj.protocol.NamedPipeSocketFactory;
 import com.mysql.cj.protocol.SocksProxySocketFactory;
 import com.mysql.cj.protocol.StandardSocketFactory;
 
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger = Driver.class, types = {
 		@TypeHint(types = {
@@ -100,7 +100,8 @@ import org.springframework.nativex.hint.TypeHint;
 				WrongArgumentException.class,
 				NamedPipeSocketFactory.class,
 				SocksProxySocketFactory.class,
-				StandardSocketFactory.class 
+				StandardSocketFactory.class,
+				PerConnectionLRUFactory.class
 		}),
 		@TypeHint(types= {
 				DeadlockTimeoutRollbackMarker.class,
