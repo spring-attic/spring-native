@@ -16,12 +16,16 @@
 
 package org.springframework.scheduling.annotation;
 
-import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.type.NativeConfiguration;
 
-@NativeHint(trigger=SchedulingConfiguration.class, types = {
-	@TypeHint(types = Schedules.class, access = TypeAccess.DECLARED_METHODS)
+@NativeHint(trigger = SchedulingConfiguration.class, types = {
+        @TypeHint(types = Schedules.class, access = TypeAccess.DECLARED_METHODS)
 })
-public class SchedulingHints implements NativeConfiguration { }
+@NativeHint(trigger = ProxyAsyncConfiguration.class, types = {
+        @TypeHint(typeNames = "org.springframework.core.annotation.TypeMappedAnnotation[]")
+})
+public class SchedulingHints implements NativeConfiguration {
+}
