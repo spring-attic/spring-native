@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.context.annotation.BuildTimeBeanDefinitionsRegistrar;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.samples.simple.ConfigurationTwo;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +60,13 @@ class BootstrapInfrastructureWriterTests {
 		assertThat(writeInfrastructure(createBootstrapContext()))
 				.contains("beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());")
 				.hasImport(ContextAnnotationAutowireCandidateResolver.class);
+	}
+
+	@Test
+	void writeInfrastructureSetAnnotationAwareOrderComparator() {
+		assertThat(writeInfrastructure(createBootstrapContext()))
+				.contains("beanFactory.setDependencyComparator(AnnotationAwareOrderComparator.INSTANCE);")
+				.hasImport(AnnotationAwareOrderComparator.class);
 	}
 
 	@Test

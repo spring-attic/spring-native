@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.ImportOriginRegistry;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
  * Write the necessary code to prepare the infrastructure so that the application
@@ -66,6 +67,7 @@ public class BootstrapInfrastructureWriter {
 	public void writeInfrastructure(CodeBlock.Builder code) {
 		code.addStatement("$T beanFactory = context.getDefaultListableBeanFactory()", DefaultListableBeanFactory.class);
 		code.addStatement("beanFactory.setAutowireCandidateResolver(new $T())", ContextAnnotationAutowireCandidateResolver.class);
+		code.addStatement("beanFactory.setDependencyComparator($T.INSTANCE)", AnnotationAwareOrderComparator.class);
 		MethodSpec.Builder importAwareBeanPostProcessorMethod = handleImportAwareBeanPostProcessor();
 		BootstrapClass bootstrapClass = this.writerContext.getMainBootstrapClass();
 		if (importAwareBeanPostProcessorMethod != null) {
