@@ -2,7 +2,7 @@
 
 image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native-0.12.x/jobs/build-samples-java11/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native-0.12.x?group=builds"] image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
 
-*Spring Native will be replaced late November 2023 by Spring Boot 3 official native support, see https://spring.io/blog/2022/09/26/native-support-in-spring-boot-3-0-0-m5[this blog post] for more details.*
+*Spring Native will be replaced late November 2022 by Spring Boot 3 official native support, see https://spring.io/blog/2022/09/26/native-support-in-spring-boot-3-0-0-m5[this blog post] for more details.*
 
 Spring Native provides beta support for compiling Spring applications to native executables using https://www.graalvm.org[GraalVM]
 https://www.graalvm.org/reference-manual/native-image/[native-image] compiler, in order to provide a native deployment
