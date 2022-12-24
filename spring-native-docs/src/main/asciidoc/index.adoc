@@ -2,6 +2,8 @@ include::attributes.adoc[]
 = Spring Native documentation
 Version {version} - Andy Clement; Sébastien Deleuze; Filip Hanik; Dave Syer; Esteban Ginez; Jay Bryant; Brian Clozel; Stéphane Nicoll; Josh Long
 
+IMPORTANT: Spring Native is now superseded by Spring Boot 3 official native support, see https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html[the related reference documentation] for more details.
+
 [[overview]]
 == Overview
 
