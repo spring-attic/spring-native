@@ -1,6 +1,8 @@
 [[support]]
 == Support
 
+IMPORTANT: Spring Native is now superseded by Spring Boot 3 official native support, see https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html[the related reference documentation] for more details.
+
 This section defines the GraalVM version, languages and dependencies that have been validated against Spring Native {version},
 which provides beta support on the scope defined in this section. You can try it on your projects if they are using those
 supported dependencies, and https://github.com/spring-projects-experimental/spring-native/issues[raise bugs] or
