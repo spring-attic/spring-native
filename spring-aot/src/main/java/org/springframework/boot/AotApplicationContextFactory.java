@@ -26,6 +26,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 
 /**
  * Prepare an application context for AOT processing.
@@ -75,25 +76,17 @@ public final class AotApplicationContextFactory {
 	}
 
 	private static ConfigurableEnvironment getOrCreateEnvironment(WebApplicationType webApplicationType) {
-		switch (webApplicationType) {
-			case SERVLET:
-				return new ApplicationServletEnvironment();
-			case REACTIVE:
-				return new ApplicationReactiveWebEnvironment();
-			default:
-				return new ApplicationEnvironment();
-		}
+		ConfigurableEnvironment environment = ApplicationContextFactory.DEFAULT.createEnvironment(webApplicationType);
+		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
 
 	private static Class<? extends StandardEnvironment> deduceEnvironmentClass(WebApplicationType webApplicationType) {
-		switch (webApplicationType) {
-			case SERVLET:
-				return ApplicationServletEnvironment.class;
-			case REACTIVE:
-				return ApplicationReactiveWebEnvironment.class;
-			default:
-				return ApplicationEnvironment.class;
+		Class<? extends ConfigurableEnvironment> environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(webApplicationType);
+		if (environmentType == null) {
+			return ApplicationEnvironment.class;
 		}
+		Assert.isAssignable(StandardEnvironment.class, environmentType);
+		return (Class<? extends StandardEnvironment>) environmentType;
 	}
 
 	private void bindToSpringApplication(ConfigurableEnvironment environment, SpringApplication application) {

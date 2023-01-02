@@ -27,14 +27,14 @@
 :graalvm-native-buildtools: https://github.com/graalvm/native-build-tools
 :graalvm-native-buildtools-version: 0.9.13
 
-:spring-boot-version: 2.7.1
+:spring-boot-version: 2.7.7
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/
 :spring-boot-maven-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/maven-plugin/reference/htmlsingle/
 
 :spring-cloud-version: 2021.0.3
 
-:spring-framework-version: current
+:spring-framework-version: 5.3.x
 :spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api
 :spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference
 

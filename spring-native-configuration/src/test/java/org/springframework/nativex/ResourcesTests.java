@@ -30,7 +30,9 @@ public class ResourcesTests {
 		InputStream s = this.getClass().getResourceAsStream("/META-INF/native-image/org.apache.tomcat.embed/tomcat-embed-core/tomcat-resource.json");
 		ResourcesDescriptor read = ResourcesJsonMarshaller.read(s);
 		Assert.assertTrue(read.getBundles().contains("javax.servlet.LocalStrings"));
-		Assert.assertTrue(read.getPatterns().contains(".*/mbeans-descriptors.xml$"));
+		Assert.assertTrue(read.getPatterns().contains("^org/apache/tomcat/.*mbeans-descriptors\\.xml$"));
+		Assert.assertTrue(read.getPatterns().contains("^org/apache/catalina/.*mbeans-descriptors\\.xml$"));
+		Assert.assertTrue(read.getPatterns().contains("^org/apache/coyote/.*mbeans-descriptors\\.xml$"));
 	}
 
 	@Test

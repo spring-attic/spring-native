@@ -41,6 +41,7 @@ import org.springframework.nativex.domain.proxies.AotProxyDescriptor;
 import org.springframework.nativex.domain.proxies.JdkProxyDescriptor;
 import org.springframework.nativex.hint.AccessBits;
 import org.springframework.nativex.hint.FieldHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.InitializationHint;
 import org.springframework.nativex.hint.InitializationTime;
@@ -100,7 +101,8 @@ import org.springframework.util.StringUtils;
 		imports = {
 				PluginHints.class,
 				JacksonHints.class,
-		}
+		},
+		resources = @ResourceHint(patterns = "org/springframework/web/context/ContextLoader.properties")
 )
 public class HateoasHints implements NativeConfiguration, TypeSystemNativeConfiguration {
 

@@ -28,6 +28,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +44,8 @@ class AotApplicationContextFactoryTests {
 		GenericApplicationContext context = new AotApplicationContextFactory(createResourceLoader("empty"))
 				.createApplicationContext(TestApplication.class);
 		assertThat(context).isInstanceOf(AnnotationConfigServletWebServerApplicationContext.class);
-		assertThat(context.getEnvironment()).isInstanceOf(ApplicationServletEnvironment.class);
+		assertThat(context.getEnvironment()).isInstanceOf(StandardServletEnvironment.class);
+		assertThat(context.getEnvironment().getClass().getName()).endsWith("ApplicationServletEnvironment");
 		assertThat(context.isRunning()).isFalse();
 	}
 
