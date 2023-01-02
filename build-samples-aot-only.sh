@@ -12,7 +12,7 @@ fi
 echo "Date,Sample,Build Time (s),Build Mem (GB),RSS Mem (M),Image Size (M),Startup Time (s),JVM Uptime (s),ReflectConfig (lines)" >> samples-summary.csv
 for d in $(find samples -maxdepth 2 -type d | sort -n)
 do
-  if [[ -f "$d/build.sh" && ! -f "$d/.ignore" ]]; then
+  if [[ -f "$d/build.sh" && ! -f "$d/.ignore" && $d != *-agent ]]; then
     if ! (cd "$d" && ./build.sh --aot-only); then
       RC=1
     fi
