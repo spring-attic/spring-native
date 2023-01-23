@@ -1,6 +1,8 @@
 :documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
 
-image:https://ci.spring.io/api/v1/teams/spring-native/pipelines/spring-native-0.12.x/jobs/build-samples-java11/badge["Build Status", link="https://ci.spring.io/teams/spring-native/pipelines/spring-native-0.12.x?group=builds"] image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
+image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
+
+*In order to adapt to the https://spring.io/blog/2022/12/14/notice-of-permissions-changes-to-repo-spring-io-january-2023[permissions changes] on https://repo.spring.io/release/, Spring Native artifacts are now available from https://repo.spring.io/milestone/, Gradle and Maven build configuration of projects depending on Spring Native should be updated accordingly.*
 
 *Spring Native is now superseded by Spring Boot 3 official native support, see https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html[the related reference documentation] for more details.*
 
