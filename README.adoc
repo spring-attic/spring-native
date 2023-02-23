@@ -1,4 +1,4 @@
-:documentation-url: https://docs.spring.io/spring-native/docs/current/reference/htmlsingle
+:documentation-url: https://docs.spring.io/spring-native/docs/0.12.x/reference/htmlsingle/
 
 image:https://img.shields.io/badge/documentation-blue.svg["Reference documentation", link="{documentation-url}"]
 
